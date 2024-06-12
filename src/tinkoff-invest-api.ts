@@ -6,7 +6,6 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
-import config from './config.json';
 
 export interface TinkoffInvestApiOptions {
   /** Токен доступа */
@@ -43,11 +42,9 @@ export class TinkoffInvestApi {
   protected metadata: Metadata;
   
   constructor(options: TinkoffInvestApiOptions) {
-    const { endpoint, appName } = config;
-
     this.options = {
-      endpoint,
-      appName,
+      endpoint: 'invest-public-api.tinkoff.ru:443',
+      appName: '',
       ...options
     };
 

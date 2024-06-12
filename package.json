@@ -9,9 +9,9 @@
   "engines": {
     "node": ">=13.2.0"
   },
-  "version": "0.0.1",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "version": "0.0.2",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
