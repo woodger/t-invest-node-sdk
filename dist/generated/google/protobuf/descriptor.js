@@ -8,8 +8,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GeneratedCodeInfo_Annotation_Semantic = exports.featureSet_JsonFormatToJSON = exports.featureSet_JsonFormatFromJSON = exports.FeatureSet_JsonFormat = exports.featureSet_MessageEncodingToJSON = exports.featureSet_MessageEncodingFromJSON = exports.FeatureSet_MessageEncoding = exports.featureSet_Utf8ValidationToJSON = exports.featureSet_Utf8ValidationFromJSON = exports.FeatureSet_Utf8Validation = exports.featureSet_RepeatedFieldEncodingToJSON = exports.featureSet_RepeatedFieldEncodingFromJSON = exports.FeatureSet_RepeatedFieldEncoding = exports.featureSet_EnumTypeToJSON = exports.featureSet_EnumTypeFromJSON = exports.FeatureSet_EnumType = exports.featureSet_FieldPresenceToJSON = exports.featureSet_FieldPresenceFromJSON = exports.FeatureSet_FieldPresence = exports.methodOptions_IdempotencyLevelToJSON = exports.methodOptions_IdempotencyLevelFromJSON = exports.MethodOptions_IdempotencyLevel = exports.fieldOptions_OptionTargetTypeToJSON = exports.fieldOptions_OptionTargetTypeFromJSON = exports.FieldOptions_OptionTargetType = exports.fieldOptions_OptionRetentionToJSON = exports.fieldOptions_OptionRetentionFromJSON = exports.FieldOptions_OptionRetention = exports.fieldOptions_JSTypeToJSON = exports.fieldOptions_JSTypeFromJSON = exports.FieldOptions_JSType = exports.fieldOptions_CTypeToJSON = exports.fieldOptions_CTypeFromJSON = exports.FieldOptions_CType = exports.fileOptions_OptimizeModeToJSON = exports.fileOptions_OptimizeModeFromJSON = exports.FileOptions_OptimizeMode = exports.fieldDescriptorProto_LabelToJSON = exports.fieldDescriptorProto_LabelFromJSON = exports.FieldDescriptorProto_Label = exports.fieldDescriptorProto_TypeToJSON = exports.fieldDescriptorProto_TypeFromJSON = exports.FieldDescriptorProto_Type = exports.extensionRangeOptions_VerificationStateToJSON = exports.extensionRangeOptions_VerificationStateFromJSON = exports.ExtensionRangeOptions_VerificationState = exports.editionToJSON = exports.editionFromJSON = exports.Edition = exports.protobufPackage = void 0;
-exports.GeneratedCodeInfo_Annotation = exports.GeneratedCodeInfo = exports.SourceCodeInfo_Location = exports.SourceCodeInfo = exports.FeatureSetDefaults_FeatureSetEditionDefault = exports.FeatureSetDefaults = exports.FeatureSet = exports.UninterpretedOption_NamePart = exports.UninterpretedOption = exports.MethodOptions = exports.ServiceOptions = exports.EnumValueOptions = exports.EnumOptions = exports.OneofOptions = exports.FieldOptions_FeatureSupport = exports.FieldOptions_EditionDefault = exports.FieldOptions = exports.MessageOptions = exports.FileOptions = exports.MethodDescriptorProto = exports.ServiceDescriptorProto = exports.EnumValueDescriptorProto = exports.EnumDescriptorProto_EnumReservedRange = exports.EnumDescriptorProto = exports.OneofDescriptorProto = exports.FieldDescriptorProto = exports.ExtensionRangeOptions_Declaration = exports.ExtensionRangeOptions = exports.DescriptorProto_ReservedRange = exports.DescriptorProto_ExtensionRange = exports.DescriptorProto = exports.FileDescriptorProto = exports.FileDescriptorSet = exports.generatedCodeInfo_Annotation_SemanticToJSON = exports.generatedCodeInfo_Annotation_SemanticFromJSON = void 0;
+exports.GeneratedCodeInfo = exports.SourceCodeInfo_Location = exports.SourceCodeInfo = exports.FeatureSetDefaults_FeatureSetEditionDefault = exports.FeatureSetDefaults = exports.FeatureSet = exports.UninterpretedOption_NamePart = exports.UninterpretedOption = exports.MethodOptions = exports.ServiceOptions = exports.EnumValueOptions = exports.EnumOptions = exports.OneofOptions = exports.FieldOptions_FeatureSupport = exports.FieldOptions_EditionDefault = exports.FieldOptions = exports.MessageOptions = exports.FileOptions = exports.MethodDescriptorProto = exports.ServiceDescriptorProto = exports.EnumValueDescriptorProto = exports.EnumDescriptorProto_EnumReservedRange = exports.EnumDescriptorProto = exports.OneofDescriptorProto = exports.FieldDescriptorProto = exports.ExtensionRangeOptions_Declaration = exports.ExtensionRangeOptions = exports.DescriptorProto_ReservedRange = exports.DescriptorProto_ExtensionRange = exports.DescriptorProto = exports.FileDescriptorProto = exports.FileDescriptorSet = exports.GeneratedCodeInfo_Annotation_Semantic = exports.FeatureSet_JsonFormat = exports.FeatureSet_MessageEncoding = exports.FeatureSet_Utf8Validation = exports.FeatureSet_RepeatedFieldEncoding = exports.FeatureSet_EnumType = exports.FeatureSet_FieldPresence = exports.MethodOptions_IdempotencyLevel = exports.FieldOptions_OptionTargetType = exports.FieldOptions_OptionRetention = exports.FieldOptions_JSType = exports.FieldOptions_CType = exports.FileOptions_OptimizeMode = exports.FieldDescriptorProto_Label = exports.FieldDescriptorProto_Type = exports.ExtensionRangeOptions_VerificationState = exports.Edition = exports.protobufPackage = void 0;
+exports.GeneratedCodeInfo_Annotation = void 0;
+exports.editionFromJSON = editionFromJSON;
+exports.editionToJSON = editionToJSON;
+exports.extensionRangeOptions_VerificationStateFromJSON = extensionRangeOptions_VerificationStateFromJSON;
+exports.extensionRangeOptions_VerificationStateToJSON = extensionRangeOptions_VerificationStateToJSON;
+exports.fieldDescriptorProto_TypeFromJSON = fieldDescriptorProto_TypeFromJSON;
+exports.fieldDescriptorProto_TypeToJSON = fieldDescriptorProto_TypeToJSON;
+exports.fieldDescriptorProto_LabelFromJSON = fieldDescriptorProto_LabelFromJSON;
+exports.fieldDescriptorProto_LabelToJSON = fieldDescriptorProto_LabelToJSON;
+exports.fileOptions_OptimizeModeFromJSON = fileOptions_OptimizeModeFromJSON;
+exports.fileOptions_OptimizeModeToJSON = fileOptions_OptimizeModeToJSON;
+exports.fieldOptions_CTypeFromJSON = fieldOptions_CTypeFromJSON;
+exports.fieldOptions_CTypeToJSON = fieldOptions_CTypeToJSON;
+exports.fieldOptions_JSTypeFromJSON = fieldOptions_JSTypeFromJSON;
+exports.fieldOptions_JSTypeToJSON = fieldOptions_JSTypeToJSON;
+exports.fieldOptions_OptionRetentionFromJSON = fieldOptions_OptionRetentionFromJSON;
+exports.fieldOptions_OptionRetentionToJSON = fieldOptions_OptionRetentionToJSON;
+exports.fieldOptions_OptionTargetTypeFromJSON = fieldOptions_OptionTargetTypeFromJSON;
+exports.fieldOptions_OptionTargetTypeToJSON = fieldOptions_OptionTargetTypeToJSON;
+exports.methodOptions_IdempotencyLevelFromJSON = methodOptions_IdempotencyLevelFromJSON;
+exports.methodOptions_IdempotencyLevelToJSON = methodOptions_IdempotencyLevelToJSON;
+exports.featureSet_FieldPresenceFromJSON = featureSet_FieldPresenceFromJSON;
+exports.featureSet_FieldPresenceToJSON = featureSet_FieldPresenceToJSON;
+exports.featureSet_EnumTypeFromJSON = featureSet_EnumTypeFromJSON;
+exports.featureSet_EnumTypeToJSON = featureSet_EnumTypeToJSON;
+exports.featureSet_RepeatedFieldEncodingFromJSON = featureSet_RepeatedFieldEncodingFromJSON;
+exports.featureSet_RepeatedFieldEncodingToJSON = featureSet_RepeatedFieldEncodingToJSON;
+exports.featureSet_Utf8ValidationFromJSON = featureSet_Utf8ValidationFromJSON;
+exports.featureSet_Utf8ValidationToJSON = featureSet_Utf8ValidationToJSON;
+exports.featureSet_MessageEncodingFromJSON = featureSet_MessageEncodingFromJSON;
+exports.featureSet_MessageEncodingToJSON = featureSet_MessageEncodingToJSON;
+exports.featureSet_JsonFormatFromJSON = featureSet_JsonFormatFromJSON;
+exports.featureSet_JsonFormatToJSON = featureSet_JsonFormatToJSON;
+exports.generatedCodeInfo_Annotation_SemanticFromJSON = generatedCodeInfo_Annotation_SemanticFromJSON;
+exports.generatedCodeInfo_Annotation_SemanticToJSON = generatedCodeInfo_Annotation_SemanticToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -100,7 +134,6 @@ function editionFromJSON(object) {
             return Edition.UNRECOGNIZED;
     }
 }
-exports.editionFromJSON = editionFromJSON;
 function editionToJSON(object) {
     switch (object) {
         case Edition.EDITION_UNKNOWN:
@@ -132,7 +165,6 @@ function editionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.editionToJSON = editionToJSON;
 /** The verification state of the extension range. */
 var ExtensionRangeOptions_VerificationState;
 (function (ExtensionRangeOptions_VerificationState) {
@@ -155,7 +187,6 @@ function extensionRangeOptions_VerificationStateFromJSON(object) {
             return ExtensionRangeOptions_VerificationState.UNRECOGNIZED;
     }
 }
-exports.extensionRangeOptions_VerificationStateFromJSON = extensionRangeOptions_VerificationStateFromJSON;
 function extensionRangeOptions_VerificationStateToJSON(object) {
     switch (object) {
         case ExtensionRangeOptions_VerificationState.DECLARATION:
@@ -167,7 +198,6 @@ function extensionRangeOptions_VerificationStateToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.extensionRangeOptions_VerificationStateToJSON = extensionRangeOptions_VerificationStateToJSON;
 var FieldDescriptorProto_Type;
 (function (FieldDescriptorProto_Type) {
     /**
@@ -275,7 +305,6 @@ function fieldDescriptorProto_TypeFromJSON(object) {
             return FieldDescriptorProto_Type.UNRECOGNIZED;
     }
 }
-exports.fieldDescriptorProto_TypeFromJSON = fieldDescriptorProto_TypeFromJSON;
 function fieldDescriptorProto_TypeToJSON(object) {
     switch (object) {
         case FieldDescriptorProto_Type.TYPE_DOUBLE:
@@ -319,7 +348,6 @@ function fieldDescriptorProto_TypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldDescriptorProto_TypeToJSON = fieldDescriptorProto_TypeToJSON;
 var FieldDescriptorProto_Label;
 (function (FieldDescriptorProto_Label) {
     /** LABEL_OPTIONAL - 0 is reserved for errors */
@@ -350,7 +378,6 @@ function fieldDescriptorProto_LabelFromJSON(object) {
             return FieldDescriptorProto_Label.UNRECOGNIZED;
     }
 }
-exports.fieldDescriptorProto_LabelFromJSON = fieldDescriptorProto_LabelFromJSON;
 function fieldDescriptorProto_LabelToJSON(object) {
     switch (object) {
         case FieldDescriptorProto_Label.LABEL_OPTIONAL:
@@ -364,7 +391,6 @@ function fieldDescriptorProto_LabelToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldDescriptorProto_LabelToJSON = fieldDescriptorProto_LabelToJSON;
 /** Generated classes can be optimized for speed or code size. */
 var FileOptions_OptimizeMode;
 (function (FileOptions_OptimizeMode) {
@@ -393,7 +419,6 @@ function fileOptions_OptimizeModeFromJSON(object) {
             return FileOptions_OptimizeMode.UNRECOGNIZED;
     }
 }
-exports.fileOptions_OptimizeModeFromJSON = fileOptions_OptimizeModeFromJSON;
 function fileOptions_OptimizeModeToJSON(object) {
     switch (object) {
         case FileOptions_OptimizeMode.SPEED:
@@ -407,7 +432,6 @@ function fileOptions_OptimizeModeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fileOptions_OptimizeModeToJSON = fileOptions_OptimizeModeToJSON;
 var FieldOptions_CType;
 (function (FieldOptions_CType) {
     /** STRING - Default mode. */
@@ -441,7 +465,6 @@ function fieldOptions_CTypeFromJSON(object) {
             return FieldOptions_CType.UNRECOGNIZED;
     }
 }
-exports.fieldOptions_CTypeFromJSON = fieldOptions_CTypeFromJSON;
 function fieldOptions_CTypeToJSON(object) {
     switch (object) {
         case FieldOptions_CType.STRING:
@@ -455,7 +478,6 @@ function fieldOptions_CTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldOptions_CTypeToJSON = fieldOptions_CTypeToJSON;
 var FieldOptions_JSType;
 (function (FieldOptions_JSType) {
     /** JS_NORMAL - Use the default type. */
@@ -483,7 +505,6 @@ function fieldOptions_JSTypeFromJSON(object) {
             return FieldOptions_JSType.UNRECOGNIZED;
     }
 }
-exports.fieldOptions_JSTypeFromJSON = fieldOptions_JSTypeFromJSON;
 function fieldOptions_JSTypeToJSON(object) {
     switch (object) {
         case FieldOptions_JSType.JS_NORMAL:
@@ -497,7 +518,6 @@ function fieldOptions_JSTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldOptions_JSTypeToJSON = fieldOptions_JSTypeToJSON;
 /**
  * If set to RETENTION_SOURCE, the option will be omitted from the binary.
  * Note: as of January 2023, support for this is in progress and does not yet
@@ -527,7 +547,6 @@ function fieldOptions_OptionRetentionFromJSON(object) {
             return FieldOptions_OptionRetention.UNRECOGNIZED;
     }
 }
-exports.fieldOptions_OptionRetentionFromJSON = fieldOptions_OptionRetentionFromJSON;
 function fieldOptions_OptionRetentionToJSON(object) {
     switch (object) {
         case FieldOptions_OptionRetention.RETENTION_UNKNOWN:
@@ -541,7 +560,6 @@ function fieldOptions_OptionRetentionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldOptions_OptionRetentionToJSON = fieldOptions_OptionRetentionToJSON;
 /**
  * This indicates the types of entities that the field may apply to when used
  * as an option. If it is unset, then the field may be freely used as an
@@ -600,7 +618,6 @@ function fieldOptions_OptionTargetTypeFromJSON(object) {
             return FieldOptions_OptionTargetType.UNRECOGNIZED;
     }
 }
-exports.fieldOptions_OptionTargetTypeFromJSON = fieldOptions_OptionTargetTypeFromJSON;
 function fieldOptions_OptionTargetTypeToJSON(object) {
     switch (object) {
         case FieldOptions_OptionTargetType.TARGET_TYPE_UNKNOWN:
@@ -628,7 +645,6 @@ function fieldOptions_OptionTargetTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldOptions_OptionTargetTypeToJSON = fieldOptions_OptionTargetTypeToJSON;
 /**
  * Is this method side-effect-free (or safe in HTTP parlance), or idempotent,
  * or neither? HTTP based RPC implementation may choose GET verb for safe
@@ -660,7 +676,6 @@ function methodOptions_IdempotencyLevelFromJSON(object) {
             return MethodOptions_IdempotencyLevel.UNRECOGNIZED;
     }
 }
-exports.methodOptions_IdempotencyLevelFromJSON = methodOptions_IdempotencyLevelFromJSON;
 function methodOptions_IdempotencyLevelToJSON(object) {
     switch (object) {
         case MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN:
@@ -674,7 +689,6 @@ function methodOptions_IdempotencyLevelToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.methodOptions_IdempotencyLevelToJSON = methodOptions_IdempotencyLevelToJSON;
 var FeatureSet_FieldPresence;
 (function (FeatureSet_FieldPresence) {
     FeatureSet_FieldPresence[FeatureSet_FieldPresence["FIELD_PRESENCE_UNKNOWN"] = 0] = "FIELD_PRESENCE_UNKNOWN";
@@ -703,7 +717,6 @@ function featureSet_FieldPresenceFromJSON(object) {
             return FeatureSet_FieldPresence.UNRECOGNIZED;
     }
 }
-exports.featureSet_FieldPresenceFromJSON = featureSet_FieldPresenceFromJSON;
 function featureSet_FieldPresenceToJSON(object) {
     switch (object) {
         case FeatureSet_FieldPresence.FIELD_PRESENCE_UNKNOWN:
@@ -719,7 +732,6 @@ function featureSet_FieldPresenceToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.featureSet_FieldPresenceToJSON = featureSet_FieldPresenceToJSON;
 var FeatureSet_EnumType;
 (function (FeatureSet_EnumType) {
     FeatureSet_EnumType[FeatureSet_EnumType["ENUM_TYPE_UNKNOWN"] = 0] = "ENUM_TYPE_UNKNOWN";
@@ -744,7 +756,6 @@ function featureSet_EnumTypeFromJSON(object) {
             return FeatureSet_EnumType.UNRECOGNIZED;
     }
 }
-exports.featureSet_EnumTypeFromJSON = featureSet_EnumTypeFromJSON;
 function featureSet_EnumTypeToJSON(object) {
     switch (object) {
         case FeatureSet_EnumType.ENUM_TYPE_UNKNOWN:
@@ -758,7 +769,6 @@ function featureSet_EnumTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.featureSet_EnumTypeToJSON = featureSet_EnumTypeToJSON;
 var FeatureSet_RepeatedFieldEncoding;
 (function (FeatureSet_RepeatedFieldEncoding) {
     FeatureSet_RepeatedFieldEncoding[FeatureSet_RepeatedFieldEncoding["REPEATED_FIELD_ENCODING_UNKNOWN"] = 0] = "REPEATED_FIELD_ENCODING_UNKNOWN";
@@ -783,7 +793,6 @@ function featureSet_RepeatedFieldEncodingFromJSON(object) {
             return FeatureSet_RepeatedFieldEncoding.UNRECOGNIZED;
     }
 }
-exports.featureSet_RepeatedFieldEncodingFromJSON = featureSet_RepeatedFieldEncodingFromJSON;
 function featureSet_RepeatedFieldEncodingToJSON(object) {
     switch (object) {
         case FeatureSet_RepeatedFieldEncoding.REPEATED_FIELD_ENCODING_UNKNOWN:
@@ -797,7 +806,6 @@ function featureSet_RepeatedFieldEncodingToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.featureSet_RepeatedFieldEncodingToJSON = featureSet_RepeatedFieldEncodingToJSON;
 var FeatureSet_Utf8Validation;
 (function (FeatureSet_Utf8Validation) {
     FeatureSet_Utf8Validation[FeatureSet_Utf8Validation["UTF8_VALIDATION_UNKNOWN"] = 0] = "UTF8_VALIDATION_UNKNOWN";
@@ -822,7 +830,6 @@ function featureSet_Utf8ValidationFromJSON(object) {
             return FeatureSet_Utf8Validation.UNRECOGNIZED;
     }
 }
-exports.featureSet_Utf8ValidationFromJSON = featureSet_Utf8ValidationFromJSON;
 function featureSet_Utf8ValidationToJSON(object) {
     switch (object) {
         case FeatureSet_Utf8Validation.UTF8_VALIDATION_UNKNOWN:
@@ -836,7 +843,6 @@ function featureSet_Utf8ValidationToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.featureSet_Utf8ValidationToJSON = featureSet_Utf8ValidationToJSON;
 var FeatureSet_MessageEncoding;
 (function (FeatureSet_MessageEncoding) {
     FeatureSet_MessageEncoding[FeatureSet_MessageEncoding["MESSAGE_ENCODING_UNKNOWN"] = 0] = "MESSAGE_ENCODING_UNKNOWN";
@@ -861,7 +867,6 @@ function featureSet_MessageEncodingFromJSON(object) {
             return FeatureSet_MessageEncoding.UNRECOGNIZED;
     }
 }
-exports.featureSet_MessageEncodingFromJSON = featureSet_MessageEncodingFromJSON;
 function featureSet_MessageEncodingToJSON(object) {
     switch (object) {
         case FeatureSet_MessageEncoding.MESSAGE_ENCODING_UNKNOWN:
@@ -875,7 +880,6 @@ function featureSet_MessageEncodingToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.featureSet_MessageEncodingToJSON = featureSet_MessageEncodingToJSON;
 var FeatureSet_JsonFormat;
 (function (FeatureSet_JsonFormat) {
     FeatureSet_JsonFormat[FeatureSet_JsonFormat["JSON_FORMAT_UNKNOWN"] = 0] = "JSON_FORMAT_UNKNOWN";
@@ -900,7 +904,6 @@ function featureSet_JsonFormatFromJSON(object) {
             return FeatureSet_JsonFormat.UNRECOGNIZED;
     }
 }
-exports.featureSet_JsonFormatFromJSON = featureSet_JsonFormatFromJSON;
 function featureSet_JsonFormatToJSON(object) {
     switch (object) {
         case FeatureSet_JsonFormat.JSON_FORMAT_UNKNOWN:
@@ -914,7 +917,6 @@ function featureSet_JsonFormatToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.featureSet_JsonFormatToJSON = featureSet_JsonFormatToJSON;
 /**
  * Represents the identified object's effect on the element in the original
  * .proto file.
@@ -946,7 +948,6 @@ function generatedCodeInfo_Annotation_SemanticFromJSON(object) {
             return GeneratedCodeInfo_Annotation_Semantic.UNRECOGNIZED;
     }
 }
-exports.generatedCodeInfo_Annotation_SemanticFromJSON = generatedCodeInfo_Annotation_SemanticFromJSON;
 function generatedCodeInfo_Annotation_SemanticToJSON(object) {
     switch (object) {
         case GeneratedCodeInfo_Annotation_Semantic.NONE:
@@ -960,7 +961,6 @@ function generatedCodeInfo_Annotation_SemanticToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.generatedCodeInfo_Annotation_SemanticToJSON = generatedCodeInfo_Annotation_SemanticToJSON;
 function createBaseFileDescriptorSet() {
     return { file: [] };
 }

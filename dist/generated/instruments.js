@@ -8,9 +8,45 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetBondEventsRequest_EventType = exports.instrumentExchangeTypeToJSON = exports.instrumentExchangeTypeFromJSON = exports.InstrumentExchangeType = exports.bondTypeToJSON = exports.bondTypeFromJSON = exports.BondType = exports.riskLevelToJSON = exports.riskLevelFromJSON = exports.RiskLevel = exports.recommendationToJSON = exports.recommendationFromJSON = exports.Recommendation = exports.realExchangeToJSON = exports.realExchangeFromJSON = exports.RealExchange = exports.editFavoritesActionTypeToJSON = exports.editFavoritesActionTypeFromJSON = exports.EditFavoritesActionType = exports.structuredProductTypeToJSON = exports.structuredProductTypeFromJSON = exports.StructuredProductType = exports.assetTypeToJSON = exports.assetTypeFromJSON = exports.AssetType = exports.shareTypeToJSON = exports.shareTypeFromJSON = exports.ShareType = exports.instrumentStatusToJSON = exports.instrumentStatusFromJSON = exports.InstrumentStatus = exports.instrumentIdTypeToJSON = exports.instrumentIdTypeFromJSON = exports.InstrumentIdType = exports.optionSettlementTypeToJSON = exports.optionSettlementTypeFromJSON = exports.OptionSettlementType = exports.optionStyleToJSON = exports.optionStyleFromJSON = exports.OptionStyle = exports.optionPaymentTypeToJSON = exports.optionPaymentTypeFromJSON = exports.OptionPaymentType = exports.optionDirectionToJSON = exports.optionDirectionFromJSON = exports.OptionDirection = exports.couponTypeToJSON = exports.couponTypeFromJSON = exports.CouponType = exports.protobufPackage = void 0;
-exports.AssetsResponse = exports.AssetsRequest = exports.AssetResponse = exports.AssetRequest = exports.Dividend = exports.GetDividendsResponse = exports.GetDividendsRequest = exports.Instrument = exports.InstrumentResponse = exports.GetFuturesMarginResponse = exports.GetFuturesMarginRequest = exports.AccruedInterest = exports.GetAccruedInterestsResponse = exports.GetAccruedInterestsRequest = exports.Share = exports.Future = exports.Etf = exports.Currency = exports.Bond = exports.SharesResponse = exports.ShareResponse = exports.Option = exports.OptionsResponse = exports.OptionResponse = exports.FuturesResponse = exports.FutureResponse = exports.EtfsResponse = exports.EtfResponse = exports.CurrenciesResponse = exports.CurrencyResponse = exports.Coupon = exports.GetBondEventsResponse_BondEvent = exports.GetBondEventsResponse = exports.GetBondEventsRequest = exports.GetBondCouponsResponse = exports.GetBondCouponsRequest = exports.BondsResponse = exports.BondResponse = exports.FilterOptionsRequest = exports.InstrumentsRequest = exports.InstrumentRequest = exports.TradingDay = exports.TradingSchedule = exports.TradingSchedulesResponse = exports.TradingSchedulesRequest = exports.getAssetReportsResponse_AssetReportPeriodTypeToJSON = exports.getAssetReportsResponse_AssetReportPeriodTypeFromJSON = exports.GetAssetReportsResponse_AssetReportPeriodType = exports.getBondEventsRequest_EventTypeToJSON = exports.getBondEventsRequest_EventTypeFromJSON = void 0;
-exports.InstrumentsServiceDefinition = exports.TradingInterval_TimeInterval = exports.TradingInterval = exports.GetForecastResponse_ConsensusItem = exports.GetForecastResponse_TargetItem = exports.GetForecastResponse = exports.GetForecastRequest = exports.GetConsensusForecastsResponse_ConsensusForecastsItem = exports.GetConsensusForecastsResponse = exports.GetConsensusForecastsRequest = exports.GetAssetReportsResponse_GetAssetReportsEvent = exports.GetAssetReportsResponse = exports.GetAssetReportsRequest = exports.GetAssetFundamentalsResponse_StatisticResponse = exports.GetAssetFundamentalsResponse = exports.GetAssetFundamentalsRequest = exports.GetBrandsResponse = exports.GetBrandRequest = exports.GetBrandsRequest = exports.InstrumentShort = exports.FindInstrumentResponse = exports.FindInstrumentRequest = exports.CountryResponse = exports.IndicativeResponse = exports.IndicativesResponse = exports.IndicativesRequest = exports.GetCountriesResponse = exports.GetCountriesRequest = exports.EditFavoritesResponse = exports.EditFavoritesRequestInstrument = exports.EditFavoritesRequest = exports.FavoriteInstrument = exports.GetFavoritesResponse = exports.GetFavoritesRequest = exports.InstrumentLink = exports.AssetInstrument = exports.Brand = exports.AssetClearingCertificate = exports.AssetEtf = exports.AssetStructuredProduct = exports.AssetBond = exports.AssetShare = exports.AssetSecurity = exports.AssetCurrency = exports.Asset = exports.AssetFull = void 0;
+exports.Share = exports.Future = exports.Etf = exports.Currency = exports.Bond = exports.SharesResponse = exports.ShareResponse = exports.Option = exports.OptionsResponse = exports.OptionResponse = exports.FuturesResponse = exports.FutureResponse = exports.EtfsResponse = exports.EtfResponse = exports.CurrenciesResponse = exports.CurrencyResponse = exports.Coupon = exports.GetBondEventsResponse_BondEvent = exports.GetBondEventsResponse = exports.GetBondEventsRequest = exports.GetBondCouponsResponse = exports.GetBondCouponsRequest = exports.BondsResponse = exports.BondResponse = exports.FilterOptionsRequest = exports.InstrumentsRequest = exports.InstrumentRequest = exports.TradingDay = exports.TradingSchedule = exports.TradingSchedulesResponse = exports.TradingSchedulesRequest = exports.GetAssetReportsResponse_AssetReportPeriodType = exports.GetBondEventsRequest_EventType = exports.InstrumentExchangeType = exports.BondType = exports.RiskLevel = exports.Recommendation = exports.RealExchange = exports.EditFavoritesActionType = exports.StructuredProductType = exports.AssetType = exports.ShareType = exports.InstrumentStatus = exports.InstrumentIdType = exports.OptionSettlementType = exports.OptionStyle = exports.OptionPaymentType = exports.OptionDirection = exports.CouponType = exports.protobufPackage = void 0;
+exports.GetAssetReportsResponse_GetAssetReportsEvent = exports.GetAssetReportsResponse = exports.GetAssetReportsRequest = exports.GetAssetFundamentalsResponse_StatisticResponse = exports.GetAssetFundamentalsResponse = exports.GetAssetFundamentalsRequest = exports.GetBrandsResponse = exports.GetBrandRequest = exports.GetBrandsRequest = exports.InstrumentShort = exports.FindInstrumentResponse = exports.FindInstrumentRequest = exports.CountryResponse = exports.IndicativeResponse = exports.IndicativesResponse = exports.IndicativesRequest = exports.GetCountriesResponse = exports.GetCountriesRequest = exports.EditFavoritesResponse = exports.EditFavoritesRequestInstrument = exports.EditFavoritesRequest = exports.FavoriteInstrument = exports.GetFavoritesResponse = exports.GetFavoritesRequest = exports.InstrumentLink = exports.AssetInstrument = exports.Brand = exports.AssetClearingCertificate = exports.AssetEtf = exports.AssetStructuredProduct = exports.AssetBond = exports.AssetShare = exports.AssetSecurity = exports.AssetCurrency = exports.Asset = exports.AssetFull = exports.AssetsResponse = exports.AssetsRequest = exports.AssetResponse = exports.AssetRequest = exports.Dividend = exports.GetDividendsResponse = exports.GetDividendsRequest = exports.Instrument = exports.InstrumentResponse = exports.GetFuturesMarginResponse = exports.GetFuturesMarginRequest = exports.AccruedInterest = exports.GetAccruedInterestsResponse = exports.GetAccruedInterestsRequest = void 0;
+exports.InstrumentsServiceDefinition = exports.TradingInterval_TimeInterval = exports.TradingInterval = exports.GetForecastResponse_ConsensusItem = exports.GetForecastResponse_TargetItem = exports.GetForecastResponse = exports.GetForecastRequest = exports.GetConsensusForecastsResponse_ConsensusForecastsItem = exports.GetConsensusForecastsResponse = exports.GetConsensusForecastsRequest = void 0;
+exports.couponTypeFromJSON = couponTypeFromJSON;
+exports.couponTypeToJSON = couponTypeToJSON;
+exports.optionDirectionFromJSON = optionDirectionFromJSON;
+exports.optionDirectionToJSON = optionDirectionToJSON;
+exports.optionPaymentTypeFromJSON = optionPaymentTypeFromJSON;
+exports.optionPaymentTypeToJSON = optionPaymentTypeToJSON;
+exports.optionStyleFromJSON = optionStyleFromJSON;
+exports.optionStyleToJSON = optionStyleToJSON;
+exports.optionSettlementTypeFromJSON = optionSettlementTypeFromJSON;
+exports.optionSettlementTypeToJSON = optionSettlementTypeToJSON;
+exports.instrumentIdTypeFromJSON = instrumentIdTypeFromJSON;
+exports.instrumentIdTypeToJSON = instrumentIdTypeToJSON;
+exports.instrumentStatusFromJSON = instrumentStatusFromJSON;
+exports.instrumentStatusToJSON = instrumentStatusToJSON;
+exports.shareTypeFromJSON = shareTypeFromJSON;
+exports.shareTypeToJSON = shareTypeToJSON;
+exports.assetTypeFromJSON = assetTypeFromJSON;
+exports.assetTypeToJSON = assetTypeToJSON;
+exports.structuredProductTypeFromJSON = structuredProductTypeFromJSON;
+exports.structuredProductTypeToJSON = structuredProductTypeToJSON;
+exports.editFavoritesActionTypeFromJSON = editFavoritesActionTypeFromJSON;
+exports.editFavoritesActionTypeToJSON = editFavoritesActionTypeToJSON;
+exports.realExchangeFromJSON = realExchangeFromJSON;
+exports.realExchangeToJSON = realExchangeToJSON;
+exports.recommendationFromJSON = recommendationFromJSON;
+exports.recommendationToJSON = recommendationToJSON;
+exports.riskLevelFromJSON = riskLevelFromJSON;
+exports.riskLevelToJSON = riskLevelToJSON;
+exports.bondTypeFromJSON = bondTypeFromJSON;
+exports.bondTypeToJSON = bondTypeToJSON;
+exports.instrumentExchangeTypeFromJSON = instrumentExchangeTypeFromJSON;
+exports.instrumentExchangeTypeToJSON = instrumentExchangeTypeToJSON;
+exports.getBondEventsRequest_EventTypeFromJSON = getBondEventsRequest_EventTypeFromJSON;
+exports.getBondEventsRequest_EventTypeToJSON = getBondEventsRequest_EventTypeToJSON;
+exports.getAssetReportsResponse_AssetReportPeriodTypeFromJSON = getAssetReportsResponse_AssetReportPeriodTypeFromJSON;
+exports.getAssetReportsResponse_AssetReportPeriodTypeToJSON = getAssetReportsResponse_AssetReportPeriodTypeToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -70,7 +106,6 @@ function couponTypeFromJSON(object) {
             return CouponType.UNRECOGNIZED;
     }
 }
-exports.couponTypeFromJSON = couponTypeFromJSON;
 function couponTypeToJSON(object) {
     switch (object) {
         case CouponType.COUPON_TYPE_UNSPECIFIED:
@@ -94,7 +129,6 @@ function couponTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.couponTypeToJSON = couponTypeToJSON;
 /** Тип опциона по направлению сделки. */
 var OptionDirection;
 (function (OptionDirection) {
@@ -123,7 +157,6 @@ function optionDirectionFromJSON(object) {
             return OptionDirection.UNRECOGNIZED;
     }
 }
-exports.optionDirectionFromJSON = optionDirectionFromJSON;
 function optionDirectionToJSON(object) {
     switch (object) {
         case OptionDirection.OPTION_DIRECTION_UNSPECIFIED:
@@ -137,7 +170,6 @@ function optionDirectionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.optionDirectionToJSON = optionDirectionToJSON;
 /** Тип расчётов по опциону. */
 var OptionPaymentType;
 (function (OptionPaymentType) {
@@ -166,7 +198,6 @@ function optionPaymentTypeFromJSON(object) {
             return OptionPaymentType.UNRECOGNIZED;
     }
 }
-exports.optionPaymentTypeFromJSON = optionPaymentTypeFromJSON;
 function optionPaymentTypeToJSON(object) {
     switch (object) {
         case OptionPaymentType.OPTION_PAYMENT_TYPE_UNSPECIFIED:
@@ -180,7 +211,6 @@ function optionPaymentTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.optionPaymentTypeToJSON = optionPaymentTypeToJSON;
 /** Тип опциона по стилю. */
 var OptionStyle;
 (function (OptionStyle) {
@@ -209,7 +239,6 @@ function optionStyleFromJSON(object) {
             return OptionStyle.UNRECOGNIZED;
     }
 }
-exports.optionStyleFromJSON = optionStyleFromJSON;
 function optionStyleToJSON(object) {
     switch (object) {
         case OptionStyle.OPTION_STYLE_UNSPECIFIED:
@@ -223,7 +252,6 @@ function optionStyleToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.optionStyleToJSON = optionStyleToJSON;
 /** Тип опциона по способу исполнения. */
 var OptionSettlementType;
 (function (OptionSettlementType) {
@@ -252,7 +280,6 @@ function optionSettlementTypeFromJSON(object) {
             return OptionSettlementType.UNRECOGNIZED;
     }
 }
-exports.optionSettlementTypeFromJSON = optionSettlementTypeFromJSON;
 function optionSettlementTypeToJSON(object) {
     switch (object) {
         case OptionSettlementType.OPTION_EXECUTION_TYPE_UNSPECIFIED:
@@ -266,7 +293,6 @@ function optionSettlementTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.optionSettlementTypeToJSON = optionSettlementTypeToJSON;
 /** Тип идентификатора инструмента. [Подробнее об идентификации инструментов](https://russianinvestments.github.io/investAPI/faq_identification/). */
 var InstrumentIdType;
 (function (InstrumentIdType) {
@@ -305,7 +331,6 @@ function instrumentIdTypeFromJSON(object) {
             return InstrumentIdType.UNRECOGNIZED;
     }
 }
-exports.instrumentIdTypeFromJSON = instrumentIdTypeFromJSON;
 function instrumentIdTypeToJSON(object) {
     switch (object) {
         case InstrumentIdType.INSTRUMENT_ID_UNSPECIFIED:
@@ -323,7 +348,6 @@ function instrumentIdTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.instrumentIdTypeToJSON = instrumentIdTypeToJSON;
 /** Статус запрашиваемых инструментов. */
 var InstrumentStatus;
 (function (InstrumentStatus) {
@@ -352,7 +376,6 @@ function instrumentStatusFromJSON(object) {
             return InstrumentStatus.UNRECOGNIZED;
     }
 }
-exports.instrumentStatusFromJSON = instrumentStatusFromJSON;
 function instrumentStatusToJSON(object) {
     switch (object) {
         case InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED:
@@ -366,7 +389,6 @@ function instrumentStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.instrumentStatusToJSON = instrumentStatusToJSON;
 /** Тип акций. */
 var ShareType;
 (function (ShareType) {
@@ -425,7 +447,6 @@ function shareTypeFromJSON(object) {
             return ShareType.UNRECOGNIZED;
     }
 }
-exports.shareTypeFromJSON = shareTypeFromJSON;
 function shareTypeToJSON(object) {
     switch (object) {
         case ShareType.SHARE_TYPE_UNSPECIFIED:
@@ -451,7 +472,6 @@ function shareTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.shareTypeToJSON = shareTypeToJSON;
 /** Тип актива. */
 var AssetType;
 (function (AssetType) {
@@ -490,7 +510,6 @@ function assetTypeFromJSON(object) {
             return AssetType.UNRECOGNIZED;
     }
 }
-exports.assetTypeFromJSON = assetTypeFromJSON;
 function assetTypeToJSON(object) {
     switch (object) {
         case AssetType.ASSET_TYPE_UNSPECIFIED:
@@ -508,7 +527,6 @@ function assetTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.assetTypeToJSON = assetTypeToJSON;
 /** Тип структурной ноты. */
 var StructuredProductType;
 (function (StructuredProductType) {
@@ -537,7 +555,6 @@ function structuredProductTypeFromJSON(object) {
             return StructuredProductType.UNRECOGNIZED;
     }
 }
-exports.structuredProductTypeFromJSON = structuredProductTypeFromJSON;
 function structuredProductTypeToJSON(object) {
     switch (object) {
         case StructuredProductType.SP_TYPE_UNSPECIFIED:
@@ -551,7 +568,6 @@ function structuredProductTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.structuredProductTypeToJSON = structuredProductTypeToJSON;
 /** Тип действия со списком избранных инструментов. */
 var EditFavoritesActionType;
 (function (EditFavoritesActionType) {
@@ -580,7 +596,6 @@ function editFavoritesActionTypeFromJSON(object) {
             return EditFavoritesActionType.UNRECOGNIZED;
     }
 }
-exports.editFavoritesActionTypeFromJSON = editFavoritesActionTypeFromJSON;
 function editFavoritesActionTypeToJSON(object) {
     switch (object) {
         case EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_UNSPECIFIED:
@@ -594,7 +609,6 @@ function editFavoritesActionTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.editFavoritesActionTypeToJSON = editFavoritesActionTypeToJSON;
 /** Реальная площадка исполнения расчётов. */
 var RealExchange;
 (function (RealExchange) {
@@ -628,7 +642,6 @@ function realExchangeFromJSON(object) {
             return RealExchange.UNRECOGNIZED;
     }
 }
-exports.realExchangeFromJSON = realExchangeFromJSON;
 function realExchangeToJSON(object) {
     switch (object) {
         case RealExchange.REAL_EXCHANGE_UNSPECIFIED:
@@ -644,7 +657,6 @@ function realExchangeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.realExchangeToJSON = realExchangeToJSON;
 var Recommendation;
 (function (Recommendation) {
     /** RECOMMENDATION_UNSPECIFIED - Не определено. */
@@ -677,7 +689,6 @@ function recommendationFromJSON(object) {
             return Recommendation.UNRECOGNIZED;
     }
 }
-exports.recommendationFromJSON = recommendationFromJSON;
 function recommendationToJSON(object) {
     switch (object) {
         case Recommendation.RECOMMENDATION_UNSPECIFIED:
@@ -693,7 +704,6 @@ function recommendationToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.recommendationToJSON = recommendationToJSON;
 /** Уровень риска облигации. */
 var RiskLevel;
 (function (RiskLevel) {
@@ -727,7 +737,6 @@ function riskLevelFromJSON(object) {
             return RiskLevel.UNRECOGNIZED;
     }
 }
-exports.riskLevelFromJSON = riskLevelFromJSON;
 function riskLevelToJSON(object) {
     switch (object) {
         case RiskLevel.RISK_LEVEL_UNSPECIFIED:
@@ -743,7 +752,6 @@ function riskLevelToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.riskLevelToJSON = riskLevelToJSON;
 var BondType;
 (function (BondType) {
     /** BOND_TYPE_UNSPECIFIED - Тип облигации не определён. */
@@ -766,7 +774,6 @@ function bondTypeFromJSON(object) {
             return BondType.UNRECOGNIZED;
     }
 }
-exports.bondTypeFromJSON = bondTypeFromJSON;
 function bondTypeToJSON(object) {
     switch (object) {
         case BondType.BOND_TYPE_UNSPECIFIED:
@@ -778,7 +785,6 @@ function bondTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.bondTypeToJSON = bondTypeToJSON;
 /** Площадка торговли. */
 var InstrumentExchangeType;
 (function (InstrumentExchangeType) {
@@ -802,7 +808,6 @@ function instrumentExchangeTypeFromJSON(object) {
             return InstrumentExchangeType.UNRECOGNIZED;
     }
 }
-exports.instrumentExchangeTypeFromJSON = instrumentExchangeTypeFromJSON;
 function instrumentExchangeTypeToJSON(object) {
     switch (object) {
         case InstrumentExchangeType.INSTRUMENT_EXCHANGE_UNSPECIFIED:
@@ -814,7 +819,6 @@ function instrumentExchangeTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.instrumentExchangeTypeToJSON = instrumentExchangeTypeToJSON;
 var GetBondEventsRequest_EventType;
 (function (GetBondEventsRequest_EventType) {
     /** EVENT_TYPE_UNSPECIFIED - Неопределённое значение. */
@@ -852,7 +856,6 @@ function getBondEventsRequest_EventTypeFromJSON(object) {
             return GetBondEventsRequest_EventType.UNRECOGNIZED;
     }
 }
-exports.getBondEventsRequest_EventTypeFromJSON = getBondEventsRequest_EventTypeFromJSON;
 function getBondEventsRequest_EventTypeToJSON(object) {
     switch (object) {
         case GetBondEventsRequest_EventType.EVENT_TYPE_UNSPECIFIED:
@@ -870,7 +873,6 @@ function getBondEventsRequest_EventTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.getBondEventsRequest_EventTypeToJSON = getBondEventsRequest_EventTypeToJSON;
 var GetAssetReportsResponse_AssetReportPeriodType;
 (function (GetAssetReportsResponse_AssetReportPeriodType) {
     /** PERIOD_TYPE_UNSPECIFIED - Не указан. */
@@ -903,7 +905,6 @@ function getAssetReportsResponse_AssetReportPeriodTypeFromJSON(object) {
             return GetAssetReportsResponse_AssetReportPeriodType.UNRECOGNIZED;
     }
 }
-exports.getAssetReportsResponse_AssetReportPeriodTypeFromJSON = getAssetReportsResponse_AssetReportPeriodTypeFromJSON;
 function getAssetReportsResponse_AssetReportPeriodTypeToJSON(object) {
     switch (object) {
         case GetAssetReportsResponse_AssetReportPeriodType.PERIOD_TYPE_UNSPECIFIED:
@@ -919,7 +920,6 @@ function getAssetReportsResponse_AssetReportPeriodTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.getAssetReportsResponse_AssetReportPeriodTypeToJSON = getAssetReportsResponse_AssetReportPeriodTypeToJSON;
 function createBaseTradingSchedulesRequest() {
     return { exchange: undefined, from: undefined, to: undefined };
 }

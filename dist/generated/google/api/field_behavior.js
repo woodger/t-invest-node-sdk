@@ -5,7 +5,9 @@
 //   protoc               v3.19.6
 // source: google/api/field_behavior.proto
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fieldBehaviorToJSON = exports.fieldBehaviorFromJSON = exports.FieldBehavior = exports.protobufPackage = void 0;
+exports.FieldBehavior = exports.protobufPackage = void 0;
+exports.fieldBehaviorFromJSON = fieldBehaviorFromJSON;
+exports.fieldBehaviorToJSON = fieldBehaviorToJSON;
 /* eslint-disable */
 exports.protobufPackage = "google.api";
 /**
@@ -99,7 +101,6 @@ function fieldBehaviorFromJSON(object) {
             return FieldBehavior.UNRECOGNIZED;
     }
 }
-exports.fieldBehaviorFromJSON = fieldBehaviorFromJSON;
 function fieldBehaviorToJSON(object) {
     switch (object) {
         case FieldBehavior.FIELD_BEHAVIOR_UNSPECIFIED:
@@ -123,4 +124,3 @@ function fieldBehaviorToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.fieldBehaviorToJSON = fieldBehaviorToJSON;

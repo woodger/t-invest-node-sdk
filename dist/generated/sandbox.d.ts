@@ -117,40 +117,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxAccounts";
             readonly requestType: {
                 encode(_: GetAccountsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetAccountsRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetAccountsRequest;
                 fromJSON(_: any): GetAccountsRequest;
                 toJSON(_: GetAccountsRequest): unknown;
-                create(base?: {}): GetAccountsRequest;
-                fromPartial(_: {}): GetAccountsRequest;
+                create(base?: import("./users").DeepPartial<GetAccountsRequest>): GetAccountsRequest;
+                fromPartial(_: import("./users").DeepPartial<GetAccountsRequest>): GetAccountsRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: GetAccountsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetAccountsResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetAccountsResponse;
                 fromJSON(object: any): GetAccountsResponse;
                 toJSON(message: GetAccountsResponse): unknown;
-                create(base?: {
-                    accounts?: {
-                        id?: string;
-                        type?: import("./users").AccountType;
-                        name?: string;
-                        status?: import("./users").AccountStatus;
-                        openedDate?: Date;
-                        closedDate?: Date;
-                        accessLevel?: import("./users").AccessLevel;
-                    }[];
-                }): GetAccountsResponse;
-                fromPartial(object: {
-                    accounts?: {
-                        id?: string;
-                        type?: import("./users").AccountType;
-                        name?: string;
-                        status?: import("./users").AccountStatus;
-                        openedDate?: Date;
-                        closedDate?: Date;
-                        accessLevel?: import("./users").AccessLevel;
-                    }[];
-                }): GetAccountsResponse;
+                create(base?: import("./users").DeepPartial<GetAccountsResponse>): GetAccountsResponse;
+                fromPartial(object: import("./users").DeepPartial<GetAccountsResponse>): GetAccountsResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -183,156 +163,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "PostSandboxOrder";
             readonly requestType: {
                 encode(message: PostOrderRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PostOrderRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PostOrderRequest;
                 fromJSON(object: any): PostOrderRequest;
                 toJSON(message: PostOrderRequest): unknown;
-                create(base?: {
-                    figi?: string;
-                    quantity?: number;
-                    price?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    direction?: import("./orders").OrderDirection;
-                    accountId?: string;
-                    orderType?: import("./orders").OrderType;
-                    orderId?: string;
-                    instrumentId?: string;
-                    timeInForce?: import("./orders").TimeInForceType;
-                    priceType?: import("./common").PriceType;
-                }): PostOrderRequest;
-                fromPartial(object: {
-                    figi?: string;
-                    quantity?: number;
-                    price?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    direction?: import("./orders").OrderDirection;
-                    accountId?: string;
-                    orderType?: import("./orders").OrderType;
-                    orderId?: string;
-                    instrumentId?: string;
-                    timeInForce?: import("./orders").TimeInForceType;
-                    priceType?: import("./common").PriceType;
-                }): PostOrderRequest;
+                create(base?: import("./orders").DeepPartial<PostOrderRequest>): PostOrderRequest;
+                fromPartial(object: import("./orders").DeepPartial<PostOrderRequest>): PostOrderRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: PostOrderResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PostOrderResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PostOrderResponse;
                 fromJSON(object: any): PostOrderResponse;
                 toJSON(message: PostOrderResponse): unknown;
-                create(base?: {
-                    orderId?: string;
-                    executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                    lotsRequested?: number;
-                    lotsExecuted?: number;
-                    initialOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalOrderAmount?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    initialCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    aciValue?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    figi?: string;
-                    direction?: import("./orders").OrderDirection;
-                    initialSecurityPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    orderType?: import("./orders").OrderType;
-                    message?: string;
-                    initialOrderPricePt?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    instrumentUid?: string;
-                    orderRequestId?: string;
-                    responseMetadata?: {
-                        trackingId?: string;
-                        serverTime?: Date;
-                    };
-                }): PostOrderResponse;
-                fromPartial(object: {
-                    orderId?: string;
-                    executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                    lotsRequested?: number;
-                    lotsExecuted?: number;
-                    initialOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalOrderAmount?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    initialCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    aciValue?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    figi?: string;
-                    direction?: import("./orders").OrderDirection;
-                    initialSecurityPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    orderType?: import("./orders").OrderType;
-                    message?: string;
-                    initialOrderPricePt?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    instrumentUid?: string;
-                    orderRequestId?: string;
-                    responseMetadata?: {
-                        trackingId?: string;
-                        serverTime?: Date;
-                    };
-                }): PostOrderResponse;
+                create(base?: import("./orders").DeepPartial<PostOrderResponse>): PostOrderResponse;
+                fromPartial(object: import("./orders").DeepPartial<PostOrderResponse>): PostOrderResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -342,148 +186,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "ReplaceSandboxOrder";
             readonly requestType: {
                 encode(message: ReplaceOrderRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): ReplaceOrderRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): ReplaceOrderRequest;
                 fromJSON(object: any): ReplaceOrderRequest;
                 toJSON(message: ReplaceOrderRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    orderId?: string;
-                    idempotencyKey?: string;
-                    quantity?: number;
-                    price?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    priceType?: import("./common").PriceType;
-                }): ReplaceOrderRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    orderId?: string;
-                    idempotencyKey?: string;
-                    quantity?: number;
-                    price?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    priceType?: import("./common").PriceType;
-                }): ReplaceOrderRequest;
+                create(base?: import("./orders").DeepPartial<ReplaceOrderRequest>): ReplaceOrderRequest;
+                fromPartial(object: import("./orders").DeepPartial<ReplaceOrderRequest>): ReplaceOrderRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: PostOrderResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PostOrderResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PostOrderResponse;
                 fromJSON(object: any): PostOrderResponse;
                 toJSON(message: PostOrderResponse): unknown;
-                create(base?: {
-                    orderId?: string;
-                    executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                    lotsRequested?: number;
-                    lotsExecuted?: number;
-                    initialOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalOrderAmount?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    initialCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    aciValue?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    figi?: string;
-                    direction?: import("./orders").OrderDirection;
-                    initialSecurityPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    orderType?: import("./orders").OrderType;
-                    message?: string;
-                    initialOrderPricePt?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    instrumentUid?: string;
-                    orderRequestId?: string;
-                    responseMetadata?: {
-                        trackingId?: string;
-                        serverTime?: Date;
-                    };
-                }): PostOrderResponse;
-                fromPartial(object: {
-                    orderId?: string;
-                    executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                    lotsRequested?: number;
-                    lotsExecuted?: number;
-                    initialOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalOrderAmount?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    initialCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    aciValue?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    figi?: string;
-                    direction?: import("./orders").OrderDirection;
-                    initialSecurityPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    orderType?: import("./orders").OrderType;
-                    message?: string;
-                    initialOrderPricePt?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    instrumentUid?: string;
-                    orderRequestId?: string;
-                    responseMetadata?: {
-                        trackingId?: string;
-                        serverTime?: Date;
-                    };
-                }): PostOrderResponse;
+                create(base?: import("./orders").DeepPartial<PostOrderResponse>): PostOrderResponse;
+                fromPartial(object: import("./orders").DeepPartial<PostOrderResponse>): PostOrderResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -493,152 +209,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxOrders";
             readonly requestType: {
                 encode(message: GetOrdersRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetOrdersRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetOrdersRequest;
                 fromJSON(object: any): GetOrdersRequest;
                 toJSON(message: GetOrdersRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                }): GetOrdersRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                }): GetOrdersRequest;
+                create(base?: import("./orders").DeepPartial<GetOrdersRequest>): GetOrdersRequest;
+                fromPartial(object: import("./orders").DeepPartial<GetOrdersRequest>): GetOrdersRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: GetOrdersResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetOrdersResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetOrdersResponse;
                 fromJSON(object: any): GetOrdersResponse;
                 toJSON(message: GetOrdersResponse): unknown;
-                create(base?: {
-                    orders?: {
-                        orderId?: string;
-                        executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                        lotsRequested?: number;
-                        lotsExecuted?: number;
-                        initialOrderPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        executedOrderPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        totalOrderAmount?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        initialCommission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        executedCommission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        figi?: string;
-                        direction?: import("./orders").OrderDirection;
-                        initialSecurityPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        stages?: {
-                            price?: {
-                                currency?: string;
-                                units?: number;
-                                nano?: number;
-                            };
-                            quantity?: number;
-                            tradeId?: string;
-                            executionTime?: Date;
-                        }[];
-                        serviceCommission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        currency?: string;
-                        orderType?: import("./orders").OrderType;
-                        orderDate?: Date;
-                        instrumentUid?: string;
-                        orderRequestId?: string;
-                    }[];
-                }): GetOrdersResponse;
-                fromPartial(object: {
-                    orders?: {
-                        orderId?: string;
-                        executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                        lotsRequested?: number;
-                        lotsExecuted?: number;
-                        initialOrderPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        executedOrderPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        totalOrderAmount?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        initialCommission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        executedCommission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        figi?: string;
-                        direction?: import("./orders").OrderDirection;
-                        initialSecurityPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        stages?: {
-                            price?: {
-                                currency?: string;
-                                units?: number;
-                                nano?: number;
-                            };
-                            quantity?: number;
-                            tradeId?: string;
-                            executionTime?: Date;
-                        }[];
-                        serviceCommission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        currency?: string;
-                        orderType?: import("./orders").OrderType;
-                        orderDate?: Date;
-                        instrumentUid?: string;
-                        orderRequestId?: string;
-                    }[];
-                }): GetOrdersResponse;
+                create(base?: import("./orders").DeepPartial<GetOrdersResponse>): GetOrdersResponse;
+                fromPartial(object: import("./orders").DeepPartial<GetOrdersResponse>): GetOrdersResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -648,38 +232,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "CancelSandboxOrder";
             readonly requestType: {
                 encode(message: CancelOrderRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): CancelOrderRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): CancelOrderRequest;
                 fromJSON(object: any): CancelOrderRequest;
                 toJSON(message: CancelOrderRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    orderId?: string;
-                }): CancelOrderRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    orderId?: string;
-                }): CancelOrderRequest;
+                create(base?: import("./orders").DeepPartial<CancelOrderRequest>): CancelOrderRequest;
+                fromPartial(object: import("./orders").DeepPartial<CancelOrderRequest>): CancelOrderRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: CancelOrderResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): CancelOrderResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): CancelOrderResponse;
                 fromJSON(object: any): CancelOrderResponse;
                 toJSON(message: CancelOrderResponse): unknown;
-                create(base?: {
-                    time?: Date;
-                    responseMetadata?: {
-                        trackingId?: string;
-                        serverTime?: Date;
-                    };
-                }): CancelOrderResponse;
-                fromPartial(object: {
-                    time?: Date;
-                    responseMetadata?: {
-                        trackingId?: string;
-                        serverTime?: Date;
-                    };
-                }): CancelOrderResponse;
+                create(base?: import("./orders").DeepPartial<CancelOrderResponse>): CancelOrderResponse;
+                fromPartial(object: import("./orders").DeepPartial<CancelOrderResponse>): CancelOrderResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -689,152 +255,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxOrderState";
             readonly requestType: {
                 encode(message: GetOrderStateRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetOrderStateRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetOrderStateRequest;
                 fromJSON(object: any): GetOrderStateRequest;
                 toJSON(message: GetOrderStateRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    orderId?: string;
-                    priceType?: import("./common").PriceType;
-                }): GetOrderStateRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    orderId?: string;
-                    priceType?: import("./common").PriceType;
-                }): GetOrderStateRequest;
+                create(base?: import("./orders").DeepPartial<GetOrderStateRequest>): GetOrderStateRequest;
+                fromPartial(object: import("./orders").DeepPartial<GetOrderStateRequest>): GetOrderStateRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: OrderState, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): OrderState;
+                decode(input: _m0.Reader | Uint8Array, length?: number): OrderState;
                 fromJSON(object: any): OrderState;
                 toJSON(message: OrderState): unknown;
-                create(base?: {
-                    orderId?: string;
-                    executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                    lotsRequested?: number;
-                    lotsExecuted?: number;
-                    initialOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalOrderAmount?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    averagePositionPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    initialCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    figi?: string;
-                    direction?: import("./orders").OrderDirection;
-                    initialSecurityPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    stages?: {
-                        price?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        quantity?: number;
-                        tradeId?: string;
-                        executionTime?: Date;
-                    }[];
-                    serviceCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    currency?: string;
-                    orderType?: import("./orders").OrderType;
-                    orderDate?: Date;
-                    instrumentUid?: string;
-                    orderRequestId?: string;
-                }): OrderState;
-                fromPartial(object: {
-                    orderId?: string;
-                    executionReportStatus?: import("./orders").OrderExecutionReportStatus;
-                    lotsRequested?: number;
-                    lotsExecuted?: number;
-                    initialOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedOrderPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalOrderAmount?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    averagePositionPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    initialCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    executedCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    figi?: string;
-                    direction?: import("./orders").OrderDirection;
-                    initialSecurityPrice?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    stages?: {
-                        price?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        quantity?: number;
-                        tradeId?: string;
-                        executionTime?: Date;
-                    }[];
-                    serviceCommission?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    currency?: string;
-                    orderType?: import("./orders").OrderType;
-                    orderDate?: Date;
-                    instrumentUid?: string;
-                    orderRequestId?: string;
-                }): OrderState;
+                create(base?: import("./orders").DeepPartial<OrderState>): OrderState;
+                fromPartial(object: import("./orders").DeepPartial<OrderState>): OrderState;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -844,92 +278,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxPositions";
             readonly requestType: {
                 encode(message: PositionsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PositionsRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PositionsRequest;
                 fromJSON(object: any): PositionsRequest;
                 toJSON(message: PositionsRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                }): PositionsRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                }): PositionsRequest;
+                create(base?: import("./operations").DeepPartial<PositionsRequest>): PositionsRequest;
+                fromPartial(object: import("./operations").DeepPartial<PositionsRequest>): PositionsRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: PositionsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PositionsResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PositionsResponse;
                 fromJSON(object: any): PositionsResponse;
                 toJSON(message: PositionsResponse): unknown;
-                create(base?: {
-                    money?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    blocked?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    securities?: {
-                        figi?: string;
-                        blocked?: number;
-                        balance?: number;
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        exchangeBlocked?: boolean;
-                        instrumentType?: string;
-                    }[];
-                    limitsLoadingInProgress?: boolean;
-                    futures?: {
-                        figi?: string;
-                        blocked?: number;
-                        balance?: number;
-                        positionUid?: string;
-                        instrumentUid?: string;
-                    }[];
-                    options?: {
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        blocked?: number;
-                        balance?: number;
-                    }[];
-                }): PositionsResponse;
-                fromPartial(object: {
-                    money?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    blocked?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    securities?: {
-                        figi?: string;
-                        blocked?: number;
-                        balance?: number;
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        exchangeBlocked?: boolean;
-                        instrumentType?: string;
-                    }[];
-                    limitsLoadingInProgress?: boolean;
-                    futures?: {
-                        figi?: string;
-                        blocked?: number;
-                        balance?: number;
-                        positionUid?: string;
-                        instrumentUid?: string;
-                    }[];
-                    options?: {
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        blocked?: number;
-                        balance?: number;
-                    }[];
-                }): PositionsResponse;
+                create(base?: import("./operations").DeepPartial<PositionsResponse>): PositionsResponse;
+                fromPartial(object: import("./operations").DeepPartial<PositionsResponse>): PositionsResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -939,106 +301,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxOperations";
             readonly requestType: {
                 encode(message: OperationsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): OperationsRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): OperationsRequest;
                 fromJSON(object: any): OperationsRequest;
                 toJSON(message: OperationsRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    from?: Date;
-                    to?: Date;
-                    state?: import("./operations").OperationState;
-                    figi?: string;
-                }): OperationsRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    from?: Date;
-                    to?: Date;
-                    state?: import("./operations").OperationState;
-                    figi?: string;
-                }): OperationsRequest;
+                create(base?: import("./operations").DeepPartial<OperationsRequest>): OperationsRequest;
+                fromPartial(object: import("./operations").DeepPartial<OperationsRequest>): OperationsRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: OperationsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): OperationsResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): OperationsResponse;
                 fromJSON(object: any): OperationsResponse;
                 toJSON(message: OperationsResponse): unknown;
-                create(base?: {
-                    operations?: {
-                        id?: string;
-                        parentOperationId?: string;
-                        currency?: string;
-                        payment?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        price?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        state?: import("./operations").OperationState;
-                        quantity?: number;
-                        quantityRest?: number;
-                        figi?: string;
-                        instrumentType?: string;
-                        date?: Date;
-                        type?: string;
-                        operationType?: import("./operations").OperationType;
-                        trades?: {
-                            tradeId?: string;
-                            dateTime?: Date;
-                            quantity?: number;
-                            price?: {
-                                currency?: string;
-                                units?: number;
-                                nano?: number;
-                            };
-                        }[];
-                        assetUid?: string;
-                        positionUid?: string;
-                        instrumentUid?: string;
-                    }[];
-                }): OperationsResponse;
-                fromPartial(object: {
-                    operations?: {
-                        id?: string;
-                        parentOperationId?: string;
-                        currency?: string;
-                        payment?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        price?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        state?: import("./operations").OperationState;
-                        quantity?: number;
-                        quantityRest?: number;
-                        figi?: string;
-                        instrumentType?: string;
-                        date?: Date;
-                        type?: string;
-                        operationType?: import("./operations").OperationType;
-                        trades?: {
-                            tradeId?: string;
-                            dateTime?: Date;
-                            quantity?: number;
-                            price?: {
-                                currency?: string;
-                                units?: number;
-                                nano?: number;
-                            };
-                        }[];
-                        assetUid?: string;
-                        positionUid?: string;
-                        instrumentUid?: string;
-                    }[];
-                }): OperationsResponse;
+                create(base?: import("./operations").DeepPartial<OperationsResponse>): OperationsResponse;
+                fromPartial(object: import("./operations").DeepPartial<OperationsResponse>): OperationsResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -1048,194 +324,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxOperationsByCursor";
             readonly requestType: {
                 encode(message: GetOperationsByCursorRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetOperationsByCursorRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetOperationsByCursorRequest;
                 fromJSON(object: any): GetOperationsByCursorRequest;
                 toJSON(message: GetOperationsByCursorRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    instrumentId?: string;
-                    from?: Date;
-                    to?: Date;
-                    cursor?: string;
-                    limit?: number;
-                    operationTypes?: import("./operations").OperationType[];
-                    state?: import("./operations").OperationState;
-                    withoutCommissions?: boolean;
-                    withoutTrades?: boolean;
-                    withoutOvernights?: boolean;
-                }): GetOperationsByCursorRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    instrumentId?: string;
-                    from?: Date;
-                    to?: Date;
-                    cursor?: string;
-                    limit?: number;
-                    operationTypes?: import("./operations").OperationType[];
-                    state?: import("./operations").OperationState;
-                    withoutCommissions?: boolean;
-                    withoutTrades?: boolean;
-                    withoutOvernights?: boolean;
-                }): GetOperationsByCursorRequest;
+                create(base?: import("./operations").DeepPartial<GetOperationsByCursorRequest>): GetOperationsByCursorRequest;
+                fromPartial(object: import("./operations").DeepPartial<GetOperationsByCursorRequest>): GetOperationsByCursorRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: GetOperationsByCursorResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetOperationsByCursorResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetOperationsByCursorResponse;
                 fromJSON(object: any): GetOperationsByCursorResponse;
                 toJSON(message: GetOperationsByCursorResponse): unknown;
-                create(base?: {
-                    hasNext?: boolean;
-                    nextCursor?: string;
-                    items?: {
-                        cursor?: string;
-                        brokerAccountId?: string;
-                        id?: string;
-                        parentOperationId?: string;
-                        name?: string;
-                        date?: Date;
-                        type?: import("./operations").OperationType;
-                        description?: string;
-                        state?: import("./operations").OperationState;
-                        instrumentUid?: string;
-                        figi?: string;
-                        instrumentType?: string;
-                        instrumentKind?: import("./common").InstrumentType;
-                        positionUid?: string;
-                        payment?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        price?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        commission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        yield?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        yieldRelative?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        accruedInt?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        quantity?: number;
-                        quantityRest?: number;
-                        quantityDone?: number;
-                        cancelDateTime?: Date;
-                        cancelReason?: string;
-                        tradesInfo?: {
-                            trades?: {
-                                num?: string;
-                                date?: Date;
-                                quantity?: number;
-                                price?: {
-                                    currency?: string;
-                                    units?: number;
-                                    nano?: number;
-                                };
-                                yield?: {
-                                    currency?: string;
-                                    units?: number;
-                                    nano?: number;
-                                };
-                                yieldRelative?: {
-                                    units?: number;
-                                    nano?: number;
-                                };
-                            }[];
-                        };
-                        assetUid?: string;
-                    }[];
-                }): GetOperationsByCursorResponse;
-                fromPartial(object: {
-                    hasNext?: boolean;
-                    nextCursor?: string;
-                    items?: {
-                        cursor?: string;
-                        brokerAccountId?: string;
-                        id?: string;
-                        parentOperationId?: string;
-                        name?: string;
-                        date?: Date;
-                        type?: import("./operations").OperationType;
-                        description?: string;
-                        state?: import("./operations").OperationState;
-                        instrumentUid?: string;
-                        figi?: string;
-                        instrumentType?: string;
-                        instrumentKind?: import("./common").InstrumentType;
-                        positionUid?: string;
-                        payment?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        price?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        commission?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        yield?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        yieldRelative?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        accruedInt?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        quantity?: number;
-                        quantityRest?: number;
-                        quantityDone?: number;
-                        cancelDateTime?: Date;
-                        cancelReason?: string;
-                        tradesInfo?: {
-                            trades?: {
-                                num?: string;
-                                date?: Date;
-                                quantity?: number;
-                                price?: {
-                                    currency?: string;
-                                    units?: number;
-                                    nano?: number;
-                                };
-                                yield?: {
-                                    currency?: string;
-                                    units?: number;
-                                    nano?: number;
-                                };
-                                yieldRelative?: {
-                                    units?: number;
-                                    nano?: number;
-                                };
-                            }[];
-                        };
-                        assetUid?: string;
-                    }[];
-                }): GetOperationsByCursorResponse;
+                create(base?: import("./operations").DeepPartial<GetOperationsByCursorResponse>): GetOperationsByCursorResponse;
+                fromPartial(object: import("./operations").DeepPartial<GetOperationsByCursorResponse>): GetOperationsByCursorResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -1245,298 +347,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxPortfolio";
             readonly requestType: {
                 encode(message: PortfolioRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PortfolioRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioRequest;
                 fromJSON(object: any): PortfolioRequest;
                 toJSON(message: PortfolioRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    currency?: import("./operations").PortfolioRequest_CurrencyRequest;
-                }): PortfolioRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    currency?: import("./operations").PortfolioRequest_CurrencyRequest;
-                }): PortfolioRequest;
+                create(base?: import("./operations").DeepPartial<PortfolioRequest>): PortfolioRequest;
+                fromPartial(object: import("./operations").DeepPartial<PortfolioRequest>): PortfolioRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: PortfolioResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): PortfolioResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioResponse;
                 fromJSON(object: any): PortfolioResponse;
                 toJSON(message: PortfolioResponse): unknown;
-                create(base?: {
-                    totalAmountShares?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountBonds?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountEtf?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountCurrencies?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountFutures?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    expectedYield?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    positions?: {
-                        figi?: string;
-                        instrumentType?: string;
-                        quantity?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYield?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        currentNkd?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPricePt?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        currentPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPriceFifo?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        quantityLots?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        blocked?: boolean;
-                        blockedLots?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        varMargin?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYieldFifo?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                    }[];
-                    accountId?: string;
-                    totalAmountOptions?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountSp?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountPortfolio?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    virtualPositions?: {
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        figi?: string;
-                        instrumentType?: string;
-                        quantity?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYield?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYieldFifo?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        expireDate?: Date;
-                        currentPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPriceFifo?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                    }[];
-                }): PortfolioResponse;
-                fromPartial(object: {
-                    totalAmountShares?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountBonds?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountEtf?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountCurrencies?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountFutures?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    expectedYield?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                    positions?: {
-                        figi?: string;
-                        instrumentType?: string;
-                        quantity?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYield?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        currentNkd?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPricePt?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        currentPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPriceFifo?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        quantityLots?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        blocked?: boolean;
-                        blockedLots?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        varMargin?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYieldFifo?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                    }[];
-                    accountId?: string;
-                    totalAmountOptions?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountSp?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    totalAmountPortfolio?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    };
-                    virtualPositions?: {
-                        positionUid?: string;
-                        instrumentUid?: string;
-                        figi?: string;
-                        instrumentType?: string;
-                        quantity?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYield?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        expectedYieldFifo?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        expireDate?: Date;
-                        currentPrice?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                        averagePositionPriceFifo?: {
-                            currency?: string;
-                            units?: number;
-                            nano?: number;
-                        };
-                    }[];
-                }): PortfolioResponse;
+                create(base?: import("./operations").DeepPartial<PortfolioResponse>): PortfolioResponse;
+                fromPartial(object: import("./operations").DeepPartial<PortfolioResponse>): PortfolioResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -1569,56 +393,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxWithdrawLimits";
             readonly requestType: {
                 encode(message: WithdrawLimitsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): WithdrawLimitsRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawLimitsRequest;
                 fromJSON(object: any): WithdrawLimitsRequest;
                 toJSON(message: WithdrawLimitsRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                }): WithdrawLimitsRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                }): WithdrawLimitsRequest;
+                create(base?: import("./operations").DeepPartial<WithdrawLimitsRequest>): WithdrawLimitsRequest;
+                fromPartial(object: import("./operations").DeepPartial<WithdrawLimitsRequest>): WithdrawLimitsRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: WithdrawLimitsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): WithdrawLimitsResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawLimitsResponse;
                 fromJSON(object: any): WithdrawLimitsResponse;
                 toJSON(message: WithdrawLimitsResponse): unknown;
-                create(base?: {
-                    money?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    blocked?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    blockedGuarantee?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                }): WithdrawLimitsResponse;
-                fromPartial(object: {
-                    money?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    blocked?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                    blockedGuarantee?: {
-                        currency?: string;
-                        units?: number;
-                        nano?: number;
-                    }[];
-                }): WithdrawLimitsResponse;
+                create(base?: import("./operations").DeepPartial<WithdrawLimitsResponse>): WithdrawLimitsResponse;
+                fromPartial(object: import("./operations").DeepPartial<WithdrawLimitsResponse>): WithdrawLimitsResponse;
             };
             readonly responseStream: false;
             readonly options: {};
@@ -1628,82 +416,20 @@ export declare const SandboxServiceDefinition: {
             readonly name: "GetSandboxMaxLots";
             readonly requestType: {
                 encode(message: GetMaxLotsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetMaxLotsRequest;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetMaxLotsRequest;
                 fromJSON(object: any): GetMaxLotsRequest;
                 toJSON(message: GetMaxLotsRequest): unknown;
-                create(base?: {
-                    accountId?: string;
-                    instrumentId?: string;
-                    price?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                }): GetMaxLotsRequest;
-                fromPartial(object: {
-                    accountId?: string;
-                    instrumentId?: string;
-                    price?: {
-                        units?: number;
-                        nano?: number;
-                    };
-                }): GetMaxLotsRequest;
+                create(base?: import("./orders").DeepPartial<GetMaxLotsRequest>): GetMaxLotsRequest;
+                fromPartial(object: import("./orders").DeepPartial<GetMaxLotsRequest>): GetMaxLotsRequest;
             };
             readonly requestStream: false;
             readonly responseType: {
                 encode(message: GetMaxLotsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: Uint8Array | _m0.Reader, length?: number): GetMaxLotsResponse;
+                decode(input: _m0.Reader | Uint8Array, length?: number): GetMaxLotsResponse;
                 fromJSON(object: any): GetMaxLotsResponse;
                 toJSON(message: GetMaxLotsResponse): unknown;
-                create(base?: {
-                    currency?: string;
-                    buyLimits?: {
-                        buyMoneyAmount?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        buyMaxLots?: number;
-                        buyMaxMarketLots?: number;
-                    };
-                    buyMarginLimits?: {
-                        buyMoneyAmount?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        buyMaxLots?: number;
-                        buyMaxMarketLots?: number;
-                    };
-                    sellLimits?: {
-                        sellMaxLots?: number;
-                    };
-                    sellMarginLimits?: {
-                        sellMaxLots?: number;
-                    };
-                }): GetMaxLotsResponse;
-                fromPartial(object: {
-                    currency?: string;
-                    buyLimits?: {
-                        buyMoneyAmount?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        buyMaxLots?: number;
-                        buyMaxMarketLots?: number;
-                    };
-                    buyMarginLimits?: {
-                        buyMoneyAmount?: {
-                            units?: number;
-                            nano?: number;
-                        };
-                        buyMaxLots?: number;
-                        buyMaxMarketLots?: number;
-                    };
-                    sellLimits?: {
-                        sellMaxLots?: number;
-                    };
-                    sellMarginLimits?: {
-                        sellMaxLots?: number;
-                    };
-                }): GetMaxLotsResponse;
+                create(base?: import("./orders").DeepPartial<GetMaxLotsResponse>): GetMaxLotsResponse;
+                fromPartial(object: import("./orders").DeepPartial<GetMaxLotsResponse>): GetMaxLotsResponse;
             };
             readonly responseStream: false;
             readonly options: {};

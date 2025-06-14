@@ -8,8 +8,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TradeInstrument = exports.SubscribeTradesRequest = exports.OrderBookSubscription = exports.SubscribeOrderBookResponse = exports.OrderBookInstrument = exports.SubscribeOrderBookRequest = exports.CandleSubscription = exports.SubscribeCandlesResponse = exports.CandleInstrument = exports.SubscribeCandlesRequest = exports.MarketDataResponse = exports.MarketDataServerSideStreamRequest = exports.MarketDataRequest = exports.getTechAnalysisRequest_IndicatorTypeToJSON = exports.getTechAnalysisRequest_IndicatorTypeFromJSON = exports.GetTechAnalysisRequest_IndicatorType = exports.getTechAnalysisRequest_TypeOfPriceToJSON = exports.getTechAnalysisRequest_TypeOfPriceFromJSON = exports.GetTechAnalysisRequest_TypeOfPrice = exports.getTechAnalysisRequest_IndicatorIntervalToJSON = exports.getTechAnalysisRequest_IndicatorIntervalFromJSON = exports.GetTechAnalysisRequest_IndicatorInterval = exports.getCandlesRequest_CandleSourceToJSON = exports.getCandlesRequest_CandleSourceFromJSON = exports.GetCandlesRequest_CandleSource = exports.orderBookTypeToJSON = exports.orderBookTypeFromJSON = exports.OrderBookType = exports.candleSourceToJSON = exports.candleSourceFromJSON = exports.CandleSource = exports.candleIntervalToJSON = exports.candleIntervalFromJSON = exports.CandleInterval = exports.tradeDirectionToJSON = exports.tradeDirectionFromJSON = exports.TradeDirection = exports.tradeSourceTypeToJSON = exports.tradeSourceTypeFromJSON = exports.TradeSourceType = exports.subscriptionStatusToJSON = exports.subscriptionStatusFromJSON = exports.SubscriptionStatus = exports.subscriptionIntervalToJSON = exports.subscriptionIntervalFromJSON = exports.SubscriptionInterval = exports.subscriptionActionToJSON = exports.subscriptionActionFromJSON = exports.SubscriptionAction = exports.protobufPackage = void 0;
-exports.MarketDataStreamServiceDefinition = exports.MarketDataServiceDefinition = exports.GetTechAnalysisResponse_TechAnalysisItem = exports.GetTechAnalysisResponse = exports.GetTechAnalysisRequest_Deviation = exports.GetTechAnalysisRequest_Smoothing = exports.GetTechAnalysisRequest = exports.InstrumentClosePriceResponse = exports.GetClosePricesResponse = exports.InstrumentClosePriceRequest = exports.GetClosePricesRequest = exports.GetMySubscriptions = exports.GetLastTradesResponse = exports.GetLastTradesRequest = exports.GetTradingStatusResponse = exports.GetTradingStatusesResponse = exports.GetTradingStatusesRequest = exports.GetTradingStatusRequest = exports.GetOrderBookResponse = exports.GetOrderBookRequest = exports.LastPrice = exports.GetLastPricesResponse = exports.GetLastPricesRequest = exports.HistoricCandle = exports.GetCandlesResponse = exports.GetCandlesRequest = exports.TradingStatus = exports.Trade = exports.Order = exports.OrderBook = exports.Candle = exports.LastPriceSubscription = exports.SubscribeLastPriceResponse = exports.LastPriceInstrument = exports.SubscribeLastPriceRequest = exports.InfoSubscription = exports.SubscribeInfoResponse = exports.InfoInstrument = exports.SubscribeInfoRequest = exports.TradeSubscription = exports.SubscribeTradesResponse = void 0;
+exports.GetTradingStatusRequest = exports.GetOrderBookResponse = exports.GetOrderBookRequest = exports.LastPrice = exports.GetLastPricesResponse = exports.GetLastPricesRequest = exports.HistoricCandle = exports.GetCandlesResponse = exports.GetCandlesRequest = exports.TradingStatus = exports.Trade = exports.Order = exports.OrderBook = exports.Candle = exports.LastPriceSubscription = exports.SubscribeLastPriceResponse = exports.LastPriceInstrument = exports.SubscribeLastPriceRequest = exports.InfoSubscription = exports.SubscribeInfoResponse = exports.InfoInstrument = exports.SubscribeInfoRequest = exports.TradeSubscription = exports.SubscribeTradesResponse = exports.TradeInstrument = exports.SubscribeTradesRequest = exports.OrderBookSubscription = exports.SubscribeOrderBookResponse = exports.OrderBookInstrument = exports.SubscribeOrderBookRequest = exports.CandleSubscription = exports.SubscribeCandlesResponse = exports.CandleInstrument = exports.SubscribeCandlesRequest = exports.MarketDataResponse = exports.MarketDataServerSideStreamRequest = exports.MarketDataRequest = exports.GetTechAnalysisRequest_IndicatorType = exports.GetTechAnalysisRequest_TypeOfPrice = exports.GetTechAnalysisRequest_IndicatorInterval = exports.GetCandlesRequest_CandleSource = exports.OrderBookType = exports.CandleSource = exports.CandleInterval = exports.TradeDirection = exports.TradeSourceType = exports.SubscriptionStatus = exports.SubscriptionInterval = exports.SubscriptionAction = exports.protobufPackage = void 0;
+exports.MarketDataStreamServiceDefinition = exports.MarketDataServiceDefinition = exports.GetTechAnalysisResponse_TechAnalysisItem = exports.GetTechAnalysisResponse = exports.GetTechAnalysisRequest_Deviation = exports.GetTechAnalysisRequest_Smoothing = exports.GetTechAnalysisRequest = exports.InstrumentClosePriceResponse = exports.GetClosePricesResponse = exports.InstrumentClosePriceRequest = exports.GetClosePricesRequest = exports.GetMySubscriptions = exports.GetLastTradesResponse = exports.GetLastTradesRequest = exports.GetTradingStatusResponse = exports.GetTradingStatusesResponse = exports.GetTradingStatusesRequest = void 0;
+exports.subscriptionActionFromJSON = subscriptionActionFromJSON;
+exports.subscriptionActionToJSON = subscriptionActionToJSON;
+exports.subscriptionIntervalFromJSON = subscriptionIntervalFromJSON;
+exports.subscriptionIntervalToJSON = subscriptionIntervalToJSON;
+exports.subscriptionStatusFromJSON = subscriptionStatusFromJSON;
+exports.subscriptionStatusToJSON = subscriptionStatusToJSON;
+exports.tradeSourceTypeFromJSON = tradeSourceTypeFromJSON;
+exports.tradeSourceTypeToJSON = tradeSourceTypeToJSON;
+exports.tradeDirectionFromJSON = tradeDirectionFromJSON;
+exports.tradeDirectionToJSON = tradeDirectionToJSON;
+exports.candleIntervalFromJSON = candleIntervalFromJSON;
+exports.candleIntervalToJSON = candleIntervalToJSON;
+exports.candleSourceFromJSON = candleSourceFromJSON;
+exports.candleSourceToJSON = candleSourceToJSON;
+exports.orderBookTypeFromJSON = orderBookTypeFromJSON;
+exports.orderBookTypeToJSON = orderBookTypeToJSON;
+exports.getCandlesRequest_CandleSourceFromJSON = getCandlesRequest_CandleSourceFromJSON;
+exports.getCandlesRequest_CandleSourceToJSON = getCandlesRequest_CandleSourceToJSON;
+exports.getTechAnalysisRequest_IndicatorIntervalFromJSON = getTechAnalysisRequest_IndicatorIntervalFromJSON;
+exports.getTechAnalysisRequest_IndicatorIntervalToJSON = getTechAnalysisRequest_IndicatorIntervalToJSON;
+exports.getTechAnalysisRequest_TypeOfPriceFromJSON = getTechAnalysisRequest_TypeOfPriceFromJSON;
+exports.getTechAnalysisRequest_TypeOfPriceToJSON = getTechAnalysisRequest_TypeOfPriceToJSON;
+exports.getTechAnalysisRequest_IndicatorTypeFromJSON = getTechAnalysisRequest_IndicatorTypeFromJSON;
+exports.getTechAnalysisRequest_IndicatorTypeToJSON = getTechAnalysisRequest_IndicatorTypeToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -44,7 +68,6 @@ function subscriptionActionFromJSON(object) {
             return SubscriptionAction.UNRECOGNIZED;
     }
 }
-exports.subscriptionActionFromJSON = subscriptionActionFromJSON;
 function subscriptionActionToJSON(object) {
     switch (object) {
         case SubscriptionAction.SUBSCRIPTION_ACTION_UNSPECIFIED:
@@ -58,7 +81,6 @@ function subscriptionActionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.subscriptionActionToJSON = subscriptionActionToJSON;
 /** Интервал свечи. */
 var SubscriptionInterval;
 (function (SubscriptionInterval) {
@@ -142,7 +164,6 @@ function subscriptionIntervalFromJSON(object) {
             return SubscriptionInterval.UNRECOGNIZED;
     }
 }
-exports.subscriptionIntervalFromJSON = subscriptionIntervalFromJSON;
 function subscriptionIntervalToJSON(object) {
     switch (object) {
         case SubscriptionInterval.SUBSCRIPTION_INTERVAL_UNSPECIFIED:
@@ -178,7 +199,6 @@ function subscriptionIntervalToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.subscriptionIntervalToJSON = subscriptionIntervalToJSON;
 /** Результат подписки. */
 var SubscriptionStatus;
 (function (SubscriptionStatus) {
@@ -242,7 +262,6 @@ function subscriptionStatusFromJSON(object) {
             return SubscriptionStatus.UNRECOGNIZED;
     }
 }
-exports.subscriptionStatusFromJSON = subscriptionStatusFromJSON;
 function subscriptionStatusToJSON(object) {
     switch (object) {
         case SubscriptionStatus.SUBSCRIPTION_STATUS_UNSPECIFIED:
@@ -270,7 +289,6 @@ function subscriptionStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.subscriptionStatusToJSON = subscriptionStatusToJSON;
 /** Источники сделок */
 var TradeSourceType;
 (function (TradeSourceType) {
@@ -304,7 +322,6 @@ function tradeSourceTypeFromJSON(object) {
             return TradeSourceType.UNRECOGNIZED;
     }
 }
-exports.tradeSourceTypeFromJSON = tradeSourceTypeFromJSON;
 function tradeSourceTypeToJSON(object) {
     switch (object) {
         case TradeSourceType.TRADE_SOURCE_UNSPECIFIED:
@@ -320,7 +337,6 @@ function tradeSourceTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.tradeSourceTypeToJSON = tradeSourceTypeToJSON;
 /** Направление сделки. */
 var TradeDirection;
 (function (TradeDirection) {
@@ -349,7 +365,6 @@ function tradeDirectionFromJSON(object) {
             return TradeDirection.UNRECOGNIZED;
     }
 }
-exports.tradeDirectionFromJSON = tradeDirectionFromJSON;
 function tradeDirectionToJSON(object) {
     switch (object) {
         case TradeDirection.TRADE_DIRECTION_UNSPECIFIED:
@@ -363,7 +378,6 @@ function tradeDirectionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.tradeDirectionToJSON = tradeDirectionToJSON;
 /** Интервал свечей. */
 var CandleInterval;
 (function (CandleInterval) {
@@ -447,7 +461,6 @@ function candleIntervalFromJSON(object) {
             return CandleInterval.UNRECOGNIZED;
     }
 }
-exports.candleIntervalFromJSON = candleIntervalFromJSON;
 function candleIntervalToJSON(object) {
     switch (object) {
         case CandleInterval.CANDLE_INTERVAL_UNSPECIFIED:
@@ -483,7 +496,6 @@ function candleIntervalToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.candleIntervalToJSON = candleIntervalToJSON;
 var CandleSource;
 (function (CandleSource) {
     /** CANDLE_SOURCE_UNSPECIFIED - Источник свечей не определён. */
@@ -511,7 +523,6 @@ function candleSourceFromJSON(object) {
             return CandleSource.UNRECOGNIZED;
     }
 }
-exports.candleSourceFromJSON = candleSourceFromJSON;
 function candleSourceToJSON(object) {
     switch (object) {
         case CandleSource.CANDLE_SOURCE_UNSPECIFIED:
@@ -525,7 +536,6 @@ function candleSourceToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.candleSourceToJSON = candleSourceToJSON;
 var OrderBookType;
 (function (OrderBookType) {
     /** ORDERBOOK_TYPE_UNSPECIFIED - не определен */
@@ -553,7 +563,6 @@ function orderBookTypeFromJSON(object) {
             return OrderBookType.UNRECOGNIZED;
     }
 }
-exports.orderBookTypeFromJSON = orderBookTypeFromJSON;
 function orderBookTypeToJSON(object) {
     switch (object) {
         case OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED:
@@ -567,7 +576,6 @@ function orderBookTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.orderBookTypeToJSON = orderBookTypeToJSON;
 var GetCandlesRequest_CandleSource;
 (function (GetCandlesRequest_CandleSource) {
     /** CANDLE_SOURCE_UNSPECIFIED - Все свечи. */
@@ -590,7 +598,6 @@ function getCandlesRequest_CandleSourceFromJSON(object) {
             return GetCandlesRequest_CandleSource.UNRECOGNIZED;
     }
 }
-exports.getCandlesRequest_CandleSourceFromJSON = getCandlesRequest_CandleSourceFromJSON;
 function getCandlesRequest_CandleSourceToJSON(object) {
     switch (object) {
         case GetCandlesRequest_CandleSource.CANDLE_SOURCE_UNSPECIFIED:
@@ -602,7 +609,6 @@ function getCandlesRequest_CandleSourceToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.getCandlesRequest_CandleSourceToJSON = getCandlesRequest_CandleSourceToJSON;
 /** Интервал свечи. */
 var GetTechAnalysisRequest_IndicatorInterval;
 (function (GetTechAnalysisRequest_IndicatorInterval) {
@@ -686,7 +692,6 @@ function getTechAnalysisRequest_IndicatorIntervalFromJSON(object) {
             return GetTechAnalysisRequest_IndicatorInterval.UNRECOGNIZED;
     }
 }
-exports.getTechAnalysisRequest_IndicatorIntervalFromJSON = getTechAnalysisRequest_IndicatorIntervalFromJSON;
 function getTechAnalysisRequest_IndicatorIntervalToJSON(object) {
     switch (object) {
         case GetTechAnalysisRequest_IndicatorInterval.INDICATOR_INTERVAL_UNSPECIFIED:
@@ -722,7 +727,6 @@ function getTechAnalysisRequest_IndicatorIntervalToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.getTechAnalysisRequest_IndicatorIntervalToJSON = getTechAnalysisRequest_IndicatorIntervalToJSON;
 var GetTechAnalysisRequest_TypeOfPrice;
 (function (GetTechAnalysisRequest_TypeOfPrice) {
     /** TYPE_OF_PRICE_UNSPECIFIED - Не указано. */
@@ -765,7 +769,6 @@ function getTechAnalysisRequest_TypeOfPriceFromJSON(object) {
             return GetTechAnalysisRequest_TypeOfPrice.UNRECOGNIZED;
     }
 }
-exports.getTechAnalysisRequest_TypeOfPriceFromJSON = getTechAnalysisRequest_TypeOfPriceFromJSON;
 function getTechAnalysisRequest_TypeOfPriceToJSON(object) {
     switch (object) {
         case GetTechAnalysisRequest_TypeOfPrice.TYPE_OF_PRICE_UNSPECIFIED:
@@ -785,7 +788,6 @@ function getTechAnalysisRequest_TypeOfPriceToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.getTechAnalysisRequest_TypeOfPriceToJSON = getTechAnalysisRequest_TypeOfPriceToJSON;
 var GetTechAnalysisRequest_IndicatorType;
 (function (GetTechAnalysisRequest_IndicatorType) {
     /** INDICATOR_TYPE_UNSPECIFIED - Не определен. */
@@ -828,7 +830,6 @@ function getTechAnalysisRequest_IndicatorTypeFromJSON(object) {
             return GetTechAnalysisRequest_IndicatorType.UNRECOGNIZED;
     }
 }
-exports.getTechAnalysisRequest_IndicatorTypeFromJSON = getTechAnalysisRequest_IndicatorTypeFromJSON;
 function getTechAnalysisRequest_IndicatorTypeToJSON(object) {
     switch (object) {
         case GetTechAnalysisRequest_IndicatorType.INDICATOR_TYPE_UNSPECIFIED:
@@ -848,7 +849,6 @@ function getTechAnalysisRequest_IndicatorTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.getTechAnalysisRequest_IndicatorTypeToJSON = getTechAnalysisRequest_IndicatorTypeToJSON;
 function createBaseMarketDataRequest() {
     return {
         subscribeCandlesRequest: undefined,

@@ -8,8 +8,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetOperationsByCursorRequest = exports.AccountSubscriptionStatus = exports.PortfolioSubscriptionResult = exports.PortfolioStreamResponse = exports.PortfolioStreamRequest = exports.DividendsForeignIssuerReport = exports.GetDividendsForeignIssuerReportResponse = exports.GenerateDividendsForeignIssuerReportResponse = exports.GetDividendsForeignIssuerReportRequest = exports.GenerateDividendsForeignIssuerReportRequest = exports.GetDividendsForeignIssuerResponse = exports.GetDividendsForeignIssuerRequest = exports.BrokerReport = exports.GetBrokerReportResponse = exports.GetBrokerReportRequest = exports.GenerateBrokerReportResponse = exports.GenerateBrokerReportRequest = exports.BrokerReportResponse = exports.BrokerReportRequest = exports.PositionsOptions = exports.PositionsFutures = exports.PositionsSecurities = exports.VirtualPortfolioPosition = exports.PortfolioPosition = exports.WithdrawLimitsResponse = exports.WithdrawLimitsRequest = exports.PositionsResponse = exports.PositionsRequest = exports.PortfolioResponse = exports.PortfolioRequest = exports.OperationTrade = exports.Operation = exports.OperationsResponse = exports.OperationsRequest = exports.portfolioRequest_CurrencyRequestToJSON = exports.portfolioRequest_CurrencyRequestFromJSON = exports.PortfolioRequest_CurrencyRequest = exports.positionsAccountSubscriptionStatusToJSON = exports.positionsAccountSubscriptionStatusFromJSON = exports.PositionsAccountSubscriptionStatus = exports.portfolioSubscriptionStatusToJSON = exports.portfolioSubscriptionStatusFromJSON = exports.PortfolioSubscriptionStatus = exports.operationTypeToJSON = exports.operationTypeFromJSON = exports.OperationType = exports.operationStateToJSON = exports.operationStateFromJSON = exports.OperationState = exports.protobufPackage = void 0;
-exports.OperationsStreamServiceDefinition = exports.OperationsServiceDefinition = exports.PositionsMoney = exports.PositionData = exports.PositionsSubscriptionStatus = exports.PositionsSubscriptionResult = exports.PositionsStreamResponse = exports.PositionsStreamRequest = exports.OperationItemTrade = exports.OperationItemTrades = exports.OperationItem = exports.GetOperationsByCursorResponse = void 0;
+exports.PositionsMoney = exports.PositionData = exports.PositionsSubscriptionStatus = exports.PositionsSubscriptionResult = exports.PositionsStreamResponse = exports.PositionsStreamRequest = exports.OperationItemTrade = exports.OperationItemTrades = exports.OperationItem = exports.GetOperationsByCursorResponse = exports.GetOperationsByCursorRequest = exports.AccountSubscriptionStatus = exports.PortfolioSubscriptionResult = exports.PortfolioStreamResponse = exports.PortfolioStreamRequest = exports.DividendsForeignIssuerReport = exports.GetDividendsForeignIssuerReportResponse = exports.GenerateDividendsForeignIssuerReportResponse = exports.GetDividendsForeignIssuerReportRequest = exports.GenerateDividendsForeignIssuerReportRequest = exports.GetDividendsForeignIssuerResponse = exports.GetDividendsForeignIssuerRequest = exports.BrokerReport = exports.GetBrokerReportResponse = exports.GetBrokerReportRequest = exports.GenerateBrokerReportResponse = exports.GenerateBrokerReportRequest = exports.BrokerReportResponse = exports.BrokerReportRequest = exports.PositionsOptions = exports.PositionsFutures = exports.PositionsSecurities = exports.VirtualPortfolioPosition = exports.PortfolioPosition = exports.WithdrawLimitsResponse = exports.WithdrawLimitsRequest = exports.PositionsResponse = exports.PositionsRequest = exports.PortfolioResponse = exports.PortfolioRequest = exports.OperationTrade = exports.Operation = exports.OperationsResponse = exports.OperationsRequest = exports.PortfolioRequest_CurrencyRequest = exports.PositionsAccountSubscriptionStatus = exports.PortfolioSubscriptionStatus = exports.OperationType = exports.OperationState = exports.protobufPackage = void 0;
+exports.OperationsStreamServiceDefinition = exports.OperationsServiceDefinition = void 0;
+exports.operationStateFromJSON = operationStateFromJSON;
+exports.operationStateToJSON = operationStateToJSON;
+exports.operationTypeFromJSON = operationTypeFromJSON;
+exports.operationTypeToJSON = operationTypeToJSON;
+exports.portfolioSubscriptionStatusFromJSON = portfolioSubscriptionStatusFromJSON;
+exports.portfolioSubscriptionStatusToJSON = portfolioSubscriptionStatusToJSON;
+exports.positionsAccountSubscriptionStatusFromJSON = positionsAccountSubscriptionStatusFromJSON;
+exports.positionsAccountSubscriptionStatusToJSON = positionsAccountSubscriptionStatusToJSON;
+exports.portfolioRequest_CurrencyRequestFromJSON = portfolioRequest_CurrencyRequestFromJSON;
+exports.portfolioRequest_CurrencyRequestToJSON = portfolioRequest_CurrencyRequestToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -49,7 +59,6 @@ function operationStateFromJSON(object) {
             return OperationState.UNRECOGNIZED;
     }
 }
-exports.operationStateFromJSON = operationStateFromJSON;
 function operationStateToJSON(object) {
     switch (object) {
         case OperationState.OPERATION_STATE_UNSPECIFIED:
@@ -65,7 +74,6 @@ function operationStateToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.operationStateToJSON = operationStateToJSON;
 /** Тип операции. */
 var OperationType;
 (function (OperationType) {
@@ -394,7 +402,6 @@ function operationTypeFromJSON(object) {
             return OperationType.UNRECOGNIZED;
     }
 }
-exports.operationTypeFromJSON = operationTypeFromJSON;
 function operationTypeToJSON(object) {
     switch (object) {
         case OperationType.OPERATION_TYPE_UNSPECIFIED:
@@ -528,7 +535,6 @@ function operationTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.operationTypeToJSON = operationTypeToJSON;
 /** Результат подписки. */
 var PortfolioSubscriptionStatus;
 (function (PortfolioSubscriptionStatus) {
@@ -562,7 +568,6 @@ function portfolioSubscriptionStatusFromJSON(object) {
             return PortfolioSubscriptionStatus.UNRECOGNIZED;
     }
 }
-exports.portfolioSubscriptionStatusFromJSON = portfolioSubscriptionStatusFromJSON;
 function portfolioSubscriptionStatusToJSON(object) {
     switch (object) {
         case PortfolioSubscriptionStatus.PORTFOLIO_SUBSCRIPTION_STATUS_UNSPECIFIED:
@@ -578,7 +583,6 @@ function portfolioSubscriptionStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.portfolioSubscriptionStatusToJSON = portfolioSubscriptionStatusToJSON;
 /** Результат подписки. */
 var PositionsAccountSubscriptionStatus;
 (function (PositionsAccountSubscriptionStatus) {
@@ -612,7 +616,6 @@ function positionsAccountSubscriptionStatusFromJSON(object) {
             return PositionsAccountSubscriptionStatus.UNRECOGNIZED;
     }
 }
-exports.positionsAccountSubscriptionStatusFromJSON = positionsAccountSubscriptionStatusFromJSON;
 function positionsAccountSubscriptionStatusToJSON(object) {
     switch (object) {
         case PositionsAccountSubscriptionStatus.POSITIONS_SUBSCRIPTION_STATUS_UNSPECIFIED:
@@ -628,7 +631,6 @@ function positionsAccountSubscriptionStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.positionsAccountSubscriptionStatusToJSON = positionsAccountSubscriptionStatusToJSON;
 var PortfolioRequest_CurrencyRequest;
 (function (PortfolioRequest_CurrencyRequest) {
     /** RUB - Рубли */
@@ -656,7 +658,6 @@ function portfolioRequest_CurrencyRequestFromJSON(object) {
             return PortfolioRequest_CurrencyRequest.UNRECOGNIZED;
     }
 }
-exports.portfolioRequest_CurrencyRequestFromJSON = portfolioRequest_CurrencyRequestFromJSON;
 function portfolioRequest_CurrencyRequestToJSON(object) {
     switch (object) {
         case PortfolioRequest_CurrencyRequest.RUB:
@@ -670,7 +671,6 @@ function portfolioRequest_CurrencyRequestToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.portfolioRequest_CurrencyRequestToJSON = portfolioRequest_CurrencyRequestToJSON;
 function createBaseOperationsRequest() {
     return { accountId: "", from: undefined, to: undefined, state: undefined, figi: undefined };
 }

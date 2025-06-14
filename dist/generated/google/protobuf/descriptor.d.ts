@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import _m0 from "protobufjs/minimal";
 export declare const protobufPackage = "google.protobuf";
 /** The full set of known editions. */

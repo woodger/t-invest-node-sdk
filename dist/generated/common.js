@@ -8,7 +8,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorDetail = exports.BrandData = exports.ResponseMetadata = exports.PageResponse = exports.Page = exports.Ping = exports.Quotation = exports.MoneyValue = exports.resultSubscriptionStatusToJSON = exports.resultSubscriptionStatusFromJSON = exports.ResultSubscriptionStatus = exports.priceTypeToJSON = exports.priceTypeFromJSON = exports.PriceType = exports.securityTradingStatusToJSON = exports.securityTradingStatusFromJSON = exports.SecurityTradingStatus = exports.instrumentTypeToJSON = exports.instrumentTypeFromJSON = exports.InstrumentType = exports.protobufPackage = void 0;
+exports.ErrorDetail = exports.BrandData = exports.ResponseMetadata = exports.PageResponse = exports.Page = exports.Ping = exports.Quotation = exports.MoneyValue = exports.ResultSubscriptionStatus = exports.PriceType = exports.SecurityTradingStatus = exports.InstrumentType = exports.protobufPackage = void 0;
+exports.instrumentTypeFromJSON = instrumentTypeFromJSON;
+exports.instrumentTypeToJSON = instrumentTypeToJSON;
+exports.securityTradingStatusFromJSON = securityTradingStatusFromJSON;
+exports.securityTradingStatusToJSON = securityTradingStatusToJSON;
+exports.priceTypeFromJSON = priceTypeFromJSON;
+exports.priceTypeToJSON = priceTypeToJSON;
+exports.resultSubscriptionStatusFromJSON = resultSubscriptionStatusFromJSON;
+exports.resultSubscriptionStatusToJSON = resultSubscriptionStatusToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -81,7 +89,6 @@ function instrumentTypeFromJSON(object) {
             return InstrumentType.UNRECOGNIZED;
     }
 }
-exports.instrumentTypeFromJSON = instrumentTypeFromJSON;
 function instrumentTypeToJSON(object) {
     switch (object) {
         case InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED:
@@ -111,7 +118,6 @@ function instrumentTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.instrumentTypeToJSON = instrumentTypeToJSON;
 /** Режим торгов инструмента */
 var SecurityTradingStatus;
 (function (SecurityTradingStatus) {
@@ -210,7 +216,6 @@ function securityTradingStatusFromJSON(object) {
             return SecurityTradingStatus.UNRECOGNIZED;
     }
 }
-exports.securityTradingStatusFromJSON = securityTradingStatusFromJSON;
 function securityTradingStatusToJSON(object) {
     switch (object) {
         case SecurityTradingStatus.SECURITY_TRADING_STATUS_UNSPECIFIED:
@@ -252,7 +257,6 @@ function securityTradingStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.securityTradingStatusToJSON = securityTradingStatusToJSON;
 /** Тип цены. */
 var PriceType;
 (function (PriceType) {
@@ -281,7 +285,6 @@ function priceTypeFromJSON(object) {
             return PriceType.UNRECOGNIZED;
     }
 }
-exports.priceTypeFromJSON = priceTypeFromJSON;
 function priceTypeToJSON(object) {
     switch (object) {
         case PriceType.PRICE_TYPE_UNSPECIFIED:
@@ -295,7 +298,6 @@ function priceTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.priceTypeToJSON = priceTypeToJSON;
 var ResultSubscriptionStatus;
 (function (ResultSubscriptionStatus) {
     /** RESULT_SUBSCRIPTION_STATUS_UNSPECIFIED - Статус подписки не определен. */
@@ -323,7 +325,6 @@ function resultSubscriptionStatusFromJSON(object) {
             return ResultSubscriptionStatus.UNRECOGNIZED;
     }
 }
-exports.resultSubscriptionStatusFromJSON = resultSubscriptionStatusFromJSON;
 function resultSubscriptionStatusToJSON(object) {
     switch (object) {
         case ResultSubscriptionStatus.RESULT_SUBSCRIPTION_STATUS_UNSPECIFIED:
@@ -337,7 +338,6 @@ function resultSubscriptionStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.resultSubscriptionStatusToJSON = resultSubscriptionStatusToJSON;
 function createBaseMoneyValue() {
     return { currency: "", units: 0, nano: 0 };
 }

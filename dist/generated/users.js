@@ -8,7 +8,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersServiceDefinition = exports.GetInfoResponse = exports.GetInfoRequest = exports.StreamLimit = exports.UnaryLimit = exports.GetUserTariffResponse = exports.GetUserTariffRequest = exports.GetMarginAttributesResponse = exports.GetMarginAttributesRequest = exports.Account = exports.GetAccountsResponse = exports.GetAccountsRequest = exports.accessLevelToJSON = exports.accessLevelFromJSON = exports.AccessLevel = exports.accountStatusToJSON = exports.accountStatusFromJSON = exports.AccountStatus = exports.accountTypeToJSON = exports.accountTypeFromJSON = exports.AccountType = exports.protobufPackage = void 0;
+exports.UsersServiceDefinition = exports.GetInfoResponse = exports.GetInfoRequest = exports.StreamLimit = exports.UnaryLimit = exports.GetUserTariffResponse = exports.GetUserTariffRequest = exports.GetMarginAttributesResponse = exports.GetMarginAttributesRequest = exports.Account = exports.GetAccountsResponse = exports.GetAccountsRequest = exports.AccessLevel = exports.AccountStatus = exports.AccountType = exports.protobufPackage = void 0;
+exports.accountTypeFromJSON = accountTypeFromJSON;
+exports.accountTypeToJSON = accountTypeToJSON;
+exports.accountStatusFromJSON = accountStatusFromJSON;
+exports.accountStatusToJSON = accountStatusToJSON;
+exports.accessLevelFromJSON = accessLevelFromJSON;
+exports.accessLevelToJSON = accessLevelToJSON;
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
 const common_1 = require("./common");
 const timestamp_1 = require("./google/protobuf/timestamp");
@@ -51,7 +57,6 @@ function accountTypeFromJSON(object) {
             return AccountType.UNRECOGNIZED;
     }
 }
-exports.accountTypeFromJSON = accountTypeFromJSON;
 function accountTypeToJSON(object) {
     switch (object) {
         case AccountType.ACCOUNT_TYPE_UNSPECIFIED:
@@ -69,7 +74,6 @@ function accountTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.accountTypeToJSON = accountTypeToJSON;
 /** Статус счёта. */
 var AccountStatus;
 (function (AccountStatus) {
@@ -103,7 +107,6 @@ function accountStatusFromJSON(object) {
             return AccountStatus.UNRECOGNIZED;
     }
 }
-exports.accountStatusFromJSON = accountStatusFromJSON;
 function accountStatusToJSON(object) {
     switch (object) {
         case AccountStatus.ACCOUNT_STATUS_UNSPECIFIED:
@@ -119,7 +122,6 @@ function accountStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.accountStatusToJSON = accountStatusToJSON;
 /** Уровень доступа к счёту. */
 var AccessLevel;
 (function (AccessLevel) {
@@ -153,7 +155,6 @@ function accessLevelFromJSON(object) {
             return AccessLevel.UNRECOGNIZED;
     }
 }
-exports.accessLevelFromJSON = accessLevelFromJSON;
 function accessLevelToJSON(object) {
     switch (object) {
         case AccessLevel.ACCOUNT_ACCESS_LEVEL_UNSPECIFIED:
@@ -169,7 +170,6 @@ function accessLevelToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.accessLevelToJSON = accessLevelToJSON;
 function createBaseGetAccountsRequest() {
     return {};
 }

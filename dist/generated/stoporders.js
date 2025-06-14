@@ -8,7 +8,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StopOrdersServiceDefinition = exports.StopOrder_TrailingData = exports.StopOrder = exports.CancelStopOrderResponse = exports.CancelStopOrderRequest = exports.GetStopOrdersResponse = exports.GetStopOrdersRequest = exports.PostStopOrderResponse = exports.PostStopOrderRequest_TrailingData = exports.PostStopOrderRequest = exports.trailingStopStatusToJSON = exports.trailingStopStatusFromJSON = exports.TrailingStopStatus = exports.trailingValueTypeToJSON = exports.trailingValueTypeFromJSON = exports.TrailingValueType = exports.takeProfitTypeToJSON = exports.takeProfitTypeFromJSON = exports.TakeProfitType = exports.exchangeOrderTypeToJSON = exports.exchangeOrderTypeFromJSON = exports.ExchangeOrderType = exports.stopOrderStatusOptionToJSON = exports.stopOrderStatusOptionFromJSON = exports.StopOrderStatusOption = exports.stopOrderTypeToJSON = exports.stopOrderTypeFromJSON = exports.StopOrderType = exports.stopOrderExpirationTypeToJSON = exports.stopOrderExpirationTypeFromJSON = exports.StopOrderExpirationType = exports.stopOrderDirectionToJSON = exports.stopOrderDirectionFromJSON = exports.StopOrderDirection = exports.protobufPackage = void 0;
+exports.StopOrdersServiceDefinition = exports.StopOrder_TrailingData = exports.StopOrder = exports.CancelStopOrderResponse = exports.CancelStopOrderRequest = exports.GetStopOrdersResponse = exports.GetStopOrdersRequest = exports.PostStopOrderResponse = exports.PostStopOrderRequest_TrailingData = exports.PostStopOrderRequest = exports.TrailingStopStatus = exports.TrailingValueType = exports.TakeProfitType = exports.ExchangeOrderType = exports.StopOrderStatusOption = exports.StopOrderType = exports.StopOrderExpirationType = exports.StopOrderDirection = exports.protobufPackage = void 0;
+exports.stopOrderDirectionFromJSON = stopOrderDirectionFromJSON;
+exports.stopOrderDirectionToJSON = stopOrderDirectionToJSON;
+exports.stopOrderExpirationTypeFromJSON = stopOrderExpirationTypeFromJSON;
+exports.stopOrderExpirationTypeToJSON = stopOrderExpirationTypeToJSON;
+exports.stopOrderTypeFromJSON = stopOrderTypeFromJSON;
+exports.stopOrderTypeToJSON = stopOrderTypeToJSON;
+exports.stopOrderStatusOptionFromJSON = stopOrderStatusOptionFromJSON;
+exports.stopOrderStatusOptionToJSON = stopOrderStatusOptionToJSON;
+exports.exchangeOrderTypeFromJSON = exchangeOrderTypeFromJSON;
+exports.exchangeOrderTypeToJSON = exchangeOrderTypeToJSON;
+exports.takeProfitTypeFromJSON = takeProfitTypeFromJSON;
+exports.takeProfitTypeToJSON = takeProfitTypeToJSON;
+exports.trailingValueTypeFromJSON = trailingValueTypeFromJSON;
+exports.trailingValueTypeToJSON = trailingValueTypeToJSON;
+exports.trailingStopStatusFromJSON = trailingStopStatusFromJSON;
+exports.trailingStopStatusToJSON = trailingStopStatusToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -43,7 +59,6 @@ function stopOrderDirectionFromJSON(object) {
             return StopOrderDirection.UNRECOGNIZED;
     }
 }
-exports.stopOrderDirectionFromJSON = stopOrderDirectionFromJSON;
 function stopOrderDirectionToJSON(object) {
     switch (object) {
         case StopOrderDirection.STOP_ORDER_DIRECTION_UNSPECIFIED:
@@ -57,7 +72,6 @@ function stopOrderDirectionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.stopOrderDirectionToJSON = stopOrderDirectionToJSON;
 /** Тип экспирации стоп-заявке. */
 var StopOrderExpirationType;
 (function (StopOrderExpirationType) {
@@ -86,7 +100,6 @@ function stopOrderExpirationTypeFromJSON(object) {
             return StopOrderExpirationType.UNRECOGNIZED;
     }
 }
-exports.stopOrderExpirationTypeFromJSON = stopOrderExpirationTypeFromJSON;
 function stopOrderExpirationTypeToJSON(object) {
     switch (object) {
         case StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_UNSPECIFIED:
@@ -100,7 +113,6 @@ function stopOrderExpirationTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.stopOrderExpirationTypeToJSON = stopOrderExpirationTypeToJSON;
 /** Тип стоп-заявки. */
 var StopOrderType;
 (function (StopOrderType) {
@@ -134,7 +146,6 @@ function stopOrderTypeFromJSON(object) {
             return StopOrderType.UNRECOGNIZED;
     }
 }
-exports.stopOrderTypeFromJSON = stopOrderTypeFromJSON;
 function stopOrderTypeToJSON(object) {
     switch (object) {
         case StopOrderType.STOP_ORDER_TYPE_UNSPECIFIED:
@@ -150,7 +161,6 @@ function stopOrderTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.stopOrderTypeToJSON = stopOrderTypeToJSON;
 /** Статус стоп-заяки. */
 var StopOrderStatusOption;
 (function (StopOrderStatusOption) {
@@ -194,7 +204,6 @@ function stopOrderStatusOptionFromJSON(object) {
             return StopOrderStatusOption.UNRECOGNIZED;
     }
 }
-exports.stopOrderStatusOptionFromJSON = stopOrderStatusOptionFromJSON;
 function stopOrderStatusOptionToJSON(object) {
     switch (object) {
         case StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED:
@@ -214,7 +223,6 @@ function stopOrderStatusOptionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.stopOrderStatusOptionToJSON = stopOrderStatusOptionToJSON;
 /** Тип выставляемой заявки. */
 var ExchangeOrderType;
 (function (ExchangeOrderType) {
@@ -243,7 +251,6 @@ function exchangeOrderTypeFromJSON(object) {
             return ExchangeOrderType.UNRECOGNIZED;
     }
 }
-exports.exchangeOrderTypeFromJSON = exchangeOrderTypeFromJSON;
 function exchangeOrderTypeToJSON(object) {
     switch (object) {
         case ExchangeOrderType.EXCHANGE_ORDER_TYPE_UNSPECIFIED:
@@ -257,7 +264,6 @@ function exchangeOrderTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.exchangeOrderTypeToJSON = exchangeOrderTypeToJSON;
 /** Тип TakeProfit заявки. */
 var TakeProfitType;
 (function (TakeProfitType) {
@@ -286,7 +292,6 @@ function takeProfitTypeFromJSON(object) {
             return TakeProfitType.UNRECOGNIZED;
     }
 }
-exports.takeProfitTypeFromJSON = takeProfitTypeFromJSON;
 function takeProfitTypeToJSON(object) {
     switch (object) {
         case TakeProfitType.TAKE_PROFIT_TYPE_UNSPECIFIED:
@@ -300,7 +305,6 @@ function takeProfitTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.takeProfitTypeToJSON = takeProfitTypeToJSON;
 /** Тип параметров значений Трейлинг-стопа */
 var TrailingValueType;
 (function (TrailingValueType) {
@@ -329,7 +333,6 @@ function trailingValueTypeFromJSON(object) {
             return TrailingValueType.UNRECOGNIZED;
     }
 }
-exports.trailingValueTypeFromJSON = trailingValueTypeFromJSON;
 function trailingValueTypeToJSON(object) {
     switch (object) {
         case TrailingValueType.TRAILING_VALUE_UNSPECIFIED:
@@ -343,7 +346,6 @@ function trailingValueTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.trailingValueTypeToJSON = trailingValueTypeToJSON;
 /** Статус Трейлинг-стопа */
 var TrailingStopStatus;
 (function (TrailingStopStatus) {
@@ -372,7 +374,6 @@ function trailingStopStatusFromJSON(object) {
             return TrailingStopStatus.UNRECOGNIZED;
     }
 }
-exports.trailingStopStatusFromJSON = trailingStopStatusFromJSON;
 function trailingStopStatusToJSON(object) {
     switch (object) {
         case TrailingStopStatus.TRAILING_STOP_UNSPECIFIED:
@@ -386,7 +387,6 @@ function trailingStopStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.trailingStopStatusToJSON = trailingStopStatusToJSON;
 function createBasePostStopOrderRequest() {
     return {
         figi: undefined,

@@ -8,7 +8,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrdersServiceDefinition = exports.OrdersStreamServiceDefinition = exports.OrderStateStreamResponse_OrderState = exports.OrderStateStreamResponse_SubscriptionResponse = exports.OrderStateStreamResponse = exports.OrderStateStreamRequest = exports.GetOrderPriceResponse_ExtraFuture = exports.GetOrderPriceResponse_ExtraBond = exports.GetOrderPriceResponse = exports.GetOrderPriceRequest = exports.GetMaxLotsResponse_SellLimitsView = exports.GetMaxLotsResponse_BuyLimitsView = exports.GetMaxLotsResponse = exports.GetMaxLotsRequest = exports.ReplaceOrderRequest = exports.OrderStage = exports.OrderState = exports.GetOrdersResponse = exports.GetOrdersRequest = exports.GetOrderStateRequest = exports.CancelOrderResponse = exports.CancelOrderRequest = exports.PostOrderResponse = exports.PostOrderRequest = exports.OrderTrade = exports.OrderTrades = exports.TradesStreamResponse = exports.TradesStreamRequest = exports.orderStateStreamResponse_StatusCauseInfoToJSON = exports.orderStateStreamResponse_StatusCauseInfoFromJSON = exports.OrderStateStreamResponse_StatusCauseInfo = exports.orderStateStreamResponse_MarkerTypeToJSON = exports.orderStateStreamResponse_MarkerTypeFromJSON = exports.OrderStateStreamResponse_MarkerType = exports.timeInForceTypeToJSON = exports.timeInForceTypeFromJSON = exports.TimeInForceType = exports.orderExecutionReportStatusToJSON = exports.orderExecutionReportStatusFromJSON = exports.OrderExecutionReportStatus = exports.orderTypeToJSON = exports.orderTypeFromJSON = exports.OrderType = exports.orderDirectionToJSON = exports.orderDirectionFromJSON = exports.OrderDirection = exports.protobufPackage = void 0;
+exports.OrdersServiceDefinition = exports.OrdersStreamServiceDefinition = exports.OrderStateStreamResponse_OrderState = exports.OrderStateStreamResponse_SubscriptionResponse = exports.OrderStateStreamResponse = exports.OrderStateStreamRequest = exports.GetOrderPriceResponse_ExtraFuture = exports.GetOrderPriceResponse_ExtraBond = exports.GetOrderPriceResponse = exports.GetOrderPriceRequest = exports.GetMaxLotsResponse_SellLimitsView = exports.GetMaxLotsResponse_BuyLimitsView = exports.GetMaxLotsResponse = exports.GetMaxLotsRequest = exports.ReplaceOrderRequest = exports.OrderStage = exports.OrderState = exports.GetOrdersResponse = exports.GetOrdersRequest = exports.GetOrderStateRequest = exports.CancelOrderResponse = exports.CancelOrderRequest = exports.PostOrderResponse = exports.PostOrderRequest = exports.OrderTrade = exports.OrderTrades = exports.TradesStreamResponse = exports.TradesStreamRequest = exports.OrderStateStreamResponse_StatusCauseInfo = exports.OrderStateStreamResponse_MarkerType = exports.TimeInForceType = exports.OrderExecutionReportStatus = exports.OrderType = exports.OrderDirection = exports.protobufPackage = void 0;
+exports.orderDirectionFromJSON = orderDirectionFromJSON;
+exports.orderDirectionToJSON = orderDirectionToJSON;
+exports.orderTypeFromJSON = orderTypeFromJSON;
+exports.orderTypeToJSON = orderTypeToJSON;
+exports.orderExecutionReportStatusFromJSON = orderExecutionReportStatusFromJSON;
+exports.orderExecutionReportStatusToJSON = orderExecutionReportStatusToJSON;
+exports.timeInForceTypeFromJSON = timeInForceTypeFromJSON;
+exports.timeInForceTypeToJSON = timeInForceTypeToJSON;
+exports.orderStateStreamResponse_MarkerTypeFromJSON = orderStateStreamResponse_MarkerTypeFromJSON;
+exports.orderStateStreamResponse_MarkerTypeToJSON = orderStateStreamResponse_MarkerTypeToJSON;
+exports.orderStateStreamResponse_StatusCauseInfoFromJSON = orderStateStreamResponse_StatusCauseInfoFromJSON;
+exports.orderStateStreamResponse_StatusCauseInfoToJSON = orderStateStreamResponse_StatusCauseInfoToJSON;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -43,7 +55,6 @@ function orderDirectionFromJSON(object) {
             return OrderDirection.UNRECOGNIZED;
     }
 }
-exports.orderDirectionFromJSON = orderDirectionFromJSON;
 function orderDirectionToJSON(object) {
     switch (object) {
         case OrderDirection.ORDER_DIRECTION_UNSPECIFIED:
@@ -57,7 +68,6 @@ function orderDirectionToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.orderDirectionToJSON = orderDirectionToJSON;
 /** Тип заявки. */
 var OrderType;
 (function (OrderType) {
@@ -91,7 +101,6 @@ function orderTypeFromJSON(object) {
             return OrderType.UNRECOGNIZED;
     }
 }
-exports.orderTypeFromJSON = orderTypeFromJSON;
 function orderTypeToJSON(object) {
     switch (object) {
         case OrderType.ORDER_TYPE_UNSPECIFIED:
@@ -107,7 +116,6 @@ function orderTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.orderTypeToJSON = orderTypeToJSON;
 /** Текущий статус заявки (поручения) */
 var OrderExecutionReportStatus;
 (function (OrderExecutionReportStatus) {
@@ -150,7 +158,6 @@ function orderExecutionReportStatusFromJSON(object) {
             return OrderExecutionReportStatus.UNRECOGNIZED;
     }
 }
-exports.orderExecutionReportStatusFromJSON = orderExecutionReportStatusFromJSON;
 function orderExecutionReportStatusToJSON(object) {
     switch (object) {
         case OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_UNSPECIFIED:
@@ -170,7 +177,6 @@ function orderExecutionReportStatusToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.orderExecutionReportStatusToJSON = orderExecutionReportStatusToJSON;
 /** Алгоритм исполнения заявки */
 var TimeInForceType;
 (function (TimeInForceType) {
@@ -204,7 +210,6 @@ function timeInForceTypeFromJSON(object) {
             return TimeInForceType.UNRECOGNIZED;
     }
 }
-exports.timeInForceTypeFromJSON = timeInForceTypeFromJSON;
 function timeInForceTypeToJSON(object) {
     switch (object) {
         case TimeInForceType.TIME_IN_FORCE_UNSPECIFIED:
@@ -220,7 +225,6 @@ function timeInForceTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.timeInForceTypeToJSON = timeInForceTypeToJSON;
 /** Маркер */
 var OrderStateStreamResponse_MarkerType;
 (function (OrderStateStreamResponse_MarkerType) {
@@ -278,7 +282,6 @@ function orderStateStreamResponse_MarkerTypeFromJSON(object) {
             return OrderStateStreamResponse_MarkerType.UNRECOGNIZED;
     }
 }
-exports.orderStateStreamResponse_MarkerTypeFromJSON = orderStateStreamResponse_MarkerTypeFromJSON;
 function orderStateStreamResponse_MarkerTypeToJSON(object) {
     switch (object) {
         case OrderStateStreamResponse_MarkerType.MARKER_UNKNOWN:
@@ -304,7 +307,6 @@ function orderStateStreamResponse_MarkerTypeToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.orderStateStreamResponse_MarkerTypeToJSON = orderStateStreamResponse_MarkerTypeToJSON;
 /** Дополнительная информация по статусу заявки */
 var OrderStateStreamResponse_StatusCauseInfo;
 (function (OrderStateStreamResponse_StatusCauseInfo) {
@@ -358,7 +360,6 @@ function orderStateStreamResponse_StatusCauseInfoFromJSON(object) {
             return OrderStateStreamResponse_StatusCauseInfo.UNRECOGNIZED;
     }
 }
-exports.orderStateStreamResponse_StatusCauseInfoFromJSON = orderStateStreamResponse_StatusCauseInfoFromJSON;
 function orderStateStreamResponse_StatusCauseInfoToJSON(object) {
     switch (object) {
         case OrderStateStreamResponse_StatusCauseInfo.CAUSE_UNSPECIFIED:
@@ -382,7 +383,6 @@ function orderStateStreamResponse_StatusCauseInfoToJSON(object) {
             return "UNRECOGNIZED";
     }
 }
-exports.orderStateStreamResponse_StatusCauseInfoToJSON = orderStateStreamResponse_StatusCauseInfoToJSON;
 function createBaseTradesStreamRequest() {
     return { accounts: [] };
 }
