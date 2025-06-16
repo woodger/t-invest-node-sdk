@@ -1,12 +1,12 @@
-import { type CallContext, type CallOptions } from "nice-grpc-common";
-import _m0 from "protobufjs/minimal";
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import { InstrumentType, MoneyValue, Ping, Quotation } from "./common";
 export declare const protobufPackage = "tinkoff.public.invest.api.contract.v1";
 /** Статус запрашиваемых операций. */
 export declare enum OperationState {
     /** OPERATION_STATE_UNSPECIFIED - Статус операции не определён */
     OPERATION_STATE_UNSPECIFIED = 0,
-    /** OPERATION_STATE_EXECUTED - Исполнена частично или полностью. */
+    /** OPERATION_STATE_EXECUTED - Исполнена. */
     OPERATION_STATE_EXECUTED = 1,
     /** OPERATION_STATE_CANCELED - Отменена. */
     OPERATION_STATE_CANCELED = 2,
@@ -140,10 +140,8 @@ export declare enum OperationType {
     OPERATION_TYPE_OVER_COM = 62,
     /** OPERATION_TYPE_OVER_INCOME - Доход от оверанайта */
     OPERATION_TYPE_OVER_INCOME = 63,
-    /** OPERATION_TYPE_OPTION_EXPIRATION - Экспирация опциона */
+    /** OPERATION_TYPE_OPTION_EXPIRATION - Экспирация */
     OPERATION_TYPE_OPTION_EXPIRATION = 64,
-    /** OPERATION_TYPE_FUTURE_EXPIRATION - Экспирация фьючерса */
-    OPERATION_TYPE_FUTURE_EXPIRATION = 65,
     UNRECOGNIZED = -1
 }
 export declare function operationTypeFromJSON(object: any): OperationType;
@@ -181,13 +179,13 @@ export interface OperationsRequest {
     /** Идентификатор счёта клиента. */
     accountId: string;
     /** Начало периода (по UTC). */
-    from?: Date | undefined;
+    from: Date | undefined;
     /** Окончание периода (по UTC). */
-    to?: Date | undefined;
+    to: Date | undefined;
     /** Статус запрашиваемых операций. */
-    state?: OperationState | undefined;
+    state: OperationState;
     /** Figi-идентификатор инструмента для фильтрации. */
-    figi?: string | undefined;
+    figi: string;
 }
 /** Список операций. */
 export interface OperationsResponse {
@@ -247,7 +245,7 @@ export interface PortfolioRequest {
     /** Идентификатор счёта пользователя. */
     accountId: string;
     /** Валюта, в которой требуется рассчитать портфель */
-    currency?: PortfolioRequest_CurrencyRequest | undefined;
+    currency: PortfolioRequest_CurrencyRequest;
 }
 export declare enum PortfolioRequest_CurrencyRequest {
     /** RUB - Рубли */
@@ -453,7 +451,7 @@ export interface GetBrokerReportRequest {
     /** Идентификатор задачи формирования брокерского отчёта. */
     taskId: string;
     /** Номер страницы отчета (начинается с 1), значение по умолчанию: 0. */
-    page?: number | undefined;
+    page: number;
 }
 export interface GetBrokerReportResponse {
     brokerReport: BrokerReport[];
@@ -538,7 +536,7 @@ export interface GenerateDividendsForeignIssuerReportRequest {
     accountId: string;
     /** Начало периода (по UTC). */
     from: Date | undefined;
-    /** Окончание периода (по UTC), как правило, возможно сформировать отчет по дату, на несколько дней меньше текущей. Начало и окончание периода должны быть в рамках одного календарного года. */
+    /** Окончание периода (по UTC). */
     to: Date | undefined;
 }
 /** Объект запроса сформированного отчёта "Справка о доходах за пределами РФ". */
@@ -546,7 +544,7 @@ export interface GetDividendsForeignIssuerReportRequest {
     /** Идентификатор задачи формирования отчёта. */
     taskId: string;
     /** Номер страницы отчета (начинается с 0), значение по умолчанию: 0. */
-    page?: number | undefined;
+    page: number;
 }
 /** Объект результата задачи запуска формирования отчёта "Справка о доходах за пределами РФ". */
 export interface GenerateDividendsForeignIssuerReportResponse {
@@ -620,25 +618,25 @@ export interface GetOperationsByCursorRequest {
     /** Идентификатор счёта клиента. Обязательный параметр для данного метода, остальные параметры опциональны. */
     accountId: string;
     /** Идентификатор инструмента (Figi инструмента или uid инструмента) */
-    instrumentId?: string | undefined;
+    instrumentId: string;
     /** Начало периода (по UTC). */
-    from?: Date | undefined;
+    from: Date | undefined;
     /** Окончание периода (по UTC). */
-    to?: Date | undefined;
+    to: Date | undefined;
     /** Идентификатор элемента, с которого начать формировать ответ. */
-    cursor?: string | undefined;
+    cursor: string;
     /** Лимит количества операций. По умолчанию устанавливается значение **100**, максимальное значение 1000. */
-    limit?: number | undefined;
+    limit: number;
     /** Тип операции. Принимает значение из списка OperationType. */
     operationTypes: OperationType[];
     /** Статус запрашиваемых операций, возможные значения указаны в OperationState. */
-    state?: OperationState | undefined;
+    state: OperationState;
     /** Флаг возвращать ли комиссии, по умолчанию false */
-    withoutCommissions?: boolean | undefined;
+    withoutCommissions: boolean;
     /** Флаг получения ответа без массива сделок. */
-    withoutTrades?: boolean | undefined;
+    withoutTrades: boolean;
     /** Флаг не показывать overnight операций. */
-    withoutOvernights?: boolean | undefined;
+    withoutOvernights: boolean;
 }
 /** Список операций по счёту с пагинацией. */
 export interface GetOperationsByCursorResponse {
@@ -773,358 +771,50 @@ export interface PositionsMoney {
     /** Заблокированное количество валютный позиций. */
     blockedValue: MoneyValue | undefined;
 }
-export declare const OperationsRequest: {
-    encode(message: OperationsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OperationsRequest;
-    fromJSON(object: any): OperationsRequest;
-    toJSON(message: OperationsRequest): unknown;
-    create(base?: DeepPartial<OperationsRequest>): OperationsRequest;
-    fromPartial(object: DeepPartial<OperationsRequest>): OperationsRequest;
-};
-export declare const OperationsResponse: {
-    encode(message: OperationsResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OperationsResponse;
-    fromJSON(object: any): OperationsResponse;
-    toJSON(message: OperationsResponse): unknown;
-    create(base?: DeepPartial<OperationsResponse>): OperationsResponse;
-    fromPartial(object: DeepPartial<OperationsResponse>): OperationsResponse;
-};
-export declare const Operation: {
-    encode(message: Operation, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): Operation;
-    fromJSON(object: any): Operation;
-    toJSON(message: Operation): unknown;
-    create(base?: DeepPartial<Operation>): Operation;
-    fromPartial(object: DeepPartial<Operation>): Operation;
-};
-export declare const OperationTrade: {
-    encode(message: OperationTrade, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OperationTrade;
-    fromJSON(object: any): OperationTrade;
-    toJSON(message: OperationTrade): unknown;
-    create(base?: DeepPartial<OperationTrade>): OperationTrade;
-    fromPartial(object: DeepPartial<OperationTrade>): OperationTrade;
-};
-export declare const PortfolioRequest: {
-    encode(message: PortfolioRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioRequest;
-    fromJSON(object: any): PortfolioRequest;
-    toJSON(message: PortfolioRequest): unknown;
-    create(base?: DeepPartial<PortfolioRequest>): PortfolioRequest;
-    fromPartial(object: DeepPartial<PortfolioRequest>): PortfolioRequest;
-};
-export declare const PortfolioResponse: {
-    encode(message: PortfolioResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioResponse;
-    fromJSON(object: any): PortfolioResponse;
-    toJSON(message: PortfolioResponse): unknown;
-    create(base?: DeepPartial<PortfolioResponse>): PortfolioResponse;
-    fromPartial(object: DeepPartial<PortfolioResponse>): PortfolioResponse;
-};
-export declare const PositionsRequest: {
-    encode(message: PositionsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsRequest;
-    fromJSON(object: any): PositionsRequest;
-    toJSON(message: PositionsRequest): unknown;
-    create(base?: DeepPartial<PositionsRequest>): PositionsRequest;
-    fromPartial(object: DeepPartial<PositionsRequest>): PositionsRequest;
-};
-export declare const PositionsResponse: {
-    encode(message: PositionsResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsResponse;
-    fromJSON(object: any): PositionsResponse;
-    toJSON(message: PositionsResponse): unknown;
-    create(base?: DeepPartial<PositionsResponse>): PositionsResponse;
-    fromPartial(object: DeepPartial<PositionsResponse>): PositionsResponse;
-};
-export declare const WithdrawLimitsRequest: {
-    encode(message: WithdrawLimitsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawLimitsRequest;
-    fromJSON(object: any): WithdrawLimitsRequest;
-    toJSON(message: WithdrawLimitsRequest): unknown;
-    create(base?: DeepPartial<WithdrawLimitsRequest>): WithdrawLimitsRequest;
-    fromPartial(object: DeepPartial<WithdrawLimitsRequest>): WithdrawLimitsRequest;
-};
-export declare const WithdrawLimitsResponse: {
-    encode(message: WithdrawLimitsResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawLimitsResponse;
-    fromJSON(object: any): WithdrawLimitsResponse;
-    toJSON(message: WithdrawLimitsResponse): unknown;
-    create(base?: DeepPartial<WithdrawLimitsResponse>): WithdrawLimitsResponse;
-    fromPartial(object: DeepPartial<WithdrawLimitsResponse>): WithdrawLimitsResponse;
-};
-export declare const PortfolioPosition: {
-    encode(message: PortfolioPosition, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioPosition;
-    fromJSON(object: any): PortfolioPosition;
-    toJSON(message: PortfolioPosition): unknown;
-    create(base?: DeepPartial<PortfolioPosition>): PortfolioPosition;
-    fromPartial(object: DeepPartial<PortfolioPosition>): PortfolioPosition;
-};
-export declare const VirtualPortfolioPosition: {
-    encode(message: VirtualPortfolioPosition, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): VirtualPortfolioPosition;
-    fromJSON(object: any): VirtualPortfolioPosition;
-    toJSON(message: VirtualPortfolioPosition): unknown;
-    create(base?: DeepPartial<VirtualPortfolioPosition>): VirtualPortfolioPosition;
-    fromPartial(object: DeepPartial<VirtualPortfolioPosition>): VirtualPortfolioPosition;
-};
-export declare const PositionsSecurities: {
-    encode(message: PositionsSecurities, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsSecurities;
-    fromJSON(object: any): PositionsSecurities;
-    toJSON(message: PositionsSecurities): unknown;
-    create(base?: DeepPartial<PositionsSecurities>): PositionsSecurities;
-    fromPartial(object: DeepPartial<PositionsSecurities>): PositionsSecurities;
-};
-export declare const PositionsFutures: {
-    encode(message: PositionsFutures, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsFutures;
-    fromJSON(object: any): PositionsFutures;
-    toJSON(message: PositionsFutures): unknown;
-    create(base?: DeepPartial<PositionsFutures>): PositionsFutures;
-    fromPartial(object: DeepPartial<PositionsFutures>): PositionsFutures;
-};
-export declare const PositionsOptions: {
-    encode(message: PositionsOptions, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsOptions;
-    fromJSON(object: any): PositionsOptions;
-    toJSON(message: PositionsOptions): unknown;
-    create(base?: DeepPartial<PositionsOptions>): PositionsOptions;
-    fromPartial(object: DeepPartial<PositionsOptions>): PositionsOptions;
-};
-export declare const BrokerReportRequest: {
-    encode(message: BrokerReportRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): BrokerReportRequest;
-    fromJSON(object: any): BrokerReportRequest;
-    toJSON(message: BrokerReportRequest): unknown;
-    create(base?: DeepPartial<BrokerReportRequest>): BrokerReportRequest;
-    fromPartial(object: DeepPartial<BrokerReportRequest>): BrokerReportRequest;
-};
-export declare const BrokerReportResponse: {
-    encode(message: BrokerReportResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): BrokerReportResponse;
-    fromJSON(object: any): BrokerReportResponse;
-    toJSON(message: BrokerReportResponse): unknown;
-    create(base?: DeepPartial<BrokerReportResponse>): BrokerReportResponse;
-    fromPartial(object: DeepPartial<BrokerReportResponse>): BrokerReportResponse;
-};
-export declare const GenerateBrokerReportRequest: {
-    encode(message: GenerateBrokerReportRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GenerateBrokerReportRequest;
-    fromJSON(object: any): GenerateBrokerReportRequest;
-    toJSON(message: GenerateBrokerReportRequest): unknown;
-    create(base?: DeepPartial<GenerateBrokerReportRequest>): GenerateBrokerReportRequest;
-    fromPartial(object: DeepPartial<GenerateBrokerReportRequest>): GenerateBrokerReportRequest;
-};
-export declare const GenerateBrokerReportResponse: {
-    encode(message: GenerateBrokerReportResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GenerateBrokerReportResponse;
-    fromJSON(object: any): GenerateBrokerReportResponse;
-    toJSON(message: GenerateBrokerReportResponse): unknown;
-    create(base?: DeepPartial<GenerateBrokerReportResponse>): GenerateBrokerReportResponse;
-    fromPartial(object: DeepPartial<GenerateBrokerReportResponse>): GenerateBrokerReportResponse;
-};
-export declare const GetBrokerReportRequest: {
-    encode(message: GetBrokerReportRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetBrokerReportRequest;
-    fromJSON(object: any): GetBrokerReportRequest;
-    toJSON(message: GetBrokerReportRequest): unknown;
-    create(base?: DeepPartial<GetBrokerReportRequest>): GetBrokerReportRequest;
-    fromPartial(object: DeepPartial<GetBrokerReportRequest>): GetBrokerReportRequest;
-};
-export declare const GetBrokerReportResponse: {
-    encode(message: GetBrokerReportResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetBrokerReportResponse;
-    fromJSON(object: any): GetBrokerReportResponse;
-    toJSON(message: GetBrokerReportResponse): unknown;
-    create(base?: DeepPartial<GetBrokerReportResponse>): GetBrokerReportResponse;
-    fromPartial(object: DeepPartial<GetBrokerReportResponse>): GetBrokerReportResponse;
-};
-export declare const BrokerReport: {
-    encode(message: BrokerReport, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): BrokerReport;
-    fromJSON(object: any): BrokerReport;
-    toJSON(message: BrokerReport): unknown;
-    create(base?: DeepPartial<BrokerReport>): BrokerReport;
-    fromPartial(object: DeepPartial<BrokerReport>): BrokerReport;
-};
-export declare const GetDividendsForeignIssuerRequest: {
-    encode(message: GetDividendsForeignIssuerRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDividendsForeignIssuerRequest;
-    fromJSON(object: any): GetDividendsForeignIssuerRequest;
-    toJSON(message: GetDividendsForeignIssuerRequest): unknown;
-    create(base?: DeepPartial<GetDividendsForeignIssuerRequest>): GetDividendsForeignIssuerRequest;
-    fromPartial(object: DeepPartial<GetDividendsForeignIssuerRequest>): GetDividendsForeignIssuerRequest;
-};
-export declare const GetDividendsForeignIssuerResponse: {
-    encode(message: GetDividendsForeignIssuerResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDividendsForeignIssuerResponse;
-    fromJSON(object: any): GetDividendsForeignIssuerResponse;
-    toJSON(message: GetDividendsForeignIssuerResponse): unknown;
-    create(base?: DeepPartial<GetDividendsForeignIssuerResponse>): GetDividendsForeignIssuerResponse;
-    fromPartial(object: DeepPartial<GetDividendsForeignIssuerResponse>): GetDividendsForeignIssuerResponse;
-};
-export declare const GenerateDividendsForeignIssuerReportRequest: {
-    encode(message: GenerateDividendsForeignIssuerReportRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GenerateDividendsForeignIssuerReportRequest;
-    fromJSON(object: any): GenerateDividendsForeignIssuerReportRequest;
-    toJSON(message: GenerateDividendsForeignIssuerReportRequest): unknown;
-    create(base?: DeepPartial<GenerateDividendsForeignIssuerReportRequest>): GenerateDividendsForeignIssuerReportRequest;
-    fromPartial(object: DeepPartial<GenerateDividendsForeignIssuerReportRequest>): GenerateDividendsForeignIssuerReportRequest;
-};
-export declare const GetDividendsForeignIssuerReportRequest: {
-    encode(message: GetDividendsForeignIssuerReportRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDividendsForeignIssuerReportRequest;
-    fromJSON(object: any): GetDividendsForeignIssuerReportRequest;
-    toJSON(message: GetDividendsForeignIssuerReportRequest): unknown;
-    create(base?: DeepPartial<GetDividendsForeignIssuerReportRequest>): GetDividendsForeignIssuerReportRequest;
-    fromPartial(object: DeepPartial<GetDividendsForeignIssuerReportRequest>): GetDividendsForeignIssuerReportRequest;
-};
-export declare const GenerateDividendsForeignIssuerReportResponse: {
-    encode(message: GenerateDividendsForeignIssuerReportResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GenerateDividendsForeignIssuerReportResponse;
-    fromJSON(object: any): GenerateDividendsForeignIssuerReportResponse;
-    toJSON(message: GenerateDividendsForeignIssuerReportResponse): unknown;
-    create(base?: DeepPartial<GenerateDividendsForeignIssuerReportResponse>): GenerateDividendsForeignIssuerReportResponse;
-    fromPartial(object: DeepPartial<GenerateDividendsForeignIssuerReportResponse>): GenerateDividendsForeignIssuerReportResponse;
-};
-export declare const GetDividendsForeignIssuerReportResponse: {
-    encode(message: GetDividendsForeignIssuerReportResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDividendsForeignIssuerReportResponse;
-    fromJSON(object: any): GetDividendsForeignIssuerReportResponse;
-    toJSON(message: GetDividendsForeignIssuerReportResponse): unknown;
-    create(base?: DeepPartial<GetDividendsForeignIssuerReportResponse>): GetDividendsForeignIssuerReportResponse;
-    fromPartial(object: DeepPartial<GetDividendsForeignIssuerReportResponse>): GetDividendsForeignIssuerReportResponse;
-};
-export declare const DividendsForeignIssuerReport: {
-    encode(message: DividendsForeignIssuerReport, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): DividendsForeignIssuerReport;
-    fromJSON(object: any): DividendsForeignIssuerReport;
-    toJSON(message: DividendsForeignIssuerReport): unknown;
-    create(base?: DeepPartial<DividendsForeignIssuerReport>): DividendsForeignIssuerReport;
-    fromPartial(object: DeepPartial<DividendsForeignIssuerReport>): DividendsForeignIssuerReport;
-};
-export declare const PortfolioStreamRequest: {
-    encode(message: PortfolioStreamRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioStreamRequest;
-    fromJSON(object: any): PortfolioStreamRequest;
-    toJSON(message: PortfolioStreamRequest): unknown;
-    create(base?: DeepPartial<PortfolioStreamRequest>): PortfolioStreamRequest;
-    fromPartial(object: DeepPartial<PortfolioStreamRequest>): PortfolioStreamRequest;
-};
-export declare const PortfolioStreamResponse: {
-    encode(message: PortfolioStreamResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioStreamResponse;
-    fromJSON(object: any): PortfolioStreamResponse;
-    toJSON(message: PortfolioStreamResponse): unknown;
-    create(base?: DeepPartial<PortfolioStreamResponse>): PortfolioStreamResponse;
-    fromPartial(object: DeepPartial<PortfolioStreamResponse>): PortfolioStreamResponse;
-};
-export declare const PortfolioSubscriptionResult: {
-    encode(message: PortfolioSubscriptionResult, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioSubscriptionResult;
-    fromJSON(object: any): PortfolioSubscriptionResult;
-    toJSON(message: PortfolioSubscriptionResult): unknown;
-    create(base?: DeepPartial<PortfolioSubscriptionResult>): PortfolioSubscriptionResult;
-    fromPartial(object: DeepPartial<PortfolioSubscriptionResult>): PortfolioSubscriptionResult;
-};
-export declare const AccountSubscriptionStatus: {
-    encode(message: AccountSubscriptionStatus, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): AccountSubscriptionStatus;
-    fromJSON(object: any): AccountSubscriptionStatus;
-    toJSON(message: AccountSubscriptionStatus): unknown;
-    create(base?: DeepPartial<AccountSubscriptionStatus>): AccountSubscriptionStatus;
-    fromPartial(object: DeepPartial<AccountSubscriptionStatus>): AccountSubscriptionStatus;
-};
-export declare const GetOperationsByCursorRequest: {
-    encode(message: GetOperationsByCursorRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetOperationsByCursorRequest;
-    fromJSON(object: any): GetOperationsByCursorRequest;
-    toJSON(message: GetOperationsByCursorRequest): unknown;
-    create(base?: DeepPartial<GetOperationsByCursorRequest>): GetOperationsByCursorRequest;
-    fromPartial(object: DeepPartial<GetOperationsByCursorRequest>): GetOperationsByCursorRequest;
-};
-export declare const GetOperationsByCursorResponse: {
-    encode(message: GetOperationsByCursorResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetOperationsByCursorResponse;
-    fromJSON(object: any): GetOperationsByCursorResponse;
-    toJSON(message: GetOperationsByCursorResponse): unknown;
-    create(base?: DeepPartial<GetOperationsByCursorResponse>): GetOperationsByCursorResponse;
-    fromPartial(object: DeepPartial<GetOperationsByCursorResponse>): GetOperationsByCursorResponse;
-};
-export declare const OperationItem: {
-    encode(message: OperationItem, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OperationItem;
-    fromJSON(object: any): OperationItem;
-    toJSON(message: OperationItem): unknown;
-    create(base?: DeepPartial<OperationItem>): OperationItem;
-    fromPartial(object: DeepPartial<OperationItem>): OperationItem;
-};
-export declare const OperationItemTrades: {
-    encode(message: OperationItemTrades, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OperationItemTrades;
-    fromJSON(object: any): OperationItemTrades;
-    toJSON(message: OperationItemTrades): unknown;
-    create(base?: DeepPartial<OperationItemTrades>): OperationItemTrades;
-    fromPartial(object: DeepPartial<OperationItemTrades>): OperationItemTrades;
-};
-export declare const OperationItemTrade: {
-    encode(message: OperationItemTrade, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OperationItemTrade;
-    fromJSON(object: any): OperationItemTrade;
-    toJSON(message: OperationItemTrade): unknown;
-    create(base?: DeepPartial<OperationItemTrade>): OperationItemTrade;
-    fromPartial(object: DeepPartial<OperationItemTrade>): OperationItemTrade;
-};
-export declare const PositionsStreamRequest: {
-    encode(message: PositionsStreamRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsStreamRequest;
-    fromJSON(object: any): PositionsStreamRequest;
-    toJSON(message: PositionsStreamRequest): unknown;
-    create(base?: DeepPartial<PositionsStreamRequest>): PositionsStreamRequest;
-    fromPartial(object: DeepPartial<PositionsStreamRequest>): PositionsStreamRequest;
-};
-export declare const PositionsStreamResponse: {
-    encode(message: PositionsStreamResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsStreamResponse;
-    fromJSON(object: any): PositionsStreamResponse;
-    toJSON(message: PositionsStreamResponse): unknown;
-    create(base?: DeepPartial<PositionsStreamResponse>): PositionsStreamResponse;
-    fromPartial(object: DeepPartial<PositionsStreamResponse>): PositionsStreamResponse;
-};
-export declare const PositionsSubscriptionResult: {
-    encode(message: PositionsSubscriptionResult, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsSubscriptionResult;
-    fromJSON(object: any): PositionsSubscriptionResult;
-    toJSON(message: PositionsSubscriptionResult): unknown;
-    create(base?: DeepPartial<PositionsSubscriptionResult>): PositionsSubscriptionResult;
-    fromPartial(object: DeepPartial<PositionsSubscriptionResult>): PositionsSubscriptionResult;
-};
-export declare const PositionsSubscriptionStatus: {
-    encode(message: PositionsSubscriptionStatus, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsSubscriptionStatus;
-    fromJSON(object: any): PositionsSubscriptionStatus;
-    toJSON(message: PositionsSubscriptionStatus): unknown;
-    create(base?: DeepPartial<PositionsSubscriptionStatus>): PositionsSubscriptionStatus;
-    fromPartial(object: DeepPartial<PositionsSubscriptionStatus>): PositionsSubscriptionStatus;
-};
-export declare const PositionData: {
-    encode(message: PositionData, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionData;
-    fromJSON(object: any): PositionData;
-    toJSON(message: PositionData): unknown;
-    create(base?: DeepPartial<PositionData>): PositionData;
-    fromPartial(object: DeepPartial<PositionData>): PositionData;
-};
-export declare const PositionsMoney: {
-    encode(message: PositionsMoney, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): PositionsMoney;
-    fromJSON(object: any): PositionsMoney;
-    toJSON(message: PositionsMoney): unknown;
-    create(base?: DeepPartial<PositionsMoney>): PositionsMoney;
-    fromPartial(object: DeepPartial<PositionsMoney>): PositionsMoney;
-};
+export declare const OperationsRequest: MessageFns<OperationsRequest>;
+export declare const OperationsResponse: MessageFns<OperationsResponse>;
+export declare const Operation: MessageFns<Operation>;
+export declare const OperationTrade: MessageFns<OperationTrade>;
+export declare const PortfolioRequest: MessageFns<PortfolioRequest>;
+export declare const PortfolioResponse: MessageFns<PortfolioResponse>;
+export declare const PositionsRequest: MessageFns<PositionsRequest>;
+export declare const PositionsResponse: MessageFns<PositionsResponse>;
+export declare const WithdrawLimitsRequest: MessageFns<WithdrawLimitsRequest>;
+export declare const WithdrawLimitsResponse: MessageFns<WithdrawLimitsResponse>;
+export declare const PortfolioPosition: MessageFns<PortfolioPosition>;
+export declare const VirtualPortfolioPosition: MessageFns<VirtualPortfolioPosition>;
+export declare const PositionsSecurities: MessageFns<PositionsSecurities>;
+export declare const PositionsFutures: MessageFns<PositionsFutures>;
+export declare const PositionsOptions: MessageFns<PositionsOptions>;
+export declare const BrokerReportRequest: MessageFns<BrokerReportRequest>;
+export declare const BrokerReportResponse: MessageFns<BrokerReportResponse>;
+export declare const GenerateBrokerReportRequest: MessageFns<GenerateBrokerReportRequest>;
+export declare const GenerateBrokerReportResponse: MessageFns<GenerateBrokerReportResponse>;
+export declare const GetBrokerReportRequest: MessageFns<GetBrokerReportRequest>;
+export declare const GetBrokerReportResponse: MessageFns<GetBrokerReportResponse>;
+export declare const BrokerReport: MessageFns<BrokerReport>;
+export declare const GetDividendsForeignIssuerRequest: MessageFns<GetDividendsForeignIssuerRequest>;
+export declare const GetDividendsForeignIssuerResponse: MessageFns<GetDividendsForeignIssuerResponse>;
+export declare const GenerateDividendsForeignIssuerReportRequest: MessageFns<GenerateDividendsForeignIssuerReportRequest>;
+export declare const GetDividendsForeignIssuerReportRequest: MessageFns<GetDividendsForeignIssuerReportRequest>;
+export declare const GenerateDividendsForeignIssuerReportResponse: MessageFns<GenerateDividendsForeignIssuerReportResponse>;
+export declare const GetDividendsForeignIssuerReportResponse: MessageFns<GetDividendsForeignIssuerReportResponse>;
+export declare const DividendsForeignIssuerReport: MessageFns<DividendsForeignIssuerReport>;
+export declare const PortfolioStreamRequest: MessageFns<PortfolioStreamRequest>;
+export declare const PortfolioStreamResponse: MessageFns<PortfolioStreamResponse>;
+export declare const PortfolioSubscriptionResult: MessageFns<PortfolioSubscriptionResult>;
+export declare const AccountSubscriptionStatus: MessageFns<AccountSubscriptionStatus>;
+export declare const GetOperationsByCursorRequest: MessageFns<GetOperationsByCursorRequest>;
+export declare const GetOperationsByCursorResponse: MessageFns<GetOperationsByCursorResponse>;
+export declare const OperationItem: MessageFns<OperationItem>;
+export declare const OperationItemTrades: MessageFns<OperationItemTrades>;
+export declare const OperationItemTrade: MessageFns<OperationItemTrade>;
+export declare const PositionsStreamRequest: MessageFns<PositionsStreamRequest>;
+export declare const PositionsStreamResponse: MessageFns<PositionsStreamResponse>;
+export declare const PositionsSubscriptionResult: MessageFns<PositionsSubscriptionResult>;
+export declare const PositionsSubscriptionStatus: MessageFns<PositionsSubscriptionStatus>;
+export declare const PositionData: MessageFns<PositionData>;
+export declare const PositionsMoney: MessageFns<PositionsMoney>;
 /**
  * Сервис предназначен для получения:</br> **1**.  списка операций по счёту;</br> **2**.
  * портфеля по счёту;</br> **3**. позиций ценных бумаг на счёте;</br> **4**.
@@ -1141,138 +831,54 @@ export declare const OperationsServiceDefinition: {
          */
         readonly getOperations: {
             readonly name: "GetOperations";
-            readonly requestType: {
-                encode(message: OperationsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): OperationsRequest;
-                fromJSON(object: any): OperationsRequest;
-                toJSON(message: OperationsRequest): unknown;
-                create(base?: DeepPartial<OperationsRequest>): OperationsRequest;
-                fromPartial(object: DeepPartial<OperationsRequest>): OperationsRequest;
-            };
+            readonly requestType: MessageFns<OperationsRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: OperationsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): OperationsResponse;
-                fromJSON(object: any): OperationsResponse;
-                toJSON(message: OperationsResponse): unknown;
-                create(base?: DeepPartial<OperationsResponse>): OperationsResponse;
-                fromPartial(object: DeepPartial<OperationsResponse>): OperationsResponse;
-            };
+            readonly responseType: MessageFns<OperationsResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод получения портфеля по счёту. */
         readonly getPortfolio: {
             readonly name: "GetPortfolio";
-            readonly requestType: {
-                encode(message: PortfolioRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioRequest;
-                fromJSON(object: any): PortfolioRequest;
-                toJSON(message: PortfolioRequest): unknown;
-                create(base?: DeepPartial<PortfolioRequest>): PortfolioRequest;
-                fromPartial(object: DeepPartial<PortfolioRequest>): PortfolioRequest;
-            };
+            readonly requestType: MessageFns<PortfolioRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: PortfolioResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioResponse;
-                fromJSON(object: any): PortfolioResponse;
-                toJSON(message: PortfolioResponse): unknown;
-                create(base?: DeepPartial<PortfolioResponse>): PortfolioResponse;
-                fromPartial(object: DeepPartial<PortfolioResponse>): PortfolioResponse;
-            };
+            readonly responseType: MessageFns<PortfolioResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод получения списка позиций по счёту. */
         readonly getPositions: {
             readonly name: "GetPositions";
-            readonly requestType: {
-                encode(message: PositionsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PositionsRequest;
-                fromJSON(object: any): PositionsRequest;
-                toJSON(message: PositionsRequest): unknown;
-                create(base?: DeepPartial<PositionsRequest>): PositionsRequest;
-                fromPartial(object: DeepPartial<PositionsRequest>): PositionsRequest;
-            };
+            readonly requestType: MessageFns<PositionsRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: PositionsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PositionsResponse;
-                fromJSON(object: any): PositionsResponse;
-                toJSON(message: PositionsResponse): unknown;
-                create(base?: DeepPartial<PositionsResponse>): PositionsResponse;
-                fromPartial(object: DeepPartial<PositionsResponse>): PositionsResponse;
-            };
+            readonly responseType: MessageFns<PositionsResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод получения доступного остатка для вывода средств. */
         readonly getWithdrawLimits: {
             readonly name: "GetWithdrawLimits";
-            readonly requestType: {
-                encode(message: WithdrawLimitsRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawLimitsRequest;
-                fromJSON(object: any): WithdrawLimitsRequest;
-                toJSON(message: WithdrawLimitsRequest): unknown;
-                create(base?: DeepPartial<WithdrawLimitsRequest>): WithdrawLimitsRequest;
-                fromPartial(object: DeepPartial<WithdrawLimitsRequest>): WithdrawLimitsRequest;
-            };
+            readonly requestType: MessageFns<WithdrawLimitsRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: WithdrawLimitsResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawLimitsResponse;
-                fromJSON(object: any): WithdrawLimitsResponse;
-                toJSON(message: WithdrawLimitsResponse): unknown;
-                create(base?: DeepPartial<WithdrawLimitsResponse>): WithdrawLimitsResponse;
-                fromPartial(object: DeepPartial<WithdrawLimitsResponse>): WithdrawLimitsResponse;
-            };
+            readonly responseType: MessageFns<WithdrawLimitsResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод получения брокерского отчёта. */
         readonly getBrokerReport: {
             readonly name: "GetBrokerReport";
-            readonly requestType: {
-                encode(message: BrokerReportRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): BrokerReportRequest;
-                fromJSON(object: any): BrokerReportRequest;
-                toJSON(message: BrokerReportRequest): unknown;
-                create(base?: DeepPartial<BrokerReportRequest>): BrokerReportRequest;
-                fromPartial(object: DeepPartial<BrokerReportRequest>): BrokerReportRequest;
-            };
+            readonly requestType: MessageFns<BrokerReportRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: BrokerReportResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): BrokerReportResponse;
-                fromJSON(object: any): BrokerReportResponse;
-                toJSON(message: BrokerReportResponse): unknown;
-                create(base?: DeepPartial<BrokerReportResponse>): BrokerReportResponse;
-                fromPartial(object: DeepPartial<BrokerReportResponse>): BrokerReportResponse;
-            };
+            readonly responseType: MessageFns<BrokerReportResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод получения отчёта "Справка о доходах за пределами РФ". */
         readonly getDividendsForeignIssuer: {
             readonly name: "GetDividendsForeignIssuer";
-            readonly requestType: {
-                encode(message: GetDividendsForeignIssuerRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetDividendsForeignIssuerRequest;
-                fromJSON(object: any): GetDividendsForeignIssuerRequest;
-                toJSON(message: GetDividendsForeignIssuerRequest): unknown;
-                create(base?: DeepPartial<GetDividendsForeignIssuerRequest>): GetDividendsForeignIssuerRequest;
-                fromPartial(object: DeepPartial<GetDividendsForeignIssuerRequest>): GetDividendsForeignIssuerRequest;
-            };
+            readonly requestType: MessageFns<GetDividendsForeignIssuerRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetDividendsForeignIssuerResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetDividendsForeignIssuerResponse;
-                fromJSON(object: any): GetDividendsForeignIssuerResponse;
-                toJSON(message: GetDividendsForeignIssuerResponse): unknown;
-                create(base?: DeepPartial<GetDividendsForeignIssuerResponse>): GetDividendsForeignIssuerResponse;
-                fromPartial(object: DeepPartial<GetDividendsForeignIssuerResponse>): GetDividendsForeignIssuerResponse;
-            };
+            readonly responseType: MessageFns<GetDividendsForeignIssuerResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
@@ -1282,23 +888,9 @@ export declare const OperationsServiceDefinition: {
          */
         readonly getOperationsByCursor: {
             readonly name: "GetOperationsByCursor";
-            readonly requestType: {
-                encode(message: GetOperationsByCursorRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetOperationsByCursorRequest;
-                fromJSON(object: any): GetOperationsByCursorRequest;
-                toJSON(message: GetOperationsByCursorRequest): unknown;
-                create(base?: DeepPartial<GetOperationsByCursorRequest>): GetOperationsByCursorRequest;
-                fromPartial(object: DeepPartial<GetOperationsByCursorRequest>): GetOperationsByCursorRequest;
-            };
+            readonly requestType: MessageFns<GetOperationsByCursorRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetOperationsByCursorResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetOperationsByCursorResponse;
-                fromJSON(object: any): GetOperationsByCursorResponse;
-                toJSON(message: GetOperationsByCursorResponse): unknown;
-                create(base?: DeepPartial<GetOperationsByCursorResponse>): GetOperationsByCursorResponse;
-                fromPartial(object: DeepPartial<GetOperationsByCursorResponse>): GetOperationsByCursorResponse;
-            };
+            readonly responseType: MessageFns<GetOperationsByCursorResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
@@ -1356,46 +948,18 @@ export declare const OperationsStreamServiceDefinition: {
         /** Server-side stream обновлений портфеля */
         readonly portfolioStream: {
             readonly name: "PortfolioStream";
-            readonly requestType: {
-                encode(message: PortfolioStreamRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioStreamRequest;
-                fromJSON(object: any): PortfolioStreamRequest;
-                toJSON(message: PortfolioStreamRequest): unknown;
-                create(base?: DeepPartial<PortfolioStreamRequest>): PortfolioStreamRequest;
-                fromPartial(object: DeepPartial<PortfolioStreamRequest>): PortfolioStreamRequest;
-            };
+            readonly requestType: MessageFns<PortfolioStreamRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: PortfolioStreamResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PortfolioStreamResponse;
-                fromJSON(object: any): PortfolioStreamResponse;
-                toJSON(message: PortfolioStreamResponse): unknown;
-                create(base?: DeepPartial<PortfolioStreamResponse>): PortfolioStreamResponse;
-                fromPartial(object: DeepPartial<PortfolioStreamResponse>): PortfolioStreamResponse;
-            };
+            readonly responseType: MessageFns<PortfolioStreamResponse>;
             readonly responseStream: true;
             readonly options: {};
         };
         /** Server-side stream обновлений информации по изменению позиций портфеля */
         readonly positionsStream: {
             readonly name: "PositionsStream";
-            readonly requestType: {
-                encode(message: PositionsStreamRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PositionsStreamRequest;
-                fromJSON(object: any): PositionsStreamRequest;
-                toJSON(message: PositionsStreamRequest): unknown;
-                create(base?: DeepPartial<PositionsStreamRequest>): PositionsStreamRequest;
-                fromPartial(object: DeepPartial<PositionsStreamRequest>): PositionsStreamRequest;
-            };
+            readonly requestType: MessageFns<PositionsStreamRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: PositionsStreamResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): PositionsStreamResponse;
-                fromJSON(object: any): PositionsStreamResponse;
-                toJSON(message: PositionsStreamResponse): unknown;
-                create(base?: DeepPartial<PositionsStreamResponse>): PositionsStreamResponse;
-                fromPartial(object: DeepPartial<PositionsStreamResponse>): PositionsStreamResponse;
-            };
+            readonly responseType: MessageFns<PositionsStreamResponse>;
             readonly responseStream: true;
             readonly options: {};
         };
@@ -1420,4 +984,12 @@ export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<
 export type ServerStreamingMethodResult<Response> = {
     [Symbol.asyncIterator](): AsyncIterator<Response, void>;
 };
+export interface MessageFns<T> {
+    encode(message: T, writer?: BinaryWriter): BinaryWriter;
+    decode(input: BinaryReader | Uint8Array, length?: number): T;
+    fromJSON(object: any): T;
+    toJSON(message: T): unknown;
+    create(base?: DeepPartial<T>): T;
+    fromPartial(object: DeepPartial<T>): T;
+}
 export {};

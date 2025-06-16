@@ -1,5 +1,5 @@
-import { type CallContext, type CallOptions } from "nice-grpc-common";
-import _m0 from "protobufjs/minimal";
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import { Ping, Quotation, SecurityTradingStatus } from "./common";
 export declare const protobufPackage = "tinkoff.public.invest.api.contract.v1";
 /** Тип операции со списком подписок. */
@@ -22,28 +22,6 @@ export declare enum SubscriptionInterval {
     SUBSCRIPTION_INTERVAL_ONE_MINUTE = 1,
     /** SUBSCRIPTION_INTERVAL_FIVE_MINUTES - Пятиминутные свечи. */
     SUBSCRIPTION_INTERVAL_FIVE_MINUTES = 2,
-    /** SUBSCRIPTION_INTERVAL_FIFTEEN_MINUTES - Пятнадцатиминутные свечи */
-    SUBSCRIPTION_INTERVAL_FIFTEEN_MINUTES = 3,
-    /** SUBSCRIPTION_INTERVAL_ONE_HOUR - Часовые свечи */
-    SUBSCRIPTION_INTERVAL_ONE_HOUR = 4,
-    /** SUBSCRIPTION_INTERVAL_ONE_DAY - Дневные свечи */
-    SUBSCRIPTION_INTERVAL_ONE_DAY = 5,
-    /** SUBSCRIPTION_INTERVAL_2_MIN - Двухминутные свечи */
-    SUBSCRIPTION_INTERVAL_2_MIN = 6,
-    /** SUBSCRIPTION_INTERVAL_3_MIN - Трехминутные свечи */
-    SUBSCRIPTION_INTERVAL_3_MIN = 7,
-    /** SUBSCRIPTION_INTERVAL_10_MIN - Десятиминутные свечи */
-    SUBSCRIPTION_INTERVAL_10_MIN = 8,
-    /** SUBSCRIPTION_INTERVAL_30_MIN - Тридцатиминутные свечи */
-    SUBSCRIPTION_INTERVAL_30_MIN = 9,
-    /** SUBSCRIPTION_INTERVAL_2_HOUR - Двухчасовые свечи */
-    SUBSCRIPTION_INTERVAL_2_HOUR = 10,
-    /** SUBSCRIPTION_INTERVAL_4_HOUR - Четырехчасовые свечи */
-    SUBSCRIPTION_INTERVAL_4_HOUR = 11,
-    /** SUBSCRIPTION_INTERVAL_WEEK - Недельные свечи */
-    SUBSCRIPTION_INTERVAL_WEEK = 12,
-    /** SUBSCRIPTION_INTERVAL_MONTH - Месячные свечи */
-    SUBSCRIPTION_INTERVAL_MONTH = 13,
     UNRECOGNIZED = -1
 }
 export declare function subscriptionIntervalFromJSON(object: any): SubscriptionInterval;
@@ -56,13 +34,13 @@ export declare enum SubscriptionStatus {
     SUBSCRIPTION_STATUS_SUCCESS = 1,
     /** SUBSCRIPTION_STATUS_INSTRUMENT_NOT_FOUND - Инструмент не найден. */
     SUBSCRIPTION_STATUS_INSTRUMENT_NOT_FOUND = 2,
-    /** SUBSCRIPTION_STATUS_SUBSCRIPTION_ACTION_IS_INVALID - Некорректный статус подписки, список возможных значений: [SubscriptionAction](https://russianinvestments.github.io/investAPI/marketdata#subscriptionaction). */
+    /** SUBSCRIPTION_STATUS_SUBSCRIPTION_ACTION_IS_INVALID - Некорректный статус подписки, список возможных значений: [SubscriptionAction](https://tinkoff.github.io/investAPI/marketdata#subscriptionaction). */
     SUBSCRIPTION_STATUS_SUBSCRIPTION_ACTION_IS_INVALID = 3,
     /** SUBSCRIPTION_STATUS_DEPTH_IS_INVALID - Некорректная глубина стакана, доступные значения: 1, 10, 20, 30, 40, 50. */
     SUBSCRIPTION_STATUS_DEPTH_IS_INVALID = 4,
-    /** SUBSCRIPTION_STATUS_INTERVAL_IS_INVALID - Некорректный интервал свечей, список возможных значений: [SubscriptionInterval](https://russianinvestments.github.io/investAPI/marketdata#subscriptioninterval). */
+    /** SUBSCRIPTION_STATUS_INTERVAL_IS_INVALID - Некорректный интервал свечей, список возможных значений: [SubscriptionInterval](https://tinkoff.github.io/investAPI/marketdata#subscriptioninterval). */
     SUBSCRIPTION_STATUS_INTERVAL_IS_INVALID = 5,
-    /** SUBSCRIPTION_STATUS_LIMIT_IS_EXCEEDED - Превышен лимит на общее количество подписок в рамках стрима, подробнее: [Лимитная политика](https://russianinvestments.github.io/investAPI/limits/). */
+    /** SUBSCRIPTION_STATUS_LIMIT_IS_EXCEEDED - Превышен лимит на общее количество подписок в рамках стрима, подробнее: [Лимитная политика](https://tinkoff.github.io/investAPI/limits/). */
     SUBSCRIPTION_STATUS_LIMIT_IS_EXCEEDED = 6,
     /** SUBSCRIPTION_STATUS_INTERNAL_ERROR - Внутренняя ошибка сервиса. */
     SUBSCRIPTION_STATUS_INTERNAL_ERROR = 7,
@@ -74,20 +52,6 @@ export declare enum SubscriptionStatus {
 }
 export declare function subscriptionStatusFromJSON(object: any): SubscriptionStatus;
 export declare function subscriptionStatusToJSON(object: SubscriptionStatus): string;
-/** Источники сделок */
-export declare enum TradeSourceType {
-    /** TRADE_SOURCE_UNSPECIFIED - Тип сделки не определён. */
-    TRADE_SOURCE_UNSPECIFIED = 0,
-    /** TRADE_SOURCE_EXCHANGE - биржевые сделки */
-    TRADE_SOURCE_EXCHANGE = 1,
-    /** TRADE_SOURCE_DEALER - сделки дилера */
-    TRADE_SOURCE_DEALER = 2,
-    /** TRADE_SOURCE_ALL - все сделки */
-    TRADE_SOURCE_ALL = 3,
-    UNRECOGNIZED = -1
-}
-export declare function tradeSourceTypeFromJSON(object: any): TradeSourceType;
-export declare function tradeSourceTypeToJSON(object: TradeSourceType): string;
 /** Направление сделки. */
 export declare enum TradeDirection {
     /** TRADE_DIRECTION_UNSPECIFIED - Направление сделки не определено. */
@@ -134,28 +98,6 @@ export declare enum CandleInterval {
 }
 export declare function candleIntervalFromJSON(object: any): CandleInterval;
 export declare function candleIntervalToJSON(object: CandleInterval): string;
-export declare enum CandleSource {
-    /** CANDLE_SOURCE_UNSPECIFIED - Источник свечей не определён. */
-    CANDLE_SOURCE_UNSPECIFIED = 0,
-    /** CANDLE_SOURCE_EXCHANGE - Биржевые свечи. */
-    CANDLE_SOURCE_EXCHANGE = 1,
-    /** CANDLE_SOURCE_DEALER_WEEKEND - Свечи  дилера в результате торговли по выходным. */
-    CANDLE_SOURCE_DEALER_WEEKEND = 2,
-    UNRECOGNIZED = -1
-}
-export declare function candleSourceFromJSON(object: any): CandleSource;
-export declare function candleSourceToJSON(object: CandleSource): string;
-export declare enum OrderBookType {
-    /** ORDERBOOK_TYPE_UNSPECIFIED - не определен */
-    ORDERBOOK_TYPE_UNSPECIFIED = 0,
-    /** ORDERBOOK_TYPE_EXCHANGE - Биржевой стакан */
-    ORDERBOOK_TYPE_EXCHANGE = 1,
-    /** ORDERBOOK_TYPE_DEALER - Стакан дилера */
-    ORDERBOOK_TYPE_DEALER = 2,
-    UNRECOGNIZED = -1
-}
-export declare function orderBookTypeFromJSON(object: any): OrderBookType;
-export declare function orderBookTypeToJSON(object: OrderBookType): string;
 /** Запрос подписки или отписки на определённые биржевые данные. */
 export interface MarketDataRequest {
     /** Запрос подписки на свечи. */
@@ -214,7 +156,7 @@ export interface SubscribeCandlesRequest {
     subscriptionAction: SubscriptionAction;
     /** Массив инструментов для подписки на свечи. */
     instruments: CandleInstrument[];
-    /** Флаг ожидания закрытия временного интервала для отправки свечи. */
+    /** Флаг ожидания закрытия временного интервала для отправки свечи, применяется только для минутных свечей. */
     waitingClose: boolean;
 }
 /** Запрос изменения статус подписки на свечи. */
@@ -225,14 +167,14 @@ export interface CandleInstrument {
      * @deprecated
      */
     figi: string;
-    /** Интервал свечей. (Двухчасовые и четырехчасовые свечи в стриме отсчитываются с 0:00 по UTC) */
+    /** Интервал свечей. */
     interval: SubscriptionInterval;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid */
     instrumentId: string;
 }
 /** Результат изменения статус подписки на свечи. */
 export interface SubscribeCandlesResponse {
-    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://russianinvestments.github.io/investAPI/grpc#tracking-id). */
+    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://tinkoff.github.io/investAPI/grpc#tracking-id). */
     trackingId: string;
     /** Массив статусов подписки на свечи. */
     candlesSubscriptions: CandleSubscription[];
@@ -247,12 +189,6 @@ export interface CandleSubscription {
     subscriptionStatus: SubscriptionStatus;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Флаг ожидания закрытия временного интервала для отправки свечи */
-    waitingClose: boolean;
-    /** Идентификатор открытого соединения */
-    streamId: string;
-    /** Идентификатор подписки в формате UUID */
-    subscriptionId: string;
 }
 /** Запрос на изменение статуса подписки на стаканы. */
 export interface SubscribeOrderBookRequest {
@@ -273,12 +209,10 @@ export interface OrderBookInstrument {
     depth: number;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid */
     instrumentId: string;
-    /** Тип стакана */
-    orderBookType: OrderBookType;
 }
 /** Результат изменения статуса подписки на стаканы. */
 export interface SubscribeOrderBookResponse {
-    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://russianinvestments.github.io/investAPI/grpc#tracking-id). */
+    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://tinkoff.github.io/investAPI/grpc#tracking-id). */
     trackingId: string;
     /** Массив статусов подписки на стаканы. */
     orderBookSubscriptions: OrderBookSubscription[];
@@ -293,12 +227,6 @@ export interface OrderBookSubscription {
     subscriptionStatus: SubscriptionStatus;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Идентификатор открытого соединения */
-    streamId: string;
-    /** Идентификатор подписки в формате UUID */
-    subscriptionId: string;
-    /** Тип стакана */
-    orderBookType: OrderBookType;
 }
 /** Изменение статуса подписки на поток обезличенных сделок. */
 export interface SubscribeTradesRequest {
@@ -306,8 +234,6 @@ export interface SubscribeTradesRequest {
     subscriptionAction: SubscriptionAction;
     /** Массив инструментов для подписки на поток обезличенных сделок. */
     instruments: TradeInstrument[];
-    /** Источник сделок */
-    tradeType: TradeSourceType;
 }
 /** Запрос подписки на поток обезличенных сделок. */
 export interface TradeInstrument {
@@ -322,12 +248,10 @@ export interface TradeInstrument {
 }
 /** Результат изменения статуса подписки на поток обезличенных сделок. */
 export interface SubscribeTradesResponse {
-    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://russianinvestments.github.io/investAPI/grpc#tracking-id). */
+    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://tinkoff.github.io/investAPI/grpc#tracking-id). */
     trackingId: string;
     /** Массив статусов подписки на поток сделок. */
     tradeSubscriptions: TradeSubscription[];
-    /** Источник сделок */
-    tradeType: TradeSourceType;
 }
 /** Статус подписки. */
 export interface TradeSubscription {
@@ -337,10 +261,6 @@ export interface TradeSubscription {
     subscriptionStatus: SubscriptionStatus;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Идентификатор открытого соединения */
-    streamId: string;
-    /** Идентификатор подписки в формате UUID */
-    subscriptionId: string;
 }
 /** Изменение статуса подписки на торговый статус инструмента. */
 export interface SubscribeInfoRequest {
@@ -362,7 +282,7 @@ export interface InfoInstrument {
 }
 /** Результат изменения статуса подписки на торговый статус. */
 export interface SubscribeInfoResponse {
-    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://russianinvestments.github.io/investAPI/grpc#tracking-id). */
+    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://tinkoff.github.io/investAPI/grpc#tracking-id). */
     trackingId: string;
     /** Массив статусов подписки на торговый статус. */
     infoSubscriptions: InfoSubscription[];
@@ -375,10 +295,6 @@ export interface InfoSubscription {
     subscriptionStatus: SubscriptionStatus;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Идентификатор открытого соединения */
-    streamId: string;
-    /** Идентификатор подписки в формате UUID */
-    subscriptionId: string;
 }
 /** Изменение статуса подписки на цену последней сделки по инструменту. */
 export interface SubscribeLastPriceRequest {
@@ -400,7 +316,7 @@ export interface LastPriceInstrument {
 }
 /** Результат изменения статуса подписки на цену последней сделки. */
 export interface SubscribeLastPriceResponse {
-    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://russianinvestments.github.io/investAPI/grpc#tracking-id). */
+    /** Уникальный идентификатор запроса, подробнее: [tracking_id](https://tinkoff.github.io/investAPI/grpc#tracking-id). */
     trackingId: string;
     /** Массив статусов подписки на цену последней сделки. */
     lastPriceSubscriptions: LastPriceSubscription[];
@@ -413,10 +329,6 @@ export interface LastPriceSubscription {
     subscriptionStatus: SubscriptionStatus;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Идентификатор открытого соединения */
-    streamId: string;
-    /** Идентификатор подписки в формате UUID */
-    subscriptionId: string;
 }
 /** Пакет свечей в рамках стрима. */
 export interface Candle {
@@ -424,13 +336,13 @@ export interface Candle {
     figi: string;
     /** Интервал свечи. */
     interval: SubscriptionInterval;
-    /** Цена открытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена открытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     open: Quotation | undefined;
-    /** Максимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Максимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     high: Quotation | undefined;
-    /** Минимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Минимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     low: Quotation | undefined;
-    /** Цена закрытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена закрытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     close: Quotation | undefined;
     /** Объём сделок в лотах. */
     volume: number;
@@ -455,18 +367,16 @@ export interface OrderBook {
     asks: Order[];
     /** Время формирования стакана в часовом поясе UTC по времени биржи. */
     time: Date | undefined;
-    /** Верхний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Верхний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     limitUp: Quotation | undefined;
-    /** Нижний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Нижний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     limitDown: Quotation | undefined;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Тип стакана */
-    orderBookType: OrderBookType;
 }
 /** Массив предложений/спроса. */
 export interface Order {
-    /** Цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     price: Quotation | undefined;
     /** Количество в лотах. */
     quantity: number;
@@ -477,7 +387,7 @@ export interface Trade {
     figi: string;
     /** Направление сделки. */
     direction: TradeDirection;
-    /** Цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     price: Quotation | undefined;
     /** Количество лотов. */
     quantity: number;
@@ -485,8 +395,6 @@ export interface Trade {
     time: Date | undefined;
     /** Uid инструмента */
     instrumentUid: string;
-    /** Источник сделки */
-    tradeSource: TradeSourceType;
 }
 /** Пакет изменения торгового статуса. */
 export interface TradingStatus {
@@ -510,7 +418,7 @@ export interface GetCandlesRequest {
      *
      * @deprecated
      */
-    figi?: string | undefined;
+    figi: string;
     /** Начало запрашиваемого периода в часовом поясе UTC. */
     from: Date | undefined;
     /** Окончание запрашиваемого периода в часовом поясе UTC. */
@@ -518,19 +426,8 @@ export interface GetCandlesRequest {
     /** Интервал запрошенных свечей. */
     interval: CandleInterval;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid. */
-    instrumentId?: string | undefined;
-    /** Тип источника свечи */
-    candleSourceType?: GetCandlesRequest_CandleSource | undefined;
+    instrumentId: string;
 }
-export declare enum GetCandlesRequest_CandleSource {
-    /** CANDLE_SOURCE_UNSPECIFIED - Все свечи. */
-    CANDLE_SOURCE_UNSPECIFIED = 0,
-    /** CANDLE_SOURCE_EXCHANGE - Биржевые свечи. */
-    CANDLE_SOURCE_EXCHANGE = 1,
-    UNRECOGNIZED = -1
-}
-export declare function getCandlesRequest_CandleSourceFromJSON(object: any): GetCandlesRequest_CandleSource;
-export declare function getCandlesRequest_CandleSourceToJSON(object: GetCandlesRequest_CandleSource): string;
 /** Список свечей. */
 export interface GetCandlesResponse {
     /** Массив свечей. */
@@ -538,13 +435,13 @@ export interface GetCandlesResponse {
 }
 /** Информация о свече. */
 export interface HistoricCandle {
-    /** Цена открытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена открытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     open: Quotation | undefined;
-    /** Максимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Максимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     high: Quotation | undefined;
-    /** Минимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Минимальная цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     low: Quotation | undefined;
-    /** Цена закрытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена закрытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     close: Quotation | undefined;
     /** Объём торгов в лотах. */
     volume: number;
@@ -552,8 +449,6 @@ export interface HistoricCandle {
     time: Date | undefined;
     /** Признак завершённости свечи. **false** значит, свеча за текущие интервал ещё сформирована не полностью. */
     isComplete: boolean;
-    /** Тип источника свечи */
-    candleSource: CandleSource;
 }
 /** Запрос получения цен последних сделок. */
 export interface GetLastPricesRequest {
@@ -575,7 +470,7 @@ export interface GetLastPricesResponse {
 export interface LastPrice {
     /** Figi инструмента. */
     figi: string;
-    /** Цена последней сделки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена последней сделки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     price: Quotation | undefined;
     /** Время получения последней цены в часовом поясе UTC по времени биржи. */
     time: Date | undefined;
@@ -589,11 +484,11 @@ export interface GetOrderBookRequest {
      *
      * @deprecated
      */
-    figi?: string | undefined;
+    figi: string;
     /** Глубина стакана. */
     depth: number;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid. */
-    instrumentId?: string | undefined;
+    instrumentId: string;
 }
 /** Информация о стакане. */
 export interface GetOrderBookResponse {
@@ -605,13 +500,13 @@ export interface GetOrderBookResponse {
     bids: Order[];
     /** Множество пар значений на продажу. */
     asks: Order[];
-    /** Цена последней сделки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена последней сделки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     lastPrice: Quotation | undefined;
-    /** Цена закрытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Цена закрытия за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     closePrice: Quotation | undefined;
-    /** Верхний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Верхний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     limitUp: Quotation | undefined;
-    /** Нижний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://russianinvestments.github.io/investAPI/faq_marketdata/) */
+    /** Нижний лимит цены за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. Для перевод цен в валюту рекомендуем использовать [информацию со страницы](https://tinkoff.github.io/investAPI/faq_marketdata/) */
     limitDown: Quotation | undefined;
     /** Время получения цены последней сделки. */
     lastPriceTs: Date | undefined;
@@ -629,9 +524,9 @@ export interface GetTradingStatusRequest {
      *
      * @deprecated
      */
-    figi?: string | undefined;
+    figi: string;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid. */
-    instrumentId?: string | undefined;
+    instrumentId: string;
 }
 /** Запрос получения торгового статуса. */
 export interface GetTradingStatusesRequest {
@@ -657,10 +552,6 @@ export interface GetTradingStatusResponse {
     apiTradeAvailableFlag: boolean;
     /** Uid инструмента. */
     instrumentUid: string;
-    /** Признак доступности завяки по лучшей цене */
-    bestpriceOrderAvailableFlag: boolean;
-    /** Признак доступности только заявки по лучшей цене */
-    onlyBestPrice: boolean;
 }
 /** Запрос обезличенных сделок за последний час. */
 export interface GetLastTradesRequest {
@@ -669,20 +560,20 @@ export interface GetLastTradesRequest {
      *
      * @deprecated
      */
-    figi?: string | undefined;
+    figi: string;
     /** Начало запрашиваемого периода в часовом поясе UTC. */
     from: Date | undefined;
     /** Окончание запрашиваемого периода в часовом поясе UTC. */
     to: Date | undefined;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid. */
-    instrumentId?: string | undefined;
+    instrumentId: string;
 }
 /** Обезличенных сделок за последний час. */
 export interface GetLastTradesResponse {
     /** Массив сделок. */
     trades: Trade[];
 }
-/** Запрос активных подписок. Запрос вернет по одному сообщению на каждый тип активных подписок (SubscribeLastPriceResponse, SubscribeInfoResponse, SubscribeTradesResponse, SubscribeOrderBookResponse, SubscribeCandlesResponse) */
+/** Запрос активных подписок. */
 export interface GetMySubscriptions {
 }
 /** Запрос цен закрытия торговой сессии по инструментам. */
@@ -708,545 +599,56 @@ export interface InstrumentClosePriceResponse {
     instrumentUid: string;
     /** Цена закрытия торговой сессии. */
     price: Quotation | undefined;
-    /** Цена последней сделки с вечерней сессии */
-    eveningSessionPrice: Quotation | undefined;
     /** Дата совершения торгов. */
     time: Date | undefined;
 }
-export interface GetTechAnalysisRequest {
-    /** Тип технического индикатора. */
-    indicatorType: GetTechAnalysisRequest_IndicatorType;
-    /** Uid инструмента. */
-    instrumentUid: string;
-    /** Начало запрашиваемого периода в часовом поясе UTC. */
-    from: Date | undefined;
-    /** Окончание запрашиваемого периода в часовом поясе UTC. */
-    to: Date | undefined;
-    /** Интервал, за который рассчитывается индикатор. */
-    interval: GetTechAnalysisRequest_IndicatorInterval;
-    /** Тип цены, используемый при расчёте индикатора. */
-    typeOfPrice: GetTechAnalysisRequest_TypeOfPrice;
-    /** Торговый период, за который рассчитывается индикатор. */
-    length: number;
-    /** Параметры отклонения. */
-    deviation: GetTechAnalysisRequest_Deviation | undefined;
-    /** Параметры сглаживания. */
-    smoothing: GetTechAnalysisRequest_Smoothing | undefined;
-}
-/** Интервал свечи. */
-export declare enum GetTechAnalysisRequest_IndicatorInterval {
-    /** INDICATOR_INTERVAL_UNSPECIFIED - Интервал не определён. */
-    INDICATOR_INTERVAL_UNSPECIFIED = 0,
-    /** INDICATOR_INTERVAL_ONE_MINUTE - 1 минута. */
-    INDICATOR_INTERVAL_ONE_MINUTE = 1,
-    /** INDICATOR_INTERVAL_FIVE_MINUTES - 5 минут. */
-    INDICATOR_INTERVAL_FIVE_MINUTES = 2,
-    /** INDICATOR_INTERVAL_FIFTEEN_MINUTES - 15 минут. */
-    INDICATOR_INTERVAL_FIFTEEN_MINUTES = 3,
-    /** INDICATOR_INTERVAL_ONE_HOUR - 1 час. */
-    INDICATOR_INTERVAL_ONE_HOUR = 4,
-    /** INDICATOR_INTERVAL_ONE_DAY - 1 день. */
-    INDICATOR_INTERVAL_ONE_DAY = 5,
-    /** INDICATOR_INTERVAL_2_MIN - 2 минуты. */
-    INDICATOR_INTERVAL_2_MIN = 6,
-    /** INDICATOR_INTERVAL_3_MIN - 3 минуты. */
-    INDICATOR_INTERVAL_3_MIN = 7,
-    /** INDICATOR_INTERVAL_10_MIN - 10 минут. */
-    INDICATOR_INTERVAL_10_MIN = 8,
-    /** INDICATOR_INTERVAL_30_MIN - 30 минут. */
-    INDICATOR_INTERVAL_30_MIN = 9,
-    /** INDICATOR_INTERVAL_2_HOUR - 2 часа. */
-    INDICATOR_INTERVAL_2_HOUR = 10,
-    /** INDICATOR_INTERVAL_4_HOUR - 4 часа. */
-    INDICATOR_INTERVAL_4_HOUR = 11,
-    /** INDICATOR_INTERVAL_WEEK - Неделя */
-    INDICATOR_INTERVAL_WEEK = 12,
-    /** INDICATOR_INTERVAL_MONTH - Месяц */
-    INDICATOR_INTERVAL_MONTH = 13,
-    UNRECOGNIZED = -1
-}
-export declare function getTechAnalysisRequest_IndicatorIntervalFromJSON(object: any): GetTechAnalysisRequest_IndicatorInterval;
-export declare function getTechAnalysisRequest_IndicatorIntervalToJSON(object: GetTechAnalysisRequest_IndicatorInterval): string;
-export declare enum GetTechAnalysisRequest_TypeOfPrice {
-    /** TYPE_OF_PRICE_UNSPECIFIED - Не указано. */
-    TYPE_OF_PRICE_UNSPECIFIED = 0,
-    /** TYPE_OF_PRICE_CLOSE - Цена закрытия. */
-    TYPE_OF_PRICE_CLOSE = 1,
-    /** TYPE_OF_PRICE_OPEN - Цена открытия. */
-    TYPE_OF_PRICE_OPEN = 2,
-    /** TYPE_OF_PRICE_HIGH - Максимальное значение за выбранный интервал. */
-    TYPE_OF_PRICE_HIGH = 3,
-    /** TYPE_OF_PRICE_LOW - Минимальное значение за выбранный интервал. */
-    TYPE_OF_PRICE_LOW = 4,
-    /** TYPE_OF_PRICE_AVG - Среднее значение по показателям [ (close + open + high + low) / 4 ]. */
-    TYPE_OF_PRICE_AVG = 5,
-    UNRECOGNIZED = -1
-}
-export declare function getTechAnalysisRequest_TypeOfPriceFromJSON(object: any): GetTechAnalysisRequest_TypeOfPrice;
-export declare function getTechAnalysisRequest_TypeOfPriceToJSON(object: GetTechAnalysisRequest_TypeOfPrice): string;
-export declare enum GetTechAnalysisRequest_IndicatorType {
-    /** INDICATOR_TYPE_UNSPECIFIED - Не определен. */
-    INDICATOR_TYPE_UNSPECIFIED = 0,
-    /** INDICATOR_TYPE_BB - Bollinger Bands (Линия Боллинжера). */
-    INDICATOR_TYPE_BB = 1,
-    /** INDICATOR_TYPE_EMA - Exponential Moving Average (EMA, Экспоненциальная скользящая средняя). */
-    INDICATOR_TYPE_EMA = 2,
-    /** INDICATOR_TYPE_RSI - Relative Strength Index (Индекс относительной силы). */
-    INDICATOR_TYPE_RSI = 3,
-    /** INDICATOR_TYPE_MACD - Moving Average Convergence/Divergence (Схождение/Расхождение скользящих средних). */
-    INDICATOR_TYPE_MACD = 4,
-    /** INDICATOR_TYPE_SMA - Simple Moving Average (Простое скользящее среднее). */
-    INDICATOR_TYPE_SMA = 5,
-    UNRECOGNIZED = -1
-}
-export declare function getTechAnalysisRequest_IndicatorTypeFromJSON(object: any): GetTechAnalysisRequest_IndicatorType;
-export declare function getTechAnalysisRequest_IndicatorTypeToJSON(object: GetTechAnalysisRequest_IndicatorType): string;
-export interface GetTechAnalysisRequest_Smoothing {
-    /** Короткий период сглаживания для первой экспоненциальной скользящей средней (EMA). */
-    fastLength: number;
-    /** Длинный период сглаживания для второй экспоненциальной скользящей средней (EMA). */
-    slowLength: number;
-    /** Период сглаживания для третьей экспоненциальной скользящей средней (EMA) */
-    signalSmoothing: number;
-}
-export interface GetTechAnalysisRequest_Deviation {
-    /** Кол-во стандартных отклонений, на которые отступает верхняя и нижняя граница */
-    deviationMultiplier: Quotation | undefined;
-}
-export interface GetTechAnalysisResponse {
-    /** Массив значений результатов тех. анализа */
-    technicalIndicators: GetTechAnalysisResponse_TechAnalysisItem[];
-}
-export interface GetTechAnalysisResponse_TechAnalysisItem {
-    /** Временная метка по UTC, для которой были рассчитаны значения индикатора. */
-    timestamp: Date | undefined;
-    /** Значение простого скользящего среднего (средней линии). */
-    middleBand?: Quotation | undefined;
-    /** Значение верхней линии Боллинджера. */
-    upperBand?: Quotation | undefined;
-    /** Значение нижней линии Боллинджера. */
-    lowerBand?: Quotation | undefined;
-    /** Значение сигнальной линии. */
-    signal?: Quotation | undefined;
-    /** Значение линии MACD. */
-    macd?: Quotation | undefined;
-}
-export declare const MarketDataRequest: {
-    encode(message: MarketDataRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataRequest;
-    fromJSON(object: any): MarketDataRequest;
-    toJSON(message: MarketDataRequest): unknown;
-    create(base?: DeepPartial<MarketDataRequest>): MarketDataRequest;
-    fromPartial(object: DeepPartial<MarketDataRequest>): MarketDataRequest;
-};
-export declare const MarketDataServerSideStreamRequest: {
-    encode(message: MarketDataServerSideStreamRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataServerSideStreamRequest;
-    fromJSON(object: any): MarketDataServerSideStreamRequest;
-    toJSON(message: MarketDataServerSideStreamRequest): unknown;
-    create(base?: DeepPartial<MarketDataServerSideStreamRequest>): MarketDataServerSideStreamRequest;
-    fromPartial(object: DeepPartial<MarketDataServerSideStreamRequest>): MarketDataServerSideStreamRequest;
-};
-export declare const MarketDataResponse: {
-    encode(message: MarketDataResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataResponse;
-    fromJSON(object: any): MarketDataResponse;
-    toJSON(message: MarketDataResponse): unknown;
-    create(base?: DeepPartial<MarketDataResponse>): MarketDataResponse;
-    fromPartial(object: DeepPartial<MarketDataResponse>): MarketDataResponse;
-};
-export declare const SubscribeCandlesRequest: {
-    encode(message: SubscribeCandlesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeCandlesRequest;
-    fromJSON(object: any): SubscribeCandlesRequest;
-    toJSON(message: SubscribeCandlesRequest): unknown;
-    create(base?: DeepPartial<SubscribeCandlesRequest>): SubscribeCandlesRequest;
-    fromPartial(object: DeepPartial<SubscribeCandlesRequest>): SubscribeCandlesRequest;
-};
-export declare const CandleInstrument: {
-    encode(message: CandleInstrument, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): CandleInstrument;
-    fromJSON(object: any): CandleInstrument;
-    toJSON(message: CandleInstrument): unknown;
-    create(base?: DeepPartial<CandleInstrument>): CandleInstrument;
-    fromPartial(object: DeepPartial<CandleInstrument>): CandleInstrument;
-};
-export declare const SubscribeCandlesResponse: {
-    encode(message: SubscribeCandlesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeCandlesResponse;
-    fromJSON(object: any): SubscribeCandlesResponse;
-    toJSON(message: SubscribeCandlesResponse): unknown;
-    create(base?: DeepPartial<SubscribeCandlesResponse>): SubscribeCandlesResponse;
-    fromPartial(object: DeepPartial<SubscribeCandlesResponse>): SubscribeCandlesResponse;
-};
-export declare const CandleSubscription: {
-    encode(message: CandleSubscription, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): CandleSubscription;
-    fromJSON(object: any): CandleSubscription;
-    toJSON(message: CandleSubscription): unknown;
-    create(base?: DeepPartial<CandleSubscription>): CandleSubscription;
-    fromPartial(object: DeepPartial<CandleSubscription>): CandleSubscription;
-};
-export declare const SubscribeOrderBookRequest: {
-    encode(message: SubscribeOrderBookRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeOrderBookRequest;
-    fromJSON(object: any): SubscribeOrderBookRequest;
-    toJSON(message: SubscribeOrderBookRequest): unknown;
-    create(base?: DeepPartial<SubscribeOrderBookRequest>): SubscribeOrderBookRequest;
-    fromPartial(object: DeepPartial<SubscribeOrderBookRequest>): SubscribeOrderBookRequest;
-};
-export declare const OrderBookInstrument: {
-    encode(message: OrderBookInstrument, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OrderBookInstrument;
-    fromJSON(object: any): OrderBookInstrument;
-    toJSON(message: OrderBookInstrument): unknown;
-    create(base?: DeepPartial<OrderBookInstrument>): OrderBookInstrument;
-    fromPartial(object: DeepPartial<OrderBookInstrument>): OrderBookInstrument;
-};
-export declare const SubscribeOrderBookResponse: {
-    encode(message: SubscribeOrderBookResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeOrderBookResponse;
-    fromJSON(object: any): SubscribeOrderBookResponse;
-    toJSON(message: SubscribeOrderBookResponse): unknown;
-    create(base?: DeepPartial<SubscribeOrderBookResponse>): SubscribeOrderBookResponse;
-    fromPartial(object: DeepPartial<SubscribeOrderBookResponse>): SubscribeOrderBookResponse;
-};
-export declare const OrderBookSubscription: {
-    encode(message: OrderBookSubscription, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OrderBookSubscription;
-    fromJSON(object: any): OrderBookSubscription;
-    toJSON(message: OrderBookSubscription): unknown;
-    create(base?: DeepPartial<OrderBookSubscription>): OrderBookSubscription;
-    fromPartial(object: DeepPartial<OrderBookSubscription>): OrderBookSubscription;
-};
-export declare const SubscribeTradesRequest: {
-    encode(message: SubscribeTradesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeTradesRequest;
-    fromJSON(object: any): SubscribeTradesRequest;
-    toJSON(message: SubscribeTradesRequest): unknown;
-    create(base?: DeepPartial<SubscribeTradesRequest>): SubscribeTradesRequest;
-    fromPartial(object: DeepPartial<SubscribeTradesRequest>): SubscribeTradesRequest;
-};
-export declare const TradeInstrument: {
-    encode(message: TradeInstrument, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): TradeInstrument;
-    fromJSON(object: any): TradeInstrument;
-    toJSON(message: TradeInstrument): unknown;
-    create(base?: DeepPartial<TradeInstrument>): TradeInstrument;
-    fromPartial(object: DeepPartial<TradeInstrument>): TradeInstrument;
-};
-export declare const SubscribeTradesResponse: {
-    encode(message: SubscribeTradesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeTradesResponse;
-    fromJSON(object: any): SubscribeTradesResponse;
-    toJSON(message: SubscribeTradesResponse): unknown;
-    create(base?: DeepPartial<SubscribeTradesResponse>): SubscribeTradesResponse;
-    fromPartial(object: DeepPartial<SubscribeTradesResponse>): SubscribeTradesResponse;
-};
-export declare const TradeSubscription: {
-    encode(message: TradeSubscription, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): TradeSubscription;
-    fromJSON(object: any): TradeSubscription;
-    toJSON(message: TradeSubscription): unknown;
-    create(base?: DeepPartial<TradeSubscription>): TradeSubscription;
-    fromPartial(object: DeepPartial<TradeSubscription>): TradeSubscription;
-};
-export declare const SubscribeInfoRequest: {
-    encode(message: SubscribeInfoRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeInfoRequest;
-    fromJSON(object: any): SubscribeInfoRequest;
-    toJSON(message: SubscribeInfoRequest): unknown;
-    create(base?: DeepPartial<SubscribeInfoRequest>): SubscribeInfoRequest;
-    fromPartial(object: DeepPartial<SubscribeInfoRequest>): SubscribeInfoRequest;
-};
-export declare const InfoInstrument: {
-    encode(message: InfoInstrument, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): InfoInstrument;
-    fromJSON(object: any): InfoInstrument;
-    toJSON(message: InfoInstrument): unknown;
-    create(base?: DeepPartial<InfoInstrument>): InfoInstrument;
-    fromPartial(object: DeepPartial<InfoInstrument>): InfoInstrument;
-};
-export declare const SubscribeInfoResponse: {
-    encode(message: SubscribeInfoResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeInfoResponse;
-    fromJSON(object: any): SubscribeInfoResponse;
-    toJSON(message: SubscribeInfoResponse): unknown;
-    create(base?: DeepPartial<SubscribeInfoResponse>): SubscribeInfoResponse;
-    fromPartial(object: DeepPartial<SubscribeInfoResponse>): SubscribeInfoResponse;
-};
-export declare const InfoSubscription: {
-    encode(message: InfoSubscription, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): InfoSubscription;
-    fromJSON(object: any): InfoSubscription;
-    toJSON(message: InfoSubscription): unknown;
-    create(base?: DeepPartial<InfoSubscription>): InfoSubscription;
-    fromPartial(object: DeepPartial<InfoSubscription>): InfoSubscription;
-};
-export declare const SubscribeLastPriceRequest: {
-    encode(message: SubscribeLastPriceRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeLastPriceRequest;
-    fromJSON(object: any): SubscribeLastPriceRequest;
-    toJSON(message: SubscribeLastPriceRequest): unknown;
-    create(base?: DeepPartial<SubscribeLastPriceRequest>): SubscribeLastPriceRequest;
-    fromPartial(object: DeepPartial<SubscribeLastPriceRequest>): SubscribeLastPriceRequest;
-};
-export declare const LastPriceInstrument: {
-    encode(message: LastPriceInstrument, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): LastPriceInstrument;
-    fromJSON(object: any): LastPriceInstrument;
-    toJSON(message: LastPriceInstrument): unknown;
-    create(base?: DeepPartial<LastPriceInstrument>): LastPriceInstrument;
-    fromPartial(object: DeepPartial<LastPriceInstrument>): LastPriceInstrument;
-};
-export declare const SubscribeLastPriceResponse: {
-    encode(message: SubscribeLastPriceResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): SubscribeLastPriceResponse;
-    fromJSON(object: any): SubscribeLastPriceResponse;
-    toJSON(message: SubscribeLastPriceResponse): unknown;
-    create(base?: DeepPartial<SubscribeLastPriceResponse>): SubscribeLastPriceResponse;
-    fromPartial(object: DeepPartial<SubscribeLastPriceResponse>): SubscribeLastPriceResponse;
-};
-export declare const LastPriceSubscription: {
-    encode(message: LastPriceSubscription, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): LastPriceSubscription;
-    fromJSON(object: any): LastPriceSubscription;
-    toJSON(message: LastPriceSubscription): unknown;
-    create(base?: DeepPartial<LastPriceSubscription>): LastPriceSubscription;
-    fromPartial(object: DeepPartial<LastPriceSubscription>): LastPriceSubscription;
-};
-export declare const Candle: {
-    encode(message: Candle, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): Candle;
-    fromJSON(object: any): Candle;
-    toJSON(message: Candle): unknown;
-    create(base?: DeepPartial<Candle>): Candle;
-    fromPartial(object: DeepPartial<Candle>): Candle;
-};
-export declare const OrderBook: {
-    encode(message: OrderBook, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): OrderBook;
-    fromJSON(object: any): OrderBook;
-    toJSON(message: OrderBook): unknown;
-    create(base?: DeepPartial<OrderBook>): OrderBook;
-    fromPartial(object: DeepPartial<OrderBook>): OrderBook;
-};
-export declare const Order: {
-    encode(message: Order, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): Order;
-    fromJSON(object: any): Order;
-    toJSON(message: Order): unknown;
-    create(base?: DeepPartial<Order>): Order;
-    fromPartial(object: DeepPartial<Order>): Order;
-};
-export declare const Trade: {
-    encode(message: Trade, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): Trade;
-    fromJSON(object: any): Trade;
-    toJSON(message: Trade): unknown;
-    create(base?: DeepPartial<Trade>): Trade;
-    fromPartial(object: DeepPartial<Trade>): Trade;
-};
-export declare const TradingStatus: {
-    encode(message: TradingStatus, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): TradingStatus;
-    fromJSON(object: any): TradingStatus;
-    toJSON(message: TradingStatus): unknown;
-    create(base?: DeepPartial<TradingStatus>): TradingStatus;
-    fromPartial(object: DeepPartial<TradingStatus>): TradingStatus;
-};
-export declare const GetCandlesRequest: {
-    encode(message: GetCandlesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetCandlesRequest;
-    fromJSON(object: any): GetCandlesRequest;
-    toJSON(message: GetCandlesRequest): unknown;
-    create(base?: DeepPartial<GetCandlesRequest>): GetCandlesRequest;
-    fromPartial(object: DeepPartial<GetCandlesRequest>): GetCandlesRequest;
-};
-export declare const GetCandlesResponse: {
-    encode(message: GetCandlesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetCandlesResponse;
-    fromJSON(object: any): GetCandlesResponse;
-    toJSON(message: GetCandlesResponse): unknown;
-    create(base?: DeepPartial<GetCandlesResponse>): GetCandlesResponse;
-    fromPartial(object: DeepPartial<GetCandlesResponse>): GetCandlesResponse;
-};
-export declare const HistoricCandle: {
-    encode(message: HistoricCandle, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): HistoricCandle;
-    fromJSON(object: any): HistoricCandle;
-    toJSON(message: HistoricCandle): unknown;
-    create(base?: DeepPartial<HistoricCandle>): HistoricCandle;
-    fromPartial(object: DeepPartial<HistoricCandle>): HistoricCandle;
-};
-export declare const GetLastPricesRequest: {
-    encode(message: GetLastPricesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetLastPricesRequest;
-    fromJSON(object: any): GetLastPricesRequest;
-    toJSON(message: GetLastPricesRequest): unknown;
-    create(base?: DeepPartial<GetLastPricesRequest>): GetLastPricesRequest;
-    fromPartial(object: DeepPartial<GetLastPricesRequest>): GetLastPricesRequest;
-};
-export declare const GetLastPricesResponse: {
-    encode(message: GetLastPricesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetLastPricesResponse;
-    fromJSON(object: any): GetLastPricesResponse;
-    toJSON(message: GetLastPricesResponse): unknown;
-    create(base?: DeepPartial<GetLastPricesResponse>): GetLastPricesResponse;
-    fromPartial(object: DeepPartial<GetLastPricesResponse>): GetLastPricesResponse;
-};
-export declare const LastPrice: {
-    encode(message: LastPrice, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): LastPrice;
-    fromJSON(object: any): LastPrice;
-    toJSON(message: LastPrice): unknown;
-    create(base?: DeepPartial<LastPrice>): LastPrice;
-    fromPartial(object: DeepPartial<LastPrice>): LastPrice;
-};
-export declare const GetOrderBookRequest: {
-    encode(message: GetOrderBookRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetOrderBookRequest;
-    fromJSON(object: any): GetOrderBookRequest;
-    toJSON(message: GetOrderBookRequest): unknown;
-    create(base?: DeepPartial<GetOrderBookRequest>): GetOrderBookRequest;
-    fromPartial(object: DeepPartial<GetOrderBookRequest>): GetOrderBookRequest;
-};
-export declare const GetOrderBookResponse: {
-    encode(message: GetOrderBookResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetOrderBookResponse;
-    fromJSON(object: any): GetOrderBookResponse;
-    toJSON(message: GetOrderBookResponse): unknown;
-    create(base?: DeepPartial<GetOrderBookResponse>): GetOrderBookResponse;
-    fromPartial(object: DeepPartial<GetOrderBookResponse>): GetOrderBookResponse;
-};
-export declare const GetTradingStatusRequest: {
-    encode(message: GetTradingStatusRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusRequest;
-    fromJSON(object: any): GetTradingStatusRequest;
-    toJSON(message: GetTradingStatusRequest): unknown;
-    create(base?: DeepPartial<GetTradingStatusRequest>): GetTradingStatusRequest;
-    fromPartial(object: DeepPartial<GetTradingStatusRequest>): GetTradingStatusRequest;
-};
-export declare const GetTradingStatusesRequest: {
-    encode(message: GetTradingStatusesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusesRequest;
-    fromJSON(object: any): GetTradingStatusesRequest;
-    toJSON(message: GetTradingStatusesRequest): unknown;
-    create(base?: DeepPartial<GetTradingStatusesRequest>): GetTradingStatusesRequest;
-    fromPartial(object: DeepPartial<GetTradingStatusesRequest>): GetTradingStatusesRequest;
-};
-export declare const GetTradingStatusesResponse: {
-    encode(message: GetTradingStatusesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusesResponse;
-    fromJSON(object: any): GetTradingStatusesResponse;
-    toJSON(message: GetTradingStatusesResponse): unknown;
-    create(base?: DeepPartial<GetTradingStatusesResponse>): GetTradingStatusesResponse;
-    fromPartial(object: DeepPartial<GetTradingStatusesResponse>): GetTradingStatusesResponse;
-};
-export declare const GetTradingStatusResponse: {
-    encode(message: GetTradingStatusResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusResponse;
-    fromJSON(object: any): GetTradingStatusResponse;
-    toJSON(message: GetTradingStatusResponse): unknown;
-    create(base?: DeepPartial<GetTradingStatusResponse>): GetTradingStatusResponse;
-    fromPartial(object: DeepPartial<GetTradingStatusResponse>): GetTradingStatusResponse;
-};
-export declare const GetLastTradesRequest: {
-    encode(message: GetLastTradesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetLastTradesRequest;
-    fromJSON(object: any): GetLastTradesRequest;
-    toJSON(message: GetLastTradesRequest): unknown;
-    create(base?: DeepPartial<GetLastTradesRequest>): GetLastTradesRequest;
-    fromPartial(object: DeepPartial<GetLastTradesRequest>): GetLastTradesRequest;
-};
-export declare const GetLastTradesResponse: {
-    encode(message: GetLastTradesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetLastTradesResponse;
-    fromJSON(object: any): GetLastTradesResponse;
-    toJSON(message: GetLastTradesResponse): unknown;
-    create(base?: DeepPartial<GetLastTradesResponse>): GetLastTradesResponse;
-    fromPartial(object: DeepPartial<GetLastTradesResponse>): GetLastTradesResponse;
-};
-export declare const GetMySubscriptions: {
-    encode(_: GetMySubscriptions, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetMySubscriptions;
-    fromJSON(_: any): GetMySubscriptions;
-    toJSON(_: GetMySubscriptions): unknown;
-    create(base?: DeepPartial<GetMySubscriptions>): GetMySubscriptions;
-    fromPartial(_: DeepPartial<GetMySubscriptions>): GetMySubscriptions;
-};
-export declare const GetClosePricesRequest: {
-    encode(message: GetClosePricesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetClosePricesRequest;
-    fromJSON(object: any): GetClosePricesRequest;
-    toJSON(message: GetClosePricesRequest): unknown;
-    create(base?: DeepPartial<GetClosePricesRequest>): GetClosePricesRequest;
-    fromPartial(object: DeepPartial<GetClosePricesRequest>): GetClosePricesRequest;
-};
-export declare const InstrumentClosePriceRequest: {
-    encode(message: InstrumentClosePriceRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): InstrumentClosePriceRequest;
-    fromJSON(object: any): InstrumentClosePriceRequest;
-    toJSON(message: InstrumentClosePriceRequest): unknown;
-    create(base?: DeepPartial<InstrumentClosePriceRequest>): InstrumentClosePriceRequest;
-    fromPartial(object: DeepPartial<InstrumentClosePriceRequest>): InstrumentClosePriceRequest;
-};
-export declare const GetClosePricesResponse: {
-    encode(message: GetClosePricesResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetClosePricesResponse;
-    fromJSON(object: any): GetClosePricesResponse;
-    toJSON(message: GetClosePricesResponse): unknown;
-    create(base?: DeepPartial<GetClosePricesResponse>): GetClosePricesResponse;
-    fromPartial(object: DeepPartial<GetClosePricesResponse>): GetClosePricesResponse;
-};
-export declare const InstrumentClosePriceResponse: {
-    encode(message: InstrumentClosePriceResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): InstrumentClosePriceResponse;
-    fromJSON(object: any): InstrumentClosePriceResponse;
-    toJSON(message: InstrumentClosePriceResponse): unknown;
-    create(base?: DeepPartial<InstrumentClosePriceResponse>): InstrumentClosePriceResponse;
-    fromPartial(object: DeepPartial<InstrumentClosePriceResponse>): InstrumentClosePriceResponse;
-};
-export declare const GetTechAnalysisRequest: {
-    encode(message: GetTechAnalysisRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisRequest;
-    fromJSON(object: any): GetTechAnalysisRequest;
-    toJSON(message: GetTechAnalysisRequest): unknown;
-    create(base?: DeepPartial<GetTechAnalysisRequest>): GetTechAnalysisRequest;
-    fromPartial(object: DeepPartial<GetTechAnalysisRequest>): GetTechAnalysisRequest;
-};
-export declare const GetTechAnalysisRequest_Smoothing: {
-    encode(message: GetTechAnalysisRequest_Smoothing, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisRequest_Smoothing;
-    fromJSON(object: any): GetTechAnalysisRequest_Smoothing;
-    toJSON(message: GetTechAnalysisRequest_Smoothing): unknown;
-    create(base?: DeepPartial<GetTechAnalysisRequest_Smoothing>): GetTechAnalysisRequest_Smoothing;
-    fromPartial(object: DeepPartial<GetTechAnalysisRequest_Smoothing>): GetTechAnalysisRequest_Smoothing;
-};
-export declare const GetTechAnalysisRequest_Deviation: {
-    encode(message: GetTechAnalysisRequest_Deviation, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisRequest_Deviation;
-    fromJSON(object: any): GetTechAnalysisRequest_Deviation;
-    toJSON(message: GetTechAnalysisRequest_Deviation): unknown;
-    create(base?: DeepPartial<GetTechAnalysisRequest_Deviation>): GetTechAnalysisRequest_Deviation;
-    fromPartial(object: DeepPartial<GetTechAnalysisRequest_Deviation>): GetTechAnalysisRequest_Deviation;
-};
-export declare const GetTechAnalysisResponse: {
-    encode(message: GetTechAnalysisResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisResponse;
-    fromJSON(object: any): GetTechAnalysisResponse;
-    toJSON(message: GetTechAnalysisResponse): unknown;
-    create(base?: DeepPartial<GetTechAnalysisResponse>): GetTechAnalysisResponse;
-    fromPartial(object: DeepPartial<GetTechAnalysisResponse>): GetTechAnalysisResponse;
-};
-export declare const GetTechAnalysisResponse_TechAnalysisItem: {
-    encode(message: GetTechAnalysisResponse_TechAnalysisItem, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisResponse_TechAnalysisItem;
-    fromJSON(object: any): GetTechAnalysisResponse_TechAnalysisItem;
-    toJSON(message: GetTechAnalysisResponse_TechAnalysisItem): unknown;
-    create(base?: DeepPartial<GetTechAnalysisResponse_TechAnalysisItem>): GetTechAnalysisResponse_TechAnalysisItem;
-    fromPartial(object: DeepPartial<GetTechAnalysisResponse_TechAnalysisItem>): GetTechAnalysisResponse_TechAnalysisItem;
-};
+export declare const MarketDataRequest: MessageFns<MarketDataRequest>;
+export declare const MarketDataServerSideStreamRequest: MessageFns<MarketDataServerSideStreamRequest>;
+export declare const MarketDataResponse: MessageFns<MarketDataResponse>;
+export declare const SubscribeCandlesRequest: MessageFns<SubscribeCandlesRequest>;
+export declare const CandleInstrument: MessageFns<CandleInstrument>;
+export declare const SubscribeCandlesResponse: MessageFns<SubscribeCandlesResponse>;
+export declare const CandleSubscription: MessageFns<CandleSubscription>;
+export declare const SubscribeOrderBookRequest: MessageFns<SubscribeOrderBookRequest>;
+export declare const OrderBookInstrument: MessageFns<OrderBookInstrument>;
+export declare const SubscribeOrderBookResponse: MessageFns<SubscribeOrderBookResponse>;
+export declare const OrderBookSubscription: MessageFns<OrderBookSubscription>;
+export declare const SubscribeTradesRequest: MessageFns<SubscribeTradesRequest>;
+export declare const TradeInstrument: MessageFns<TradeInstrument>;
+export declare const SubscribeTradesResponse: MessageFns<SubscribeTradesResponse>;
+export declare const TradeSubscription: MessageFns<TradeSubscription>;
+export declare const SubscribeInfoRequest: MessageFns<SubscribeInfoRequest>;
+export declare const InfoInstrument: MessageFns<InfoInstrument>;
+export declare const SubscribeInfoResponse: MessageFns<SubscribeInfoResponse>;
+export declare const InfoSubscription: MessageFns<InfoSubscription>;
+export declare const SubscribeLastPriceRequest: MessageFns<SubscribeLastPriceRequest>;
+export declare const LastPriceInstrument: MessageFns<LastPriceInstrument>;
+export declare const SubscribeLastPriceResponse: MessageFns<SubscribeLastPriceResponse>;
+export declare const LastPriceSubscription: MessageFns<LastPriceSubscription>;
+export declare const Candle: MessageFns<Candle>;
+export declare const OrderBook: MessageFns<OrderBook>;
+export declare const Order: MessageFns<Order>;
+export declare const Trade: MessageFns<Trade>;
+export declare const TradingStatus: MessageFns<TradingStatus>;
+export declare const GetCandlesRequest: MessageFns<GetCandlesRequest>;
+export declare const GetCandlesResponse: MessageFns<GetCandlesResponse>;
+export declare const HistoricCandle: MessageFns<HistoricCandle>;
+export declare const GetLastPricesRequest: MessageFns<GetLastPricesRequest>;
+export declare const GetLastPricesResponse: MessageFns<GetLastPricesResponse>;
+export declare const LastPrice: MessageFns<LastPrice>;
+export declare const GetOrderBookRequest: MessageFns<GetOrderBookRequest>;
+export declare const GetOrderBookResponse: MessageFns<GetOrderBookResponse>;
+export declare const GetTradingStatusRequest: MessageFns<GetTradingStatusRequest>;
+export declare const GetTradingStatusesRequest: MessageFns<GetTradingStatusesRequest>;
+export declare const GetTradingStatusesResponse: MessageFns<GetTradingStatusesResponse>;
+export declare const GetTradingStatusResponse: MessageFns<GetTradingStatusResponse>;
+export declare const GetLastTradesRequest: MessageFns<GetLastTradesRequest>;
+export declare const GetLastTradesResponse: MessageFns<GetLastTradesResponse>;
+export declare const GetMySubscriptions: MessageFns<GetMySubscriptions>;
+export declare const GetClosePricesRequest: MessageFns<GetClosePricesRequest>;
+export declare const InstrumentClosePriceRequest: MessageFns<InstrumentClosePriceRequest>;
+export declare const GetClosePricesResponse: MessageFns<GetClosePricesResponse>;
+export declare const InstrumentClosePriceResponse: MessageFns<InstrumentClosePriceResponse>;
 /** Сервис получения биржевой информации:</br> **1**. свечи;</br> **2**. стаканы;</br> **3**. торговые статусы;</br> **4**. лента сделок. */
 export type MarketDataServiceDefinition = typeof MarketDataServiceDefinition;
 export declare const MarketDataServiceDefinition: {
@@ -1256,184 +658,63 @@ export declare const MarketDataServiceDefinition: {
         /** Метод запроса исторических свечей по инструменту. */
         readonly getCandles: {
             readonly name: "GetCandles";
-            readonly requestType: {
-                encode(message: GetCandlesRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetCandlesRequest;
-                fromJSON(object: any): GetCandlesRequest;
-                toJSON(message: GetCandlesRequest): unknown;
-                create(base?: DeepPartial<GetCandlesRequest>): GetCandlesRequest;
-                fromPartial(object: DeepPartial<GetCandlesRequest>): GetCandlesRequest;
-            };
+            readonly requestType: MessageFns<GetCandlesRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetCandlesResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetCandlesResponse;
-                fromJSON(object: any): GetCandlesResponse;
-                toJSON(message: GetCandlesResponse): unknown;
-                create(base?: DeepPartial<GetCandlesResponse>): GetCandlesResponse;
-                fromPartial(object: DeepPartial<GetCandlesResponse>): GetCandlesResponse;
-            };
+            readonly responseType: MessageFns<GetCandlesResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод запроса цен последних сделок по инструментам. */
         readonly getLastPrices: {
             readonly name: "GetLastPrices";
-            readonly requestType: {
-                encode(message: GetLastPricesRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetLastPricesRequest;
-                fromJSON(object: any): GetLastPricesRequest;
-                toJSON(message: GetLastPricesRequest): unknown;
-                create(base?: DeepPartial<GetLastPricesRequest>): GetLastPricesRequest;
-                fromPartial(object: DeepPartial<GetLastPricesRequest>): GetLastPricesRequest;
-            };
+            readonly requestType: MessageFns<GetLastPricesRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetLastPricesResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetLastPricesResponse;
-                fromJSON(object: any): GetLastPricesResponse;
-                toJSON(message: GetLastPricesResponse): unknown;
-                create(base?: DeepPartial<GetLastPricesResponse>): GetLastPricesResponse;
-                fromPartial(object: DeepPartial<GetLastPricesResponse>): GetLastPricesResponse;
-            };
+            readonly responseType: MessageFns<GetLastPricesResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод получения стакана по инструменту. */
         readonly getOrderBook: {
             readonly name: "GetOrderBook";
-            readonly requestType: {
-                encode(message: GetOrderBookRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetOrderBookRequest;
-                fromJSON(object: any): GetOrderBookRequest;
-                toJSON(message: GetOrderBookRequest): unknown;
-                create(base?: DeepPartial<GetOrderBookRequest>): GetOrderBookRequest;
-                fromPartial(object: DeepPartial<GetOrderBookRequest>): GetOrderBookRequest;
-            };
+            readonly requestType: MessageFns<GetOrderBookRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetOrderBookResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetOrderBookResponse;
-                fromJSON(object: any): GetOrderBookResponse;
-                toJSON(message: GetOrderBookResponse): unknown;
-                create(base?: DeepPartial<GetOrderBookResponse>): GetOrderBookResponse;
-                fromPartial(object: DeepPartial<GetOrderBookResponse>): GetOrderBookResponse;
-            };
+            readonly responseType: MessageFns<GetOrderBookResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод запроса статуса торгов по инструментам. */
         readonly getTradingStatus: {
             readonly name: "GetTradingStatus";
-            readonly requestType: {
-                encode(message: GetTradingStatusRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusRequest;
-                fromJSON(object: any): GetTradingStatusRequest;
-                toJSON(message: GetTradingStatusRequest): unknown;
-                create(base?: DeepPartial<GetTradingStatusRequest>): GetTradingStatusRequest;
-                fromPartial(object: DeepPartial<GetTradingStatusRequest>): GetTradingStatusRequest;
-            };
+            readonly requestType: MessageFns<GetTradingStatusRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetTradingStatusResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusResponse;
-                fromJSON(object: any): GetTradingStatusResponse;
-                toJSON(message: GetTradingStatusResponse): unknown;
-                create(base?: DeepPartial<GetTradingStatusResponse>): GetTradingStatusResponse;
-                fromPartial(object: DeepPartial<GetTradingStatusResponse>): GetTradingStatusResponse;
-            };
+            readonly responseType: MessageFns<GetTradingStatusResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод запроса статуса торгов по инструментам. */
         readonly getTradingStatuses: {
             readonly name: "GetTradingStatuses";
-            readonly requestType: {
-                encode(message: GetTradingStatusesRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusesRequest;
-                fromJSON(object: any): GetTradingStatusesRequest;
-                toJSON(message: GetTradingStatusesRequest): unknown;
-                create(base?: DeepPartial<GetTradingStatusesRequest>): GetTradingStatusesRequest;
-                fromPartial(object: DeepPartial<GetTradingStatusesRequest>): GetTradingStatusesRequest;
-            };
+            readonly requestType: MessageFns<GetTradingStatusesRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetTradingStatusesResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetTradingStatusesResponse;
-                fromJSON(object: any): GetTradingStatusesResponse;
-                toJSON(message: GetTradingStatusesResponse): unknown;
-                create(base?: DeepPartial<GetTradingStatusesResponse>): GetTradingStatusesResponse;
-                fromPartial(object: DeepPartial<GetTradingStatusesResponse>): GetTradingStatusesResponse;
-            };
+            readonly responseType: MessageFns<GetTradingStatusesResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод запроса обезличенных сделок за последний час. */
         readonly getLastTrades: {
             readonly name: "GetLastTrades";
-            readonly requestType: {
-                encode(message: GetLastTradesRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetLastTradesRequest;
-                fromJSON(object: any): GetLastTradesRequest;
-                toJSON(message: GetLastTradesRequest): unknown;
-                create(base?: DeepPartial<GetLastTradesRequest>): GetLastTradesRequest;
-                fromPartial(object: DeepPartial<GetLastTradesRequest>): GetLastTradesRequest;
-            };
+            readonly requestType: MessageFns<GetLastTradesRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetLastTradesResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetLastTradesResponse;
-                fromJSON(object: any): GetLastTradesResponse;
-                toJSON(message: GetLastTradesResponse): unknown;
-                create(base?: DeepPartial<GetLastTradesResponse>): GetLastTradesResponse;
-                fromPartial(object: DeepPartial<GetLastTradesResponse>): GetLastTradesResponse;
-            };
+            readonly responseType: MessageFns<GetLastTradesResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
         /** Метод запроса цен закрытия торговой сессии по инструментам. */
         readonly getClosePrices: {
             readonly name: "GetClosePrices";
-            readonly requestType: {
-                encode(message: GetClosePricesRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetClosePricesRequest;
-                fromJSON(object: any): GetClosePricesRequest;
-                toJSON(message: GetClosePricesRequest): unknown;
-                create(base?: DeepPartial<GetClosePricesRequest>): GetClosePricesRequest;
-                fromPartial(object: DeepPartial<GetClosePricesRequest>): GetClosePricesRequest;
-            };
+            readonly requestType: MessageFns<GetClosePricesRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetClosePricesResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetClosePricesResponse;
-                fromJSON(object: any): GetClosePricesResponse;
-                toJSON(message: GetClosePricesResponse): unknown;
-                create(base?: DeepPartial<GetClosePricesResponse>): GetClosePricesResponse;
-                fromPartial(object: DeepPartial<GetClosePricesResponse>): GetClosePricesResponse;
-            };
-            readonly responseStream: false;
-            readonly options: {};
-        };
-        /** Метод получения технических индикаторов по инструменту */
-        readonly getTechAnalysis: {
-            readonly name: "GetTechAnalysis";
-            readonly requestType: {
-                encode(message: GetTechAnalysisRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisRequest;
-                fromJSON(object: any): GetTechAnalysisRequest;
-                toJSON(message: GetTechAnalysisRequest): unknown;
-                create(base?: DeepPartial<GetTechAnalysisRequest>): GetTechAnalysisRequest;
-                fromPartial(object: DeepPartial<GetTechAnalysisRequest>): GetTechAnalysisRequest;
-            };
-            readonly requestStream: false;
-            readonly responseType: {
-                encode(message: GetTechAnalysisResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): GetTechAnalysisResponse;
-                fromJSON(object: any): GetTechAnalysisResponse;
-                toJSON(message: GetTechAnalysisResponse): unknown;
-                create(base?: DeepPartial<GetTechAnalysisResponse>): GetTechAnalysisResponse;
-                fromPartial(object: DeepPartial<GetTechAnalysisResponse>): GetTechAnalysisResponse;
-            };
+            readonly responseType: MessageFns<GetClosePricesResponse>;
             readonly responseStream: false;
             readonly options: {};
         };
@@ -1454,8 +735,6 @@ export interface MarketDataServiceImplementation<CallContextExt = {}> {
     getLastTrades(request: GetLastTradesRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GetLastTradesResponse>>;
     /** Метод запроса цен закрытия торговой сессии по инструментам. */
     getClosePrices(request: GetClosePricesRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GetClosePricesResponse>>;
-    /** Метод получения технических индикаторов по инструменту */
-    getTechAnalysis(request: GetTechAnalysisRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GetTechAnalysisResponse>>;
 }
 export interface MarketDataServiceClient<CallOptionsExt = {}> {
     /** Метод запроса исторических свечей по инструменту. */
@@ -1472,8 +751,6 @@ export interface MarketDataServiceClient<CallOptionsExt = {}> {
     getLastTrades(request: DeepPartial<GetLastTradesRequest>, options?: CallOptions & CallOptionsExt): Promise<GetLastTradesResponse>;
     /** Метод запроса цен закрытия торговой сессии по инструментам. */
     getClosePrices(request: DeepPartial<GetClosePricesRequest>, options?: CallOptions & CallOptionsExt): Promise<GetClosePricesResponse>;
-    /** Метод получения технических индикаторов по инструменту */
-    getTechAnalysis(request: DeepPartial<GetTechAnalysisRequest>, options?: CallOptions & CallOptionsExt): Promise<GetTechAnalysisResponse>;
 }
 export type MarketDataStreamServiceDefinition = typeof MarketDataStreamServiceDefinition;
 export declare const MarketDataStreamServiceDefinition: {
@@ -1483,46 +760,18 @@ export declare const MarketDataStreamServiceDefinition: {
         /** Bi-directional стрим предоставления биржевой информации. */
         readonly marketDataStream: {
             readonly name: "MarketDataStream";
-            readonly requestType: {
-                encode(message: MarketDataRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataRequest;
-                fromJSON(object: any): MarketDataRequest;
-                toJSON(message: MarketDataRequest): unknown;
-                create(base?: DeepPartial<MarketDataRequest>): MarketDataRequest;
-                fromPartial(object: DeepPartial<MarketDataRequest>): MarketDataRequest;
-            };
+            readonly requestType: MessageFns<MarketDataRequest>;
             readonly requestStream: true;
-            readonly responseType: {
-                encode(message: MarketDataResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataResponse;
-                fromJSON(object: any): MarketDataResponse;
-                toJSON(message: MarketDataResponse): unknown;
-                create(base?: DeepPartial<MarketDataResponse>): MarketDataResponse;
-                fromPartial(object: DeepPartial<MarketDataResponse>): MarketDataResponse;
-            };
+            readonly responseType: MessageFns<MarketDataResponse>;
             readonly responseStream: true;
             readonly options: {};
         };
         /** Server-side стрим предоставления биржевой информации. */
         readonly marketDataServerSideStream: {
             readonly name: "MarketDataServerSideStream";
-            readonly requestType: {
-                encode(message: MarketDataServerSideStreamRequest, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataServerSideStreamRequest;
-                fromJSON(object: any): MarketDataServerSideStreamRequest;
-                toJSON(message: MarketDataServerSideStreamRequest): unknown;
-                create(base?: DeepPartial<MarketDataServerSideStreamRequest>): MarketDataServerSideStreamRequest;
-                fromPartial(object: DeepPartial<MarketDataServerSideStreamRequest>): MarketDataServerSideStreamRequest;
-            };
+            readonly requestType: MessageFns<MarketDataServerSideStreamRequest>;
             readonly requestStream: false;
-            readonly responseType: {
-                encode(message: MarketDataResponse, writer?: _m0.Writer): _m0.Writer;
-                decode(input: _m0.Reader | Uint8Array, length?: number): MarketDataResponse;
-                fromJSON(object: any): MarketDataResponse;
-                toJSON(message: MarketDataResponse): unknown;
-                create(base?: DeepPartial<MarketDataResponse>): MarketDataResponse;
-                fromPartial(object: DeepPartial<MarketDataResponse>): MarketDataResponse;
-            };
+            readonly responseType: MessageFns<MarketDataResponse>;
             readonly responseStream: true;
             readonly options: {};
         };
@@ -1547,4 +796,12 @@ export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<
 export type ServerStreamingMethodResult<Response> = {
     [Symbol.asyncIterator](): AsyncIterator<Response, void>;
 };
+export interface MessageFns<T> {
+    encode(message: T, writer?: BinaryWriter): BinaryWriter;
+    decode(input: BinaryReader | Uint8Array, length?: number): T;
+    fromJSON(object: any): T;
+    toJSON(message: T): unknown;
+    create(base?: DeepPartial<T>): T;
+    fromPartial(object: DeepPartial<T>): T;
+}
 export {};
