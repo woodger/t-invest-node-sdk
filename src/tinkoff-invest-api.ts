@@ -6,7 +6,7 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
-import config from '../config.json';
+import config from './config.json';
 
 export interface TinkoffInvestApiOptions {
   /** Токен доступа */
