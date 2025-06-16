@@ -1,4 +1,7 @@
-import { createChannel, createClient, Channel, Metadata, ChannelCredentials } from 'nice-grpc';
+import {
+  createClientFactory, createChannel, Channel, Metadata, 
+  ChannelCredentials, ClientMiddlewareCall, CallOptions
+} from 'nice-grpc';
 import { InstrumentsServiceDefinition, InstrumentsServiceClient } from './generated/instruments';
 import { MarketDataServiceDefinition, MarketDataServiceClient } from './generated/marketdata';
 import { OperationsServiceDefinition, OperationsServiceClient } from './generated/operations';
@@ -6,6 +9,7 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
+import { Throttle } from './throttle';
 import config from './config.json';
 
 export interface TinkoffInvestApiOptions {
@@ -33,7 +37,9 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
+export const abortController = new AbortController();
 
+export const throttle = new Throttle(100);
 
 export class TinkoffInvestApi {
   options: Required<TinkoffInvestApiOptions>;
@@ -95,11 +101,13 @@ export class TinkoffInvestApi {
     let client = this.storage.get(service);
 
     if (!client) {
-      client = createClient(service, this.channel, {
-        '*': {
-          metadata: this.metadata
-        }
-      });
+      client = createClientFactory()
+        .use(this.middleware)
+        .create(service, this.channel, {
+          '*': {
+            metadata: this.metadata
+          }
+        });
 
       this.storage.set(service, client);
     }
@@ -122,6 +130,25 @@ export class TinkoffInvestApi {
       'Authorization': `Bearer ${this.options.token}`,
       'x-app-name': this.options.appName
     });
+  }
+
+  private async *middleware<Request, Response>(call: ClientMiddlewareCall<Request, Response>, options: CallOptions) {
+    if (!call.responseStream) {
+      if (throttle.reduce() === false) {
+        throw new Error('Too many requests');
+      }
+      
+      const response = yield* call.next(call.request, options);
+
+      return response;
+    }
+    else {
+      for await (const response of call.next(call.request, options)) {
+        yield response;
+      }
+
+      return;
+    }
   }
 }
 

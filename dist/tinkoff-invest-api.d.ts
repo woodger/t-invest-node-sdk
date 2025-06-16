@@ -6,6 +6,7 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
+import { Throttle } from './throttle';
 export interface TinkoffInvestApiOptions {
     /** Токен доступа */
     token: string;
@@ -16,6 +17,8 @@ export interface TinkoffInvestApiOptions {
 }
 type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;
 type ServiceClient = InstrumentsServiceClient | MarketDataServiceClient | OperationsServiceClient | OrdersServiceClient | SandboxServiceClient | StopOrdersServiceClient | UsersServiceClient;
+export declare const abortController: AbortController;
+export declare const throttle: Throttle;
 export declare class TinkoffInvestApi {
     options: Required<TinkoffInvestApiOptions>;
     protected storage: Map<ServiceDefinition, ServiceClient>;
@@ -40,6 +43,7 @@ export declare class TinkoffInvestApi {
     private useServiceAsClient;
     private createChannel;
     private createDefaultMetadata;
+    private middleware;
 }
 export { Timestamp } from './generated/google/protobuf/timestamp';
 export { protobufPackage, Edition, editionFromJSON, editionToJSON, FileDescriptorSet, FileDescriptorProto, DescriptorProto, DescriptorProto_ExtensionRange, DescriptorProto_ReservedRange, ExtensionRangeOptions, ExtensionRangeOptions_VerificationState, extensionRangeOptions_VerificationStateFromJSON, extensionRangeOptions_VerificationStateToJSON, ExtensionRangeOptions_Declaration, FieldDescriptorProto, FieldDescriptorProto_Type, fieldDescriptorProto_TypeFromJSON, fieldDescriptorProto_TypeToJSON, FieldDescriptorProto_Label, fieldDescriptorProto_LabelFromJSON, fieldDescriptorProto_LabelToJSON, OneofDescriptorProto, EnumDescriptorProto, EnumDescriptorProto_EnumReservedRange, EnumValueDescriptorProto, ServiceDescriptorProto, MethodDescriptorProto, FileOptions, FileOptions_OptimizeMode, fileOptions_OptimizeModeFromJSON, fileOptions_OptimizeModeToJSON, MessageOptions, FieldOptions, FieldOptions_CType, fieldOptions_CTypeFromJSON, fieldOptions_CTypeToJSON, FieldOptions_JSType, fieldOptions_JSTypeFromJSON, fieldOptions_JSTypeToJSON, FieldOptions_OptionRetention, fieldOptions_OptionRetentionFromJSON, fieldOptions_OptionRetentionToJSON, FieldOptions_OptionTargetType, fieldOptions_OptionTargetTypeFromJSON, fieldOptions_OptionTargetTypeToJSON, FieldOptions_EditionDefault, FieldOptions_FeatureSupport, OneofOptions, EnumOptions, EnumValueOptions, ServiceOptions, MethodOptions, MethodOptions_IdempotencyLevel, methodOptions_IdempotencyLevelFromJSON, methodOptions_IdempotencyLevelToJSON, UninterpretedOption, UninterpretedOption_NamePart, FeatureSet, FeatureSet_FieldPresence, featureSet_FieldPresenceFromJSON, featureSet_FieldPresenceToJSON, FeatureSet_EnumType, featureSet_EnumTypeFromJSON, featureSet_EnumTypeToJSON, FeatureSet_RepeatedFieldEncoding, featureSet_RepeatedFieldEncodingFromJSON, featureSet_RepeatedFieldEncodingToJSON, FeatureSet_Utf8Validation, featureSet_Utf8ValidationFromJSON, featureSet_Utf8ValidationToJSON, FeatureSet_MessageEncoding, featureSet_MessageEncodingFromJSON, featureSet_MessageEncodingToJSON, FeatureSet_JsonFormat, featureSet_JsonFormatFromJSON, featureSet_JsonFormatToJSON, FeatureSetDefaults, FeatureSetDefaults_FeatureSetEditionDefault, SourceCodeInfo, SourceCodeInfo_Location, GeneratedCodeInfo, GeneratedCodeInfo_Annotation, GeneratedCodeInfo_Annotation_Semantic, generatedCodeInfo_Annotation_SemanticFromJSON, generatedCodeInfo_Annotation_SemanticToJSON } from './generated/google/protobuf/descriptor';
