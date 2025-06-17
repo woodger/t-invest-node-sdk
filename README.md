@@ -1,5 +1,7 @@
-# tinkoff-invest-api
+# tinkoff-invest-node-api
+
 Node.js SDK для работы с [Tinkoff Invest API](https://tinkoff.github.io/investAPI/).
+Лимиты [система динамического формирования лимитов для пользователей](https://developer.tbank.ru/invest/intro/intro/limits)
 
 <!-- toc -->
 

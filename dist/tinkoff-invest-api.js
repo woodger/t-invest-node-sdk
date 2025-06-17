@@ -23,7 +23,7 @@ const users_1 = require("./generated/users");
 const throttle_1 = require("./throttle");
 const config_json_1 = __importDefault(require("./config.json"));
 exports.abortController = new AbortController();
-exports.throttle = new throttle_1.Throttle(100);
+exports.throttle = new throttle_1.Throttle(50);
 class TinkoffInvestApi {
     options;
     storage = new Map();

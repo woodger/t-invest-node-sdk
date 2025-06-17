@@ -39,7 +39,7 @@ type ServiceClient = InstrumentsServiceClient
 
 export const abortController = new AbortController();
 
-export const throttle = new Throttle(100);
+export const throttle = new Throttle(50);
 
 export class TinkoffInvestApi {
   options: Required<TinkoffInvestApiOptions>;
