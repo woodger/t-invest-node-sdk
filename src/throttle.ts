@@ -1,26 +1,19 @@
 export class Throttle {
-  private timer: NodeJS.Timeout;
+  readonly limit: number;
   private counter: number;
 
-  public limit: number;
-  
   constructor(limit: number) {
     this.limit = limit;
+    this.counter = limit;
 
     /***
     * Таймер обновляет счетчик 1 раз в секунду
     */
 
-    this.timer = setInterval(() => {
-      this.reset();
+    setInterval(() => {
+      this.counter = limit;
     },
     1e3);
-
-    this.reset();
-  }
-
-  reset() {
-    this.counter = this.limit;
   }
 
   reduce() {

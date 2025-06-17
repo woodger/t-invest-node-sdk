@@ -2,21 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Throttle = void 0;
 class Throttle {
-    timer;
-    counter;
     limit;
+    counter;
     constructor(limit) {
         this.limit = limit;
+        this.counter = limit;
         /***
         * Таймер обновляет счетчик 1 раз в секунду
         */
-        this.timer = setInterval(() => {
-            this.reset();
+        setInterval(() => {
+            this.counter = limit;
         }, 1e3);
-        this.reset();
-    }
-    reset() {
-        this.counter = this.limit;
     }
     reduce() {
         return this.counter-- > 0;

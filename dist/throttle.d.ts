@@ -1,8 +1,6 @@
 export declare class Throttle {
-    private timer;
+    readonly limit: number;
     private counter;
-    limit: number;
     constructor(limit: number);
-    reset(): void;
     reduce(): boolean;
 }
