@@ -1,1 +1,1 @@
-export * from './tinkoff-invest-api';
+export * from './tinkoff-invest-node-sdk';
