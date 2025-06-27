@@ -100,11 +100,10 @@ class TinkoffInvestNodeSDK {
         return client;
     }
     createChannel() {
-        const { endpoint } = this.options;
-        const credentials = /^localhost/i.test(endpoint)
-            ? nice_grpc_1.ChannelCredentials.createInsecure()
-            : nice_grpc_1.ChannelCredentials.createSsl();
-        return (0, nice_grpc_1.createChannel)(endpoint, credentials);
+        const credentials = process.env.TINKOFF_INVEST_SSL === 'y'
+            ? nice_grpc_1.ChannelCredentials.createSsl()
+            : nice_grpc_1.ChannelCredentials.createInsecure();
+        return (0, nice_grpc_1.createChannel)(this.options.endpoint, credentials);
     }
     createMetadata() {
         return new nice_grpc_1.Metadata({
