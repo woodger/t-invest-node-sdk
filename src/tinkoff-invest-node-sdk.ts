@@ -1,7 +1,8 @@
 import {
-  createClientFactory, createChannel, Channel, Metadata, 
-  ChannelCredentials, ClientMiddlewareCall, CallOptions
+  Channel, Metadata, ChannelCredentials, ClientMiddlewareCall, CallOptions,
+  createClientFactory, createChannel
 } from 'nice-grpc';
+import dotenv from 'dotenv';
 import { InstrumentsServiceDefinition, InstrumentsServiceClient } from './generated/instruments';
 import { MarketDataServiceDefinition, MarketDataServiceClient } from './generated/marketdata';
 import { OperationsServiceDefinition, OperationsServiceClient } from './generated/operations';
@@ -9,14 +10,17 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
-import { Throttle } from './throttle';
-import config from './config.json';
+import { Throttle, UnaryLimits } from './throttle';
 
-export interface TinkoffInvestApiOptions {
-  /** Токен доступа */
-  token: string;
+dotenv.config();
+
+export interface TinkoffInvestOptions {
   /** Имя приложения */
   appName?: string;
+
+  /** Токен доступа */
+  token: string;
+  
   /** API endpoint */
   endpoint?: string;
 }
@@ -37,32 +41,56 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
-export const abortController = new AbortController();
+/*
+Сервис инструментов		                      200   ✓
+Сервис счетов			                          100   ✓
+Сервис операций			                        200   ✓
+Формирование отчетов в сервисе операций		  5
+Сервис котировок		                        600   ✓
+Сервис стоп-ордеров		                      50
+Песочницы			                              200   ✓
+Сервис ордеров			                        100   ✓
+*/
 
-export const throttle = new Throttle(50);
+const unaryLimits: UnaryLimits = {
+  InstrumentsService: 100,
+  MarketDataService: 300,
+  OperationsService: 100,
+  OrdersService: 50,
+  SandboxService: 100,
+  StopOrdersService: 25,
+  UsersService: 50
+};
 
-export class TinkoffInvestApi {
-  options: Required<TinkoffInvestApiOptions>;
+const throttle = new Throttle(unaryLimits);
+
+export class TinkoffInvestNodeSDK {
+  options: Required<TinkoffInvestOptions>;
 
   protected storage: Map<ServiceDefinition, ServiceClient> = new Map();
   protected channel: Channel;
   protected metadata: Metadata;
   
-  constructor(options: TinkoffInvestApiOptions) {
+  constructor(options: TinkoffInvestOptions) {
+    let host = process.env.TINKOFF_INVEST_API_HOST;
+    let port = +process.env.TINKOFF_INVEST_PORT;
+
+    if (!port) {
+      port = 443;
+    }
+    
+    console.log(`${host}:${port}`);
+    console.log(process.env.APPLICATION_NAME);
+
     this.options = {
-      endpoint: config.endpoint,
-      appName: config.appName,
+      endpoint: `${host}:${port}`,
+      appName: process.env.APPLICATION_NAME,
       ...options
     };
 
     this.channel = this.createChannel();
-    this.metadata = this.createDefaultMetadata();
+    this.metadata = this.createMetadata();
   }
-
- /***
- * Инструменты
- * https://russianinvestments.github.io/investAPI/instruments/#findinstrument
- */
 
   get instruments() {
     return this.useServiceAsClient<InstrumentsServiceClient>(InstrumentsServiceDefinition);
@@ -87,11 +115,6 @@ export class TinkoffInvestApi {
   get stoporders() {
     return this.useServiceAsClient<StopOrdersServiceClient>(StopOrdersServiceDefinition);
   }
-
-  /***
-  * Счета
-  * https://russianinvestments.github.io/investAPI/instruments/#findinstrument
-  */
   
   get users() {
     return this.useServiceAsClient<UsersServiceClient>(UsersServiceDefinition);
@@ -101,6 +124,8 @@ export class TinkoffInvestApi {
     let client = this.storage.get(service);
 
     if (!client) {
+      
+
       client = createClientFactory()
         .use(this.middleware)
         .create(service, this.channel, {
@@ -125,19 +150,16 @@ export class TinkoffInvestApi {
     return createChannel(endpoint, credentials);
   }
 
-  private createDefaultMetadata() {
+  private createMetadata() {
     return new Metadata({
       'Authorization': `Bearer ${this.options.token}`,
       'x-app-name': this.options.appName
     });
   }
 
-  private async *middleware<Request, Response>(call: ClientMiddlewareCall<Request, Response>, options: CallOptions) {
+  private async *middleware<Request, Response>(call: ClientMiddlewareCall<Request, Response, CallOptions>, options: CallOptions) {
     if (!call.responseStream) {
-      if (throttle.reduce() === false) {
-        throw new Error('Too many requests');
-      }
-      
+      await throttle.reduce(call.method.path);
       const response = yield* call.next(call.request, options);
 
       return response;
@@ -151,11 +173,6 @@ export class TinkoffInvestApi {
     }
   }
 }
-
-/*
-export \w+ 
-(<|\s|\().*$
-*/
 
 export { Timestamp } from './generated/google/protobuf/timestamp';
 

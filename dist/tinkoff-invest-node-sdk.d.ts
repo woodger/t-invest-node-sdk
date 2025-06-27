@@ -6,43 +6,32 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
-import { Throttle } from './throttle';
-export interface TinkoffInvestApiOptions {
-    /** Токен доступа */
-    token: string;
+export interface TinkoffInvestOptions {
     /** Имя приложения */
     appName?: string;
+    /** Токен доступа */
+    token: string;
     /** API endpoint */
     endpoint?: string;
 }
 type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;
 type ServiceClient = InstrumentsServiceClient | MarketDataServiceClient | OperationsServiceClient | OrdersServiceClient | SandboxServiceClient | StopOrdersServiceClient | UsersServiceClient;
-export declare const abortController: AbortController;
-export declare const throttle: Throttle;
-export declare class TinkoffInvestApi {
-    options: Required<TinkoffInvestApiOptions>;
+export declare class TinkoffInvestNodeSDK {
+    options: Required<TinkoffInvestOptions>;
     protected storage: Map<ServiceDefinition, ServiceClient>;
     protected channel: Channel;
     protected metadata: Metadata;
-    constructor(options: TinkoffInvestApiOptions);
-    /***
-    * Инструменты
-    * https://russianinvestments.github.io/investAPI/instruments/#findinstrument
-    */
+    constructor(options: TinkoffInvestOptions);
     get instruments(): InstrumentsServiceClient<{}>;
     get marketdata(): MarketDataServiceClient<{}>;
     get operations(): OperationsServiceClient<{}>;
     get orders(): OrdersServiceClient<{}>;
     get sandbox(): SandboxServiceClient<{}>;
     get stoporders(): StopOrdersServiceClient<{}>;
-    /***
-    * Счета
-    * https://russianinvestments.github.io/investAPI/instruments/#findinstrument
-    */
     get users(): UsersServiceClient<{}>;
     private useServiceAsClient;
     private createChannel;
-    private createDefaultMetadata;
+    private createMetadata;
     private middleware;
 }
 export { Timestamp } from './generated/google/protobuf/timestamp';
