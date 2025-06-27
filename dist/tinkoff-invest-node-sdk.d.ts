@@ -7,11 +7,8 @@ import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sand
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
 export interface TinkoffInvestOptions {
-    /** Имя приложения */
     appName?: string;
-    /** Токен доступа */
     token: string;
-    /** API endpoint */
     endpoint?: string;
 }
 type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;

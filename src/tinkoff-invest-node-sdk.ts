@@ -15,13 +15,8 @@ import { Throttle, UnaryLimits } from './throttle';
 dotenv.config();
 
 export interface TinkoffInvestOptions {
-  /** Имя приложения */
   appName?: string;
-
-  /** Токен доступа */
   token: string;
-  
-  /** API endpoint */
   endpoint?: string;
 }
 
@@ -141,13 +136,11 @@ export class TinkoffInvestNodeSDK {
   }
 
   private createChannel() {
-    const { endpoint } = this.options;
-
-    const credentials = /^localhost/i.test(endpoint)
-      ? ChannelCredentials.createInsecure()
-      : ChannelCredentials.createSsl();
+    const credentials = process.env.TINKOFF_INVEST_SSL === 'y'
+      ? ChannelCredentials.createSsl()
+      : ChannelCredentials.createInsecure();
       
-    return createChannel(endpoint, credentials);
+    return createChannel(this.options.endpoint, credentials);
   }
 
   private createMetadata() {
