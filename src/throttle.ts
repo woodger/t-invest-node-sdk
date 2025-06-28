@@ -13,7 +13,7 @@ export interface UnaryLimits {
 }
 
 export class Throttle {
-  private timestamp = 0;
+  private stamp = 0;
   private unaryLimits: UnaryLimits;
 
   constructor(unaryLimits: UnaryLimits) {
@@ -21,27 +21,31 @@ export class Throttle {
   }
 
   async reduce(path: string) {
-    const now = new Date().getTime();
-    const delay = this.timestamp - now;
+    const time = new Date().getTime();
+    const delay = this.stamp - time;
 
-    if (delay > 0) {
-      await new Promise((resolve) => 
-        setTimeout(resolve, delay)
-      );
-    }
-
-    let ops = 50;
+    let limit = 50;
 
     for (const key in this.unaryLimits) {
       if (path.indexOf(key) > -1) {
-        ops = this.unaryLimits[key];
+        limit = this.unaryLimits[key];
       }
     }
     
-    if (!ops) {
+    if (!limit) {
       throw new Error('Unhandled unary limits');
     }
 
-    this.timestamp = Math.ceil(6e4 / ops) + now + delay;
+    this.stamp = time + Math.ceil(6e4 / limit);
+
+    if (!delay) {
+      return;
+    }
+
+    await new Promise((resolve) => 
+      setTimeout(resolve, delay)
+    );
+
+    this.stamp += delay;
   }
 }

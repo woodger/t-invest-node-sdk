@@ -1,0 +1,5 @@
+{
+  "appName": "Tinkoff Invest Node SDK",
+  "endpoint": "localhost:8080",
+  "useSsl": false
+}

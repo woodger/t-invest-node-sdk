@@ -13,7 +13,6 @@ exports.GetOrdersRequest = exports.GetOrderStateRequest = exports.CancelOrderRes
 exports.GetInfoResponse = exports.GetInfoRequest = exports.StreamLimit = exports.UnaryLimit = exports.GetUserTariffResponse = exports.GetUserTariffRequest = exports.GetMarginAttributesResponse = exports.GetMarginAttributesRequest = exports.Account = exports.GetAccountsResponse = exports.GetAccountsRequest = exports.accessLevelToJSON = exports.accessLevelFromJSON = exports.AccessLevel = exports.accountStatusToJSON = exports.accountStatusFromJSON = exports.AccountStatus = exports.accountTypeToJSON = exports.accountTypeFromJSON = exports.AccountType = exports.StopOrdersServiceDefinition = exports.StopOrder = exports.CancelStopOrderResponse = exports.CancelStopOrderRequest = exports.GetStopOrdersResponse = exports.GetStopOrdersRequest = exports.PostStopOrderResponse = exports.PostStopOrderRequest = exports.stopOrderTypeToJSON = exports.stopOrderTypeFromJSON = exports.StopOrderType = exports.stopOrderExpirationTypeToJSON = exports.stopOrderExpirationTypeFromJSON = exports.StopOrderExpirationType = exports.stopOrderDirectionToJSON = exports.stopOrderDirectionFromJSON = exports.StopOrderDirection = exports.SandboxServiceDefinition = exports.SandboxPayInResponse = exports.SandboxPayInRequest = exports.CloseSandboxAccountResponse = exports.CloseSandboxAccountRequest = exports.OpenSandboxAccountResponse = exports.OpenSandboxAccountRequest = exports.OrdersServiceDefinition = exports.OrdersStreamServiceDefinition = exports.ReplaceOrderRequest = exports.OrderStage = exports.OrderState = exports.GetOrdersResponse = void 0;
 exports.UsersServiceDefinition = void 0;
 const nice_grpc_1 = require("nice-grpc");
-const dotenv_1 = __importDefault(require("dotenv"));
 const instruments_1 = require("./generated/instruments");
 const marketdata_1 = require("./generated/marketdata");
 const operations_1 = require("./generated/operations");
@@ -22,7 +21,7 @@ const sandbox_1 = require("./generated/sandbox");
 const stoporders_1 = require("./generated/stoporders");
 const users_1 = require("./generated/users");
 const throttle_1 = require("./throttle");
-dotenv_1.default.config();
+const config_json_1 = __importDefault(require("./config.json"));
 /*
 Сервис инструментов		                      200   ✓
 Сервис счетов			                          100   ✓
@@ -49,16 +48,9 @@ class TinkoffInvestNodeSDK {
     channel;
     metadata;
     constructor(options) {
-        let host = process.env.TINKOFF_INVEST_API_HOST;
-        let port = +process.env.TINKOFF_INVEST_PORT;
-        if (!port) {
-            port = 443;
-        }
-        console.log(`${host}:${port}`);
-        console.log(process.env.APPLICATION_NAME);
         this.options = {
-            endpoint: `${host}:${port}`,
-            appName: process.env.APPLICATION_NAME,
+            endpoint: config_json_1.default.endpoint,
+            appName: config_json_1.default.appName,
             ...options
         };
         this.channel = this.createChannel();
@@ -100,7 +92,7 @@ class TinkoffInvestNodeSDK {
         return client;
     }
     createChannel() {
-        const credentials = process.env.TINKOFF_INVEST_SSL === 'y'
+        const credentials = config_json_1.default.useSsl
             ? nice_grpc_1.ChannelCredentials.createSsl()
             : nice_grpc_1.ChannelCredentials.createInsecure();
         return (0, nice_grpc_1.createChannel)(this.options.endpoint, credentials);

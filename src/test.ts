@@ -1,18 +1,59 @@
-import { TinkoffInvestNodeSDK, CandleInterval } from './tinkoff-invest-node-sdk';
+import dotenv from 'dotenv';
+import { TinkoffInvestNodeSDK, CandleInterval, InstrumentIdType, Instrument } from './tinkoff-invest-node-sdk';
+import dataSource from './data-source.json';
+
+class TinkoffInvestService {
+  tinkoffInvest: TinkoffInvestNodeSDK;
+
+  constructor() {
+    dotenv.config();
+
+    this.tinkoffInvest = new TinkoffInvestNodeSDK({
+      token: process.env.TINKOFF_INVEST_API_TOKEN
+    });
+  }
+
+  /**
+   * Получения счетов пользователя
+   */
+
+  async getAccounts() {
+    return await this.tinkoffInvest.users.getAccounts({});
+  }
+
+  /**
+   * Получение информаци об инструментах
+   */
+
+  async initialAll() {
+    let count = 0;
+    
+    for (let figi of dataSource.figiList) {
+      let instrument: Instrument;
+
+      try {
+        let res = await this.tinkoffInvest.instruments.getInstrumentBy({
+          idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
+          id: figi
+        });
+
+        instrument = res.instrument;
+      }
+      catch (err) {
+        console.log(`Instrument '${figi}' not found; needs to be excluded`);
+        continue;
+      }
+
+      count++;
+    }
+
+    return count;
+  }
+}
 
 (async function (){
-  const tinkoffInvestNodeSDK = new TinkoffInvestNodeSDK({
-    token: 't.mock_access_token'
-  });
+  const tinkoffInvestService = new TinkoffInvestService();
+  const count = await tinkoffInvestService.initialAll();
 
-  const accounts = await tinkoffInvestNodeSDK.users.getAccounts({});
-
-  // const { candles } = await tinkoffInvestNodeSDK.marketdata.getCandles({
-  //   instrumentId: 'BBG004730RP0',
-  //   from: new Date('2022-04-04T11:00:00Z'),
-  //   to: new Date('2022-04-04T11:20:59Z'),
-  //   interval: CandleInterval.CANDLE_INTERVAL_15_MIN
-  // });
-
-  console.log(accounts);
+  console.log(`Received ${count} instruments`);
 })();

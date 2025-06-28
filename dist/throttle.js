@@ -11,27 +11,29 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Throttle = void 0;
 class Throttle {
-    timestamp = 0;
+    stamp = 0;
     unaryLimits;
     constructor(unaryLimits) {
         this.unaryLimits = unaryLimits;
     }
     async reduce(path) {
-        const now = new Date().getTime();
-        const delay = this.timestamp - now;
-        if (delay > 0) {
-            await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-        let ops = 50;
+        const time = new Date().getTime();
+        const delay = this.stamp - time;
+        let limit = 50;
         for (const key in this.unaryLimits) {
             if (path.indexOf(key) > -1) {
-                ops = this.unaryLimits[key];
+                limit = this.unaryLimits[key];
             }
         }
-        if (!ops) {
+        if (!limit) {
             throw new Error('Unhandled unary limits');
         }
-        this.timestamp = Math.ceil(6e4 / ops) + now + delay;
+        this.stamp = time + Math.ceil(6e4 / limit);
+        if (!delay) {
+            return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        this.stamp += delay;
     }
 }
 exports.Throttle = Throttle;
