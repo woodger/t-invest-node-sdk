@@ -11,7 +11,7 @@ export interface UnaryLimits {
     [propName: string]: number;
 }
 export declare class Throttle {
-    private timestamp;
+    private stamp;
     private unaryLimits;
     constructor(unaryLimits: UnaryLimits);
     reduce(path: string): Promise<void>;

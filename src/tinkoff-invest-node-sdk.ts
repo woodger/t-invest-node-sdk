@@ -2,7 +2,6 @@ import {
   Channel, Metadata, ChannelCredentials, ClientMiddlewareCall, CallOptions,
   createClientFactory, createChannel
 } from 'nice-grpc';
-import dotenv from 'dotenv';
 import { InstrumentsServiceDefinition, InstrumentsServiceClient } from './generated/instruments';
 import { MarketDataServiceDefinition, MarketDataServiceClient } from './generated/marketdata';
 import { OperationsServiceDefinition, OperationsServiceClient } from './generated/operations';
@@ -11,8 +10,7 @@ import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sand
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
 import { Throttle, UnaryLimits } from './throttle';
-
-dotenv.config();
+import config from './config.json';
 
 export interface TinkoffInvestOptions {
   appName?: string;
@@ -67,19 +65,9 @@ export class TinkoffInvestNodeSDK {
   protected metadata: Metadata;
   
   constructor(options: TinkoffInvestOptions) {
-    let host = process.env.TINKOFF_INVEST_API_HOST;
-    let port = +process.env.TINKOFF_INVEST_PORT;
-
-    if (!port) {
-      port = 443;
-    }
-    
-    console.log(`${host}:${port}`);
-    console.log(process.env.APPLICATION_NAME);
-
     this.options = {
-      endpoint: `${host}:${port}`,
-      appName: process.env.APPLICATION_NAME,
+      endpoint: config.endpoint,
+      appName: config.appName,
       ...options
     };
 
@@ -119,8 +107,6 @@ export class TinkoffInvestNodeSDK {
     let client = this.storage.get(service);
 
     if (!client) {
-      
-
       client = createClientFactory()
         .use(this.middleware)
         .create(service, this.channel, {
@@ -136,7 +122,7 @@ export class TinkoffInvestNodeSDK {
   }
 
   private createChannel() {
-    const credentials = process.env.TINKOFF_INVEST_SSL === 'y'
+    const credentials = config.useSsl
       ? ChannelCredentials.createSsl()
       : ChannelCredentials.createInsecure();
       
