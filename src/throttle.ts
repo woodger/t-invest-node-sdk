@@ -23,8 +23,7 @@ export class Throttle {
   async reduce(path: string) {
     const time = new Date().getTime();
     const delay = this.stamp - time;
-
-    let limit = 50;
+    let limit;
 
     for (const key in this.unaryLimits) {
       if (path.indexOf(key) > -1) {
@@ -32,20 +31,20 @@ export class Throttle {
       }
     }
     
-    if (!limit) {
-      throw new Error('Unhandled unary limits');
+    if (limit === undefined) {
+      throw new Error(`Unhandled unary limits for ${path}`);
     }
 
     this.stamp = time + Math.ceil(6e4 / limit);
 
-    if (!delay) {
+    if (delay < 0) {
       return;
     }
+
+    this.stamp += delay;
 
     await new Promise((resolve) => 
       setTimeout(resolve, delay)
     );
-
-    this.stamp += delay;
   }
 }

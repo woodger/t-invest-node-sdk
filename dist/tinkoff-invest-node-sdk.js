@@ -22,24 +22,14 @@ const stoporders_1 = require("./generated/stoporders");
 const users_1 = require("./generated/users");
 const throttle_1 = require("./throttle");
 const config_json_1 = __importDefault(require("./config.json"));
-/*
-Сервис инструментов		                      200   ✓
-Сервис счетов			                          100   ✓
-Сервис операций			                        200   ✓
-Формирование отчетов в сервисе операций		  5
-Сервис котировок		                        600   ✓
-Сервис стоп-ордеров		                      50
-Песочницы			                              200   ✓
-Сервис ордеров			                        100   ✓
-*/
 const unaryLimits = {
-    InstrumentsService: 100,
-    MarketDataService: 300,
-    OperationsService: 100,
-    OrdersService: 50,
-    SandboxService: 100,
-    StopOrdersService: 25,
-    UsersService: 50
+    InstrumentsService: 200,
+    MarketDataService: 600,
+    OperationsService: 200,
+    OrdersService: 100,
+    SandboxService: 200,
+    StopOrdersService: 50,
+    UsersService: 100
 };
 const throttle = new throttle_1.Throttle(unaryLimits);
 class TinkoffInvestNodeSDK {
