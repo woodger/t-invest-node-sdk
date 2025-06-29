@@ -1,5 +1,14 @@
 {
   "appName": "Tinkoff Invest Node SDK",
-  "endpoint": "localhost:8080",
-  "useSsl": false
+  "endpoint": "invest-public-api.tinkoff.ru:443",
+  "unaryLimits": {
+    "InstrumentsService": 200,
+    "MarketDataService": 600,
+    "OperationsService": 200,
+    "OrdersService": 100,
+    "SandboxService": 200,
+    "StopOrdersService": 50,
+    "UsersService": 100
+  },
+  "useSsl": true
 }

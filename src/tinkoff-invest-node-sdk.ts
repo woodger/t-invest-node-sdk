@@ -34,17 +34,7 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
-const unaryLimits: UnaryLimits = {
-  InstrumentsService: 200,
-  MarketDataService: 600,
-  OperationsService: 200,
-  OrdersService: 100,
-  SandboxService: 200,
-  StopOrdersService: 50,
-  UsersService: 100
-};
-
-const throttle = new Throttle(unaryLimits);
+const throttle = new Throttle(config.unaryLimits);
 
 export class TinkoffInvestNodeSDK {
   options: Required<TinkoffInvestOptions>;
