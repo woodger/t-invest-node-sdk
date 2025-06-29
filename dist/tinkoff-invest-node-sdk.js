@@ -22,16 +22,7 @@ const stoporders_1 = require("./generated/stoporders");
 const users_1 = require("./generated/users");
 const throttle_1 = require("./throttle");
 const config_json_1 = __importDefault(require("./config.json"));
-const unaryLimits = {
-    InstrumentsService: 200,
-    MarketDataService: 600,
-    OperationsService: 200,
-    OrdersService: 100,
-    SandboxService: 200,
-    StopOrdersService: 50,
-    UsersService: 100
-};
-const throttle = new throttle_1.Throttle(unaryLimits);
+const throttle = new throttle_1.Throttle(config_json_1.default.unaryLimits);
 class TinkoffInvestNodeSDK {
     options;
     storage = new Map();
