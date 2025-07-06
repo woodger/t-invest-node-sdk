@@ -12,11 +12,11 @@ import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
 import { Throttle, UnaryLimits } from './throttle';
 
 export interface TinkoffInvestOptions {
-  appName?: string;
   token: string;
-  endpoint?: string;
-  useSsl?: boolean;
-  // unaryLimits: UnaryLimits;
+  endpoint: string;
+  appName?: string;
+  unsafe?: boolean;
+  trackLimits?: boolean;
 }
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
@@ -54,7 +54,12 @@ export class TinkoffInvestNodeSDK {
   protected metadata: Metadata;
   
   constructor(options: TinkoffInvestOptions) {
-    this.options = options;
+    this.options = {
+      unsafe: false,
+      trackLimits: true,
+      ...options
+    };
+
     this.channel = this.createChannel();
     this.metadata = this.createMetadata();
   }
@@ -92,7 +97,7 @@ export class TinkoffInvestNodeSDK {
 
     if (!client) {
       client = createClientFactory()
-        .use(this.middleware)
+        .use(this.middleware(this.options.trackLimits))
         .create(service, this.channel, {
           '*': {
             metadata: this.metadata
@@ -106,9 +111,9 @@ export class TinkoffInvestNodeSDK {
   }
 
   private createChannel() {
-    const credentials = this.options.useSsl === true
-      ? ChannelCredentials.createSsl()
-      : ChannelCredentials.createInsecure();
+    const credentials = this.options.unsafe
+      ? ChannelCredentials.createInsecure()
+      : ChannelCredentials.createSsl();
       
     return createChannel(this.options.endpoint, credentials);
   }
@@ -125,19 +130,24 @@ export class TinkoffInvestNodeSDK {
     return new Metadata(init);
   }
 
-  private async *middleware<Request, Response>(call: ClientMiddlewareCall<Request, Response, CallOptions>, options: CallOptions) {
-    if (!call.responseStream) {
-      await throttle.reduce(call.method.path);
-      const response = yield* call.next(call.request, options);
+  private middleware(trackLimits) {
+    return async function*<Request, Response>(call: ClientMiddlewareCall<Request, Response, CallOptions>, options: CallOptions) {
+      if (!call.responseStream) {
+        if (trackLimits) {
+          await throttle.reduce(call.method.path);
+        }
+        
+        const response = yield* call.next(call.request, options);
 
-      return response;
-    }
-    else {
-      for await (const response of call.next(call.request, options)) {
-        yield response;
+        return response;
       }
+      else {
+        for await (const response of call.next(call.request, options)) {
+          yield response;
+        }
 
-      return;
+        return;
+      }
     }
   }
 }

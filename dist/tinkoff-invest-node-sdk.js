@@ -34,7 +34,11 @@ class TinkoffInvestNodeSDK {
     channel;
     metadata;
     constructor(options) {
-        this.options = options;
+        this.options = {
+            unsafe: false,
+            trackLimits: true,
+            ...options
+        };
         this.channel = this.createChannel();
         this.metadata = this.createMetadata();
     }
@@ -63,7 +67,7 @@ class TinkoffInvestNodeSDK {
         let client = this.storage.get(service);
         if (!client) {
             client = (0, nice_grpc_1.createClientFactory)()
-                .use(this.middleware)
+                .use(this.middleware(this.options.trackLimits))
                 .create(service, this.channel, {
                 '*': {
                     metadata: this.metadata
@@ -74,9 +78,9 @@ class TinkoffInvestNodeSDK {
         return client;
     }
     createChannel() {
-        const credentials = this.options.useSsl === true
-            ? nice_grpc_1.ChannelCredentials.createSsl()
-            : nice_grpc_1.ChannelCredentials.createInsecure();
+        const credentials = this.options.unsafe
+            ? nice_grpc_1.ChannelCredentials.createInsecure()
+            : nice_grpc_1.ChannelCredentials.createSsl();
         return (0, nice_grpc_1.createChannel)(this.options.endpoint, credentials);
     }
     createMetadata() {
@@ -88,18 +92,22 @@ class TinkoffInvestNodeSDK {
         }
         return new nice_grpc_1.Metadata(init);
     }
-    async *middleware(call, options) {
-        if (!call.responseStream) {
-            await throttle.reduce(call.method.path);
-            const response = yield* call.next(call.request, options);
-            return response;
-        }
-        else {
-            for await (const response of call.next(call.request, options)) {
-                yield response;
+    middleware(trackLimits) {
+        return async function* (call, options) {
+            if (!call.responseStream) {
+                if (trackLimits) {
+                    await throttle.reduce(call.method.path);
+                }
+                const response = yield* call.next(call.request, options);
+                return response;
             }
-            return;
-        }
+            else {
+                for await (const response of call.next(call.request, options)) {
+                    yield response;
+                }
+                return;
+            }
+        };
     }
 }
 exports.TinkoffInvestNodeSDK = TinkoffInvestNodeSDK;
