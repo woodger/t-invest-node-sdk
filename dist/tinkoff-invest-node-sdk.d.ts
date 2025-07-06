@@ -7,10 +7,11 @@ import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sand
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
 export interface TinkoffInvestOptions {
-    appName?: string;
     token: string;
-    endpoint?: string;
-    useSsl?: boolean;
+    endpoint: string;
+    appName?: string;
+    unsafe?: boolean;
+    trackLimits?: boolean;
 }
 type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;
 type ServiceClient = InstrumentsServiceClient | MarketDataServiceClient | OperationsServiceClient | OrdersServiceClient | SandboxServiceClient | StopOrdersServiceClient | UsersServiceClient;
