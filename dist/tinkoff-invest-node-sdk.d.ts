@@ -10,11 +10,12 @@ export interface TinkoffInvestOptions {
     appName?: string;
     token: string;
     endpoint?: string;
+    useSsl?: boolean;
 }
 type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;
 type ServiceClient = InstrumentsServiceClient | MarketDataServiceClient | OperationsServiceClient | OrdersServiceClient | SandboxServiceClient | StopOrdersServiceClient | UsersServiceClient;
 export declare class TinkoffInvestNodeSDK {
-    options: Required<TinkoffInvestOptions>;
+    protected options: TinkoffInvestOptions;
     protected storage: Map<ServiceDefinition, ServiceClient>;
     protected channel: Channel;
     protected metadata: Metadata;

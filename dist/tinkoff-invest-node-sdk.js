@@ -1,7 +1,4 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OneofOptions = exports.FieldOptions_FeatureSupport = exports.FieldOptions_EditionDefault = exports.fieldOptions_OptionTargetTypeToJSON = exports.fieldOptions_OptionTargetTypeFromJSON = exports.FieldOptions_OptionTargetType = exports.fieldOptions_OptionRetentionToJSON = exports.fieldOptions_OptionRetentionFromJSON = exports.FieldOptions_OptionRetention = exports.fieldOptions_JSTypeToJSON = exports.fieldOptions_JSTypeFromJSON = exports.FieldOptions_JSType = exports.fieldOptions_CTypeToJSON = exports.fieldOptions_CTypeFromJSON = exports.FieldOptions_CType = exports.FieldOptions = exports.MessageOptions = exports.fileOptions_OptimizeModeToJSON = exports.fileOptions_OptimizeModeFromJSON = exports.FileOptions_OptimizeMode = exports.FileOptions = exports.MethodDescriptorProto = exports.ServiceDescriptorProto = exports.EnumValueDescriptorProto = exports.EnumDescriptorProto_EnumReservedRange = exports.EnumDescriptorProto = exports.OneofDescriptorProto = exports.fieldDescriptorProto_LabelToJSON = exports.fieldDescriptorProto_LabelFromJSON = exports.FieldDescriptorProto_Label = exports.fieldDescriptorProto_TypeToJSON = exports.fieldDescriptorProto_TypeFromJSON = exports.FieldDescriptorProto_Type = exports.FieldDescriptorProto = exports.ExtensionRangeOptions_Declaration = exports.extensionRangeOptions_VerificationStateToJSON = exports.extensionRangeOptions_VerificationStateFromJSON = exports.ExtensionRangeOptions_VerificationState = exports.ExtensionRangeOptions = exports.DescriptorProto_ReservedRange = exports.DescriptorProto_ExtensionRange = exports.DescriptorProto = exports.FileDescriptorProto = exports.FileDescriptorSet = exports.editionToJSON = exports.editionFromJSON = exports.Edition = exports.protobufPackage = exports.Timestamp = exports.TinkoffInvestNodeSDK = void 0;
 exports.OptionDirection = exports.couponTypeToJSON = exports.couponTypeFromJSON = exports.CouponType = exports.Ping = exports.Quotation = exports.MoneyValue = exports.securityTradingStatusToJSON = exports.securityTradingStatusFromJSON = exports.SecurityTradingStatus = exports.instrumentTypeToJSON = exports.instrumentTypeFromJSON = exports.InstrumentType = exports.generatedCodeInfo_Annotation_SemanticToJSON = exports.generatedCodeInfo_Annotation_SemanticFromJSON = exports.GeneratedCodeInfo_Annotation_Semantic = exports.GeneratedCodeInfo_Annotation = exports.GeneratedCodeInfo = exports.SourceCodeInfo_Location = exports.SourceCodeInfo = exports.FeatureSetDefaults_FeatureSetEditionDefault = exports.FeatureSetDefaults = exports.featureSet_JsonFormatToJSON = exports.featureSet_JsonFormatFromJSON = exports.FeatureSet_JsonFormat = exports.featureSet_MessageEncodingToJSON = exports.featureSet_MessageEncodingFromJSON = exports.FeatureSet_MessageEncoding = exports.featureSet_Utf8ValidationToJSON = exports.featureSet_Utf8ValidationFromJSON = exports.FeatureSet_Utf8Validation = exports.featureSet_RepeatedFieldEncodingToJSON = exports.featureSet_RepeatedFieldEncodingFromJSON = exports.FeatureSet_RepeatedFieldEncoding = exports.featureSet_EnumTypeToJSON = exports.featureSet_EnumTypeFromJSON = exports.FeatureSet_EnumType = exports.featureSet_FieldPresenceToJSON = exports.featureSet_FieldPresenceFromJSON = exports.FeatureSet_FieldPresence = exports.FeatureSet = exports.UninterpretedOption_NamePart = exports.UninterpretedOption = exports.methodOptions_IdempotencyLevelToJSON = exports.methodOptions_IdempotencyLevelFromJSON = exports.MethodOptions_IdempotencyLevel = exports.MethodOptions = exports.ServiceOptions = exports.EnumValueOptions = exports.EnumOptions = void 0;
@@ -21,19 +18,23 @@ const sandbox_1 = require("./generated/sandbox");
 const stoporders_1 = require("./generated/stoporders");
 const users_1 = require("./generated/users");
 const throttle_1 = require("./throttle");
-const config_json_1 = __importDefault(require("./config.json"));
-const throttle = new throttle_1.Throttle(config_json_1.default.unaryLimits);
+const unaryLimits = {
+    InstrumentsService: 200,
+    MarketDataService: 600,
+    OperationsService: 200,
+    OrdersService: 100,
+    SandboxService: 200,
+    StopOrdersService: 50,
+    UsersService: 100
+};
+const throttle = new throttle_1.Throttle(unaryLimits);
 class TinkoffInvestNodeSDK {
     options;
     storage = new Map();
     channel;
     metadata;
     constructor(options) {
-        this.options = {
-            endpoint: config_json_1.default.endpoint,
-            appName: config_json_1.default.appName,
-            ...options
-        };
+        this.options = options;
         this.channel = this.createChannel();
         this.metadata = this.createMetadata();
     }
@@ -73,16 +74,19 @@ class TinkoffInvestNodeSDK {
         return client;
     }
     createChannel() {
-        const credentials = config_json_1.default.useSsl
+        const credentials = this.options.useSsl === true
             ? nice_grpc_1.ChannelCredentials.createSsl()
             : nice_grpc_1.ChannelCredentials.createInsecure();
         return (0, nice_grpc_1.createChannel)(this.options.endpoint, credentials);
     }
     createMetadata() {
-        return new nice_grpc_1.Metadata({
-            'Authorization': `Bearer ${this.options.token}`,
-            'x-app-name': this.options.appName
-        });
+        const init = {
+            'Authorization': `Bearer ${this.options.token}`
+        };
+        if (this.options.appName) {
+            init['x-app-name'] = this.options.appName;
+        }
+        return new nice_grpc_1.Metadata(init);
     }
     async *middleware(call, options) {
         if (!call.responseStream) {

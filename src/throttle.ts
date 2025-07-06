@@ -30,7 +30,7 @@ export class Throttle {
         limit = this.unaryLimits[key];
       }
     }
-    
+
     if (limit === undefined) {
       throw new Error(`Unhandled unary limits for ${path}`);
     }

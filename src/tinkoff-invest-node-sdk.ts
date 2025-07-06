@@ -10,12 +10,13 @@ import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sand
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
 import { Throttle, UnaryLimits } from './throttle';
-import config from './config.json';
 
 export interface TinkoffInvestOptions {
   appName?: string;
   token: string;
   endpoint?: string;
+  useSsl?: boolean;
+  // unaryLimits: UnaryLimits;
 }
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
@@ -34,22 +35,26 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
-const throttle = new Throttle(config.unaryLimits);
+const unaryLimits: UnaryLimits = {
+  InstrumentsService: 200,
+  MarketDataService: 600,
+  OperationsService: 200,
+  OrdersService: 100,
+  SandboxService: 200,
+  StopOrdersService: 50,
+  UsersService: 100
+};
+
+const throttle = new Throttle(unaryLimits);
 
 export class TinkoffInvestNodeSDK {
-  options: Required<TinkoffInvestOptions>;
-
+  protected options: TinkoffInvestOptions;
   protected storage: Map<ServiceDefinition, ServiceClient> = new Map();
   protected channel: Channel;
   protected metadata: Metadata;
   
   constructor(options: TinkoffInvestOptions) {
-    this.options = {
-      endpoint: config.endpoint,
-      appName: config.appName,
-      ...options
-    };
-
+    this.options = options;
     this.channel = this.createChannel();
     this.metadata = this.createMetadata();
   }
@@ -101,7 +106,7 @@ export class TinkoffInvestNodeSDK {
   }
 
   private createChannel() {
-    const credentials = config.useSsl
+    const credentials = this.options.useSsl === true
       ? ChannelCredentials.createSsl()
       : ChannelCredentials.createInsecure();
       
@@ -109,10 +114,15 @@ export class TinkoffInvestNodeSDK {
   }
 
   private createMetadata() {
-    return new Metadata({
-      'Authorization': `Bearer ${this.options.token}`,
-      'x-app-name': this.options.appName
-    });
+    const init = {
+      'Authorization': `Bearer ${this.options.token}`
+    };
+
+    if (this.options.appName) {
+      init['x-app-name'] = this.options.appName
+    }
+
+    return new Metadata(init);
   }
 
   private async *middleware<Request, Response>(call: ClientMiddlewareCall<Request, Response, CallOptions>, options: CallOptions) {
