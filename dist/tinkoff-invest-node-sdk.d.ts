@@ -10,7 +10,7 @@ export interface TinkoffInvestOptions {
     token: string;
     endpoint: string;
     appName?: string;
-    unsafe?: boolean;
+    useSsl?: boolean;
     trackLimits?: boolean;
 }
 type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;
