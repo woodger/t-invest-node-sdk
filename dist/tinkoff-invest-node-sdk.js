@@ -35,7 +35,7 @@ class TinkoffInvestNodeSDK {
     metadata;
     constructor(options) {
         this.options = {
-            unsafe: false,
+            useSsl: true,
             trackLimits: true,
             ...options
         };
@@ -78,9 +78,9 @@ class TinkoffInvestNodeSDK {
         return client;
     }
     createChannel() {
-        const credentials = this.options.unsafe
-            ? nice_grpc_1.ChannelCredentials.createInsecure()
-            : nice_grpc_1.ChannelCredentials.createSsl();
+        const credentials = this.options.useSsl
+            ? nice_grpc_1.ChannelCredentials.createSsl()
+            : nice_grpc_1.ChannelCredentials.createInsecure();
         return (0, nice_grpc_1.createChannel)(this.options.endpoint, credentials);
     }
     createMetadata() {

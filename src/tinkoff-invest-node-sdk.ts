@@ -15,7 +15,7 @@ export interface TinkoffInvestOptions {
   token: string;
   endpoint: string;
   appName?: string;
-  unsafe?: boolean;
+  useSsl?: boolean;
   trackLimits?: boolean;
 }
 
@@ -55,7 +55,7 @@ export class TinkoffInvestNodeSDK {
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
-      unsafe: false,
+      useSsl: true,
       trackLimits: true,
       ...options
     };
@@ -111,9 +111,9 @@ export class TinkoffInvestNodeSDK {
   }
 
   private createChannel() {
-    const credentials = this.options.unsafe
-      ? ChannelCredentials.createInsecure()
-      : ChannelCredentials.createSsl();
+    const credentials = this.options.useSsl
+      ? ChannelCredentials.createSsl()
+      : ChannelCredentials.createInsecure();
       
     return createChannel(this.options.endpoint, credentials);
   }
