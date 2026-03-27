@@ -37,4 +37,3 @@ class Throttle {
     }
 }
 exports.Throttle = Throttle;
-//# sourceMappingURL=throttle.js.map
