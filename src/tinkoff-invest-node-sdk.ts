@@ -11,6 +11,48 @@ import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generate
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
 import { Throttle, UnaryLimits } from './throttle';
 
+const unaryLimits: UnaryLimits = {
+  /**
+   * Сервис инструментов
+   * Справочная информация о ценных бумагах.
+   */
+  InstrumentsService: 200,
+
+  /**
+   * Сервис котировок предназначен для получения различной биржевой информации, 
+   * в том числе исторической
+   */
+  MarketDataService: 600,
+
+  /**
+   * Сервис операций
+   * Предназначен для получения информации о портфеле по конкретному счету.
+   */
+  OperationsService: 200,
+
+  /**
+   * Сервис ордеров
+   * Сервис для работы с торговыми поручениями.
+   */
+  OrdersService: 100,
+
+  /**
+   * Песочница — это тестовый контур.
+   */
+  SandboxService: 200,
+
+  /**
+   * Сервис стоп-ордеров
+   */
+  StopOrdersService: 50,
+
+  /**
+   * Сервис счетов
+   * Предназначен для получения информации о пользователе и его счетах в Т-Инвестициях.
+   */
+  UsersService: 100
+};
+
 export interface TinkoffInvestOptions {
   token: string;
   endpoint: string;
@@ -34,16 +76,6 @@ type ServiceClient = InstrumentsServiceClient
   | SandboxServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
-
-const unaryLimits: UnaryLimits = {
-  InstrumentsService: 200,
-  MarketDataService: 600,
-  OperationsService: 200,
-  OrdersService: 100,
-  SandboxService: 200,
-  StopOrdersService: 50,
-  UsersService: 100
-};
 
 const throttle = new Throttle(unaryLimits);
 
