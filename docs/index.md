@@ -99,3 +99,17 @@ npm run docs:build
 ```
 
 Для VitePress нужен современный Node.js runtime. Это требование относится только к документации и не меняет runtime-требования самой библиотеки.
+
+## Генерация proto
+
+TypeScript-код из `contracts/*.proto` генерируется через:
+
+```bash
+npm run proto
+```
+
+Скрипт использует `dist/compile-proto.js`, поэтому после изменений в `src/compile-proto.ts` сначала нужно пересобрать проект:
+
+```bash
+npm run build
+```
