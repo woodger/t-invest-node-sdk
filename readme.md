@@ -34,6 +34,20 @@ npm run docs:build
 
 Для запуска VitePress потребуется современная версия Node.js. Это ограничение относится только к docs-tooling и не меняет runtime-требование SDK из `engines`.
 
+## Генерация proto
+
+Генерация TypeScript-кода из `contracts/*.proto` запускается через npm-скрипт:
+
+```bash
+npm run proto
+```
+
+Скрипт использует собранный файл `dist/compile-proto.js`, поэтому перед первым запуском после изменений в `src/compile-proto.ts` нужно выполнить:
+
+```bash
+npm run build
+```
+
 ## Быстрый старт
 
 ```ts
