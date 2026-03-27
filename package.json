@@ -15,8 +15,12 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src eslint.config.mjs",
-    "test": "node dist/suite.test.js"
+    "test": "node dist/suite.test.js",
+    "proto": "node dist/compile-proto.js",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs",
+    "docs:preview": "vitepress preview docs",
+    "lint": "eslint src eslint.config.mjs"
   },
   "dependencies": {
     "nice-grpc": "^2.1.12"
@@ -26,8 +30,10 @@
     "@types/node": "^25.5.0",
     "eslint": "^9.23.0",
     "globals": "^16.0.0",
+    "pwd-fs": "^3.4.0",
     "ts-proto": "^2.7.5",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.28.0",
-    "typescript": "^5.8.3"
+    "vitepress": "^1.6.4"
   }
 }
