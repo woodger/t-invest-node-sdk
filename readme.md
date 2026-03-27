@@ -9,7 +9,7 @@
 ## Установка
 
 ```bash
-npm i tinkoff-invest-node-sdk
+yarn add tinkoff-invest-node-sdk
 ```
 
 ## Быстрый старт
@@ -41,6 +41,8 @@ interface TinkoffInvestOptions {
 - `appName` - необязательное значение для заголовка `x-app-name`.
 - `useSsl` - использовать TLS, по умолчанию `true`.
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
+
+Подробности по официальной лимитной политике API и её связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
 
 ## Доступные сервисы
 

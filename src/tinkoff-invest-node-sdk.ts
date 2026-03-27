@@ -1,6 +1,5 @@
 import {
-  Channel, Metadata, ChannelCredentials, ClientMiddlewareCall, CallOptions,
-  createClientFactory, createChannel
+  Channel, Metadata
 } from 'nice-grpc';
 import { InstrumentsServiceDefinition, InstrumentsServiceClient } from './generated/instruments';
 import { MarketDataServiceDefinition, MarketDataServiceClient } from './generated/marketdata';
@@ -9,49 +8,9 @@ import { OrdersServiceDefinition, OrdersServiceClient } from './generated/orders
 import { SandboxServiceDefinition, SandboxServiceClient } from './generated/sandbox';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from './generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from './generated/users';
-import { Throttle, UnaryLimits } from './throttle';
-
-const unaryLimits: UnaryLimits = {
-  /**
-   * Сервис инструментов
-   * Справочная информация о ценных бумагах.
-   */
-  InstrumentsService: 200,
-
-  /**
-   * Сервис котировок предназначен для получения различной биржевой информации, 
-   * в том числе исторической
-   */
-  MarketDataService: 600,
-
-  /**
-   * Сервис операций
-   * Предназначен для получения информации о портфеле по конкретному счету.
-   */
-  OperationsService: 200,
-
-  /**
-   * Сервис ордеров
-   * Сервис для работы с торговыми поручениями.
-   */
-  OrdersService: 100,
-
-  /**
-   * Песочница — это тестовый контур.
-   */
-  SandboxService: 200,
-
-  /**
-   * Сервис стоп-ордеров
-   */
-  StopOrdersService: 50,
-
-  /**
-   * Сервис счетов
-   * Предназначен для получения информации о пользователе и его счетах в Т-Инвестициях.
-   */
-  UsersService: 100
-};
+import { defaultConfig } from './config';
+import { createSdkChannel, createSdkClient, createSdkMetadata } from './sdk-internals';
+import { Throttle } from './throttle';
 
 export interface TinkoffInvestOptions {
   token: string;
@@ -77,13 +36,13 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
-const throttle = new Throttle(unaryLimits);
-
 export class TinkoffInvestNodeSDK {
   protected options: TinkoffInvestOptions;
+  // Кэширует лениво созданные клиенты сервисов на время жизни SDK-инстанса.
   protected storage: Map<ServiceDefinition, ServiceClient> = new Map();
   protected channel: Channel;
   protected metadata: Metadata;
+  protected throttle: Throttle;
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
@@ -92,8 +51,9 @@ export class TinkoffInvestNodeSDK {
       ...options
     };
 
-    this.channel = this.createChannel();
-    this.metadata = this.createMetadata();
+    this.throttle = new Throttle(defaultConfig.unaryLimits);
+    this.channel = createSdkChannel(this.options);
+    this.metadata = createSdkMetadata(this.options);
   }
 
   get instruments() {
@@ -124,513 +84,22 @@ export class TinkoffInvestNodeSDK {
     return this.useServiceAsClient<UsersServiceClient>(UsersServiceDefinition);
   }
 
+  // Каждый сервис создается один раз и затем переиспользуется.
   private useServiceAsClient<T extends ServiceClient>(service: ServiceDefinition) {
     let client = this.storage.get(service);
 
     if (!client) {
-      client = createClientFactory()
-        .use(this.middleware(this.options.trackLimits))
-        .create(service, this.channel, {
-          '*': {
-            metadata: this.metadata
-          }
-        });
+      client = createSdkClient<ServiceClient>(
+        service,
+        this.channel,
+        this.metadata,
+        this.options.trackLimits,
+        this.throttle
+      );
 
       this.storage.set(service, client);
     }
 
     return client as T;
   }
-
-  private createChannel() {
-    const credentials = this.options.useSsl
-      ? ChannelCredentials.createSsl()
-      : ChannelCredentials.createInsecure();
-      
-    return createChannel(this.options.endpoint, credentials);
-  }
-
-  private createMetadata() {
-    const init = {
-      'Authorization': `Bearer ${this.options.token}`
-    };
-
-    if (this.options.appName) {
-      init['x-app-name'] = this.options.appName
-    }
-
-    return new Metadata(init);
-  }
-
-  private middleware(trackLimits) {
-    return async function*<Request, Response>(call: ClientMiddlewareCall<Request, Response, CallOptions>, options: CallOptions) {
-      if (!call.responseStream) {
-        if (trackLimits) {
-          await throttle.reduce(call.method.path);
-        }
-        
-        const response = yield* call.next(call.request, options);
-
-        return response;
-      }
-      else {
-        for await (const response of call.next(call.request, options)) {
-          yield response;
-        }
-
-        return;
-      }
-    }
-  }
 }
-
-export { Timestamp } from './generated/google/protobuf/timestamp';
-
-export {
-  protobufPackage,
-  Edition,
-  editionFromJSON,
-  editionToJSON,
-  FileDescriptorSet,
-  FileDescriptorProto,
-  DescriptorProto,
-  DescriptorProto_ExtensionRange,
-  DescriptorProto_ReservedRange,
-  ExtensionRangeOptions,
-  ExtensionRangeOptions_VerificationState,
-  extensionRangeOptions_VerificationStateFromJSON,
-  extensionRangeOptions_VerificationStateToJSON,
-  ExtensionRangeOptions_Declaration,
-  FieldDescriptorProto,
-  FieldDescriptorProto_Type,
-  fieldDescriptorProto_TypeFromJSON,
-  fieldDescriptorProto_TypeToJSON,
-  FieldDescriptorProto_Label,
-  fieldDescriptorProto_LabelFromJSON,
-  fieldDescriptorProto_LabelToJSON,
-  OneofDescriptorProto,
-  EnumDescriptorProto,
-  EnumDescriptorProto_EnumReservedRange,
-  EnumValueDescriptorProto,
-  ServiceDescriptorProto,
-  MethodDescriptorProto,
-  FileOptions,
-  FileOptions_OptimizeMode,
-  fileOptions_OptimizeModeFromJSON,
-  fileOptions_OptimizeModeToJSON,
-  MessageOptions,
-  FieldOptions,
-  FieldOptions_CType,
-  fieldOptions_CTypeFromJSON,
-  fieldOptions_CTypeToJSON,
-  FieldOptions_JSType,
-  fieldOptions_JSTypeFromJSON,
-  fieldOptions_JSTypeToJSON,
-  FieldOptions_OptionRetention,
-  fieldOptions_OptionRetentionFromJSON,
-  fieldOptions_OptionRetentionToJSON,
-  FieldOptions_OptionTargetType,
-  fieldOptions_OptionTargetTypeFromJSON,
-  fieldOptions_OptionTargetTypeToJSON,
-  FieldOptions_EditionDefault,
-  FieldOptions_FeatureSupport,
-  OneofOptions,
-  EnumOptions,
-  EnumValueOptions,
-  ServiceOptions,
-  MethodOptions,
-  MethodOptions_IdempotencyLevel,
-  methodOptions_IdempotencyLevelFromJSON,
-  methodOptions_IdempotencyLevelToJSON,
-  UninterpretedOption,
-  UninterpretedOption_NamePart,
-  FeatureSet,
-  FeatureSet_FieldPresence,
-  featureSet_FieldPresenceFromJSON,
-  featureSet_FieldPresenceToJSON,
-  FeatureSet_EnumType,
-  featureSet_EnumTypeFromJSON,
-  featureSet_EnumTypeToJSON,
-  FeatureSet_RepeatedFieldEncoding,
-  featureSet_RepeatedFieldEncodingFromJSON,
-  featureSet_RepeatedFieldEncodingToJSON,
-  FeatureSet_Utf8Validation,
-  featureSet_Utf8ValidationFromJSON,
-  featureSet_Utf8ValidationToJSON,
-  FeatureSet_MessageEncoding,
-  featureSet_MessageEncodingFromJSON,
-  featureSet_MessageEncodingToJSON,
-  FeatureSet_JsonFormat,
-  featureSet_JsonFormatFromJSON,
-  featureSet_JsonFormatToJSON,
-  FeatureSetDefaults,
-  FeatureSetDefaults_FeatureSetEditionDefault,
-  SourceCodeInfo,
-  SourceCodeInfo_Location,
-  GeneratedCodeInfo,
-  GeneratedCodeInfo_Annotation,
-  GeneratedCodeInfo_Annotation_Semantic,
-  generatedCodeInfo_Annotation_SemanticFromJSON,
-  generatedCodeInfo_Annotation_SemanticToJSON
-} from './generated/google/protobuf/descriptor';
-
-export {
-  InstrumentType,
-  instrumentTypeFromJSON,
-  instrumentTypeToJSON,
-  SecurityTradingStatus,
-  securityTradingStatusFromJSON,
-  securityTradingStatusToJSON,
-  MoneyValue,
-  Quotation,
-  Ping,
-  DeepPartial,
-  MessageFns
-} from './generated/common';
-
-export {
-  CouponType,
-  couponTypeFromJSON,
-  couponTypeToJSON,
-  OptionDirection,
-  optionDirectionFromJSON,
-  optionDirectionToJSON,
-  OptionPaymentType,
-  optionPaymentTypeFromJSON,
-  optionPaymentTypeToJSON,
-  OptionStyle,
-  optionStyleFromJSON,
-  optionStyleToJSON,
-  OptionSettlementType,
-  optionSettlementTypeFromJSON,
-  optionSettlementTypeToJSON,
-  InstrumentIdType,
-  instrumentIdTypeFromJSON,
-  instrumentIdTypeToJSON,
-  InstrumentStatus,
-  instrumentStatusFromJSON,
-  instrumentStatusToJSON,
-  ShareType,
-  shareTypeFromJSON,
-  shareTypeToJSON,
-  AssetType,
-  assetTypeFromJSON,
-  assetTypeToJSON,
-  StructuredProductType,
-  structuredProductTypeFromJSON,
-  structuredProductTypeToJSON,
-  EditFavoritesActionType,
-  editFavoritesActionTypeFromJSON,
-  editFavoritesActionTypeToJSON,
-  RealExchange,
-  realExchangeFromJSON,
-  realExchangeToJSON,
-  RiskLevel,
-  riskLevelFromJSON,
-  riskLevelToJSON,
-  TradingSchedulesRequest,
-  TradingSchedulesResponse,
-  TradingSchedule,
-  TradingDay,
-  InstrumentRequest,
-  InstrumentsRequest,
-  FilterOptionsRequest,
-  BondResponse,
-  BondsResponse,
-  GetBondCouponsRequest,
-  GetBondCouponsResponse,
-  Coupon,
-  CurrencyResponse,
-  CurrenciesResponse,
-  EtfResponse,
-  EtfsResponse,
-  FutureResponse,
-  FuturesResponse,
-  OptionResponse,
-  OptionsResponse,
-  Option,
-  ShareResponse,
-  SharesResponse,
-  Bond,
-  Currency,
-  Etf,
-  Future,
-  Share,
-  GetAccruedInterestsRequest,
-  GetAccruedInterestsResponse,
-  AccruedInterest,
-  GetFuturesMarginRequest,
-  GetFuturesMarginResponse,
-  InstrumentResponse,
-  Instrument,
-  GetDividendsRequest,
-  GetDividendsResponse,
-  Dividend,
-  AssetRequest,
-  AssetResponse,
-  AssetsRequest,
-  AssetsResponse,
-  AssetFull,
-  Asset,
-  AssetCurrency,
-  AssetSecurity,
-  AssetShare,
-  AssetBond,
-  AssetStructuredProduct,
-  AssetEtf,
-  AssetClearingCertificate,
-  Brand,
-  AssetInstrument,
-  InstrumentLink,
-  GetFavoritesRequest,
-  GetFavoritesResponse,
-  FavoriteInstrument,
-  EditFavoritesRequest,
-  EditFavoritesRequestInstrument,
-  EditFavoritesResponse,
-  GetCountriesRequest,
-  GetCountriesResponse,
-  CountryResponse,
-  FindInstrumentRequest,
-  FindInstrumentResponse,
-  InstrumentShort,
-  GetBrandsRequest,
-  GetBrandRequest,
-  GetBrandsResponse,
-  InstrumentsServiceDefinition,
-  InstrumentsServiceImplementation,
-  InstrumentsServiceClient
-} from './generated/instruments';
-
-export {
-  SubscriptionAction,
-  subscriptionActionFromJSON,
-  subscriptionActionToJSON,
-  SubscriptionInterval,
-  subscriptionIntervalFromJSON,
-  subscriptionIntervalToJSON,
-  SubscriptionStatus,
-  subscriptionStatusFromJSON,
-  subscriptionStatusToJSON,
-  TradeDirection,
-  tradeDirectionFromJSON,
-  tradeDirectionToJSON,
-  CandleInterval,
-  candleIntervalFromJSON,
-  candleIntervalToJSON,
-  MarketDataRequest,
-  MarketDataServerSideStreamRequest,
-  MarketDataResponse,
-  SubscribeCandlesRequest,
-  CandleInstrument,
-  SubscribeCandlesResponse,
-  CandleSubscription,
-  SubscribeOrderBookRequest,
-  OrderBookInstrument,
-  SubscribeOrderBookResponse,
-  OrderBookSubscription,
-  SubscribeTradesRequest,
-  TradeInstrument,
-  SubscribeTradesResponse,
-  TradeSubscription,
-  SubscribeInfoRequest,
-  InfoInstrument,
-  SubscribeInfoResponse,
-  InfoSubscription,
-  SubscribeLastPriceRequest,
-  LastPriceInstrument,
-  SubscribeLastPriceResponse,
-  LastPriceSubscription,
-  Candle,
-  OrderBook,
-  Order,
-  Trade,
-  TradingStatus,
-  GetCandlesRequest,
-  GetCandlesResponse,
-  HistoricCandle,
-  GetLastPricesRequest,
-  GetLastPricesResponse,
-  LastPrice,
-  GetOrderBookRequest,
-  GetOrderBookResponse,
-  GetTradingStatusRequest,
-  GetTradingStatusesRequest,
-  GetTradingStatusesResponse,
-  GetTradingStatusResponse,
-  GetLastTradesRequest,
-  GetLastTradesResponse,
-  GetMySubscriptions,
-  GetClosePricesRequest,
-  InstrumentClosePriceRequest,
-  GetClosePricesResponse,
-  InstrumentClosePriceResponse,
-  MarketDataServiceDefinition,
-  MarketDataServiceImplementation,
-  MarketDataServiceClient,
-  MarketDataStreamServiceDefinition,
-  MarketDataStreamServiceImplementation,
-  MarketDataStreamServiceClient,
-  ServerStreamingMethodResult
-} from './generated/marketdata';
-
-export {
-  OperationState,
-  operationStateFromJSON,
-  operationStateToJSON,
-  OperationType,
-  operationTypeFromJSON,
-  operationTypeToJSON,
-  PortfolioSubscriptionStatus,
-  portfolioSubscriptionStatusFromJSON,
-  portfolioSubscriptionStatusToJSON,
-  PositionsAccountSubscriptionStatus,
-  positionsAccountSubscriptionStatusFromJSON,
-  positionsAccountSubscriptionStatusToJSON,
-  PortfolioRequest_CurrencyRequest,
-  portfolioRequest_CurrencyRequestFromJSON,
-  portfolioRequest_CurrencyRequestToJSON,
-  OperationsRequest,
-  OperationsResponse,
-  Operation,
-  OperationTrade,
-  PortfolioRequest,
-  PortfolioResponse,
-  PositionsRequest,
-  PositionsResponse,
-  WithdrawLimitsRequest,
-  WithdrawLimitsResponse,
-  PortfolioPosition,
-  VirtualPortfolioPosition,
-  PositionsSecurities,
-  PositionsFutures,
-  PositionsOptions,
-  BrokerReportRequest,
-  BrokerReportResponse,
-  GenerateBrokerReportRequest,
-  GenerateBrokerReportResponse,
-  GetBrokerReportRequest,
-  GetBrokerReportResponse,
-  BrokerReport,
-  GetDividendsForeignIssuerRequest,
-  GetDividendsForeignIssuerResponse,
-  GenerateDividendsForeignIssuerReportRequest,
-  GetDividendsForeignIssuerReportRequest,
-  GenerateDividendsForeignIssuerReportResponse,
-  GetDividendsForeignIssuerReportResponse,
-  DividendsForeignIssuerReport,
-  PortfolioStreamRequest,
-  PortfolioStreamResponse,
-  PortfolioSubscriptionResult,
-  AccountSubscriptionStatus,
-  GetOperationsByCursorRequest,
-  GetOperationsByCursorResponse,
-  OperationItem,
-  OperationItemTrades,
-  OperationItemTrade,
-  PositionsStreamRequest,
-  PositionsStreamResponse,
-  PositionsSubscriptionResult,
-  PositionsSubscriptionStatus,
-  PositionData,
-  PositionsMoney,
-  OperationsServiceDefinition,
-  OperationsServiceImplementation,
-  OperationsServiceClient,
-  OperationsStreamServiceDefinition,
-  OperationsStreamServiceImplementation,
-  OperationsStreamServiceClient
-} from './generated/operations';
-
-export {
-  OrderDirection,
-  orderDirectionFromJSON,
-  orderDirectionToJSON,
-  orderTypeFromJSON,
-  orderTypeToJSON,
-  OrderExecutionReportStatus,
-  orderExecutionReportStatusFromJSON,
-  orderExecutionReportStatusToJSON,
-  priceTypeFromJSON,
-  priceTypeToJSON,
-  TradesStreamRequest,
-  TradesStreamResponse,
-  OrderTrades,
-  OrderTrade,
-  PostOrderRequest,
-  PostOrderResponse,
-  CancelOrderRequest,
-  CancelOrderResponse,
-  GetOrderStateRequest,
-  GetOrdersRequest,
-  GetOrdersResponse,
-  OrderState,
-  OrderStage,
-  ReplaceOrderRequest,
-  OrdersStreamServiceDefinition,
-  OrdersStreamServiceImplementation,
-  OrdersStreamServiceClient,
-  OrdersServiceDefinition,
-  OrdersServiceImplementation,
-  OrdersServiceClient
-} from './generated/orders';
-
-export {
-  OpenSandboxAccountRequest,
-  OpenSandboxAccountResponse,
-  CloseSandboxAccountRequest,
-  CloseSandboxAccountResponse,
-  SandboxPayInRequest,
-  SandboxPayInResponse,
-  SandboxServiceDefinition,
-  SandboxServiceImplementation,
-  SandboxServiceClient
-} from './generated/sandbox';
-
-export {
-  StopOrderDirection,
-  stopOrderDirectionFromJSON,
-  stopOrderDirectionToJSON,
-  StopOrderExpirationType,
-  stopOrderExpirationTypeFromJSON,
-  stopOrderExpirationTypeToJSON,
-  StopOrderType,
-  stopOrderTypeFromJSON,
-  stopOrderTypeToJSON,
-  PostStopOrderRequest,
-  PostStopOrderResponse,
-  GetStopOrdersRequest,
-  GetStopOrdersResponse,
-  CancelStopOrderRequest,
-  CancelStopOrderResponse,
-  StopOrder,
-  StopOrdersServiceDefinition,
-  StopOrdersServiceImplementation,
-  StopOrdersServiceClient
-} from './generated/stoporders';
-
-export {
-  AccountType,
-  accountTypeFromJSON,
-  accountTypeToJSON,
-  AccountStatus,
-  accountStatusFromJSON,
-  accountStatusToJSON,
-  AccessLevel,
-  accessLevelFromJSON,
-  accessLevelToJSON,
-  GetAccountsRequest,
-  GetAccountsResponse,
-  Account,
-  GetMarginAttributesRequest,
-  GetMarginAttributesResponse,
-  GetUserTariffRequest,
-  GetUserTariffResponse,
-  UnaryLimit,
-  StreamLimit,
-  GetInfoRequest,
-  GetInfoResponse,
-  UsersServiceDefinition,
-  UsersServiceImplementation,
-  UsersServiceClient
-} from './generated/users';
