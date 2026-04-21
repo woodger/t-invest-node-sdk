@@ -3,13 +3,26 @@ import test from 'node:test';
 import { createSdkMiddleware } from './sdk-internals';
 import { Throttle } from './throttle';
 
+function createUnaryResponseIterator<Response>(response: Response): AsyncIterableIterator<Response> {
+  const iterator: AsyncIterableIterator<Response> = {
+    async next() {
+      return { done: true, value: response };
+    },
+    [Symbol.asyncIterator]() {
+      return iterator;
+    }
+  };
+
+  return iterator;
+}
+
 function createUnaryCall(path: string) {
   return {
     request: {},
     responseStream: false,
     method: { path },
-    next: async function*() {
-      return { ok: true };
+    next() {
+      return createUnaryResponseIterator({ ok: true });
     }
   } as any;
 }

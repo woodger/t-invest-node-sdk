@@ -53,7 +53,7 @@ class TinkoffInvestNodeSDK {
     useServiceAsClient(service) {
         let client = this.storage.get(service);
         if (!client) {
-            client = (0, sdk_internals_1.createSdkClient)(service, this.channel, this.metadata, this.options.trackLimits, this.throttle);
+            client = (0, sdk_internals_1.createSdkClient)(service, this.channel, this.metadata, this.options.trackLimits ?? true, this.throttle);
             this.storage.set(service, client);
         }
         return client;

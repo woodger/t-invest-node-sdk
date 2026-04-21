@@ -7,13 +7,24 @@ const node_assert_1 = __importDefault(require("node:assert"));
 const node_test_1 = __importDefault(require("node:test"));
 const sdk_internals_1 = require("./sdk-internals");
 const throttle_1 = require("./throttle");
+function createUnaryResponseIterator(response) {
+    const iterator = {
+        async next() {
+            return { done: true, value: response };
+        },
+        [Symbol.asyncIterator]() {
+            return iterator;
+        }
+    };
+    return iterator;
+}
 function createUnaryCall(path) {
     return {
         request: {},
         responseStream: false,
         method: { path },
-        next: async function* () {
-            return { ok: true };
+        next() {
+            return createUnaryResponseIterator({ ok: true });
         }
     };
 }

@@ -8,5 +8,5 @@ export declare class Throttle {
     private unaryLimits;
     constructor(unaryLimits: UnaryLimits);
     reduce(path: string): Promise<void>;
-    resolveLimit(path: string): any;
+    resolveLimit(path: string): number | undefined;
 }

@@ -3,9 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const node_child_process_1 = require("node:child_process");
 const node_path_1 = __importDefault(require("node:path"));
+const node_child_process_1 = require("node:child_process");
 const pwd_fs_1 = require("pwd-fs");
+/**
+ * Создание TS-сервисов из proto-файлов.
+ * См.: https://github.com/stephenh/ts-proto
+ */
 // Скрипт ожидает запуск из корня репозитория и строит все пути относительно него.
 const contractsDir = node_path_1.default.join(pwd_fs_1.pfs.pwd, 'contracts');
 const generatedDir = node_path_1.default.join(pwd_fs_1.pfs.pwd, 'src', 'generated');
@@ -20,7 +24,7 @@ const protoFiles = pwd_fs_1.pfs.readdir(contractsDir, { sync: true })
     .filter((fileName) => fileName.endsWith('.proto'))
     .sort()
     .map((fileName) => node_path_1.default.join(contractsDir, fileName));
-if (protoFiles.length === 0) {
+if (!protoFiles.length) {
     throw new Error(`No proto files found in ${contractsDir}`);
 }
 try {
@@ -40,7 +44,7 @@ try {
 }
 catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-        throw new Error('`protoc` is not installed or is not available in PATH');
+        throw new Error('`protoc` is not installed or is not available in PATH', { cause: error });
     }
     throw error;
 }
