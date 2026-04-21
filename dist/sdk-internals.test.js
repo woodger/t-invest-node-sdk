@@ -8,13 +8,24 @@ const node_test_1 = __importDefault(require("node:test"));
 const users_1 = require("./generated/users");
 const sdk_internals_1 = require("./sdk-internals");
 const throttle_1 = require("./throttle");
+function createUnaryResponseIterator(response) {
+    const iterator = {
+        async next() {
+            return { done: true, value: response };
+        },
+        [Symbol.asyncIterator]() {
+            return iterator;
+        }
+    };
+    return iterator;
+}
 function createUnaryCall(path, response = { ok: true }) {
     return {
         request: {},
         responseStream: false,
         method: { path },
-        next: async function* () {
-            return response;
+        next() {
+            return createUnaryResponseIterator(response);
         }
     };
 }

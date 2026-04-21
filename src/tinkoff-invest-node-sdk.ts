@@ -93,7 +93,7 @@ export class TinkoffInvestNodeSDK {
         service,
         this.channel,
         this.metadata,
-        this.options.trackLimits,
+        this.options.trackLimits ?? true,
         this.throttle
       );
 

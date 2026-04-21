@@ -25,7 +25,7 @@ const protoFiles = pfs.readdir(contractsDir, { sync: true })
   .sort()
   .map((fileName) => path.join(contractsDir, fileName));
 
-if (protoFiles.length === 0) {
+if (!protoFiles.length) {
   throw new Error(`No proto files found in ${contractsDir}`);
 }
 
@@ -43,9 +43,10 @@ try {
     cwd: pfs.pwd,
     stdio: 'inherit',
   });
-} catch (error) {
+}
+catch (error) {
   if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-    throw new Error('`protoc` is not installed or is not available in PATH');
+    throw new Error('`protoc` is not installed or is not available in PATH', { cause: error });
   }
 
   throw error;
