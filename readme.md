@@ -94,6 +94,14 @@ interface TinkoffInvestOptions {
 
 Все методы этих клиентов соответствуют сгенерированным gRPC-описаниям.
 
+Для streaming RPC доступны клиенты:
+
+- `sdk.marketdataStream`
+- `sdk.operationsStream`
+- `sdk.ordersStream`
+
+Все клиенты используют общий gRPC channel и metadata. Закрыть channel можно через `sdk.close()`.
+
 ## Примеры unary-запросов
 
 ### Получить счета
@@ -162,52 +170,51 @@ console.log(response.candles);
 
 ## Стримы
 
-`TinkoffInvestNodeSDK` не создает отдельные stream-обертки. Для streaming RPC используйте экспортируемые service definition и `nice-grpc` напрямую.
+`TinkoffInvestNodeSDK` создает stream-клиенты с теми же metadata и channel, что и unary-клиенты. Локальный throttling через `trackLimits` применяется только к unary-вызовам.
 
 ### Server-side stream
 
 ```ts
-import { createChannel, createClient, Metadata } from 'nice-grpc';
 import {
-  MarketDataStreamServiceDefinition,
+  SubscriptionAction,
   SubscriptionInterval,
+  TinkoffInvestNodeSDK,
 } from 'tinkoff-invest-node-sdk';
 
-const channel = createChannel('your-api-host:443');
-
-const client = createClient(MarketDataStreamServiceDefinition, channel, {
-  '*': {
-    metadata: Metadata({
-      Authorization: `Bearer ${process.env.INVEST_TOKEN!}`,
-    }),
-  },
+const sdk = new TinkoffInvestNodeSDK({
+  token: process.env.INVEST_TOKEN!,
+  endpoint: 'your-api-host:443',
 });
 
-for await (const event of client.marketDataServerSideStream({
-  subscribeCandlesRequest: {
-    subscriptionAction: 1,
-    instruments: [
-      {
-        instrumentId: 'BBG00QPYJ5H0',
-        interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
-      },
-    ],
-    waitingClose: false,
-  },
-})) {
-  console.log(event);
+try {
+  for await (const event of sdk.marketdataStream.marketDataServerSideStream({
+    subscribeCandlesRequest: {
+      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+      instruments: [
+        {
+          instrumentId: 'BBG00QPYJ5H0',
+          interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
+        },
+      ],
+      waitingClose: false,
+    },
+  })) {
+    console.log(event);
+  }
+}
+finally {
+  sdk.close();
 }
 ```
 
 ### Bidirectional stream
 
 ```ts
-import { createChannel, createClient, Metadata } from 'nice-grpc';
 import {
   MarketDataRequest,
-  MarketDataStreamServiceDefinition,
   SubscriptionAction,
   SubscriptionInterval,
+  TinkoffInvestNodeSDK,
 } from 'tinkoff-invest-node-sdk';
 
 async function* requestStream(): AsyncIterable<MarketDataRequest> {
@@ -225,18 +232,18 @@ async function* requestStream(): AsyncIterable<MarketDataRequest> {
   };
 }
 
-const channel = createChannel('your-api-host:443');
-
-const client = createClient(MarketDataStreamServiceDefinition, channel, {
-  '*': {
-    metadata: Metadata({
-      Authorization: `Bearer ${process.env.INVEST_TOKEN!}`,
-    }),
-  },
+const sdk = new TinkoffInvestNodeSDK({
+  token: process.env.INVEST_TOKEN!,
+  endpoint: 'your-api-host:443',
 });
 
-for await (const event of client.marketDataStream(requestStream())) {
-  console.log(event);
+try {
+  for await (const event of sdk.marketdataStream.marketDataStream(requestStream())) {
+    console.log(event);
+  }
+}
+finally {
+  sdk.close();
 }
 ```
 

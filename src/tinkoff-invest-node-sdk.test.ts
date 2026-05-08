@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { createSdkMiddleware } from './sdk-internals';
 import { Throttle } from './throttle';
+import { TinkoffInvestNodeSDK } from './tinkoff-invest-node-sdk';
 
 function createUnaryResponseIterator<Response>(response: Response): AsyncIterableIterator<Response> {
   const iterator: AsyncIterableIterator<Response> = {
@@ -77,4 +78,33 @@ test('middleware skips throttle when trackLimits is disabled', async () => {
   ).next();
 
   assert.equal(throttleCalls, 0);
+});
+
+test('sdk exposes stream clients', () => {
+  const sdk = new TinkoffInvestNodeSDK({
+    token: 'token',
+    endpoint: 'localhost:50051',
+    useSsl: false
+  });
+
+  try {
+    assert.equal(typeof sdk.marketdataStream.marketDataStream, 'function');
+    assert.equal(typeof sdk.marketdataStream.marketDataServerSideStream, 'function');
+    assert.equal(typeof sdk.operationsStream.portfolioStream, 'function');
+    assert.equal(typeof sdk.operationsStream.positionsStream, 'function');
+    assert.equal(typeof sdk.ordersStream.tradesStream, 'function');
+  }
+  finally {
+    sdk.close();
+  }
+});
+
+test('sdk close closes the shared channel', () => {
+  const sdk = new TinkoffInvestNodeSDK({
+    token: 'token',
+    endpoint: 'localhost:50051',
+    useSsl: false
+  });
+
+  assert.doesNotThrow(() => sdk.close());
 });

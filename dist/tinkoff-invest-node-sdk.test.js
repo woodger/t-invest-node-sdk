@@ -7,6 +7,7 @@ const node_assert_1 = __importDefault(require("node:assert"));
 const node_test_1 = __importDefault(require("node:test"));
 const sdk_internals_1 = require("./sdk-internals");
 const throttle_1 = require("./throttle");
+const tinkoff_invest_node_sdk_1 = require("./tinkoff-invest-node-sdk");
 function createUnaryResponseIterator(response) {
     const iterator = {
         async next() {
@@ -57,4 +58,29 @@ function createUnaryCall(path) {
     const middleware = (0, sdk_internals_1.createSdkMiddleware)(false, throttle);
     await middleware(createUnaryCall('/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'), {}).next();
     node_assert_1.default.equal(throttleCalls, 0);
+});
+(0, node_test_1.default)('sdk exposes stream clients', () => {
+    const sdk = new tinkoff_invest_node_sdk_1.TinkoffInvestNodeSDK({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+    });
+    try {
+        node_assert_1.default.equal(typeof sdk.marketdataStream.marketDataStream, 'function');
+        node_assert_1.default.equal(typeof sdk.marketdataStream.marketDataServerSideStream, 'function');
+        node_assert_1.default.equal(typeof sdk.operationsStream.portfolioStream, 'function');
+        node_assert_1.default.equal(typeof sdk.operationsStream.positionsStream, 'function');
+        node_assert_1.default.equal(typeof sdk.ordersStream.tradesStream, 'function');
+    }
+    finally {
+        sdk.close();
+    }
+});
+(0, node_test_1.default)('sdk close closes the shared channel', () => {
+    const sdk = new tinkoff_invest_node_sdk_1.TinkoffInvestNodeSDK({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+    });
+    node_assert_1.default.doesNotThrow(() => sdk.close());
 });

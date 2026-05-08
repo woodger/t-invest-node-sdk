@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: Готовый SDK-клиент
-    details: "`TinkoffInvestNodeSDK` лениво создает unary-клиенты для `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `stoporders` и `users`."
+    details: "`TinkoffInvestNodeSDK` лениво создает unary- и stream-клиенты с общим gRPC channel и metadata."
   - title: Сгенерированные типы и enum'ы
     details: "Пакет реэкспортирует типы, enum'ы и service definition из `contracts/*.proto`, чтобы можно было использовать их напрямую."
   - title: Контроль лимитов
@@ -74,9 +74,17 @@ interface TinkoffInvestOptions {
 - `sdk.stoporders`
 - `sdk.users`
 
+Для streaming RPC доступны клиенты:
+
+- `sdk.marketdataStream`
+- `sdk.operationsStream`
+- `sdk.ordersStream`
+
+Все клиенты используют общий gRPC channel. Закрыть channel можно через `sdk.close()`.
+
 ## Стримы
 
-`TinkoffInvestNodeSDK` не создает отдельные stream-обертки. Для streaming RPC используйте экспортируемые service definition и `nice-grpc` напрямую.
+`TinkoffInvestNodeSDK` создает stream-клиенты с теми же metadata и channel, что и unary-клиенты. Локальный throttling через `trackLimits` применяется только к unary-вызовам.
 
 ## Документация
 
