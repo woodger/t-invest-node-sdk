@@ -34,11 +34,20 @@ class TinkoffInvestNodeSDK {
     get marketdata() {
         return this.useServiceAsClient(marketdata_1.MarketDataServiceDefinition);
     }
+    get marketdataStream() {
+        return this.useServiceAsClient(marketdata_1.MarketDataStreamServiceDefinition);
+    }
     get operations() {
         return this.useServiceAsClient(operations_1.OperationsServiceDefinition);
     }
+    get operationsStream() {
+        return this.useServiceAsClient(operations_1.OperationsStreamServiceDefinition);
+    }
     get orders() {
         return this.useServiceAsClient(orders_1.OrdersServiceDefinition);
+    }
+    get ordersStream() {
+        return this.useServiceAsClient(orders_1.OrdersStreamServiceDefinition);
     }
     get sandbox() {
         return this.useServiceAsClient(sandbox_1.SandboxServiceDefinition);
@@ -48,6 +57,9 @@ class TinkoffInvestNodeSDK {
     }
     get users() {
         return this.useServiceAsClient(users_1.UsersServiceDefinition);
+    }
+    close() {
+        this.channel.close();
     }
     // Каждый сервис создается один раз и затем переиспользуется.
     useServiceAsClient(service) {
