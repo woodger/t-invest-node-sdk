@@ -1,4 +1,4 @@
-# Agent Rules (Backend)
+# Agent Rules
 
 You are working in a production backend system.
 
@@ -14,6 +14,16 @@ You may improve code if:
 - behavior is unchanged
 - the change is safe
 - it stays within task scope
+
+
+## Clarification First
+
+Ask clarifying questions when:
+- requirements are ambiguous
+- multiple interpretations are possible
+- important context is missing
+
+Do not guess when a small question can remove uncertainty.
 
 
 ## Change Strategy
@@ -138,9 +148,58 @@ Before changing code:
 If unsure → choose safer option.
 
 
+## Common Implementation Mistakes
+
+While working, actively watch for the following problems:
+
+- unnecessary abstraction  
+- premature generalization  
+- noisy or over-engineered typing  
+- weak discipline in local code style  
+- refactoring for form rather than simplification  
+
+Guidelines:
+
+- Prefer simple, direct solutions over abstract ones unless abstraction is clearly justified.
+- Do not generalize code for hypothetical future use cases.
+- Keep types minimal, readable, and purposeful — avoid excessive or redundant typing.
+- Follow existing local style and conventions consistently.
+- Refactor only when it makes the code easier to understand, safer, or less duplicated.
+
+When you detect these issues:
+1. Briefly point them out
+2. Suggest a better, simpler approach
+
+Apply fixes immediately only if they are small, safe, and within scope.
+
+
+## Testing Principles
+
+Tests must validate behavior, not mirror implementation.
+
+Avoid:
+- copying implementation logic into tests
+- relying on internal details
+- tests that pass even if the logic is wrong in the same way
+
+Guidelines:
+
+- Treat code as a black box where possible
+- Assert observable outcomes, not implementation steps
+- Cover edge cases and real scenarios
+- Keep tests stable under refactoring
+
+A test is weak if it:
+- repeats the code logic
+- depends on internals
+- breaks after harmless refactoring
+
+
 ## Output
 
 When responding:
 - implement solution
 - briefly explain changes
 - list improvement suggestions separately
+- report validation results
+- suggest a Git commit message

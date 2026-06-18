@@ -14,25 +14,12 @@ yarn add tinkoff-invest-node-sdk
 
 ## Документация
 
-Проект поддерживает сайт документации на VitePress.
+Документация ведется как обычные Markdown-файлы в каталоге `docs`:
 
-```bash
-npm run docs:dev
-```
+- [Обзор SDK](docs/index.md)
+- [Лимитная политика API](docs/limits-policy.md)
 
-Сайт поднимется на `http://localhost:4173`.
-Порт задается в конфиге VitePress.
-
-Сборка статической версии:
-
-```bash
-npm run docs:build
-```
-
-Основная точка входа документации: [docs/index.md](docs/index.md).
-Отдельный материал по лимитам API: [docs/limits-policy.md](docs/limits-policy.md).
-
-Для запуска VitePress потребуется современная версия Node.js. Это ограничение относится только к docs-tooling и не меняет runtime-требование SDK из `engines`.
+Отдельного docs-сайта, dev-сервера и сборки статической документации в проекте нет.
 
 ## Генерация proto
 
