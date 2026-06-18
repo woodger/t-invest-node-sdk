@@ -1,6 +1,2 @@
 node_modules
 yarn.lock
-
-# docs
-docs/.vitepress/cache
-docs/.vitepress/dist

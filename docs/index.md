@@ -1,30 +1,12 @@
----
-layout: home
-
-hero:
-  name: Tinkoff Invest Node SDK
-  text: Минималистичный TypeScript/Node.js SDK для T-Invest API
-  tagline: Unary gRPC-клиенты, сгенерированные типы и service definition в одном пакете.
-  actions:
-    - theme: brand
-      text: Быстрый старт
-      link: /#быстрый-старт
-    - theme: alt
-      text: Лимитная политика
-      link: /limits-policy
-
-features:
-  - title: Готовый SDK-клиент
-    details: "`TinkoffInvestNodeSDK` лениво создает unary- и stream-клиенты с общим gRPC channel и metadata."
-  - title: Сгенерированные типы и enum'ы
-    details: "Пакет реэкспортирует типы, enum'ы и service definition из `contracts/*.proto`, чтобы можно было использовать их напрямую."
-  - title: Контроль лимитов
-    details: "SDK поддерживает локальный throttling unary-запросов через `trackLimits` и отдельную таблицу лимитов по сервисам."
----
-
-# Обзор
+# Tinkoff Invest Node SDK
 
 `tinkoff-invest-node-sdk` - минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Investments через `nice-grpc`.
+
+## Возможности
+
+- `TinkoffInvestNodeSDK` лениво создает unary- и stream-клиенты с общим gRPC channel и metadata.
+- Пакет реэкспортирует сгенерированные типы, enum'ы и service definition из `contracts/*.proto`.
+- SDK поддерживает локальный throttling unary-запросов через `trackLimits` и отдельную таблицу лимитов по сервисам.
 
 ## Установка
 
@@ -90,23 +72,6 @@ interface TinkoffInvestOptions {
 
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
 - Исходное описание и дополнительные примеры: [README в репозитории](https://github.com/woodger/tinkoff-invest-node-sdk#readme)
-
-## Локальный запуск docs
-
-```bash
-npm run docs:dev
-```
-
-Dev-сервер запускается на `http://localhost:4173`.
-Порт задается в конфиге VitePress.
-
-Сборка статической документации:
-
-```bash
-npm run docs:build
-```
-
-Для VitePress нужен современный Node.js runtime. Это требование относится только к документации и не меняет runtime-требования самой библиотеки.
 
 ## Генерация proto
 

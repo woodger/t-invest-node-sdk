@@ -10,16 +10,13 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "version": "0.0.25",
+  "version": "0.0.26",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "node dist/suite.test.js",
     "proto": "node dist/compile-proto.js",
-    "docs:build": "vitepress build docs",
-    "docs:dev": "vitepress dev docs",
-    "docs:preview": "vitepress preview docs",
     "lint": "eslint src eslint.config.mjs"
   },
   "dependencies": {
@@ -34,7 +31,6 @@
     "pwd-fs": "^3.4.0",
     "ts-proto": "^2.11.6",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.0",
-    "vitepress": "^1.6.4"
+    "typescript-eslint": "^8.59.0"
   }
 }
