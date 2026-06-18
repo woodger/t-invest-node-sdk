@@ -18,8 +18,9 @@ yarn add tinkoff-invest-node-sdk
 
 - [Обзор SDK](docs/index.md)
 - [Лимитная политика API](docs/limits-policy.md)
-- [Политика тестирования](docs/testing-policy.md)
-- [Политика комментариев в тестах](docs/test-comment-style.md)
+- [Политики проекта](docs/policy/index.md)
+- [Политика тестирования](docs/policy/testing-policy.md)
+- [Политика комментариев в тестах](docs/policy/test-comment-style.md)
 
 Отдельного docs-сайта, dev-сервера и сборки статической документации в проекте нет.
 
