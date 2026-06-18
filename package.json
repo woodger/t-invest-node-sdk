@@ -15,7 +15,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "node dist/suite.test.js",
+    "test": "node dist/suite.js",
     "proto": "node dist/compile-proto.js",
     "lint": "eslint src eslint.config.mjs"
   },

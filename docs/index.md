@@ -71,6 +71,8 @@ interface TinkoffInvestOptions {
 ## Документация
 
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
+- Правила запуска и написания тестов: [Политика тестирования](./testing-policy.md)
+- Правила комментариев в тестах: [Политика комментариев в тестах](./test-comment-style.md)
 - Исходное описание и дополнительные примеры: [README в репозитории](https://github.com/woodger/tinkoff-invest-node-sdk#readme)
 
 ## Генерация proto
