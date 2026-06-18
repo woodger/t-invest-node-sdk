@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import test from 'node:test';
+import { describe, test } from 'node:test';
 import { UsersServiceDefinition } from './generated/users';
 import {
   createSdkChannel,
@@ -46,107 +46,117 @@ function createResponseStreamCall(path: string, responses: unknown[]) {
   } as any;
 }
 
-test('createSdkMetadata adds authorization header', () => {
-  const metadata = createSdkMetadata({
-    token: 'token',
-    endpoint: 'localhost:50051'
+describe('sdk-internals', () => {
+  describe('createSdkMetadata', () => {
+    test('adds authorization header', () => {
+      const metadata = createSdkMetadata({
+        token: 'token',
+        endpoint: 'localhost:50051'
+      });
+
+      assert.equal(metadata.get('Authorization'), 'Bearer token');
+      assert.equal(metadata.get('x-app-name'), undefined);
+    });
+
+    test('adds x-app-name when it is provided', () => {
+      const metadata = createSdkMetadata({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        appName: 'sdk-app'
+      });
+
+      assert.equal(metadata.get('Authorization'), 'Bearer token');
+      assert.equal(metadata.get('x-app-name'), 'sdk-app');
+    });
   });
 
-  assert.equal(metadata.get('Authorization'), 'Bearer token');
-  assert.equal(metadata.get('x-app-name'), undefined);
-});
+  describe('createSdkMiddleware', () => {
+    test('throttles unary calls when trackLimits is enabled', async () => {
+      const throttle = new Throttle({});
+      let throttleCalls = 0;
 
-test('createSdkMetadata adds x-app-name when it is provided', () => {
-  const metadata = createSdkMetadata({
-    token: 'token',
-    endpoint: 'localhost:50051',
-    appName: 'sdk-app'
+      throttle.reduce = async (path: string) => {
+        throttleCalls += 1;
+        assert.equal(path, '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts');
+      };
+
+      const middleware = createSdkMiddleware(true, throttle);
+      const iterator = middleware(
+        createUnaryCall('/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'),
+        {}
+      );
+
+      const result = await iterator.next();
+
+      assert.equal(throttleCalls, 1);
+      assert.deepEqual(result, {
+        done: true,
+        value: { ok: true }
+      });
+    });
+
+    test('does not throttle response streams', async () => {
+      const throttle = new Throttle({});
+      let throttleCalls = 0;
+
+      throttle.reduce = async () => {
+        throttleCalls += 1;
+      };
+
+      const middleware = createSdkMiddleware(true, throttle);
+      const iterator = middleware(
+        createResponseStreamCall('/tinkoff.public.invest.api.contract.v1.OperationsStreamService/PortfolioStream', [
+          { seq: 1 },
+          { seq: 2 }
+        ]),
+        {}
+      );
+
+      const responses = [];
+
+      for await (const response of iterator) {
+        responses.push(response);
+      }
+
+      assert.equal(throttleCalls, 0);
+      assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
+    });
   });
 
-  assert.equal(metadata.get('Authorization'), 'Bearer token');
-  assert.equal(metadata.get('x-app-name'), 'sdk-app');
-});
+  describe('createSdkChannel', () => {
+    test('creates a channel object for the configured endpoint', () => {
+      const channel = createSdkChannel({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+      });
 
-test('createSdkMiddleware throttles unary calls when trackLimits is enabled', async () => {
-  const throttle = new Throttle({});
-  let throttleCalls = 0;
-
-  throttle.reduce = async (path: string) => {
-    throttleCalls += 1;
-    assert.equal(path, '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts');
-  };
-
-  const middleware = createSdkMiddleware(true, throttle);
-  const iterator = middleware(
-    createUnaryCall('/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'),
-    {}
-  );
-
-  const result = await iterator.next();
-
-  assert.equal(throttleCalls, 1);
-  assert.deepEqual(result, {
-    done: true,
-    value: { ok: true }
-  });
-});
-
-test('createSdkMiddleware does not throttle response streams', async () => {
-  const throttle = new Throttle({});
-  let throttleCalls = 0;
-
-  throttle.reduce = async () => {
-    throttleCalls += 1;
-  };
-
-  const middleware = createSdkMiddleware(true, throttle);
-  const iterator = middleware(
-    createResponseStreamCall('/tinkoff.public.invest.api.contract.v1.OperationsStreamService/PortfolioStream', [
-      { seq: 1 },
-      { seq: 2 }
-    ]),
-    {}
-  );
-
-  const responses = [];
-
-  for await (const response of iterator) {
-    responses.push(response);
-  }
-
-  assert.equal(throttleCalls, 0);
-  assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
-});
-
-test('createSdkChannel creates a channel object for the configured endpoint', () => {
-  const channel = createSdkChannel({
-    token: 'token',
-    endpoint: 'localhost:50051',
-    useSsl: false
+      assert.ok(channel);
+      assert.equal(typeof channel.close, 'function');
+    });
   });
 
-  assert.ok(channel);
-  assert.equal(typeof channel.close, 'function');
-});
+  describe('createSdkClient', () => {
+    test('creates a typed client for the service definition', () => {
+      const channel = createSdkChannel({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+      });
+      const metadata = createSdkMetadata({
+        token: 'token',
+        endpoint: 'localhost:50051'
+      });
+      const throttle = new Throttle({});
+      const client = createSdkClient<{ getAccounts: unknown }>(
+        UsersServiceDefinition,
+        channel,
+        metadata,
+        true,
+        throttle
+      );
 
-test('createSdkClient creates a typed client for the service definition', () => {
-  const channel = createSdkChannel({
-    token: 'token',
-    endpoint: 'localhost:50051',
-    useSsl: false
+      assert.equal(typeof client.getAccounts, 'function');
+    });
   });
-  const metadata = createSdkMetadata({
-    token: 'token',
-    endpoint: 'localhost:50051'
-  });
-  const throttle = new Throttle({});
-  const client = createSdkClient<{ getAccounts: unknown }>(
-    UsersServiceDefinition,
-    channel,
-    metadata,
-    true,
-    throttle
-  );
-
-  assert.equal(typeof client.getAccounts, 'function');
 });
