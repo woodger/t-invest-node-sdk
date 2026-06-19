@@ -14,19 +14,27 @@ type CliIO = {
   stderr: CliWritable;
 };
 
+const booleanOptionNames = new Set([
+  'help',
+  'version',
+  'insecure'
+]);
+
 export function parseCliArgs(argv: string[]): CliArgs {
   const parsed: CliArgs = {
     _: []
   };
 
-  for (const arg of argv) {
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+
     if (arg.startsWith('--')) {
       const option = arg.slice(2);
       const separatorIndex = option.indexOf('=');
       const name = separatorIndex === -1
         ? option
         : option.slice(0, separatorIndex);
-      const value = separatorIndex === -1
+      let value: string | boolean = separatorIndex === -1
         ? true
         : option.slice(separatorIndex + 1);
 
@@ -34,6 +42,18 @@ export function parseCliArgs(argv: string[]): CliArgs {
         parsed._.push(arg);
       }
       else {
+        const nextArg = argv[index + 1];
+
+        if (
+          value === true &&
+          !booleanOptionNames.has(name) &&
+          nextArg !== undefined &&
+          !nextArg.startsWith('-')
+        ) {
+          value = nextArg;
+          index += 1;
+        }
+
         parsed[name] = value;
       }
     }

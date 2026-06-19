@@ -77,9 +77,16 @@ interface TinkoffInvestOptions {
 node dist/bootstrap/cli/cli.js --help
 node dist/bootstrap/cli/cli.js help
 node dist/bootstrap/cli/cli.js version
+node dist/bootstrap/cli/cli.js accounts --help
+node dist/bootstrap/cli/cli.js candles --help
 ```
 
-Сейчас CLI не содержит API-команд. Новые команды должны:
+Сейчас CLI содержит первые API-команды:
+
+- `accounts` - список счетов пользователя;
+- `candles` - исторические свечи.
+
+Новые команды должны:
 
 - регистрироваться через `src/bootstrap/command-registry.ts`;
 - размещать handler в `src/bootstrap/commands`;

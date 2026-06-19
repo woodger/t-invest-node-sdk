@@ -57,6 +57,9 @@ export function renderCommandHelp(commandName: CommandHelpName): string {
     `${packageJson.name} ${packageJson.version}`,
     `${commandName} - ${command.description}`,
     ...renderSection('Usage', command.usage),
+    ...renderSection('Required options', command.required),
+    ...renderSection('Optional options', command.optional),
+    ...renderSection('Environment', command.environment),
     ...renderSection('Examples', command.examples),
     ...renderSection('Notes', command.notes),
     ''

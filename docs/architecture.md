@@ -65,10 +65,9 @@ infrastructure modules.
 - `bootstrap/command-registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
-CLI слой сейчас намеренно минимален: он поддерживает `help`, `version`, ошибку
-для неизвестных команд и общий подготовительный слой для будущих API-команд.
-SDK-команды для работы с T-Invest API не добавлены, потому что отдельные CLI
-use-cases еще не определены.
+CLI слой сейчас поддерживает `help`, `version`, `accounts`, `candles` и ошибку
+для неизвестных команд. API-команды остаются тонкими bootstrap handlers:
+они валидируют CLI-контракт, создают SDK facade и форматируют вывод.
 
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
 primitive CLI-контракты и нормализует общие `TinkoffInvestOptions` из CLI/ENV.

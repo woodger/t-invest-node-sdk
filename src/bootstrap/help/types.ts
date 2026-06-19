@@ -12,6 +12,9 @@
 export interface CommandHelp {
   description: string;
   usage: string[];
+  required?: string[];
+  optional?: string[];
+  environment?: string[];
   examples: string[];
   notes?: string[];
 }

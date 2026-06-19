@@ -29,18 +29,21 @@ describe('help', () => {
     assert.match(help, /Usage:/);
     assert.match(help, /Global options:/);
     assert.match(help, /Commands:/);
+    assert.match(help, /accounts/);
+    assert.match(help, /candles/);
     assert.match(help, /version/);
-    assert.doesNotMatch(help, /Environment:/);
   });
 
   test('renders command-specific help from command help flag', () => {
     const help = renderHelp(argv({
-      _: ['version'],
+      _: ['candles'],
       help: true
     }));
 
-    assert.match(help, /version - Show package and runtime version info/);
-    assert.match(help, /tinkoff-invest-node-sdk version/);
+    assert.match(help, /candles - Print historical candles/);
+    assert.match(help, /Required options:/);
+    assert.match(help, /--instrument-id=ID/);
+    assert.match(help, /Environment:/);
     assert.doesNotMatch(help, /Commands:/);
   });
 
