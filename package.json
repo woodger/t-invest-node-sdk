@@ -13,6 +13,9 @@
   "version": "0.0.28",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "tinkoff-invest-node-sdk": "./dist/bootstrap/cli/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "test": "node dist/suite.js",

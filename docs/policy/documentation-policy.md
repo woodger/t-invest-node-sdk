@@ -13,9 +13,10 @@
 Для SDK действуют следующие источники истины:
 
 - public package entrypoint: `src/index.ts`;
-- SDK client API: `src/tinkoff-invest-node-sdk.ts`;
-- runtime internals: `src/sdk-internals.ts`;
-- throttling policy implementation: `src/throttle.ts` и `src/config.ts`;
+- SDK client API: `src/bootstrap/tinkoff-invest-node-sdk.ts` и compatibility re-export `src/tinkoff-invest-node-sdk.ts`;
+- runtime gRPC internals: `src/infrastructure/grpc/**` и compatibility re-export `src/sdk-internals.ts`;
+- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/config.ts` и compatibility re-export `src/throttle.ts`;
+- CLI entrypoint: `src/bootstrap/cli/**`, `src/bootstrap/command-registry.ts`, `src/bootstrap/commands/**`, `src/bootstrap/help/**`, `src/bootstrap/version.ts`;
 - proto wire contracts: `contracts/*.proto`;
 - generated exports: `src/generated-exports.ts` и `src/generated/**`;
 - test runner contract: `src/suite.ts`;

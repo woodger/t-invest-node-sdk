@@ -7,6 +7,7 @@
 - `TinkoffInvestNodeSDK` лениво создает unary- и stream-клиенты с общим gRPC channel и metadata.
 - Пакет реэкспортирует сгенерированные типы, enum'ы и service definition из `contracts/*.proto`.
 - SDK поддерживает локальный throttling unary-запросов через `trackLimits` и отдельную таблицу лимитов по сервисам.
+- Bootstrap CLI layer содержит command registry, `help` и `version` utility-команды.
 
 ## Установка
 
@@ -68,8 +69,23 @@ interface TinkoffInvestOptions {
 
 `TinkoffInvestNodeSDK` создает stream-клиенты с теми же metadata и channel, что и unary-клиенты. Локальный throttling через `trackLimits` применяется только к unary-вызовам.
 
+## CLI
+
+После сборки CLI можно вызвать напрямую:
+
+```bash
+node dist/bootstrap/cli/cli.js --help
+node dist/bootstrap/cli/cli.js help
+node dist/bootstrap/cli/cli.js version
+```
+
+Сейчас CLI не содержит API-команд. Новые команды должны регистрироваться через
+`src/bootstrap/command-registry.ts`, размещать handler в `src/bootstrap/commands`
+и не переносить gRPC или business-логику в CLI parser.
+
 ## Документация
 
+- Карта слоев SDK: [Архитектура SDK](./architecture.md)
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
 - Правила тестирования и test pipeline: [Политики проекта](./policy/index.md)
 - Правила запуска и написания тестов: [Политика тестирования](./policy/testing-policy.md)

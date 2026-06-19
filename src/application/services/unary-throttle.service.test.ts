@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { Throttle } from './throttle';
+import { Throttle } from './unary-throttle.service';
 
 describe('Throttle', () => {
   describe('#resolveLimit', () => {

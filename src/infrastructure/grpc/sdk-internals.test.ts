@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { UsersServiceDefinition } from './generated/users';
+import { Throttle } from '../../application/services/unary-throttle.service';
+import { UsersServiceDefinition } from '../../generated/users';
 import {
   createSdkChannel,
   createSdkClient,
   createSdkMetadata,
   createSdkMiddleware
-} from './sdk-internals';
-import { Throttle } from './throttle';
+} from './index';
 
 function createUnaryResponseIterator<Response>(response: Response): AsyncIterableIterator<Response> {
   const iterator: AsyncIterableIterator<Response> = {
@@ -46,7 +46,7 @@ function createResponseStreamCall(path: string, responses: unknown[]) {
   } as any;
 }
 
-describe('sdk-internals', () => {
+describe('infrastructure grpc', () => {
   describe('createSdkMetadata', () => {
     test('adds authorization header', () => {
       const metadata = createSdkMetadata({

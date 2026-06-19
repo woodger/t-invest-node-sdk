@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { createSdkMiddleware } from './sdk-internals';
-import { Throttle } from './throttle';
+import { Throttle } from './application/services/unary-throttle.service';
+import { createSdkMiddleware } from './infrastructure/grpc';
 import { TinkoffInvestNodeSDK } from './tinkoff-invest-node-sdk';
 
 function createUnaryResponseIterator<Response>(response: Response): AsyncIterableIterator<Response> {

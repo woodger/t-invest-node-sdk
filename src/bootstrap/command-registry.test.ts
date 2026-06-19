@@ -1,0 +1,35 @@
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
+import { isCommandName, resolveCommand } from './command-registry';
+
+describe('resolveCommand', () => {
+  test('resolves help command without context requirement', () => {
+    const command = resolveCommand('help');
+
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves version command without context requirement', () => {
+    const command = resolveCommand('version');
+
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('throws for unknown command', () => {
+    assert.throws(
+      () => resolveCommand('unknown-command'),
+      /is not a program command/
+    );
+  });
+});
+
+describe('isCommandName', () => {
+  test('accepts registered command names only', () => {
+    assert.equal(isCommandName('help'), true);
+    assert.equal(isCommandName('version'), true);
+    assert.equal(isCommandName('accounts'), false);
+    assert.equal(isCommandName(undefined), false);
+  });
+});
