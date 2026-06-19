@@ -1,26 +1,13 @@
-import type { Quotation } from '../../../generated/common';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   CandleInterval,
   type GetCandlesRequest,
-  type GetCandlesResponse,
-  type HistoricCandle
+  type GetCandlesResponse
 } from '../../../generated/marketdata';
 import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
-
-type CandlesFormat = 'json' | 'csv';
-
-type CandleOutput = {
-  time: string;
-  open: string;
-  high: string;
-  low: string;
-  close: string;
-  volume: number;
-  isComplete: boolean;
-};
+import { candlesFormats, formatCandles, type CandlesFormat } from './reporter';
 
 type CandlesSdk = {
   marketdata: {
@@ -31,7 +18,6 @@ type CandlesSdk = {
 
 type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
 
-const candlesFormatValues = ['json', 'csv'] as const;
 const candlesArgNames = new Set([
   ...sdkOptionArgNames,
   'instrument-id',
@@ -59,40 +45,6 @@ const candleIntervals = {
 } as const;
 
 type CandleIntervalName = keyof typeof candleIntervals;
-
-function csvValue(value: string | number | boolean): string {
-  const text = String(value);
-
-  if (!/[",\n]/.test(text)) {
-    return text;
-  }
-
-  return `"${text.replaceAll('"', '""')}"`;
-}
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function toCandleOutput(candle: HistoricCandle): CandleOutput {
-  return {
-    time: formatDate(candle.time),
-    open: formatQuotation(candle.open),
-    high: formatQuotation(candle.high),
-    low: formatQuotation(candle.low),
-    close: formatQuotation(candle.close),
-    volume: candle.volume,
-    isComplete: candle.isComplete
-  };
-}
 
 export function parseCandleInterval(argv: CliArgs): CandleInterval {
   const interval = ArgGuards.requireStringArg(argv, 'interval');
@@ -122,29 +74,7 @@ export function parseCandlesRequest(argv: CliArgs): GetCandlesRequest {
 }
 
 export function parseCandlesFormat(argv: CliArgs): CandlesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', candlesFormatValues) ?? 'json';
-}
-
-export function formatCandles(candles: HistoricCandle[], format: CandlesFormat): string {
-  const output = candles.map(toCandleOutput);
-
-  if (format === 'json') {
-    return `${JSON.stringify(output, null, 2)}\n`;
-  }
-
-  return [
-    'time,open,high,low,close,volume,isComplete',
-    ...output.map((candle) => [
-      candle.time,
-      candle.open,
-      candle.high,
-      candle.low,
-      candle.close,
-      candle.volume,
-      candle.isComplete
-    ].map(csvValue).join(',')),
-    ''
-  ].join('\n');
+  return ArgGuards.optionalEnumArgValue(argv, 'format', candlesFormats) ?? 'json';
 }
 
 export function createCandlesCommand(
@@ -170,3 +100,5 @@ export function createCandlesCommand(
 }
 
 export const candles = createCandlesCommand();
+
+export { formatCandles };

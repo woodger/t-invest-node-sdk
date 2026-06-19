@@ -91,6 +91,8 @@ node dist/bootstrap/cli/cli.js candles --help
 - регистрироваться через `src/bootstrap/command-registry.ts`;
 - размещать handler в `src/bootstrap/commands`;
 - использовать `src/bootstrap/args` для primitive CLI validation и общих SDK options;
+- описывать стабильный output contract в `src/application/reports`;
+- форматировать output в `src/bootstrap/commands/*/reporter.ts`;
 - не переносить gRPC или business-логику в CLI parser.
 
 ## Документация
