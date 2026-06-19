@@ -8,5 +8,5 @@ type CliIO = {
     stderr: CliWritable;
 };
 export declare function parseCliArgs(argv: string[]): CliArgs;
-export declare function runCli(argv?: string[], io?: CliIO): number;
+export declare function runCli(argv?: string[], io?: CliIO): Promise<number>;
 export {};

@@ -20,14 +20,25 @@ export function parseCliArgs(argv: string[]): CliArgs {
   };
 
   for (const arg of argv) {
-    if (arg === '--help') {
-      parsed.help = true;
+    if (arg.startsWith('--')) {
+      const option = arg.slice(2);
+      const separatorIndex = option.indexOf('=');
+      const name = separatorIndex === -1
+        ? option
+        : option.slice(0, separatorIndex);
+      const value = separatorIndex === -1
+        ? true
+        : option.slice(separatorIndex + 1);
+
+      if (name === '') {
+        parsed._.push(arg);
+      }
+      else {
+        parsed[name] = value;
+      }
     }
     else if (arg === '-h') {
       parsed.h = true;
-    }
-    else if (arg === '--version') {
-      parsed.version = true;
     }
     else if (arg === '-v') {
       parsed.v = true;
@@ -40,13 +51,21 @@ export function parseCliArgs(argv: string[]): CliArgs {
   return parsed;
 }
 
-export function runCli(
+function renderCommandError(error: unknown): string {
+  if (error instanceof Error) {
+    return `${error.message}\n`;
+  }
+
+  return `${String(error)}\n`;
+}
+
+export async function runCli(
   argv = process.argv.slice(2),
   io: CliIO = {
     stdout: process.stdout,
     stderr: process.stderr
   }
-): number {
+): Promise<number> {
   const parsedArgv = parseCliArgs(argv);
 
   if (isHelpRequested(parsedArgv)) {
@@ -62,10 +81,20 @@ export function runCli(
   }
 
   const action = parsedArgv._[0] ?? 'help';
+  let command;
 
   try {
-    const command = resolveCommand(action);
-    const output = command.handler(parsedArgv);
+    command = resolveCommand(action);
+  }
+  catch {
+    io.stderr.write(`Unknown command: ${action}\n\n`);
+    io.stderr.write(renderCliHelp());
+
+    return 1;
+  }
+
+  try {
+    const output = await command.handler(parsedArgv);
 
     if (output !== undefined) {
       io.stdout.write(output);
@@ -73,14 +102,20 @@ export function runCli(
 
     return 0;
   }
-  catch {
-    io.stderr.write(`Unknown command: ${action}\n\n`);
-    io.stderr.write(renderCliHelp());
+  catch (error) {
+    io.stderr.write(renderCommandError(error));
   }
 
   return 1;
 }
 
 if (require.main === module) {
-  process.exitCode = runCli();
+  void runCli()
+    .then((exitCode) => {
+      process.exitCode = exitCode;
+    })
+    .catch((error: unknown) => {
+      console.error(error);
+      process.exitCode = 1;
+    });
 }

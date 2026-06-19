@@ -79,9 +79,12 @@ node dist/bootstrap/cli/cli.js help
 node dist/bootstrap/cli/cli.js version
 ```
 
-Сейчас CLI не содержит API-команд. Новые команды должны регистрироваться через
-`src/bootstrap/command-registry.ts`, размещать handler в `src/bootstrap/commands`
-и не переносить gRPC или business-логику в CLI parser.
+Сейчас CLI не содержит API-команд. Новые команды должны:
+
+- регистрироваться через `src/bootstrap/command-registry.ts`;
+- размещать handler в `src/bootstrap/commands`;
+- использовать `src/bootstrap/args` для primitive CLI validation и общих SDK options;
+- не переносить gRPC или business-логику в CLI parser.
 
 ## Документация
 
