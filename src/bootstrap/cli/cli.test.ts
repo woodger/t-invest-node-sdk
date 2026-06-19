@@ -46,15 +46,29 @@ describe('bootstrap cli', () => {
       assert.deepEqual(
         parseCliArgs([
           'accounts',
+          '--format',
+          'json',
           '--token=secret',
           '--endpoint=invest.example:443',
           '--insecure'
         ]),
         {
           _: ['accounts'],
+          format: 'json',
           token: 'secret',
           endpoint: 'invest.example:443',
           insecure: true
+        }
+      );
+    });
+
+    test('does not consume values after known boolean flags', () => {
+      assert.deepEqual(
+        parseCliArgs(['--help', 'accounts', '--version', 'candles']),
+        {
+          _: ['accounts', 'candles'],
+          help: true,
+          version: true
         }
       );
     });
@@ -105,11 +119,11 @@ describe('bootstrap cli', () => {
 
     test('returns a failure for unknown commands', async () => {
       const { io, read } = createIo();
-      const exitCode = await runCli(['accounts'], io);
+      const exitCode = await runCli(['orders'], io);
 
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Unknown command: accounts/);
+      assert.match(read().stderr, /Unknown command: orders/);
       assert.match(read().stderr, /Usage:/);
     });
   });

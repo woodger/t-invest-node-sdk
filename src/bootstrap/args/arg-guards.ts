@@ -107,4 +107,12 @@ export class ArgGuards {
       throw new Error(`Unexpected argument '--${name}'`);
     }
   }
+
+  static assertNoExtraPositionals(argv: CliArgs, commandName: string): void {
+    const [, ...extra] = argv._;
+
+    if (extra.length > 0) {
+      throw new Error(`Unexpected positional argument for '${commandName}': ${extra[0]}`);
+    }
+  }
 }

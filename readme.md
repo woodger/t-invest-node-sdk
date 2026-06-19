@@ -74,17 +74,19 @@ interface TinkoffInvestOptions {
 ## CLI
 
 В проекте есть bootstrap CLI layer с command registry. После сборки доступны
-utility-команды:
+utility- и API-команды:
 
 ```bash
 node dist/bootstrap/cli/cli.js --help
 node dist/bootstrap/cli/cli.js help
 node dist/bootstrap/cli/cli.js version
+node dist/bootstrap/cli/cli.js accounts --help
+node dist/bootstrap/cli/cli.js candles --help
 ```
 
-Команды для работы с T-Invest API пока не добавлены. Runtime SDK API остается
-основным публичным интерфейсом пакета. Общие guards для будущих API-команд уже
-живут в `src/bootstrap/args`.
+API-команды используют `--token` / `TINKOFF_TOKEN` и
+`--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным
+интерфейсом пакета.
 
 ## Доступные сервисы
 

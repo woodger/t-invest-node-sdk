@@ -3,6 +3,20 @@ import { describe, test } from 'node:test';
 import { isCommandName, resolveCommand } from './command-registry';
 
 describe('resolveCommand', () => {
+  test('resolves accounts command without context requirement', () => {
+    const command = resolveCommand('accounts');
+
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves candles command without context requirement', () => {
+    const command = resolveCommand('candles');
+
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves help command without context requirement', () => {
     const command = resolveCommand('help');
 
@@ -27,9 +41,11 @@ describe('resolveCommand', () => {
 
 describe('isCommandName', () => {
   test('accepts registered command names only', () => {
+    assert.equal(isCommandName('accounts'), true);
+    assert.equal(isCommandName('candles'), true);
     assert.equal(isCommandName('help'), true);
     assert.equal(isCommandName('version'), true);
-    assert.equal(isCommandName('accounts'), false);
+    assert.equal(isCommandName('orders'), false);
     assert.equal(isCommandName(undefined), false);
   });
 });

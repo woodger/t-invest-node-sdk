@@ -9,6 +9,8 @@
  * Здесь не должно быть исполнения команд, разбора argv или форматирования help/version output.
  */
 
+import { accounts } from './commands/accounts/cli';
+import { candles } from './commands/candles/cli';
 import { help } from './commands/help/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
@@ -19,6 +21,14 @@ export type ResolvedCommand = {
 };
 
 const commandRegistry = {
+  accounts: {
+    requiresContext: false,
+    handler: accounts
+  },
+  candles: {
+    requiresContext: false,
+    handler: candles
+  },
   help: {
     requiresContext: false,
     handler: help
