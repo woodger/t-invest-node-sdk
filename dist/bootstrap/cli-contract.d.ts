@@ -10,9 +10,11 @@
  */
 export type CliArgs = {
     _: string[];
+    [name: string]: string | boolean | string[] | undefined;
     help?: boolean;
     h?: boolean;
     version?: boolean;
     v?: boolean;
 };
-export type CliCommand = (argv: CliArgs) => string | undefined;
+export type CliCommandOutput = string | undefined;
+export type CliCommand = (argv: CliArgs) => CliCommandOutput | Promise<CliCommandOutput>;

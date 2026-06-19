@@ -22,6 +22,7 @@ export function renderVersionInfo(): string {
   return [
     `${packageJson.name} ${packageJson.version}`,
     `node ${process.version}`,
-    `platform ${process.platform}/${process.arch}`
+    `platform ${process.platform}/${process.arch}`,
+    ''
   ].join('\n');
 }

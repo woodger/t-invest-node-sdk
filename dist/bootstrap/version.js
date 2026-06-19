@@ -25,6 +25,7 @@ function renderVersionInfo() {
     return [
         `${package_json_1.default.name} ${package_json_1.default.version}`,
         `node ${process.version}`,
-        `platform ${process.platform}/${process.arch}`
+        `platform ${process.platform}/${process.arch}`,
+        ''
     ].join('\n');
 }

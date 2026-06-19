@@ -41,22 +41,39 @@ describe('bootstrap cli', () => {
         }
       );
     });
+
+    test('maps long options with values and boolean flags', () => {
+      assert.deepEqual(
+        parseCliArgs([
+          'accounts',
+          '--token=secret',
+          '--endpoint=invest.example:443',
+          '--insecure'
+        ]),
+        {
+          _: ['accounts'],
+          token: 'secret',
+          endpoint: 'invest.example:443',
+          insecure: true
+        }
+      );
+    });
   });
 
   describe('runCli', () => {
-    test('prints help when no command is provided', () => {
+    test('prints help when no command is provided', async () => {
       const { io, read } = createIo();
-      const exitCode = runCli([], io);
+      const exitCode = await runCli([], io);
 
       assert.equal(exitCode, 0);
       assert.match(read().stdout, /Usage:/);
       assert.equal(read().stderr, '');
     });
 
-    test('prints top-level help from help command and global flags', () => {
+    test('prints top-level help from help command and global flags', async () => {
       for (const command of ['--help', '-h', 'help']) {
         const { io, read } = createIo();
-        const exitCode = runCli([command], io);
+        const exitCode = await runCli([command], io);
 
         assert.equal(exitCode, 0);
         assert.match(read().stdout, /Commands:/);
@@ -64,9 +81,9 @@ describe('bootstrap cli', () => {
       }
     });
 
-    test('prints command-specific help from a command help flag', () => {
+    test('prints command-specific help from a command help flag', async () => {
       const { io, read } = createIo();
-      const exitCode = runCli(['version', '--help'], io);
+      const exitCode = await runCli(['version', '--help'], io);
 
       assert.equal(exitCode, 0);
       assert.match(read().stdout, /version - Show package and runtime version info/);
@@ -74,10 +91,10 @@ describe('bootstrap cli', () => {
       assert.equal(read().stderr, '');
     });
 
-    test('prints version from version command and global flag', () => {
+    test('prints version from version command and global flag', async () => {
       for (const command of ['version', '--version']) {
         const { io, read } = createIo();
-        const exitCode = runCli([command], io);
+        const exitCode = await runCli([command], io);
 
         assert.equal(exitCode, 0);
         assert.match(read().stdout, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
@@ -86,9 +103,9 @@ describe('bootstrap cli', () => {
       }
     });
 
-    test('returns a failure for unknown commands', () => {
+    test('returns a failure for unknown commands', async () => {
       const { io, read } = createIo();
-      const exitCode = runCli(['accounts'], io);
+      const exitCode = await runCli(['accounts'], io);
 
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');
