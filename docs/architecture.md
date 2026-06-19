@@ -2,6 +2,8 @@
 
 > Type: Reference. Этот документ фиксирует текущую карту слоев SDK и служит
 > practical companion к [архитектурной политике](./policy/architecture.md).
+> Дополнительные design notes по развитию слоев находятся в
+> [Clean Architecture Notes](./clean-architecture/index.md).
 
 Проект использует Clean Architecture Lite. Слои выделяются только там, где у
 кода есть самостоятельная ответственность.
