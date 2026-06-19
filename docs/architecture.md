@@ -65,8 +65,8 @@ infrastructure modules.
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
 - `bootstrap/help` - декларативный help registry и renderer;
-- `bootstrap/table-renderer.ts` - общий renderer простых plain-text таблиц для
-  CLI presentation layer;
+- `bootstrap/*-renderer.ts` - общие renderer-ы простых presentation-форматов
+  CLI, например plain-text таблиц и CSV-строк;
 - `bootstrap/command-registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
