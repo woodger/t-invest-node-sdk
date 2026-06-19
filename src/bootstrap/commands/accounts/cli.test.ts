@@ -52,8 +52,8 @@ describe('accounts command', () => {
     test('formats accounts as table', () => {
       const output = formatAccounts([account()], 'table');
 
-      assert.match(output, /^id\tname\ttype\tstatus\taccessLevel\topenedDate\tclosedDate/);
-      assert.match(output, /account-id\tMain account\tACCOUNT_TYPE_TINKOFF/);
+      assert.match(output, /^id\s+name\s+type\s+status\s+accessLevel\s+openedDate\s+closedDate/);
+      assert.match(output, /account-id\s+Main account\s+ACCOUNT_TYPE_TINKOFF/);
       assert.match(output, /ACCOUNT_ACCESS_LEVEL_FULL_ACCESS/);
     });
 
@@ -62,6 +62,9 @@ describe('accounts command', () => {
       const parsed = JSON.parse(output);
 
       assert.equal(parsed[0].id, 'account-id');
+      assert.equal(parsed[0].type, 'ACCOUNT_TYPE_TINKOFF');
+      assert.equal(parsed[0].status, 'ACCOUNT_STATUS_OPEN');
+      assert.equal(parsed[0].accessLevel, 'ACCOUNT_ACCESS_LEVEL_FULL_ACCESS');
       assert.equal(parsed[0].openedDate, '2026-06-19T00:00:00.000Z');
     });
   });

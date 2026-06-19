@@ -12,6 +12,16 @@ import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 
 type CandlesFormat = 'json' | 'csv';
 
+type CandleOutput = {
+  time: string;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volume: number;
+  isComplete: boolean;
+};
+
 type CandlesSdk = {
   marketdata: {
     getCandles(request: GetCandlesRequest): Promise<GetCandlesResponse>;
@@ -72,6 +82,18 @@ function formatQuotation(value: Quotation | undefined): string {
   return String(value.units + value.nano / 1e9);
 }
 
+function toCandleOutput(candle: HistoricCandle): CandleOutput {
+  return {
+    time: formatDate(candle.time),
+    open: formatQuotation(candle.open),
+    high: formatQuotation(candle.high),
+    low: formatQuotation(candle.low),
+    close: formatQuotation(candle.close),
+    volume: candle.volume,
+    isComplete: candle.isComplete
+  };
+}
+
 export function parseCandleInterval(argv: CliArgs): CandleInterval {
   const interval = ArgGuards.requireStringArg(argv, 'interval');
 
@@ -104,18 +126,20 @@ export function parseCandlesFormat(argv: CliArgs): CandlesFormat {
 }
 
 export function formatCandles(candles: HistoricCandle[], format: CandlesFormat): string {
+  const output = candles.map(toCandleOutput);
+
   if (format === 'json') {
-    return `${JSON.stringify(candles, null, 2)}\n`;
+    return `${JSON.stringify(output, null, 2)}\n`;
   }
 
   return [
     'time,open,high,low,close,volume,isComplete',
-    ...candles.map((candle) => [
-      formatDate(candle.time),
-      formatQuotation(candle.open),
-      formatQuotation(candle.high),
-      formatQuotation(candle.low),
-      formatQuotation(candle.close),
+    ...output.map((candle) => [
+      candle.time,
+      candle.open,
+      candle.high,
+      candle.low,
+      candle.close,
       candle.volume,
       candle.isComplete
     ].map(csvValue).join(',')),

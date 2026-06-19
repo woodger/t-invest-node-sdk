@@ -97,7 +97,12 @@ describe('candles command', () => {
       const parsed = JSON.parse(output);
 
       assert.equal(parsed[0].time, '2026-06-19T00:00:00.000Z');
+      assert.equal(parsed[0].open, '10.5');
+      assert.equal(parsed[0].high, '11');
+      assert.equal(parsed[0].low, '9.25');
+      assert.equal(parsed[0].close, '10.75');
       assert.equal(parsed[0].volume, 42);
+      assert.equal(parsed[0].isComplete, true);
     });
 
     test('formats candles as csv', () => {
