@@ -12,6 +12,7 @@ import {
   accountTypeToJSON,
   type Account
 } from '../../../generated/users';
+import { renderTextTable } from '../../table-renderer';
 
 export const accountsFormats = ['json', 'table'] as const;
 
@@ -33,22 +34,6 @@ function toReportAccount(account: Account): AccountsReportAccount {
   };
 }
 
-function renderTable(rows: string[][]): string {
-  const widths = rows[0].map((_, columnIndex) =>
-    Math.max(...rows.map((row) => row[columnIndex].length))
-  );
-
-  return [
-    ...rows.map((row) =>
-      row
-        .map((value, columnIndex) => value.padEnd(widths[columnIndex]))
-        .join('  ')
-        .trimEnd()
-    ),
-    ''
-  ].join('\n');
-}
-
 export function createAccountsReport(accounts: Account[]): AccountsReport {
   return accounts.map(toReportAccount);
 }
@@ -58,7 +43,7 @@ export function formatAccountsReport(report: AccountsReport, format: AccountsFor
     return `${JSON.stringify(report, null, 2)}\n`;
   }
 
-  return renderTable([
+  return renderTextTable([
     ['id', 'name', 'type', 'status', 'accessLevel', 'openedDate', 'closedDate'],
     ...report.map((account) => [
       account.id,
