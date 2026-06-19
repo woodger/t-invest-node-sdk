@@ -5,30 +5,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
 const node_test_1 = require("node:test");
-const throttle_1 = require("./throttle");
+const unary_throttle_service_1 = require("./unary-throttle.service");
 (0, node_test_1.describe)('Throttle', () => {
     (0, node_test_1.describe)('#resolveLimit', () => {
         (0, node_test_1.test)('returns the configured limit for a matching path', () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 MarketDataService: 300
             });
             node_assert_1.default.equal(throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.MarketDataService/GetCandles'), 300);
         });
         (0, node_test_1.test)('returns undefined for an unknown path', () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 KnownService: 100
             });
             node_assert_1.default.equal(throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'), undefined);
         });
         (0, node_test_1.test)('prefers the most specific matching key for overlapping routes', () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 OrdersService: 100,
                 '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders': 200
             });
             node_assert_1.default.equal(throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders'), 200);
         });
         (0, node_test_1.test)('does not depend on object key order for overlapping routes', () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders': 200,
                 OrdersService: 100
             });
@@ -37,13 +37,13 @@ const throttle_1 = require("./throttle");
     });
     (0, node_test_1.describe)('#reduce', () => {
         (0, node_test_1.test)('throws for unknown unary limit path', async () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 KnownService: 100
             });
             await node_assert_1.default.rejects(throttle.reduce('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'), /Unhandled unary limits/);
         });
         (0, node_test_1.test)('does not wait on the first request for a known path', async () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 MarketDataService: 300
             });
             const originalSetTimeout = global.setTimeout;
@@ -62,7 +62,7 @@ const throttle_1 = require("./throttle");
             }
         });
         (0, node_test_1.test)('waits according to the configured limit between requests', async () => {
-            const throttle = new throttle_1.Throttle({
+            const throttle = new unary_throttle_service_1.Throttle({
                 OrdersService: 100
             });
             const originalDate = global.Date;

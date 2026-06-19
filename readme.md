@@ -17,6 +17,7 @@ yarn add tinkoff-invest-node-sdk
 Документация ведется как обычные Markdown-файлы в каталоге `docs`:
 
 - [Обзор SDK](docs/index.md)
+- [Архитектура SDK](docs/architecture.md)
 - [Лимитная политика API](docs/limits-policy.md)
 - [Политики проекта](docs/policy/index.md)
 - [Политика тестирования](docs/policy/testing-policy.md)
@@ -69,6 +70,20 @@ interface TinkoffInvestOptions {
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
 
 Подробности по официальной лимитной политике API и её связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
+
+## CLI
+
+В проекте есть bootstrap CLI layer с command registry. После сборки доступны
+utility-команды:
+
+```bash
+node dist/bootstrap/cli/cli.js --help
+node dist/bootstrap/cli/cli.js help
+node dist/bootstrap/cli/cli.js version
+```
+
+Команды для работы с T-Invest API пока не добавлены. Runtime SDK API остается
+основным публичным интерфейсом пакета.
 
 ## Доступные сервисы
 
