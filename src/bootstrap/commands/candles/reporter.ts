@@ -8,20 +8,11 @@
 import type { CandlesReport, CandlesReportCandle } from '../../../application/reports';
 import type { Quotation } from '../../../generated/common';
 import type { HistoricCandle } from '../../../generated/marketdata';
+import { renderCsvRow } from '../../csv-renderer';
 
 export const candlesFormats = ['json', 'csv'] as const;
 
 export type CandlesFormat = typeof candlesFormats[number];
-
-function csvValue(value: string | number | boolean): string {
-  const text = String(value);
-
-  if (!/[",\n]/.test(text)) {
-    return text;
-  }
-
-  return `"${text.replaceAll('"', '""')}"`;
-}
 
 function formatDate(value: Date | undefined): string {
   return value?.toISOString() ?? '';
@@ -58,7 +49,7 @@ export function formatCandlesReport(report: CandlesReport, format: CandlesFormat
 
   return [
     'time,open,high,low,close,volume,isComplete',
-    ...report.map((candle) => [
+    ...report.map((candle) => renderCsvRow([
       candle.time,
       candle.open,
       candle.high,
@@ -66,7 +57,7 @@ export function formatCandlesReport(report: CandlesReport, format: CandlesFormat
       candle.close,
       candle.volume,
       candle.isComplete
-    ].map(csvValue).join(',')),
+    ])),
     ''
   ].join('\n');
 }
