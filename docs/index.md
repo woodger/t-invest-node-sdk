@@ -98,6 +98,7 @@ node dist/bootstrap/cli/cli.js candles --help
 ## Документация
 
 - Карта слоев SDK: [Архитектура SDK](./architecture.md)
+- Clean Architecture design notes: [Clean Architecture Notes](./clean-architecture/index.md)
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
 - Правила тестирования и test pipeline: [Политики проекта](./policy/index.md)
 - Правила запуска и написания тестов: [Политика тестирования](./policy/testing-policy.md)
