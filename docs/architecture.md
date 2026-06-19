@@ -35,6 +35,7 @@ provider-neutral правилами или моделями.
 Текущие зоны:
 
 - `application/dto` - входные SDK options и другие application-level contracts;
+- `application/reports` - стабильные output/report contracts API-команд;
 - `application/services` - reusable application services, например unary
   throttling.
 
@@ -61,13 +62,17 @@ infrastructure modules.
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
 - `bootstrap/cli` - CLI entrypoint layer;
 - `bootstrap/commands` - handlers CLI-команд;
+- `bootstrap/commands/*/reporter.ts` - presentation formatting application
+  report contracts;
 - `bootstrap/help` - декларативный help registry и renderer;
 - `bootstrap/command-registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
 CLI слой сейчас поддерживает `help`, `version`, `accounts`, `candles` и ошибку
 для неизвестных команд. API-команды остаются тонкими bootstrap handlers:
-они валидируют CLI-контракт, создают SDK facade и форматируют вывод.
+они валидируют CLI-контракт, создают SDK facade и передают provider response в
+reporter-модуль. Reporter-ы преобразуют generated DTO в
+`application/reports` contracts и форматируют вывод для CLI.
 
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
 primitive CLI-контракты и нормализует общие `TinkoffInvestOptions` из CLI/ENV.

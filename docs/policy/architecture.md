@@ -88,6 +88,7 @@ Bootstrap
 - application services;
 - ports;
 - DTO;
+- report/output contracts;
 - сценарные ошибки;
 - orchestration между domain-логикой и ports.
 
@@ -221,6 +222,8 @@ Bootstrap
 
 - `*.service.ts` - application/domain service;
 - `*.port.ts` - application port;
+- `*.report.ts` - application report/output contract;
+- `reporter.ts` внутри `bootstrap/commands/<command>` - bootstrap presentation reporter;
 - `*.policy.ts` - правило или политика;
 - `*.validator.ts` - validator;
 - `*.mapper.ts` - mapper между слоями или форматами;

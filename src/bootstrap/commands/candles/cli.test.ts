@@ -9,7 +9,6 @@ import {
 import type { CliArgs } from '../../cli-contract';
 import {
   createCandlesCommand,
-  formatCandles,
   parseCandleInterval,
   parseCandlesFormat,
   parseCandlesRequest
@@ -88,28 +87,6 @@ describe('candles command', () => {
   describe('parseCandlesFormat', () => {
     test('returns json by default', () => {
       assert.equal(parseCandlesFormat(argv()), 'json');
-    });
-  });
-
-  describe('formatCandles', () => {
-    test('formats candles as json', () => {
-      const output = formatCandles([candle()], 'json');
-      const parsed = JSON.parse(output);
-
-      assert.equal(parsed[0].time, '2026-06-19T00:00:00.000Z');
-      assert.equal(parsed[0].open, '10.5');
-      assert.equal(parsed[0].high, '11');
-      assert.equal(parsed[0].low, '9.25');
-      assert.equal(parsed[0].close, '10.75');
-      assert.equal(parsed[0].volume, 42);
-      assert.equal(parsed[0].isComplete, true);
-    });
-
-    test('formats candles as csv', () => {
-      const output = formatCandles([candle()], 'csv');
-
-      assert.match(output, /^time,open,high,low,close,volume,isComplete/);
-      assert.match(output, /2026-06-19T00:00:00.000Z,10.5,11,9.25,10.75,42,true/);
     });
   });
 
