@@ -10,11 +10,11 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "tinkoff-invest-node-sdk": "./dist/bootstrap/cli/cli.js"
+    "tinkoff-invest-node-sdk": "./dist/bootstrap/cli.js"
   },
   "scripts": {
     "build": "tsc",

@@ -96,7 +96,7 @@ CliArgs
 | generated API response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | application report -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
 | output values -> JSON/CSV/table | `infrastructure/renderers/*` | без изменений, пока renderer-ы остаются механическими |
-| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli` | без изменений |
+| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli.ts` | без изменений |
 
 ## Типичные Ошибки
 

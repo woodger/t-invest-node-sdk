@@ -179,7 +179,7 @@ Bootstrap
 - `domain`;
 - `application`;
 - `infrastructure`;
-- `bootstrap` и вложенные bootstrap entrypoints вроде `bootstrap/cli`;
+- `bootstrap`, `bootstrap/cli.ts` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
 - `internal`;
 - `generated`;
 - `docs`;
