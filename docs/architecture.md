@@ -77,7 +77,7 @@ infrastructure modules.
 - `bootstrap/version.ts` - presentation-контракт версии.
 
 CLI слой сейчас поддерживает `help`, `version`, `accounts`, `candles`,
-`portfolio`, `positions` и ошибку для неизвестных команд. API-команды остаются
+`last-prices`, `portfolio`, `positions` и ошибку для неизвестных команд. API-команды остаются
 тонкими bootstrap handlers:
 они валидируют CLI-контракт, создают SDK facade и передают provider response в
 reporter-модуль. Reporter-ы преобразуют generated DTO в
