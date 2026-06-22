@@ -18,6 +18,8 @@ yarn add tinkoff-invest-node-sdk
 
 - [Обзор SDK](docs/index.md)
 - [Архитектура SDK](docs/architecture.md)
+- [Clean Architecture Notes](docs/clean-architecture/index.md)
+- [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
 - [Лимитная политика API](docs/limits-policy.md)
 - [Политики проекта](docs/policy/index.md)
 - [Политика тестирования](docs/policy/testing-policy.md)
