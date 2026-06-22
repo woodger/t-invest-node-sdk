@@ -3,8 +3,7 @@
  *
  * Здесь допустимы:
  * - распознавание help-флагов;
- * - выбор между общим help и command-specific help;
- * - реэкспорт renderer-функций для entrypoint/bootstrap.
+ * - выбор между общим help и command-specific help.
  *
  * Здесь не должно быть разбора command arguments или зависимости от application/infrastructure слоя.
  */
@@ -12,9 +11,6 @@
 import type { CliArgs } from '../cli-contract';
 import { isCommandHelpName } from './commands';
 import { renderCliHelp, renderCommandHelp } from './renderer';
-
-export { isCommandHelpName } from './commands';
-export { renderCliHelp, renderCommandHelp } from './renderer';
 
 export function isHelpRequested(argv: CliArgs): boolean {
   return argv.help === true || argv.h === true;

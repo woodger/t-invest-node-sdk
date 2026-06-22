@@ -9,7 +9,15 @@
  * Здесь не должно быть исполнения команд или разбора argv.
  */
 
-import type { CommandHelp } from './types';
+export interface CommandHelp {
+  description: string;
+  usage: readonly string[];
+  required?: readonly string[];
+  optional?: readonly string[];
+  environment?: readonly string[];
+  examples: readonly string[];
+  notes?: readonly string[];
+}
 
 export const commandHelp = {
   accounts: {
