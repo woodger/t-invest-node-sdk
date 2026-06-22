@@ -10,6 +10,10 @@
 - `accounts` - получает счета пользователя;
 - `candles` - получает исторические свечи.
 
+Этот список не считается конечным. Новые API-команды добавляются
+инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
+команды. Общий command framework заранее не вводится.
+
 Команда делает несколько разных вещей:
 
 1. принимает CLI args;
@@ -28,7 +32,8 @@
 ```text
 src/bootstrap
   args/
-  cli/
+  cli.ts
+  command-registry.ts
   commands/
     accounts/
       cli.ts
@@ -123,7 +128,8 @@ string -> stdout
 ```text
 src/bootstrap
   args/
-  cli/
+  cli.ts
+  command-registry.ts
   commands/
     accounts/
       cli.ts
@@ -173,5 +179,39 @@ Use-case стоит выделять, если появляется хотя б�
 - держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
 - использовать `infrastructure/renderers` только для общей механики формата;
 - не класть JSON/CSV/table formatting в stdout sink;
+- регистрировать команду в `bootstrap/command-registry.ts`;
+- добавлять help metadata в `bootstrap/help/commands.ts`;
+- добавлять тесты рядом с конкретными файлами команды;
+- не вводить общий command framework до появления реального повторения в
+  нескольких командах;
 - сверять новые output-решения с
   [Разделением форматирования и вывода в CLI](./cli-output-boundaries.md).
+
+## Когда Обобщать Commands
+
+Обобщение command lifecycle допустимо только после появления повторения с
+одинаковой ответственностью.
+
+До этого каждая команда остается явной:
+
+```text
+bootstrap/commands/<command>/cli.ts
+bootstrap/commands/<command>/reporter.ts
+application/reports/<command>.report.ts
+```
+
+Допустимые причины для extract-а:
+
+- один и тот же SDK lifecycle повторяется в 3+ API-командах;
+- одинаковый parsing/validation pattern больше не выражается существующими
+  `ArgGuards`;
+- tests начинают дублировать setup без изменения сценария;
+- общий код получает понятную ответственность и не скрывает command-specific
+  различия.
+
+Недопустимые причины:
+
+- будущий список команд неизвестен, поэтому хочется подготовить framework;
+- две команды выглядят похожими внешне, но имеют разные request/report/output
+  правила;
+- хочется сократить количество строк в `commands/*/cli.ts`.
