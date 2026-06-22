@@ -8,7 +8,8 @@
 import type { CandlesReport, CandlesReportCandle } from '../../../application/reports';
 import type { Quotation } from '../../../generated/common';
 import type { HistoricCandle } from '../../../generated/marketdata';
-import { renderCsvRow } from '../../csv-renderer';
+import { renderCsvRow } from '../../../infrastructure/renderers/csv-renderer';
+import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 
 export const candlesFormats = ['json', 'csv'] as const;
 
@@ -44,7 +45,7 @@ export function createCandlesReport(candles: HistoricCandle[]): CandlesReport {
 
 export function formatCandlesReport(report: CandlesReport, format: CandlesFormat): string {
   if (format === 'json') {
-    return `${JSON.stringify(report, null, 2)}\n`;
+    return renderJson(report);
   }
 
   return [

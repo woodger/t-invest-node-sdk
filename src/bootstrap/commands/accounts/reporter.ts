@@ -12,7 +12,8 @@ import {
   accountTypeToJSON,
   type Account
 } from '../../../generated/users';
-import { renderTextTable } from '../../table-renderer';
+import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const accountsFormats = ['json', 'table'] as const;
 
@@ -40,7 +41,7 @@ export function createAccountsReport(accounts: Account[]): AccountsReport {
 
 export function formatAccountsReport(report: AccountsReport, format: AccountsFormat): string {
   if (format === 'json') {
-    return `${JSON.stringify(report, null, 2)}\n`;
+    return renderJson(report);
   }
 
   return renderTextTable([

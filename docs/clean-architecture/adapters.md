@@ -9,20 +9,29 @@
 преобразуют внутренние contracts в форму конкретного внешнего интерфейса и
 обратно.
 
-В Inventory adapters живут в `infrastructure/adapters/**`. В текущем SDK пока
-есть только `infrastructure/grpc/**`, а CLI reporter-ы и renderers временно
-лежат в `bootstrap`.
+В Inventory CLI-команды живут в `bootstrap`, а технические интеграции вынесены
+наружу. В текущем SDK используется такой же компактный вариант: command-specific
+CLI reporter-ы остаются рядом с командами в `bootstrap`, а механический
+rendering и output sinks вынесены в `infrastructure`.
+
+Focused правила по JSON/CSV/table formatting и stdout delivery описаны в
+[Разделение форматирования и вывода в CLI](./cli-output-boundaries.md).
 
 ## Текущее Состояние
 
 ```text
 src/infrastructure
   grpc/
+  output/
+    stderr-writer.ts
+    stdout-writer.ts
+  renderers/
+    csv-renderer.ts
+    json-renderer.ts
+    table-renderer.ts
 
 src/bootstrap
   commands/*/reporter.ts
-  csv-renderer.ts
-  table-renderer.ts
 ```
 
 `infrastructure/grpc` - технический adapter к `nice-grpc`:
@@ -32,14 +41,29 @@ src/bootstrap
 - middleware;
 - typed clients.
 
-`bootstrap/commands/*/reporter.ts` сейчас выполняет роль CLI adapter-а:
+`infrastructure/renderers` - технический renderer layer:
+
+- pretty JSON;
+- CSV escaping;
+- plain-text table alignment.
+
+Renderer-ы не знают про конкретные команды, generated DTO или application
+services. Они получают уже выбранные значения и возвращают строку.
+
+`infrastructure/output` - технические sinks:
+
+- `stdout-writer`;
+- `stderr-writer`.
+
+Sinks принимают готовый текст и пишут его во внешний поток. Они не знают, как
+строить JSON, CSV или таблицу.
+
+`bootstrap/commands/*/reporter.ts` выполняет роль command-specific CLI adapter-а:
 
 - принимает generated response;
 - строит application report;
-- форматирует report для CLI.
-
-Это допустимый промежуточный шаг для маленького проекта, но не лучший
-долгосрочный placement.
+- выбирает поля, порядок и пользовательское представление;
+- использует общие renderer-ы для технического JSON/CSV/table rendering.
 
 ## Adapter И Sink
 
@@ -53,69 +77,26 @@ stdout sink:
   string -> process.stdout
 ```
 
-Если JSON/CSV/table formatter положить в `infrastructure/stdout`, слой будет
-назван по конкретному каналу записи, но фактически будет владеть presentation
-policy. Это смешивает ответственности.
-
-## Варианты Placement
-
-### `src/presentation/cli`
-
-Плюсы:
-
-- название прямо говорит о presentation formatting;
-- stdout остается отдельным sink;
-- bootstrap не растет.
-
-Минусы:
-
-- добавляется новый top-level слой, которого сейчас нет в проекте.
-
-### `src/interface-adapters/cli`
-
-Плюсы:
-
-- ближе к терминологии Clean Architecture;
-- хорошо описывает роль `application report -> external interface`;
-- отделяет adapter от technical sink.
-
-Минусы:
-
-- тоже добавляет новый top-level слой;
-- потребуется расширить архитектурную policy.
-
-### `src/infrastructure/adapters/cli`
-
-Плюсы:
-
-- ближе к структуре Inventory;
-- adapters живут рядом с другой внешней интеграцией;
-- не добавляет отдельный top-level слой.
-
-Минусы:
-
-- нужно строго отделять CLI formatting от stdout sink;
-- есть риск складывать в infrastructure любую presentation logic без ясной
-  границы.
-
-## Рабочий Вариант Для Текущего SDK
-
-Если не вводить новый top-level слой, наиболее практичный вариант:
+Если JSON/CSV/table formatter положить в `infrastructure/output`, слой будет
+назван по конкретному каналу записи, но фактически начнет владеть presentation
+policy. Поэтому output sinks и renderers разделены:
 
 ```text
 src/infrastructure
-  adapters/
-    cli/
-      commands/
-      renderers/
-    stdout/
+  renderers/
+    json-renderer.ts
+    csv-renderer.ts
+    table-renderer.ts
+  output/
+    stdout-writer.ts
+    stderr-writer.ts
 ```
 
 Граница:
 
-- `adapters/cli` знает про `application/reports` и CLI output formats;
-- `adapters/stdout` знает только про запись готовой строки;
-- `bootstrap` собирает command handler, SDK facade и adapter;
+- `bootstrap/commands/*/reporter.ts` знает про команду и ее output contract;
+- `infrastructure/renderers` знает только про механику формата;
+- `infrastructure/output` знает только про запись готовой строки;
 - `application` не импортирует adapters.
 
 ## Dependency Direction
@@ -123,29 +104,30 @@ src/infrastructure
 Допустимо:
 
 ```text
-bootstrap -> infrastructure/adapters/cli -> application/reports
-bootstrap -> infrastructure/adapters/stdout
+bootstrap/commands/*/reporter.ts -> application/reports
+bootstrap -> infrastructure/renderers
+bootstrap -> infrastructure/output
 infrastructure/grpc -> application/services
 ```
 
 Недопустимо:
 
 ```text
-application -> infrastructure/adapters/cli
+application -> bootstrap/commands/*/reporter.ts
 application -> bootstrap
-infrastructure/adapters/stdout -> CLI report formatting
+infrastructure/renderers -> bootstrap/commands
+infrastructure/output -> CLI report formatting
 ```
 
 ## Migration Notes
 
-Без изменения поведения можно двигаться маленькими шагами:
+Перенос выполнен без изменения поведения:
 
-1. Перенести `bootstrap/*-renderer.ts` в `infrastructure/adapters/cli/renderers`.
-2. Перенести `bootstrap/commands/*/reporter.ts` в
-   `infrastructure/adapters/cli/commands/*/reporter.ts`.
-3. Оставить `bootstrap/commands/*/cli.ts` как тонкие entrypoints.
-4. Если появится реальный output sink abstraction, добавить
-   `infrastructure/adapters/stdout`.
+1. `bootstrap/*-renderer.ts` перенесены в `infrastructure/renderers`.
+2. Добавлен общий `json-renderer`, чтобы не дублировать pretty JSON в командах.
+3. Добавлены `stdout-writer` и `stderr-writer` как технические sinks.
+4. `bootstrap/commands/*/reporter.ts` оставлены рядом с командами, как в
+   Inventory.
 
 Отдельный use-case слой нужен только когда command перестает быть простой
 оберткой над одним SDK call.

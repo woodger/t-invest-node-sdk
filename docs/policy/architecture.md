@@ -224,6 +224,10 @@ Bootstrap
 - `*.port.ts` - application port;
 - `*.report.ts` - application report/output contract;
 - `reporter.ts` внутри `bootstrap/commands/<command>` - bootstrap presentation reporter;
+- `*-renderer.ts` внутри `infrastructure/renderers` - механический renderer
+  готовых значений в конкретный текстовый формат;
+- `*-writer.ts` внутри `infrastructure/output` - технический sink для записи
+  готового текста;
 - `*.policy.ts` - правило или политика;
 - `*.validator.ts` - validator;
 - `*.mapper.ts` - mapper между слоями или форматами;

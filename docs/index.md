@@ -92,13 +92,19 @@ node dist/bootstrap/cli/cli.js candles --help
 - размещать handler в `src/bootstrap/commands`;
 - использовать `src/bootstrap/args` для primitive CLI validation и общих SDK options;
 - описывать стабильный output contract в `src/application/reports`;
-- форматировать output в `src/bootstrap/commands/*/reporter.ts`;
+- держать command-specific formatting в `src/bootstrap/commands/*/reporter.ts`;
+- использовать `src/infrastructure/renderers` только для механического
+  JSON/CSV/table rendering;
+- использовать `src/infrastructure/output` только для записи готового текста;
+- сверять новые JSON/CSV/table решения с
+  [Разделением форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md);
 - не переносить gRPC или business-логику в CLI parser.
 
 ## Документация
 
 - Карта слоев SDK: [Архитектура SDK](./architecture.md)
 - Clean Architecture design notes: [Clean Architecture Notes](./clean-architecture/index.md)
+- Границы CLI formatting и stdout: [Разделение форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md)
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
 - Правила тестирования и test pipeline: [Политики проекта](./policy/index.md)
 - Правила запуска и написания тестов: [Политика тестирования](./policy/testing-policy.md)
