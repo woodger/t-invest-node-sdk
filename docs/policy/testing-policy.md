@@ -108,6 +108,59 @@ Runner из `src/suite.ts`:
 
 Допустимо иметь несколько assertions в одном тесте, если они описывают один и тот же contract. Если assertions проверяют разные причины изменения поведения, их нужно разделить на отдельные тесты.
 
+## Граница тестового файла
+
+Тестовый файл должен покрывать конкретный production-файл, а не директорию.
+
+Правило соответствия:
+
+```text
+src/bootstrap/help/renderer.ts      -> src/bootstrap/help/renderer.test.ts
+src/bootstrap/help/commands.ts      -> src/bootstrap/help/commands.test.ts
+src/bootstrap/help/help.ts          -> src/bootstrap/help/help.test.ts
+src/bootstrap/cli/cli.ts            -> src/bootstrap/cli/cli.test.ts
+```
+
+Запрещено создавать тест, который по имени выглядит как тест директории или
+barrel-модуля:
+
+```text
+src/bootstrap/help.test.ts          # покрывает директорию help/
+src/bootstrap/help/index.test.ts    # покрывает barrel-only index.ts
+```
+
+Исключение допустимо только если файл действительно является runtime entrypoint
+или package entrypoint с собственным поведением. В этом случае тест должен
+проверять именно поведение entrypoint, а не внутренние файлы директории.
+
+Если `index.ts` содержит только re-export-ы, отдельный тест для него не нужен.
+Тестировать нужно файлы, в которых находится логика.
+
+## Импорты в тестах
+
+Unit-тесты должны импортировать код из конкретного файла, который они проверяют.
+
+Допустимо:
+
+```ts
+import { renderCliHelp } from './renderer';
+import { isHelpRequested } from './help'; // если рядом есть файл help.ts
+```
+
+Запрещено для unit-теста конкретного файла:
+
+```ts
+import { renderCliHelp } from './index';
+import { renderCliHelp } from '../help';
+```
+
+Второй пример запрещен, если `../help` резолвится как директория или barrel, а
+не как конкретный файл.
+
+Integration-тест может идти через публичный entrypoint, если проверяет
+наблюдаемое поведение entrypoint: exit code, stdout/stderr, dispatch, wiring или
+public API contract.
+
 ## Изоляция
 
 Тест должен минимизировать зависимость от:
