@@ -80,13 +80,15 @@ node dist/bootstrap/cli.js version
 node dist/bootstrap/cli.js accounts --help
 node dist/bootstrap/cli.js candles --help
 node dist/bootstrap/cli.js portfolio --help
+node dist/bootstrap/cli.js positions --help
 ```
 
 Сейчас CLI содержит первые API-команды:
 
 - `accounts` - список счетов пользователя;
 - `candles` - исторические свечи;
-- `portfolio` - текущий портфель по счету.
+- `portfolio` - текущий портфель по счету;
+- `positions` - позиции по счету.
 
 Новые команды должны:
 

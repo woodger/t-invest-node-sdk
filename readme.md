@@ -85,6 +85,7 @@ node dist/bootstrap/cli.js version
 node dist/bootstrap/cli.js accounts --help
 node dist/bootstrap/cli.js candles --help
 node dist/bootstrap/cli.js portfolio --help
+node dist/bootstrap/cli.js positions --help
 ```
 
 API-команды используют `--token` / `TINKOFF_TOKEN` и

@@ -31,6 +31,9 @@ src/bootstrap
     portfolio/
       cli.ts
       reporter.ts
+    positions/
+      cli.ts
+      reporter.ts
 
 src/infrastructure
   renderers/

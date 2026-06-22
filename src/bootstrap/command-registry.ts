@@ -13,6 +13,7 @@ import { accounts } from './commands/accounts/cli';
 import { candles } from './commands/candles/cli';
 import { help } from './commands/help/cli';
 import { portfolio } from './commands/portfolio/cli';
+import { positions } from './commands/positions/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
 
@@ -33,6 +34,10 @@ const commandRegistry = {
   portfolio: {
     requiresContext: false,
     handler: portfolio
+  },
+  positions: {
+    requiresContext: false,
+    handler: positions
   },
   help: {
     requiresContext: false,

@@ -13,6 +13,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /accounts/);
     assert.match(help, /candles/);
     assert.match(help, /portfolio/);
+    assert.match(help, /positions/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /Examples:/);
