@@ -66,6 +66,7 @@ infrastructure modules.
 Текущие зоны:
 
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
+- `bootstrap/compile-proto.ts` - package script entrypoint для proto generation;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
 - `bootstrap/cli.ts` - CLI entrypoint layer;
 - `bootstrap/commands` - handlers CLI-команд;
@@ -86,22 +87,22 @@ rendering.
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
 primitive CLI-контракты и нормализует общие `TinkoffInvestOptions` из CLI/ENV.
 
-## Public Compatibility Entrypoints
+## Public Entrypoints
 
-Корневые файлы сохраняют совместимость существующих imports:
+Корневые файлы держат только package entrypoint, runtime config и generated
+exports exception:
 
 - `src/index.ts` - основной package entrypoint;
 - `src/config.ts` - публичная конфигурация unary limits;
-- `src/tinkoff-invest-node-sdk.ts` - re-export публичного SDK facade и options;
-- `src/sdk-internals.ts` - compatibility re-export для gRPC internals;
-- `src/throttle.ts` - compatibility re-export throttling service.
+- `src/config.types.ts` - типы публичной конфигурации;
+- `src/generated-exports.ts` - aggregation layer для публичных generated exports.
 
-Новый код должен импортировать реализацию из слоя-владельца, а не из
-compatibility wrappers.
+Новый код должен импортировать реализацию из слоя-владельца. Root-level
+compatibility wrappers не создаются.
 
 ## Generated Code
 
 `src/generated/**` воспроизводится из `contracts/*.proto` и не редактируется
-вручную.
-
-Публичные generated exports собраны в `src/generated-exports.ts`.
+вручную. `src/generated/**` и `src/generated-exports.ts` являются
+top-level исключением из компактной структуры `src`, потому что package
+entrypoint реэкспортирует generated public API.

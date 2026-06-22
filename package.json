@@ -10,7 +10,7 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "test": "node dist/suite.js",
-    "proto": "node dist/compile-proto.js",
+    "proto": "node dist/bootstrap/compile-proto.js",
     "lint": "eslint src eslint.config.mjs"
   },
   "dependencies": {

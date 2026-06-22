@@ -35,7 +35,7 @@ yarn add tinkoff-invest-node-sdk
 npm run proto
 ```
 
-Скрипт использует собранный файл `dist/compile-proto.js`, поэтому перед первым запуском после изменений в `src/compile-proto.ts` нужно выполнить:
+Скрипт использует собранный файл `dist/bootstrap/compile-proto.js`, поэтому перед первым запуском после изменений в `src/bootstrap/compile-proto.ts` нужно выполнить:
 
 ```bash
 npm run build

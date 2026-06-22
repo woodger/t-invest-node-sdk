@@ -46,7 +46,9 @@ src/infrastructure
 
 src/bootstrap
   args/
-  cli/
+  cli.ts
+  compile-proto.ts
+  command-registry.ts
   commands/
   help/
   tinkoff-invest-node-sdk.ts
@@ -62,7 +64,8 @@ contracts и не содержит самостоятельную provider-neutr
 - `application` описывает стабильные контракты и reusable application rules;
 - `infrastructure` содержит внешние технологии и adapters;
 - `bootstrap` собирает runtime entrypoints и связывает зависимости;
-- `generated` содержит proto-generated contracts и не редактируется вручную.
+- `generated` содержит proto-generated contracts и не редактируется вручную;
+- `generated-exports.ts` остается top-level generated public export exception.
 
 Если новая логика не укладывается в эту карту, нужно сначала уточнить
 архитектурное намерение и обновить документацию.

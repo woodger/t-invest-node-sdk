@@ -1,10 +1,6 @@
-import type { UnaryLimits } from './application/services/unary-throttle.service';
+import type { TinkoffInvestNodeSDKConfig } from './config.types';
 
-export type { UnaryLimits };
-
-export interface TinkoffInvestNodeSDKConfig {
-  unaryLimits: UnaryLimits;
-}
+export type { TinkoffInvestNodeSDKConfig, UnaryLimits } from './config.types';
 
 // Ключи сопоставляются с gRPC path и могут быть как сервисными, так и метод-специфичными.
 export const defaultConfig: TinkoffInvestNodeSDKConfig = {
