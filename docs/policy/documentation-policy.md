@@ -13,12 +13,13 @@
 Для SDK действуют следующие источники истины:
 
 - public package entrypoint: `src/index.ts`;
-- SDK client API: `src/bootstrap/tinkoff-invest-node-sdk.ts` и compatibility re-export `src/tinkoff-invest-node-sdk.ts`;
+- SDK client API: `src/bootstrap/tinkoff-invest-node-sdk.ts`;
 - application report contracts: `src/application/reports/**`;
 - Clean Architecture design notes: `docs/clean-architecture/**`;
-- runtime gRPC internals: `src/infrastructure/transport/grpc/**` и compatibility re-export `src/sdk-internals.ts`;
-- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/config.ts` и compatibility re-export `src/throttle.ts`;
+- runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
+- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/config.ts` и `src/config.types.ts`;
 - CLI entrypoint: `src/bootstrap/cli.ts`, `src/bootstrap/args/**`, `src/bootstrap/command-registry.ts`, `src/bootstrap/commands/**`, `src/bootstrap/help/**`, `src/bootstrap/version.ts`;
+- proto generation entrypoint: `src/bootstrap/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
 - proto wire contracts: `contracts/*.proto`;
 - generated exports: `src/generated-exports.ts` и `src/generated/**`;

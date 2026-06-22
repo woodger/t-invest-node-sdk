@@ -119,7 +119,7 @@ TypeScript-код из `contracts/*.proto` генерируется через:
 npm run proto
 ```
 
-Скрипт использует `dist/compile-proto.js`, поэтому после изменений в `src/compile-proto.ts` сначала нужно пересобрать проект:
+Скрипт использует `dist/bootstrap/compile-proto.js`, поэтому после изменений в `src/bootstrap/compile-proto.ts` сначала нужно пересобрать проект:
 
 ```bash
 npm run build
