@@ -74,11 +74,11 @@ interface TinkoffInvestOptions {
 После сборки CLI можно вызвать напрямую:
 
 ```bash
-node dist/bootstrap/cli/cli.js --help
-node dist/bootstrap/cli/cli.js help
-node dist/bootstrap/cli/cli.js version
-node dist/bootstrap/cli/cli.js accounts --help
-node dist/bootstrap/cli/cli.js candles --help
+node dist/bootstrap/cli.js --help
+node dist/bootstrap/cli.js help
+node dist/bootstrap/cli.js version
+node dist/bootstrap/cli.js accounts --help
+node dist/bootstrap/cli.js candles --help
 ```
 
 Сейчас CLI содержит первые API-команды:

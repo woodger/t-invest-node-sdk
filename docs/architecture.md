@@ -67,7 +67,7 @@ infrastructure modules.
 
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
-- `bootstrap/cli` - CLI entrypoint layer;
+- `bootstrap/cli.ts` - CLI entrypoint layer;
 - `bootstrap/commands` - handlers CLI-команд;
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;

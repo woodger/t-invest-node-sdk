@@ -118,7 +118,7 @@ Runner из `src/suite.ts`:
 src/bootstrap/help/renderer.ts      -> src/bootstrap/help/renderer.test.ts
 src/bootstrap/help/commands.ts      -> src/bootstrap/help/commands.test.ts
 src/bootstrap/help/help.ts          -> src/bootstrap/help/help.test.ts
-src/bootstrap/cli/cli.ts            -> src/bootstrap/cli/cli.test.ts
+src/bootstrap/cli.ts                -> src/bootstrap/cli.test.ts
 ```
 
 Запрещено создавать тест, который по имени выглядит как тест директории или
