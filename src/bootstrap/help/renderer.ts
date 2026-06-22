@@ -10,8 +10,7 @@
  */
 
 import packageJson from '../../../package.json';
-import type { CommandHelp } from './types';
-import { commandHelp, type CommandHelpName } from './commands';
+import { commandHelp, type CommandHelp, type CommandHelpName } from './commands';
 
 function renderSection(title: string, rows: readonly string[] | undefined): string[] {
   if (rows === undefined || rows.length === 0) {

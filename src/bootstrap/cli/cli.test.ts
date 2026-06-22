@@ -1,6 +1,5 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { renderCliHelp } from '../help';
 import { parseCliArgs, runCli } from './cli';
 
 function createIo() {
@@ -105,6 +104,16 @@ describe('bootstrap cli', () => {
       assert.equal(read().stderr, '');
     });
 
+    test('prints command-specific help from help command argument', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['help', 'version'], io);
+
+      assert.equal(exitCode, 0);
+      assert.match(read().stdout, /version - Show package and runtime version info/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk --version/);
+      assert.equal(read().stderr, '');
+    });
+
     test('prints version from version command and global flag', async () => {
       for (const command of ['version', '--version']) {
         const { io, read } = createIo();
@@ -125,18 +134,6 @@ describe('bootstrap cli', () => {
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Unknown command: orders/);
       assert.match(read().stderr, /Usage:/);
-    });
-  });
-
-  describe('renderCliHelp', () => {
-    test('renders top-level help', () => {
-      const help = renderCliHelp();
-
-      assert.match(help, /Usage:/);
-      assert.match(help, /Global options:/);
-      assert.match(help, /Commands:/);
-      assert.match(help, /tinkoff-invest-node-sdk --help/);
-      assert.doesNotMatch(help, /Examples:/);
     });
   });
 });

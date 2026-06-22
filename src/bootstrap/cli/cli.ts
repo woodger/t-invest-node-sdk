@@ -4,7 +4,8 @@ import type { CliArgs } from '../cli-contract';
 import { createStderrWriter } from '../../infrastructure/output/stderr-writer';
 import { createStdoutWriter } from '../../infrastructure/output/stdout-writer';
 import { resolveCommand } from '../command-registry';
-import { isHelpRequested, renderCliHelp, renderHelp } from '../help';
+import { isHelpRequested, renderHelp } from '../help/help';
+import { renderCliHelp } from '../help/renderer';
 import { isVersionRequested, renderVersionInfo } from '../version';
 
 type CliWritable = {
