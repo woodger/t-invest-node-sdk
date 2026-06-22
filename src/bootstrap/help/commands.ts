@@ -69,6 +69,30 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  portfolio: {
+    description: 'Print account portfolio',
+    usage: [
+      'tinkoff-invest-node-sdk portfolio --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from the accounts command'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--currency=rub|usd|eur Portfolio valuation currency (default: rub)',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk portfolio --account-id=2000000000 --format=json'
+    ]
+  },
   help: {
     description: 'Show top-level or command-specific help',
     usage: [

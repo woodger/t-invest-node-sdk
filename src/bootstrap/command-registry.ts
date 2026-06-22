@@ -12,6 +12,7 @@
 import { accounts } from './commands/accounts/cli';
 import { candles } from './commands/candles/cli';
 import { help } from './commands/help/cli';
+import { portfolio } from './commands/portfolio/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
 
@@ -28,6 +29,10 @@ const commandRegistry = {
   candles: {
     requiresContext: false,
     handler: candles
+  },
+  portfolio: {
+    requiresContext: false,
+    handler: portfolio
   },
   help: {
     requiresContext: false,

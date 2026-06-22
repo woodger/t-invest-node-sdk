@@ -8,7 +8,8 @@
 В SDK появились API-команды:
 
 - `accounts` - получает счета пользователя;
-- `candles` - получает исторические свечи.
+- `candles` - получает исторические свечи;
+- `portfolio` - получает текущий портфель по счету.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -39,6 +40,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     candles/
+      cli.ts
+      reporter.ts
+    portfolio/
       cli.ts
       reporter.ts
 
@@ -135,6 +139,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     candles/
+      cli.ts
+      reporter.ts
+    portfolio/
       cli.ts
       reporter.ts
 
