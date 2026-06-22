@@ -21,6 +21,9 @@ src/application
   reports/
     accounts.report.ts
     candles.report.ts
+    last-prices.report.ts
+    portfolio.report.ts
+    positions.report.ts
   services/
     unary-throttle.service.ts
 ```
