@@ -27,6 +27,8 @@ Policy source of truth по ограничениям и направлению �
 - [DTO и Reports](./dto.md) - где живут boundary contracts.
 - [API Commands](./api-commands.md) - текущий CLI flow и границы command layer.
 - [Adapters](./adapters.md) - место CLI adapters, renderers и stdout sink.
+- [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) -
+  границы JSON/CSV/table formatting и записи в stdout.
 
 ## Текущая Карта
 
@@ -38,13 +40,14 @@ src/application
 
 src/infrastructure
   grpc/
+  output/
+  renderers/
 
 src/bootstrap
   args/
   cli/
   commands/
   help/
-  *-renderer.ts
   tinkoff-invest-node-sdk.ts
 ```
 

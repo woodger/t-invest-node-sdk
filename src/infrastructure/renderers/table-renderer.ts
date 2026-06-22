@@ -1,5 +1,5 @@
 /**
- * Модуль рендеринга простых plain-text таблиц для CLI presentation layer.
+ * Модуль рендеринга простых plain-text таблиц.
  *
  * Здесь не должно быть знаний о конкретных командах, application reports или
  * provider DTO.

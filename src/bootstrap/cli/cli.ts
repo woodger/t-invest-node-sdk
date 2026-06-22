@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import type { CliArgs } from '../cli-contract';
+import { createStderrWriter } from '../../infrastructure/output/stderr-writer';
+import { createStdoutWriter } from '../../infrastructure/output/stdout-writer';
 import { resolveCommand } from '../command-registry';
 import { isHelpRequested, renderCliHelp, renderHelp } from '../help';
 import { isVersionRequested, renderVersionInfo } from '../version';
@@ -82,8 +84,8 @@ function renderCommandError(error: unknown): string {
 export async function runCli(
   argv = process.argv.slice(2),
   io: CliIO = {
-    stdout: process.stdout,
-    stderr: process.stderr
+    stdout: createStdoutWriter(),
+    stderr: createStderrWriter()
   }
 ): Promise<number> {
   const parsedArgv = parseCliArgs(argv);

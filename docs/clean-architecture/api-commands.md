@@ -36,8 +36,15 @@ src/bootstrap
     candles/
       cli.ts
       reporter.ts
-  csv-renderer.ts
-  table-renderer.ts
+
+src/infrastructure
+  output/
+    stderr-writer.ts
+    stdout-writer.ts
+  renderers/
+    csv-renderer.ts
+    json-renderer.ts
+    table-renderer.ts
 ```
 
 `cli.ts` сейчас отвечает за:
@@ -51,11 +58,16 @@ src/bootstrap
 `reporter.ts` сейчас отвечает за:
 
 - mapping generated response в application report;
-- JSON/CSV/table formatting.
+- выбор command-specific output contract;
+- подготовку значений для JSON/CSV/table output.
 
-`*-renderer.ts` сейчас отвечает за:
+`infrastructure/renderers/*` сейчас отвечает за:
 
-- технические детали plain-text table или CSV row rendering.
+- технические детали pretty JSON, plain-text table и CSV row rendering.
+
+`infrastructure/output/*` сейчас отвечает за:
+
+- запись готового текста в `stdout` или `stderr`.
 
 ## Что Уже Хорошо
 
@@ -63,7 +75,9 @@ src/bootstrap
 - stable output shape вынесен в `application/reports`;
 - команды закрывают SDK в `finally`;
 - formatting logic вынесена из `cli.ts`;
-- table/CSV escaping не дублируется в command reporter-ах.
+- JSON pretty-print, table alignment и CSV escaping не дублируются в command
+  reporter-ах;
+- `stdout`/`stderr` delivery отделен от построения JSON/CSV/table.
 
 ## Текущая Проблема
 
@@ -73,16 +87,20 @@ src/bootstrap
 parse entrypoint -> assemble dependencies -> call command -> return status/output
 ```
 
-Но сейчас в `bootstrap` уже лежит presentation/adaptation logic:
+В `bootstrap` остается command-specific presentation/adaptation logic:
 
 ```text
-application report -> JSON/CSV/table
 generated response -> stable report
+application report -> command-specific output values
 ```
 
-Если JSON formatting начнет содержать логику совместимости, redaction,
-normalization или версионирование output, `bootstrap` начнет расти
-неконтролируемо.
+Это осознанный компактный вариант, близкий к Inventory. Риск появляется, если
+технические `infrastructure/renderers` начнут выбирать поля, делать redaction,
+normalization или версионировать output конкретной команды.
+
+Подробные правила разделения command-specific formatting, общих renderers и
+stdout delivery описаны в
+[Разделение форматирования и вывода в CLI](./cli-output-boundaries.md).
 
 ## Важное Разделение
 
@@ -100,39 +118,37 @@ string -> stdout
 
 Это output sink. `stdout` не должен знать, как строить JSON, CSV или table.
 
-## Возможное Целевое Разделение
-
-Если решено держать adapters внутри `infrastructure`, целевая структура может
-быть такой:
+## Принятое Разделение
 
 ```text
 src/bootstrap
   args/
   cli/
   commands/
-    accounts/cli.ts
-    candles/cli.ts
+    accounts/
+      cli.ts
+      reporter.ts
+    candles/
+      cli.ts
+      reporter.ts
 
 src/infrastructure
-  grpc/
-  adapters/
-    cli/
-      commands/
-        accounts/reporter.ts
-        candles/reporter.ts
-      renderers/
-        csv-renderer.ts
-        table-renderer.ts
-    stdout/
-      stdout-writer.ts
+  renderers/
+    csv-renderer.ts
+    json-renderer.ts
+    table-renderer.ts
+  output/
+    stdout-writer.ts
+    stderr-writer.ts
 ```
 
 Граница:
 
-- `bootstrap/commands/*/cli.ts` - command entrypoint и wiring;
-- `infrastructure/adapters/cli/**` - application report -> CLI output;
-- `infrastructure/adapters/stdout/**` - string -> process stdout, если нужен
-  отдельный sink;
+- `bootstrap/commands/*/cli.ts` - command entrypoint, parsing и SDK lifecycle;
+- `bootstrap/commands/*/reporter.ts` - generated response -> application report
+  и command-specific CLI output;
+- `src/infrastructure/renderers/**` - механика JSON/CSV/table rendering;
+- `src/infrastructure/output/**` - запись готовой строки в stream;
 - `application/reports/**` - stable output contracts.
 
 ## Когда Нужен Use-Case
@@ -151,10 +167,11 @@ Use-case стоит выделять, если появляется хотя б�
 
 ## Правило Для Новых Команд
 
-Пока placement CLI adapters не выбран окончательно:
-
 - не добавлять новую formatting logic в `cli.ts`;
 - держать command handler тонким;
 - описывать stable output в `application/reports`;
+- держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
+- использовать `infrastructure/renderers` только для общей механики формата;
 - не класть JSON/CSV/table formatting в stdout sink;
-- при втором consumer-е переносить общий rendering code из command reporter-а.
+- сверять новые output-решения с
+  [Разделением форматирования и вывода в CLI](./cli-output-boundaries.md).

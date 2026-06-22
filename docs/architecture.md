@@ -49,6 +49,11 @@ provider-neutral правилами или моделями.
 
 - `infrastructure/grpc` - создание `nice-grpc` channel, metadata, middleware и
   typed clients.
+- `infrastructure/renderers` - механический рендеринг готовых данных в JSON,
+  CSV-строки и plain-text таблицы. Здесь не выбираются поля команд и не
+  формируются command-specific output contracts.
+- `infrastructure/output` - технические sinks для записи готового текста в
+  `stdout` и `stderr`.
 
 Здесь допустимы imports из `nice-grpc`, generated service definitions и
 application services. Application не должен импортировать concrete
@@ -67,8 +72,6 @@ infrastructure modules.
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
 - `bootstrap/help` - декларативный help registry и renderer;
-- `bootstrap/*-renderer.ts` - общие renderer-ы простых presentation-форматов
-  CLI, например plain-text таблиц и CSV-строк;
 - `bootstrap/command-registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
@@ -76,7 +79,9 @@ CLI слой сейчас поддерживает `help`, `version`, `accounts`
 для неизвестных команд. API-команды остаются тонкими bootstrap handlers:
 они валидируют CLI-контракт, создают SDK facade и передают provider response в
 reporter-модуль. Reporter-ы преобразуют generated DTO в
-`application/reports` contracts и форматируют вывод для CLI.
+`application/reports` contracts, выбирают command-specific представление и
+используют `infrastructure/renderers` для технического JSON/CSV/table
+rendering.
 
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
 primitive CLI-контракты и нормализует общие `TinkoffInvestOptions` из CLI/ENV.
