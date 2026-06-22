@@ -26,7 +26,7 @@ import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
 import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
 import { Throttle } from '../application/services/unary-throttle.service';
 import { defaultConfig } from '../config';
-import { createSdkChannel, createSdkClient, createSdkMetadata } from '../infrastructure/grpc';
+import { createSdkChannel, createSdkClient, createSdkMetadata } from '../infrastructure/transport/grpc';
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof MarketDataServiceDefinition

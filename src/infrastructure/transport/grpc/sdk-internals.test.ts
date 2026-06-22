@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { Throttle } from '../../application/services/unary-throttle.service';
-import { UsersServiceDefinition } from '../../generated/users';
+import { Throttle } from '../../../application/services/unary-throttle.service';
+import { UsersServiceDefinition } from '../../../generated/users';
 import {
   createSdkChannel,
   createSdkClient,
@@ -46,7 +46,7 @@ function createResponseStreamCall(path: string, responses: unknown[]) {
   } as any;
 }
 
-describe('infrastructure grpc', () => {
+describe('infrastructure transport grpc', () => {
   describe('createSdkMetadata', () => {
     test('adds authorization header', () => {
       const metadata = createSdkMetadata({

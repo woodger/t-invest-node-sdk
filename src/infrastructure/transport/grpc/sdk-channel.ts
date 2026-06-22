@@ -2,7 +2,7 @@ import {
   ChannelCredentials,
   createChannel
 } from 'nice-grpc';
-import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 
 // Создает канал с TLS или insecure credentials в зависимости от настроек SDK.
 export function createSdkChannel(options: TinkoffInvestOptions) {

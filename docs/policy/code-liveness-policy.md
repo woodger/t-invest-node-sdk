@@ -25,7 +25,7 @@ Production graph начинается от runtime entrypoints и рабочих
 - `package.json` `main`, `types`, `exports` и runtime scripts;
 - `src/index.ts`;
 - `src/tinkoff-invest-node-sdk.ts` и `src/bootstrap/tinkoff-invest-node-sdk.ts`;
-- SDK internals, middleware, channel/client creation в `src/infrastructure/grpc`;
+- SDK internals, middleware, channel/client creation в `src/infrastructure/transport/grpc`;
 - CLI entrypoint в `src/bootstrap/cli`, reusable CLI guards в `src/bootstrap/args`, command registry и registered handlers в `src/bootstrap/commands`, если они связаны через `package.json` `bin`;
 - throttling runtime configuration;
 - `contracts/*.proto`;

@@ -21,7 +21,8 @@ Focused правила по JSON/CSV/table formatting и stdout delivery опи�
 
 ```text
 src/infrastructure
-  grpc/
+  transport/
+    grpc/
   output/
     stderr-writer.ts
     stdout-writer.ts
@@ -34,7 +35,7 @@ src/bootstrap
   commands/*/reporter.ts
 ```
 
-`infrastructure/grpc` - технический adapter к `nice-grpc`:
+`infrastructure/transport/grpc` - технический adapter к `nice-grpc`:
 
 - channel;
 - metadata;
@@ -107,7 +108,7 @@ src/infrastructure
 bootstrap/commands/*/reporter.ts -> application/reports
 bootstrap -> infrastructure/renderers
 bootstrap -> infrastructure/output
-infrastructure/grpc -> application/services
+infrastructure/transport/grpc -> application/services
 ```
 
 Недопустимо:
