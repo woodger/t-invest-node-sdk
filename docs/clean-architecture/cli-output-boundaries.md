@@ -19,7 +19,8 @@ presentation policy конкретных CLI-команд.
 
 ```text
 src/bootstrap
-  cli/
+  cli.ts
+  command-registry.ts
   commands/
     accounts/
       cli.ts
@@ -174,7 +175,12 @@ infrastructure/output/*          -> пишет готовую строку
 - `reporter.ts` строит stable report и command-specific output;
 - общий JSON/CSV/table код переиспользуется из `infrastructure/renderers`;
 - запись в `stdout`/`stderr` проходит через `infrastructure/output`;
-- generated DTO не становится стабильным CLI output contract.
+- generated DTO не становится стабильным CLI output contract;
+- output contract выбирается для конкретной команды, а не для будущего
+  неизвестного списка команд.
+
+Общие helpers для command output допустимы только если они убирают реальное
+повторение и не переносят command-specific policy в `infrastructure`.
 
 ## Признаки Неверной Границы
 
@@ -198,7 +204,8 @@ infrastructure/output/*          -> пишет готовую строку
 Текущий проект использует Inventory-style CLI placement:
 
 ```text
-CLI commands -> bootstrap
+CLI entrypoint -> bootstrap/cli.ts
+CLI commands   -> bootstrap/commands
 format mechanics -> infrastructure/renderers
 stdout/stderr sinks -> infrastructure/output
 ```
