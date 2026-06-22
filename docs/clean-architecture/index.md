@@ -39,7 +39,8 @@ src/application
   services/
 
 src/infrastructure
-  grpc/
+  transport/
+    grpc/
   output/
   renderers/
 

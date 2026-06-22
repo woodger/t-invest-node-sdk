@@ -2,7 +2,7 @@ import type {
   CallOptions,
   ClientMiddlewareCall
 } from 'nice-grpc';
-import type { Throttle } from '../../application/services/unary-throttle.service';
+import type { Throttle } from '../../../application/services/unary-throttle.service';
 
 // Middleware применяет локальный throttling только к unary-вызовам.
 export function createSdkMiddleware(trackLimits: boolean, throttle: Throttle) {

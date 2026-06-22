@@ -47,8 +47,8 @@ provider-neutral правилами или моделями.
 
 Текущие зоны:
 
-- `infrastructure/grpc` - создание `nice-grpc` channel, metadata, middleware и
-  typed clients.
+- `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
+  middleware и typed clients.
 - `infrastructure/renderers` - механический рендеринг готовых данных в JSON,
   CSV-строки и plain-text таблицы. Здесь не выбираются поля команд и не
   формируются command-specific output contracts.

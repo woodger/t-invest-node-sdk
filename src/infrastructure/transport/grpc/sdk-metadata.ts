@@ -1,5 +1,5 @@
 import { Metadata } from 'nice-grpc';
-import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 
 // Подготавливает metadata, которая будет отправляться со всеми unary-вызовами.
 export function createSdkMetadata(options: TinkoffInvestOptions) {

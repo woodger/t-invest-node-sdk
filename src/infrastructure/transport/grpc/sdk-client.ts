@@ -2,7 +2,7 @@ import type {
   Channel,
   Metadata
 } from 'nice-grpc';
-import type { Throttle } from '../../application/services/unary-throttle.service';
+import type { Throttle } from '../../../application/services/unary-throttle.service';
 import { createClientFactory } from 'nice-grpc';
 import { createSdkMiddleware } from './sdk-middleware';
 

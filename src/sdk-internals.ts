@@ -3,4 +3,4 @@ export {
   createSdkClient,
   createSdkMetadata,
   createSdkMiddleware
-} from './infrastructure/grpc';
+} from './infrastructure/transport/grpc';
