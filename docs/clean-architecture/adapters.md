@@ -1,7 +1,7 @@
 # Adapters
 
-> Type: Design Note. Документ фиксирует варианты placement для adapters и
-> output formatting в текущем SDK.
+> Type: Design Note. Документ фиксирует текущий placement adapters, renderers
+> и output sinks в SDK.
 
 ## Контекст
 
@@ -124,7 +124,7 @@ infrastructure/output -> CLI report formatting
 
 Перенос выполнен без изменения поведения:
 
-1. `bootstrap/*-renderer.ts` перенесены в `infrastructure/renderers`.
+1. Общие renderer-ы перенесены из `bootstrap` в `infrastructure/renderers`.
 2. Добавлен общий `json-renderer`, чтобы не дублировать pretty JSON в командах.
 3. Добавлены `stdout-writer` и `stderr-writer` как технические sinks.
 4. `bootstrap/commands/*/reporter.ts` оставлены рядом с командами, как в
