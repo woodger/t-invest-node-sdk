@@ -6,7 +6,7 @@ describe('commandHelp', () => {
   test('contains help entries for public bootstrap commands', () => {
     assert.deepEqual(
       Object.keys(commandHelp).sort(),
-      ['accounts', 'candles', 'help', 'portfolio', 'version']
+      ['accounts', 'candles', 'help', 'portfolio', 'positions', 'version']
     );
   });
 });
@@ -16,6 +16,7 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('accounts'), true);
     assert.equal(isCommandHelpName('candles'), true);
     assert.equal(isCommandHelpName('portfolio'), true);
+    assert.equal(isCommandHelpName('positions'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
     assert.equal(isCommandHelpName('orders'), false);

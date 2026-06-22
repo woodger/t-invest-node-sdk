@@ -9,7 +9,8 @@
 
 - `accounts` - получает счета пользователя;
 - `candles` - получает исторические свечи;
-- `portfolio` - получает текущий портфель по счету.
+- `portfolio` - получает текущий портфель по счету;
+- `positions` - получает позиции по счету.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -43,6 +44,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     portfolio/
+      cli.ts
+      reporter.ts
+    positions/
       cli.ts
       reporter.ts
 
@@ -142,6 +146,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     portfolio/
+      cli.ts
+      reporter.ts
+    positions/
       cli.ts
       reporter.ts
 
