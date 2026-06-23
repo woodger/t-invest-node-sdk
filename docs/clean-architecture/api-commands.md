@@ -14,6 +14,7 @@
 - `marketdata get-candles` -> `sdk.marketdata.getCandles`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
 - `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
+- `marketdata get-last-trades` -> `sdk.marketdata.getLastTrades`;
 - `marketdata get-order-book` -> `sdk.marketdata.getOrderBook`;
 - `marketdata get-trading-status` -> `sdk.marketdata.getTradingStatus`;
 - `marketdata get-trading-statuses` -> `sdk.marketdata.getTradingStatuses`;
@@ -103,6 +104,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     last-prices/
+      cli.ts
+      reporter.ts
+    last-trades/
       cli.ts
       reporter.ts
     order-book/
@@ -239,6 +243,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     last-prices/
+      cli.ts
+      reporter.ts
+    last-trades/
       cli.ts
       reporter.ts
     order-book/

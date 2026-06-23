@@ -200,6 +200,37 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk marketdata get-last-prices --instrument-id=BBG00QPYJ5H0 --format=json'
     ]
   },
+  'marketdata get-last-trades': {
+    description: 'Print recent trades',
+    sdkCall: 'sdk.marketdata.getLastTrades',
+    grpcMethod: 'MarketDataService/GetLastTrades',
+    usage: [
+      'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=ID --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--instrument-id=ID     FIGI or instrument UID',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z',
+      'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
   'marketdata get-order-book': {
     description: 'Print instrument order book',
     sdkCall: 'sdk.marketdata.getOrderBook',
