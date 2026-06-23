@@ -20,6 +20,7 @@ import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
 import { tradingStatus } from './commands/trading-status/cli';
 import { tradingStatuses } from './commands/trading-statuses/cli';
+import { userInfo } from './commands/user-info/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
 
@@ -36,6 +37,10 @@ const commandRegistry = {
   'users get-accounts': {
     requiresContext: false,
     handler: accounts
+  },
+  'users get-info': {
+    requiresContext: false,
+    handler: userInfo
   },
   'marketdata get-candles': {
     requiresContext: false,
