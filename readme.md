@@ -92,6 +92,8 @@ node dist/bootstrap/cli.js users get-margin-attributes --help
 node dist/bootstrap/cli.js users get-user-tariff --help
 node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js marketdata get-close-prices --help
+node dist/bootstrap/cli.js instruments get-countries --help
+node dist/bootstrap/cli.js instruments get-favorites --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
 node dist/bootstrap/cli.js marketdata get-last-trades --help

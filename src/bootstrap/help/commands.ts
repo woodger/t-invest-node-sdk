@@ -173,6 +173,52 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
     ]
   },
+  'instruments get-countries': {
+    description: 'Print countries dictionary',
+    sdkCall: 'sdk.instruments.getCountries',
+    grpcMethod: 'InstrumentsService/GetCountries',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-countries [options]'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-countries',
+      'tinkoff-invest-node-sdk instruments get-countries --format=json'
+    ]
+  },
+  'instruments get-favorites': {
+    description: 'Print favorite instruments',
+    sdkCall: 'sdk.instruments.getFavorites',
+    grpcMethod: 'InstrumentsService/GetFavorites',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-favorites [options]'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-favorites',
+      'tinkoff-invest-node-sdk instruments get-favorites --format=json'
+    ]
+  },
   'instruments get-instrument-by': {
     description: 'Print instrument details',
     sdkCall: 'sdk.instruments.getInstrumentBy',

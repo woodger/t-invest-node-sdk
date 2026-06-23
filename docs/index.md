@@ -83,6 +83,8 @@ node dist/bootstrap/cli.js users get-margin-attributes --help
 node dist/bootstrap/cli.js users get-user-tariff --help
 node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js marketdata get-close-prices --help
+node dist/bootstrap/cli.js instruments get-countries --help
+node dist/bootstrap/cli.js instruments get-favorites --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
 node dist/bootstrap/cli.js marketdata get-last-trades --help
@@ -107,6 +109,8 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `users get-user-tariff` - текущие API-лимиты пользователя;
 - `marketdata get-candles` - исторические свечи;
 - `marketdata get-close-prices` - цены закрытия торговой сессии;
+- `instruments get-countries` - справочник стран;
+- `instruments get-favorites` - избранные инструменты пользователя;
 - `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
 - `marketdata get-last-prices` - последние рыночные цены инструментов;
 - `marketdata get-last-trades` - обезличенные сделки по инструменту;
