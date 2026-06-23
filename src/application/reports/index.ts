@@ -18,6 +18,7 @@ export * from './favorites.report';
 export * from './find-instrument.report';
 export * from './futures-margin.report';
 export * from './dividends.report';
+export * from './etf.report';
 export * from './instrument.report';
 export * from './last-prices.report';
 export * from './last-trades.report';

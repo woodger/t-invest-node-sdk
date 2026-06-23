@@ -426,6 +426,64 @@ export const commandHelp = {
       'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
     ]
   },
+  'instruments etf-by': {
+    description: 'Print ETF details',
+    sdkCall: 'sdk.instruments.etfBy',
+    grpcMethod: 'InstrumentsService/EtfBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments etf-by --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments etf-by --id=BBG333333333 --id-type=figi',
+      'tinkoff-invest-node-sdk instruments etf-by --id=TMOS --id-type=ticker --class-code=TQTF --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instruments etfs': {
+    description: 'Print ETFs',
+    sdkCall: 'sdk.instruments.etfs',
+    grpcMethod: 'InstrumentsService/Etfs',
+    usage: [
+      'tinkoff-invest-node-sdk instruments etfs [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments etfs',
+      'tinkoff-invest-node-sdk instruments etfs --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
   'instruments get-dividends': {
     description: 'Print instrument dividends',
     sdkCall: 'sdk.instruments.getDividends',
