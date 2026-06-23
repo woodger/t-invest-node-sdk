@@ -22,6 +22,7 @@ src/application
     accounts.report.ts
     candles.report.ts
     last-prices.report.ts
+    orders.report.ts
     portfolio.report.ts
     positions.report.ts
   services/

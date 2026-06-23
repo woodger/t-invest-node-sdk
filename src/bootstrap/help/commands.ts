@@ -92,6 +92,29 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk last-prices --instrument-id=BBG00QPYJ5H0 --format=json'
     ]
   },
+  orders: {
+    description: 'Print active account orders',
+    usage: [
+      'tinkoff-invest-node-sdk orders --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from the accounts command'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk orders --account-id=2000000000 --format=json'
+    ]
+  },
   portfolio: {
     description: 'Print account portfolio',
     usage: [
