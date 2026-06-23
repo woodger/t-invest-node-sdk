@@ -8,6 +8,8 @@ describe('commandHelp', () => {
       Object.keys(commandHelp).sort(),
       [
         'help',
+        'instruments currencies',
+        'instruments currency-by',
         'instruments find-instrument',
         'instruments get-accrued-interests',
         'instruments get-bond-coupons',
@@ -57,6 +59,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments get-brand-by'), true);
     assert.equal(isCommandHelpName('instruments get-brands'), true);
     assert.equal(isCommandHelpName('instruments get-countries'), true);
+    assert.equal(isCommandHelpName('instruments currencies'), true);
+    assert.equal(isCommandHelpName('instruments currency-by'), true);
     assert.equal(isCommandHelpName('instruments get-dividends'), true);
     assert.equal(isCommandHelpName('instruments get-favorites'), true);
     assert.equal(isCommandHelpName('instruments find-instrument'), true);
