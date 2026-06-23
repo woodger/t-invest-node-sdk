@@ -24,14 +24,7 @@ const lastPricesArgNames = new Set([
 ]);
 
 export function parseLastPricesInstrumentIds(argv: CliArgs): string[] {
-  const rawValue = ArgGuards.requireStringArg(argv, 'instrument-id');
-  const instrumentIds = rawValue.split(',').map((value) => value.trim());
-
-  if (instrumentIds.some((value) => value === '')) {
-    throw new Error("Expected '--instrument-id' as comma-separated list");
-  }
-
-  return instrumentIds;
+  return ArgGuards.requireCommaSeparatedStringListArg(argv, 'instrument-id');
 }
 
 export function parseLastPricesRequest(argv: CliArgs): GetLastPricesRequest {

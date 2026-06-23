@@ -147,6 +147,32 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  'marketdata get-close-prices': {
+    description: 'Print close prices',
+    sdkCall: 'sdk.marketdata.getClosePrices',
+    grpcMethod: 'MarketDataService/GetClosePrices',
+    usage: [
+      'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=ID[,ID] [options]'
+    ],
+    required: [
+      '--instrument-id=ID[,ID] FIGI or instrument UID list'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0',
+      'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
+    ]
+  },
   'instruments get-instrument-by': {
     description: 'Print instrument details',
     sdkCall: 'sdk.instruments.getInstrumentBy',
