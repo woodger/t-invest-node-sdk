@@ -10,6 +10,7 @@ export * from './accrued-interests.report';
 export * from './asset.report';
 export * from './bond.report';
 export * from './bond-coupons.report';
+export * from './broker-report.report';
 export * from './brands.report';
 export * from './candles.report';
 export * from './close-prices.report';

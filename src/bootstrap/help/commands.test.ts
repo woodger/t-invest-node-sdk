@@ -40,6 +40,7 @@ describe('commandHelp', () => {
         'marketdata get-order-book',
         'marketdata get-trading-status',
         'marketdata get-trading-statuses',
+        'operations get-broker-report',
         'operations get-operations',
         'operations get-operations-by-cursor',
         'operations get-portfolio',
@@ -98,6 +99,7 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('marketdata get-trading-statuses'), true);
     assert.equal(isCommandHelpName('orders get-orders'), true);
     assert.equal(isCommandHelpName('orders get-order-state'), true);
+    assert.equal(isCommandHelpName('operations get-broker-report'), true);
     assert.equal(isCommandHelpName('operations get-operations-by-cursor'), true);
     assert.equal(isCommandHelpName('operations get-operations'), true);
     assert.equal(isCommandHelpName('operations get-portfolio'), true);

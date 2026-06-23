@@ -1145,6 +1145,39 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  'operations get-broker-report': {
+    description: 'Generate or print a broker report page',
+    sdkCall: 'sdk.operations.getBrokerReport',
+    grpcMethod: 'OperationsService/GetBrokerReport',
+    usage: [
+      'tinkoff-invest-node-sdk operations get-broker-report --account-id=ID --from=ISO --to=ISO [options]',
+      'tinkoff-invest-node-sdk operations get-broker-report --task-id=ID [options]'
+    ],
+    required: [
+      'Generate mode: --account-id=ID --from=ISO --to=ISO',
+      'Page mode:     --task-id=ID'
+    ],
+    optional: [
+      '--page=N              Report page number, only with --task-id (default: 0)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk operations get-broker-report --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk operations get-broker-report --task-id=TASK --page=1 --format=json'
+    ],
+    notes: [
+      'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
   'operations get-portfolio': {
     description: 'Print account portfolio',
     sdkCall: 'sdk.operations.getPortfolio',

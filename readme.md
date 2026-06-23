@@ -124,6 +124,7 @@ node dist/bootstrap/cli.js marketdata get-trading-status --help
 node dist/bootstrap/cli.js marketdata get-trading-statuses --help
 node dist/bootstrap/cli.js orders get-orders --help
 node dist/bootstrap/cli.js orders get-order-state --help
+node dist/bootstrap/cli.js operations get-broker-report --help
 node dist/bootstrap/cli.js operations get-operations --help
 node dist/bootstrap/cli.js operations get-operations-by-cursor --help
 node dist/bootstrap/cli.js operations get-portfolio --help
