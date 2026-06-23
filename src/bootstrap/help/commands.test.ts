@@ -9,9 +9,11 @@ describe('commandHelp', () => {
       [
         'help',
         'instruments find-instrument',
+        'instruments get-accrued-interests',
         'instruments get-brand-by',
         'instruments get-brands',
         'instruments get-countries',
+        'instruments get-dividends',
         'instruments get-favorites',
         'instruments get-futures-margin',
         'instruments get-instrument-by',
@@ -48,9 +50,11 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('users get-user-tariff'), true);
     assert.equal(isCommandHelpName('marketdata get-candles'), true);
     assert.equal(isCommandHelpName('marketdata get-close-prices'), true);
+    assert.equal(isCommandHelpName('instruments get-accrued-interests'), true);
     assert.equal(isCommandHelpName('instruments get-brand-by'), true);
     assert.equal(isCommandHelpName('instruments get-brands'), true);
     assert.equal(isCommandHelpName('instruments get-countries'), true);
+    assert.equal(isCommandHelpName('instruments get-dividends'), true);
     assert.equal(isCommandHelpName('instruments get-favorites'), true);
     assert.equal(isCommandHelpName('instruments find-instrument'), true);
     assert.equal(isCommandHelpName('instruments get-futures-margin'), true);

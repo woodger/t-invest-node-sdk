@@ -10,11 +10,13 @@
  */
 
 import { accounts } from './commands/accounts/cli';
+import { accruedInterests } from './commands/accrued-interests/cli';
 import { brand } from './commands/brand/cli';
 import { brands } from './commands/brands/cli';
 import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
+import { dividends } from './commands/dividends/cli';
 import { favorites } from './commands/favorites/cli';
 import { findInstrument } from './commands/find-instrument/cli';
 import { futuresMargin } from './commands/futures-margin/cli';
@@ -73,6 +75,10 @@ const commandRegistry = {
     requiresContext: false,
     handler: closePrices
   },
+  'instruments get-accrued-interests': {
+    requiresContext: false,
+    handler: accruedInterests
+  },
   'instruments get-brand-by': {
     requiresContext: false,
     handler: brand
@@ -84,6 +90,10 @@ const commandRegistry = {
   'instruments get-countries': {
     requiresContext: false,
     handler: countries
+  },
+  'instruments get-dividends': {
+    requiresContext: false,
+    handler: dividends
   },
   'instruments get-favorites': {
     requiresContext: false,

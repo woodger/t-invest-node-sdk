@@ -14,9 +14,11 @@
 - `marketdata get-candles` -> `sdk.marketdata.getCandles`;
 - `marketdata get-close-prices` -> `sdk.marketdata.getClosePrices`;
 - `instruments find-instrument` -> `sdk.instruments.findInstrument`;
+- `instruments get-accrued-interests` -> `sdk.instruments.getAccruedInterests`;
 - `instruments get-brand-by` -> `sdk.instruments.getBrandBy`;
 - `instruments get-brands` -> `sdk.instruments.getBrands`;
 - `instruments get-countries` -> `sdk.instruments.getCountries`;
+- `instruments get-dividends` -> `sdk.instruments.getDividends`;
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
@@ -117,6 +119,9 @@ src/bootstrap
     find-instrument/
       cli.ts
       reporter.ts
+    accrued-interests/
+      cli.ts
+      reporter.ts
     brand/
       cli.ts
       reporter.ts
@@ -124,6 +129,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     countries/
+      cli.ts
+      reporter.ts
+    dividends/
       cli.ts
       reporter.ts
     favorites/
@@ -289,6 +297,9 @@ src/bootstrap
     find-instrument/
       cli.ts
       reporter.ts
+    accrued-interests/
+      cli.ts
+      reporter.ts
     brand/
       cli.ts
       reporter.ts
@@ -296,6 +307,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     countries/
+      cli.ts
+      reporter.ts
+    dividends/
       cli.ts
       reporter.ts
     favorites/
