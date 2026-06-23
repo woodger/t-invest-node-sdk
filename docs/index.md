@@ -89,6 +89,8 @@ node dist/bootstrap/cli.js instruments get-bond-coupons --help
 node dist/bootstrap/cli.js instruments get-brand-by --help
 node dist/bootstrap/cli.js instruments get-brands --help
 node dist/bootstrap/cli.js instruments get-countries --help
+node dist/bootstrap/cli.js instruments currencies --help
+node dist/bootstrap/cli.js instruments currency-by --help
 node dist/bootstrap/cli.js instruments get-dividends --help
 node dist/bootstrap/cli.js instruments get-favorites --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
@@ -123,6 +125,8 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `instruments get-brand-by` - информация о бренде по идентификатору;
 - `instruments get-brands` - справочник брендов;
 - `instruments get-countries` - справочник стран;
+- `instruments currencies` - список валют;
+- `instruments currency-by` - информация о валюте по идентификатору;
 - `instruments get-dividends` - дивиденды по инструменту;
 - `instruments get-favorites` - избранные инструменты пользователя;
 - `instruments get-futures-margin` - гарантийное обеспечение по фьючерсу;

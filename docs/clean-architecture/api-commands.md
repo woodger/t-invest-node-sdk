@@ -19,6 +19,8 @@
 - `instruments get-brand-by` -> `sdk.instruments.getBrandBy`;
 - `instruments get-brands` -> `sdk.instruments.getBrands`;
 - `instruments get-countries` -> `sdk.instruments.getCountries`;
+- `instruments currencies` -> `sdk.instruments.currencies`;
+- `instruments currency-by` -> `sdk.instruments.currencyBy`;
 - `instruments get-dividends` -> `sdk.instruments.getDividends`;
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
@@ -134,6 +136,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     countries/
+      cli.ts
+      reporter.ts
+    currencies/
+      cli.ts
+      reporter.ts
+    currency/
       cli.ts
       reporter.ts
     dividends/

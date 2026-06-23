@@ -100,6 +100,22 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves currencies command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'currencies']);
+
+    assert.equal(command.name, 'instruments currencies');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves currency command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'currency-by']);
+
+    assert.equal(command.name, 'instruments currency-by');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves favorites command without context requirement', () => {
     const command = resolveCommand(['instruments', 'get-favorites']);
 
@@ -288,6 +304,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('instruments get-brand-by'), true);
     assert.equal(isCommandName('instruments get-brands'), true);
     assert.equal(isCommandName('instruments get-countries'), true);
+    assert.equal(isCommandName('instruments currencies'), true);
+    assert.equal(isCommandName('instruments currency-by'), true);
     assert.equal(isCommandName('instruments get-dividends'), true);
     assert.equal(isCommandName('instruments get-favorites'), true);
     assert.equal(isCommandName('instruments find-instrument'), true);

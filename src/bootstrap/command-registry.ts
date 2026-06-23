@@ -17,6 +17,8 @@ import { bondCoupons } from './commands/bond-coupons/cli';
 import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
+import { currencies } from './commands/currencies/cli';
+import { currency } from './commands/currency/cli';
 import { dividends } from './commands/dividends/cli';
 import { favorites } from './commands/favorites/cli';
 import { findInstrument } from './commands/find-instrument/cli';
@@ -96,6 +98,14 @@ const commandRegistry = {
   'instruments get-countries': {
     requiresContext: false,
     handler: countries
+  },
+  'instruments currencies': {
+    requiresContext: false,
+    handler: currencies
+  },
+  'instruments currency-by': {
+    requiresContext: false,
+    handler: currency
   },
   'instruments get-dividends': {
     requiresContext: false,
