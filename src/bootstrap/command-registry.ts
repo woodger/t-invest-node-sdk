@@ -22,6 +22,8 @@ import { countries } from './commands/countries/cli';
 import { currencies } from './commands/currencies/cli';
 import { currency } from './commands/currency/cli';
 import { dividends } from './commands/dividends/cli';
+import { etf } from './commands/etf/cli';
+import { etfs } from './commands/etfs/cli';
 import { favorites } from './commands/favorites/cli';
 import { findInstrument } from './commands/find-instrument/cli';
 import { futuresMargin } from './commands/futures-margin/cli';
@@ -122,6 +124,14 @@ const commandRegistry = {
   'instruments get-dividends': {
     requiresContext: false,
     handler: dividends
+  },
+  'instruments etf-by': {
+    requiresContext: false,
+    handler: etf
+  },
+  'instruments etfs': {
+    requiresContext: false,
+    handler: etfs
   },
   'instruments get-favorites': {
     requiresContext: false,

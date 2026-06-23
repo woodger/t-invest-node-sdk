@@ -23,6 +23,8 @@
 - `instruments get-countries` -> `sdk.instruments.getCountries`;
 - `instruments currencies` -> `sdk.instruments.currencies`;
 - `instruments currency-by` -> `sdk.instruments.currencyBy`;
+- `instruments etf-by` -> `sdk.instruments.etfBy`;
+- `instruments etfs` -> `sdk.instruments.etfs`;
 - `instruments get-dividends` -> `sdk.instruments.getDividends`;
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
@@ -153,6 +155,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     currency/
+      cli.ts
+      reporter.ts
+    etf/
+      cli.ts
+      reporter.ts
+    etfs/
       cli.ts
       reporter.ts
     dividends/

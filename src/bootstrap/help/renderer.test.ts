@@ -26,6 +26,8 @@ describe('renderCliHelp', () => {
     assert.match(help, /instruments get-countries/);
     assert.match(help, /instruments currencies/);
     assert.match(help, /instruments currency-by/);
+    assert.match(help, /instruments etf-by/);
+    assert.match(help, /instruments etfs/);
     assert.match(help, /instruments get-dividends/);
     assert.match(help, /instruments get-favorites/);
     assert.match(help, /instruments get-futures-margin/);

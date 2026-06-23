@@ -85,7 +85,7 @@ CLI слой сейчас поддерживает `help`, `version` и API-ко
 `instruments get-bond-coupons`, `instruments bond-by`, `instruments bonds`,
 `instruments get-brand-by`, `instruments get-brands`,
 `instruments get-countries`, `instruments currencies`, `instruments currency-by`,
-`instruments get-dividends`, `instruments get-favorites`,
+`instruments etf-by`, `instruments etfs`, `instruments get-dividends`, `instruments get-favorites`,
 `instruments get-futures-margin`, `instruments get-instrument-by`,
 `instruments share-by`, `instruments shares`, `instruments trading-schedules`,
 `marketdata get-last-prices`,

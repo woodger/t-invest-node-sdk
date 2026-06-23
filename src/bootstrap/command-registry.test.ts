@@ -148,6 +148,22 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves etf command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'etf-by']);
+
+    assert.equal(command.name, 'instruments etf-by');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves etfs command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'etfs']);
+
+    assert.equal(command.name, 'instruments etfs');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves find-instrument command without context requirement', () => {
     const command = resolveCommand(['instruments', 'find-instrument']);
 
@@ -341,6 +357,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('instruments currencies'), true);
     assert.equal(isCommandName('instruments currency-by'), true);
     assert.equal(isCommandName('instruments get-dividends'), true);
+    assert.equal(isCommandName('instruments etf-by'), true);
+    assert.equal(isCommandName('instruments etfs'), true);
     assert.equal(isCommandName('instruments get-favorites'), true);
     assert.equal(isCommandName('instruments find-instrument'), true);
     assert.equal(isCommandName('instruments get-futures-margin'), true);
