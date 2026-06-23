@@ -25,7 +25,9 @@ describe('renderCliHelp', () => {
     assert.match(help, /operations get-operations-by-cursor/);
     assert.match(help, /operations get-portfolio/);
     assert.match(help, /operations get-positions/);
+    assert.match(help, /operations get-withdraw-limits/);
     assert.match(help, /orders get-order-state/);
+    assert.match(help, /stoporders get-stop-orders/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /Examples:/);

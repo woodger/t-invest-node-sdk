@@ -116,6 +116,14 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves withdraw-limits command without context requirement', () => {
+    const command = resolveCommand(['operations', 'get-withdraw-limits']);
+
+    assert.equal(command.name, 'operations get-withdraw-limits');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves orders command without context requirement', () => {
     const command = resolveCommand(['orders', 'get-orders']);
 
@@ -144,6 +152,14 @@ describe('resolveCommand', () => {
     const command = resolveCommand(['operations', 'get-operations-by-cursor']);
 
     assert.equal(command.name, 'operations get-operations-by-cursor');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves stop-orders command without context requirement', () => {
+    const command = resolveCommand(['stoporders', 'get-stop-orders']);
+
+    assert.equal(command.name, 'stoporders get-stop-orders');
     assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
@@ -199,6 +215,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('operations get-operations-by-cursor'), true);
     assert.equal(isCommandName('operations get-portfolio'), true);
     assert.equal(isCommandName('operations get-positions'), true);
+    assert.equal(isCommandName('operations get-withdraw-limits'), true);
+    assert.equal(isCommandName('stoporders get-stop-orders'), true);
     assert.equal(isCommandName('help'), true);
     assert.equal(isCommandName('version'), true);
     assert.equal(isCommandName('portfolio'), false);

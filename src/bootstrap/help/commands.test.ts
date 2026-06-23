@@ -20,8 +20,10 @@ describe('commandHelp', () => {
         'operations get-operations-by-cursor',
         'operations get-portfolio',
         'operations get-positions',
+        'operations get-withdraw-limits',
         'orders get-order-state',
         'orders get-orders',
+        'stoporders get-stop-orders',
         'users get-accounts',
         'users get-info',
         'users get-margin-attributes',
@@ -52,6 +54,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('operations get-operations'), true);
     assert.equal(isCommandHelpName('operations get-portfolio'), true);
     assert.equal(isCommandHelpName('operations get-positions'), true);
+    assert.equal(isCommandHelpName('operations get-withdraw-limits'), true);
+    assert.equal(isCommandHelpName('stoporders get-stop-orders'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
     assert.equal(isCommandHelpName('portfolio'), false);

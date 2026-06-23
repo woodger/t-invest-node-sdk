@@ -24,7 +24,9 @@
 - `operations get-operations` -> `sdk.operations.getOperations`;
 - `operations get-operations-by-cursor` -> `sdk.operations.getOperationsByCursor`;
 - `operations get-portfolio` -> `sdk.operations.getPortfolio`;
-- `operations get-positions` -> `sdk.operations.getPositions`.
+- `operations get-positions` -> `sdk.operations.getPositions`;
+- `operations get-withdraw-limits` -> `sdk.operations.getWithdrawLimits`;
+- `stoporders get-stop-orders` -> `sdk.stoporders.getStopOrders`.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -140,6 +142,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     positions/
+      cli.ts
+      reporter.ts
+    withdraw-limits/
+      cli.ts
+      reporter.ts
+    stop-orders/
       cli.ts
       reporter.ts
 
@@ -288,6 +296,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     positions/
+      cli.ts
+      reporter.ts
+    withdraw-limits/
+      cli.ts
+      reporter.ts
+    stop-orders/
       cli.ts
       reporter.ts
 

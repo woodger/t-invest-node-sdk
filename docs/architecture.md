@@ -87,7 +87,8 @@ CLI слой сейчас поддерживает `help`, `version` и API-ко
 `marketdata get-trading-statuses`, `orders get-orders`,
 `orders get-order-state`, `operations get-operations`,
 `operations get-operations-by-cursor`, `operations get-portfolio`,
-`operations get-positions`.
+`operations get-positions`, `operations get-withdraw-limits`,
+`stoporders get-stop-orders`.
 API-команды остаются тонкими bootstrap handlers:
 они валидируют CLI-контракт, создают SDK facade и передают provider response в
 reporter-модуль. Reporter-ы преобразуют generated DTO в

@@ -104,6 +104,8 @@ node dist/bootstrap/cli.js operations get-operations --help
 node dist/bootstrap/cli.js operations get-operations-by-cursor --help
 node dist/bootstrap/cli.js operations get-portfolio --help
 node dist/bootstrap/cli.js operations get-positions --help
+node dist/bootstrap/cli.js operations get-withdraw-limits --help
+node dist/bootstrap/cli.js stoporders get-stop-orders --help
 ```
 
 API-команды используют `--token` / `TINKOFF_TOKEN` и

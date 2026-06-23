@@ -512,6 +512,58 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk operations get-positions --account-id=2000000000 --format=json'
     ]
   },
+  'operations get-withdraw-limits': {
+    description: 'Print account withdraw limits',
+    sdkCall: 'sdk.operations.getWithdrawLimits',
+    grpcMethod: 'OperationsService/GetWithdrawLimits',
+    usage: [
+      'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=2000000000',
+      'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=2000000000 --format=json'
+    ]
+  },
+  'stoporders get-stop-orders': {
+    description: 'Print active stop orders',
+    sdkCall: 'sdk.stoporders.getStopOrders',
+    grpcMethod: 'StopOrdersService/GetStopOrders',
+    usage: [
+      'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000',
+      'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000 --format=json'
+    ]
+  },
   help: {
     description: 'Show top-level or command-specific help',
     usage: [

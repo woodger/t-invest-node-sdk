@@ -95,6 +95,8 @@ node dist/bootstrap/cli.js operations get-operations --help
 node dist/bootstrap/cli.js operations get-operations-by-cursor --help
 node dist/bootstrap/cli.js operations get-portfolio --help
 node dist/bootstrap/cli.js operations get-positions --help
+node dist/bootstrap/cli.js operations get-withdraw-limits --help
+node dist/bootstrap/cli.js stoporders get-stop-orders --help
 ```
 
 Сейчас CLI содержит первые API-команды:
@@ -116,7 +118,9 @@ node dist/bootstrap/cli.js operations get-positions --help
 - `operations get-operations` - операции по счету за период;
 - `operations get-operations-by-cursor` - страница операций по cursor-контракту;
 - `operations get-portfolio` - текущий портфель по счету;
-- `operations get-positions` - позиции по счету.
+- `operations get-positions` - позиции по счету;
+- `operations get-withdraw-limits` - доступный остаток для вывода;
+- `stoporders get-stop-orders` - активные стоп-заявки по счету.
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md): весь `sandbox` service и
