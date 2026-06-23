@@ -18,6 +18,7 @@ import { orderBook } from './commands/order-book/cli';
 import { orders } from './commands/orders/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
+import { tradingStatus } from './commands/trading-status/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
 
@@ -50,6 +51,10 @@ const commandRegistry = {
   'marketdata get-order-book': {
     requiresContext: false,
     handler: orderBook
+  },
+  'marketdata get-trading-status': {
+    requiresContext: false,
+    handler: tradingStatus
   },
   'orders get-orders': {
     requiresContext: false,

@@ -91,6 +91,7 @@ node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
 node dist/bootstrap/cli.js marketdata get-order-book --help
+node dist/bootstrap/cli.js marketdata get-trading-status --help
 node dist/bootstrap/cli.js orders get-orders --help
 node dist/bootstrap/cli.js operations get-portfolio --help
 node dist/bootstrap/cli.js operations get-positions --help
