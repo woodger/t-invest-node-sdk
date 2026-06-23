@@ -1,0 +1,165 @@
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import {
+  CouponType,
+  type Coupon,
+  type GetBondCouponsRequest,
+  type GetBondCouponsResponse
+} from '../../../generated/instruments';
+import type { CliArgs } from '../../cli-contract';
+import {
+  createBondCouponsCommand,
+  parseBondCouponsFormat,
+  parseBondCouponsRequest
+} from './cli';
+
+function argv(args: Partial<CliArgs> = {}): CliArgs {
+  return {
+    _: ['instruments get-bond-coupons'],
+    ...args
+  };
+}
+
+function coupon(overrides: Partial<Coupon> = {}): Coupon {
+  return {
+    figi: 'BOND-FIGI',
+    couponDate: new Date('2026-02-01T00:00:00Z'),
+    couponNumber: 3,
+    fixDate: new Date('2026-01-20T00:00:00Z'),
+    payOneBond: {
+      currency: 'rub',
+      units: 25,
+      nano: 500_000_000
+    },
+    couponType: CouponType.COUPON_TYPE_CONSTANT,
+    couponStartDate: new Date('2026-01-01T00:00:00Z'),
+    couponEndDate: new Date('2026-02-01T00:00:00Z'),
+    couponPeriod: 31,
+    ...overrides
+  };
+}
+
+function response(overrides: Partial<GetBondCouponsResponse> = {}): GetBondCouponsResponse {
+  return {
+    events: [coupon()],
+    ...overrides
+  };
+}
+
+describe('bond-coupons command', () => {
+  describe('parseBondCouponsRequest', () => {
+    test('returns generated getBondCoupons request', () => {
+      const request = parseBondCouponsRequest(argv({
+        figi: 'BOND-FIGI',
+        from: '2026-01-01T00:00:00Z',
+        to: '2026-01-31T00:00:00Z'
+      }));
+
+      assert.deepEqual(request, {
+        figi: 'BOND-FIGI',
+        from: new Date('2026-01-01T00:00:00Z'),
+        to: new Date('2026-01-31T00:00:00Z')
+      });
+    });
+
+    test('rejects inverted date range', () => {
+      assert.throws(
+        () => parseBondCouponsRequest(argv({
+          figi: 'BOND-FIGI',
+          from: '2026-02-01T00:00:00Z',
+          to: '2026-01-01T00:00:00Z'
+        })),
+        /Expected '--from' to be earlier than or equal to '--to'/
+      );
+    });
+  });
+
+  describe('parseBondCouponsFormat', () => {
+    test('returns table by default', () => {
+      assert.equal(parseBondCouponsFormat(argv()), 'table');
+    });
+
+    test('rejects unknown formats', () => {
+      assert.throws(
+        () => parseBondCouponsFormat(argv({ format: 'xml' })),
+        /Expected '--format' as one of: json, table/
+      );
+    });
+  });
+
+  describe('createBondCouponsCommand', () => {
+    test('calls getBondCoupons and closes sdk', async () => {
+      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedRequest: GetBondCouponsRequest | undefined;
+      let getBondCouponsCalls = 0;
+      let closeCalls = 0;
+      const command = createBondCouponsCommand((options) => {
+        receivedOptions = options;
+
+        return {
+          instruments: {
+            async getBondCoupons(request) {
+              receivedRequest = request;
+              getBondCouponsCalls += 1;
+
+              return response();
+            }
+          },
+          close() {
+            closeCalls += 1;
+          }
+        };
+      });
+
+      const output = await command(argv({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        figi: 'BOND-FIGI',
+        from: '2026-01-01T00:00:00Z',
+        to: '2026-01-31T00:00:00Z',
+        format: 'json'
+      }));
+
+      assert.deepEqual(receivedOptions, {
+        token: 'token',
+        endpoint: 'localhost:50051'
+      });
+      assert.equal(getBondCouponsCalls, 1);
+      assert.deepEqual(receivedRequest, {
+        figi: 'BOND-FIGI',
+        from: new Date('2026-01-01T00:00:00Z'),
+        to: new Date('2026-01-31T00:00:00Z')
+      });
+      assert.equal(closeCalls, 1);
+      assert.equal(JSON.parse(output)[0].couponType, 'COUPON_TYPE_CONSTANT');
+    });
+
+    test('closes sdk when getBondCoupons rejects', async () => {
+      let closeCalls = 0;
+      const command = createBondCouponsCommand(() => ({
+        instruments: {
+          async getBondCoupons() {
+            throw new Error('api failed');
+          }
+        },
+        close() {
+          closeCalls += 1;
+        }
+      }));
+
+      await assert.rejects(
+        () => command(argv({
+          token: 'token',
+          endpoint: 'localhost:50051',
+          figi: 'BOND-FIGI',
+          from: '2026-01-01T00:00:00Z',
+          to: '2026-01-31T00:00:00Z'
+        })),
+        /api failed/
+      );
+
+      assert.equal(closeCalls, 1);
+    });
+  });
+});

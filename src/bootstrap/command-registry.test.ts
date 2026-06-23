@@ -68,6 +68,14 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves bond-coupons command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'get-bond-coupons']);
+
+    assert.equal(command.name, 'instruments get-bond-coupons');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves brand command without context requirement', () => {
     const command = resolveCommand(['instruments', 'get-brand-by']);
 
@@ -120,6 +128,14 @@ describe('resolveCommand', () => {
     const command = resolveCommand(['instruments', 'get-futures-margin']);
 
     assert.equal(command.name, 'instruments get-futures-margin');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves trading-schedules command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'trading-schedules']);
+
+    assert.equal(command.name, 'instruments trading-schedules');
     assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
@@ -268,6 +284,7 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('marketdata get-candles'), true);
     assert.equal(isCommandName('marketdata get-close-prices'), true);
     assert.equal(isCommandName('instruments get-accrued-interests'), true);
+    assert.equal(isCommandName('instruments get-bond-coupons'), true);
     assert.equal(isCommandName('instruments get-brand-by'), true);
     assert.equal(isCommandName('instruments get-brands'), true);
     assert.equal(isCommandName('instruments get-countries'), true);
@@ -276,6 +293,7 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('instruments find-instrument'), true);
     assert.equal(isCommandName('instruments get-futures-margin'), true);
     assert.equal(isCommandName('instruments get-instrument-by'), true);
+    assert.equal(isCommandName('instruments trading-schedules'), true);
     assert.equal(isCommandName('marketdata get-last-prices'), true);
     assert.equal(isCommandName('marketdata get-last-trades'), true);
     assert.equal(isCommandName('marketdata get-order-book'), true);

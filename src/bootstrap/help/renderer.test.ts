@@ -18,6 +18,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /marketdata get-close-prices/);
     assert.match(help, /instruments find-instrument/);
     assert.match(help, /instruments get-accrued-interests/);
+    assert.match(help, /instruments get-bond-coupons/);
     assert.match(help, /instruments get-brand-by/);
     assert.match(help, /instruments get-brands/);
     assert.match(help, /instruments get-countries/);
@@ -25,6 +26,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /instruments get-favorites/);
     assert.match(help, /instruments get-futures-margin/);
     assert.match(help, /marketdata get-last-prices/);
+    assert.match(help, /instruments trading-schedules/);
     assert.match(help, /marketdata get-last-trades/);
     assert.match(help, /marketdata get-order-book/);
     assert.match(help, /marketdata get-trading-status/);

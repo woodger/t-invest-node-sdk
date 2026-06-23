@@ -10,6 +10,7 @@ describe('commandHelp', () => {
         'help',
         'instruments find-instrument',
         'instruments get-accrued-interests',
+        'instruments get-bond-coupons',
         'instruments get-brand-by',
         'instruments get-brands',
         'instruments get-countries',
@@ -17,6 +18,7 @@ describe('commandHelp', () => {
         'instruments get-favorites',
         'instruments get-futures-margin',
         'instruments get-instrument-by',
+        'instruments trading-schedules',
         'marketdata get-candles',
         'marketdata get-close-prices',
         'marketdata get-last-prices',
@@ -51,6 +53,7 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('marketdata get-candles'), true);
     assert.equal(isCommandHelpName('marketdata get-close-prices'), true);
     assert.equal(isCommandHelpName('instruments get-accrued-interests'), true);
+    assert.equal(isCommandHelpName('instruments get-bond-coupons'), true);
     assert.equal(isCommandHelpName('instruments get-brand-by'), true);
     assert.equal(isCommandHelpName('instruments get-brands'), true);
     assert.equal(isCommandHelpName('instruments get-countries'), true);
@@ -59,6 +62,7 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments find-instrument'), true);
     assert.equal(isCommandHelpName('instruments get-futures-margin'), true);
     assert.equal(isCommandHelpName('instruments get-instrument-by'), true);
+    assert.equal(isCommandHelpName('instruments trading-schedules'), true);
     assert.equal(isCommandHelpName('marketdata get-last-prices'), true);
     assert.equal(isCommandHelpName('marketdata get-last-trades'), true);
     assert.equal(isCommandHelpName('marketdata get-order-book'), true);
