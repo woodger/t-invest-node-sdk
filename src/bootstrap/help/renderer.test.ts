@@ -20,6 +20,8 @@ describe('renderCliHelp', () => {
     assert.match(help, /instruments bonds/);
     assert.match(help, /instruments find-instrument/);
     assert.match(help, /instruments get-accrued-interests/);
+    assert.match(help, /instruments get-asset-by/);
+    assert.match(help, /instruments get-assets/);
     assert.match(help, /instruments get-bond-coupons/);
     assert.match(help, /instruments get-brand-by/);
     assert.match(help, /instruments get-brands/);

@@ -15,6 +15,8 @@
 - `marketdata get-close-prices` -> `sdk.marketdata.getClosePrices`;
 - `instruments find-instrument` -> `sdk.instruments.findInstrument`;
 - `instruments get-accrued-interests` -> `sdk.instruments.getAccruedInterests`;
+- `instruments get-asset-by` -> `sdk.instruments.getAssetBy`;
+- `instruments get-assets` -> `sdk.instruments.getAssets`;
 - `instruments get-bond-coupons` -> `sdk.instruments.getBondCoupons`;
 - `instruments bond-by` -> `sdk.instruments.bondBy`;
 - `instruments bonds` -> `sdk.instruments.bonds`;
@@ -135,6 +137,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     accrued-interests/
+      cli.ts
+      reporter.ts
+    asset/
+      cli.ts
+      reporter.ts
+    assets/
       cli.ts
       reporter.ts
     bond-coupons/
@@ -356,6 +364,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     accrued-interests/
+      cli.ts
+      reporter.ts
+    asset/
+      cli.ts
+      reporter.ts
+    assets/
       cli.ts
       reporter.ts
     bond-coupons/

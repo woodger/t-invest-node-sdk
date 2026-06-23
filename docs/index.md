@@ -85,6 +85,8 @@ node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js marketdata get-close-prices --help
 node dist/bootstrap/cli.js instruments find-instrument --help
 node dist/bootstrap/cli.js instruments get-accrued-interests --help
+node dist/bootstrap/cli.js instruments get-asset-by --help
+node dist/bootstrap/cli.js instruments get-assets --help
 node dist/bootstrap/cli.js instruments get-bond-coupons --help
 node dist/bootstrap/cli.js instruments bond-by --help
 node dist/bootstrap/cli.js instruments bonds --help
@@ -131,6 +133,8 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `marketdata get-close-prices` - цены закрытия торговой сессии;
 - `instruments find-instrument` - поиск инструментов;
 - `instruments get-accrued-interests` - накопленный купонный доход по облигации;
+- `instruments get-asset-by` - информация об активе по идентификатору;
+- `instruments get-assets` - список активов;
 - `instruments get-bond-coupons` - купоны по облигации;
 - `instruments bond-by` - информация об облигации по идентификатору;
 - `instruments bonds` - список облигаций;
