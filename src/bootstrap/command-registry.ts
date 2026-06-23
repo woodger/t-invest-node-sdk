@@ -24,11 +24,13 @@ import { operationsByCursor } from './commands/operations-by-cursor/cli';
 import { operations } from './commands/operations/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
+import { stopOrders } from './commands/stop-orders/cli';
 import { tradingStatus } from './commands/trading-status/cli';
 import { tradingStatuses } from './commands/trading-statuses/cli';
 import { userInfo } from './commands/user-info/cli';
 import { userTariff } from './commands/user-tariff/cli';
 import { version } from './commands/version/cli';
+import { withdrawLimits } from './commands/withdraw-limits/cli';
 import type { CliCommand } from './cli-contract';
 
 export type ResolvedCommand = {
@@ -112,6 +114,14 @@ const commandRegistry = {
   'operations get-positions': {
     requiresContext: false,
     handler: positions
+  },
+  'operations get-withdraw-limits': {
+    requiresContext: false,
+    handler: withdrawLimits
+  },
+  'stoporders get-stop-orders': {
+    requiresContext: false,
+    handler: stopOrders
   },
   help: {
     requiresContext: false,
