@@ -31,6 +31,9 @@ src/bootstrap
     last-prices/
       cli.ts
       reporter.ts
+    orders/
+      cli.ts
+      reporter.ts
     portfolio/
       cli.ts
       reporter.ts

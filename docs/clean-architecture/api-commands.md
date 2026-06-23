@@ -10,6 +10,7 @@
 - `accounts` - получает счета пользователя;
 - `candles` - получает исторические свечи;
 - `last-prices` - получает последние рыночные цены инструментов;
+- `orders` - получает активные торговые поручения по счету;
 - `portfolio` - получает текущий портфель по счету;
 - `positions` - получает позиции по счету.
 
@@ -45,6 +46,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     last-prices/
+      cli.ts
+      reporter.ts
+    orders/
       cli.ts
       reporter.ts
     portfolio/
@@ -150,6 +154,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     last-prices/
+      cli.ts
+      reporter.ts
+    orders/
       cli.ts
       reporter.ts
     portfolio/

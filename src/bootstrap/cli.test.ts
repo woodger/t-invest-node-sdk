@@ -128,11 +128,11 @@ describe('bootstrap cli', () => {
 
     test('returns a failure for unknown commands', async () => {
       const { io, read } = createIo();
-      const exitCode = await runCli(['orders'], io);
+      const exitCode = await runCli(['unknown-command'], io);
 
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Unknown command: orders/);
+      assert.match(read().stderr, /Unknown command: unknown-command/);
       assert.match(read().stderr, /Usage:/);
     });
   });

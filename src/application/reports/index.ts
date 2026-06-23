@@ -8,5 +8,6 @@
 export * from './accounts.report';
 export * from './candles.report';
 export * from './last-prices.report';
+export * from './orders.report';
 export * from './portfolio.report';
 export * from './positions.report';
