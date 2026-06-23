@@ -11,6 +11,7 @@ export * from './instrument.report';
 export * from './last-prices.report';
 export * from './margin-attributes.report';
 export * from './order-book.report';
+export * from './order-state.report';
 export * from './orders.report';
 export * from './portfolio.report';
 export * from './positions.report';

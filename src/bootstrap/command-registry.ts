@@ -16,6 +16,7 @@ import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
 import { marginAttributes } from './commands/margin-attributes/cli';
 import { orderBook } from './commands/order-book/cli';
+import { orderState } from './commands/order-state/cli';
 import { orders } from './commands/orders/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
@@ -74,6 +75,10 @@ const commandRegistry = {
   'orders get-orders': {
     requiresContext: false,
     handler: orders
+  },
+  'orders get-order-state': {
+    requiresContext: false,
+    handler: orderState
   },
   'operations get-portfolio': {
     requiresContext: false,
