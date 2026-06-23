@@ -87,6 +87,7 @@ node dist/bootstrap/cli.js --help
 node dist/bootstrap/cli.js help
 node dist/bootstrap/cli.js version
 node dist/bootstrap/cli.js users get-accounts --help
+node dist/bootstrap/cli.js users get-info --help
 node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help

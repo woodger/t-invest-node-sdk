@@ -18,6 +18,7 @@ describe('commandHelp', () => {
         'operations get-positions',
         'orders get-orders',
         'users get-accounts',
+        'users get-info',
         'version'
       ]
     );
@@ -27,6 +28,7 @@ describe('commandHelp', () => {
 describe('isCommandHelpName', () => {
   test('accepts registered help command names only', () => {
     assert.equal(isCommandHelpName('users get-accounts'), true);
+    assert.equal(isCommandHelpName('users get-info'), true);
     assert.equal(isCommandHelpName('marketdata get-candles'), true);
     assert.equal(isCommandHelpName('instruments get-instrument-by'), true);
     assert.equal(isCommandHelpName('marketdata get-last-prices'), true);
