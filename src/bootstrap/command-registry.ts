@@ -35,6 +35,8 @@ import { operationsByCursor } from './commands/operations-by-cursor/cli';
 import { operations } from './commands/operations/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
+import { share } from './commands/share/cli';
+import { shares } from './commands/shares/cli';
 import { stopOrders } from './commands/stop-orders/cli';
 import { tradingSchedules } from './commands/trading-schedules/cli';
 import { tradingStatus } from './commands/trading-status/cli';
@@ -126,6 +128,14 @@ const commandRegistry = {
   'instruments get-instrument-by': {
     requiresContext: false,
     handler: instrument
+  },
+  'instruments share-by': {
+    requiresContext: false,
+    handler: share
+  },
+  'instruments shares': {
+    requiresContext: false,
+    handler: shares
   },
   'instruments trading-schedules': {
     requiresContext: false,

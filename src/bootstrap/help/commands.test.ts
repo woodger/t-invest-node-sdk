@@ -20,6 +20,8 @@ describe('commandHelp', () => {
         'instruments get-favorites',
         'instruments get-futures-margin',
         'instruments get-instrument-by',
+        'instruments share-by',
+        'instruments shares',
         'instruments trading-schedules',
         'marketdata get-candles',
         'marketdata get-close-prices',
@@ -66,6 +68,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments find-instrument'), true);
     assert.equal(isCommandHelpName('instruments get-futures-margin'), true);
     assert.equal(isCommandHelpName('instruments get-instrument-by'), true);
+    assert.equal(isCommandHelpName('instruments share-by'), true);
+    assert.equal(isCommandHelpName('instruments shares'), true);
     assert.equal(isCommandHelpName('instruments trading-schedules'), true);
     assert.equal(isCommandHelpName('marketdata get-last-prices'), true);
     assert.equal(isCommandHelpName('marketdata get-last-trades'), true);
