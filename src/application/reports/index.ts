@@ -6,6 +6,7 @@
  */
 
 export * from './accounts.report';
+export * from './brands.report';
 export * from './candles.report';
 export * from './close-prices.report';
 export * from './countries.report';

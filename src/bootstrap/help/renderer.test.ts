@@ -16,6 +16,8 @@ describe('renderCliHelp', () => {
     assert.match(help, /users get-user-tariff/);
     assert.match(help, /marketdata get-candles/);
     assert.match(help, /marketdata get-close-prices/);
+    assert.match(help, /instruments get-brand-by/);
+    assert.match(help, /instruments get-brands/);
     assert.match(help, /instruments get-countries/);
     assert.match(help, /instruments get-favorites/);
     assert.match(help, /marketdata get-last-prices/);

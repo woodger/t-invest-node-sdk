@@ -10,6 +10,8 @@
  */
 
 import { accounts } from './commands/accounts/cli';
+import { brand } from './commands/brand/cli';
+import { brands } from './commands/brands/cli';
 import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
@@ -68,6 +70,14 @@ const commandRegistry = {
   'marketdata get-close-prices': {
     requiresContext: false,
     handler: closePrices
+  },
+  'instruments get-brand-by': {
+    requiresContext: false,
+    handler: brand
+  },
+  'instruments get-brands': {
+    requiresContext: false,
+    handler: brands
   },
   'instruments get-countries': {
     requiresContext: false,

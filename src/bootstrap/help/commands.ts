@@ -173,6 +173,58 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
     ]
   },
+  'instruments get-brand-by': {
+    description: 'Print brand details',
+    sdkCall: 'sdk.instruments.getBrandBy',
+    grpcMethod: 'InstrumentsService/GetBrandBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-brand-by --id=ID [options]'
+    ],
+    required: [
+      '--id=ID               Brand UID'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-brand-by --id=brand-uid',
+      'tinkoff-invest-node-sdk instruments get-brand-by --id=brand-uid --format=json'
+    ]
+  },
+  'instruments get-brands': {
+    description: 'Print brands dictionary',
+    sdkCall: 'sdk.instruments.getBrands',
+    grpcMethod: 'InstrumentsService/GetBrands',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-brands [options]'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-brands',
+      'tinkoff-invest-node-sdk instruments get-brands --format=json'
+    ],
+    notes: [
+      'Table output keeps long description/info fields out of columns; use --format=json for the full report.'
+    ]
+  },
   'instruments get-countries': {
     description: 'Print countries dictionary',
     sdkCall: 'sdk.instruments.getCountries',
