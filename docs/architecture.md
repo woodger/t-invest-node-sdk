@@ -82,6 +82,7 @@ CLI слой сейчас поддерживает `help`, `version` и API-ко
 `users get-margin-attributes`, `users get-user-tariff`,
 `marketdata get-candles`, `marketdata get-close-prices`,
 `instruments find-instrument`, `instruments get-accrued-interests`,
+`instruments get-asset-by`, `instruments get-assets`,
 `instruments get-bond-coupons`, `instruments bond-by`, `instruments bonds`,
 `instruments get-brand-by`, `instruments get-brands`,
 `instruments get-countries`, `instruments currencies`, `instruments currency-by`,

@@ -7,6 +7,7 @@
 
 export * from './accounts.report';
 export * from './accrued-interests.report';
+export * from './asset.report';
 export * from './bond.report';
 export * from './bond-coupons.report';
 export * from './brands.report';

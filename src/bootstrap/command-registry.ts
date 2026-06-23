@@ -11,6 +11,8 @@
 
 import { accounts } from './commands/accounts/cli';
 import { accruedInterests } from './commands/accrued-interests/cli';
+import { asset } from './commands/asset/cli';
+import { assets } from './commands/assets/cli';
 import { bond } from './commands/bond/cli';
 import { brand } from './commands/brand/cli';
 import { brands } from './commands/brands/cli';
@@ -92,6 +94,14 @@ const commandRegistry = {
   'instruments get-accrued-interests': {
     requiresContext: false,
     handler: accruedInterests
+  },
+  'instruments get-asset-by': {
+    requiresContext: false,
+    handler: asset
+  },
+  'instruments get-assets': {
+    requiresContext: false,
+    handler: assets
   },
   'instruments get-bond-coupons': {
     requiresContext: false,

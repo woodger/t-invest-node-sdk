@@ -204,6 +204,62 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  'instruments get-asset-by': {
+    description: 'Print asset details',
+    sdkCall: 'sdk.instruments.getAssetBy',
+    grpcMethod: 'InstrumentsService/GetAssetBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-asset-by --id=UID [options]'
+    ],
+    required: [
+      '--id=UID              Asset UID'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-asset-by --id=asset-uid',
+      'tinkoff-invest-node-sdk instruments get-asset-by --id=asset-uid --format=json'
+    ],
+    notes: [
+      'Table output is a compact asset overview; use --format=json for brand, security and instrument details.'
+    ]
+  },
+  'instruments get-assets': {
+    description: 'Print assets',
+    sdkCall: 'sdk.instruments.getAssets',
+    grpcMethod: 'InstrumentsService/GetAssets',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-assets [options]'
+    ],
+    optional: [
+      '--instrument-type=TYPE unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate (default: unspecified)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-assets',
+      'tinkoff-invest-node-sdk instruments get-assets --instrument-type=share --format=json'
+    ],
+    notes: [
+      'The gRPC method does not include futures and options assets in this list.'
+    ]
+  },
   'instruments get-bond-coupons': {
     description: 'Print bond coupons',
     sdkCall: 'sdk.instruments.getBondCoupons',

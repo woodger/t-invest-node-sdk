@@ -18,6 +18,8 @@ describe('commandHelp', () => {
         'instruments future-by',
         'instruments futures',
         'instruments get-accrued-interests',
+        'instruments get-asset-by',
+        'instruments get-assets',
         'instruments get-bond-coupons',
         'instruments get-brand-by',
         'instruments get-brands',
@@ -67,6 +69,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments bond-by'), true);
     assert.equal(isCommandHelpName('instruments bonds'), true);
     assert.equal(isCommandHelpName('instruments get-accrued-interests'), true);
+    assert.equal(isCommandHelpName('instruments get-asset-by'), true);
+    assert.equal(isCommandHelpName('instruments get-assets'), true);
     assert.equal(isCommandHelpName('instruments get-bond-coupons'), true);
     assert.equal(isCommandHelpName('instruments get-brand-by'), true);
     assert.equal(isCommandHelpName('instruments get-brands'), true);
