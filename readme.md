@@ -105,6 +105,11 @@ API-команды используют `--token` / `TINKOFF_TOKEN` и
 `--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным
 интерфейсом пакета.
 
+Отложенные группы CLI-команд (`To introduce`) описаны в
+[docs/clean-architecture/api-commands.md](docs/clean-architecture/api-commands.md):
+весь `sandbox` service и команды с side effects вводятся отдельно от read-only
+CLI-команд.
+
 ## Доступные сервисы
 
 Экземпляр `TinkoffInvestNodeSDK` лениво создает unary-клиенты для сервисов:

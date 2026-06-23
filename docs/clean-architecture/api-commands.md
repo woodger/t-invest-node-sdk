@@ -27,6 +27,41 @@
 `<service> <method>`, где `method` - kebab-case имя SDK method. Общий command
 framework заранее не вводится.
 
+## To Introduce
+
+Команды ниже пока не являются текущим CLI-контрактом. Этот список фиксирует
+отложенные группы API-команд, которые нужно вводить отдельно и осознанно.
+
+Sandbox service откладывается целиком:
+
+- `sandbox open-sandbox-account`;
+- `sandbox get-sandbox-accounts`;
+- `sandbox close-sandbox-account`;
+- `sandbox post-sandbox-order`;
+- `sandbox replace-sandbox-order`;
+- `sandbox get-sandbox-orders`;
+- `sandbox cancel-sandbox-order`;
+- `sandbox get-sandbox-order-state`;
+- `sandbox get-sandbox-positions`;
+- `sandbox get-sandbox-operations`;
+- `sandbox get-sandbox-operations-by-cursor`;
+- `sandbox get-sandbox-portfolio`;
+- `sandbox sandbox-pay-in`;
+- `sandbox get-sandbox-withdraw-limits`.
+
+Команды с side effects откладываются отдельно от read-only CLI-команд:
+
+- `orders post-order`;
+- `orders cancel-order`;
+- `orders replace-order`;
+- `stoporders post-stop-order`;
+- `stoporders cancel-stop-order`;
+- `instruments edit-favorites`.
+
+Перед реализацией таких команд нужно явно определить CLI-контракт,
+идемпотентность/повторный запуск, формат подтверждения опасных действий и
+ожидаемое поведение при ошибках provider-а.
+
 Команда делает несколько разных вещей:
 
 1. принимает CLI args;

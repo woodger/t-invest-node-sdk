@@ -108,6 +108,10 @@ node dist/bootstrap/cli.js operations get-positions --help
 - `operations get-portfolio` - текущий портфель по счету;
 - `operations get-positions` - позиции по счету.
 
+Отложенные группы команд (`To introduce`) описаны в
+[API Commands](./clean-architecture/api-commands.md): весь `sandbox` service и
+команды с side effects вводятся отдельно от read-only CLI-команд.
+
 Новые команды должны:
 
 - регистрироваться через `src/bootstrap/command-registry.ts`;
