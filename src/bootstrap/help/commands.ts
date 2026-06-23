@@ -421,6 +421,46 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  'operations get-operations-by-cursor': {
+    description: 'Print one cursor page of account operations',
+    sdkCall: 'sdk.operations.getOperationsByCursor',
+    grpcMethod: 'OperationsService/GetOperationsByCursor',
+    usage: [
+      'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts'
+    ],
+    optional: [
+      '--instrument-id=ID    Optional FIGI or instrument UID filter',
+      '--from=ISO             Optional start timestamp, inclusive',
+      '--to=ISO               Optional end timestamp, inclusive',
+      '--cursor=CURSOR        Cursor returned as nextCursor by the previous page',
+      '--limit=N              Page size from 1 to 1000; provider default is used when omitted',
+      '--operation-type=TYPE  Generated OperationType name; comma-separated list is allowed',
+      '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
+      '--without-commissions  Exclude commissions',
+      '--without-trades       Exclude trades',
+      '--without-overnights   Exclude overnight operations',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=2000000000 --limit=100',
+      'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
+    ],
+    notes: [
+      'The command returns one page; pass nextCursor as --cursor to request the next page.',
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
   'operations get-portfolio': {
     description: 'Print account portfolio',
     sdkCall: 'sdk.operations.getPortfolio',

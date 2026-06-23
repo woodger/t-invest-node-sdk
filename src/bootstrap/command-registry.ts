@@ -20,6 +20,7 @@ import { marginAttributes } from './commands/margin-attributes/cli';
 import { orderBook } from './commands/order-book/cli';
 import { orderState } from './commands/order-state/cli';
 import { orders } from './commands/orders/cli';
+import { operationsByCursor } from './commands/operations-by-cursor/cli';
 import { operations } from './commands/operations/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
@@ -99,6 +100,10 @@ const commandRegistry = {
   'operations get-operations': {
     requiresContext: false,
     handler: operations
+  },
+  'operations get-operations-by-cursor': {
+    requiresContext: false,
+    handler: operationsByCursor
   },
   'operations get-portfolio': {
     requiresContext: false,
