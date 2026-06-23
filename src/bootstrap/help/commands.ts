@@ -504,6 +504,64 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
     ]
   },
+  'instruments share-by': {
+    description: 'Print share details',
+    sdkCall: 'sdk.instruments.shareBy',
+    grpcMethod: 'InstrumentsService/ShareBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments share-by --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments share-by --id=BBG004730N88 --id-type=figi',
+      'tinkoff-invest-node-sdk instruments share-by --id=SBER --id-type=ticker --class-code=TQBR --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instruments shares': {
+    description: 'Print shares',
+    sdkCall: 'sdk.instruments.shares',
+    grpcMethod: 'InstrumentsService/Shares',
+    usage: [
+      'tinkoff-invest-node-sdk instruments shares [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments shares',
+      'tinkoff-invest-node-sdk instruments shares --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
   'instruments trading-schedules': {
     description: 'Print trading schedules',
     sdkCall: 'sdk.instruments.tradingSchedules',

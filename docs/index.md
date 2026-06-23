@@ -95,6 +95,8 @@ node dist/bootstrap/cli.js instruments get-dividends --help
 node dist/bootstrap/cli.js instruments get-favorites --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
+node dist/bootstrap/cli.js instruments share-by --help
+node dist/bootstrap/cli.js instruments shares --help
 node dist/bootstrap/cli.js instruments trading-schedules --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
 node dist/bootstrap/cli.js marketdata get-last-trades --help
@@ -131,6 +133,8 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `instruments get-favorites` - избранные инструменты пользователя;
 - `instruments get-futures-margin` - гарантийное обеспечение по фьючерсу;
 - `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
+- `instruments share-by` - информация об акции по идентификатору;
+- `instruments shares` - список акций;
 - `instruments trading-schedules` - расписания торговых площадок;
 - `marketdata get-last-prices` - последние рыночные цены инструментов;
 - `marketdata get-last-trades` - обезличенные сделки по инструменту;

@@ -104,6 +104,8 @@ node dist/bootstrap/cli.js instruments get-dividends --help
 node dist/bootstrap/cli.js instruments get-favorites --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
+node dist/bootstrap/cli.js instruments share-by --help
+node dist/bootstrap/cli.js instruments shares --help
 node dist/bootstrap/cli.js instruments trading-schedules --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
 node dist/bootstrap/cli.js marketdata get-last-trades --help

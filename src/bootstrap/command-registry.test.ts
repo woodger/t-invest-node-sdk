@@ -156,6 +156,22 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves share command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'share-by']);
+
+    assert.equal(command.name, 'instruments share-by');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves shares command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'shares']);
+
+    assert.equal(command.name, 'instruments shares');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves portfolio command without context requirement', () => {
     const command = resolveCommand(['operations', 'get-portfolio']);
 
@@ -311,6 +327,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('instruments find-instrument'), true);
     assert.equal(isCommandName('instruments get-futures-margin'), true);
     assert.equal(isCommandName('instruments get-instrument-by'), true);
+    assert.equal(isCommandName('instruments share-by'), true);
+    assert.equal(isCommandName('instruments shares'), true);
     assert.equal(isCommandName('instruments trading-schedules'), true);
     assert.equal(isCommandName('marketdata get-last-prices'), true);
     assert.equal(isCommandName('marketdata get-last-trades'), true);

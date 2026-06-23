@@ -25,6 +25,8 @@
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
+- `instruments share-by` -> `sdk.instruments.shareBy`;
+- `instruments shares` -> `sdk.instruments.shares`;
 - `instruments trading-schedules` -> `sdk.instruments.tradingSchedules`;
 - `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
 - `marketdata get-last-trades` -> `sdk.marketdata.getLastTrades`;
@@ -154,6 +156,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     instrument/
+      cli.ts
+      reporter.ts
+    share/
+      cli.ts
+      reporter.ts
+    shares/
       cli.ts
       reporter.ts
     trading-schedules/
