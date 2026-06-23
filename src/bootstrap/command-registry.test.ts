@@ -60,6 +60,22 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves countries command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'get-countries']);
+
+    assert.equal(command.name, 'instruments get-countries');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves favorites command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'get-favorites']);
+
+    assert.equal(command.name, 'instruments get-favorites');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves portfolio command without context requirement', () => {
     const command = resolveCommand(['operations', 'get-portfolio']);
 
@@ -203,6 +219,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('users get-user-tariff'), true);
     assert.equal(isCommandName('marketdata get-candles'), true);
     assert.equal(isCommandName('marketdata get-close-prices'), true);
+    assert.equal(isCommandName('instruments get-countries'), true);
+    assert.equal(isCommandName('instruments get-favorites'), true);
     assert.equal(isCommandName('instruments get-instrument-by'), true);
     assert.equal(isCommandName('marketdata get-last-prices'), true);
     assert.equal(isCommandName('marketdata get-last-trades'), true);

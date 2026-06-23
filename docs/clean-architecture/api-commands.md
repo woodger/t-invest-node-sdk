@@ -13,6 +13,8 @@
 - `users get-user-tariff` -> `sdk.users.getUserTariff`;
 - `marketdata get-candles` -> `sdk.marketdata.getCandles`;
 - `marketdata get-close-prices` -> `sdk.marketdata.getClosePrices`;
+- `instruments get-countries` -> `sdk.instruments.getCountries`;
+- `instruments get-favorites` -> `sdk.instruments.getFavorites`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
 - `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
 - `marketdata get-last-trades` -> `sdk.marketdata.getLastTrades`;
@@ -106,6 +108,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     close-prices/
+      cli.ts
+      reporter.ts
+    countries/
+      cli.ts
+      reporter.ts
+    favorites/
       cli.ts
       reporter.ts
     instrument/
@@ -260,6 +268,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     close-prices/
+      cli.ts
+      reporter.ts
+    countries/
+      cli.ts
+      reporter.ts
+    favorites/
       cli.ts
       reporter.ts
     instrument/
