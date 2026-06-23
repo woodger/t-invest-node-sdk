@@ -13,7 +13,7 @@
 
 ## Generated DTO
 
-`src/generated/**` воспроизводится из `contracts/*.proto`.
+`src/generated/**` воспроизводится из `contracts/**/*.proto`.
 
 Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя
 использовать как место для project-specific правил.

@@ -4,7 +4,8 @@
 
 Текущий публичный API модуля состоит из:
 - класса `TinkoffInvestNodeSDK` для unary-запросов;
-- экспортов сгенерированных типов, enum'ов и service definition из `contracts/*.proto`.
+- выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
+  `contracts/**/*.proto`.
 
 ## Установка
 
@@ -29,7 +30,7 @@ yarn add tinkoff-invest-node-sdk
 
 ## Генерация proto
 
-Генерация TypeScript-кода из `contracts/*.proto` запускается через npm-скрипт:
+Генерация TypeScript-кода из `contracts/**/*.proto` запускается через npm-скрипт:
 
 ```bash
 npm run proto

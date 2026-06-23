@@ -156,7 +156,7 @@ Bootstrap
 
 ### `generated`
 
-Содержит код, полученный из `contracts/*.proto`.
+Содержит код, полученный из `contracts/**/*.proto`.
 
 Здесь допустимы:
 

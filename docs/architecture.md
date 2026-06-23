@@ -103,7 +103,7 @@ compatibility wrappers не создаются.
 
 ## Generated Code
 
-`src/generated/**` воспроизводится из `contracts/*.proto` и не редактируется
+`src/generated/**` воспроизводится из `contracts/**/*.proto` и не редактируется
 вручную. `src/generated/**` и `src/generated-exports.ts` являются
 top-level исключением из компактной структуры `src`, потому что package
 entrypoint реэкспортирует generated public API.

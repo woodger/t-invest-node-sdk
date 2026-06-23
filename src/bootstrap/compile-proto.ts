@@ -12,6 +12,20 @@ const contractsDir = path.join(pfs.pwd, 'contracts');
 const generatedDir = path.join(pfs.pwd, 'src', 'generated');
 const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', 'protoc-gen-ts_proto');
 
+function collectProtoFiles(dir: string): string[] {
+  return pfs.readdir(dir, { sync: true })
+    .sort()
+    .flatMap((entryName) => {
+      const entryPath = path.join(dir, entryName);
+
+      if (pfs.stat(entryPath, { sync: true }).isDirectory()) {
+        return collectProtoFiles(entryPath);
+      }
+
+      return entryName.endsWith('.proto') ? [entryPath] : [];
+    });
+}
+
 if (!pfs.test(contractsDir, { sync: true })) {
   throw new Error(`Missing contracts directory at ${contractsDir}`);
 }
@@ -20,10 +34,7 @@ if (!pfs.test(pluginPath, { sync: true })) {
   throw new Error(`Missing ts-proto plugin at ${pluginPath}`);
 }
 
-const protoFiles = pfs.readdir(contractsDir, { sync: true })
-  .filter((fileName) => fileName.endsWith('.proto'))
-  .sort()
-  .map((fileName) => path.join(contractsDir, fileName));
+const protoFiles = collectProtoFiles(contractsDir);
 
 if (!protoFiles.length) {
   throw new Error(`No proto files found in ${contractsDir}`);
