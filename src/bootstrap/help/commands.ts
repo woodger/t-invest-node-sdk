@@ -128,6 +128,33 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk marketdata get-last-prices --instrument-id=BBG00QPYJ5H0 --format=json'
     ]
   },
+  'marketdata get-order-book': {
+    description: 'Print instrument order book',
+    sdkCall: 'sdk.marketdata.getOrderBook',
+    grpcMethod: 'MarketDataService/GetOrderBook',
+    usage: [
+      'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=ID --depth=DEPTH [options]'
+    ],
+    required: [
+      '--instrument-id=ID     FIGI or instrument UID',
+      '--depth=DEPTH          Order book depth as positive integer'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=BBG00QPYJ5H0 --depth=10',
+      'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=instrument-uid --depth=20 --format=json'
+    ]
+  },
   'orders get-orders': {
     description: 'Print active account orders',
     sdkCall: 'sdk.orders.getOrders',
