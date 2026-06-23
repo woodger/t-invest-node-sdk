@@ -93,6 +93,7 @@ node dist/bootstrap/cli.js users get-user-tariff --help
 node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
+node dist/bootstrap/cli.js marketdata get-last-trades --help
 node dist/bootstrap/cli.js marketdata get-order-book --help
 node dist/bootstrap/cli.js marketdata get-trading-status --help
 node dist/bootstrap/cli.js marketdata get-trading-statuses --help

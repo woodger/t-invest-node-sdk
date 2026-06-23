@@ -82,6 +82,7 @@ CLI слой сейчас поддерживает `help`, `version` и API-ко
 `users get-margin-attributes`, `users get-user-tariff`,
 `marketdata get-candles`,
 `instruments get-instrument-by`, `marketdata get-last-prices`,
+`marketdata get-last-trades`,
 `marketdata get-order-book`, `marketdata get-trading-status`,
 `marketdata get-trading-statuses`, `orders get-orders`,
 `orders get-order-state`, `operations get-portfolio`,

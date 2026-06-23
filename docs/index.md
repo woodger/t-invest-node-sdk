@@ -84,6 +84,7 @@ node dist/bootstrap/cli.js users get-user-tariff --help
 node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
+node dist/bootstrap/cli.js marketdata get-last-trades --help
 node dist/bootstrap/cli.js marketdata get-order-book --help
 node dist/bootstrap/cli.js marketdata get-trading-status --help
 node dist/bootstrap/cli.js marketdata get-trading-statuses --help
@@ -102,6 +103,7 @@ node dist/bootstrap/cli.js operations get-positions --help
 - `marketdata get-candles` - исторические свечи;
 - `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
 - `marketdata get-last-prices` - последние рыночные цены инструментов;
+- `marketdata get-last-trades` - обезличенные сделки по инструменту;
 - `marketdata get-order-book` - стакан инструмента;
 - `marketdata get-trading-status` - торговый статус инструмента;
 - `marketdata get-trading-statuses` - торговые статусы инструментов;
