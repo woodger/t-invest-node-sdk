@@ -15,6 +15,8 @@ describe('commandHelp', () => {
         'instruments etf-by',
         'instruments etfs',
         'instruments find-instrument',
+        'instruments future-by',
+        'instruments futures',
         'instruments get-accrued-interests',
         'instruments get-bond-coupons',
         'instruments get-brand-by',
@@ -74,6 +76,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments get-dividends'), true);
     assert.equal(isCommandHelpName('instruments get-favorites'), true);
     assert.equal(isCommandHelpName('instruments find-instrument'), true);
+    assert.equal(isCommandHelpName('instruments future-by'), true);
+    assert.equal(isCommandHelpName('instruments futures'), true);
     assert.equal(isCommandHelpName('instruments get-futures-margin'), true);
     assert.equal(isCommandHelpName('instruments get-instrument-by'), true);
     assert.equal(isCommandHelpName('instruments share-by'), true);

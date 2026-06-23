@@ -106,6 +106,8 @@ node dist/bootstrap/cli.js instruments etf-by --help
 node dist/bootstrap/cli.js instruments etfs --help
 node dist/bootstrap/cli.js instruments get-dividends --help
 node dist/bootstrap/cli.js instruments get-favorites --help
+node dist/bootstrap/cli.js instruments future-by --help
+node dist/bootstrap/cli.js instruments futures --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js instruments share-by --help

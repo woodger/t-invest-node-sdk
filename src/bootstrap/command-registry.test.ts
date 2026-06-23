@@ -172,6 +172,22 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves future command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'future-by']);
+
+    assert.equal(command.name, 'instruments future-by');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves futures command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'futures']);
+
+    assert.equal(command.name, 'instruments futures');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves futures-margin command without context requirement', () => {
     const command = resolveCommand(['instruments', 'get-futures-margin']);
 
@@ -361,6 +377,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('instruments etfs'), true);
     assert.equal(isCommandName('instruments get-favorites'), true);
     assert.equal(isCommandName('instruments find-instrument'), true);
+    assert.equal(isCommandName('instruments future-by'), true);
+    assert.equal(isCommandName('instruments futures'), true);
     assert.equal(isCommandName('instruments get-futures-margin'), true);
     assert.equal(isCommandName('instruments get-instrument-by'), true);
     assert.equal(isCommandName('instruments share-by'), true);

@@ -16,6 +16,7 @@ export * from './countries.report';
 export * from './currency.report';
 export * from './favorites.report';
 export * from './find-instrument.report';
+export * from './future.report';
 export * from './futures-margin.report';
 export * from './dividends.report';
 export * from './etf.report';

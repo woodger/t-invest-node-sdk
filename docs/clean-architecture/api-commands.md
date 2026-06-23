@@ -27,6 +27,8 @@
 - `instruments etfs` -> `sdk.instruments.etfs`;
 - `instruments get-dividends` -> `sdk.instruments.getDividends`;
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
+- `instruments future-by` -> `sdk.instruments.futureBy`;
+- `instruments futures` -> `sdk.instruments.futures`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
 - `instruments share-by` -> `sdk.instruments.shareBy`;
@@ -167,6 +169,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     favorites/
+      cli.ts
+      reporter.ts
+    future/
+      cli.ts
+      reporter.ts
+    futures/
       cli.ts
       reporter.ts
     futures-margin/
