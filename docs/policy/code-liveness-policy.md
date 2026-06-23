@@ -29,7 +29,7 @@ Production graph начинается от runtime entrypoints и рабочих
 - CLI entrypoint в `src/bootstrap/cli.ts`, reusable CLI guards в `src/bootstrap/args`, command registry и registered handlers в `src/bootstrap/commands`, если они связаны через `package.json` `bin`;
 - proto generation entrypoint в `src/bootstrap/compile-proto.ts`, если он связан через `package.json` script;
 - throttling runtime configuration;
-- `contracts/*.proto`;
+- `contracts/**/*.proto`;
 - `src/generated-exports.ts` и generated modules, если они экспортируются пакетом;
 - dynamic runtime bindings, если они подтверждены кодом или конфигурацией.
 
@@ -61,7 +61,7 @@ Test graph начинается от `*.test.ts` и test runner.
 
 ### Generated Contract Code
 
-Код получен из `contracts/*.proto` и воспроизводится proto workflow.
+Код получен из `contracts/**/*.proto` и воспроизводится proto workflow.
 
 Признаки:
 

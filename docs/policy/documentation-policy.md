@@ -21,7 +21,7 @@
 - CLI entrypoint: `src/bootstrap/cli.ts`, `src/bootstrap/args/**`, `src/bootstrap/command-registry.ts`, `src/bootstrap/commands/**`, `src/bootstrap/help/**`, `src/bootstrap/version.ts`;
 - proto generation entrypoint: `src/bootstrap/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
-- proto wire contracts: `contracts/*.proto`;
+- proto wire contracts: `contracts/**/*.proto`;
 - generated exports: `src/generated-exports.ts` и `src/generated/**`;
 - test runner contract: `src/suite.ts`;
 - package scripts: `package.json`.
@@ -30,7 +30,7 @@ Markdown должен объяснять, где находится актуал
 
 ## Generated code и proto
 
-Контракт внешнего API в первую очередь живет в `contracts/*.proto`.
+Контракт внешнего API в первую очередь живет в `contracts/**/*.proto`.
 
 Если меняется proto workflow, documentation update должен объяснить:
 
