@@ -281,6 +281,33 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk orders get-orders --account-id=2000000000 --format=json'
     ]
   },
+  'orders get-order-state': {
+    description: 'Print order state',
+    sdkCall: 'sdk.orders.getOrderState',
+    grpcMethod: 'OrdersService/GetOrderState',
+    usage: [
+      'tinkoff-invest-node-sdk orders get-order-state --account-id=ID --order-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts',
+      '--order-id=ID         Exchange order identifier'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345',
+      'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345 --format=json'
+    ]
+  },
   'operations get-portfolio': {
     description: 'Print account portfolio',
     sdkCall: 'sdk.operations.getPortfolio',

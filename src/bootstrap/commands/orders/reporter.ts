@@ -56,7 +56,7 @@ function toReportStage(stage: OrderStage): OrdersReportStage {
   };
 }
 
-function toReportOrder(order: OrderState): OrdersReportOrder {
+export function createOrderStateReport(order: OrderState): OrdersReportOrder {
   return {
     orderId: order.orderId,
     orderRequestId: order.orderRequestId,
@@ -81,7 +81,7 @@ function toReportOrder(order: OrderState): OrdersReportOrder {
 }
 
 export function createOrdersReport(response: GetOrdersResponse): OrdersReport {
-  return response.orders.map(toReportOrder);
+  return response.orders.map(createOrderStateReport);
 }
 
 export function formatOrdersReport(report: OrdersReport, format: OrdersFormat): string {

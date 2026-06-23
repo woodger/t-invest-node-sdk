@@ -17,6 +17,7 @@
 - `marketdata get-trading-status` -> `sdk.marketdata.getTradingStatus`;
 - `marketdata get-trading-statuses` -> `sdk.marketdata.getTradingStatuses`;
 - `orders get-orders` -> `sdk.orders.getOrders`;
+- `orders get-order-state` -> `sdk.orders.getOrderState`;
 - `operations get-portfolio` -> `sdk.operations.getPortfolio`;
 - `operations get-positions` -> `sdk.operations.getPositions`.
 
@@ -75,6 +76,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     orders/
+      cli.ts
+      reporter.ts
+    order-state/
       cli.ts
       reporter.ts
     portfolio/
@@ -205,6 +209,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     orders/
+      cli.ts
+      reporter.ts
+    order-state/
       cli.ts
       reporter.ts
     portfolio/
