@@ -271,6 +271,60 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-favorites --format=json'
     ]
   },
+  'instruments find-instrument': {
+    description: 'Search instruments',
+    sdkCall: 'sdk.instruments.findInstrument',
+    grpcMethod: 'InstrumentsService/FindInstrument',
+    usage: [
+      'tinkoff-invest-node-sdk instruments find-instrument --query=TEXT [options]'
+    ],
+    required: [
+      '--query=TEXT          Search query'
+    ],
+    optional: [
+      '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate',
+      '--api-trade-available Only instruments available for API trading',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG',
+      'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG --instrument-kind=share --api-trade-available --format=json'
+    ]
+  },
+  'instruments get-futures-margin': {
+    description: 'Print futures margin details',
+    sdkCall: 'sdk.instruments.getFuturesMargin',
+    grpcMethod: 'InstrumentsService/GetFuturesMargin',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-futures-margin --figi=FIGI [options]'
+    ],
+    required: [
+      '--figi=FIGI           Futures FIGI'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-futures-margin --figi=FUTFIGI',
+      'tinkoff-invest-node-sdk instruments get-futures-margin --figi=FUTFIGI --format=json'
+    ]
+  },
   'instruments get-instrument-by': {
     description: 'Print instrument details',
     sdkCall: 'sdk.instruments.getInstrumentBy',

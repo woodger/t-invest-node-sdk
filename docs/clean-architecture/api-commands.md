@@ -13,10 +13,12 @@
 - `users get-user-tariff` -> `sdk.users.getUserTariff`;
 - `marketdata get-candles` -> `sdk.marketdata.getCandles`;
 - `marketdata get-close-prices` -> `sdk.marketdata.getClosePrices`;
+- `instruments find-instrument` -> `sdk.instruments.findInstrument`;
 - `instruments get-brand-by` -> `sdk.instruments.getBrandBy`;
 - `instruments get-brands` -> `sdk.instruments.getBrands`;
 - `instruments get-countries` -> `sdk.instruments.getCountries`;
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
+- `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
 - `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
 - `marketdata get-last-trades` -> `sdk.marketdata.getLastTrades`;
@@ -112,6 +114,9 @@ src/bootstrap
     close-prices/
       cli.ts
       reporter.ts
+    find-instrument/
+      cli.ts
+      reporter.ts
     brand/
       cli.ts
       reporter.ts
@@ -122,6 +127,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     favorites/
+      cli.ts
+      reporter.ts
+    futures-margin/
       cli.ts
       reporter.ts
     instrument/
@@ -278,6 +286,9 @@ src/bootstrap
     close-prices/
       cli.ts
       reporter.ts
+    find-instrument/
+      cli.ts
+      reporter.ts
     brand/
       cli.ts
       reporter.ts
@@ -288,6 +299,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     favorites/
+      cli.ts
+      reporter.ts
+    futures-margin/
       cli.ts
       reporter.ts
     instrument/
