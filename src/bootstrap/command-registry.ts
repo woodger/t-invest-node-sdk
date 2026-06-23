@@ -14,6 +14,7 @@ import { candles } from './commands/candles/cli';
 import { help } from './commands/help/cli';
 import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
+import { orderBook } from './commands/order-book/cli';
 import { orders } from './commands/orders/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
@@ -45,6 +46,10 @@ const commandRegistry = {
   'marketdata get-last-prices': {
     requiresContext: false,
     handler: lastPrices
+  },
+  'marketdata get-order-book': {
+    requiresContext: false,
+    handler: orderBook
   },
   'orders get-orders': {
     requiresContext: false,
