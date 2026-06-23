@@ -79,10 +79,11 @@ infrastructure modules.
 
 CLI слой сейчас поддерживает `help`, `version` и API-команды в canonical форме
 `<service> <method>`: `users get-accounts`, `users get-info`,
-`marketdata get-candles`, `instruments get-instrument-by`,
-`marketdata get-last-prices`, `marketdata get-order-book`,
-`marketdata get-trading-status`, `marketdata get-trading-statuses`,
-`orders get-orders`, `operations get-portfolio`, `operations get-positions`.
+`users get-margin-attributes`, `marketdata get-candles`,
+`instruments get-instrument-by`, `marketdata get-last-prices`,
+`marketdata get-order-book`, `marketdata get-trading-status`,
+`marketdata get-trading-statuses`, `orders get-orders`,
+`operations get-portfolio`, `operations get-positions`.
 API-команды остаются тонкими bootstrap handlers:
 они валидируют CLI-контракт, создают SDK facade и передают provider response в
 reporter-модуль. Reporter-ы преобразуют generated DTO в

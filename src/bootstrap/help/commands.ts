@@ -67,6 +67,32 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk users get-info --format=json'
     ]
   },
+  'users get-margin-attributes': {
+    description: 'Print account margin attributes',
+    sdkCall: 'sdk.users.getMarginAttributes',
+    grpcMethod: 'UsersService/GetMarginAttributes',
+    usage: [
+      'tinkoff-invest-node-sdk users get-margin-attributes --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000',
+      'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000 --format=json'
+    ]
+  },
   'marketdata get-candles': {
     description: 'Print historical candles',
     sdkCall: 'sdk.marketdata.getCandles',

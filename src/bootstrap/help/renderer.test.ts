@@ -12,6 +12,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /Commands:/);
     assert.match(help, /users get-accounts/);
     assert.match(help, /users get-info/);
+    assert.match(help, /users get-margin-attributes/);
     assert.match(help, /marketdata get-candles/);
     assert.match(help, /marketdata get-last-prices/);
     assert.match(help, /marketdata get-order-book/);
