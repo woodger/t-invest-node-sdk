@@ -173,6 +173,37 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
     ]
   },
+  'instruments get-accrued-interests': {
+    description: 'Print bond accrued interests',
+    sdkCall: 'sdk.instruments.getAccruedInterests',
+    grpcMethod: 'InstrumentsService/GetAccruedInterests',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-accrued-interests --figi=FIGI --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--figi=FIGI           Bond FIGI',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-accrued-interests --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments get-accrued-interests --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
   'instruments get-brand-by': {
     description: 'Print brand details',
     sdkCall: 'sdk.instruments.getBrandBy',
@@ -246,6 +277,37 @@ export const commandHelp = {
     examples: [
       'tinkoff-invest-node-sdk instruments get-countries',
       'tinkoff-invest-node-sdk instruments get-countries --format=json'
+    ]
+  },
+  'instruments get-dividends': {
+    description: 'Print instrument dividends',
+    sdkCall: 'sdk.instruments.getDividends',
+    grpcMethod: 'InstrumentsService/GetDividends',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-dividends --figi=FIGI --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--figi=FIGI           Share FIGI',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-dividends --figi=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments get-dividends --figi=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
   'instruments get-favorites': {

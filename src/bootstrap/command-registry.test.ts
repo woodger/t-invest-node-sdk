@@ -60,6 +60,14 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves accrued-interests command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'get-accrued-interests']);
+
+    assert.equal(command.name, 'instruments get-accrued-interests');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves brand command without context requirement', () => {
     const command = resolveCommand(['instruments', 'get-brand-by']);
 
@@ -88,6 +96,14 @@ describe('resolveCommand', () => {
     const command = resolveCommand(['instruments', 'get-favorites']);
 
     assert.equal(command.name, 'instruments get-favorites');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves dividends command without context requirement', () => {
+    const command = resolveCommand(['instruments', 'get-dividends']);
+
+    assert.equal(command.name, 'instruments get-dividends');
     assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
@@ -251,9 +267,11 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('users get-user-tariff'), true);
     assert.equal(isCommandName('marketdata get-candles'), true);
     assert.equal(isCommandName('marketdata get-close-prices'), true);
+    assert.equal(isCommandName('instruments get-accrued-interests'), true);
     assert.equal(isCommandName('instruments get-brand-by'), true);
     assert.equal(isCommandName('instruments get-brands'), true);
     assert.equal(isCommandName('instruments get-countries'), true);
+    assert.equal(isCommandName('instruments get-dividends'), true);
     assert.equal(isCommandName('instruments get-favorites'), true);
     assert.equal(isCommandName('instruments find-instrument'), true);
     assert.equal(isCommandName('instruments get-futures-margin'), true);
