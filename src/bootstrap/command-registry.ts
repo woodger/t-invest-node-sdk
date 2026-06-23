@@ -11,9 +11,11 @@
 
 import { accounts } from './commands/accounts/cli';
 import { accruedInterests } from './commands/accrued-interests/cli';
+import { bond } from './commands/bond/cli';
 import { brand } from './commands/brand/cli';
 import { brands } from './commands/brands/cli';
 import { bondCoupons } from './commands/bond-coupons/cli';
+import { bonds } from './commands/bonds/cli';
 import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
@@ -88,6 +90,14 @@ const commandRegistry = {
   'instruments get-bond-coupons': {
     requiresContext: false,
     handler: bondCoupons
+  },
+  'instruments bond-by': {
+    requiresContext: false,
+    handler: bond
+  },
+  'instruments bonds': {
+    requiresContext: false,
+    handler: bonds
   },
   'instruments get-brand-by': {
     requiresContext: false,

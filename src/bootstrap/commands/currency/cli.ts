@@ -1,12 +1,16 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
-  InstrumentIdType,
   type CurrencyResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
 import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  instrumentLookupArgNames,
+  parseInstrumentLookupIdType,
+  parseInstrumentLookupRequest
+} from '../instruments-args';
 import { currencyFormats, formatCurrency, type CurrencyFormat } from './reporter';
 
 type CurrencySdk = {
@@ -20,45 +24,12 @@ type CurrencySdkFactory = (options: TinkoffInvestOptions) => CurrencySdk;
 
 const currencyArgNames = new Set([
   ...sdkOptionArgNames,
-  'id',
-  'id-type',
-  'class-code',
+  ...instrumentLookupArgNames,
   'format'
 ]);
 
-const currencyIdTypes = {
-  figi: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-  ticker: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-  uid: InstrumentIdType.INSTRUMENT_ID_TYPE_UID,
-  'position-uid': InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-} as const;
-
-type CurrencyIdTypeName = keyof typeof currencyIdTypes;
-
-export function parseCurrencyIdType(argv: CliArgs): InstrumentIdType {
-  const idType = ArgGuards.requireStringArg(argv, 'id-type');
-
-  if (!(idType in currencyIdTypes)) {
-    throw new Error(`Expected '--id-type' as one of: ${Object.keys(currencyIdTypes).join(', ')}`);
-  }
-
-  return currencyIdTypes[idType as CurrencyIdTypeName];
-}
-
-export function parseCurrencyRequest(argv: CliArgs): InstrumentRequest {
-  const idType = parseCurrencyIdType(argv);
-  const classCode = ArgGuards.optionalStringArgValue(argv, 'class-code') ?? '';
-
-  if (idType === InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER && classCode === '') {
-    throw new Error("Expected required argument '--class-code' when '--id-type=ticker'");
-  }
-
-  return {
-    id: ArgGuards.requireStringArg(argv, 'id'),
-    idType,
-    classCode
-  };
-}
+export const parseCurrencyIdType = parseInstrumentLookupIdType;
+export const parseCurrencyRequest = parseInstrumentLookupRequest;
 
 export function parseCurrencyFormat(argv: CliArgs): CurrencyFormat {
   return ArgGuards.optionalEnumArgValue(argv, 'format', currencyFormats) ?? 'table';

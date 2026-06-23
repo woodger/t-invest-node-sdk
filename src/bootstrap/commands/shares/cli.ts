@@ -1,12 +1,16 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
-  InstrumentStatus,
   type InstrumentsRequest,
   type SharesResponse
 } from '../../../generated/instruments';
 import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  instrumentStatusArgNames,
+  parseInstrumentsRequest,
+  parseInstrumentStatus
+} from '../instruments-args';
 import { formatShares, sharesFormats, type SharesFormat } from './reporter';
 
 type SharesSdk = {
@@ -20,35 +24,12 @@ type SharesSdkFactory = (options: TinkoffInvestOptions) => SharesSdk;
 
 const sharesArgNames = new Set([
   ...sdkOptionArgNames,
-  'instrument-status',
+  ...instrumentStatusArgNames,
   'format'
 ]);
 
-const instrumentStatuses = {
-  unspecified: InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED,
-  base: InstrumentStatus.INSTRUMENT_STATUS_BASE,
-  all: InstrumentStatus.INSTRUMENT_STATUS_ALL
-} as const;
-
-type InstrumentStatusName = keyof typeof instrumentStatuses;
-
-export function parseSharesInstrumentStatus(argv: CliArgs): InstrumentStatus {
-  const status = ArgGuards.optionalStringArgValue(argv, 'instrument-status') ?? 'base';
-
-  if (!(status in instrumentStatuses)) {
-    throw new Error(
-      `Expected '--instrument-status' as one of: ${Object.keys(instrumentStatuses).join(', ')}`
-    );
-  }
-
-  return instrumentStatuses[status as InstrumentStatusName];
-}
-
-export function parseSharesRequest(argv: CliArgs): InstrumentsRequest {
-  return {
-    instrumentStatus: parseSharesInstrumentStatus(argv)
-  };
-}
+export const parseSharesInstrumentStatus = parseInstrumentStatus;
+export const parseSharesRequest = parseInstrumentsRequest;
 
 export function parseSharesFormat(argv: CliArgs): SharesFormat {
   return ArgGuards.optionalEnumArgValue(argv, 'format', sharesFormats) ?? 'table';
