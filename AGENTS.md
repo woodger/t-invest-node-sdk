@@ -26,6 +26,29 @@ Ask clarifying questions when:
 Do not guess when a small question can remove uncertainty.
 
 
+## Environment Issues
+
+Do not silently work around environment problems.
+
+If work is blocked by:
+- missing tools
+- missing permissions
+- container limitations
+- OS/package-manager issues
+
+Then:
+- stop
+- explain the problem briefly
+- ask how to proceed
+
+Do not:
+- change project code to bypass environment issues
+- install software without request
+- replace validation with speculative work
+
+If validation cannot be executed, report it explicitly.
+
+
 ## Change Strategy
 
 Make reasonable, scoped changes.
