@@ -12,6 +12,7 @@
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
 - `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
 - `marketdata get-order-book` -> `sdk.marketdata.getOrderBook`;
+- `marketdata get-trading-status` -> `sdk.marketdata.getTradingStatus`;
 - `orders get-orders` -> `sdk.orders.getOrders`;
 - `operations get-portfolio` -> `sdk.operations.getPortfolio`;
 - `operations get-positions` -> `sdk.operations.getPositions`.
@@ -56,6 +57,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     order-book/
+      cli.ts
+      reporter.ts
+    trading-status/
       cli.ts
       reporter.ts
     orders/
@@ -174,6 +178,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     order-book/
+      cli.ts
+      reporter.ts
+    trading-status/
       cli.ts
       reporter.ts
     orders/
