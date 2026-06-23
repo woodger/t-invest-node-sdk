@@ -17,6 +17,13 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves instrument command without context requirement', () => {
+    const command = resolveCommand('instrument');
+
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves portfolio command without context requirement', () => {
     const command = resolveCommand('portfolio');
 
@@ -71,6 +78,7 @@ describe('isCommandName', () => {
   test('accepts registered command names only', () => {
     assert.equal(isCommandName('accounts'), true);
     assert.equal(isCommandName('candles'), true);
+    assert.equal(isCommandName('instrument'), true);
     assert.equal(isCommandName('last-prices'), true);
     assert.equal(isCommandName('orders'), true);
     assert.equal(isCommandName('portfolio'), true);

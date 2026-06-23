@@ -28,6 +28,9 @@ src/bootstrap
     candles/
       cli.ts
       reporter.ts
+    instrument/
+      cli.ts
+      reporter.ts
     last-prices/
       cli.ts
       reporter.ts

@@ -9,6 +9,7 @@
 
 - `accounts` - получает счета пользователя;
 - `candles` - получает исторические свечи;
+- `instrument` - получает основную информацию об инструменте по идентификатору;
 - `last-prices` - получает последние рыночные цены инструментов;
 - `orders` - получает активные торговые поручения по счету;
 - `portfolio` - получает текущий портфель по счету;
@@ -43,6 +44,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     candles/
+      cli.ts
+      reporter.ts
+    instrument/
       cli.ts
       reporter.ts
     last-prices/
@@ -151,6 +155,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     candles/
+      cli.ts
+      reporter.ts
+    instrument/
       cli.ts
       reporter.ts
     last-prices/

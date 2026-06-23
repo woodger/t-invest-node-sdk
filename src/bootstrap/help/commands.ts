@@ -69,6 +69,32 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  instrument: {
+    description: 'Print instrument details',
+    usage: [
+      'tinkoff-invest-node-sdk instrument --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instrument --id=BBG00QPYJ5H0 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
+    ]
+  },
   'last-prices': {
     description: 'Print latest market prices',
     usage: [

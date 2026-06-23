@@ -88,6 +88,7 @@ node dist/bootstrap/cli.js help
 node dist/bootstrap/cli.js version
 node dist/bootstrap/cli.js accounts --help
 node dist/bootstrap/cli.js candles --help
+node dist/bootstrap/cli.js instrument --help
 node dist/bootstrap/cli.js last-prices --help
 node dist/bootstrap/cli.js orders --help
 node dist/bootstrap/cli.js portfolio --help
