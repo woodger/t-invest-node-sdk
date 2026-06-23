@@ -79,7 +79,8 @@ infrastructure modules.
 
 CLI слой сейчас поддерживает `help`, `version` и API-команды в canonical форме
 `<service> <method>`: `users get-accounts`, `users get-info`,
-`users get-margin-attributes`, `marketdata get-candles`,
+`users get-margin-attributes`, `users get-user-tariff`,
+`marketdata get-candles`,
 `instruments get-instrument-by`, `marketdata get-last-prices`,
 `marketdata get-order-book`, `marketdata get-trading-status`,
 `marketdata get-trading-statuses`, `orders get-orders`,

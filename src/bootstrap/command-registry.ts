@@ -23,6 +23,7 @@ import { positions } from './commands/positions/cli';
 import { tradingStatus } from './commands/trading-status/cli';
 import { tradingStatuses } from './commands/trading-statuses/cli';
 import { userInfo } from './commands/user-info/cli';
+import { userTariff } from './commands/user-tariff/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
 
@@ -47,6 +48,10 @@ const commandRegistry = {
   'users get-margin-attributes': {
     requiresContext: false,
     handler: marginAttributes
+  },
+  'users get-user-tariff': {
+    requiresContext: false,
+    handler: userTariff
   },
   'marketdata get-candles': {
     requiresContext: false,

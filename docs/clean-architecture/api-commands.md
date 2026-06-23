@@ -10,6 +10,7 @@
 - `users get-accounts` -> `sdk.users.getAccounts`;
 - `users get-info` -> `sdk.users.getInfo`;
 - `users get-margin-attributes` -> `sdk.users.getMarginAttributes`;
+- `users get-user-tariff` -> `sdk.users.getUserTariff`;
 - `marketdata get-candles` -> `sdk.marketdata.getCandles`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
 - `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
@@ -90,6 +91,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     margin-attributes/
+      cli.ts
+      reporter.ts
+    user-tariff/
       cli.ts
       reporter.ts
     candles/
@@ -223,6 +227,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     margin-attributes/
+      cli.ts
+      reporter.ts
+    user-tariff/
       cli.ts
       reporter.ts
     candles/

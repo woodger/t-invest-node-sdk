@@ -93,6 +93,29 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000 --format=json'
     ]
   },
+  'users get-user-tariff': {
+    description: 'Print user API limits',
+    sdkCall: 'sdk.users.getUserTariff',
+    grpcMethod: 'UsersService/GetUserTariff',
+    usage: [
+      'tinkoff-invest-node-sdk users get-user-tariff [options]'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk users get-user-tariff',
+      'tinkoff-invest-node-sdk users get-user-tariff --format=json'
+    ]
+  },
   'marketdata get-candles': {
     description: 'Print historical candles',
     sdkCall: 'sdk.marketdata.getCandles',

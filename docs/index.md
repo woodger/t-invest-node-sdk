@@ -80,6 +80,7 @@ node dist/bootstrap/cli.js version
 node dist/bootstrap/cli.js users get-accounts --help
 node dist/bootstrap/cli.js users get-info --help
 node dist/bootstrap/cli.js users get-margin-attributes --help
+node dist/bootstrap/cli.js users get-user-tariff --help
 node dist/bootstrap/cli.js marketdata get-candles --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
@@ -97,6 +98,7 @@ node dist/bootstrap/cli.js operations get-positions --help
 - `users get-accounts` - список счетов пользователя;
 - `users get-info` - информация о пользователе;
 - `users get-margin-attributes` - маржинальные показатели счета;
+- `users get-user-tariff` - текущие API-лимиты пользователя;
 - `marketdata get-candles` - исторические свечи;
 - `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
 - `marketdata get-last-prices` - последние рыночные цены инструментов;

@@ -18,3 +18,4 @@ export * from './positions.report';
 export * from './trading-status.report';
 export * from './trading-statuses.report';
 export * from './user-info.report';
+export * from './user-tariff.report';
