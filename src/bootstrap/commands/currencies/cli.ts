@@ -1,12 +1,16 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
-  InstrumentStatus,
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
 import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  instrumentStatusArgNames,
+  parseInstrumentsRequest,
+  parseInstrumentStatus
+} from '../instruments-args';
 import { currenciesFormats, formatCurrencies, type CurrenciesFormat } from './reporter';
 
 type CurrenciesSdk = {
@@ -20,35 +24,12 @@ type CurrenciesSdkFactory = (options: TinkoffInvestOptions) => CurrenciesSdk;
 
 const currenciesArgNames = new Set([
   ...sdkOptionArgNames,
-  'instrument-status',
+  ...instrumentStatusArgNames,
   'format'
 ]);
 
-const instrumentStatuses = {
-  unspecified: InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED,
-  base: InstrumentStatus.INSTRUMENT_STATUS_BASE,
-  all: InstrumentStatus.INSTRUMENT_STATUS_ALL
-} as const;
-
-type InstrumentStatusName = keyof typeof instrumentStatuses;
-
-export function parseCurrenciesInstrumentStatus(argv: CliArgs): InstrumentStatus {
-  const status = ArgGuards.optionalStringArgValue(argv, 'instrument-status') ?? 'base';
-
-  if (!(status in instrumentStatuses)) {
-    throw new Error(
-      `Expected '--instrument-status' as one of: ${Object.keys(instrumentStatuses).join(', ')}`
-    );
-  }
-
-  return instrumentStatuses[status as InstrumentStatusName];
-}
-
-export function parseCurrenciesRequest(argv: CliArgs): InstrumentsRequest {
-  return {
-    instrumentStatus: parseCurrenciesInstrumentStatus(argv)
-  };
-}
+export const parseCurrenciesInstrumentStatus = parseInstrumentStatus;
+export const parseCurrenciesRequest = parseInstrumentsRequest;
 
 export function parseCurrenciesFormat(argv: CliArgs): CurrenciesFormat {
   return ArgGuards.optionalEnumArgValue(argv, 'format', currenciesFormats) ?? 'table';

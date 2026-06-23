@@ -235,6 +235,64 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  'instruments bond-by': {
+    description: 'Print bond details',
+    sdkCall: 'sdk.instruments.bondBy',
+    grpcMethod: 'InstrumentsService/BondBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments bond-by --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments bond-by --id=BBG00B9XRY4J --id-type=figi',
+      'tinkoff-invest-node-sdk instruments bond-by --id=SU26238RMFS4 --id-type=ticker --class-code=TQOB --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instruments bonds': {
+    description: 'Print bonds',
+    sdkCall: 'sdk.instruments.bonds',
+    grpcMethod: 'InstrumentsService/Bonds',
+    usage: [
+      'tinkoff-invest-node-sdk instruments bonds [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments bonds',
+      'tinkoff-invest-node-sdk instruments bonds --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
+    ]
+  },
   'instruments get-brand-by': {
     description: 'Print brand details',
     sdkCall: 'sdk.instruments.getBrandBy',

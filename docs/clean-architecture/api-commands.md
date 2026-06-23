@@ -16,6 +16,8 @@
 - `instruments find-instrument` -> `sdk.instruments.findInstrument`;
 - `instruments get-accrued-interests` -> `sdk.instruments.getAccruedInterests`;
 - `instruments get-bond-coupons` -> `sdk.instruments.getBondCoupons`;
+- `instruments bond-by` -> `sdk.instruments.bondBy`;
+- `instruments bonds` -> `sdk.instruments.bonds`;
 - `instruments get-brand-by` -> `sdk.instruments.getBrandBy`;
 - `instruments get-brands` -> `sdk.instruments.getBrands`;
 - `instruments get-countries` -> `sdk.instruments.getCountries`;
@@ -104,6 +106,7 @@ src/bootstrap
   cli.ts
   command-registry.ts
   commands/
+    instruments-args.ts
     accounts/
       cli.ts
       reporter.ts
@@ -129,6 +132,12 @@ src/bootstrap
       cli.ts
       reporter.ts
     bond-coupons/
+      cli.ts
+      reporter.ts
+    bond/
+      cli.ts
+      reporter.ts
+    bonds/
       cli.ts
       reporter.ts
     brand/

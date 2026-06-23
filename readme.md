@@ -95,6 +95,8 @@ node dist/bootstrap/cli.js marketdata get-close-prices --help
 node dist/bootstrap/cli.js instruments find-instrument --help
 node dist/bootstrap/cli.js instruments get-accrued-interests --help
 node dist/bootstrap/cli.js instruments get-bond-coupons --help
+node dist/bootstrap/cli.js instruments bond-by --help
+node dist/bootstrap/cli.js instruments bonds --help
 node dist/bootstrap/cli.js instruments get-brand-by --help
 node dist/bootstrap/cli.js instruments get-brands --help
 node dist/bootstrap/cli.js instruments get-countries --help
