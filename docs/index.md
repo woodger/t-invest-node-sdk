@@ -101,6 +101,8 @@ node dist/bootstrap/cli.js instruments future-by --help
 node dist/bootstrap/cli.js instruments futures --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
+node dist/bootstrap/cli.js instruments option-by --help
+node dist/bootstrap/cli.js instruments options-by --help
 node dist/bootstrap/cli.js instruments share-by --help
 node dist/bootstrap/cli.js instruments shares --help
 node dist/bootstrap/cli.js instruments trading-schedules --help
@@ -145,6 +147,8 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `instruments futures` - список фьючерсов;
 - `instruments get-futures-margin` - гарантийное обеспечение по фьючерсу;
 - `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
+- `instruments option-by` - информация об опционе по идентификатору;
+- `instruments options-by` - список опционов по базовому активу;
 - `instruments share-by` - информация об акции по идентификатору;
 - `instruments shares` - список акций;
 - `instruments trading-schedules` - расписания торговых площадок;

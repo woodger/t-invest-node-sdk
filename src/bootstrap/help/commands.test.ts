@@ -26,6 +26,8 @@ describe('commandHelp', () => {
         'instruments get-favorites',
         'instruments get-futures-margin',
         'instruments get-instrument-by',
+        'instruments option-by',
+        'instruments options-by',
         'instruments share-by',
         'instruments shares',
         'instruments trading-schedules',
@@ -80,6 +82,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments futures'), true);
     assert.equal(isCommandHelpName('instruments get-futures-margin'), true);
     assert.equal(isCommandHelpName('instruments get-instrument-by'), true);
+    assert.equal(isCommandHelpName('instruments option-by'), true);
+    assert.equal(isCommandHelpName('instruments options-by'), true);
     assert.equal(isCommandHelpName('instruments share-by'), true);
     assert.equal(isCommandHelpName('instruments shares'), true);
     assert.equal(isCommandHelpName('instruments trading-schedules'), true);

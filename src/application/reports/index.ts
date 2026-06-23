@@ -29,6 +29,7 @@ export * from './order-state.report';
 export * from './orders.report';
 export * from './operations-by-cursor.report';
 export * from './operations.report';
+export * from './option.report';
 export * from './portfolio.report';
 export * from './positions.report';
 export * from './share.report';
