@@ -66,7 +66,8 @@ infrastructure modules.
 Текущие зоны:
 
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
-- `bootstrap/compile-proto.ts` - package script entrypoint для proto generation;
+- `bootstrap/compile-proto.ts` - package script entrypoint для proto generation
+  через локальный compiler из `grpc-tools`;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
 - `bootstrap/cli.ts` - CLI entrypoint layer;
 - `bootstrap/commands` - handlers CLI-команд;
