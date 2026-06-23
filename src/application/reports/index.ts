@@ -7,6 +7,7 @@
 
 export * from './accounts.report';
 export * from './accrued-interests.report';
+export * from './bond-coupons.report';
 export * from './brands.report';
 export * from './candles.report';
 export * from './close-prices.report';
@@ -27,6 +28,7 @@ export * from './operations.report';
 export * from './portfolio.report';
 export * from './positions.report';
 export * from './stop-orders.report';
+export * from './trading-schedules.report';
 export * from './trading-status.report';
 export * from './trading-statuses.report';
 export * from './user-info.report';

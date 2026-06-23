@@ -204,6 +204,37 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
+  'instruments get-bond-coupons': {
+    description: 'Print bond coupons',
+    sdkCall: 'sdk.instruments.getBondCoupons',
+    grpcMethod: 'InstrumentsService/GetBondCoupons',
+    usage: [
+      'tinkoff-invest-node-sdk instruments get-bond-coupons --figi=FIGI --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--figi=FIGI           Bond FIGI',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments get-bond-coupons --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments get-bond-coupons --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
   'instruments get-brand-by': {
     description: 'Print brand details',
     sdkCall: 'sdk.instruments.getBrandBy',
@@ -413,6 +444,37 @@ export const commandHelp = {
     examples: [
       'tinkoff-invest-node-sdk instruments get-instrument-by --id=BBG00QPYJ5H0 --id-type=figi',
       'tinkoff-invest-node-sdk instruments get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
+    ]
+  },
+  'instruments trading-schedules': {
+    description: 'Print trading schedules',
+    sdkCall: 'sdk.instruments.tradingSchedules',
+    grpcMethod: 'InstrumentsService/TradingSchedules',
+    usage: [
+      'tinkoff-invest-node-sdk instruments trading-schedules --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--exchange=EXCHANGE    Optional exchange or settlement calendar code',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments trading-schedules --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments trading-schedules --exchange=MOEX --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
   'marketdata get-last-prices': {

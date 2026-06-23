@@ -13,6 +13,7 @@ import { accounts } from './commands/accounts/cli';
 import { accruedInterests } from './commands/accrued-interests/cli';
 import { brand } from './commands/brand/cli';
 import { brands } from './commands/brands/cli';
+import { bondCoupons } from './commands/bond-coupons/cli';
 import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
@@ -33,6 +34,7 @@ import { operations } from './commands/operations/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
 import { stopOrders } from './commands/stop-orders/cli';
+import { tradingSchedules } from './commands/trading-schedules/cli';
 import { tradingStatus } from './commands/trading-status/cli';
 import { tradingStatuses } from './commands/trading-statuses/cli';
 import { userInfo } from './commands/user-info/cli';
@@ -79,6 +81,10 @@ const commandRegistry = {
     requiresContext: false,
     handler: accruedInterests
   },
+  'instruments get-bond-coupons': {
+    requiresContext: false,
+    handler: bondCoupons
+  },
   'instruments get-brand-by': {
     requiresContext: false,
     handler: brand
@@ -110,6 +116,10 @@ const commandRegistry = {
   'instruments get-instrument-by': {
     requiresContext: false,
     handler: instrument
+  },
+  'instruments trading-schedules': {
+    requiresContext: false,
+    handler: tradingSchedules
   },
   'marketdata get-last-prices': {
     requiresContext: false,
