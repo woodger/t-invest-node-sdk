@@ -94,7 +94,7 @@ CLI слой сейчас поддерживает `help`, `version` и API-ко
 `marketdata get-last-trades`,
 `marketdata get-order-book`, `marketdata get-trading-status`,
 `marketdata get-trading-statuses`, `orders get-orders`,
-`orders get-order-state`, `operations get-operations`,
+`orders get-order-state`, `operations get-broker-report`, `operations get-operations`,
 `operations get-operations-by-cursor`, `operations get-portfolio`,
 `operations get-positions`, `operations get-withdraw-limits`,
 `stoporders get-stop-orders`.

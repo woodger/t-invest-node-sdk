@@ -18,6 +18,7 @@ import { brand } from './commands/brand/cli';
 import { brands } from './commands/brands/cli';
 import { bondCoupons } from './commands/bond-coupons/cli';
 import { bonds } from './commands/bonds/cli';
+import { brokerReport } from './commands/broker-report/cli';
 import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
@@ -226,6 +227,10 @@ const commandRegistry = {
   'operations get-operations-by-cursor': {
     requiresContext: false,
     handler: operationsByCursor
+  },
+  'operations get-broker-report': {
+    requiresContext: false,
+    handler: brokerReport
   },
   'operations get-portfolio': {
     requiresContext: false,
