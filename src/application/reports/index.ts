@@ -7,6 +7,7 @@
 
 export * from './accounts.report';
 export * from './candles.report';
+export * from './close-prices.report';
 export * from './instrument.report';
 export * from './last-prices.report';
 export * from './last-trades.report';

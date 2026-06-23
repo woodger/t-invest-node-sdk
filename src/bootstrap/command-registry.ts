@@ -11,6 +11,7 @@
 
 import { accounts } from './commands/accounts/cli';
 import { candles } from './commands/candles/cli';
+import { closePrices } from './commands/close-prices/cli';
 import { help } from './commands/help/cli';
 import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
@@ -57,6 +58,10 @@ const commandRegistry = {
   'marketdata get-candles': {
     requiresContext: false,
     handler: candles
+  },
+  'marketdata get-close-prices': {
+    requiresContext: false,
+    handler: closePrices
   },
   'instruments get-instrument-by': {
     requiresContext: false,

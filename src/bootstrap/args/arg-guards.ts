@@ -98,6 +98,17 @@ export class ArgGuards {
     return date;
   }
 
+  static requireCommaSeparatedStringListArg(argv: CliArgs, name: string): string[] {
+    const rawValue = ArgGuards.requireStringArg(argv, name);
+    const values = rawValue.split(',').map((value) => value.trim());
+
+    if (values.some((value) => value === '')) {
+      throw new Error(`Expected '--${name}' as comma-separated list`);
+    }
+
+    return values;
+  }
+
   static assertKnownArgs(argv: CliArgs, knownArgs: ReadonlySet<string>): void {
     for (const name of Object.keys(argv)) {
       if (name === '_' || knownArgs.has(name)) {

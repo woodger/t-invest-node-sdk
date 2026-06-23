@@ -101,6 +101,28 @@ describe('ArgGuards', () => {
     });
   });
 
+  describe('requireCommaSeparatedStringListArg', () => {
+    test('returns trimmed comma-separated values', () => {
+      assert.deepEqual(
+        ArgGuards.requireCommaSeparatedStringListArg(
+          argv({ 'instrument-id': 'figi, instrument-uid' }),
+          'instrument-id'
+        ),
+        ['figi', 'instrument-uid']
+      );
+    });
+
+    test('throws when list contains empty values', () => {
+      assert.throws(
+        () => ArgGuards.requireCommaSeparatedStringListArg(
+          argv({ 'instrument-id': 'figi,,instrument-uid' }),
+          'instrument-id'
+        ),
+        /Expected '--instrument-id' as comma-separated list/
+      );
+    });
+  });
+
   describe('assertKnownArgs', () => {
     test('ignores positional arguments and accepts known options', () => {
       assert.doesNotThrow(() => {
