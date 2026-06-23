@@ -9,7 +9,7 @@
  */
 
 import type { CliArgs } from '../cli-contract';
-import { isCommandHelpName } from './commands';
+import { resolveCommandHelpName } from './commands';
 import { renderCliHelp, renderCommandHelp } from './renderer';
 
 export function isHelpRequested(argv: CliArgs): boolean {
@@ -17,9 +17,9 @@ export function isHelpRequested(argv: CliArgs): boolean {
 }
 
 export function renderHelp(argv: CliArgs): string {
-  const [commandName] = argv._;
+  const commandName = resolveCommandHelpName(argv._);
 
-  if (!isCommandHelpName(commandName)) {
+  if (commandName === undefined) {
     return renderCliHelp();
   }
 

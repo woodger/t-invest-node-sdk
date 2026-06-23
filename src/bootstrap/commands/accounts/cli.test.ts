@@ -15,7 +15,7 @@ import {
 
 function argv(args: Partial<CliArgs> = {}): CliArgs {
   return {
-    _: ['accounts'],
+    _: ['users get-accounts'],
     ...args
   };
 }

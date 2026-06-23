@@ -44,7 +44,8 @@ describe('bootstrap cli', () => {
     test('maps long options with values and boolean flags', () => {
       assert.deepEqual(
         parseCliArgs([
-          'accounts',
+          'users',
+          'get-accounts',
           '--format',
           'json',
           '--token=secret',
@@ -52,7 +53,7 @@ describe('bootstrap cli', () => {
           '--insecure'
         ]),
         {
-          _: ['accounts'],
+          _: ['users', 'get-accounts'],
           format: 'json',
           token: 'secret',
           endpoint: 'invest.example:443',
@@ -63,9 +64,9 @@ describe('bootstrap cli', () => {
 
     test('does not consume values after known boolean flags', () => {
       assert.deepEqual(
-        parseCliArgs(['--help', 'accounts', '--version', 'candles']),
+        parseCliArgs(['--help', 'users', 'get-accounts', '--version', 'marketdata', 'get-candles']),
         {
-          _: ['accounts', 'candles'],
+          _: ['users', 'get-accounts', 'marketdata', 'get-candles'],
           help: true,
           version: true
         }
@@ -96,15 +97,26 @@ describe('bootstrap cli', () => {
 
     test('prints command-specific help from a command help flag', async () => {
       const { io, read } = createIo();
-      const exitCode = await runCli(['version', '--help'], io);
+      const exitCode = await runCli(['operations', 'get-portfolio', '--help'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /version - Show package and runtime version info/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk --version/);
+      assert.match(read().stdout, /operations get-portfolio - Print account portfolio/);
+      assert.match(read().stdout, /SDK call:\n {2}sdk\.operations\.getPortfolio/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk operations get-portfolio --account-id=ID/);
       assert.equal(read().stderr, '');
     });
 
     test('prints command-specific help from help command argument', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['help', 'marketdata', 'get-candles'], io);
+
+      assert.equal(exitCode, 0);
+      assert.match(read().stdout, /marketdata get-candles - Print historical candles/);
+      assert.match(read().stdout, /gRPC method:\n {2}MarketDataService\/GetCandles/);
+      assert.equal(read().stderr, '');
+    });
+
+    test('prints utility help from help command argument', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['help', 'version'], io);
 
@@ -133,6 +145,16 @@ describe('bootstrap cli', () => {
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Unknown command: unknown-command/);
+      assert.match(read().stderr, /Usage:/);
+    });
+
+    test('does not resolve legacy shortcut commands', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['portfolio'], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.match(read().stderr, /Unknown command: portfolio/);
       assert.match(read().stderr, /Usage:/);
     });
   });

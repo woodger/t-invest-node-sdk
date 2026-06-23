@@ -106,7 +106,7 @@ describe('ArgGuards', () => {
       assert.doesNotThrow(() => {
         ArgGuards.assertKnownArgs(
           argv({
-            _: ['accounts'],
+            _: ['users get-accounts'],
             token: 'secret'
           }),
           new Set(['token'])

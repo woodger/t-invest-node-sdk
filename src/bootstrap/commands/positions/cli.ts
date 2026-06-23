@@ -35,7 +35,7 @@ export function createPositionsCommand(
 ) {
   return async function positions(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, positionsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'positions');
+    ArgGuards.assertNoExtraPositionals(argv, 'operations get-positions');
 
     const request = parsePositionsRequest(argv);
     const format = parsePositionsFormat(argv);

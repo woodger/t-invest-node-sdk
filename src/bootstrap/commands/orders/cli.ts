@@ -35,7 +35,7 @@ export function createOrdersCommand(
 ) {
   return async function orders(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, ordersArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'orders');
+    ArgGuards.assertNoExtraPositionals(argv, 'orders get-orders');
 
     const request = parseOrdersRequest(argv);
     const format = parseOrdersFormat(argv);

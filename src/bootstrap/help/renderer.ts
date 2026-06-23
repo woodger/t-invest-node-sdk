@@ -24,13 +24,23 @@ function renderSection(title: string, rows: readonly string[] | undefined): stri
   ];
 }
 
+function renderCommandContract(command: CommandHelp): string[] {
+  return [
+    ...renderSection('SDK call', command.sdkCall === undefined ? undefined : [command.sdkCall]),
+    ...renderSection('gRPC method', command.grpcMethod === undefined ? undefined : [command.grpcMethod])
+  ];
+}
+
 export function renderCliHelp(): string {
+  const commandNameWidth = Math.max(...Object.keys(commandHelp).map((name) => name.length));
+
   return [
     `${packageJson.name} ${packageJson.version}`,
     packageJson.description,
     '',
     'Usage:',
-    '  tinkoff-invest-node-sdk <command> [options]',
+    '  tinkoff-invest-node-sdk <service> <method> [options]',
+    '  tinkoff-invest-node-sdk help [<service> <method>|version]',
     '  tinkoff-invest-node-sdk --help',
     '  tinkoff-invest-node-sdk --version',
     '',
@@ -40,11 +50,11 @@ export function renderCliHelp(): string {
     '',
     'Commands:',
     ...Object.entries(commandHelp).map(
-      ([name, command]) => `  ${name.padEnd(10)} ${command.description}`
+      ([name, command]) => `  ${name.padEnd(commandNameWidth)} ${command.description}`
     ),
     '',
     'Command details:',
-    '  tinkoff-invest-node-sdk <command> --help',
+    '  tinkoff-invest-node-sdk <service> <method> --help',
     ''
   ].join('\n');
 }
@@ -55,6 +65,7 @@ export function renderCommandHelp(commandName: CommandHelpName): string {
   return [
     `${packageJson.name} ${packageJson.version}`,
     `${commandName} - ${command.description}`,
+    ...renderCommandContract(command),
     ...renderSection('Usage', command.usage),
     ...renderSection('Required options', command.required),
     ...renderSection('Optional options', command.optional),

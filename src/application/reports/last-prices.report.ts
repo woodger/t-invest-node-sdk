@@ -1,4 +1,4 @@
-/** Одна последняя цена инструмента в отчете команды `last-prices`. */
+/** Одна последняя цена инструмента в отчете команды `marketdata get-last-prices`. */
 export interface LastPricesReportPrice {
   figi: string;
   instrumentUid: string;
@@ -6,5 +6,5 @@ export interface LastPricesReportPrice {
   time: string;
 }
 
-/** Отчет команды `last-prices` на application/output boundary. */
+/** Отчет команды `marketdata get-last-prices` на application/output boundary. */
 export type LastPricesReport = LastPricesReportPrice[];

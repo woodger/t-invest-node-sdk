@@ -7,17 +7,19 @@
 
 В SDK появились API-команды:
 
-- `accounts` - получает счета пользователя;
-- `candles` - получает исторические свечи;
-- `instrument` - получает основную информацию об инструменте по идентификатору;
-- `last-prices` - получает последние рыночные цены инструментов;
-- `orders` - получает активные торговые поручения по счету;
-- `portfolio` - получает текущий портфель по счету;
-- `positions` - получает позиции по счету.
+- `users get-accounts` -> `sdk.users.getAccounts`;
+- `marketdata get-candles` -> `sdk.marketdata.getCandles`;
+- `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
+- `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
+- `orders get-orders` -> `sdk.orders.getOrders`;
+- `operations get-portfolio` -> `sdk.operations.getPortfolio`;
+- `operations get-positions` -> `sdk.operations.getPositions`.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
-команды. Общий command framework заранее не вводится.
+команды. Публичный CLI path зеркалит SDK/gRPC contract в форме
+`<service> <method>`, где `method` - kebab-case имя SDK method. Общий command
+framework заранее не вводится.
 
 Команда делает несколько разных вещей:
 
@@ -93,6 +95,10 @@ src/infrastructure
 `infrastructure/output/*` сейчас отвечает за:
 
 - запись готового текста в `stdout` или `stderr`.
+
+Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами
+adapter-модулей. Они не задают публичный CLI path: публичный контракт команды
+фиксируется в `bootstrap/command-registry.ts` и `bootstrap/help/commands.ts`.
 
 ## Что Уже Хорошо
 
@@ -214,7 +220,9 @@ Use-case стоит выделять, если появляется хотя б�
 - держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
 - использовать `infrastructure/renderers` только для общей механики формата;
 - не класть JSON/CSV/table formatting в stdout sink;
-- регистрировать команду в `bootstrap/command-registry.ts`;
+- регистрировать команду в `bootstrap/command-registry.ts` только в canonical
+  форме `<service> <method>`;
+- не добавлять short aliases для API-команд;
 - добавлять help metadata в `bootstrap/help/commands.ts`;
 - добавлять тесты рядом с конкретными файлами команды;
 - не вводить общий command framework до появления реального повторения в
@@ -230,9 +238,9 @@ Use-case стоит выделять, если появляется хотя б�
 До этого каждая команда остается явной:
 
 ```text
-bootstrap/commands/<command>/cli.ts
-bootstrap/commands/<command>/reporter.ts
-application/reports/<command>.report.ts
+bootstrap/commands/<command-adapter>/cli.ts
+bootstrap/commands/<command-adapter>/reporter.ts
+application/reports/<command-adapter>.report.ts
 ```
 
 Допустимые причины для extract-а:

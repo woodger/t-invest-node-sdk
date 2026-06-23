@@ -1,11 +1,12 @@
 import type { CliArgs } from '../../cli-contract';
-import { isCommandHelpName } from '../../help/commands';
+import { resolveCommandHelpName } from '../../help/commands';
 import { renderCliHelp, renderCommandHelp } from '../../help/renderer';
 
 export function help(argv: CliArgs): string {
-  const [, commandName] = argv._;
+  const [, ...positionals] = argv._;
+  const commandName = resolveCommandHelpName(positionals);
 
-  if (!isCommandHelpName(commandName)) {
+  if (commandName === undefined) {
     return renderCliHelp();
   }
 

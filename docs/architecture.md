@@ -77,9 +77,11 @@ infrastructure modules.
 - `bootstrap/command-registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
-CLI слой сейчас поддерживает `help`, `version`, `accounts`, `candles`,
-`instrument`, `last-prices`, `orders`, `portfolio`, `positions` и ошибку для
-неизвестных команд. API-команды остаются тонкими bootstrap handlers:
+CLI слой сейчас поддерживает `help`, `version` и API-команды в canonical форме
+`<service> <method>`: `users get-accounts`, `marketdata get-candles`,
+`instruments get-instrument-by`, `marketdata get-last-prices`,
+`orders get-orders`, `operations get-portfolio`, `operations get-positions`.
+API-команды остаются тонкими bootstrap handlers:
 они валидируют CLI-контракт, создают SDK facade и передают provider response в
 reporter-модуль. Reporter-ы преобразуют generated DTO в
 `application/reports` contracts, выбирают command-specific представление и

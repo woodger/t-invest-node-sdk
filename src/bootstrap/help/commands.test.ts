@@ -6,22 +6,33 @@ describe('commandHelp', () => {
   test('contains help entries for public bootstrap commands', () => {
     assert.deepEqual(
       Object.keys(commandHelp).sort(),
-      ['accounts', 'candles', 'help', 'instrument', 'last-prices', 'orders', 'portfolio', 'positions', 'version']
+      [
+        'help',
+        'instruments get-instrument-by',
+        'marketdata get-candles',
+        'marketdata get-last-prices',
+        'operations get-portfolio',
+        'operations get-positions',
+        'orders get-orders',
+        'users get-accounts',
+        'version'
+      ]
     );
   });
 });
 
 describe('isCommandHelpName', () => {
   test('accepts registered help command names only', () => {
-    assert.equal(isCommandHelpName('accounts'), true);
-    assert.equal(isCommandHelpName('candles'), true);
-    assert.equal(isCommandHelpName('instrument'), true);
-    assert.equal(isCommandHelpName('last-prices'), true);
-    assert.equal(isCommandHelpName('orders'), true);
-    assert.equal(isCommandHelpName('portfolio'), true);
-    assert.equal(isCommandHelpName('positions'), true);
+    assert.equal(isCommandHelpName('users get-accounts'), true);
+    assert.equal(isCommandHelpName('marketdata get-candles'), true);
+    assert.equal(isCommandHelpName('instruments get-instrument-by'), true);
+    assert.equal(isCommandHelpName('marketdata get-last-prices'), true);
+    assert.equal(isCommandHelpName('orders get-orders'), true);
+    assert.equal(isCommandHelpName('operations get-portfolio'), true);
+    assert.equal(isCommandHelpName('operations get-positions'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
+    assert.equal(isCommandHelpName('portfolio'), false);
     assert.equal(isCommandHelpName('unknown-command'), false);
     assert.equal(isCommandHelpName(undefined), false);
   });

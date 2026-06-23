@@ -28,7 +28,7 @@ export function createAccountsCommand(
 ) {
   return async function accounts(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, accountsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'accounts');
+    ArgGuards.assertNoExtraPositionals(argv, 'users get-accounts');
 
     const format = parseAccountsFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));

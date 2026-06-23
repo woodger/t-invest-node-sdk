@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `candles`.
+ * Модуль CLI-репортинга команды `marketdata get-candles`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор argv и запуск SDK остаются в `cli.ts`.

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `positions`.
+ * Модуль CLI-репортинга команды `operations get-positions`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор argv и запуск SDK остаются в `cli.ts`.

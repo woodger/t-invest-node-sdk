@@ -103,21 +103,27 @@ export async function runCli(
     return 0;
   }
 
-  const action = parsedArgv._[0] ?? 'help';
+  const action = parsedArgv._.length === 0 ? ['help'] : parsedArgv._;
   let command;
 
   try {
     command = resolveCommand(action);
   }
   catch {
-    io.stderr.write(`Unknown command: ${action}\n\n`);
+    io.stderr.write(`Unknown command: ${action.join(' ')}\n\n`);
     io.stderr.write(renderCliHelp());
 
     return 1;
   }
 
   try {
-    const output = await command.handler(parsedArgv);
+    const output = await command.handler({
+      ...parsedArgv,
+      _: [
+        command.name,
+        ...parsedArgv._.slice(command.path.length)
+      ]
+    });
 
     if (output !== undefined) {
       io.stdout.write(output);

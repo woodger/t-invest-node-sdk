@@ -1,4 +1,4 @@
-/** Сводка портфеля в отчете команды `portfolio`. */
+/** Сводка портфеля в отчете команды `operations get-portfolio`. */
 export interface PortfolioReportSummary {
   accountId: string;
   totalAmountPortfolio: string;
@@ -12,7 +12,7 @@ export interface PortfolioReportSummary {
   expectedYield: string;
 }
 
-/** Одна позиция портфеля в отчете команды `portfolio`. */
+/** Одна позиция портфеля в отчете команды `operations get-portfolio`. */
 export interface PortfolioReportPosition {
   figi: string;
   instrumentUid: string;
@@ -25,7 +25,7 @@ export interface PortfolioReportPosition {
   blocked: boolean;
 }
 
-/** Отчет команды `portfolio` на application/output boundary. */
+/** Отчет команды `operations get-portfolio` на application/output boundary. */
 export interface PortfolioReport {
   summary: PortfolioReportSummary;
   positions: PortfolioReportPosition[];

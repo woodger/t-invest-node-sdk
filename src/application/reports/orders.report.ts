@@ -1,11 +1,11 @@
-/** Одна стадия исполнения заявки в отчете команды `orders`. */
+/** Одна стадия исполнения заявки в отчете команды `orders get-orders`. */
 export interface OrdersReportStage {
   price: string;
   quantity: number;
   tradeId: string;
 }
 
-/** Одна активная заявка в отчете команды `orders`. */
+/** Одна активная заявка в отчете команды `orders get-orders`. */
 export interface OrdersReportOrder {
   orderId: string;
   orderRequestId: string;
@@ -28,5 +28,5 @@ export interface OrdersReportOrder {
   stages: OrdersReportStage[];
 }
 
-/** Отчет команды `orders` на application/output boundary. */
+/** Отчет команды `orders get-orders` на application/output boundary. */
 export type OrdersReport = OrdersReportOrder[];
