@@ -15,6 +15,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /marketdata get-last-prices/);
     assert.match(help, /marketdata get-order-book/);
     assert.match(help, /marketdata get-trading-status/);
+    assert.match(help, /marketdata get-trading-statuses/);
     assert.match(help, /operations get-portfolio/);
     assert.match(help, /operations get-positions/);
     assert.match(help, /version/);

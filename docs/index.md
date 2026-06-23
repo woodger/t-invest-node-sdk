@@ -83,6 +83,7 @@ node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js marketdata get-last-prices --help
 node dist/bootstrap/cli.js marketdata get-order-book --help
 node dist/bootstrap/cli.js marketdata get-trading-status --help
+node dist/bootstrap/cli.js marketdata get-trading-statuses --help
 node dist/bootstrap/cli.js orders get-orders --help
 node dist/bootstrap/cli.js operations get-portfolio --help
 node dist/bootstrap/cli.js operations get-positions --help
@@ -96,6 +97,7 @@ node dist/bootstrap/cli.js operations get-positions --help
 - `marketdata get-last-prices` - последние рыночные цены инструментов;
 - `marketdata get-order-book` - стакан инструмента;
 - `marketdata get-trading-status` - торговый статус инструмента;
+- `marketdata get-trading-statuses` - торговые статусы инструментов;
 - `orders get-orders` - активные торговые поручения по счету;
 - `operations get-portfolio` - текущий портфель по счету;
 - `operations get-positions` - позиции по счету.

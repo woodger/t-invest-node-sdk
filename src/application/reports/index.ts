@@ -14,3 +14,4 @@ export * from './orders.report';
 export * from './portfolio.report';
 export * from './positions.report';
 export * from './trading-status.report';
+export * from './trading-statuses.report';

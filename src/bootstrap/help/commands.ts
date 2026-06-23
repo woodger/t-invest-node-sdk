@@ -181,6 +181,32 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk marketdata get-trading-status --instrument-id=instrument-uid --format=json'
     ]
   },
+  'marketdata get-trading-statuses': {
+    description: 'Print instrument trading statuses',
+    sdkCall: 'sdk.marketdata.getTradingStatuses',
+    grpcMethod: 'MarketDataService/GetTradingStatuses',
+    usage: [
+      'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=ID[,ID] [options]'
+    ],
+    required: [
+      '--instrument-id=ID[,ID] FIGI or instrument UID list'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=BBG00QPYJ5H0,instrument-uid',
+      'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=BBG00QPYJ5H0 --format=json'
+    ]
+  },
   'orders get-orders': {
     description: 'Print active account orders',
     sdkCall: 'sdk.orders.getOrders',
