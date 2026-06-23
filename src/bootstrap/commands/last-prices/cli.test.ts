@@ -17,7 +17,7 @@ import {
 
 function argv(args: Partial<CliArgs> = {}): CliArgs {
   return {
-    _: ['last-prices'],
+    _: ['marketdata get-last-prices'],
     ...args
   };
 }

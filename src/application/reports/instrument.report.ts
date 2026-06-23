@@ -1,4 +1,4 @@
-/** Основная информация об инструменте в отчете команды `instrument`. */
+/** Основная информация об инструменте в отчете команды `instruments get-instrument-by`. */
 export interface InstrumentReportInstrument {
   figi: string;
   ticker: string;
@@ -29,5 +29,5 @@ export interface InstrumentReportInstrument {
   first1dayCandleDate: string;
 }
 
-/** Отчет команды `instrument` на application/output boundary. */
+/** Отчет команды `instruments get-instrument-by` на application/output boundary. */
 export type InstrumentReport = InstrumentReportInstrument | null;

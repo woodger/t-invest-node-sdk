@@ -50,7 +50,7 @@ export function createLastPricesCommand(
 ) {
   return async function lastPrices(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, lastPricesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'last-prices');
+    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-last-prices');
 
     const request = parseLastPricesRequest(argv);
     const format = parseLastPricesFormat(argv);

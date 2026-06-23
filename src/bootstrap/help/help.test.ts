@@ -23,10 +23,10 @@ describe('renderHelp', () => {
   test('returns command-specific help for known command name', () => {
     assert.equal(
       renderHelp(argv({
-        _: ['candles'],
+        _: ['marketdata', 'get-candles'],
         help: true
       })),
-      renderCommandHelp('candles')
+      renderCommandHelp('marketdata get-candles')
     );
   });
 

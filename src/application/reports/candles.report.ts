@@ -1,4 +1,4 @@
-/** Одна историческая свеча в отчете команды `candles`. */
+/** Одна историческая свеча в отчете команды `marketdata get-candles`. */
 export interface CandlesReportCandle {
   time: string;
   open: string;
@@ -9,5 +9,5 @@ export interface CandlesReportCandle {
   isComplete: boolean;
 }
 
-/** Отчет команды `candles` на application/output boundary. */
+/** Отчет команды `marketdata get-candles` на application/output boundary. */
 export type CandlesReport = CandlesReportCandle[];

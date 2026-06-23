@@ -18,7 +18,7 @@ import {
 
 function argv(args: Partial<CliArgs> = {}): CliArgs {
   return {
-    _: ['orders'],
+    _: ['orders get-orders'],
     ...args
   };
 }

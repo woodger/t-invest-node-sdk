@@ -82,7 +82,7 @@ export function createCandlesCommand(
 ) {
   return async function candles(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, candlesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'candles');
+    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-candles');
 
     const request = parseCandlesRequest(argv);
     const format = parseCandlesFormat(argv);

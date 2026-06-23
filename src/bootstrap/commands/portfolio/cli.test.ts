@@ -17,7 +17,7 @@ import {
 
 function argv(args: Partial<CliArgs> = {}): CliArgs {
   return {
-    _: ['portfolio'],
+    _: ['operations get-portfolio'],
     ...args
   };
 }

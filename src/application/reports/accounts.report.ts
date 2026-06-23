@@ -1,4 +1,4 @@
-/** Один счет в отчете команды `accounts`. */
+/** Один счет в отчете команды `users get-accounts`. */
 export interface AccountsReportAccount {
   id: string;
   name: string;
@@ -9,5 +9,5 @@ export interface AccountsReportAccount {
   closedDate: string;
 }
 
-/** Отчет команды `accounts` на application/output boundary. */
+/** Отчет команды `users get-accounts` на application/output boundary. */
 export type AccountsReport = AccountsReportAccount[];

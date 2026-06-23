@@ -77,24 +77,24 @@ interface TinkoffInvestOptions {
 node dist/bootstrap/cli.js --help
 node dist/bootstrap/cli.js help
 node dist/bootstrap/cli.js version
-node dist/bootstrap/cli.js accounts --help
-node dist/bootstrap/cli.js candles --help
-node dist/bootstrap/cli.js instrument --help
-node dist/bootstrap/cli.js last-prices --help
-node dist/bootstrap/cli.js orders --help
-node dist/bootstrap/cli.js portfolio --help
-node dist/bootstrap/cli.js positions --help
+node dist/bootstrap/cli.js users get-accounts --help
+node dist/bootstrap/cli.js marketdata get-candles --help
+node dist/bootstrap/cli.js instruments get-instrument-by --help
+node dist/bootstrap/cli.js marketdata get-last-prices --help
+node dist/bootstrap/cli.js orders get-orders --help
+node dist/bootstrap/cli.js operations get-portfolio --help
+node dist/bootstrap/cli.js operations get-positions --help
 ```
 
 Сейчас CLI содержит первые API-команды:
 
-- `accounts` - список счетов пользователя;
-- `candles` - исторические свечи;
-- `instrument` - основная информация об инструменте по идентификатору;
-- `last-prices` - последние рыночные цены инструментов;
-- `orders` - активные торговые поручения по счету;
-- `portfolio` - текущий портфель по счету;
-- `positions` - позиции по счету.
+- `users get-accounts` - список счетов пользователя;
+- `marketdata get-candles` - исторические свечи;
+- `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
+- `marketdata get-last-prices` - последние рыночные цены инструментов;
+- `orders get-orders` - активные торговые поручения по счету;
+- `operations get-portfolio` - текущий портфель по счету;
+- `operations get-positions` - позиции по счету.
 
 Новые команды должны:
 

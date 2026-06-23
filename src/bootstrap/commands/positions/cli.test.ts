@@ -12,7 +12,7 @@ import {
 
 function argv(args: Partial<CliArgs> = {}): CliArgs {
   return {
-    _: ['positions'],
+    _: ['operations get-positions'],
     ...args
   };
 }

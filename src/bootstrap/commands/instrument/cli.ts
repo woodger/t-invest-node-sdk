@@ -69,7 +69,7 @@ export function createInstrumentCommand(
 ) {
   return async function instrument(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, instrumentArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instrument');
+    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-instrument-by');
 
     const request = parseInstrumentRequest(argv);
     const format = parseInstrumentFormat(argv);

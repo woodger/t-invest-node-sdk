@@ -59,7 +59,7 @@ export function createPortfolioCommand(
 ) {
   return async function portfolio(argv: CliArgs): Promise<string> {
     ArgGuards.assertKnownArgs(argv, portfolioArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'portfolio');
+    ArgGuards.assertNoExtraPositionals(argv, 'operations get-portfolio');
 
     const request = parsePortfolioRequest(argv);
     const format = parsePortfolioFormat(argv);

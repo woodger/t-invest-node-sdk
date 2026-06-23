@@ -10,11 +10,11 @@ describe('renderCliHelp', () => {
     assert.match(help, /Usage:/);
     assert.match(help, /Global options:/);
     assert.match(help, /Commands:/);
-    assert.match(help, /accounts/);
-    assert.match(help, /candles/);
-    assert.match(help, /last-prices/);
-    assert.match(help, /portfolio/);
-    assert.match(help, /positions/);
+    assert.match(help, /users get-accounts/);
+    assert.match(help, /marketdata get-candles/);
+    assert.match(help, /marketdata get-last-prices/);
+    assert.match(help, /operations get-portfolio/);
+    assert.match(help, /operations get-positions/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /Examples:/);
@@ -23,9 +23,11 @@ describe('renderCliHelp', () => {
 
 describe('renderCommandHelp', () => {
   test('renders command-specific help page', () => {
-    const help = renderCommandHelp('candles');
+    const help = renderCommandHelp('marketdata get-candles');
 
-    assert.match(help, /candles - Print historical candles/);
+    assert.match(help, /marketdata get-candles - Print historical candles/);
+    assert.match(help, /SDK call:\n {2}sdk\.marketdata\.getCandles/);
+    assert.match(help, /gRPC method:\n {2}MarketDataService\/GetCandles/);
     assert.match(help, /Required options:/);
     assert.match(help, /--instrument-id=ID/);
     assert.match(help, /Environment:/);
@@ -36,6 +38,6 @@ describe('renderCommandHelp', () => {
     const help = renderCommandHelp('help');
 
     assert.match(help, /help - Show top-level or command-specific help/);
-    assert.match(help, /tinkoff-invest-node-sdk help <command>/);
+    assert.match(help, /tinkoff-invest-node-sdk help <service> <method>/);
   });
 });

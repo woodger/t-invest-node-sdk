@@ -86,13 +86,13 @@ utility- и API-команды:
 node dist/bootstrap/cli.js --help
 node dist/bootstrap/cli.js help
 node dist/bootstrap/cli.js version
-node dist/bootstrap/cli.js accounts --help
-node dist/bootstrap/cli.js candles --help
-node dist/bootstrap/cli.js instrument --help
-node dist/bootstrap/cli.js last-prices --help
-node dist/bootstrap/cli.js orders --help
-node dist/bootstrap/cli.js portfolio --help
-node dist/bootstrap/cli.js positions --help
+node dist/bootstrap/cli.js users get-accounts --help
+node dist/bootstrap/cli.js marketdata get-candles --help
+node dist/bootstrap/cli.js instruments get-instrument-by --help
+node dist/bootstrap/cli.js marketdata get-last-prices --help
+node dist/bootstrap/cli.js orders get-orders --help
+node dist/bootstrap/cli.js operations get-portfolio --help
+node dist/bootstrap/cli.js operations get-positions --help
 ```
 
 API-команды используют `--token` / `TINKOFF_TOKEN` и

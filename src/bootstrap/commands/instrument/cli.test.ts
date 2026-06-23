@@ -12,7 +12,7 @@ import {
 
 function argv(args: Partial<CliArgs> = {}): CliArgs {
   return {
-    _: ['instrument'],
+    _: ['instruments get-instrument-by'],
     ...args
   };
 }
