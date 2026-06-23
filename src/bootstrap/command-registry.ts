@@ -12,6 +12,7 @@
 import { accounts } from './commands/accounts/cli';
 import { candles } from './commands/candles/cli';
 import { help } from './commands/help/cli';
+import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
 import { orders } from './commands/orders/cli';
 import { portfolio } from './commands/portfolio/cli';
@@ -32,6 +33,10 @@ const commandRegistry = {
   candles: {
     requiresContext: false,
     handler: candles
+  },
+  instrument: {
+    requiresContext: false,
+    handler: instrument
   },
   'last-prices': {
     requiresContext: false,

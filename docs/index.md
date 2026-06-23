@@ -79,6 +79,7 @@ node dist/bootstrap/cli.js help
 node dist/bootstrap/cli.js version
 node dist/bootstrap/cli.js accounts --help
 node dist/bootstrap/cli.js candles --help
+node dist/bootstrap/cli.js instrument --help
 node dist/bootstrap/cli.js last-prices --help
 node dist/bootstrap/cli.js orders --help
 node dist/bootstrap/cli.js portfolio --help
@@ -89,6 +90,7 @@ node dist/bootstrap/cli.js positions --help
 
 - `accounts` - список счетов пользователя;
 - `candles` - исторические свечи;
+- `instrument` - основная информация об инструменте по идентификатору;
 - `last-prices` - последние рыночные цены инструментов;
 - `orders` - активные торговые поручения по счету;
 - `portfolio` - текущий портфель по счету;
