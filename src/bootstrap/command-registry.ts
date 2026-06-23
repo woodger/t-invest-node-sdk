@@ -19,6 +19,7 @@ import { orders } from './commands/orders/cli';
 import { portfolio } from './commands/portfolio/cli';
 import { positions } from './commands/positions/cli';
 import { tradingStatus } from './commands/trading-status/cli';
+import { tradingStatuses } from './commands/trading-statuses/cli';
 import { version } from './commands/version/cli';
 import type { CliCommand } from './cli-contract';
 
@@ -55,6 +56,10 @@ const commandRegistry = {
   'marketdata get-trading-status': {
     requiresContext: false,
     handler: tradingStatus
+  },
+  'marketdata get-trading-statuses': {
+    requiresContext: false,
+    handler: tradingStatuses
   },
   'orders get-orders': {
     requiresContext: false,
