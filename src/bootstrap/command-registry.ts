@@ -16,6 +16,8 @@ import { candles } from './commands/candles/cli';
 import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
 import { favorites } from './commands/favorites/cli';
+import { findInstrument } from './commands/find-instrument/cli';
+import { futuresMargin } from './commands/futures-margin/cli';
 import { help } from './commands/help/cli';
 import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
@@ -86,6 +88,14 @@ const commandRegistry = {
   'instruments get-favorites': {
     requiresContext: false,
     handler: favorites
+  },
+  'instruments find-instrument': {
+    requiresContext: false,
+    handler: findInstrument
+  },
+  'instruments get-futures-margin': {
+    requiresContext: false,
+    handler: futuresMargin
   },
   'instruments get-instrument-by': {
     requiresContext: false,

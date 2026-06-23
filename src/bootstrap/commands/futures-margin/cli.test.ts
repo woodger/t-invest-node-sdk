@@ -1,0 +1,140 @@
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type {
+  GetFuturesMarginRequest,
+  GetFuturesMarginResponse
+} from '../../../generated/instruments';
+import type { CliArgs } from '../../cli-contract';
+import {
+  createFuturesMarginCommand,
+  parseFuturesMarginFormat,
+  parseFuturesMarginRequest
+} from './cli';
+
+function argv(args: Partial<CliArgs> = {}): CliArgs {
+  return {
+    _: ['instruments get-futures-margin'],
+    ...args
+  };
+}
+
+function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFuturesMarginResponse {
+  return {
+    initialMarginOnBuy: {
+      currency: 'rub',
+      units: 1000,
+      nano: 250_000_000
+    },
+    initialMarginOnSell: {
+      currency: 'rub',
+      units: 1100,
+      nano: 0
+    },
+    minPriceIncrement: {
+      units: 1,
+      nano: 0
+    },
+    minPriceIncrementAmount: {
+      units: 10,
+      nano: 500_000_000
+    },
+    ...overrides
+  };
+}
+
+describe('futures-margin command', () => {
+  describe('parseFuturesMarginRequest', () => {
+    test('returns generated getFuturesMargin request', () => {
+      const request = parseFuturesMarginRequest(argv({
+        figi: 'FUTFIGI'
+      }));
+
+      assert.deepEqual(request, {
+        figi: 'FUTFIGI'
+      });
+    });
+  });
+
+  describe('parseFuturesMarginFormat', () => {
+    test('returns table by default', () => {
+      assert.equal(parseFuturesMarginFormat(argv()), 'table');
+    });
+
+    test('rejects unknown formats', () => {
+      assert.throws(
+        () => parseFuturesMarginFormat(argv({ format: 'xml' })),
+        /Expected '--format' as one of: json, table/
+      );
+    });
+  });
+
+  describe('createFuturesMarginCommand', () => {
+    test('calls getFuturesMargin and closes sdk', async () => {
+      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedRequest: GetFuturesMarginRequest | undefined;
+      let getFuturesMarginCalls = 0;
+      let closeCalls = 0;
+      const command = createFuturesMarginCommand((options) => {
+        receivedOptions = options;
+
+        return {
+          instruments: {
+            async getFuturesMargin(request) {
+              receivedRequest = request;
+              getFuturesMarginCalls += 1;
+
+              return response();
+            }
+          },
+          close() {
+            closeCalls += 1;
+          }
+        };
+      });
+
+      const output = await command(argv({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        figi: 'FUTFIGI',
+        format: 'json'
+      }));
+
+      assert.deepEqual(receivedOptions, {
+        token: 'token',
+        endpoint: 'localhost:50051'
+      });
+      assert.equal(getFuturesMarginCalls, 1);
+      assert.deepEqual(receivedRequest, {
+        figi: 'FUTFIGI'
+      });
+      assert.equal(closeCalls, 1);
+      assert.equal(JSON.parse(output).initialMarginOnBuy, '1000.25 rub');
+    });
+
+    test('closes sdk when getFuturesMargin rejects', async () => {
+      let closeCalls = 0;
+      const command = createFuturesMarginCommand(() => ({
+        instruments: {
+          async getFuturesMargin() {
+            throw new Error('api failed');
+          }
+        },
+        close() {
+          closeCalls += 1;
+        }
+      }));
+
+      await assert.rejects(
+        () => command(argv({
+          token: 'token',
+          endpoint: 'localhost:50051',
+          figi: 'FUTFIGI'
+        })),
+        /api failed/
+      );
+
+      assert.equal(closeCalls, 1);
+    });
+  });
+});

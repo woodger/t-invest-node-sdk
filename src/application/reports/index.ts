@@ -11,6 +11,8 @@ export * from './candles.report';
 export * from './close-prices.report';
 export * from './countries.report';
 export * from './favorites.report';
+export * from './find-instrument.report';
+export * from './futures-margin.report';
 export * from './instrument.report';
 export * from './last-prices.report';
 export * from './last-trades.report';
