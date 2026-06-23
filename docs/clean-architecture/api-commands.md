@@ -31,6 +31,8 @@
 - `instruments futures` -> `sdk.instruments.futures`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
 - `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
+- `instruments option-by` -> `sdk.instruments.optionBy`;
+- `instruments options-by` -> `sdk.instruments.optionsBy`;
 - `instruments share-by` -> `sdk.instruments.shareBy`;
 - `instruments shares` -> `sdk.instruments.shares`;
 - `instruments trading-schedules` -> `sdk.instruments.tradingSchedules`;
@@ -183,6 +185,12 @@ src/bootstrap
     instrument/
       cli.ts
       reporter.ts
+    option/
+      cli.ts
+      reporter.ts
+    options-by/
+      cli.ts
+      reporter.ts
     share/
       cli.ts
       reporter.ts
@@ -325,6 +333,7 @@ src/bootstrap
   cli.ts
   command-registry.ts
   commands/
+    instruments-args.ts
     accounts/
       cli.ts
       reporter.ts
@@ -352,6 +361,12 @@ src/bootstrap
     bond-coupons/
       cli.ts
       reporter.ts
+    bond/
+      cli.ts
+      reporter.ts
+    bonds/
+      cli.ts
+      reporter.ts
     brand/
       cli.ts
       reporter.ts
@@ -361,16 +376,46 @@ src/bootstrap
     countries/
       cli.ts
       reporter.ts
+    currencies/
+      cli.ts
+      reporter.ts
+    currency/
+      cli.ts
+      reporter.ts
+    etf/
+      cli.ts
+      reporter.ts
+    etfs/
+      cli.ts
+      reporter.ts
     dividends/
       cli.ts
       reporter.ts
     favorites/
       cli.ts
       reporter.ts
+    future/
+      cli.ts
+      reporter.ts
+    futures/
+      cli.ts
+      reporter.ts
     futures-margin/
       cli.ts
       reporter.ts
     instrument/
+      cli.ts
+      reporter.ts
+    option/
+      cli.ts
+      reporter.ts
+    options-by/
+      cli.ts
+      reporter.ts
+    share/
+      cli.ts
+      reporter.ts
+    shares/
       cli.ts
       reporter.ts
     trading-schedules/

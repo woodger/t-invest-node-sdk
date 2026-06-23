@@ -34,6 +34,8 @@ import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
 import { lastTrades } from './commands/last-trades/cli';
 import { marginAttributes } from './commands/margin-attributes/cli';
+import { option } from './commands/option/cli';
+import { optionsBy } from './commands/options-by/cli';
 import { orderBook } from './commands/order-book/cli';
 import { orderState } from './commands/order-state/cli';
 import { orders } from './commands/orders/cli';
@@ -158,6 +160,14 @@ const commandRegistry = {
   'instruments get-instrument-by': {
     requiresContext: false,
     handler: instrument
+  },
+  'instruments option-by': {
+    requiresContext: false,
+    handler: option
+  },
+  'instruments options-by': {
+    requiresContext: false,
+    handler: optionsBy
   },
   'instruments share-by': {
     requiresContext: false,

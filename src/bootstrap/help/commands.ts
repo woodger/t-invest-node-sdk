@@ -678,6 +678,68 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
     ]
   },
+  'instruments option-by': {
+    description: 'Print option contract details',
+    sdkCall: 'sdk.instruments.optionBy',
+    grpcMethod: 'InstrumentsService/OptionBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments option-by --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments option-by --id=OPTIONUID --id-type=uid',
+      'tinkoff-invest-node-sdk instruments option-by --id=OPTIONTICKER --id-type=ticker --class-code=SPBOPT --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instruments options-by': {
+    description: 'Print option contracts by underlying asset',
+    sdkCall: 'sdk.instruments.optionsBy',
+    grpcMethod: 'InstrumentsService/OptionsBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=UID [options]'
+    ],
+    required: [
+      '--basic-asset-uid=UID Underlying asset UID'
+    ],
+    optional: [
+      '--basic-asset-position-uid=UID Underlying asset position UID',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=asset-uid',
+      'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=asset-uid --basic-asset-position-uid=position-uid --format=json'
+    ],
+    notes: [
+      '`sdk.instruments.options` is deprecated in the generated contract, so the CLI exposes `options-by` instead.',
+      'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
   'instruments share-by': {
     description: 'Print share details',
     sdkCall: 'sdk.instruments.shareBy',

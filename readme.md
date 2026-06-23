@@ -110,6 +110,8 @@ node dist/bootstrap/cli.js instruments future-by --help
 node dist/bootstrap/cli.js instruments futures --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
+node dist/bootstrap/cli.js instruments option-by --help
+node dist/bootstrap/cli.js instruments options-by --help
 node dist/bootstrap/cli.js instruments share-by --help
 node dist/bootstrap/cli.js instruments shares --help
 node dist/bootstrap/cli.js instruments trading-schedules --help

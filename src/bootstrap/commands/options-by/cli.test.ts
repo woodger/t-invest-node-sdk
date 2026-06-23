@@ -1,0 +1,142 @@
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type {
+  FilterOptionsRequest,
+  OptionsResponse
+} from '../../../generated/instruments';
+import type { CliArgs } from '../../cli-contract';
+import {
+  createOptionsByCommand,
+  parseOptionsByFormat,
+  parseOptionsByRequest
+} from './cli';
+
+function argv(args: Partial<CliArgs> = {}): CliArgs {
+  return {
+    _: ['instruments options-by'],
+    ...args
+  };
+}
+
+function response(overrides: Partial<OptionsResponse> = {}): OptionsResponse {
+  return {
+    instruments: [],
+    ...overrides
+  };
+}
+
+describe('options-by command', () => {
+  describe('parseOptionsByRequest', () => {
+    test('returns generated optionsBy request', () => {
+      const request = parseOptionsByRequest(argv({
+        'basic-asset-uid': 'asset-uid'
+      }));
+
+      assert.deepEqual(request, {
+        basicAssetUid: 'asset-uid',
+        basicAssetPositionUid: ''
+      });
+    });
+
+    test('uses optional basic asset position uid', () => {
+      const request = parseOptionsByRequest(argv({
+        'basic-asset-uid': 'asset-uid',
+        'basic-asset-position-uid': 'position-uid'
+      }));
+
+      assert.deepEqual(request, {
+        basicAssetUid: 'asset-uid',
+        basicAssetPositionUid: 'position-uid'
+      });
+    });
+
+    test('requires basic asset uid', () => {
+      assert.throws(
+        () => parseOptionsByRequest(argv()),
+        /Expected required argument '--basic-asset-uid'/
+      );
+    });
+  });
+
+  describe('parseOptionsByFormat', () => {
+    test('returns table by default', () => {
+      assert.equal(parseOptionsByFormat(argv()), 'table');
+    });
+
+    test('rejects unknown formats', () => {
+      assert.throws(
+        () => parseOptionsByFormat(argv({ format: 'xml' })),
+        /Expected '--format' as one of: json, table/
+      );
+    });
+  });
+
+  describe('createOptionsByCommand', () => {
+    test('calls optionsBy and closes sdk', async () => {
+      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedRequest: FilterOptionsRequest | undefined;
+      let closeCalls = 0;
+      const command = createOptionsByCommand((options) => {
+        receivedOptions = options;
+
+        return {
+          instruments: {
+            async optionsBy(request) {
+              receivedRequest = request;
+
+              return response();
+            }
+          },
+          close() {
+            closeCalls += 1;
+          }
+        };
+      });
+
+      const output = await command(argv({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        'basic-asset-uid': 'asset-uid',
+        'basic-asset-position-uid': 'position-uid',
+        format: 'json'
+      }));
+
+      assert.deepEqual(receivedOptions, {
+        token: 'token',
+        endpoint: 'localhost:50051'
+      });
+      assert.deepEqual(receivedRequest, {
+        basicAssetUid: 'asset-uid',
+        basicAssetPositionUid: 'position-uid'
+      });
+      assert.equal(closeCalls, 1);
+      assert.deepEqual(JSON.parse(output), []);
+    });
+
+    test('closes sdk when optionsBy rejects', async () => {
+      let closeCalls = 0;
+      const command = createOptionsByCommand(() => ({
+        instruments: {
+          async optionsBy() {
+            throw new Error('api failed');
+          }
+        },
+        close() {
+          closeCalls += 1;
+        }
+      }));
+
+      await assert.rejects(
+        () => command(argv({
+          token: 'token',
+          endpoint: 'localhost:50051',
+          'basic-asset-uid': 'asset-uid'
+        })),
+        /api failed/
+      );
+
+      assert.equal(closeCalls, 1);
+    });
+  });
+});

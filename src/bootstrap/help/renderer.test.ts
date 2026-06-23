@@ -33,6 +33,8 @@ describe('renderCliHelp', () => {
     assert.match(help, /instruments future-by/);
     assert.match(help, /instruments futures/);
     assert.match(help, /instruments get-futures-margin/);
+    assert.match(help, /instruments option-by/);
+    assert.match(help, /instruments options-by/);
     assert.match(help, /instruments share-by/);
     assert.match(help, /instruments shares/);
     assert.match(help, /marketdata get-last-prices/);
