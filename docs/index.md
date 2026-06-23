@@ -92,6 +92,7 @@ node dist/bootstrap/cli.js marketdata get-trading-statuses --help
 node dist/bootstrap/cli.js orders get-orders --help
 node dist/bootstrap/cli.js orders get-order-state --help
 node dist/bootstrap/cli.js operations get-operations --help
+node dist/bootstrap/cli.js operations get-operations-by-cursor --help
 node dist/bootstrap/cli.js operations get-portfolio --help
 node dist/bootstrap/cli.js operations get-positions --help
 ```
@@ -113,6 +114,7 @@ node dist/bootstrap/cli.js operations get-positions --help
 - `orders get-orders` - активные торговые поручения по счету;
 - `orders get-order-state` - статус торгового поручения;
 - `operations get-operations` - операции по счету за период;
+- `operations get-operations-by-cursor` - страница операций по cursor-контракту;
 - `operations get-portfolio` - текущий портфель по счету;
 - `operations get-positions` - позиции по счету.
 

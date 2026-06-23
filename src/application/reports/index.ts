@@ -15,6 +15,7 @@ export * from './margin-attributes.report';
 export * from './order-book.report';
 export * from './order-state.report';
 export * from './orders.report';
+export * from './operations-by-cursor.report';
 export * from './operations.report';
 export * from './portfolio.report';
 export * from './positions.report';
