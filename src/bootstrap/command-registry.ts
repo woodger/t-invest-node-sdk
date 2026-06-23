@@ -26,6 +26,8 @@ import { etf } from './commands/etf/cli';
 import { etfs } from './commands/etfs/cli';
 import { favorites } from './commands/favorites/cli';
 import { findInstrument } from './commands/find-instrument/cli';
+import { future } from './commands/future/cli';
+import { futures } from './commands/futures/cli';
 import { futuresMargin } from './commands/futures-margin/cli';
 import { help } from './commands/help/cli';
 import { instrument } from './commands/instrument/cli';
@@ -140,6 +142,14 @@ const commandRegistry = {
   'instruments find-instrument': {
     requiresContext: false,
     handler: findInstrument
+  },
+  'instruments future-by': {
+    requiresContext: false,
+    handler: future
+  },
+  'instruments futures': {
+    requiresContext: false,
+    handler: futures
   },
   'instruments get-futures-margin': {
     requiresContext: false,

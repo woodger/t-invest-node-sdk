@@ -566,6 +566,64 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG --instrument-kind=share --api-trade-available --format=json'
     ]
   },
+  'instruments future-by': {
+    description: 'Print futures contract details',
+    sdkCall: 'sdk.instruments.futureBy',
+    grpcMethod: 'InstrumentsService/FutureBy',
+    usage: [
+      'tinkoff-invest-node-sdk instruments future-by --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments future-by --id=FUTFIGI --id-type=figi',
+      'tinkoff-invest-node-sdk instruments future-by --id=SiM6 --id-type=ticker --class-code=SPBFUT --format=json'
+    ],
+    notes: [
+      'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instruments futures': {
+    description: 'Print futures contracts',
+    sdkCall: 'sdk.instruments.futures',
+    grpcMethod: 'InstrumentsService/Futures',
+    usage: [
+      'tinkoff-invest-node-sdk instruments futures [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments futures',
+      'tinkoff-invest-node-sdk instruments futures --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
   'instruments get-futures-margin': {
     description: 'Print futures margin details',
     sdkCall: 'sdk.instruments.getFuturesMargin',

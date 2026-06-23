@@ -97,6 +97,8 @@ node dist/bootstrap/cli.js instruments etf-by --help
 node dist/bootstrap/cli.js instruments etfs --help
 node dist/bootstrap/cli.js instruments get-dividends --help
 node dist/bootstrap/cli.js instruments get-favorites --help
+node dist/bootstrap/cli.js instruments future-by --help
+node dist/bootstrap/cli.js instruments futures --help
 node dist/bootstrap/cli.js instruments get-futures-margin --help
 node dist/bootstrap/cli.js instruments get-instrument-by --help
 node dist/bootstrap/cli.js instruments share-by --help
@@ -139,6 +141,8 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `instruments etfs` - список ETF;
 - `instruments get-dividends` - дивиденды по инструменту;
 - `instruments get-favorites` - избранные инструменты пользователя;
+- `instruments future-by` - информация о фьючерсе по идентификатору;
+- `instruments futures` - список фьючерсов;
 - `instruments get-futures-margin` - гарантийное обеспечение по фьючерсу;
 - `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
 - `instruments share-by` - информация об акции по идентификатору;
