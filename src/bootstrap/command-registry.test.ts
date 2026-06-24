@@ -356,6 +356,14 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves dividends-foreign-issuer command without context requirement', () => {
+    const command = resolveCommand(['operations', 'get-dividends-foreign-issuer']);
+
+    assert.equal(command.name, 'operations get-dividends-foreign-issuer');
+    assert.equal(command.requiresContext, false);
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves stop-orders command without context requirement', () => {
     const command = resolveCommand(['stoporders', 'get-stop-orders']);
 
@@ -436,6 +444,7 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('orders get-orders'), true);
     assert.equal(isCommandName('orders get-order-state'), true);
     assert.equal(isCommandName('operations get-broker-report'), true);
+    assert.equal(isCommandName('operations get-dividends-foreign-issuer'), true);
     assert.equal(isCommandName('operations get-operations'), true);
     assert.equal(isCommandName('operations get-operations-by-cursor'), true);
     assert.equal(isCommandName('operations get-portfolio'), true);

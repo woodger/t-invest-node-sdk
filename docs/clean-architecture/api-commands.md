@@ -46,6 +46,7 @@
 - `orders get-orders` -> `sdk.orders.getOrders`;
 - `orders get-order-state` -> `sdk.orders.getOrderState`;
 - `operations get-broker-report` -> `sdk.operations.getBrokerReport`;
+- `operations get-dividends-foreign-issuer` -> `sdk.operations.getDividendsForeignIssuer`;
 - `operations get-operations` -> `sdk.operations.getOperations`;
 - `operations get-operations-by-cursor` -> `sdk.operations.getOperationsByCursor`;
 - `operations get-portfolio` -> `sdk.operations.getPortfolio`;
@@ -231,6 +232,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     broker-report/
+      cli.ts
+      reporter.ts
+    dividends-foreign-issuer/
       cli.ts
       reporter.ts
     operations/
@@ -461,6 +465,9 @@ src/bootstrap
       cli.ts
       reporter.ts
     broker-report/
+      cli.ts
+      reporter.ts
+    dividends-foreign-issuer/
       cli.ts
       reporter.ts
     operations/
