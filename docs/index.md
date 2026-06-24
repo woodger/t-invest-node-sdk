@@ -175,8 +175,10 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `stoporders get-stop-orders` - активные стоп-заявки по счету.
 
 Отложенные группы команд (`To introduce`) описаны в
-[API Commands](./clean-architecture/api-commands.md): весь `sandbox` service и
-команды с side effects вводятся отдельно от read-only CLI-команд.
+[API Commands](./clean-architecture/api-commands.md): весь `sandbox` service,
+stream API и команды с side effects вводятся отдельно от read-only CLI-команд.
+Deprecated `sdk.instruments.options` не вводится как публичная CLI-команда;
+для опционов используется `instruments options-by`.
 
 Новые команды должны:
 
