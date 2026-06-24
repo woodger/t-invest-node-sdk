@@ -110,6 +110,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('stoporders get-stop-orders'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
+    assert.equal(isCommandHelpName('instruments options'), false);
+    assert.equal(isCommandHelpName('marketdata stream'), false);
     assert.equal(isCommandHelpName('portfolio'), false);
     assert.equal(isCommandHelpName('unknown-command'), false);
     assert.equal(isCommandHelpName(undefined), false);

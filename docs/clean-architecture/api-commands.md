@@ -91,6 +91,21 @@ Sandbox service откладывается целиком:
 - `stoporders cancel-stop-order`;
 - `instruments edit-favorites`.
 
+Stream API откладывается отдельно от unary CLI-команд. CLI-контракт для
+долгоживущих подписок, завершения процесса, backpressure и формата событий
+нужно проектировать отдельно:
+
+- `sdk.marketdataStream.marketDataStream`;
+- `sdk.marketdataStream.marketDataServerSideStream`;
+- `sdk.operationsStream.portfolioStream`;
+- `sdk.operationsStream.positionsStream`;
+- `sdk.ordersStream.tradesStream`.
+
+Deprecated generated methods не вводятся как публичные CLI-команды:
+
+- `sdk.instruments.options` - deprecated в generated contract; вместо него
+  используется `instruments options-by` / `sdk.instruments.optionsBy`.
+
 Перед реализацией таких команд нужно явно определить CLI-контракт,
 идемпотентность/повторный запуск, формат подтверждения опасных действий и
 ожидаемое поведение при ошибках provider-а.
