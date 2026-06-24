@@ -16,6 +16,7 @@ export * from './candles.report';
 export * from './close-prices.report';
 export * from './countries.report';
 export * from './currency.report';
+export * from './dividends-foreign-issuer.report';
 export * from './favorites.report';
 export * from './find-instrument.report';
 export * from './future.report';

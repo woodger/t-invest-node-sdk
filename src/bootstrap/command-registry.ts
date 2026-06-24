@@ -24,6 +24,7 @@ import { closePrices } from './commands/close-prices/cli';
 import { countries } from './commands/countries/cli';
 import { currencies } from './commands/currencies/cli';
 import { currency } from './commands/currency/cli';
+import { dividendsForeignIssuer } from './commands/dividends-foreign-issuer/cli';
 import { dividends } from './commands/dividends/cli';
 import { etf } from './commands/etf/cli';
 import { etfs } from './commands/etfs/cli';
@@ -231,6 +232,10 @@ const commandRegistry = {
   'operations get-broker-report': {
     requiresContext: false,
     handler: brokerReport
+  },
+  'operations get-dividends-foreign-issuer': {
+    requiresContext: false,
+    handler: dividendsForeignIssuer
   },
   'operations get-portfolio': {
     requiresContext: false,

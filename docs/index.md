@@ -116,6 +116,7 @@ node dist/bootstrap/cli.js marketdata get-trading-statuses --help
 node dist/bootstrap/cli.js orders get-orders --help
 node dist/bootstrap/cli.js orders get-order-state --help
 node dist/bootstrap/cli.js operations get-broker-report --help
+node dist/bootstrap/cli.js operations get-dividends-foreign-issuer --help
 node dist/bootstrap/cli.js operations get-operations --help
 node dist/bootstrap/cli.js operations get-operations-by-cursor --help
 node dist/bootstrap/cli.js operations get-portfolio --help
@@ -165,6 +166,7 @@ node dist/bootstrap/cli.js stoporders get-stop-orders --help
 - `orders get-orders` - активные торговые поручения по счету;
 - `orders get-order-state` - статус торгового поручения;
 - `operations get-broker-report` - брокерский отчет: запуск формирования или страница по `taskId`;
+- `operations get-dividends-foreign-issuer` - отчет по дивидендам иностранных эмитентов: запуск формирования или страница по `taskId`;
 - `operations get-operations` - операции по счету за период;
 - `operations get-operations-by-cursor` - страница операций по cursor-контракту;
 - `operations get-portfolio` - текущий портфель по счету;
