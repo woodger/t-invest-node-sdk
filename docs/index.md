@@ -216,8 +216,8 @@ TypeScript-код из `contracts/**/*.proto` генерируется чере�
 npm run proto
 ```
 
-Proto compiler берется из dev-зависимости `grpc-tools`, внешний `protoc` в
-окружении не требуется.
+Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
+TypeScript plugin берется из dev-зависимости `ts-proto`.
 
 Скрипт использует `dist/bootstrap/compile-proto.js`, поэтому после изменений в `src/bootstrap/compile-proto.ts` сначала нужно пересобрать проект:
 
