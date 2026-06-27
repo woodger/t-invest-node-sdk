@@ -4,8 +4,13 @@ import {
   type GetCandlesRequest,
   type GetCandlesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommandOptions,
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { candlesFormats, formatCandles, type CandlesFormat } from './reporter';
 
@@ -17,15 +22,6 @@ type CandlesSdk = {
 };
 
 type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
-
-const candlesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'instrument-id',
-  'from',
-  'to',
-  'interval',
-  'format'
-]);
 
 const candleIntervals = {
   '1min': CandleInterval.CANDLE_INTERVAL_1_MIN,
@@ -44,48 +40,76 @@ const candleIntervals = {
   month: CandleInterval.CANDLE_INTERVAL_MONTH
 } as const;
 
+const candleIntervalNames = Object.keys(candleIntervals) as Array<keyof typeof candleIntervals>;
+
 type CandleIntervalName = keyof typeof candleIntervals;
 
-export function parseCandleInterval(argv: CliArgs): CandleInterval {
-  const interval = ArgGuards.requireStringArg(argv, 'interval');
-
-  if (!(interval in candleIntervals)) {
-    throw new Error(`Expected '--interval' as one of: ${Object.keys(candleIntervals).join(', ')}`);
+const candlesRequestOptionsSchema = {
+  'instrument-id': {
+    type: 'string',
+    required: true
+  },
+  from: {
+    type: 'string',
+    required: true
+  },
+  to: {
+    type: 'string',
+    required: true
+  },
+  interval: {
+    type: 'string',
+    choices: candleIntervalNames,
+    required: true
   }
+} as const;
+
+const candlesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: candlesFormats,
+    default: 'json'
+  }
+} as const;
+
+const candlesOptionsSchema = withSdkOptions({
+  ...candlesRequestOptionsSchema,
+  ...candlesFormatOptionsSchema
+} as const);
+
+function parseCandlesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'marketdata get-candles', candlesOptionsSchema);
+}
+
+export function parseCandleInterval(argv: CliArgs): CandleInterval {
+  const { interval } = parseCommandOptions(
+    argv,
+    'marketdata get-candles',
+    { interval: candlesRequestOptionsSchema.interval } as const
+  );
 
   return candleIntervals[interval as CandleIntervalName];
 }
 
 export function parseCandlesRequest(argv: CliArgs): GetCandlesRequest {
-  const from = ArgGuards.parseDateArg(argv, 'from');
-  const to = ArgGuards.parseDateArg(argv, 'to');
-
-  if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    figi: '',
-    instrumentId: ArgGuards.requireStringArg(argv, 'instrument-id'),
-    from,
-    to,
-    interval: parseCandleInterval(argv)
-  };
+  return createCandlesRequest(parseCandlesOptions(argv));
 }
 
 export function parseCandlesFormat(argv: CliArgs): CandlesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', candlesFormats) ?? 'json';
+  return parseCommandOptions(
+    argv,
+    'marketdata get-candles',
+    candlesFormatOptionsSchema
+  ).format;
 }
 
 export function createCandlesCommand(
   createSdk: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function candles(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, candlesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-candles');
-
-    const request = parseCandlesRequest(argv);
-    const format = parseCandlesFormat(argv);
+    const options = parseCandlesOptions(argv);
+    const request = createCandlesRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -102,3 +126,22 @@ export function createCandlesCommand(
 export const candles = createCandlesCommand();
 
 export { formatCandles };
+
+function createCandlesRequest(
+  options: ReturnType<typeof parseCandlesOptions>
+): GetCandlesRequest {
+  const from = parseDateTimeOption(options.from, 'from');
+  const to = parseDateTimeOption(options.to, 'to');
+
+  if (from.getTime() > to.getTime()) {
+    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+  }
+
+  return {
+    figi: '',
+    instrumentId: options['instrument-id'],
+    from,
+    to,
+    interval: candleIntervals[options.interval as CandleIntervalName]
+  };
+}
