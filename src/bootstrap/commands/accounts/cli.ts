@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import type { GetAccountsResponse } from '../../../generated/users';
 import { accountsFormats, formatAccounts, type AccountsFormat } from './reporter';
@@ -14,23 +15,27 @@ type AccountsSdk = {
 
 type AccountsSdkFactory = (options: TinkoffInvestOptions) => AccountsSdk;
 
-const accountsArgNames = new Set([
-  ...sdkOptionArgNames,
-  'format'
-]);
+const accountsOptionsSchema = withSdkOptions({
+  format: {
+    type: 'string',
+    choices: accountsFormats,
+    default: 'table'
+  }
+} as const);
+
+function parseAccountsOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'users get-accounts', accountsOptionsSchema);
+}
 
 export function parseAccountsFormat(argv: CliArgs): AccountsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', accountsFormats) ?? 'table';
+  return parseAccountsOptions(argv).format;
 }
 
 export function createAccountsCommand(
   createSdk: AccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function accounts(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, accountsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'users get-accounts');
-
-    const format = parseAccountsFormat(argv);
+    const { format } = parseAccountsOptions(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

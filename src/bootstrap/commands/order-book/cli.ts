@@ -3,8 +3,9 @@ import type {
   GetOrderBookRequest,
   GetOrderBookResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrderBook, orderBookFormats, type OrderBookFormat } from './reporter';
 
@@ -17,50 +18,73 @@ type OrderBookSdk = {
 
 type OrderBookSdkFactory = (options: TinkoffInvestOptions) => OrderBookSdk;
 
-const orderBookArgNames = new Set([
-  ...sdkOptionArgNames,
-  'instrument-id',
-  'depth',
-  'format'
-]);
+const orderBookDepthOptionsSchema = {
+  depth: {
+    type: 'number',
+    integer: true,
+    min: 1,
+    required: true
+  }
+} as const;
+
+const orderBookFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: orderBookFormats,
+    default: 'table'
+  }
+} as const;
+
+const orderBookOptionsSchema = withSdkOptions({
+  'instrument-id': {
+    type: 'string',
+    required: true
+  },
+  ...orderBookDepthOptionsSchema,
+  ...orderBookFormatOptionsSchema
+} as const);
+
+function parseOrderBookOptions(argv: CliArgs) {
+  try {
+    return parseCommandOptions(argv, 'marketdata get-order-book', orderBookOptionsSchema);
+  }
+  catch (error) {
+    throw normalizeOrderBookDepthError(error);
+  }
+}
 
 export function parseOrderBookDepth(argv: CliArgs): number {
-  const rawValue = ArgGuards.requireStringArg(argv, 'depth');
-
-  if (!/^\d+$/.test(rawValue)) {
-    throw new Error("Expected '--depth' as positive integer");
+  try {
+    return parseCommandOptions(
+      argv,
+      'marketdata get-order-book',
+      orderBookDepthOptionsSchema
+    ).depth;
   }
-
-  const depth = Number(rawValue);
-
-  if (!Number.isSafeInteger(depth) || depth <= 0) {
-    throw new Error("Expected '--depth' as positive integer");
+  catch (error) {
+    throw normalizeOrderBookDepthError(error);
   }
-
-  return depth;
 }
 
 export function parseOrderBookRequest(argv: CliArgs): GetOrderBookRequest {
-  return {
-    figi: '',
-    instrumentId: ArgGuards.requireStringArg(argv, 'instrument-id'),
-    depth: parseOrderBookDepth(argv)
-  };
+  return createOrderBookRequest(parseOrderBookOptions(argv));
 }
 
 export function parseOrderBookFormat(argv: CliArgs): OrderBookFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', orderBookFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'marketdata get-order-book',
+    orderBookFormatOptionsSchema
+  ).format;
 }
 
 export function createOrderBookCommand(
   createSdk: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function orderBook(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, orderBookArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-order-book');
-
-    const request = parseOrderBookRequest(argv);
-    const format = parseOrderBookFormat(argv);
+    const options = parseOrderBookOptions(argv);
+    const request = createOrderBookRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -77,3 +101,24 @@ export function createOrderBookCommand(
 export const orderBook = createOrderBookCommand();
 
 export { formatOrderBook };
+
+function createOrderBookRequest(
+  options: ReturnType<typeof parseOrderBookOptions>
+): GetOrderBookRequest {
+  return {
+    figi: '',
+    instrumentId: options['instrument-id'],
+    depth: options.depth
+  };
+}
+
+function normalizeOrderBookDepthError(error: unknown): Error {
+  if (
+    error instanceof Error
+    && error.message.startsWith("Expected '--depth'")
+  ) {
+    return new Error("Expected '--depth' as positive integer");
+  }
+
+  return error instanceof Error ? error : new Error(String(error));
+}
