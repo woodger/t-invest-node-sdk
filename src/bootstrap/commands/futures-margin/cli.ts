@@ -3,8 +3,9 @@ import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatFuturesMargin,
@@ -21,31 +22,49 @@ type FuturesMarginSdk = {
 
 type FuturesMarginSdkFactory = (options: TinkoffInvestOptions) => FuturesMarginSdk;
 
-const futuresMarginArgNames = new Set([
-  ...sdkOptionArgNames,
-  'figi',
-  'format'
-]);
+const futuresMarginRequestOptionsSchema = {
+  figi: {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const futuresMarginFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: futuresMarginFormats,
+    default: 'table'
+  }
+} as const;
+
+const futuresMarginOptionsSchema = withSdkOptions({
+  ...futuresMarginRequestOptionsSchema,
+  ...futuresMarginFormatOptionsSchema
+} as const);
+
+function parseFuturesMarginOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-futures-margin', futuresMarginOptionsSchema);
+}
 
 export function parseFuturesMarginRequest(argv: CliArgs): GetFuturesMarginRequest {
-  return {
-    figi: ArgGuards.requireStringArg(argv, 'figi')
-  };
+  return createFuturesMarginRequest(parseFuturesMarginOptions(argv));
 }
 
 export function parseFuturesMarginFormat(argv: CliArgs): FuturesMarginFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', futuresMarginFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments get-futures-margin',
+    futuresMarginFormatOptionsSchema
+  ).format;
 }
 
 export function createFuturesMarginCommand(
   createSdk: FuturesMarginSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function futuresMargin(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, futuresMarginArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-futures-margin');
-
-    const request = parseFuturesMarginRequest(argv);
-    const format = parseFuturesMarginFormat(argv);
+    const options = parseFuturesMarginOptions(argv);
+    const request = createFuturesMarginRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -62,3 +81,11 @@ export function createFuturesMarginCommand(
 export const futuresMargin = createFuturesMarginCommand();
 
 export { formatFuturesMargin };
+
+function createFuturesMarginRequest(
+  options: ReturnType<typeof parseFuturesMarginOptions>
+): GetFuturesMarginRequest {
+  return {
+    figi: options.figi
+  };
+}

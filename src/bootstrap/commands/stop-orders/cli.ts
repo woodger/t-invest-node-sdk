@@ -3,8 +3,9 @@ import type {
   GetStopOrdersRequest,
   GetStopOrdersResponse
 } from '../../../generated/stoporders';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatStopOrders, stopOrdersFormats, type StopOrdersFormat } from './reporter';
 
@@ -17,31 +18,49 @@ type StopOrdersSdk = {
 
 type StopOrdersSdkFactory = (options: TinkoffInvestOptions) => StopOrdersSdk;
 
-const stopOrdersArgNames = new Set([
-  ...sdkOptionArgNames,
-  'account-id',
-  'format'
-]);
+const stopOrdersRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const stopOrdersFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: stopOrdersFormats,
+    default: 'table'
+  }
+} as const;
+
+const stopOrdersOptionsSchema = withSdkOptions({
+  ...stopOrdersRequestOptionsSchema,
+  ...stopOrdersFormatOptionsSchema
+} as const);
+
+function parseStopOrdersOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'stoporders get-stop-orders', stopOrdersOptionsSchema);
+}
 
 export function parseStopOrdersRequest(argv: CliArgs): GetStopOrdersRequest {
-  return {
-    accountId: ArgGuards.requireStringArg(argv, 'account-id')
-  };
+  return createStopOrdersRequest(parseStopOrdersOptions(argv));
 }
 
 export function parseStopOrdersFormat(argv: CliArgs): StopOrdersFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', stopOrdersFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'stoporders get-stop-orders',
+    stopOrdersFormatOptionsSchema
+  ).format;
 }
 
 export function createStopOrdersCommand(
   createSdk: StopOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function stopOrders(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, stopOrdersArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'stoporders get-stop-orders');
-
-    const request = parseStopOrdersRequest(argv);
-    const format = parseStopOrdersFormat(argv);
+    const options = parseStopOrdersOptions(argv);
+    const request = createStopOrdersRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -58,3 +77,11 @@ export function createStopOrdersCommand(
 export const stopOrders = createStopOrdersCommand();
 
 export { formatStopOrders };
+
+function createStopOrdersRequest(
+  options: ReturnType<typeof parseStopOrdersOptions>
+): GetStopOrdersRequest {
+  return {
+    accountId: options['account-id']
+  };
+}

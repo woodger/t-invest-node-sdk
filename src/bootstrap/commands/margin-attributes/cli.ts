@@ -3,8 +3,9 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatMarginAttributes,
@@ -21,31 +22,49 @@ type MarginAttributesSdk = {
 
 type MarginAttributesSdkFactory = (options: TinkoffInvestOptions) => MarginAttributesSdk;
 
-const marginAttributesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'account-id',
-  'format'
-]);
+const marginAttributesRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const marginAttributesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: marginAttributesFormats,
+    default: 'table'
+  }
+} as const;
+
+const marginAttributesOptionsSchema = withSdkOptions({
+  ...marginAttributesRequestOptionsSchema,
+  ...marginAttributesFormatOptionsSchema
+} as const);
+
+function parseMarginAttributesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'users get-margin-attributes', marginAttributesOptionsSchema);
+}
 
 export function parseMarginAttributesRequest(argv: CliArgs): GetMarginAttributesRequest {
-  return {
-    accountId: ArgGuards.requireStringArg(argv, 'account-id')
-  };
+  return createMarginAttributesRequest(parseMarginAttributesOptions(argv));
 }
 
 export function parseMarginAttributesFormat(argv: CliArgs): MarginAttributesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', marginAttributesFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'users get-margin-attributes',
+    marginAttributesFormatOptionsSchema
+  ).format;
 }
 
 export function createMarginAttributesCommand(
   createSdk: MarginAttributesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function marginAttributes(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, marginAttributesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'users get-margin-attributes');
-
-    const request = parseMarginAttributesRequest(argv);
-    const format = parseMarginAttributesFormat(argv);
+    const options = parseMarginAttributesOptions(argv);
+    const request = createMarginAttributesRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -62,3 +81,11 @@ export function createMarginAttributesCommand(
 export const marginAttributes = createMarginAttributesCommand();
 
 export { formatMarginAttributes };
+
+function createMarginAttributesRequest(
+  options: ReturnType<typeof parseMarginAttributesOptions>
+): GetMarginAttributesRequest {
+  return {
+    accountId: options['account-id']
+  };
+}
