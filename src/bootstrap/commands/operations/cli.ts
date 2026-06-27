@@ -4,7 +4,8 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -22,6 +23,10 @@ type OperationsSdk = {
 };
 
 type OperationsSdkFactory = (options: TinkoffInvestOptions) => OperationsSdk;
+
+const operationsCommandName = 'operations get-operations';
+const operationsCommandPath = ['operations', 'get-operations'] as const;
+const defaultOperationsSdkFactory: OperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const operationStates = {
   unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
@@ -75,13 +80,13 @@ const operationsOptionsSchema = withSdkOptions(
 );
 
 function parseOperationsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'operations get-operations', operationsOptionsSchema);
+  return parseCommandOptions(argv, operationsCommandName, operationsOptionsSchema);
 }
 
 export function parseOperationsState(argv: CliArgs): OperationState {
   const { state } = parseCommandOptions(
     argv,
-    'operations get-operations',
+    operationsCommandName,
     operationsStateOptionsSchema
   );
 
@@ -95,32 +100,49 @@ export function parseOperationsRequest(argv: CliArgs): OperationsRequest {
 export function parseOperationsFormat(argv: CliArgs): OperationsFormat {
   return parseCommandOptions(
     argv,
-    'operations get-operations',
+    operationsCommandName,
     operationsFormatOptionsSchema
   ).format;
 }
 
 export function createOperationsCommand(
-  createSdk: OperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: OperationsSdkFactory = defaultOperationsSdkFactory
 ) {
-  return async function operations(argv: CliArgs): Promise<string> {
-    const options = parseOperationsOptions(argv);
-    const request = createOperationsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.operations.getOperations(request);
-
-      return formatOperations(response.operations, format);
+  return defineCommand({
+    path: operationsCommandPath,
+    options: operationsOptionsSchema,
+    handle({ options }) {
+      return runOperationsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const operations = createOperationsCommand();
+export function operations(argv: CliArgs): Promise<string> {
+  return runOperationsCommand(
+    parseOperationsOptions(argv),
+    defaultOperationsSdkFactory
+  );
+}
+
+export const operationsCommand = createOperationsCommand();
+
+async function runOperationsCommand(
+  options: ReturnType<typeof parseOperationsOptions>,
+  createSdk: OperationsSdkFactory
+): Promise<string> {
+  const request = createOperationsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.operations.getOperations(request);
+
+    return formatOperations(response.operations, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatOperations };
 

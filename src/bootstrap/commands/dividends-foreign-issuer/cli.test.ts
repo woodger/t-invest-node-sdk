@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   GetDividendsForeignIssuerRequest,
@@ -154,14 +155,20 @@ describe('dividends-foreign-issuer command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'account-id': '2000000000',
-        from: '2026-01-01T00:00:00.000Z',
-        to: '2026-12-31T00:00:00.000Z',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'operations',
+          'get-dividends-foreign-issuer',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--account-id=2000000000',
+          '--from=2026-01-01T00:00:00.000Z',
+          '--to=2026-12-31T00:00:00.000Z',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -193,11 +200,17 @@ describe('dividends-foreign-issuer command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          'task-id': 'task-id'
-        })),
+        () => runCommand(
+          command,
+          [
+            'operations',
+            'get-dividends-foreign-issuer',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--task-id=task-id'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

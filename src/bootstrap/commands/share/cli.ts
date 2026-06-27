@@ -3,11 +3,13 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
   parseInstrumentLookupRequest
@@ -23,6 +25,10 @@ type ShareSdk = {
 
 type ShareSdkFactory = (options: TinkoffInvestOptions) => ShareSdk;
 
+const shareCommandName = 'instruments share-by';
+const shareCommandPath = ['instruments', 'share-by'] as const;
+const defaultShareSdkFactory: ShareSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const shareFormatOptionsSchema = {
   format: {
     type: 'string',
@@ -37,7 +43,7 @@ const shareOptionsSchema = withSdkOptions(
 );
 
 function parseShareOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments share-by', shareOptionsSchema);
+  return parseCommandOptions(argv, shareCommandName, shareOptionsSchema);
 }
 
 export const parseShareIdType = parseInstrumentLookupIdType;
@@ -46,30 +52,48 @@ export const parseShareRequest = parseInstrumentLookupRequest;
 export function parseShareFormat(argv: CliArgs): ShareFormat {
   return parseCommandOptions(
     argv,
-    'instruments share-by',
+    shareCommandName,
     shareFormatOptionsSchema
   ).format;
 }
 
 export function createShareCommand(
-  createSdk: ShareSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: ShareSdkFactory = defaultShareSdkFactory
 ) {
-  return async function share(argv: CliArgs): Promise<string> {
-    const { format } = parseShareOptions(argv);
-    const request = parseShareRequest(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.shareBy(request);
-
-      return formatShare(response, format);
+  return defineCommand({
+    path: shareCommandPath,
+    options: shareOptionsSchema,
+    handle({ options }) {
+      return runShareCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const share = createShareCommand();
+export function share(argv: CliArgs): Promise<string> {
+  return runShareCommand(
+    parseShareOptions(argv),
+    defaultShareSdkFactory
+  );
+}
+
+export const shareCommand = createShareCommand();
+
+async function runShareCommand(
+  options: ReturnType<typeof parseShareOptions>,
+  createSdk: ShareSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const request = createInstrumentLookupRequestFromOptions(options);
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.shareBy(request);
+
+    return formatShare(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatShare };

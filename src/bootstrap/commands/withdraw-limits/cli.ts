@@ -3,7 +3,8 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -21,6 +22,10 @@ type WithdrawLimitsSdk = {
 };
 
 type WithdrawLimitsSdkFactory = (options: TinkoffInvestOptions) => WithdrawLimitsSdk;
+
+const withdrawLimitsCommandName = 'operations get-withdraw-limits';
+const withdrawLimitsCommandPath = ['operations', 'get-withdraw-limits'] as const;
+const defaultWithdrawLimitsSdkFactory: WithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const withdrawLimitsRequestOptionsSchema = {
   'account-id': {
@@ -43,7 +48,7 @@ const withdrawLimitsOptionsSchema = withSdkOptions(
 );
 
 function parseWithdrawLimitsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'operations get-withdraw-limits', withdrawLimitsOptionsSchema);
+  return parseCommandOptions(argv, withdrawLimitsCommandName, withdrawLimitsOptionsSchema);
 }
 
 export function parseWithdrawLimitsRequest(argv: CliArgs): WithdrawLimitsRequest {
@@ -53,32 +58,49 @@ export function parseWithdrawLimitsRequest(argv: CliArgs): WithdrawLimitsRequest
 export function parseWithdrawLimitsFormat(argv: CliArgs): WithdrawLimitsFormat {
   return parseCommandOptions(
     argv,
-    'operations get-withdraw-limits',
+    withdrawLimitsCommandName,
     withdrawLimitsFormatOptionsSchema
   ).format;
 }
 
 export function createWithdrawLimitsCommand(
-  createSdk: WithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: WithdrawLimitsSdkFactory = defaultWithdrawLimitsSdkFactory
 ) {
-  return async function withdrawLimits(argv: CliArgs): Promise<string> {
-    const options = parseWithdrawLimitsOptions(argv);
-    const request = createWithdrawLimitsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.operations.getWithdrawLimits(request);
-
-      return formatWithdrawLimits(response, format);
+  return defineCommand({
+    path: withdrawLimitsCommandPath,
+    options: withdrawLimitsOptionsSchema,
+    handle({ options }) {
+      return runWithdrawLimitsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const withdrawLimits = createWithdrawLimitsCommand();
+export function withdrawLimits(argv: CliArgs): Promise<string> {
+  return runWithdrawLimitsCommand(
+    parseWithdrawLimitsOptions(argv),
+    defaultWithdrawLimitsSdkFactory
+  );
+}
+
+export const withdrawLimitsCommand = createWithdrawLimitsCommand();
+
+async function runWithdrawLimitsCommand(
+  options: ReturnType<typeof parseWithdrawLimitsOptions>,
+  createSdk: WithdrawLimitsSdkFactory
+): Promise<string> {
+  const request = createWithdrawLimitsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.operations.getWithdrawLimits(request);
+
+    return formatWithdrawLimits(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatWithdrawLimits };
 

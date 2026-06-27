@@ -3,11 +3,13 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
   parseInstrumentsRequest,
   parseInstrumentStatus
@@ -23,6 +25,10 @@ type CurrenciesSdk = {
 
 type CurrenciesSdkFactory = (options: TinkoffInvestOptions) => CurrenciesSdk;
 
+const currenciesCommandName = 'instruments currencies';
+const currenciesCommandPath = ['instruments', 'currencies'] as const;
+const defaultCurrenciesSdkFactory: CurrenciesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const currenciesFormatOptionsSchema = {
   format: {
     type: 'string',
@@ -37,7 +43,7 @@ const currenciesOptionsSchema = withSdkOptions(
 );
 
 function parseCurrenciesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments currencies', currenciesOptionsSchema);
+  return parseCommandOptions(argv, currenciesCommandName, currenciesOptionsSchema);
 }
 
 export const parseCurrenciesInstrumentStatus = parseInstrumentStatus;
@@ -46,30 +52,48 @@ export const parseCurrenciesRequest = parseInstrumentsRequest;
 export function parseCurrenciesFormat(argv: CliArgs): CurrenciesFormat {
   return parseCommandOptions(
     argv,
-    'instruments currencies',
+    currenciesCommandName,
     currenciesFormatOptionsSchema
   ).format;
 }
 
 export function createCurrenciesCommand(
-  createSdk: CurrenciesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: CurrenciesSdkFactory = defaultCurrenciesSdkFactory
 ) {
-  return async function currencies(argv: CliArgs): Promise<string> {
-    const { format } = parseCurrenciesOptions(argv);
-    const request = parseCurrenciesRequest(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.currencies(request);
-
-      return formatCurrencies(response.instruments, format);
+  return defineCommand({
+    path: currenciesCommandPath,
+    options: currenciesOptionsSchema,
+    handle({ options }) {
+      return runCurrenciesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const currencies = createCurrenciesCommand();
+export function currencies(argv: CliArgs): Promise<string> {
+  return runCurrenciesCommand(
+    parseCurrenciesOptions(argv),
+    defaultCurrenciesSdkFactory
+  );
+}
+
+export const currenciesCommand = createCurrenciesCommand();
+
+async function runCurrenciesCommand(
+  options: ReturnType<typeof parseCurrenciesOptions>,
+  createSdk: CurrenciesSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const request = createInstrumentsRequestFromOptions(options);
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.currencies(request);
+
+    return formatCurrencies(response.instruments, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatCurrencies };

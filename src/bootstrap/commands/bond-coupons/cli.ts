@@ -3,7 +3,8 @@ import type {
   GetBondCouponsRequest,
   GetBondCouponsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -21,6 +22,10 @@ type BondCouponsSdk = {
 };
 
 type BondCouponsSdkFactory = (options: TinkoffInvestOptions) => BondCouponsSdk;
+
+const bondCouponsCommandName = 'instruments get-bond-coupons';
+const bondCouponsCommandPath = ['instruments', 'get-bond-coupons'] as const;
+const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const bondCouponsRequestOptionsSchema = {
   figi: {
@@ -53,7 +58,7 @@ const bondCouponsOptionsSchema = withSdkOptions(
 function parseBondCouponsOptions(argv: CliArgs) {
   return parseCommandOptions(
     argv,
-    'instruments get-bond-coupons',
+    bondCouponsCommandName,
     bondCouponsOptionsSchema
   );
 }
@@ -65,32 +70,49 @@ export function parseBondCouponsRequest(argv: CliArgs): GetBondCouponsRequest {
 export function parseBondCouponsFormat(argv: CliArgs): BondCouponsFormat {
   return parseCommandOptions(
     argv,
-    'instruments get-bond-coupons',
+    bondCouponsCommandName,
     bondCouponsFormatOptionsSchema
   ).format;
 }
 
 export function createBondCouponsCommand(
-  createSdk: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: BondCouponsSdkFactory = defaultBondCouponsSdkFactory
 ) {
-  return async function bondCoupons(argv: CliArgs): Promise<string> {
-    const options = parseBondCouponsOptions(argv);
-    const request = createBondCouponsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getBondCoupons(request);
-
-      return formatBondCoupons(response.events, format);
+  return defineCommand({
+    path: bondCouponsCommandPath,
+    options: bondCouponsOptionsSchema,
+    handle({ options }) {
+      return runBondCouponsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const bondCoupons = createBondCouponsCommand();
+export function bondCoupons(argv: CliArgs): Promise<string> {
+  return runBondCouponsCommand(
+    parseBondCouponsOptions(argv),
+    defaultBondCouponsSdkFactory
+  );
+}
+
+export const bondCouponsCommand = createBondCouponsCommand();
+
+async function runBondCouponsCommand(
+  options: ReturnType<typeof parseBondCouponsOptions>,
+  createSdk: BondCouponsSdkFactory
+): Promise<string> {
+  const request = createBondCouponsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getBondCoupons(request);
+
+    return formatBondCoupons(response.events, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatBondCoupons };
 

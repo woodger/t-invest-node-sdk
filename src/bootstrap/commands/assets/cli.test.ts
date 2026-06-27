@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
@@ -96,12 +97,18 @@ describe('assets command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'instrument-type': 'share',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'instruments',
+          'get-assets',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--instrument-type=share',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -128,10 +135,16 @@ describe('assets command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051'
-        })),
+        () => runCommand(
+          command,
+          [
+            'instruments',
+            'get-assets',
+            '--token=token',
+            '--endpoint=localhost:50051'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

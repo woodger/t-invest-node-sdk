@@ -3,7 +3,8 @@ import type {
   GetClosePricesRequest,
   GetClosePricesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommaSeparatedStringListOption,
@@ -21,6 +22,10 @@ type ClosePricesSdk = {
 };
 
 type ClosePricesSdkFactory = (options: TinkoffInvestOptions) => ClosePricesSdk;
+
+const closePricesCommandName = 'marketdata get-close-prices';
+const closePricesCommandPath = ['marketdata', 'get-close-prices'] as const;
+const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const closePricesInstrumentIdsOptionsSchema = {
   'instrument-id': {
@@ -43,13 +48,13 @@ const closePricesOptionsSchema = withSdkOptions(
 );
 
 function parseClosePricesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'marketdata get-close-prices', closePricesOptionsSchema);
+  return parseCommandOptions(argv, closePricesCommandName, closePricesOptionsSchema);
 }
 
 export function parseClosePricesInstrumentIds(argv: CliArgs): string[] {
   const options = parseCommandOptions(
     argv,
-    'marketdata get-close-prices',
+    closePricesCommandName,
     closePricesInstrumentIdsOptionsSchema
   );
 
@@ -63,32 +68,49 @@ export function parseClosePricesRequest(argv: CliArgs): GetClosePricesRequest {
 export function parseClosePricesFormat(argv: CliArgs): ClosePricesFormat {
   return parseCommandOptions(
     argv,
-    'marketdata get-close-prices',
+    closePricesCommandName,
     closePricesFormatOptionsSchema
   ).format;
 }
 
 export function createClosePricesCommand(
-  createSdk: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: ClosePricesSdkFactory = defaultClosePricesSdkFactory
 ) {
-  return async function closePrices(argv: CliArgs): Promise<string> {
-    const options = parseClosePricesOptions(argv);
-    const request = createClosePricesRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.marketdata.getClosePrices(request);
-
-      return formatClosePrices(response.closePrices, format);
+  return defineCommand({
+    path: closePricesCommandPath,
+    options: closePricesOptionsSchema,
+    handle({ options }) {
+      return runClosePricesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const closePrices = createClosePricesCommand();
+export function closePrices(argv: CliArgs): Promise<string> {
+  return runClosePricesCommand(
+    parseClosePricesOptions(argv),
+    defaultClosePricesSdkFactory
+  );
+}
+
+export const closePricesCommand = createClosePricesCommand();
+
+async function runClosePricesCommand(
+  options: ReturnType<typeof parseClosePricesOptions>,
+  createSdk: ClosePricesSdkFactory
+): Promise<string> {
+  const request = createClosePricesRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.marketdata.getClosePrices(request);
+
+    return formatClosePrices(response.closePrices, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatClosePrices };
 

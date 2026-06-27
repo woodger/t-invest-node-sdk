@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest, FindInstrumentResponse } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -19,6 +20,10 @@ type FindInstrumentSdk = {
 };
 
 type FindInstrumentSdkFactory = (options: TinkoffInvestOptions) => FindInstrumentSdk;
+
+const findInstrumentCommandName = 'instruments find-instrument';
+const findInstrumentCommandPath = ['instruments', 'find-instrument'] as const;
+const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const instrumentKinds = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -68,7 +73,7 @@ const findInstrumentOptionsSchema = withSdkOptions(
 function parseFindInstrumentOptions(argv: CliArgs) {
   return parseCommandOptions(
     argv,
-    'instruments find-instrument',
+    findInstrumentCommandName,
     findInstrumentOptionsSchema
   );
 }
@@ -76,7 +81,7 @@ function parseFindInstrumentOptions(argv: CliArgs) {
 export function parseFindInstrumentKind(argv: CliArgs): InstrumentType {
   const instrumentKind = parseCommandOptions(
     argv,
-    'instruments find-instrument',
+    findInstrumentCommandName,
     { 'instrument-kind': findInstrumentRequestOptionsSchema['instrument-kind'] } as const
   )['instrument-kind'];
 
@@ -90,32 +95,49 @@ export function parseFindInstrumentRequest(argv: CliArgs): FindInstrumentRequest
 export function parseFindInstrumentFormat(argv: CliArgs): FindInstrumentFormat {
   return parseCommandOptions(
     argv,
-    'instruments find-instrument',
+    findInstrumentCommandName,
     findInstrumentFormatOptionsSchema
   ).format;
 }
 
 export function createFindInstrumentCommand(
-  createSdk: FindInstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: FindInstrumentSdkFactory = defaultFindInstrumentSdkFactory
 ) {
-  return async function findInstrument(argv: CliArgs): Promise<string> {
-    const options = parseFindInstrumentOptions(argv);
-    const request = createFindInstrumentRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.findInstrument(request);
-
-      return formatFindInstrument(response.instruments, format);
+  return defineCommand({
+    path: findInstrumentCommandPath,
+    options: findInstrumentOptionsSchema,
+    handle({ options }) {
+      return runFindInstrumentCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const findInstrument = createFindInstrumentCommand();
+export function findInstrument(argv: CliArgs): Promise<string> {
+  return runFindInstrumentCommand(
+    parseFindInstrumentOptions(argv),
+    defaultFindInstrumentSdkFactory
+  );
+}
+
+export const findInstrumentCommand = createFindInstrumentCommand();
+
+async function runFindInstrumentCommand(
+  options: ReturnType<typeof parseFindInstrumentOptions>,
+  createSdk: FindInstrumentSdkFactory
+): Promise<string> {
+  const request = createFindInstrumentRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.findInstrument(request);
+
+    return formatFindInstrument(response.instruments, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatFindInstrument };
 

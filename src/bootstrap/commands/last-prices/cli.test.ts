@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Quotation } from '../../../generated/common';
 import type {
@@ -120,12 +121,18 @@ describe('last-prices command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'instrument-id': 'BBG00QPYJ5H0,instrument-uid',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'marketdata',
+          'get-last-prices',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--instrument-id=BBG00QPYJ5H0,instrument-uid',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -151,11 +158,17 @@ describe('last-prices command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          'instrument-id': 'BBG00QPYJ5H0'
-        })),
+        () => runCommand(
+          command,
+          [
+            'marketdata',
+            'get-last-prices',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--instrument-id=BBG00QPYJ5H0'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Brand, GetBrandRequest } from '../../../generated/instruments';
 import type { CliArgs } from '../../cli-contract';
@@ -78,12 +79,18 @@ describe('brand command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        id: 'brand-uid',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'instruments',
+          'get-brand-by',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--id=brand-uid',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -111,11 +118,17 @@ describe('brand command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          id: 'brand-uid'
-        })),
+        () => runCommand(
+          command,
+          [
+            'instruments',
+            'get-brand-by',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--id=brand-uid'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

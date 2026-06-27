@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   Dividend,
@@ -119,14 +120,20 @@ describe('dividends command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        figi: 'SHARE-FIGI',
-        from: '2026-01-01T00:00:00Z',
-        to: '2026-01-31T00:00:00Z',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'instruments',
+          'get-dividends',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--figi=SHARE-FIGI',
+          '--from=2026-01-01T00:00:00Z',
+          '--to=2026-01-31T00:00:00Z',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -156,13 +163,19 @@ describe('dividends command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          figi: 'SHARE-FIGI',
-          from: '2026-01-01T00:00:00Z',
-          to: '2026-01-31T00:00:00Z'
-        })),
+        () => runCommand(
+          command,
+          [
+            'instruments',
+            'get-dividends',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--figi=SHARE-FIGI',
+            '--from=2026-01-01T00:00:00Z',
+            '--to=2026-01-31T00:00:00Z'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

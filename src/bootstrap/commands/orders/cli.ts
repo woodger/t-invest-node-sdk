@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -14,6 +15,10 @@ type OrdersSdk = {
 };
 
 type OrdersSdkFactory = (options: TinkoffInvestOptions) => OrdersSdk;
+
+const ordersCommandName = 'orders get-orders';
+const ordersCommandPath = ['orders', 'get-orders'] as const;
+const defaultOrdersSdkFactory: OrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const ordersRequestOptionsSchema = {
   'account-id': {
@@ -36,7 +41,7 @@ const ordersOptionsSchema = withSdkOptions(
 );
 
 function parseOrdersOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'orders get-orders', ordersOptionsSchema);
+  return parseCommandOptions(argv, ordersCommandName, ordersOptionsSchema);
 }
 
 export function parseOrdersRequest(argv: CliArgs): GetOrdersRequest {
@@ -46,32 +51,49 @@ export function parseOrdersRequest(argv: CliArgs): GetOrdersRequest {
 export function parseOrdersFormat(argv: CliArgs): OrdersFormat {
   return parseCommandOptions(
     argv,
-    'orders get-orders',
+    ordersCommandName,
     ordersFormatOptionsSchema
   ).format;
 }
 
 export function createOrdersCommand(
-  createSdk: OrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: OrdersSdkFactory = defaultOrdersSdkFactory
 ) {
-  return async function orders(argv: CliArgs): Promise<string> {
-    const options = parseOrdersOptions(argv);
-    const request = createOrdersRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.orders.getOrders(request);
-
-      return formatOrders(response, format);
+  return defineCommand({
+    path: ordersCommandPath,
+    options: ordersOptionsSchema,
+    handle({ options }) {
+      return runOrdersCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const orders = createOrdersCommand();
+export function orders(argv: CliArgs): Promise<string> {
+  return runOrdersCommand(
+    parseOrdersOptions(argv),
+    defaultOrdersSdkFactory
+  );
+}
+
+export const ordersCommand = createOrdersCommand();
+
+async function runOrdersCommand(
+  options: ReturnType<typeof parseOrdersOptions>,
+  createSdk: OrdersSdkFactory
+): Promise<string> {
+  const request = createOrdersRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.orders.getOrders(request);
+
+    return formatOrders(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatOrders };
 

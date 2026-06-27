@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -15,6 +16,10 @@ type AssetsSdk = {
 };
 
 type AssetsSdkFactory = (options: TinkoffInvestOptions) => AssetsSdk;
+
+const assetsCommandName = 'instruments get-assets';
+const assetsCommandPath = ['instruments', 'get-assets'] as const;
+const defaultAssetsSdkFactory: AssetsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const assetInstrumentTypes = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -54,13 +59,13 @@ const assetsOptionsSchema = withSdkOptions(
 );
 
 function parseAssetsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments get-assets', assetsOptionsSchema);
+  return parseCommandOptions(argv, assetsCommandName, assetsOptionsSchema);
 }
 
 export function parseAssetsInstrumentType(argv: CliArgs): InstrumentType {
   const options = parseCommandOptions(
     argv,
-    'instruments get-assets',
+    assetsCommandName,
     assetsInstrumentTypeOptionsSchema
   );
 
@@ -74,32 +79,49 @@ export function parseAssetsRequest(argv: CliArgs): AssetsRequest {
 export function parseAssetsFormat(argv: CliArgs): AssetsFormat {
   return parseCommandOptions(
     argv,
-    'instruments get-assets',
+    assetsCommandName,
     assetsFormatOptionsSchema
   ).format;
 }
 
 export function createAssetsCommand(
-  createSdk: AssetsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: AssetsSdkFactory = defaultAssetsSdkFactory
 ) {
-  return async function assets(argv: CliArgs): Promise<string> {
-    const options = parseAssetsOptions(argv);
-    const request = createAssetsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getAssets(request);
-
-      return formatAssets(response.assets, format);
+  return defineCommand({
+    path: assetsCommandPath,
+    options: assetsOptionsSchema,
+    handle({ options }) {
+      return runAssetsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const assets = createAssetsCommand();
+export function assets(argv: CliArgs): Promise<string> {
+  return runAssetsCommand(
+    parseAssetsOptions(argv),
+    defaultAssetsSdkFactory
+  );
+}
+
+export const assetsCommand = createAssetsCommand();
+
+async function runAssetsCommand(
+  options: ReturnType<typeof parseAssetsOptions>,
+  createSdk: AssetsSdkFactory
+): Promise<string> {
+  const request = createAssetsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getAssets(request);
+
+    return formatAssets(response.assets, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatAssets };
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Quotation } from '../../../generated/common';
 import {
@@ -112,14 +113,20 @@ describe('last-trades command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'instrument-id': 'BBG00QPYJ5H0',
-        from: '2026-06-19T10:00:00.000Z',
-        to: '2026-06-19T11:00:00.000Z',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'marketdata',
+          'get-last-trades',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--instrument-id=BBG00QPYJ5H0',
+          '--from=2026-06-19T10:00:00.000Z',
+          '--to=2026-06-19T11:00:00.000Z',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -146,13 +153,19 @@ describe('last-trades command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          'instrument-id': 'BBG00QPYJ5H0',
-          from: '2026-06-19T10:00:00.000Z',
-          to: '2026-06-19T11:00:00.000Z'
-        })),
+        () => runCommand(
+          command,
+          [
+            'marketdata',
+            'get-last-trades',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--instrument-id=BBG00QPYJ5H0',
+            '--from=2026-06-19T10:00:00.000Z',
+            '--to=2026-06-19T11:00:00.000Z'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

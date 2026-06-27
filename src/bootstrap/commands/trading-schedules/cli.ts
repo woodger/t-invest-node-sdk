@@ -3,7 +3,8 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -25,6 +26,10 @@ type TradingSchedulesSdk = {
 };
 
 type TradingSchedulesSdkFactory = (options: TinkoffInvestOptions) => TradingSchedulesSdk;
+
+const tradingSchedulesCommandName = 'instruments trading-schedules';
+const tradingSchedulesCommandPath = ['instruments', 'trading-schedules'] as const;
+const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const tradingSchedulesRequestOptionsSchema = {
   exchange: {
@@ -56,7 +61,7 @@ const tradingSchedulesOptionsSchema = withSdkOptions(
 function parseTradingSchedulesOptions(argv: CliArgs) {
   return parseCommandOptions(
     argv,
-    'instruments trading-schedules',
+    tradingSchedulesCommandName,
     tradingSchedulesOptionsSchema
   );
 }
@@ -68,32 +73,49 @@ export function parseTradingSchedulesRequest(argv: CliArgs): TradingSchedulesReq
 export function parseTradingSchedulesFormat(argv: CliArgs): TradingSchedulesFormat {
   return parseCommandOptions(
     argv,
-    'instruments trading-schedules',
+    tradingSchedulesCommandName,
     tradingSchedulesFormatOptionsSchema
   ).format;
 }
 
 export function createTradingSchedulesCommand(
-  createSdk: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: TradingSchedulesSdkFactory = defaultTradingSchedulesSdkFactory
 ) {
-  return async function tradingSchedules(argv: CliArgs): Promise<string> {
-    const options = parseTradingSchedulesOptions(argv);
-    const request = createTradingSchedulesRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.tradingSchedules(request);
-
-      return formatTradingSchedules(response.exchanges, format);
+  return defineCommand({
+    path: tradingSchedulesCommandPath,
+    options: tradingSchedulesOptionsSchema,
+    handle({ options }) {
+      return runTradingSchedulesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const tradingSchedules = createTradingSchedulesCommand();
+export function tradingSchedules(argv: CliArgs): Promise<string> {
+  return runTradingSchedulesCommand(
+    parseTradingSchedulesOptions(argv),
+    defaultTradingSchedulesSdkFactory
+  );
+}
+
+export const tradingSchedulesCommand = createTradingSchedulesCommand();
+
+async function runTradingSchedulesCommand(
+  options: ReturnType<typeof parseTradingSchedulesOptions>,
+  createSdk: TradingSchedulesSdkFactory
+): Promise<string> {
+  const request = createTradingSchedulesRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.tradingSchedules(request);
+
+    return formatTradingSchedules(response.exchanges, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatTradingSchedules };
 

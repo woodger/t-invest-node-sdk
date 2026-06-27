@@ -4,7 +4,8 @@ import {
   type GetCandlesRequest,
   type GetCandlesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -22,6 +23,10 @@ type CandlesSdk = {
 };
 
 type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
+
+const candlesCommandName = 'marketdata get-candles';
+const candlesCommandPath = ['marketdata', 'get-candles'] as const;
+const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const candleIntervals = {
   '1min': CandleInterval.CANDLE_INTERVAL_1_MIN,
@@ -78,13 +83,13 @@ const candlesOptionsSchema = withSdkOptions(
 );
 
 function parseCandlesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'marketdata get-candles', candlesOptionsSchema);
+  return parseCommandOptions(argv, candlesCommandName, candlesOptionsSchema);
 }
 
 export function parseCandleInterval(argv: CliArgs): CandleInterval {
   const { interval } = parseCommandOptions(
     argv,
-    'marketdata get-candles',
+    candlesCommandName,
     { interval: candlesRequestOptionsSchema.interval } as const
   );
 
@@ -98,32 +103,49 @@ export function parseCandlesRequest(argv: CliArgs): GetCandlesRequest {
 export function parseCandlesFormat(argv: CliArgs): CandlesFormat {
   return parseCommandOptions(
     argv,
-    'marketdata get-candles',
+    candlesCommandName,
     candlesFormatOptionsSchema
   ).format;
 }
 
 export function createCandlesCommand(
-  createSdk: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: CandlesSdkFactory = defaultCandlesSdkFactory
 ) {
-  return async function candles(argv: CliArgs): Promise<string> {
-    const options = parseCandlesOptions(argv);
-    const request = createCandlesRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.marketdata.getCandles(request);
-
-      return formatCandles(response.candles, format);
+  return defineCommand({
+    path: candlesCommandPath,
+    options: candlesOptionsSchema,
+    handle({ options }) {
+      return runCandlesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const candles = createCandlesCommand();
+export function candles(argv: CliArgs): Promise<string> {
+  return runCandlesCommand(
+    parseCandlesOptions(argv),
+    defaultCandlesSdkFactory
+  );
+}
+
+export const candlesCommand = createCandlesCommand();
+
+async function runCandlesCommand(
+  options: ReturnType<typeof parseCandlesOptions>,
+  createSdk: CandlesSdkFactory
+): Promise<string> {
+  const request = createCandlesRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.marketdata.getCandles(request);
+
+    return formatCandles(response.candles, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatCandles };
 

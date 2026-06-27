@@ -6,7 +6,8 @@ import {
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommaSeparatedStringListOption,
@@ -31,6 +32,10 @@ type OperationsByCursorSdk = {
 };
 
 type OperationsByCursorSdkFactory = (options: TinkoffInvestOptions) => OperationsByCursorSdk;
+
+const operationsByCursorCommandName = 'operations get-operations-by-cursor';
+const operationsByCursorCommandPath = ['operations', 'get-operations-by-cursor'] as const;
+const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const operationStates = {
   unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
@@ -113,7 +118,7 @@ const operationsByCursorOptionsSchema = withSdkOptions(
 function parseOperationsByCursorOptions(argv: CliArgs) {
   return parseCommandOptions(
     argv,
-    'operations get-operations-by-cursor',
+    operationsByCursorCommandName,
     operationsByCursorOptionsSchema
   );
 }
@@ -121,7 +126,7 @@ function parseOperationsByCursorOptions(argv: CliArgs) {
 export function parseOperationsByCursorState(argv: CliArgs): OperationState {
   const { state } = parseCommandOptions(
     argv,
-    'operations get-operations-by-cursor',
+    operationsByCursorCommandName,
     operationsByCursorStateOptionsSchema
   );
 
@@ -131,7 +136,7 @@ export function parseOperationsByCursorState(argv: CliArgs): OperationState {
 export function parseOperationsByCursorLimit(argv: CliArgs): number {
   const { limit } = parseCommandOptions(
     argv,
-    'operations get-operations-by-cursor',
+    operationsByCursorCommandName,
     operationsByCursorLimitOptionsSchema
   );
 
@@ -159,7 +164,7 @@ function parseOperationsByCursorLimitOption(rawValue: string | undefined): numbe
 export function parseOperationsByCursorOperationTypes(argv: CliArgs): OperationType[] {
   const options = parseCommandOptions(
     argv,
-    'operations get-operations-by-cursor',
+    operationsByCursorCommandName,
     operationsByCursorOperationTypesOptionsSchema
   );
 
@@ -193,32 +198,49 @@ export function parseOperationsByCursorRequest(argv: CliArgs): GetOperationsByCu
 export function parseOperationsByCursorFormat(argv: CliArgs): OperationsByCursorFormat {
   return parseCommandOptions(
     argv,
-    'operations get-operations-by-cursor',
+    operationsByCursorCommandName,
     operationsByCursorFormatOptionsSchema
   ).format;
 }
 
 export function createOperationsByCursorCommand(
-  createSdk: OperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: OperationsByCursorSdkFactory = defaultOperationsByCursorSdkFactory
 ) {
-  return async function operationsByCursor(argv: CliArgs): Promise<string> {
-    const options = parseOperationsByCursorOptions(argv);
-    const request = createOperationsByCursorRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.operations.getOperationsByCursor(request);
-
-      return formatOperationsByCursor(response, format);
+  return defineCommand({
+    path: operationsByCursorCommandPath,
+    options: operationsByCursorOptionsSchema,
+    handle({ options }) {
+      return runOperationsByCursorCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const operationsByCursor = createOperationsByCursorCommand();
+export function operationsByCursor(argv: CliArgs): Promise<string> {
+  return runOperationsByCursorCommand(
+    parseOperationsByCursorOptions(argv),
+    defaultOperationsByCursorSdkFactory
+  );
+}
+
+export const operationsByCursorCommand = createOperationsByCursorCommand();
+
+async function runOperationsByCursorCommand(
+  options: ReturnType<typeof parseOperationsByCursorOptions>,
+  createSdk: OperationsByCursorSdkFactory
+): Promise<string> {
+  const request = createOperationsByCursorRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.operations.getOperationsByCursor(request);
+
+    return formatOperationsByCursor(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatOperationsByCursor };
 

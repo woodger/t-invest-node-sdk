@@ -3,7 +3,8 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -27,6 +28,10 @@ type BrokerReportSdk = {
 };
 
 type BrokerReportSdkFactory = (options: TinkoffInvestOptions) => BrokerReportSdk;
+
+const brokerReportCommandName = 'operations get-broker-report';
+const brokerReportCommandPath = ['operations', 'get-broker-report'] as const;
+const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const brokerReportRequestOptionsSchema = {
   'account-id': {
@@ -60,7 +65,7 @@ const brokerReportOptionsSchema = withSdkOptions(
 );
 
 function parseBrokerReportOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'operations get-broker-report', brokerReportOptionsSchema);
+  return parseCommandOptions(argv, brokerReportCommandName, brokerReportOptionsSchema);
 }
 
 function createBrokerReportRequest(
@@ -113,31 +118,48 @@ export function parseBrokerReportRequest(argv: CliArgs): BrokerReportRequest {
 export function parseBrokerReportFormat(argv: CliArgs): BrokerReportFormat {
   return parseCommandOptions(
     argv,
-    'operations get-broker-report',
+    brokerReportCommandName,
     brokerReportFormatOptionsSchema
   ).format;
 }
 
 export function createBrokerReportCommand(
-  createSdk: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: BrokerReportSdkFactory = defaultBrokerReportSdkFactory
 ) {
-  return async function brokerReport(argv: CliArgs): Promise<string> {
-    const options = parseBrokerReportOptions(argv);
-    const request = createBrokerReportRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.operations.getBrokerReport(request);
-
-      return formatBrokerReport(response, format);
+  return defineCommand({
+    path: brokerReportCommandPath,
+    options: brokerReportOptionsSchema,
+    handle({ options }) {
+      return runBrokerReportCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const brokerReport = createBrokerReportCommand();
+export function brokerReport(argv: CliArgs): Promise<string> {
+  return runBrokerReportCommand(
+    parseBrokerReportOptions(argv),
+    defaultBrokerReportSdkFactory
+  );
+}
+
+export const brokerReportCommand = createBrokerReportCommand();
+
+async function runBrokerReportCommand(
+  options: ReturnType<typeof parseBrokerReportOptions>,
+  createSdk: BrokerReportSdkFactory
+): Promise<string> {
+  const request = createBrokerReportRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.operations.getBrokerReport(request);
+
+    return formatBrokerReport(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatBrokerReport };

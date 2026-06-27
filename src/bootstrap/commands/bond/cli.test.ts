@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   InstrumentIdType,
@@ -131,14 +132,20 @@ describe('bond command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        id: 'SU26238RMFS4',
-        'id-type': 'ticker',
-        'class-code': 'TQOB',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'instruments',
+          'bond-by',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--id=SU26238RMFS4',
+          '--id-type=ticker',
+          '--class-code=TQOB',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -167,12 +174,18 @@ describe('bond command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          id: 'BBG00B9XRY4J',
-          'id-type': 'figi'
-        })),
+        () => runCommand(
+          command,
+          [
+            'instruments',
+            'bond-by',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--id=BBG00B9XRY4J',
+            '--id-type=figi'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

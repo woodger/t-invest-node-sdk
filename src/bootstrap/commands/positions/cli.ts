@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -14,6 +15,10 @@ type PositionsSdk = {
 };
 
 type PositionsSdkFactory = (options: TinkoffInvestOptions) => PositionsSdk;
+
+const positionsCommandName = 'operations get-positions';
+const positionsCommandPath = ['operations', 'get-positions'] as const;
+const defaultPositionsSdkFactory: PositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const positionsRequestOptionsSchema = {
   'account-id': {
@@ -36,7 +41,7 @@ const positionsOptionsSchema = withSdkOptions(
 );
 
 function parsePositionsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'operations get-positions', positionsOptionsSchema);
+  return parseCommandOptions(argv, positionsCommandName, positionsOptionsSchema);
 }
 
 export function parsePositionsRequest(argv: CliArgs): PositionsRequest {
@@ -46,32 +51,49 @@ export function parsePositionsRequest(argv: CliArgs): PositionsRequest {
 export function parsePositionsFormat(argv: CliArgs): PositionsFormat {
   return parseCommandOptions(
     argv,
-    'operations get-positions',
+    positionsCommandName,
     positionsFormatOptionsSchema
   ).format;
 }
 
 export function createPositionsCommand(
-  createSdk: PositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: PositionsSdkFactory = defaultPositionsSdkFactory
 ) {
-  return async function positions(argv: CliArgs): Promise<string> {
-    const options = parsePositionsOptions(argv);
-    const request = createPositionsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.operations.getPositions(request);
-
-      return formatPositions(response, format);
+  return defineCommand({
+    path: positionsCommandPath,
+    options: positionsOptionsSchema,
+    handle({ options }) {
+      return runPositionsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const positions = createPositionsCommand();
+export function positions(argv: CliArgs): Promise<string> {
+  return runPositionsCommand(
+    parsePositionsOptions(argv),
+    defaultPositionsSdkFactory
+  );
+}
+
+export const positionsCommand = createPositionsCommand();
+
+async function runPositionsCommand(
+  options: ReturnType<typeof parsePositionsOptions>,
+  createSdk: PositionsSdkFactory
+): Promise<string> {
+  const request = createPositionsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.operations.getPositions(request);
+
+    return formatPositions(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatPositions };
 

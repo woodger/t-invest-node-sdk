@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   CandleInterval,
@@ -114,15 +115,21 @@ describe('candles command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'instrument-id': 'BBG00QPYJ5H0',
-        from: '2026-06-19T00:00:00.000Z',
-        to: '2026-06-19T01:00:00.000Z',
-        interval: '1min',
-        format: 'csv'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'marketdata',
+          'get-candles',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--instrument-id=BBG00QPYJ5H0',
+          '--from=2026-06-19T00:00:00.000Z',
+          '--to=2026-06-19T01:00:00.000Z',
+          '--interval=1min',
+          '--format=csv'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
