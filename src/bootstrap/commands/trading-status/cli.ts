@@ -3,8 +3,9 @@ import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatTradingStatus,
@@ -21,32 +22,49 @@ type TradingStatusSdk = {
 
 type TradingStatusSdkFactory = (options: TinkoffInvestOptions) => TradingStatusSdk;
 
-const tradingStatusArgNames = new Set([
-  ...sdkOptionArgNames,
-  'instrument-id',
-  'format'
-]);
+const tradingStatusRequestOptionsSchema = {
+  'instrument-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const tradingStatusFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: tradingStatusFormats,
+    default: 'table'
+  }
+} as const;
+
+const tradingStatusOptionsSchema = withSdkOptions({
+  ...tradingStatusRequestOptionsSchema,
+  ...tradingStatusFormatOptionsSchema
+} as const);
+
+function parseTradingStatusOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'marketdata get-trading-status', tradingStatusOptionsSchema);
+}
 
 export function parseTradingStatusRequest(argv: CliArgs): GetTradingStatusRequest {
-  return {
-    figi: '',
-    instrumentId: ArgGuards.requireStringArg(argv, 'instrument-id')
-  };
+  return createTradingStatusRequest(parseTradingStatusOptions(argv));
 }
 
 export function parseTradingStatusFormat(argv: CliArgs): TradingStatusFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', tradingStatusFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'marketdata get-trading-status',
+    tradingStatusFormatOptionsSchema
+  ).format;
 }
 
 export function createTradingStatusCommand(
   createSdk: TradingStatusSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function tradingStatus(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, tradingStatusArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-trading-status');
-
-    const request = parseTradingStatusRequest(argv);
-    const format = parseTradingStatusFormat(argv);
+    const options = parseTradingStatusOptions(argv);
+    const request = createTradingStatusRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -63,3 +81,12 @@ export function createTradingStatusCommand(
 export const tradingStatus = createTradingStatusCommand();
 
 export { formatTradingStatus };
+
+function createTradingStatusRequest(
+  options: ReturnType<typeof parseTradingStatusOptions>
+): GetTradingStatusRequest {
+  return {
+    figi: '',
+    instrumentId: options['instrument-id']
+  };
+}

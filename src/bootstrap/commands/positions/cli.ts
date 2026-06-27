@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPositions, positionsFormats, type PositionsFormat } from './reporter';
 
@@ -14,31 +15,49 @@ type PositionsSdk = {
 
 type PositionsSdkFactory = (options: TinkoffInvestOptions) => PositionsSdk;
 
-const positionsArgNames = new Set([
-  ...sdkOptionArgNames,
-  'account-id',
-  'format'
-]);
+const positionsRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const positionsFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: positionsFormats,
+    default: 'table'
+  }
+} as const;
+
+const positionsOptionsSchema = withSdkOptions({
+  ...positionsRequestOptionsSchema,
+  ...positionsFormatOptionsSchema
+} as const);
+
+function parsePositionsOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'operations get-positions', positionsOptionsSchema);
+}
 
 export function parsePositionsRequest(argv: CliArgs): PositionsRequest {
-  return {
-    accountId: ArgGuards.requireStringArg(argv, 'account-id')
-  };
+  return createPositionsRequest(parsePositionsOptions(argv));
 }
 
 export function parsePositionsFormat(argv: CliArgs): PositionsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', positionsFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'operations get-positions',
+    positionsFormatOptionsSchema
+  ).format;
 }
 
 export function createPositionsCommand(
   createSdk: PositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function positions(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, positionsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'operations get-positions');
-
-    const request = parsePositionsRequest(argv);
-    const format = parsePositionsFormat(argv);
+    const options = parsePositionsOptions(argv);
+    const request = createPositionsRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -55,3 +74,11 @@ export function createPositionsCommand(
 export const positions = createPositionsCommand();
 
 export { formatPositions };
+
+function createPositionsRequest(
+  options: ReturnType<typeof parsePositionsOptions>
+): PositionsRequest {
+  return {
+    accountId: options['account-id']
+  };
+}
