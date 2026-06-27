@@ -358,6 +358,8 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
     ...command,
     requiresContext: metadata.requiresContext,
     handler(args) {
+      // Resolved commands are still executed from raw CLI args, so `icore`
+      // remains the single owner of path, extra positional, and option parsing.
       return runCommand(command, args, undefined);
     }
   };

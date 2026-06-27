@@ -24,6 +24,10 @@ import {
   type RawOptionValue
 } from 'icore';
 
+/**
+ * Raw option maps are used by exported parser helpers and focused tests.
+ * Runtime command execution receives typed options directly from `icore`.
+ */
 export type CommandRawOptions = Record<string, unknown>;
 
 export const sdkOptionsSchema = {
@@ -52,6 +56,8 @@ export function parseCommandOptions<const TSchema extends OptionsSchema>(
   commandName: string,
   schema: TSchema
 ): InferOptions<TSchema> {
+  // Command path and extra positional validation belong to `icore.runCommand`;
+  // this helper validates only named options for parser helpers and tests.
   void commandName;
 
   return parseOptions(schema, toRawOptions(options));
@@ -130,6 +136,8 @@ function toRawOptions(values: CommandRawOptions): Record<string, RawOptionValue>
       throw new Error(`Expected '--${name}' as scalar option`);
     }
 
+    // `icore.parseOptions` owns schema-level parsing; this adapter only rejects
+    // values that cannot come from raw CLI option parsing.
     options[name] = value;
   }
 
