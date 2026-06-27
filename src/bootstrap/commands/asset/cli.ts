@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { AssetRequest, AssetResponse } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { assetFormats, formatAsset, type AssetFormat } from './reporter';
 
@@ -14,31 +15,49 @@ type AssetSdk = {
 
 type AssetSdkFactory = (options: TinkoffInvestOptions) => AssetSdk;
 
-const assetArgNames = new Set([
-  ...sdkOptionArgNames,
-  'id',
-  'format'
-]);
+const assetRequestOptionsSchema = {
+  id: {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const assetFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: assetFormats,
+    default: 'table'
+  }
+} as const;
+
+const assetOptionsSchema = withSdkOptions({
+  ...assetRequestOptionsSchema,
+  ...assetFormatOptionsSchema
+} as const);
+
+function parseAssetOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-asset-by', assetOptionsSchema);
+}
 
 export function parseAssetRequest(argv: CliArgs): AssetRequest {
-  return {
-    id: ArgGuards.requireStringArg(argv, 'id')
-  };
+  return createAssetRequest(parseAssetOptions(argv));
 }
 
 export function parseAssetFormat(argv: CliArgs): AssetFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', assetFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments get-asset-by',
+    assetFormatOptionsSchema
+  ).format;
 }
 
 export function createAssetCommand(
   createSdk: AssetSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function asset(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, assetArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-asset-by');
-
-    const request = parseAssetRequest(argv);
-    const format = parseAssetFormat(argv);
+    const options = parseAssetOptions(argv);
+    const request = createAssetRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -55,3 +74,11 @@ export function createAssetCommand(
 export const asset = createAssetCommand();
 
 export { formatAsset };
+
+function createAssetRequest(
+  options: ReturnType<typeof parseAssetOptions>
+): AssetRequest {
+  return {
+    id: options.id
+  };
+}
