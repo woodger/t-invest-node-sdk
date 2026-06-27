@@ -11,7 +11,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createTradingStatusCommand,
   parseTradingStatusFormat,
-  parseTradingStatusRequest
+  createTradingStatusRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -33,11 +33,11 @@ function response(
 }
 
 describe('trading-status command', () => {
-  describe('parseTradingStatusRequest', () => {
+  describe('createTradingStatusRequest', () => {
     test('returns generated getTradingStatus request', () => {
-      const request = parseTradingStatusRequest(rawOptions({
+      const request = createTradingStatusRequest({
         'instrument-id': 'BBG00QPYJ5H0'
-      }));
+      });
 
       assert.deepEqual(request, {
         figi: '',

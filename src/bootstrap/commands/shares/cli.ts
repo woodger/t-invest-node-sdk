@@ -11,7 +11,6 @@ import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
-  parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
 import { formatShares, sharesFormats, type SharesFormat } from './reporter';
@@ -25,7 +24,6 @@ type SharesSdk = {
 
 type SharesSdkFactory = (options: TinkoffInvestOptions) => SharesSdk;
 
-const sharesCommandName = 'instruments shares';
 const sharesCommandPath = ['instruments', 'shares'] as const;
 const defaultSharesSdkFactory: SharesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const sharesOptionsSchema = withSdkOptions(
 type SharesOptions = InferOptions<typeof sharesOptionsSchema>;
 
 export const parseSharesInstrumentStatus = parseInstrumentStatus;
-export const parseSharesRequest = parseInstrumentsRequest;
+export const createSharesRequest = createInstrumentsRequestFromOptions;
 
 export function parseSharesFormat(rawOptions: CommandRawOptions): SharesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    sharesCommandName,
-    sharesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, sharesFormatOptionsSchema).format;
 }
 
 export function createSharesCommand(

@@ -30,6 +30,21 @@ import {
  */
 export type CommandRawOptions = Record<string, unknown>;
 
+type OptionalCommandOptionKeys<TOptions> = {
+  [TKey in keyof TOptions]: undefined extends TOptions[TKey] ? TKey : never;
+}[keyof TOptions];
+
+type RequiredCommandOptionKeys<TOptions> = Exclude<
+  keyof TOptions,
+  OptionalCommandOptionKeys<TOptions>
+>;
+
+export type CommandRequestOptions<
+  TOptions,
+  TKeys extends keyof TOptions
+> = Pick<TOptions, Extract<TKeys, RequiredCommandOptionKeys<TOptions>>>
+  & Partial<Pick<TOptions, Extract<TKeys, OptionalCommandOptionKeys<TOptions>>>>;
+
 export const sdkOptionsSchema = {
   token: {
     type: 'string'
@@ -53,13 +68,10 @@ export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
 
 export function parseCommandOptions<const TSchema extends OptionsSchema>(
   options: CommandRawOptions,
-  commandName: string,
   schema: TSchema
 ): InferOptions<TSchema> {
   // Command path and extra positional validation belong to `icore.runCommand`;
   // this helper validates only named options for parser helpers and tests.
-  void commandName;
-
   return parseOptions(schema, toRawOptions(options));
 }
 

@@ -3,388 +3,340 @@ import { describe, test } from 'node:test';
 import { isCommandName, resolveCommand } from './command-registry';
 
 describe('resolveCommand', () => {
-  test('resolves accounts command without context requirement', () => {
+  test('resolves accounts command', () => {
     const command = resolveCommand(['users', 'get-accounts']);
 
     assert.equal(command.name, 'users get-accounts');
     assert.deepEqual(command.path, ['users', 'get-accounts']);
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves user-info command without context requirement', () => {
+  test('resolves user-info command', () => {
     const command = resolveCommand(['users', 'get-info']);
 
     assert.equal(command.name, 'users get-info');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves margin-attributes command without context requirement', () => {
+  test('resolves margin-attributes command', () => {
     const command = resolveCommand(['users', 'get-margin-attributes']);
 
     assert.equal(command.name, 'users get-margin-attributes');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves user-tariff command without context requirement', () => {
+  test('resolves user-tariff command', () => {
     const command = resolveCommand(['users', 'get-user-tariff']);
 
     assert.equal(command.name, 'users get-user-tariff');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves candles command without context requirement', () => {
+  test('resolves candles command', () => {
     const command = resolveCommand(['marketdata', 'get-candles']);
 
     assert.equal(command.name, 'marketdata get-candles');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves close-prices command without context requirement', () => {
+  test('resolves close-prices command', () => {
     const command = resolveCommand(['marketdata', 'get-close-prices']);
 
     assert.equal(command.name, 'marketdata get-close-prices');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves instrument command without context requirement', () => {
+  test('resolves instrument command', () => {
     const command = resolveCommand(['instruments', 'get-instrument-by']);
 
     assert.equal(command.name, 'instruments get-instrument-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves accrued-interests command without context requirement', () => {
+  test('resolves accrued-interests command', () => {
     const command = resolveCommand(['instruments', 'get-accrued-interests']);
 
     assert.equal(command.name, 'instruments get-accrued-interests');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves asset command without context requirement', () => {
+  test('resolves asset command', () => {
     const command = resolveCommand(['instruments', 'get-asset-by']);
 
     assert.equal(command.name, 'instruments get-asset-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves assets command without context requirement', () => {
+  test('resolves assets command', () => {
     const command = resolveCommand(['instruments', 'get-assets']);
 
     assert.equal(command.name, 'instruments get-assets');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves bond-coupons command without context requirement', () => {
+  test('resolves bond-coupons command', () => {
     const command = resolveCommand(['instruments', 'get-bond-coupons']);
 
     assert.equal(command.name, 'instruments get-bond-coupons');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves bond command without context requirement', () => {
+  test('resolves bond command', () => {
     const command = resolveCommand(['instruments', 'bond-by']);
 
     assert.equal(command.name, 'instruments bond-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves bonds command without context requirement', () => {
+  test('resolves bonds command', () => {
     const command = resolveCommand(['instruments', 'bonds']);
 
     assert.equal(command.name, 'instruments bonds');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves brand command without context requirement', () => {
+  test('resolves brand command', () => {
     const command = resolveCommand(['instruments', 'get-brand-by']);
 
     assert.equal(command.name, 'instruments get-brand-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves brands command without context requirement', () => {
+  test('resolves brands command', () => {
     const command = resolveCommand(['instruments', 'get-brands']);
 
     assert.equal(command.name, 'instruments get-brands');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves countries command without context requirement', () => {
+  test('resolves countries command', () => {
     const command = resolveCommand(['instruments', 'get-countries']);
 
     assert.equal(command.name, 'instruments get-countries');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves currencies command without context requirement', () => {
+  test('resolves currencies command', () => {
     const command = resolveCommand(['instruments', 'currencies']);
 
     assert.equal(command.name, 'instruments currencies');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves currency command without context requirement', () => {
+  test('resolves currency command', () => {
     const command = resolveCommand(['instruments', 'currency-by']);
 
     assert.equal(command.name, 'instruments currency-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves favorites command without context requirement', () => {
+  test('resolves favorites command', () => {
     const command = resolveCommand(['instruments', 'get-favorites']);
 
     assert.equal(command.name, 'instruments get-favorites');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves dividends command without context requirement', () => {
+  test('resolves dividends command', () => {
     const command = resolveCommand(['instruments', 'get-dividends']);
 
     assert.equal(command.name, 'instruments get-dividends');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves etf command without context requirement', () => {
+  test('resolves etf command', () => {
     const command = resolveCommand(['instruments', 'etf-by']);
 
     assert.equal(command.name, 'instruments etf-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves etfs command without context requirement', () => {
+  test('resolves etfs command', () => {
     const command = resolveCommand(['instruments', 'etfs']);
 
     assert.equal(command.name, 'instruments etfs');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves find-instrument command without context requirement', () => {
+  test('resolves find-instrument command', () => {
     const command = resolveCommand(['instruments', 'find-instrument']);
 
     assert.equal(command.name, 'instruments find-instrument');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves future command without context requirement', () => {
+  test('resolves future command', () => {
     const command = resolveCommand(['instruments', 'future-by']);
 
     assert.equal(command.name, 'instruments future-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves futures command without context requirement', () => {
+  test('resolves futures command', () => {
     const command = resolveCommand(['instruments', 'futures']);
 
     assert.equal(command.name, 'instruments futures');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves futures-margin command without context requirement', () => {
+  test('resolves futures-margin command', () => {
     const command = resolveCommand(['instruments', 'get-futures-margin']);
 
     assert.equal(command.name, 'instruments get-futures-margin');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves option command without context requirement', () => {
+  test('resolves option command', () => {
     const command = resolveCommand(['instruments', 'option-by']);
 
     assert.equal(command.name, 'instruments option-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves options-by command without context requirement', () => {
+  test('resolves options-by command', () => {
     const command = resolveCommand(['instruments', 'options-by']);
 
     assert.equal(command.name, 'instruments options-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves trading-schedules command without context requirement', () => {
+  test('resolves trading-schedules command', () => {
     const command = resolveCommand(['instruments', 'trading-schedules']);
 
     assert.equal(command.name, 'instruments trading-schedules');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves share command without context requirement', () => {
+  test('resolves share command', () => {
     const command = resolveCommand(['instruments', 'share-by']);
 
     assert.equal(command.name, 'instruments share-by');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves shares command without context requirement', () => {
+  test('resolves shares command', () => {
     const command = resolveCommand(['instruments', 'shares']);
 
     assert.equal(command.name, 'instruments shares');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves portfolio command without context requirement', () => {
+  test('resolves portfolio command', () => {
     const command = resolveCommand(['operations', 'get-portfolio']);
 
     assert.equal(command.name, 'operations get-portfolio');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves last-prices command without context requirement', () => {
+  test('resolves last-prices command', () => {
     const command = resolveCommand(['marketdata', 'get-last-prices']);
 
     assert.equal(command.name, 'marketdata get-last-prices');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves last-trades command without context requirement', () => {
+  test('resolves last-trades command', () => {
     const command = resolveCommand(['marketdata', 'get-last-trades']);
 
     assert.equal(command.name, 'marketdata get-last-trades');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves order-book command without context requirement', () => {
+  test('resolves order-book command', () => {
     const command = resolveCommand(['marketdata', 'get-order-book']);
 
     assert.equal(command.name, 'marketdata get-order-book');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves trading-status command without context requirement', () => {
+  test('resolves trading-status command', () => {
     const command = resolveCommand(['marketdata', 'get-trading-status']);
 
     assert.equal(command.name, 'marketdata get-trading-status');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves trading-statuses command without context requirement', () => {
+  test('resolves trading-statuses command', () => {
     const command = resolveCommand(['marketdata', 'get-trading-statuses']);
 
     assert.equal(command.name, 'marketdata get-trading-statuses');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves positions command without context requirement', () => {
+  test('resolves positions command', () => {
     const command = resolveCommand(['operations', 'get-positions']);
 
     assert.equal(command.name, 'operations get-positions');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves withdraw-limits command without context requirement', () => {
+  test('resolves withdraw-limits command', () => {
     const command = resolveCommand(['operations', 'get-withdraw-limits']);
 
     assert.equal(command.name, 'operations get-withdraw-limits');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves orders command without context requirement', () => {
+  test('resolves orders command', () => {
     const command = resolveCommand(['orders', 'get-orders']);
 
     assert.equal(command.name, 'orders get-orders');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves order-state command without context requirement', () => {
+  test('resolves order-state command', () => {
     const command = resolveCommand(['orders', 'get-order-state']);
 
     assert.equal(command.name, 'orders get-order-state');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves operations command without context requirement', () => {
+  test('resolves operations command', () => {
     const command = resolveCommand(['operations', 'get-operations']);
 
     assert.equal(command.name, 'operations get-operations');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves operations-by-cursor command without context requirement', () => {
+  test('resolves operations-by-cursor command', () => {
     const command = resolveCommand(['operations', 'get-operations-by-cursor']);
 
     assert.equal(command.name, 'operations get-operations-by-cursor');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves broker-report command without context requirement', () => {
+  test('resolves broker-report command', () => {
     const command = resolveCommand(['operations', 'get-broker-report']);
 
     assert.equal(command.name, 'operations get-broker-report');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves dividends-foreign-issuer command without context requirement', () => {
+  test('resolves dividends-foreign-issuer command', () => {
     const command = resolveCommand(['operations', 'get-dividends-foreign-issuer']);
 
     assert.equal(command.name, 'operations get-dividends-foreign-issuer');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves stop-orders command without context requirement', () => {
+  test('resolves stop-orders command', () => {
     const command = resolveCommand(['stoporders', 'get-stop-orders']);
 
     assert.equal(command.name, 'stoporders get-stop-orders');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves help command without context requirement', () => {
+  test('resolves help command', () => {
     const command = resolveCommand(['help']);
 
     assert.equal(command.name, 'help');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('resolves version command without context requirement', () => {
+  test('resolves version command', () => {
     const command = resolveCommand(['version']);
 
     assert.equal(command.name, 'version');
-    assert.equal(command.requiresContext, false);
     assert.equal(typeof command.handler, 'function');
   });
 

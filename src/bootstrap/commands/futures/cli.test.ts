@@ -12,7 +12,7 @@ import {
   createFuturesCommand,
   parseFuturesFormat,
   parseFuturesInstrumentStatus,
-  parseFuturesRequest
+  createFuturesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,9 +55,9 @@ describe('futures command', () => {
     });
   });
 
-  describe('parseFuturesRequest', () => {
+  describe('createFuturesRequest', () => {
     test('returns generated futures request', () => {
-      assert.deepEqual(parseFuturesRequest(rawOptions({ 'instrument-status': 'all' })), {
+      assert.deepEqual(createFuturesRequest({ 'instrument-status': 'all' }), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });

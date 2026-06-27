@@ -13,7 +13,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createLastTradesCommand,
   parseLastTradesFormat,
-  parseLastTradesRequest
+  createLastTradesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -49,13 +49,13 @@ function lastTradesResponse(
 }
 
 describe('last-trades command', () => {
-  describe('parseLastTradesRequest', () => {
+  describe('createLastTradesRequest', () => {
     test('returns generated getLastTrades request', () => {
-      const request = parseLastTradesRequest(rawOptions({
+      const request = createLastTradesRequest({
         'instrument-id': 'BBG00QPYJ5H0',
         from: '2026-06-19T10:00:00.000Z',
         to: '2026-06-19T11:00:00.000Z'
-      }));
+      });
 
       assert.equal(request.instrumentId, 'BBG00QPYJ5H0');
       assert.equal(request.figi, '');
@@ -65,11 +65,11 @@ describe('last-trades command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseLastTradesRequest(rawOptions({
+        () => createLastTradesRequest({
           'instrument-id': 'BBG00QPYJ5H0',
           from: '2026-06-19T11:00:00.000Z',
           to: '2026-06-19T10:00:00.000Z'
-        })),
+        }),
         /Expected '--from' to be earlier/
       );
     });

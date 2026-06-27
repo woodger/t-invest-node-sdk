@@ -14,7 +14,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOrdersCommand,
   parseOrdersFormat,
-  parseOrdersRequest
+  createOrdersRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -60,11 +60,11 @@ function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersRe
 }
 
 describe('orders command', () => {
-  describe('parseOrdersRequest', () => {
+  describe('createOrdersRequest', () => {
     test('returns generated getOrders request', () => {
-      const request = parseOrdersRequest(rawOptions({
+      const request = createOrdersRequest({
         'account-id': 'account-id'
-      }));
+      });
 
       assert.equal(request.accountId, 'account-id');
     });

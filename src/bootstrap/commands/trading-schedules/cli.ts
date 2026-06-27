@@ -3,9 +3,9 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -27,7 +27,6 @@ type TradingSchedulesSdk = {
 
 type TradingSchedulesSdkFactory = (options: TinkoffInvestOptions) => TradingSchedulesSdk;
 
-const tradingSchedulesCommandName = 'instruments trading-schedules';
 const tradingSchedulesCommandPath = ['instruments', 'trading-schedules'] as const;
 const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -58,24 +57,13 @@ const tradingSchedulesOptionsSchema = withSdkOptions(
   tradingSchedulesFormatOptionsSchema
 );
 
-function parseTradingSchedulesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    tradingSchedulesCommandName,
-    tradingSchedulesOptionsSchema
-  );
-}
+type TradingSchedulesOptions = InferOptions<typeof tradingSchedulesOptionsSchema>;
+type TradingSchedulesRequestOptions = CommandRequestOptions<TradingSchedulesOptions, 'from' | 'to' | 'exchange'>;
 
-export function parseTradingSchedulesRequest(rawOptions: CommandRawOptions): TradingSchedulesRequest {
-  return createTradingSchedulesRequest(parseTradingSchedulesOptions(rawOptions));
-}
+
 
 export function parseTradingSchedulesFormat(rawOptions: CommandRawOptions): TradingSchedulesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    tradingSchedulesCommandName,
-    tradingSchedulesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, tradingSchedulesFormatOptionsSchema).format;
 }
 
 export function createTradingSchedulesCommand(
@@ -93,7 +81,7 @@ export function createTradingSchedulesCommand(
 export const tradingSchedulesCommand = createTradingSchedulesCommand();
 
 async function runTradingSchedulesCommand(
-  options: ReturnType<typeof parseTradingSchedulesOptions>,
+  options: TradingSchedulesOptions,
   createSdk: TradingSchedulesSdkFactory
 ): Promise<string> {
   const request = createTradingSchedulesRequest(options);
@@ -112,8 +100,8 @@ async function runTradingSchedulesCommand(
 
 export { formatTradingSchedules };
 
-function createTradingSchedulesRequest(
-  options: ReturnType<typeof parseTradingSchedulesOptions>
+export function createTradingSchedulesRequest(
+  options: TradingSchedulesRequestOptions
 ): TradingSchedulesRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');

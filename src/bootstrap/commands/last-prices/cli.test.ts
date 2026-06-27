@@ -13,7 +13,7 @@ import {
   createLastPricesCommand,
   parseLastPricesFormat,
   parseLastPricesInstrumentIds,
-  parseLastPricesRequest
+  createLastPricesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -72,11 +72,11 @@ describe('last-prices command', () => {
     });
   });
 
-  describe('parseLastPricesRequest', () => {
+  describe('createLastPricesRequest', () => {
     test('returns generated getLastPrices request', () => {
-      const request = parseLastPricesRequest(rawOptions({
+      const request = createLastPricesRequest({
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
-      }));
+      });
 
       assert.deepEqual(request.figi, []);
       assert.deepEqual(request.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);

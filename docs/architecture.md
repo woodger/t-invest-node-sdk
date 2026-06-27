@@ -100,8 +100,9 @@ CLI слой сейчас поддерживает `help`, `version` и API-ко
 `operations get-positions`, `operations get-withdraw-limits`,
 `stoporders get-stop-orders`.
 API-команды остаются тонкими bootstrap handlers:
-они валидируют CLI-контракт, создают SDK facade и передают provider response в
-reporter-модуль. Reporter-ы преобразуют generated DTO в
+`icore` валидирует raw CLI args и передает handler-у typed command options.
+Command `cli.ts` создает generated request DTO из typed options, создает SDK
+facade и передает provider response в reporter-модуль. Reporter-ы преобразуют generated DTO в
 `application/reports` contracts, выбирают command-specific представление и
 используют `infrastructure/renderers` для технического JSON/CSV/table
 rendering.

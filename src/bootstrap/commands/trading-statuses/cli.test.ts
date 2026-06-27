@@ -13,7 +13,7 @@ import {
   createTradingStatusesCommand,
   parseTradingStatusesFormat,
   parseTradingStatusesInstrumentIds,
-  parseTradingStatusesRequest
+  createTradingStatusesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -76,11 +76,11 @@ describe('trading-statuses command', () => {
     });
   });
 
-  describe('parseTradingStatusesRequest', () => {
+  describe('createTradingStatusesRequest', () => {
     test('returns generated getTradingStatuses request', () => {
-      const request = parseTradingStatusesRequest(rawOptions({
+      const request = createTradingStatusesRequest({
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
-      }));
+      });
 
       assert.deepEqual(request.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
     });

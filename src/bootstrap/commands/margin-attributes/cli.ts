@@ -3,9 +3,9 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -23,7 +23,6 @@ type MarginAttributesSdk = {
 
 type MarginAttributesSdkFactory = (options: TinkoffInvestOptions) => MarginAttributesSdk;
 
-const marginAttributesCommandName = 'users get-margin-attributes';
 const marginAttributesCommandPath = ['users', 'get-margin-attributes'] as const;
 const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -47,20 +46,13 @@ const marginAttributesOptionsSchema = withSdkOptions(
   marginAttributesFormatOptionsSchema
 );
 
-function parseMarginAttributesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, marginAttributesCommandName, marginAttributesOptionsSchema);
-}
+type MarginAttributesOptions = InferOptions<typeof marginAttributesOptionsSchema>;
+type MarginAttributesRequestOptions = CommandRequestOptions<MarginAttributesOptions, 'account-id'>;
 
-export function parseMarginAttributesRequest(rawOptions: CommandRawOptions): GetMarginAttributesRequest {
-  return createMarginAttributesRequest(parseMarginAttributesOptions(rawOptions));
-}
+
 
 export function parseMarginAttributesFormat(rawOptions: CommandRawOptions): MarginAttributesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    marginAttributesCommandName,
-    marginAttributesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, marginAttributesFormatOptionsSchema).format;
 }
 
 export function createMarginAttributesCommand(
@@ -78,7 +70,7 @@ export function createMarginAttributesCommand(
 export const marginAttributesCommand = createMarginAttributesCommand();
 
 async function runMarginAttributesCommand(
-  options: ReturnType<typeof parseMarginAttributesOptions>,
+  options: MarginAttributesOptions,
   createSdk: MarginAttributesSdkFactory
 ): Promise<string> {
   const request = createMarginAttributesRequest(options);
@@ -97,8 +89,8 @@ async function runMarginAttributesCommand(
 
 export { formatMarginAttributes };
 
-function createMarginAttributesRequest(
-  options: ReturnType<typeof parseMarginAttributesOptions>
+export function createMarginAttributesRequest(
+  options: MarginAttributesRequestOptions
 ): GetMarginAttributesRequest {
   return {
     accountId: options['account-id']

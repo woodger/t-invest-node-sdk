@@ -7,7 +7,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createAssetCommand,
   parseAssetFormat,
-  parseAssetRequest
+  createAssetRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -22,21 +22,15 @@ function response(overrides: Partial<AssetResponse> = {}): AssetResponse {
 }
 
 describe('asset command', () => {
-  describe('parseAssetRequest', () => {
+  describe('createAssetRequest', () => {
     test('returns generated getAssetBy request', () => {
-      const request = parseAssetRequest(rawOptions({ id: 'asset-uid' }));
+      const request = createAssetRequest({ id: 'asset-uid' });
 
       assert.deepEqual(request, {
         id: 'asset-uid'
       });
     });
 
-    test('requires id', () => {
-      assert.throws(
-        () => parseAssetRequest(rawOptions()),
-        /Expected required argument '--id'/
-      );
-    });
   });
 
   describe('parseAssetFormat', () => {

@@ -11,7 +11,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createTradingSchedulesCommand,
   parseTradingSchedulesFormat,
-  parseTradingSchedulesRequest
+  createTradingSchedulesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -52,13 +52,13 @@ function response(overrides: Partial<TradingSchedulesResponse> = {}): TradingSch
 }
 
 describe('trading-schedules command', () => {
-  describe('parseTradingSchedulesRequest', () => {
+  describe('createTradingSchedulesRequest', () => {
     test('returns generated tradingSchedules request', () => {
-      const request = parseTradingSchedulesRequest(rawOptions({
+      const request = createTradingSchedulesRequest({
         exchange: 'MOEX',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
-      }));
+      });
 
       assert.deepEqual(request, {
         exchange: 'MOEX',
@@ -68,20 +68,20 @@ describe('trading-schedules command', () => {
     });
 
     test('uses empty exchange when omitted', () => {
-      const request = parseTradingSchedulesRequest(rawOptions({
+      const request = createTradingSchedulesRequest({
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
-      }));
+      });
 
       assert.equal(request.exchange, '');
     });
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseTradingSchedulesRequest(rawOptions({
+        () => createTradingSchedulesRequest({
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
-        })),
+        }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });

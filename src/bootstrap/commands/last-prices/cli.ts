@@ -3,9 +3,9 @@ import type {
   GetLastPricesRequest,
   GetLastPricesResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -23,7 +23,6 @@ type LastPricesSdk = {
 
 type LastPricesSdkFactory = (options: TinkoffInvestOptions) => LastPricesSdk;
 
-const lastPricesCommandName = 'marketdata get-last-prices';
 const lastPricesCommandPath = ['marketdata', 'get-last-prices'] as const;
 const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -47,30 +46,19 @@ const lastPricesOptionsSchema = withSdkOptions(
   lastPricesFormatOptionsSchema
 );
 
-function parseLastPricesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, lastPricesCommandName, lastPricesOptionsSchema);
-}
+type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
+type LastPricesRequestOptions = CommandRequestOptions<LastPricesOptions, 'instrument-id'>;
+
 
 export function parseLastPricesInstrumentIds(rawOptions: CommandRawOptions): string[] {
-  const options = parseCommandOptions(
-    rawOptions,
-    lastPricesCommandName,
-    lastPricesInstrumentIdsOptionsSchema
-  );
+  const options = parseCommandOptions(rawOptions, lastPricesInstrumentIdsOptionsSchema);
 
   return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
-export function parseLastPricesRequest(rawOptions: CommandRawOptions): GetLastPricesRequest {
-  return createLastPricesRequest(parseLastPricesOptions(rawOptions));
-}
 
 export function parseLastPricesFormat(rawOptions: CommandRawOptions): LastPricesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    lastPricesCommandName,
-    lastPricesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, lastPricesFormatOptionsSchema).format;
 }
 
 export function createLastPricesCommand(
@@ -88,7 +76,7 @@ export function createLastPricesCommand(
 export const lastPricesCommand = createLastPricesCommand();
 
 async function runLastPricesCommand(
-  options: ReturnType<typeof parseLastPricesOptions>,
+  options: LastPricesOptions,
   createSdk: LastPricesSdkFactory
 ): Promise<string> {
   const request = createLastPricesRequest(options);
@@ -107,8 +95,8 @@ async function runLastPricesCommand(
 
 export { formatLastPrices };
 
-function createLastPricesRequest(
-  options: ReturnType<typeof parseLastPricesOptions>
+export function createLastPricesRequest(
+  options: LastPricesRequestOptions
 ): GetLastPricesRequest {
   return {
     figi: [],

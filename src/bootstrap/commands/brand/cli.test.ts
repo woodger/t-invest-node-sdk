@@ -7,7 +7,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBrandCommand,
   parseBrandFormat,
-  parseBrandRequest
+  createBrandRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -29,9 +29,9 @@ function brand(overrides: Partial<Brand> = {}): Brand {
 }
 
 describe('brand command', () => {
-  describe('parseBrandRequest', () => {
+  describe('createBrandRequest', () => {
     test('returns generated getBrandBy request', () => {
-      const request = parseBrandRequest(rawOptions({ id: 'brand-uid' }));
+      const request = createBrandRequest({ id: 'brand-uid' });
 
       assert.deepEqual(request, {
         id: 'brand-uid'

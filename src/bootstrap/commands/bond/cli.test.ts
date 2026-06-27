@@ -12,7 +12,7 @@ import {
   createBondCommand,
   parseBondFormat,
   parseBondIdType,
-  parseBondRequest
+  createBondRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,12 +55,12 @@ describe('bond command', () => {
     });
   });
 
-  describe('parseBondRequest', () => {
+  describe('createBondRequest', () => {
     test('returns generated bondBy request', () => {
-      const request = parseBondRequest(rawOptions({
+      const request = createBondRequest({
         id: 'BBG00B9XRY4J',
         'id-type': 'figi'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'BBG00B9XRY4J',
@@ -71,20 +71,20 @@ describe('bond command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseBondRequest(rawOptions({
+        () => createBondRequest({
           id: 'SU26238RMFS4',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseBondRequest(rawOptions({
+      const request = createBondRequest({
         id: 'SU26238RMFS4',
         'id-type': 'ticker',
         'class-code': 'TQOB'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'SU26238RMFS4',

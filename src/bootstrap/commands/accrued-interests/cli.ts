@@ -3,9 +3,9 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -27,7 +27,6 @@ type AccruedInterestsSdk = {
 
 type AccruedInterestsSdkFactory = (options: TinkoffInvestOptions) => AccruedInterestsSdk;
 
-const accruedInterestsCommandName = 'instruments get-accrued-interests';
 const accruedInterestsCommandPath = ['instruments', 'get-accrued-interests'] as const;
 const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -59,24 +58,13 @@ const accruedInterestsOptionsSchema = withSdkOptions(
   accruedInterestsFormatOptionsSchema
 );
 
-function parseAccruedInterestsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    accruedInterestsCommandName,
-    accruedInterestsOptionsSchema
-  );
-}
+type AccruedInterestsOptions = InferOptions<typeof accruedInterestsOptionsSchema>;
+type AccruedInterestsRequestOptions = CommandRequestOptions<AccruedInterestsOptions, 'from' | 'to' | 'figi'>;
 
-export function parseAccruedInterestsRequest(rawOptions: CommandRawOptions): GetAccruedInterestsRequest {
-  return createAccruedInterestsRequest(parseAccruedInterestsOptions(rawOptions));
-}
+
 
 export function parseAccruedInterestsFormat(rawOptions: CommandRawOptions): AccruedInterestsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    accruedInterestsCommandName,
-    accruedInterestsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, accruedInterestsFormatOptionsSchema).format;
 }
 
 export function createAccruedInterestsCommand(
@@ -94,7 +82,7 @@ export function createAccruedInterestsCommand(
 export const accruedInterestsCommand = createAccruedInterestsCommand();
 
 async function runAccruedInterestsCommand(
-  options: ReturnType<typeof parseAccruedInterestsOptions>,
+  options: AccruedInterestsOptions,
   createSdk: AccruedInterestsSdkFactory
 ): Promise<string> {
   const request = createAccruedInterestsRequest(options);
@@ -113,8 +101,8 @@ async function runAccruedInterestsCommand(
 
 export { formatAccruedInterests };
 
-function createAccruedInterestsRequest(
-  options: ReturnType<typeof parseAccruedInterestsOptions>
+export function createAccruedInterestsRequest(
+  options: AccruedInterestsRequestOptions
 ): GetAccruedInterestsRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');

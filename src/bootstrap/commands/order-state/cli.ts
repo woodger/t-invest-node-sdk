@@ -3,9 +3,9 @@ import type {
   GetOrderStateRequest,
   OrderState
 } from '../../../generated/orders';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrderState, orderStateFormats, type OrderStateFormat } from './reporter';
@@ -19,7 +19,6 @@ type OrderStateSdk = {
 
 type OrderStateSdkFactory = (options: TinkoffInvestOptions) => OrderStateSdk;
 
-const orderStateCommandName = 'orders get-order-state';
 const orderStateCommandPath = ['orders', 'get-order-state'] as const;
 const defaultOrderStateSdkFactory: OrderStateSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -47,20 +46,13 @@ const orderStateOptionsSchema = withSdkOptions(
   orderStateFormatOptionsSchema
 );
 
-function parseOrderStateOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, orderStateCommandName, orderStateOptionsSchema);
-}
+type OrderStateOptions = InferOptions<typeof orderStateOptionsSchema>;
+type OrderStateRequestOptions = CommandRequestOptions<OrderStateOptions, 'account-id' | 'order-id'>;
 
-export function parseOrderStateRequest(rawOptions: CommandRawOptions): GetOrderStateRequest {
-  return createOrderStateRequest(parseOrderStateOptions(rawOptions));
-}
+
 
 export function parseOrderStateFormat(rawOptions: CommandRawOptions): OrderStateFormat {
-  return parseCommandOptions(
-    rawOptions,
-    orderStateCommandName,
-    orderStateFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, orderStateFormatOptionsSchema).format;
 }
 
 export function createOrderStateCommand(
@@ -78,7 +70,7 @@ export function createOrderStateCommand(
 export const orderStateCommand = createOrderStateCommand();
 
 async function runOrderStateCommand(
-  options: ReturnType<typeof parseOrderStateOptions>,
+  options: OrderStateOptions,
   createSdk: OrderStateSdkFactory
 ): Promise<string> {
   const request = createOrderStateRequest(options);
@@ -97,8 +89,8 @@ async function runOrderStateCommand(
 
 export { formatOrderState };
 
-function createOrderStateRequest(
-  options: ReturnType<typeof parseOrderStateOptions>
+export function createOrderStateRequest(
+  options: OrderStateRequestOptions
 ): GetOrderStateRequest {
   return {
     accountId: options['account-id'],

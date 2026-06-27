@@ -1,6 +1,6 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -16,7 +16,6 @@ type CountriesSdk = {
 
 type CountriesSdkFactory = (options: TinkoffInvestOptions) => CountriesSdk;
 
-const countriesCommandName = 'instruments get-countries';
 const countriesCommandPath = ['instruments', 'get-countries'] as const;
 const defaultCountriesSdkFactory: CountriesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -28,12 +27,10 @@ const countriesOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseCountriesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, countriesCommandName, countriesOptionsSchema);
-}
+type CountriesOptions = InferOptions<typeof countriesOptionsSchema>;
 
 export function parseCountriesFormat(rawOptions: CommandRawOptions): CountriesFormat {
-  return parseCountriesOptions(rawOptions).format;
+  return parseCommandOptions(rawOptions, countriesOptionsSchema).format;
 }
 
 export function createCountriesCommand(
@@ -51,7 +48,7 @@ export function createCountriesCommand(
 export const countriesCommand = createCountriesCommand();
 
 async function runCountriesCommand(
-  options: ReturnType<typeof parseCountriesOptions>,
+  options: CountriesOptions,
   createSdk: CountriesSdkFactory
 ): Promise<string> {
   const { format } = options;

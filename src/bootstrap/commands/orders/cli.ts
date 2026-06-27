@@ -1,8 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrders, ordersFormats, type OrdersFormat } from './reporter';
@@ -16,7 +16,6 @@ type OrdersSdk = {
 
 type OrdersSdkFactory = (options: TinkoffInvestOptions) => OrdersSdk;
 
-const ordersCommandName = 'orders get-orders';
 const ordersCommandPath = ['orders', 'get-orders'] as const;
 const defaultOrdersSdkFactory: OrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -40,20 +39,13 @@ const ordersOptionsSchema = withSdkOptions(
   ordersFormatOptionsSchema
 );
 
-function parseOrdersOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, ordersCommandName, ordersOptionsSchema);
-}
+type OrdersOptions = InferOptions<typeof ordersOptionsSchema>;
+type OrdersRequestOptions = CommandRequestOptions<OrdersOptions, 'account-id'>;
 
-export function parseOrdersRequest(rawOptions: CommandRawOptions): GetOrdersRequest {
-  return createOrdersRequest(parseOrdersOptions(rawOptions));
-}
+
 
 export function parseOrdersFormat(rawOptions: CommandRawOptions): OrdersFormat {
-  return parseCommandOptions(
-    rawOptions,
-    ordersCommandName,
-    ordersFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, ordersFormatOptionsSchema).format;
 }
 
 export function createOrdersCommand(
@@ -71,7 +63,7 @@ export function createOrdersCommand(
 export const ordersCommand = createOrdersCommand();
 
 async function runOrdersCommand(
-  options: ReturnType<typeof parseOrdersOptions>,
+  options: OrdersOptions,
   createSdk: OrdersSdkFactory
 ): Promise<string> {
   const request = createOrdersRequest(options);
@@ -90,8 +82,8 @@ async function runOrdersCommand(
 
 export { formatOrders };
 
-function createOrdersRequest(
-  options: ReturnType<typeof parseOrdersOptions>
+export function createOrdersRequest(
+  options: OrdersRequestOptions
 ): GetOrdersRequest {
   return {
     accountId: options['account-id']

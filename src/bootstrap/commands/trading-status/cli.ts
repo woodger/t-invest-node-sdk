@@ -3,9 +3,9 @@ import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -23,7 +23,6 @@ type TradingStatusSdk = {
 
 type TradingStatusSdkFactory = (options: TinkoffInvestOptions) => TradingStatusSdk;
 
-const tradingStatusCommandName = 'marketdata get-trading-status';
 const tradingStatusCommandPath = ['marketdata', 'get-trading-status'] as const;
 const defaultTradingStatusSdkFactory: TradingStatusSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -47,20 +46,13 @@ const tradingStatusOptionsSchema = withSdkOptions(
   tradingStatusFormatOptionsSchema
 );
 
-function parseTradingStatusOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, tradingStatusCommandName, tradingStatusOptionsSchema);
-}
+type TradingStatusOptions = InferOptions<typeof tradingStatusOptionsSchema>;
+type TradingStatusRequestOptions = CommandRequestOptions<TradingStatusOptions, 'instrument-id'>;
 
-export function parseTradingStatusRequest(rawOptions: CommandRawOptions): GetTradingStatusRequest {
-  return createTradingStatusRequest(parseTradingStatusOptions(rawOptions));
-}
+
 
 export function parseTradingStatusFormat(rawOptions: CommandRawOptions): TradingStatusFormat {
-  return parseCommandOptions(
-    rawOptions,
-    tradingStatusCommandName,
-    tradingStatusFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, tradingStatusFormatOptionsSchema).format;
 }
 
 export function createTradingStatusCommand(
@@ -78,7 +70,7 @@ export function createTradingStatusCommand(
 export const tradingStatusCommand = createTradingStatusCommand();
 
 async function runTradingStatusCommand(
-  options: ReturnType<typeof parseTradingStatusOptions>,
+  options: TradingStatusOptions,
   createSdk: TradingStatusSdkFactory
 ): Promise<string> {
   const request = createTradingStatusRequest(options);
@@ -97,8 +89,8 @@ async function runTradingStatusCommand(
 
 export { formatTradingStatus };
 
-function createTradingStatusRequest(
-  options: ReturnType<typeof parseTradingStatusOptions>
+export function createTradingStatusRequest(
+  options: TradingStatusRequestOptions
 ): GetTradingStatusRequest {
   return {
     figi: '',

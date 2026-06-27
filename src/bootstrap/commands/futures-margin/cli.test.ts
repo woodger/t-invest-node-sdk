@@ -10,7 +10,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createFuturesMarginCommand,
   parseFuturesMarginFormat,
-  parseFuturesMarginRequest
+  createFuturesMarginRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -42,11 +42,11 @@ function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFutures
 }
 
 describe('futures-margin command', () => {
-  describe('parseFuturesMarginRequest', () => {
+  describe('createFuturesMarginRequest', () => {
     test('returns generated getFuturesMargin request', () => {
-      const request = parseFuturesMarginRequest(rawOptions({
+      const request = createFuturesMarginRequest({
         figi: 'FUTFIGI'
-      }));
+      });
 
       assert.deepEqual(request, {
         figi: 'FUTFIGI'

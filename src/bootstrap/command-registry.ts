@@ -72,7 +72,6 @@ type CliCommand = (args: readonly string[]) => CliCommandOutput | Promise<CliCom
 export type ResolvedCommand = {
   name: CommandName;
   path: readonly string[];
-  requiresContext: boolean;
   handler: CliCommand;
 };
 
@@ -184,7 +183,6 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   return {
     name: commandName,
     path: resolvedCommand.path,
-    requiresContext: command.requiresContext,
     handler: command.handler
   };
 }
@@ -198,150 +196,54 @@ type CommandLineDefinition = CommandDefinition<
 
 const commandLineRegistry = defineCommandRegistry(
   [
-    defineCommandLineCommand(accountsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(userInfoCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(marginAttributesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(userTariffCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(candlesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(ordersCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(orderStateCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(stopOrdersCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(closePricesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(lastPricesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(lastTradesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(orderBookCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(tradingStatusCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(tradingStatusesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(operationsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(operationsByCursorCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(brokerReportCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(dividendsForeignIssuerCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(portfolioCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(positionsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(withdrawLimitsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(brandsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(countriesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(currenciesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(bondsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(etfsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(futuresCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(sharesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(bondCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(etfCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(futureCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(shareCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(assetCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(brandCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(currencyCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(instrumentCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(optionCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(assetsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(favoritesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(findInstrumentCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(futuresMarginCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(optionsByCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(accruedInterestsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(bondCouponsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(dividendsCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(tradingSchedulesCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(helpCommand, {
-      requiresContext: false
-    }),
-    defineCommandLineCommand(versionCommand, {
-      requiresContext: false
-    })
+    defineCommandLineCommand(accountsCommand),
+    defineCommandLineCommand(userInfoCommand),
+    defineCommandLineCommand(marginAttributesCommand),
+    defineCommandLineCommand(userTariffCommand),
+    defineCommandLineCommand(candlesCommand),
+    defineCommandLineCommand(ordersCommand),
+    defineCommandLineCommand(orderStateCommand),
+    defineCommandLineCommand(stopOrdersCommand),
+    defineCommandLineCommand(closePricesCommand),
+    defineCommandLineCommand(lastPricesCommand),
+    defineCommandLineCommand(lastTradesCommand),
+    defineCommandLineCommand(orderBookCommand),
+    defineCommandLineCommand(tradingStatusCommand),
+    defineCommandLineCommand(tradingStatusesCommand),
+    defineCommandLineCommand(operationsCommand),
+    defineCommandLineCommand(operationsByCursorCommand),
+    defineCommandLineCommand(brokerReportCommand),
+    defineCommandLineCommand(dividendsForeignIssuerCommand),
+    defineCommandLineCommand(portfolioCommand),
+    defineCommandLineCommand(positionsCommand),
+    defineCommandLineCommand(withdrawLimitsCommand),
+    defineCommandLineCommand(brandsCommand),
+    defineCommandLineCommand(countriesCommand),
+    defineCommandLineCommand(currenciesCommand),
+    defineCommandLineCommand(bondsCommand),
+    defineCommandLineCommand(etfsCommand),
+    defineCommandLineCommand(futuresCommand),
+    defineCommandLineCommand(sharesCommand),
+    defineCommandLineCommand(bondCommand),
+    defineCommandLineCommand(etfCommand),
+    defineCommandLineCommand(futureCommand),
+    defineCommandLineCommand(shareCommand),
+    defineCommandLineCommand(assetCommand),
+    defineCommandLineCommand(brandCommand),
+    defineCommandLineCommand(currencyCommand),
+    defineCommandLineCommand(instrumentCommand),
+    defineCommandLineCommand(optionCommand),
+    defineCommandLineCommand(assetsCommand),
+    defineCommandLineCommand(favoritesCommand),
+    defineCommandLineCommand(findInstrumentCommand),
+    defineCommandLineCommand(futuresMarginCommand),
+    defineCommandLineCommand(optionsByCommand),
+    defineCommandLineCommand(accruedInterestsCommand),
+    defineCommandLineCommand(bondCouponsCommand),
+    defineCommandLineCommand(dividendsCommand),
+    defineCommandLineCommand(tradingSchedulesCommand),
+    defineCommandLineCommand(helpCommand),
+    defineCommandLineCommand(versionCommand)
   ]
 );
 
@@ -351,12 +253,10 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
     undefined,
     CliCommandOutput,
     readonly [string, ...string[]]
-  >,
-  metadata: Pick<RegisteredCommand, 'requiresContext'>
+  >
 ): CommandLineDefinition {
   return {
     ...command,
-    requiresContext: metadata.requiresContext,
     handler(args) {
       // Resolved commands are still executed from raw CLI args, so `icore`
       // remains the single owner of path, extra positional, and option parsing.

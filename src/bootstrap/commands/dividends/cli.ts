@@ -3,9 +3,9 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -23,7 +23,6 @@ type DividendsSdk = {
 
 type DividendsSdkFactory = (options: TinkoffInvestOptions) => DividendsSdk;
 
-const dividendsCommandName = 'instruments get-dividends';
 const dividendsCommandPath = ['instruments', 'get-dividends'] as const;
 const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -55,20 +54,13 @@ const dividendsOptionsSchema = withSdkOptions(
   dividendsFormatOptionsSchema
 );
 
-function parseDividendsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, dividendsCommandName, dividendsOptionsSchema);
-}
+type DividendsOptions = InferOptions<typeof dividendsOptionsSchema>;
+type DividendsRequestOptions = CommandRequestOptions<DividendsOptions, 'from' | 'to' | 'figi'>;
 
-export function parseDividendsRequest(rawOptions: CommandRawOptions): GetDividendsRequest {
-  return createDividendsRequest(parseDividendsOptions(rawOptions));
-}
+
 
 export function parseDividendsFormat(rawOptions: CommandRawOptions): DividendsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    dividendsCommandName,
-    dividendsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, dividendsFormatOptionsSchema).format;
 }
 
 export function createDividendsCommand(
@@ -86,7 +78,7 @@ export function createDividendsCommand(
 export const dividendsCommand = createDividendsCommand();
 
 async function runDividendsCommand(
-  options: ReturnType<typeof parseDividendsOptions>,
+  options: DividendsOptions,
   createSdk: DividendsSdkFactory
 ): Promise<string> {
   const request = createDividendsRequest(options);
@@ -105,8 +97,8 @@ async function runDividendsCommand(
 
 export { formatDividends };
 
-function createDividendsRequest(
-  options: ReturnType<typeof parseDividendsOptions>
+export function createDividendsRequest(
+  options: DividendsRequestOptions
 ): GetDividendsRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');

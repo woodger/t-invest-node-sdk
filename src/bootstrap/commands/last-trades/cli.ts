@@ -3,9 +3,9 @@ import type {
   GetLastTradesRequest,
   GetLastTradesResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -23,7 +23,6 @@ type LastTradesSdk = {
 
 type LastTradesSdkFactory = (options: TinkoffInvestOptions) => LastTradesSdk;
 
-const lastTradesCommandName = 'marketdata get-last-trades';
 const lastTradesCommandPath = ['marketdata', 'get-last-trades'] as const;
 const defaultLastTradesSdkFactory: LastTradesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -55,20 +54,13 @@ const lastTradesOptionsSchema = withSdkOptions(
   lastTradesFormatOptionsSchema
 );
 
-function parseLastTradesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, lastTradesCommandName, lastTradesOptionsSchema);
-}
+type LastTradesOptions = InferOptions<typeof lastTradesOptionsSchema>;
+type LastTradesRequestOptions = CommandRequestOptions<LastTradesOptions, 'instrument-id' | 'from' | 'to'>;
 
-export function parseLastTradesRequest(rawOptions: CommandRawOptions): GetLastTradesRequest {
-  return createLastTradesRequest(parseLastTradesOptions(rawOptions));
-}
+
 
 export function parseLastTradesFormat(rawOptions: CommandRawOptions): LastTradesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    lastTradesCommandName,
-    lastTradesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, lastTradesFormatOptionsSchema).format;
 }
 
 export function createLastTradesCommand(
@@ -86,7 +78,7 @@ export function createLastTradesCommand(
 export const lastTradesCommand = createLastTradesCommand();
 
 async function runLastTradesCommand(
-  options: ReturnType<typeof parseLastTradesOptions>,
+  options: LastTradesOptions,
   createSdk: LastTradesSdkFactory
 ): Promise<string> {
   const request = createLastTradesRequest(options);
@@ -105,8 +97,8 @@ async function runLastTradesCommand(
 
 export { formatLastTrades };
 
-function createLastTradesRequest(
-  options: ReturnType<typeof parseLastTradesOptions>
+export function createLastTradesRequest(
+  options: LastTradesRequestOptions
 ): GetLastTradesRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');

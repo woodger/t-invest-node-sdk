@@ -3,9 +3,9 @@ import type {
   GetOrderBookRequest,
   GetOrderBookResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrderBook, orderBookFormats, type OrderBookFormat } from './reporter';
@@ -19,7 +19,6 @@ type OrderBookSdk = {
 
 type OrderBookSdkFactory = (options: TinkoffInvestOptions) => OrderBookSdk;
 
-const orderBookCommandName = 'marketdata get-order-book';
 const orderBookCommandPath = ['marketdata', 'get-order-book'] as const;
 const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -53,38 +52,21 @@ const orderBookOptionsSchema = withSdkOptions(
   orderBookFormatOptionsSchema
 );
 
-function parseOrderBookOptions(rawOptions: CommandRawOptions) {
-  try {
-    return parseCommandOptions(rawOptions, orderBookCommandName, orderBookOptionsSchema);
-  }
-  catch (error) {
-    throw normalizeOrderBookDepthError(error);
-  }
-}
+type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
+type OrderBookRequestOptions = CommandRequestOptions<OrderBookOptions, 'instrument-id' | 'depth'>;
 
 export function parseOrderBookDepth(rawOptions: CommandRawOptions): number {
   try {
-    return parseCommandOptions(
-      rawOptions,
-      orderBookCommandName,
-      orderBookDepthOptionsSchema
-    ).depth;
+    return parseCommandOptions(rawOptions, orderBookDepthOptionsSchema).depth;
   }
   catch (error) {
     throw normalizeOrderBookDepthError(error);
   }
 }
 
-export function parseOrderBookRequest(rawOptions: CommandRawOptions): GetOrderBookRequest {
-  return createOrderBookRequest(parseOrderBookOptions(rawOptions));
-}
 
 export function parseOrderBookFormat(rawOptions: CommandRawOptions): OrderBookFormat {
-  return parseCommandOptions(
-    rawOptions,
-    orderBookCommandName,
-    orderBookFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, orderBookFormatOptionsSchema).format;
 }
 
 export function createOrderBookCommand(
@@ -102,7 +84,7 @@ export function createOrderBookCommand(
 export const orderBookCommand = createOrderBookCommand();
 
 async function runOrderBookCommand(
-  options: ReturnType<typeof parseOrderBookOptions>,
+  options: OrderBookOptions,
   createSdk: OrderBookSdkFactory
 ): Promise<string> {
   const request = createOrderBookRequest(options);
@@ -121,8 +103,8 @@ async function runOrderBookCommand(
 
 export { formatOrderBook };
 
-function createOrderBookRequest(
-  options: ReturnType<typeof parseOrderBookOptions>
+export function createOrderBookRequest(
+  options: OrderBookRequestOptions
 ): GetOrderBookRequest {
   return {
     figi: '',

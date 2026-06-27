@@ -1,8 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Brand, GetBrandRequest } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { brandFormats, formatBrand, type BrandFormat } from './reporter';
@@ -16,7 +16,6 @@ type BrandSdk = {
 
 type BrandSdkFactory = (options: TinkoffInvestOptions) => BrandSdk;
 
-const brandCommandName = 'instruments get-brand-by';
 const brandCommandPath = ['instruments', 'get-brand-by'] as const;
 const defaultBrandSdkFactory: BrandSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -40,20 +39,13 @@ const brandOptionsSchema = withSdkOptions(
   brandFormatOptionsSchema
 );
 
-function parseBrandOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, brandCommandName, brandOptionsSchema);
-}
+type BrandOptions = InferOptions<typeof brandOptionsSchema>;
+type BrandRequestOptions = CommandRequestOptions<BrandOptions, 'id'>;
 
-export function parseBrandRequest(rawOptions: CommandRawOptions): GetBrandRequest {
-  return createBrandRequest(parseBrandOptions(rawOptions));
-}
+
 
 export function parseBrandFormat(rawOptions: CommandRawOptions): BrandFormat {
-  return parseCommandOptions(
-    rawOptions,
-    brandCommandName,
-    brandFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, brandFormatOptionsSchema).format;
 }
 
 export function createBrandCommand(
@@ -71,7 +63,7 @@ export function createBrandCommand(
 export const brandCommand = createBrandCommand();
 
 async function runBrandCommand(
-  options: ReturnType<typeof parseBrandOptions>,
+  options: BrandOptions,
   createSdk: BrandSdkFactory
 ): Promise<string> {
   const request = createBrandRequest(options);
@@ -90,8 +82,8 @@ async function runBrandCommand(
 
 export { formatBrand };
 
-function createBrandRequest(
-  options: ReturnType<typeof parseBrandOptions>
+export function createBrandRequest(
+  options: BrandRequestOptions
 ): GetBrandRequest {
   return {
     id: options.id

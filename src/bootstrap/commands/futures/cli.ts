@@ -11,7 +11,6 @@ import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
-  parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
 import { formatFutures, futuresFormats, type FuturesFormat } from './reporter';
@@ -25,7 +24,6 @@ type FuturesSdk = {
 
 type FuturesSdkFactory = (options: TinkoffInvestOptions) => FuturesSdk;
 
-const futuresCommandName = 'instruments futures';
 const futuresCommandPath = ['instruments', 'futures'] as const;
 const defaultFuturesSdkFactory: FuturesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const futuresOptionsSchema = withSdkOptions(
 type FuturesOptions = InferOptions<typeof futuresOptionsSchema>;
 
 export const parseFuturesInstrumentStatus = parseInstrumentStatus;
-export const parseFuturesRequest = parseInstrumentsRequest;
+export const createFuturesRequest = createInstrumentsRequestFromOptions;
 
 export function parseFuturesFormat(rawOptions: CommandRawOptions): FuturesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    futuresCommandName,
-    futuresFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, futuresFormatOptionsSchema).format;
 }
 
 export function createFuturesCommand(

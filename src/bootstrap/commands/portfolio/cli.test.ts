@@ -13,7 +13,7 @@ import {
   createPortfolioCommand,
   parsePortfolioCurrency,
   parsePortfolioFormat,
-  parsePortfolioRequest
+  createPortfolioRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -72,12 +72,12 @@ describe('portfolio command', () => {
     });
   });
 
-  describe('parsePortfolioRequest', () => {
+  describe('createPortfolioRequest', () => {
     test('returns generated getPortfolio request', () => {
-      const request = parsePortfolioRequest(rawOptions({
+      const request = createPortfolioRequest({
         'account-id': 'account-id',
         currency: 'usd'
-      }));
+      });
 
       assert.equal(request.accountId, 'account-id');
       assert.equal(request.currency, PortfolioCurrency.USD);

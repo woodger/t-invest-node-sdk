@@ -284,10 +284,24 @@ src/infrastructure
 `cli.ts` сейчас отвечает за:
 
 - whitelist CLI args;
-- разбор command-specific flags;
+- разбор command-specific flags через декларативные `icore` schemas;
+- mapping typed command options в generated request DTO;
 - создание SDK facade;
 - вызов API;
 - закрытие SDK.
+
+Внутри command module нужно различать два вида helper-ов:
+
+```text
+parse*          -> raw CLI option parsing / focused parser checks
+create*Request -> typed command options -> generated request DTO
+```
+
+`parse*` helper может принимать raw option map, если тестируется именно CLI
+parser behavior: format, enum, comma-separated list или normalization error.
+`create*Request` не должен принимать raw CLI args. Он получает typed options,
+которые уже прошли `icore`, и отвечает за generated request DTO shape и
+request-level validation вроде date range или mutually exclusive modes.
 
 `reporter.ts` сейчас отвечает за:
 
@@ -310,6 +324,7 @@ adapter-модулей. Они не задают публичный CLI path: п
 ## Что Уже Хорошо
 
 - CLI args validation отделена в `bootstrap/args`;
+- raw CLI parsing отделен от typed generated request mapping;
 - stable output shape вынесен в `application/reports`;
 - команды закрывают SDK в `finally`;
 - formatting logic вынесена из `cli.ts`;

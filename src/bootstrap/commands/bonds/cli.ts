@@ -11,7 +11,6 @@ import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
-  parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
 import { bondsFormats, formatBonds, type BondsFormat } from './reporter';
@@ -25,7 +24,6 @@ type BondsSdk = {
 
 type BondsSdkFactory = (options: TinkoffInvestOptions) => BondsSdk;
 
-const bondsCommandName = 'instruments bonds';
 const bondsCommandPath = ['instruments', 'bonds'] as const;
 const defaultBondsSdkFactory: BondsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const bondsOptionsSchema = withSdkOptions(
 type BondsOptions = InferOptions<typeof bondsOptionsSchema>;
 
 export const parseBondsInstrumentStatus = parseInstrumentStatus;
-export const parseBondsRequest = parseInstrumentsRequest;
+export const createBondsRequest = createInstrumentsRequestFromOptions;
 
 export function parseBondsFormat(rawOptions: CommandRawOptions): BondsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    bondsCommandName,
-    bondsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, bondsFormatOptionsSchema).format;
 }
 
 export function createBondsCommand(

@@ -12,7 +12,6 @@ import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-  parseInstrumentLookupRequest
 } from '../instruments-args';
 import { currencyFormats, formatCurrency, type CurrencyFormat } from './reporter';
 
@@ -25,7 +24,6 @@ type CurrencySdk = {
 
 type CurrencySdkFactory = (options: TinkoffInvestOptions) => CurrencySdk;
 
-const currencyCommandName = 'instruments currency-by';
 const currencyCommandPath = ['instruments', 'currency-by'] as const;
 const defaultCurrencySdkFactory: CurrencySdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const currencyOptionsSchema = withSdkOptions(
 type CurrencyOptions = InferOptions<typeof currencyOptionsSchema>;
 
 export const parseCurrencyIdType = parseInstrumentLookupIdType;
-export const parseCurrencyRequest = parseInstrumentLookupRequest;
+export const createCurrencyRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseCurrencyFormat(rawOptions: CommandRawOptions): CurrencyFormat {
-  return parseCommandOptions(
-    rawOptions,
-    currencyCommandName,
-    currencyFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, currencyFormatOptionsSchema).format;
 }
 
 export function createCurrencyCommand(

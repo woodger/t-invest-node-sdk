@@ -11,7 +11,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createWithdrawLimitsCommand,
   parseWithdrawLimitsFormat,
-  parseWithdrawLimitsRequest
+  createWithdrawLimitsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -38,11 +38,11 @@ function withdrawLimitsResponse(
 }
 
 describe('withdraw-limits command', () => {
-  describe('parseWithdrawLimitsRequest', () => {
+  describe('createWithdrawLimitsRequest', () => {
     test('returns generated getWithdrawLimits request', () => {
-      const request = parseWithdrawLimitsRequest(rawOptions({
+      const request = createWithdrawLimitsRequest({
         'account-id': 'account-id'
-      }));
+      });
 
       assert.deepEqual(request, {
         accountId: 'account-id'

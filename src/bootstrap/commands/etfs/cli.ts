@@ -11,7 +11,6 @@ import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
-  parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
 import { etfsFormats, formatEtfs, type EtfsFormat } from './reporter';
@@ -25,7 +24,6 @@ type EtfsSdk = {
 
 type EtfsSdkFactory = (options: TinkoffInvestOptions) => EtfsSdk;
 
-const etfsCommandName = 'instruments etfs';
 const etfsCommandPath = ['instruments', 'etfs'] as const;
 const defaultEtfsSdkFactory: EtfsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const etfsOptionsSchema = withSdkOptions(
 type EtfsOptions = InferOptions<typeof etfsOptionsSchema>;
 
 export const parseEtfsInstrumentStatus = parseInstrumentStatus;
-export const parseEtfsRequest = parseInstrumentsRequest;
+export const createEtfsRequest = createInstrumentsRequestFromOptions;
 
 export function parseEtfsFormat(rawOptions: CommandRawOptions): EtfsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    etfsCommandName,
-    etfsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, etfsFormatOptionsSchema).format;
 }
 
 export function createEtfsCommand(

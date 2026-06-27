@@ -9,8 +9,8 @@ import {
   instrumentLookupArgNames,
   instrumentStatusArgNames,
   parseInstrumentLookupIdType,
-  parseInstrumentLookupRequest,
-  parseInstrumentsRequest,
+  createInstrumentLookupRequestFromOptions,
+  createInstrumentsRequestFromOptions,
   parseInstrumentStatus
 } from './instruments-args';
 
@@ -55,12 +55,12 @@ describe('instruments args', () => {
     });
   });
 
-  describe('parseInstrumentLookupRequest', () => {
+  describe('createInstrumentLookupRequestFromOptions', () => {
     test('returns generated instrument lookup request', () => {
-      assert.deepEqual(parseInstrumentLookupRequest(rawOptions({
+      assert.deepEqual(createInstrumentLookupRequestFromOptions({
         id: 'BBG004730N88',
         'id-type': 'figi'
-      })), {
+      }), {
         id: 'BBG004730N88',
         idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
         classCode: ''
@@ -69,10 +69,10 @@ describe('instruments args', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseInstrumentLookupRequest(rawOptions({
+        () => createInstrumentLookupRequestFromOptions({
           id: 'SBER',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
@@ -112,9 +112,9 @@ describe('instruments args', () => {
     });
   });
 
-  describe('parseInstrumentsRequest', () => {
+  describe('createInstrumentsRequestFromOptions', () => {
     test('returns generated instruments request', () => {
-      assert.deepEqual(parseInstrumentsRequest(rawOptions({ 'instrument-status': 'all' })), {
+      assert.deepEqual(createInstrumentsRequestFromOptions({ 'instrument-status': 'all' }), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });

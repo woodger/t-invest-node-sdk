@@ -14,7 +14,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createStopOrdersCommand,
   parseStopOrdersFormat,
-  parseStopOrdersRequest
+  createStopOrdersRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -57,11 +57,11 @@ function stopOrdersResponse(
 }
 
 describe('stop-orders command', () => {
-  describe('parseStopOrdersRequest', () => {
+  describe('createStopOrdersRequest', () => {
     test('returns generated getStopOrders request', () => {
-      const request = parseStopOrdersRequest(rawOptions({
+      const request = createStopOrdersRequest({
         'account-id': 'account-id'
-      }));
+      });
 
       assert.deepEqual(request, {
         accountId: 'account-id'

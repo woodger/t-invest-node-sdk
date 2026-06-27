@@ -1,6 +1,6 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -16,7 +16,6 @@ type UserInfoSdk = {
 
 type UserInfoSdkFactory = (options: TinkoffInvestOptions) => UserInfoSdk;
 
-const userInfoCommandName = 'users get-info';
 const userInfoCommandPath = ['users', 'get-info'] as const;
 const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -28,12 +27,10 @@ const userInfoOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseUserInfoOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, userInfoCommandName, userInfoOptionsSchema);
-}
+type UserInfoOptions = InferOptions<typeof userInfoOptionsSchema>;
 
 export function parseUserInfoFormat(rawOptions: CommandRawOptions): UserInfoFormat {
-  return parseUserInfoOptions(rawOptions).format;
+  return parseCommandOptions(rawOptions, userInfoOptionsSchema).format;
 }
 
 export function createUserInfoCommand(
@@ -51,7 +48,7 @@ export function createUserInfoCommand(
 export const userInfoCommand = createUserInfoCommand();
 
 async function runUserInfoCommand(
-  options: ReturnType<typeof parseUserInfoOptions>,
+  options: UserInfoOptions,
   createSdk: UserInfoSdkFactory
 ): Promise<string> {
   const { format } = options;

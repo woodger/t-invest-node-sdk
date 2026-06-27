@@ -4,9 +4,9 @@ import {
   type GetCandlesRequest,
   type GetCandlesResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -24,7 +24,6 @@ type CandlesSdk = {
 
 type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
 
-const candlesCommandName = 'marketdata get-candles';
 const candlesCommandPath = ['marketdata', 'get-candles'] as const;
 const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -82,30 +81,25 @@ const candlesOptionsSchema = withSdkOptions(
   candlesFormatOptionsSchema
 );
 
-function parseCandlesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, candlesCommandName, candlesOptionsSchema);
-}
+type CandlesOptions = InferOptions<typeof candlesOptionsSchema>;
+type CandlesRequestOptions = CommandRequestOptions<
+  CandlesOptions,
+  'instrument-id' |
+  'from' |
+  'to' |
+  'interval'
+>;
+
 
 export function parseCandleInterval(rawOptions: CommandRawOptions): CandleInterval {
-  const { interval } = parseCommandOptions(
-    rawOptions,
-    candlesCommandName,
-    { interval: candlesRequestOptionsSchema.interval } as const
-  );
+  const { interval } = parseCommandOptions(rawOptions, { interval: candlesRequestOptionsSchema.interval } as const);
 
   return candleIntervals[interval as CandleIntervalName];
 }
 
-export function parseCandlesRequest(rawOptions: CommandRawOptions): GetCandlesRequest {
-  return createCandlesRequest(parseCandlesOptions(rawOptions));
-}
 
 export function parseCandlesFormat(rawOptions: CommandRawOptions): CandlesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    candlesCommandName,
-    candlesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, candlesFormatOptionsSchema).format;
 }
 
 export function createCandlesCommand(
@@ -123,7 +117,7 @@ export function createCandlesCommand(
 export const candlesCommand = createCandlesCommand();
 
 async function runCandlesCommand(
-  options: ReturnType<typeof parseCandlesOptions>,
+  options: CandlesOptions,
   createSdk: CandlesSdkFactory
 ): Promise<string> {
   const request = createCandlesRequest(options);
@@ -142,8 +136,8 @@ async function runCandlesCommand(
 
 export { formatCandles };
 
-function createCandlesRequest(
-  options: ReturnType<typeof parseCandlesOptions>
+export function createCandlesRequest(
+  options: CandlesRequestOptions
 ): GetCandlesRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');
