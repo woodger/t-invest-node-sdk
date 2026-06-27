@@ -45,10 +45,10 @@ const lastTradesFormatOptionsSchema = {
   }
 } as const;
 
-const lastTradesOptionsSchema = withSdkOptions({
-  ...lastTradesRequestOptionsSchema,
-  ...lastTradesFormatOptionsSchema
-} as const);
+const lastTradesOptionsSchema = withSdkOptions(
+  lastTradesRequestOptionsSchema,
+  lastTradesFormatOptionsSchema
+);
 
 function parseLastTradesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'marketdata get-last-trades', lastTradesOptionsSchema);

@@ -31,10 +31,10 @@ const futureFormatOptionsSchema = {
   }
 } as const;
 
-const futureOptionsSchema = withSdkOptions({
-  ...instrumentLookupOptionsSchema,
-  ...futureFormatOptionsSchema
-} as const);
+const futureOptionsSchema = withSdkOptions(
+  instrumentLookupOptionsSchema,
+  futureFormatOptionsSchema
+);
 
 function parseFutureOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments future-by', futureOptionsSchema);

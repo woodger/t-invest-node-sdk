@@ -72,10 +72,10 @@ const candlesFormatOptionsSchema = {
   }
 } as const;
 
-const candlesOptionsSchema = withSdkOptions({
-  ...candlesRequestOptionsSchema,
-  ...candlesFormatOptionsSchema
-} as const);
+const candlesOptionsSchema = withSdkOptions(
+  candlesRequestOptionsSchema,
+  candlesFormatOptionsSchema
+);
 
 function parseCandlesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'marketdata get-candles', candlesOptionsSchema);

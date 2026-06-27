@@ -60,10 +60,10 @@ const findInstrumentFormatOptionsSchema = {
   }
 } as const;
 
-const findInstrumentOptionsSchema = withSdkOptions({
-  ...findInstrumentRequestOptionsSchema,
-  ...findInstrumentFormatOptionsSchema
-} as const);
+const findInstrumentOptionsSchema = withSdkOptions(
+  findInstrumentRequestOptionsSchema,
+  findInstrumentFormatOptionsSchema
+);
 
 function parseFindInstrumentOptions(argv: CliArgs) {
   return parseCommandOptions(

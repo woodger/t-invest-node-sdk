@@ -54,10 +54,10 @@ const brokerReportFormatOptionsSchema = {
   }
 } as const;
 
-const brokerReportOptionsSchema = withSdkOptions({
-  ...brokerReportRequestOptionsSchema,
-  ...brokerReportFormatOptionsSchema
-} as const);
+const brokerReportOptionsSchema = withSdkOptions(
+  brokerReportRequestOptionsSchema,
+  brokerReportFormatOptionsSchema
+);
 
 function parseBrokerReportOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'operations get-broker-report', brokerReportOptionsSchema);

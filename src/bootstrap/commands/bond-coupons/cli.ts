@@ -45,10 +45,10 @@ const bondCouponsFormatOptionsSchema = {
   }
 } as const;
 
-const bondCouponsOptionsSchema = withSdkOptions({
-  ...bondCouponsRequestOptionsSchema,
-  ...bondCouponsFormatOptionsSchema
-} as const);
+const bondCouponsOptionsSchema = withSdkOptions(
+  bondCouponsRequestOptionsSchema,
+  bondCouponsFormatOptionsSchema
+);
 
 function parseBondCouponsOptions(argv: CliArgs) {
   return parseCommandOptions(

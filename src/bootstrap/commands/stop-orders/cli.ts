@@ -33,10 +33,10 @@ const stopOrdersFormatOptionsSchema = {
   }
 } as const;
 
-const stopOrdersOptionsSchema = withSdkOptions({
-  ...stopOrdersRequestOptionsSchema,
-  ...stopOrdersFormatOptionsSchema
-} as const);
+const stopOrdersOptionsSchema = withSdkOptions(
+  stopOrdersRequestOptionsSchema,
+  stopOrdersFormatOptionsSchema
+);
 
 function parseStopOrdersOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'stoporders get-stop-orders', stopOrdersOptionsSchema);

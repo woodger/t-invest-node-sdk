@@ -25,16 +25,24 @@ describe('command mechanics', () => {
         argv({
           token: 'token',
           endpoint: 'localhost:50051',
-          format: 'json'
+          format: 'json',
+          cursor: 'next'
         }),
         'users get-accounts',
-        withSdkOptions({
-          format: {
-            type: 'string',
-            choices: ['json', 'table'],
-            default: 'table'
+        withSdkOptions(
+          {
+            format: {
+              type: 'string',
+              choices: ['json', 'table'],
+              default: 'table'
+            }
+          } as const,
+          {
+            cursor: {
+              type: 'string'
+            }
           }
-        } as const)
+        )
       );
 
       assert.deepEqual(options, {
@@ -42,7 +50,8 @@ describe('command mechanics', () => {
         endpoint: 'localhost:50051',
         'app-name': undefined,
         insecure: undefined,
-        format: 'json'
+        format: 'json',
+        cursor: 'next'
       });
     });
   });

@@ -37,10 +37,10 @@ const withdrawLimitsFormatOptionsSchema = {
   }
 } as const;
 
-const withdrawLimitsOptionsSchema = withSdkOptions({
-  ...withdrawLimitsRequestOptionsSchema,
-  ...withdrawLimitsFormatOptionsSchema
-} as const);
+const withdrawLimitsOptionsSchema = withSdkOptions(
+  withdrawLimitsRequestOptionsSchema,
+  withdrawLimitsFormatOptionsSchema
+);
 
 function parseWithdrawLimitsOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'operations get-withdraw-limits', withdrawLimitsOptionsSchema);

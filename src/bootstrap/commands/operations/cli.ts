@@ -68,11 +68,11 @@ const operationsFormatOptionsSchema = {
   }
 } as const;
 
-const operationsOptionsSchema = withSdkOptions({
-  ...operationsRequestOptionsSchema,
-  ...operationsStateOptionsSchema,
-  ...operationsFormatOptionsSchema
-} as const);
+const operationsOptionsSchema = withSdkOptions(
+  operationsRequestOptionsSchema,
+  operationsStateOptionsSchema,
+  operationsFormatOptionsSchema
+);
 
 function parseOperationsOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'operations get-operations', operationsOptionsSchema);

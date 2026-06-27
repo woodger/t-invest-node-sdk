@@ -30,10 +30,10 @@ const assetFormatOptionsSchema = {
   }
 } as const;
 
-const assetOptionsSchema = withSdkOptions({
-  ...assetRequestOptionsSchema,
-  ...assetFormatOptionsSchema
-} as const);
+const assetOptionsSchema = withSdkOptions(
+  assetRequestOptionsSchema,
+  assetFormatOptionsSchema
+);
 
 function parseAssetOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments get-asset-by', assetOptionsSchema);
