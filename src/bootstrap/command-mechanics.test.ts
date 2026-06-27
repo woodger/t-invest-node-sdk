@@ -5,6 +5,9 @@ import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   parseDateTimeOption,
+  parseOptionalNonNegativeIntegerOption,
+  parseRequiredDateTimeOption,
+  requireStringOption,
   withSdkOptions
 } from './command-mechanics';
 
@@ -107,6 +110,52 @@ describe('command mechanics', () => {
       assert.throws(
         () => parseDateTimeOption('not-a-date', 'from'),
         /Expected '--from' as date-time/
+      );
+    });
+  });
+
+  describe('requireStringOption', () => {
+    test('returns present string option', () => {
+      assert.equal(requireStringOption('value', 'name'), 'value');
+    });
+
+    test('rejects absent string option', () => {
+      assert.throws(
+        () => requireStringOption(undefined, 'name'),
+        /Expected required argument '--name'/
+      );
+    });
+  });
+
+  describe('parseRequiredDateTimeOption', () => {
+    test('returns parsed required date-time', () => {
+      assert.deepEqual(
+        parseRequiredDateTimeOption('2026-01-01T00:00:00Z', 'from'),
+        new Date('2026-01-01T00:00:00Z')
+      );
+    });
+
+    test('rejects absent date-time option', () => {
+      assert.throws(
+        () => parseRequiredDateTimeOption(undefined, 'from'),
+        /Expected required argument '--from'/
+      );
+    });
+  });
+
+  describe('parseOptionalNonNegativeIntegerOption', () => {
+    test('returns zero when option is absent', () => {
+      assert.equal(parseOptionalNonNegativeIntegerOption(undefined, 'page'), 0);
+    });
+
+    test('returns parsed non-negative integer', () => {
+      assert.equal(parseOptionalNonNegativeIntegerOption('2', 'page'), 2);
+    });
+
+    test('rejects negative integer values', () => {
+      assert.throws(
+        () => parseOptionalNonNegativeIntegerOption('-1', 'page'),
+        /Expected '--page' as integer greater than or equal to 0/
       );
     });
   });

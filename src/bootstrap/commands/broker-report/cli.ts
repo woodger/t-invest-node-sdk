@@ -3,8 +3,15 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommandOptions,
+  parseOptionalNonNegativeIntegerOption,
+  parseRequiredDateTimeOption,
+  requireStringOption,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   brokerReportFormats,
@@ -21,64 +28,69 @@ type BrokerReportSdk = {
 
 type BrokerReportSdkFactory = (options: TinkoffInvestOptions) => BrokerReportSdk;
 
-const brokerReportArgNames = new Set([
-  ...sdkOptionArgNames,
-  'account-id',
-  'from',
-  'to',
-  'task-id',
-  'page',
-  'format'
-]);
+const brokerReportRequestOptionsSchema = {
+  'account-id': {
+    type: 'string'
+  },
+  from: {
+    type: 'string'
+  },
+  to: {
+    type: 'string'
+  },
+  'task-id': {
+    type: 'string'
+  },
+  page: {
+    type: 'string'
+  }
+} as const;
 
-function hasArg(argv: CliArgs, name: string): boolean {
-  return argv[name] !== undefined;
+const brokerReportFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: brokerReportFormats,
+    default: 'table'
+  }
+} as const;
+
+const brokerReportOptionsSchema = withSdkOptions({
+  ...brokerReportRequestOptionsSchema,
+  ...brokerReportFormatOptionsSchema
+} as const);
+
+function parseBrokerReportOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'operations get-broker-report', brokerReportOptionsSchema);
 }
 
-function parsePage(argv: CliArgs): number {
-  const rawValue = ArgGuards.optionalStringArgValue(argv, 'page');
+function createBrokerReportRequest(
+  options: ReturnType<typeof parseBrokerReportOptions>
+): BrokerReportRequest {
+  const taskId = options['task-id'];
+  const hasGenerateArgs = options['account-id'] !== undefined
+    || options.from !== undefined
+    || options.to !== undefined;
 
-  if (rawValue === undefined) {
-    return 0;
-  }
-
-  if (!/^\d+$/.test(rawValue)) {
-    throw new Error("Expected '--page' as integer greater than or equal to 0");
-  }
-
-  const page = Number(rawValue);
-
-  if (!Number.isSafeInteger(page)) {
-    throw new Error("Expected '--page' as integer greater than or equal to 0");
-  }
-
-  return page;
-}
-
-export function parseBrokerReportRequest(argv: CliArgs): BrokerReportRequest {
-  const isGetMode = hasArg(argv, 'task-id');
-  const hasGenerateArgs = hasArg(argv, 'account-id') || hasArg(argv, 'from') || hasArg(argv, 'to');
-
-  if (isGetMode && hasGenerateArgs) {
+  if (taskId !== undefined && hasGenerateArgs) {
     throw new Error("Expected either '--task-id' or '--account-id' with '--from' and '--to'");
   }
 
-  if (isGetMode) {
+  if (taskId !== undefined) {
     return {
       getBrokerReportRequest: {
-        taskId: ArgGuards.requireStringArg(argv, 'task-id'),
-        page: parsePage(argv)
+        taskId,
+        page: parseOptionalNonNegativeIntegerOption(options.page, 'page')
       },
       generateBrokerReportRequest: undefined
     };
   }
 
-  if (hasArg(argv, 'page')) {
+  if (options.page !== undefined) {
     throw new Error("Expected '--page' only with '--task-id'");
   }
 
-  const from = ArgGuards.parseDateArg(argv, 'from');
-  const to = ArgGuards.parseDateArg(argv, 'to');
+  const from = parseRequiredDateTimeOption(options.from, 'from');
+  const to = parseRequiredDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
     throw new Error("Expected '--from' to be earlier than or equal to '--to'");
@@ -86,7 +98,7 @@ export function parseBrokerReportRequest(argv: CliArgs): BrokerReportRequest {
 
   return {
     generateBrokerReportRequest: {
-      accountId: ArgGuards.requireStringArg(argv, 'account-id'),
+      accountId: requireStringOption(options['account-id'], 'account-id'),
       from,
       to
     },
@@ -94,19 +106,25 @@ export function parseBrokerReportRequest(argv: CliArgs): BrokerReportRequest {
   };
 }
 
+export function parseBrokerReportRequest(argv: CliArgs): BrokerReportRequest {
+  return createBrokerReportRequest(parseBrokerReportOptions(argv));
+}
+
 export function parseBrokerReportFormat(argv: CliArgs): BrokerReportFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', brokerReportFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'operations get-broker-report',
+    brokerReportFormatOptionsSchema
+  ).format;
 }
 
 export function createBrokerReportCommand(
   createSdk: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function brokerReport(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, brokerReportArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'operations get-broker-report');
-
-    const request = parseBrokerReportRequest(argv);
-    const format = parseBrokerReportFormat(argv);
+    const options = parseBrokerReportOptions(argv);
+    const request = createBrokerReportRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
