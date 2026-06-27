@@ -149,13 +149,6 @@ export function createDividendsForeignIssuerCommand(
   });
 }
 
-export function dividendsForeignIssuer(argv: CliArgs): Promise<string> {
-  return runDividendsForeignIssuerCommand(
-    parseDividendsForeignIssuerOptions(argv),
-    defaultDividendsForeignIssuerSdkFactory
-  );
-}
-
 export const dividendsForeignIssuerCommand = createDividendsForeignIssuerCommand();
 
 async function runDividendsForeignIssuerCommand(

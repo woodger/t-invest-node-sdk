@@ -572,7 +572,7 @@ application/reports/<command-adapter>.report.ts
 
 - один и тот же SDK lifecycle повторяется в 3+ API-командах;
 - одинаковый parsing/validation pattern больше не выражается существующими
-  `ArgGuards`;
+  `icore` option schemas;
 - tests начинают дублировать setup без изменения сценария;
 - общий код получает понятную ответственность и не скрывает command-specific
   различия.

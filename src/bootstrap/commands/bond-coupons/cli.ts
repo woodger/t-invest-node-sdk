@@ -87,13 +87,6 @@ export function createBondCouponsCommand(
   });
 }
 
-export function bondCoupons(argv: CliArgs): Promise<string> {
-  return runBondCouponsCommand(
-    parseBondCouponsOptions(argv),
-    defaultBondCouponsSdkFactory
-  );
-}
-
 export const bondCouponsCommand = createBondCouponsCommand();
 
 async function runBondCouponsCommand(

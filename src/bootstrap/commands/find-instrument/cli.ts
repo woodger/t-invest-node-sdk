@@ -112,13 +112,6 @@ export function createFindInstrumentCommand(
   });
 }
 
-export function findInstrument(argv: CliArgs): Promise<string> {
-  return runFindInstrumentCommand(
-    parseFindInstrumentOptions(argv),
-    defaultFindInstrumentSdkFactory
-  );
-}
-
 export const findInstrumentCommand = createFindInstrumentCommand();
 
 async function runFindInstrumentCommand(

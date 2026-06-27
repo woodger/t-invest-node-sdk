@@ -3,7 +3,7 @@ import type {
   BondsResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const bondsOptionsSchema = withSdkOptions(
   bondsFormatOptionsSchema
 );
 
-function parseBondsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, bondsCommandName, bondsOptionsSchema);
-}
+type BondsOptions = InferOptions<typeof bondsOptionsSchema>;
 
 export const parseBondsInstrumentStatus = parseInstrumentStatus;
 export const parseBondsRequest = parseInstrumentsRequest;
@@ -69,17 +67,10 @@ export function createBondsCommand(
   });
 }
 
-export function bonds(argv: CliArgs): Promise<string> {
-  return runBondsCommand(
-    parseBondsOptions(argv),
-    defaultBondsSdkFactory
-  );
-}
-
 export const bondsCommand = createBondsCommand();
 
 async function runBondsCommand(
-  options: ReturnType<typeof parseBondsOptions>,
+  options: BondsOptions,
   createSdk: BondsSdkFactory
 ): Promise<string> {
   const { format } = options;

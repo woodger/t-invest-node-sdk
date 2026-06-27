@@ -75,13 +75,6 @@ export function createOrderStateCommand(
   });
 }
 
-export function orderState(argv: CliArgs): Promise<string> {
-  return runOrderStateCommand(
-    parseOrderStateOptions(argv),
-    defaultOrderStateSdkFactory
-  );
-}
-
 export const orderStateCommand = createOrderStateCommand();
 
 async function runOrderStateCommand(

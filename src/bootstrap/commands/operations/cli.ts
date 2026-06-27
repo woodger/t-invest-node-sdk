@@ -117,13 +117,6 @@ export function createOperationsCommand(
   });
 }
 
-export function operations(argv: CliArgs): Promise<string> {
-  return runOperationsCommand(
-    parseOperationsOptions(argv),
-    defaultOperationsSdkFactory
-  );
-}
-
 export const operationsCommand = createOperationsCommand();
 
 async function runOperationsCommand(

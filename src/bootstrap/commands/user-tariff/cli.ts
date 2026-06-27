@@ -48,13 +48,6 @@ export function createUserTariffCommand(
   });
 }
 
-export function userTariff(argv: CliArgs): Promise<string> {
-  return runUserTariffCommand(
-    parseUserTariffOptions(argv),
-    defaultUserTariffSdkFactory
-  );
-}
-
 export const userTariffCommand = createUserTariffCommand();
 
 async function runUserTariffCommand(

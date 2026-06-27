@@ -3,7 +3,7 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const currenciesOptionsSchema = withSdkOptions(
   currenciesFormatOptionsSchema
 );
 
-function parseCurrenciesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, currenciesCommandName, currenciesOptionsSchema);
-}
+type CurrenciesOptions = InferOptions<typeof currenciesOptionsSchema>;
 
 export const parseCurrenciesInstrumentStatus = parseInstrumentStatus;
 export const parseCurrenciesRequest = parseInstrumentsRequest;
@@ -69,17 +67,10 @@ export function createCurrenciesCommand(
   });
 }
 
-export function currencies(argv: CliArgs): Promise<string> {
-  return runCurrenciesCommand(
-    parseCurrenciesOptions(argv),
-    defaultCurrenciesSdkFactory
-  );
-}
-
 export const currenciesCommand = createCurrenciesCommand();
 
 async function runCurrenciesCommand(
-  options: ReturnType<typeof parseCurrenciesOptions>,
+  options: CurrenciesOptions,
   createSdk: CurrenciesSdkFactory
 ): Promise<string> {
   const { format } = options;

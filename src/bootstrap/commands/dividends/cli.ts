@@ -83,13 +83,6 @@ export function createDividendsCommand(
   });
 }
 
-export function dividends(argv: CliArgs): Promise<string> {
-  return runDividendsCommand(
-    parseDividendsOptions(argv),
-    defaultDividendsSdkFactory
-  );
-}
-
 export const dividendsCommand = createDividendsCommand();
 
 async function runDividendsCommand(

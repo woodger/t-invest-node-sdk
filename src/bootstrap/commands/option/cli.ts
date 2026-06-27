@@ -3,7 +3,7 @@ import type {
   InstrumentRequest,
   OptionResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const optionOptionsSchema = withSdkOptions(
   optionFormatOptionsSchema
 );
 
-function parseOptionOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, optionCommandName, optionOptionsSchema);
-}
+type OptionOptions = InferOptions<typeof optionOptionsSchema>;
 
 export const parseOptionIdType = parseInstrumentLookupIdType;
 export const parseOptionRequest = parseInstrumentLookupRequest;
@@ -69,17 +67,10 @@ export function createOptionCommand(
   });
 }
 
-export function option(argv: CliArgs): Promise<string> {
-  return runOptionCommand(
-    parseOptionOptions(argv),
-    defaultOptionSdkFactory
-  );
-}
-
 export const optionCommand = createOptionCommand();
 
 async function runOptionCommand(
-  options: ReturnType<typeof parseOptionOptions>,
+  options: OptionOptions,
   createSdk: OptionSdkFactory
 ): Promise<string> {
   const { format } = options;

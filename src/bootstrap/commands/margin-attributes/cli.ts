@@ -75,13 +75,6 @@ export function createMarginAttributesCommand(
   });
 }
 
-export function marginAttributes(argv: CliArgs): Promise<string> {
-  return runMarginAttributesCommand(
-    parseMarginAttributesOptions(argv),
-    defaultMarginAttributesSdkFactory
-  );
-}
-
 export const marginAttributesCommand = createMarginAttributesCommand();
 
 async function runMarginAttributesCommand(

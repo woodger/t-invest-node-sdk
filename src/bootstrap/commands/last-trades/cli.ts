@@ -83,13 +83,6 @@ export function createLastTradesCommand(
   });
 }
 
-export function lastTrades(argv: CliArgs): Promise<string> {
-  return runLastTradesCommand(
-    parseLastTradesOptions(argv),
-    defaultLastTradesSdkFactory
-  );
-}
-
 export const lastTradesCommand = createLastTradesCommand();
 
 async function runLastTradesCommand(

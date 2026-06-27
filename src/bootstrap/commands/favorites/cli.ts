@@ -48,13 +48,6 @@ export function createFavoritesCommand(
   });
 }
 
-export function favorites(argv: CliArgs): Promise<string> {
-  return runFavoritesCommand(
-    parseFavoritesOptions(argv),
-    defaultFavoritesSdkFactory
-  );
-}
-
 export const favoritesCommand = createFavoritesCommand();
 
 async function runFavoritesCommand(

@@ -93,13 +93,6 @@ export function createTradingStatusesCommand(
   });
 }
 
-export function tradingStatuses(argv: CliArgs): Promise<string> {
-  return runTradingStatusesCommand(
-    parseTradingStatusesOptions(argv),
-    defaultTradingStatusesSdkFactory
-  );
-}
-
 export const tradingStatusesCommand = createTradingStatusesCommand();
 
 async function runTradingStatusesCommand(

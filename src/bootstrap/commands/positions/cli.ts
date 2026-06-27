@@ -68,13 +68,6 @@ export function createPositionsCommand(
   });
 }
 
-export function positions(argv: CliArgs): Promise<string> {
-  return runPositionsCommand(
-    parsePositionsOptions(argv),
-    defaultPositionsSdkFactory
-  );
-}
-
 export const positionsCommand = createPositionsCommand();
 
 async function runPositionsCommand(

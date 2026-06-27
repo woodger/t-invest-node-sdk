@@ -3,7 +3,7 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const shareOptionsSchema = withSdkOptions(
   shareFormatOptionsSchema
 );
 
-function parseShareOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, shareCommandName, shareOptionsSchema);
-}
+type ShareOptions = InferOptions<typeof shareOptionsSchema>;
 
 export const parseShareIdType = parseInstrumentLookupIdType;
 export const parseShareRequest = parseInstrumentLookupRequest;
@@ -69,17 +67,10 @@ export function createShareCommand(
   });
 }
 
-export function share(argv: CliArgs): Promise<string> {
-  return runShareCommand(
-    parseShareOptions(argv),
-    defaultShareSdkFactory
-  );
-}
-
 export const shareCommand = createShareCommand();
 
 async function runShareCommand(
-  options: ReturnType<typeof parseShareOptions>,
+  options: ShareOptions,
   createSdk: ShareSdkFactory
 ): Promise<string> {
   const { format } = options;

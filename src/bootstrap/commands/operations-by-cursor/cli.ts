@@ -215,13 +215,6 @@ export function createOperationsByCursorCommand(
   });
 }
 
-export function operationsByCursor(argv: CliArgs): Promise<string> {
-  return runOperationsByCursorCommand(
-    parseOperationsByCursorOptions(argv),
-    defaultOperationsByCursorSdkFactory
-  );
-}
-
 export const operationsByCursorCommand = createOperationsByCursorCommand();
 
 async function runOperationsByCursorCommand(

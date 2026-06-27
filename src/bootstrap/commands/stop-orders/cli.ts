@@ -71,13 +71,6 @@ export function createStopOrdersCommand(
   });
 }
 
-export function stopOrders(argv: CliArgs): Promise<string> {
-  return runStopOrdersCommand(
-    parseStopOrdersOptions(argv),
-    defaultStopOrdersSdkFactory
-  );
-}
-
 export const stopOrdersCommand = createStopOrdersCommand();
 
 async function runStopOrdersCommand(

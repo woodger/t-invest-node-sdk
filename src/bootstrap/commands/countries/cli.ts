@@ -48,13 +48,6 @@ export function createCountriesCommand(
   });
 }
 
-export function countries(argv: CliArgs): Promise<string> {
-  return runCountriesCommand(
-    parseCountriesOptions(argv),
-    defaultCountriesSdkFactory
-  );
-}
-
 export const countriesCommand = createCountriesCommand();
 
 async function runCountriesCommand(

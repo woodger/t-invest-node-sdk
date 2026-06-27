@@ -75,13 +75,6 @@ export function createWithdrawLimitsCommand(
   });
 }
 
-export function withdrawLimits(argv: CliArgs): Promise<string> {
-  return runWithdrawLimitsCommand(
-    parseWithdrawLimitsOptions(argv),
-    defaultWithdrawLimitsSdkFactory
-  );
-}
-
 export const withdrawLimitsCommand = createWithdrawLimitsCommand();
 
 async function runWithdrawLimitsCommand(

@@ -90,13 +90,6 @@ export function createTradingSchedulesCommand(
   });
 }
 
-export function tradingSchedules(argv: CliArgs): Promise<string> {
-  return runTradingSchedulesCommand(
-    parseTradingSchedulesOptions(argv),
-    defaultTradingSchedulesSdkFactory
-  );
-}
-
 export const tradingSchedulesCommand = createTradingSchedulesCommand();
 
 async function runTradingSchedulesCommand(

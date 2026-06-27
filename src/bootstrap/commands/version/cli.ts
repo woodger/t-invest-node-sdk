@@ -10,6 +10,3 @@ export const versionCommand = defineCommand({
   }
 });
 
-export function version(): string {
-  return renderVersionInfo();
-}

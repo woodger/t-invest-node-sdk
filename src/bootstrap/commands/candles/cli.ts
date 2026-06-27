@@ -120,13 +120,6 @@ export function createCandlesCommand(
   });
 }
 
-export function candles(argv: CliArgs): Promise<string> {
-  return runCandlesCommand(
-    parseCandlesOptions(argv),
-    defaultCandlesSdkFactory
-  );
-}
-
 export const candlesCommand = createCandlesCommand();
 
 async function runCandlesCommand(

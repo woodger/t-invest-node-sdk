@@ -75,13 +75,6 @@ export function createTradingStatusCommand(
   });
 }
 
-export function tradingStatus(argv: CliArgs): Promise<string> {
-  return runTradingStatusCommand(
-    parseTradingStatusOptions(argv),
-    defaultTradingStatusSdkFactory
-  );
-}
-
 export const tradingStatusCommand = createTradingStatusCommand();
 
 async function runTradingStatusCommand(

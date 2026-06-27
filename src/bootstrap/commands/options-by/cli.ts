@@ -74,13 +74,6 @@ export function createOptionsByCommand(
   });
 }
 
-export function optionsBy(argv: CliArgs): Promise<string> {
-  return runOptionsByCommand(
-    parseOptionsByOptions(argv),
-    defaultOptionsBySdkFactory
-  );
-}
-
 export const optionsByCommand = createOptionsByCommand();
 
 async function runOptionsByCommand(
