@@ -3,11 +3,12 @@ import type {
   BondsResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentStatusArgNames,
+  instrumentStatusOptionsSchema,
   parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type BondsSdk = {
 
 type BondsSdkFactory = (options: TinkoffInvestOptions) => BondsSdk;
 
-const bondsArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentStatusArgNames,
-  'format'
-]);
+const bondsFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: bondsFormats,
+    default: 'table'
+  }
+} as const;
+
+const bondsOptionsSchema = withSdkOptions({
+  ...instrumentStatusOptionsSchema,
+  ...bondsFormatOptionsSchema
+} as const);
+
+function parseBondsOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments bonds', bondsOptionsSchema);
+}
 
 export const parseBondsInstrumentStatus = parseInstrumentStatus;
 export const parseBondsRequest = parseInstrumentsRequest;
 
 export function parseBondsFormat(argv: CliArgs): BondsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', bondsFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments bonds',
+    bondsFormatOptionsSchema
+  ).format;
 }
 
 export function createBondsCommand(
   createSdk: BondsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function bonds(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, bondsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments bonds');
-
+    const { format } = parseBondsOptions(argv);
     const request = parseBondsRequest(argv);
-    const format = parseBondsFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

@@ -3,11 +3,12 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentStatusArgNames,
+  instrumentStatusOptionsSchema,
   parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type CurrenciesSdk = {
 
 type CurrenciesSdkFactory = (options: TinkoffInvestOptions) => CurrenciesSdk;
 
-const currenciesArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentStatusArgNames,
-  'format'
-]);
+const currenciesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: currenciesFormats,
+    default: 'table'
+  }
+} as const;
+
+const currenciesOptionsSchema = withSdkOptions({
+  ...instrumentStatusOptionsSchema,
+  ...currenciesFormatOptionsSchema
+} as const);
+
+function parseCurrenciesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments currencies', currenciesOptionsSchema);
+}
 
 export const parseCurrenciesInstrumentStatus = parseInstrumentStatus;
 export const parseCurrenciesRequest = parseInstrumentsRequest;
 
 export function parseCurrenciesFormat(argv: CliArgs): CurrenciesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', currenciesFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments currencies',
+    currenciesFormatOptionsSchema
+  ).format;
 }
 
 export function createCurrenciesCommand(
   createSdk: CurrenciesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function currencies(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, currenciesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments currencies');
-
+    const { format } = parseCurrenciesOptions(argv);
     const request = parseCurrenciesRequest(argv);
-    const format = parseCurrenciesFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

@@ -11,6 +11,7 @@ import {
   type InstrumentRequest,
   type InstrumentsRequest
 } from '../../generated/instruments';
+import { parseOptions, type RawOptionValue } from 'icore';
 import { ArgGuards } from '../args';
 import type { CliArgs } from '../cli-contract';
 
@@ -41,6 +42,16 @@ const instrumentStatuses = {
 
 type InstrumentStatusName = keyof typeof instrumentStatuses;
 
+export const instrumentStatusNames = Object.keys(instrumentStatuses) as InstrumentStatusName[];
+
+export const instrumentStatusOptionsSchema = {
+  'instrument-status': {
+    type: 'string',
+    choices: instrumentStatusNames,
+    default: 'base'
+  }
+} as const;
+
 export function parseInstrumentLookupIdType(argv: CliArgs): InstrumentIdType {
   const idType = ArgGuards.requireStringArg(argv, 'id-type');
 
@@ -67,19 +78,33 @@ export function parseInstrumentLookupRequest(argv: CliArgs): InstrumentRequest {
 }
 
 export function parseInstrumentStatus(argv: CliArgs): InstrumentStatus {
-  const status = ArgGuards.optionalStringArgValue(argv, 'instrument-status') ?? 'base';
+  const options = parseOptions(
+    instrumentStatusOptionsSchema,
+    toRawInstrumentStatusOption(argv)
+  );
+  const status = options['instrument-status'];
 
-  if (!(status in instrumentStatuses)) {
-    throw new Error(
-      `Expected '--instrument-status' as one of: ${Object.keys(instrumentStatuses).join(', ')}`
-    );
-  }
-
-  return instrumentStatuses[status as InstrumentStatusName];
+  return instrumentStatuses[status];
 }
 
 export function parseInstrumentsRequest(argv: CliArgs): InstrumentsRequest {
   return {
     instrumentStatus: parseInstrumentStatus(argv)
+  };
+}
+
+function toRawInstrumentStatusOption(argv: CliArgs): Record<string, RawOptionValue> {
+  const value = argv['instrument-status'];
+
+  if (value === undefined) {
+    return {};
+  }
+
+  if (typeof value !== 'string' && typeof value !== 'boolean') {
+    throw new Error("Expected '--instrument-status' as scalar option");
+  }
+
+  return {
+    'instrument-status': value
   };
 }
