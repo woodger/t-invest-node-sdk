@@ -33,7 +33,7 @@ import { findInstrument } from './commands/find-instrument/cli';
 import { future } from './commands/future/cli';
 import { futures } from './commands/futures/cli';
 import { futuresMargin } from './commands/futures-margin/cli';
-import { help } from './commands/help/cli';
+import { helpCommand } from './commands/help/cli';
 import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
 import { lastTrades } from './commands/last-trades/cli';
@@ -55,12 +55,13 @@ import { tradingStatus } from './commands/trading-status/cli';
 import { tradingStatuses } from './commands/trading-statuses/cli';
 import { userInfo } from './commands/user-info/cli';
 import { userTariff } from './commands/user-tariff/cli';
-import { version } from './commands/version/cli';
+import { versionCommand } from './commands/version/cli';
 import { withdrawLimits } from './commands/withdraw-limits/cli';
 import {
   defineCommandRegistry,
-  isCommandName as isIcoreCommandName,
-  resolveCommand as resolveIcoreCommand,
+  isCommandName as isCommandLineCommandName,
+  resolveCommand as resolveCommandLineCommand,
+  runCommand,
   type CommandDefinition
 } from 'icore';
 import type { CliArgs, CliCommand, CliCommandOutput } from './cli-contract';
@@ -258,21 +259,13 @@ const commandRegistry = {
   'stoporders get-stop-orders': {
     requiresContext: false,
     handler: stopOrders
-  },
-  help: {
-    requiresContext: false,
-    handler: help
-  },
-  version: {
-    requiresContext: false,
-    handler: version
   }
 } as const satisfies Record<string, RegisteredCommand>;
 
-export type CommandName = keyof typeof commandRegistry;
+export type CommandName = keyof typeof commandRegistry | 'help' | 'version';
 
 export function isCommandName(value: unknown): value is CommandName {
-  return isIcoreCommandName(icoreCommandRegistry, value);
+  return isCommandLineCommandName(commandLineRegistry, value);
 }
 
 function commandNameFromPositionals(positionals: readonly unknown[]): string {
@@ -289,8 +282,8 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   let resolvedCommand;
 
   try {
-    resolvedCommand = resolveIcoreCommand(
-      icoreCommandRegistry,
+    resolvedCommand = resolveCommandLineCommand(
+      commandLineRegistry,
       positionals.map((value) => String(value))
     );
   }
@@ -322,8 +315,23 @@ type LegacyCliCommandDefinition = CommandDefinition<
   [string, ...string[]]
 > & RegisteredCommand;
 
-const icoreCommandRegistry = defineCommandRegistry(
-  Object.entries(commandRegistry).map(([name, command]) => defineLegacyCliCommand(name, command))
+type CommandLineDefinition = CommandDefinition<
+  Record<never, never>,
+  undefined,
+  CliCommandOutput,
+  readonly [string, ...string[]]
+> & RegisteredCommand;
+
+const commandLineRegistry = defineCommandRegistry(
+  [
+    ...Object.entries(commandRegistry).map(([name, command]) => defineLegacyCliCommand(name, command)),
+    defineCommandLineCommand(helpCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(versionCommand, {
+      requiresContext: false
+    })
+  ]
 );
 
 function defineLegacyCliCommand(
@@ -344,6 +352,24 @@ function defineLegacyCliCommand(
           ...positionals
         ]
       });
+    }
+  };
+}
+
+function defineCommandLineCommand(
+  command: CommandDefinition<
+    Record<never, never>,
+    undefined,
+    CliCommandOutput,
+    readonly [string, ...string[]]
+  >,
+  metadata: Pick<RegisteredCommand, 'requiresContext'>
+): CommandLineDefinition {
+  return {
+    ...command,
+    requiresContext: metadata.requiresContext,
+    handler(argv) {
+      return runCommand(command, argv._, undefined);
     }
   };
 }

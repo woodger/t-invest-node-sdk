@@ -388,11 +388,18 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
-  test('returns executable legacy command handler', async () => {
+  test('returns executable command handler', async () => {
     const command = resolveCommand(['version']);
     const output = await command.handler({ _: ['version'] });
 
     assert.match(output ?? '', /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
+  });
+
+  test('returns executable help command handler', async () => {
+    const command = resolveCommand(['help']);
+    const output = await command.handler({ _: ['help', 'version'] });
+
+    assert.match(output ?? '', /version - Show package and runtime version info/);
   });
 
   test('throws for unknown command', () => {
