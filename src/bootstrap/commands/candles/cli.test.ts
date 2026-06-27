@@ -12,7 +12,7 @@ import {
   createCandlesCommand,
   parseCandleInterval,
   parseCandlesFormat,
-  parseCandlesRequest
+  createCandlesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -53,14 +53,14 @@ describe('candles command', () => {
     });
   });
 
-  describe('parseCandlesRequest', () => {
+  describe('createCandlesRequest', () => {
     test('returns generated getCandles request', () => {
-      const request = parseCandlesRequest(rawOptions({
+      const request = createCandlesRequest({
         'instrument-id': 'BBG00QPYJ5H0',
         from: '2026-06-19T00:00:00.000Z',
         to: '2026-06-19T01:00:00.000Z',
         interval: 'hour'
-      }));
+      });
 
       assert.equal(request.instrumentId, 'BBG00QPYJ5H0');
       assert.equal(request.figi, '');
@@ -71,12 +71,12 @@ describe('candles command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseCandlesRequest(rawOptions({
+        () => createCandlesRequest({
           'instrument-id': 'BBG00QPYJ5H0',
           from: '2026-06-20T00:00:00.000Z',
           to: '2026-06-19T00:00:00.000Z',
           interval: 'day'
-        })),
+        }),
         /Expected '--from' to be earlier/
       );
     });

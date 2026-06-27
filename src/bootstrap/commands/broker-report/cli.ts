@@ -3,9 +3,9 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
@@ -29,7 +29,6 @@ type BrokerReportSdk = {
 
 type BrokerReportSdkFactory = (options: TinkoffInvestOptions) => BrokerReportSdk;
 
-const brokerReportCommandName = 'operations get-broker-report';
 const brokerReportCommandPath = ['operations', 'get-broker-report'] as const;
 const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -64,12 +63,19 @@ const brokerReportOptionsSchema = withSdkOptions(
   brokerReportFormatOptionsSchema
 );
 
-function parseBrokerReportOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, brokerReportCommandName, brokerReportOptionsSchema);
-}
+type BrokerReportOptions = InferOptions<typeof brokerReportOptionsSchema>;
+type BrokerReportRequestOptions = CommandRequestOptions<
+  BrokerReportOptions,
+  'task-id' |
+  'account-id' |
+  'from' |
+  'to' |
+  'page'
+>;
 
-function createBrokerReportRequest(
-  options: ReturnType<typeof parseBrokerReportOptions>
+
+export function createBrokerReportRequest(
+  options: BrokerReportRequestOptions
 ): BrokerReportRequest {
   const taskId = options['task-id'];
   const hasGenerateArgs = options['account-id'] !== undefined
@@ -111,16 +117,9 @@ function createBrokerReportRequest(
   };
 }
 
-export function parseBrokerReportRequest(rawOptions: CommandRawOptions): BrokerReportRequest {
-  return createBrokerReportRequest(parseBrokerReportOptions(rawOptions));
-}
 
 export function parseBrokerReportFormat(rawOptions: CommandRawOptions): BrokerReportFormat {
-  return parseCommandOptions(
-    rawOptions,
-    brokerReportCommandName,
-    brokerReportFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, brokerReportFormatOptionsSchema).format;
 }
 
 export function createBrokerReportCommand(
@@ -138,7 +137,7 @@ export function createBrokerReportCommand(
 export const brokerReportCommand = createBrokerReportCommand();
 
 async function runBrokerReportCommand(
-  options: ReturnType<typeof parseBrokerReportOptions>,
+  options: BrokerReportOptions,
   createSdk: BrokerReportSdkFactory
 ): Promise<string> {
   const request = createBrokerReportRequest(options);

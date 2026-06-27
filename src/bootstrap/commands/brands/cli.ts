@@ -1,6 +1,6 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -16,7 +16,6 @@ type BrandsSdk = {
 
 type BrandsSdkFactory = (options: TinkoffInvestOptions) => BrandsSdk;
 
-const brandsCommandName = 'instruments get-brands';
 const brandsCommandPath = ['instruments', 'get-brands'] as const;
 const defaultBrandsSdkFactory: BrandsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -28,12 +27,10 @@ const brandsOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseBrandsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, brandsCommandName, brandsOptionsSchema);
-}
+type BrandsOptions = InferOptions<typeof brandsOptionsSchema>;
 
 export function parseBrandsFormat(rawOptions: CommandRawOptions): BrandsFormat {
-  return parseBrandsOptions(rawOptions).format;
+  return parseCommandOptions(rawOptions, brandsOptionsSchema).format;
 }
 
 export function createBrandsCommand(
@@ -51,7 +48,7 @@ export function createBrandsCommand(
 export const brandsCommand = createBrandsCommand();
 
 async function runBrandsCommand(
-  options: ReturnType<typeof parseBrandsOptions>,
+  options: BrandsOptions,
   createSdk: BrandsSdkFactory
 ): Promise<string> {
   const { format } = options;

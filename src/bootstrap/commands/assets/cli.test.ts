@@ -9,7 +9,7 @@ import {
   createAssetsCommand,
   parseAssetsFormat,
   parseAssetsInstrumentType,
-  parseAssetsRequest
+  createAssetsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -49,9 +49,9 @@ describe('assets command', () => {
     });
   });
 
-  describe('parseAssetsRequest', () => {
+  describe('createAssetsRequest', () => {
     test('returns generated getAssets request', () => {
-      const request = parseAssetsRequest(rawOptions({ 'instrument-type': 'share' }));
+      const request = createAssetsRequest({ 'instrument-type': 'share' });
 
       assert.deepEqual(request, {
         instrumentType: InstrumentType.INSTRUMENT_TYPE_SHARE

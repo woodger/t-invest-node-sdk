@@ -3,9 +3,9 @@ import type {
   GetClosePricesRequest,
   GetClosePricesResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -23,7 +23,6 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TinkoffInvestOptions) => ClosePricesSdk;
 
-const closePricesCommandName = 'marketdata get-close-prices';
 const closePricesCommandPath = ['marketdata', 'get-close-prices'] as const;
 const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -47,30 +46,19 @@ const closePricesOptionsSchema = withSdkOptions(
   closePricesFormatOptionsSchema
 );
 
-function parseClosePricesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, closePricesCommandName, closePricesOptionsSchema);
-}
+type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
+type ClosePricesRequestOptions = CommandRequestOptions<ClosePricesOptions, 'instrument-id'>;
+
 
 export function parseClosePricesInstrumentIds(rawOptions: CommandRawOptions): string[] {
-  const options = parseCommandOptions(
-    rawOptions,
-    closePricesCommandName,
-    closePricesInstrumentIdsOptionsSchema
-  );
+  const options = parseCommandOptions(rawOptions, closePricesInstrumentIdsOptionsSchema);
 
   return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
-export function parseClosePricesRequest(rawOptions: CommandRawOptions): GetClosePricesRequest {
-  return createClosePricesRequest(parseClosePricesOptions(rawOptions));
-}
 
 export function parseClosePricesFormat(rawOptions: CommandRawOptions): ClosePricesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    closePricesCommandName,
-    closePricesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, closePricesFormatOptionsSchema).format;
 }
 
 export function createClosePricesCommand(
@@ -88,7 +76,7 @@ export function createClosePricesCommand(
 export const closePricesCommand = createClosePricesCommand();
 
 async function runClosePricesCommand(
-  options: ReturnType<typeof parseClosePricesOptions>,
+  options: ClosePricesOptions,
   createSdk: ClosePricesSdkFactory
 ): Promise<string> {
   const request = createClosePricesRequest(options);
@@ -107,8 +95,8 @@ async function runClosePricesCommand(
 
 export { formatClosePrices };
 
-function createClosePricesRequest(
-  options: ReturnType<typeof parseClosePricesOptions>
+export function createClosePricesRequest(
+  options: ClosePricesRequestOptions
 ): GetClosePricesRequest {
   return {
     instruments: parseCommaSeparatedStringListOption(

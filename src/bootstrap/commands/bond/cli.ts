@@ -12,7 +12,6 @@ import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-  parseInstrumentLookupRequest
 } from '../instruments-args';
 import { bondFormats, formatBond, type BondFormat } from './reporter';
 
@@ -25,7 +24,6 @@ type BondSdk = {
 
 type BondSdkFactory = (options: TinkoffInvestOptions) => BondSdk;
 
-const bondCommandName = 'instruments bond-by';
 const bondCommandPath = ['instruments', 'bond-by'] as const;
 const defaultBondSdkFactory: BondSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const bondOptionsSchema = withSdkOptions(
 type BondOptions = InferOptions<typeof bondOptionsSchema>;
 
 export const parseBondIdType = parseInstrumentLookupIdType;
-export const parseBondRequest = parseInstrumentLookupRequest;
+export const createBondRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseBondFormat(rawOptions: CommandRawOptions): BondFormat {
-  return parseCommandOptions(
-    rawOptions,
-    bondCommandName,
-    bondFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, bondFormatOptionsSchema).format;
 }
 
 export function createBondCommand(

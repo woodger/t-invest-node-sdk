@@ -14,7 +14,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOrderStateCommand,
   parseOrderStateFormat,
-  parseOrderStateRequest
+  createOrderStateRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -56,12 +56,12 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 }
 
 describe('order-state command', () => {
-  describe('parseOrderStateRequest', () => {
+  describe('createOrderStateRequest', () => {
     test('returns generated getOrderState request', () => {
-      const request = parseOrderStateRequest(rawOptions({
+      const request = createOrderStateRequest({
         'account-id': 'account-id',
         'order-id': 'order-id'
-      }));
+      });
 
       assert.deepEqual(request, {
         accountId: 'account-id',

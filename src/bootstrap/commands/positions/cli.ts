@@ -1,8 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPositions, positionsFormats, type PositionsFormat } from './reporter';
@@ -16,7 +16,6 @@ type PositionsSdk = {
 
 type PositionsSdkFactory = (options: TinkoffInvestOptions) => PositionsSdk;
 
-const positionsCommandName = 'operations get-positions';
 const positionsCommandPath = ['operations', 'get-positions'] as const;
 const defaultPositionsSdkFactory: PositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -40,20 +39,13 @@ const positionsOptionsSchema = withSdkOptions(
   positionsFormatOptionsSchema
 );
 
-function parsePositionsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, positionsCommandName, positionsOptionsSchema);
-}
+type PositionsOptions = InferOptions<typeof positionsOptionsSchema>;
+type PositionsRequestOptions = CommandRequestOptions<PositionsOptions, 'account-id'>;
 
-export function parsePositionsRequest(rawOptions: CommandRawOptions): PositionsRequest {
-  return createPositionsRequest(parsePositionsOptions(rawOptions));
-}
+
 
 export function parsePositionsFormat(rawOptions: CommandRawOptions): PositionsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    positionsCommandName,
-    positionsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, positionsFormatOptionsSchema).format;
 }
 
 export function createPositionsCommand(
@@ -71,7 +63,7 @@ export function createPositionsCommand(
 export const positionsCommand = createPositionsCommand();
 
 async function runPositionsCommand(
-  options: ReturnType<typeof parsePositionsOptions>,
+  options: PositionsOptions,
   createSdk: PositionsSdkFactory
 ): Promise<string> {
   const request = createPositionsRequest(options);
@@ -90,8 +82,8 @@ async function runPositionsCommand(
 
 export { formatPositions };
 
-function createPositionsRequest(
-  options: ReturnType<typeof parsePositionsOptions>
+export function createPositionsRequest(
+  options: PositionsRequestOptions
 ): PositionsRequest {
   return {
     accountId: options['account-id']

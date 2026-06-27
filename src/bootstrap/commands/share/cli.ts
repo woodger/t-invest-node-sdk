@@ -12,7 +12,6 @@ import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-  parseInstrumentLookupRequest
 } from '../instruments-args';
 import { formatShare, shareFormats, type ShareFormat } from './reporter';
 
@@ -25,7 +24,6 @@ type ShareSdk = {
 
 type ShareSdkFactory = (options: TinkoffInvestOptions) => ShareSdk;
 
-const shareCommandName = 'instruments share-by';
 const shareCommandPath = ['instruments', 'share-by'] as const;
 const defaultShareSdkFactory: ShareSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const shareOptionsSchema = withSdkOptions(
 type ShareOptions = InferOptions<typeof shareOptionsSchema>;
 
 export const parseShareIdType = parseInstrumentLookupIdType;
-export const parseShareRequest = parseInstrumentLookupRequest;
+export const createShareRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseShareFormat(rawOptions: CommandRawOptions): ShareFormat {
-  return parseCommandOptions(
-    rawOptions,
-    shareCommandName,
-    shareFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, shareFormatOptionsSchema).format;
 }
 
 export function createShareCommand(

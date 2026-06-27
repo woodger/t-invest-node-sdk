@@ -12,7 +12,7 @@ import {
   createEtfsCommand,
   parseEtfsFormat,
   parseEtfsInstrumentStatus,
-  parseEtfsRequest
+  createEtfsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,9 +55,9 @@ describe('etfs command', () => {
     });
   });
 
-  describe('parseEtfsRequest', () => {
+  describe('createEtfsRequest', () => {
     test('returns generated etfs request', () => {
-      assert.deepEqual(parseEtfsRequest(rawOptions({ 'instrument-status': 'all' })), {
+      assert.deepEqual(createEtfsRequest({ 'instrument-status': 'all' }), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });

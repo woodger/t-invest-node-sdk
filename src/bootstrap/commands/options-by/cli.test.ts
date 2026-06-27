@@ -10,7 +10,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOptionsByCommand,
   parseOptionsByFormat,
-  parseOptionsByRequest
+  createOptionsByRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -25,11 +25,11 @@ function response(overrides: Partial<OptionsResponse> = {}): OptionsResponse {
 }
 
 describe('options-by command', () => {
-  describe('parseOptionsByRequest', () => {
+  describe('createOptionsByRequest', () => {
     test('returns generated optionsBy request', () => {
-      const request = parseOptionsByRequest(rawOptions({
+      const request = createOptionsByRequest({
         'basic-asset-uid': 'asset-uid'
-      }));
+      });
 
       assert.deepEqual(request, {
         basicAssetUid: 'asset-uid',
@@ -38,10 +38,10 @@ describe('options-by command', () => {
     });
 
     test('uses optional basic asset position uid', () => {
-      const request = parseOptionsByRequest(rawOptions({
+      const request = createOptionsByRequest({
         'basic-asset-uid': 'asset-uid',
         'basic-asset-position-uid': 'position-uid'
-      }));
+      });
 
       assert.deepEqual(request, {
         basicAssetUid: 'asset-uid',
@@ -49,12 +49,6 @@ describe('options-by command', () => {
       });
     });
 
-    test('requires basic asset uid', () => {
-      assert.throws(
-        () => parseOptionsByRequest(rawOptions()),
-        /Expected required argument '--basic-asset-uid'/
-      );
-    });
   });
 
   describe('parseOptionsByFormat', () => {

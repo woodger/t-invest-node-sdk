@@ -3,9 +3,9 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOptionsBy, optionsByFormats, type OptionsByFormat } from './reporter';
@@ -19,7 +19,6 @@ type OptionsBySdk = {
 
 type OptionsBySdkFactory = (options: TinkoffInvestOptions) => OptionsBySdk;
 
-const optionsByCommandName = 'instruments options-by';
 const optionsByCommandPath = ['instruments', 'options-by'] as const;
 const defaultOptionsBySdkFactory: OptionsBySdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -46,20 +45,13 @@ const optionsByOptionsSchema = withSdkOptions(
   optionsByFormatOptionsSchema
 );
 
-function parseOptionsByOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, optionsByCommandName, optionsByOptionsSchema);
-}
+type OptionsByOptions = InferOptions<typeof optionsByOptionsSchema>;
+type OptionsByRequestOptions = CommandRequestOptions<OptionsByOptions, 'basic-asset-uid' | 'basic-asset-position-uid'>;
 
-export function parseOptionsByRequest(rawOptions: CommandRawOptions): FilterOptionsRequest {
-  return createOptionsByRequest(parseOptionsByOptions(rawOptions));
-}
+
 
 export function parseOptionsByFormat(rawOptions: CommandRawOptions): OptionsByFormat {
-  return parseCommandOptions(
-    rawOptions,
-    optionsByCommandName,
-    optionsByFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, optionsByFormatOptionsSchema).format;
 }
 
 export function createOptionsByCommand(
@@ -77,7 +69,7 @@ export function createOptionsByCommand(
 export const optionsByCommand = createOptionsByCommand();
 
 async function runOptionsByCommand(
-  options: ReturnType<typeof parseOptionsByOptions>,
+  options: OptionsByOptions,
   createSdk: OptionsBySdkFactory
 ): Promise<string> {
   const request = createOptionsByRequest(options);
@@ -96,8 +88,8 @@ async function runOptionsByCommand(
 
 export { formatOptionsBy };
 
-function createOptionsByRequest(
-  options: ReturnType<typeof parseOptionsByOptions>
+export function createOptionsByRequest(
+  options: OptionsByRequestOptions
 ): FilterOptionsRequest {
   return {
     basicAssetUid: options['basic-asset-uid'],

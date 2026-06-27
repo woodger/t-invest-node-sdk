@@ -4,9 +4,9 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -24,7 +24,6 @@ type OperationsSdk = {
 
 type OperationsSdkFactory = (options: TinkoffInvestOptions) => OperationsSdk;
 
-const operationsCommandName = 'operations get-operations';
 const operationsCommandPath = ['operations', 'get-operations'] as const;
 const defaultOperationsSdkFactory: OperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -79,30 +78,26 @@ const operationsOptionsSchema = withSdkOptions(
   operationsFormatOptionsSchema
 );
 
-function parseOperationsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, operationsCommandName, operationsOptionsSchema);
-}
+type OperationsOptions = InferOptions<typeof operationsOptionsSchema>;
+type OperationsRequestOptions = CommandRequestOptions<
+  OperationsOptions,
+  'account-id' |
+  'from' |
+  'to' |
+  'state' |
+  'figi'
+>;
+
 
 export function parseOperationsState(rawOptions: CommandRawOptions): OperationState {
-  const { state } = parseCommandOptions(
-    rawOptions,
-    operationsCommandName,
-    operationsStateOptionsSchema
-  );
+  const { state } = parseCommandOptions(rawOptions, operationsStateOptionsSchema);
 
   return operationStates[state];
 }
 
-export function parseOperationsRequest(rawOptions: CommandRawOptions): OperationsRequest {
-  return createOperationsRequest(parseOperationsOptions(rawOptions));
-}
 
 export function parseOperationsFormat(rawOptions: CommandRawOptions): OperationsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    operationsCommandName,
-    operationsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, operationsFormatOptionsSchema).format;
 }
 
 export function createOperationsCommand(
@@ -120,7 +115,7 @@ export function createOperationsCommand(
 export const operationsCommand = createOperationsCommand();
 
 async function runOperationsCommand(
-  options: ReturnType<typeof parseOperationsOptions>,
+  options: OperationsOptions,
   createSdk: OperationsSdkFactory
 ): Promise<string> {
   const request = createOperationsRequest(options);
@@ -139,8 +134,8 @@ async function runOperationsCommand(
 
 export { formatOperations };
 
-function createOperationsRequest(
-  options: ReturnType<typeof parseOperationsOptions>
+export function createOperationsRequest(
+  options: OperationsRequestOptions
 ): OperationsRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');

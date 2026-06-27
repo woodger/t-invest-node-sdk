@@ -16,7 +16,7 @@ import {
   parseOperationsByCursorFormat,
   parseOperationsByCursorLimit,
   parseOperationsByCursorOperationTypes,
-  parseOperationsByCursorRequest,
+  createOperationsByCursorRequest,
   parseOperationsByCursorState
 } from './cli';
 
@@ -147,9 +147,9 @@ describe('operations-by-cursor command', () => {
     });
   });
 
-  describe('parseOperationsByCursorRequest', () => {
+  describe('createOperationsByCursorRequest', () => {
     test('returns generated getOperationsByCursor request', () => {
-      const request = parseOperationsByCursorRequest(rawOptions({
+      const request = createOperationsByCursorRequest({
         'account-id': 'account-id',
         'instrument-id': 'instrument-uid',
         from: '2026-06-01T00:00:00.000Z',
@@ -161,7 +161,7 @@ describe('operations-by-cursor command', () => {
         'without-commissions': true,
         'without-trades': true,
         'without-overnights': true
-      }));
+      });
 
       assert.equal(request.accountId, 'account-id');
       assert.equal(request.instrumentId, 'instrument-uid');
@@ -178,11 +178,15 @@ describe('operations-by-cursor command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseOperationsByCursorRequest(rawOptions({
+        () => createOperationsByCursorRequest({
           'account-id': 'account-id',
           from: '2026-06-20T00:00:00.000Z',
-          to: '2026-06-19T00:00:00.000Z'
-        })),
+          to: '2026-06-19T00:00:00.000Z',
+          state: 'unspecified',
+          'without-commissions': false,
+          'without-trades': false,
+          'without-overnights': false
+        }),
         /Expected '--from' to be earlier/
       );
     });

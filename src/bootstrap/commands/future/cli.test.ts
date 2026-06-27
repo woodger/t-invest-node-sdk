@@ -12,7 +12,7 @@ import {
   createFutureCommand,
   parseFutureFormat,
   parseFutureIdType,
-  parseFutureRequest
+  createFutureRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,12 +55,12 @@ describe('future command', () => {
     });
   });
 
-  describe('parseFutureRequest', () => {
+  describe('createFutureRequest', () => {
     test('returns generated futureBy request', () => {
-      const request = parseFutureRequest(rawOptions({
+      const request = createFutureRequest({
         id: 'FUTFIGI',
         'id-type': 'figi'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'FUTFIGI',
@@ -71,20 +71,20 @@ describe('future command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseFutureRequest(rawOptions({
+        () => createFutureRequest({
           id: 'SiM6',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseFutureRequest(rawOptions({
+      const request = createFutureRequest({
         id: 'SiM6',
         'id-type': 'ticker',
         'class-code': 'SPBFUT'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'SiM6',

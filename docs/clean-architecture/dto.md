@@ -79,6 +79,12 @@ Command-specific primitive options описываются декларативн
 `src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API
 или форматировать reports.
 
+После `icore` validation command handler работает с typed command options. Raw
+CLI option maps не должны передаваться в request builders. Если нужен focused
+parser для CLI edge case, он должен оставаться `parse*` helper-ом и работать с
+raw options. Mapping typed options в generated request DTO должен жить в
+`create*Request` helper-е.
+
 ## Mapping
 
 Текущий flow API-команды:
@@ -87,6 +93,7 @@ Command-specific primitive options описываются декларативн
 process.argv
   -> icore parser/validator
   -> typed command options
+  -> generated request DTO
   -> generated SDK call
   -> application report
   -> CLI output
@@ -97,6 +104,7 @@ process.argv
 | Mapping | Текущее место | Возможное целевое место |
 | --- | --- | --- |
 | typed command options -> `TinkoffInvestOptions` | `bootstrap/args` | без изменений |
+| typed command options -> generated request DTO | `bootstrap/commands/*/cli.ts`, `create*Request` | application use-case, если command перестает быть тонким adapter-ом |
 | generated API response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | application report -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
 | output values -> JSON/CSV/table | `infrastructure/renderers/*` | без изменений, пока renderer-ы остаются механическими |
@@ -105,6 +113,7 @@ process.argv
 ## Типичные Ошибки
 
 - передавать raw CLI args глубже bootstrap boundary;
+- смешивать raw CLI parsing и generated request DTO mapping в одной функции;
 - форматировать пользовательский output внутри application report contract;
 - класть JSON/CSV/table logic в stdout sink;
 - считать generated DTO стабильным CLI output contract;

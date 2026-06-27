@@ -185,6 +185,9 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 - регистрироваться через `src/bootstrap/command-registry.ts`;
 - размещать handler в `src/bootstrap/commands`;
 - использовать `src/bootstrap/args` для primitive CLI validation и общих SDK options;
+- разделять raw CLI parsing и typed request mapping: `parse*` helper-ы
+  работают с raw CLI options, а `create*Request` принимает typed options и
+  строит generated request DTO;
 - описывать стабильный output contract в `src/application/reports`;
 - держать command-specific formatting в `src/bootstrap/commands/*/reporter.ts`;
 - использовать `src/infrastructure/renderers` только для механического

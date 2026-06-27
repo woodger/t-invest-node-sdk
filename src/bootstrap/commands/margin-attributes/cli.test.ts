@@ -11,7 +11,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createMarginAttributesCommand,
   parseMarginAttributesFormat,
-  parseMarginAttributesRequest
+  createMarginAttributesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -48,11 +48,11 @@ function response(
 }
 
 describe('margin-attributes command', () => {
-  describe('parseMarginAttributesRequest', () => {
+  describe('createMarginAttributesRequest', () => {
     test('returns generated getMarginAttributes request', () => {
-      const request = parseMarginAttributesRequest(rawOptions({
+      const request = createMarginAttributesRequest({
         'account-id': 'account-id'
-      }));
+      });
 
       assert.deepEqual(request, {
         accountId: 'account-id'

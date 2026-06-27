@@ -12,7 +12,7 @@ import {
   createSharesCommand,
   parseSharesFormat,
   parseSharesInstrumentStatus,
-  parseSharesRequest
+  createSharesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,9 +55,9 @@ describe('shares command', () => {
     });
   });
 
-  describe('parseSharesRequest', () => {
+  describe('createSharesRequest', () => {
     test('returns generated shares request', () => {
-      assert.deepEqual(parseSharesRequest(rawOptions({ 'instrument-status': 'all' })), {
+      assert.deepEqual(createSharesRequest({ 'instrument-status': 'all' }), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });

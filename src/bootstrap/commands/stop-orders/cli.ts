@@ -3,9 +3,9 @@ import type {
   GetStopOrdersRequest,
   GetStopOrdersResponse
 } from '../../../generated/stoporders';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatStopOrders, stopOrdersFormats, type StopOrdersFormat } from './reporter';
@@ -19,7 +19,6 @@ type StopOrdersSdk = {
 
 type StopOrdersSdkFactory = (options: TinkoffInvestOptions) => StopOrdersSdk;
 
-const stopOrdersCommandName = 'stoporders get-stop-orders';
 const stopOrdersCommandPath = ['stoporders', 'get-stop-orders'] as const;
 const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -43,20 +42,13 @@ const stopOrdersOptionsSchema = withSdkOptions(
   stopOrdersFormatOptionsSchema
 );
 
-function parseStopOrdersOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, stopOrdersCommandName, stopOrdersOptionsSchema);
-}
+type StopOrdersOptions = InferOptions<typeof stopOrdersOptionsSchema>;
+type StopOrdersRequestOptions = CommandRequestOptions<StopOrdersOptions, 'account-id'>;
 
-export function parseStopOrdersRequest(rawOptions: CommandRawOptions): GetStopOrdersRequest {
-  return createStopOrdersRequest(parseStopOrdersOptions(rawOptions));
-}
+
 
 export function parseStopOrdersFormat(rawOptions: CommandRawOptions): StopOrdersFormat {
-  return parseCommandOptions(
-    rawOptions,
-    stopOrdersCommandName,
-    stopOrdersFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, stopOrdersFormatOptionsSchema).format;
 }
 
 export function createStopOrdersCommand(
@@ -74,7 +66,7 @@ export function createStopOrdersCommand(
 export const stopOrdersCommand = createStopOrdersCommand();
 
 async function runStopOrdersCommand(
-  options: ReturnType<typeof parseStopOrdersOptions>,
+  options: StopOrdersOptions,
   createSdk: StopOrdersSdkFactory
 ): Promise<string> {
   const request = createStopOrdersRequest(options);
@@ -93,8 +85,8 @@ async function runStopOrdersCommand(
 
 export { formatStopOrders };
 
-function createStopOrdersRequest(
-  options: ReturnType<typeof parseStopOrdersOptions>
+export function createStopOrdersRequest(
+  options: StopOrdersRequestOptions
 ): GetStopOrdersRequest {
   return {
     accountId: options['account-id']

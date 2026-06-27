@@ -6,9 +6,9 @@ import {
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse
 } from '../../../generated/operations';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -33,7 +33,6 @@ type OperationsByCursorSdk = {
 
 type OperationsByCursorSdkFactory = (options: TinkoffInvestOptions) => OperationsByCursorSdk;
 
-const operationsByCursorCommandName = 'operations get-operations-by-cursor';
 const operationsByCursorCommandPath = ['operations', 'get-operations-by-cursor'] as const;
 const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -115,30 +114,31 @@ const operationsByCursorOptionsSchema = withSdkOptions(
   operationsByCursorFormatOptionsSchema
 );
 
-function parseOperationsByCursorOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    operationsByCursorCommandName,
-    operationsByCursorOptionsSchema
-  );
-}
+type OperationsByCursorOptions = InferOptions<typeof operationsByCursorOptionsSchema>;
+type OperationsByCursorRequestOptions = CommandRequestOptions<
+  OperationsByCursorOptions,
+  'account-id' |
+  'instrument-id' |
+  'operation-type' |
+  'without-commissions' |
+  'without-trades' |
+  'without-overnights' |
+  'from' |
+  'to' |
+  'cursor' |
+  'limit' |
+  'state'
+>;
+
 
 export function parseOperationsByCursorState(rawOptions: CommandRawOptions): OperationState {
-  const { state } = parseCommandOptions(
-    rawOptions,
-    operationsByCursorCommandName,
-    operationsByCursorStateOptionsSchema
-  );
+  const { state } = parseCommandOptions(rawOptions, operationsByCursorStateOptionsSchema);
 
   return operationStates[state];
 }
 
 export function parseOperationsByCursorLimit(rawOptions: CommandRawOptions): number {
-  const { limit } = parseCommandOptions(
-    rawOptions,
-    operationsByCursorCommandName,
-    operationsByCursorLimitOptionsSchema
-  );
+  const { limit } = parseCommandOptions(rawOptions, operationsByCursorLimitOptionsSchema);
 
   return parseOperationsByCursorLimitOption(limit);
 }
@@ -162,11 +162,7 @@ function parseOperationsByCursorLimitOption(rawValue: string | undefined): numbe
 }
 
 export function parseOperationsByCursorOperationTypes(rawOptions: CommandRawOptions): OperationType[] {
-  const options = parseCommandOptions(
-    rawOptions,
-    operationsByCursorCommandName,
-    operationsByCursorOperationTypesOptionsSchema
-  );
+  const options = parseCommandOptions(rawOptions, operationsByCursorOperationTypesOptionsSchema);
 
   return parseOperationsByCursorOperationTypesOption(options['operation-type']);
 }
@@ -191,16 +187,9 @@ function parseOperationsByCursorOperationTypesOption(
   });
 }
 
-export function parseOperationsByCursorRequest(rawOptions: CommandRawOptions): GetOperationsByCursorRequest {
-  return createOperationsByCursorRequest(parseOperationsByCursorOptions(rawOptions));
-}
 
 export function parseOperationsByCursorFormat(rawOptions: CommandRawOptions): OperationsByCursorFormat {
-  return parseCommandOptions(
-    rawOptions,
-    operationsByCursorCommandName,
-    operationsByCursorFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, operationsByCursorFormatOptionsSchema).format;
 }
 
 export function createOperationsByCursorCommand(
@@ -218,7 +207,7 @@ export function createOperationsByCursorCommand(
 export const operationsByCursorCommand = createOperationsByCursorCommand();
 
 async function runOperationsByCursorCommand(
-  options: ReturnType<typeof parseOperationsByCursorOptions>,
+  options: OperationsByCursorOptions,
   createSdk: OperationsByCursorSdkFactory
 ): Promise<string> {
   const request = createOperationsByCursorRequest(options);
@@ -237,8 +226,8 @@ async function runOperationsByCursorCommand(
 
 export { formatOperationsByCursor };
 
-function createOperationsByCursorRequest(
-  options: ReturnType<typeof parseOperationsByCursorOptions>
+export function createOperationsByCursorRequest(
+  options: OperationsByCursorRequestOptions
 ): GetOperationsByCursorRequest {
   const from = parseOptionalDateTimeOption(options.from, 'from');
   const to = parseOptionalDateTimeOption(options.to, 'to');

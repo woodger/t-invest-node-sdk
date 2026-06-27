@@ -12,7 +12,6 @@ import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-  parseInstrumentLookupRequest
 } from '../instruments-args';
 import { formatFuture, futureFormats, type FutureFormat } from './reporter';
 
@@ -25,7 +24,6 @@ type FutureSdk = {
 
 type FutureSdkFactory = (options: TinkoffInvestOptions) => FutureSdk;
 
-const futureCommandName = 'instruments future-by';
 const futureCommandPath = ['instruments', 'future-by'] as const;
 const defaultFutureSdkFactory: FutureSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const futureOptionsSchema = withSdkOptions(
 type FutureOptions = InferOptions<typeof futureOptionsSchema>;
 
 export const parseFutureIdType = parseInstrumentLookupIdType;
-export const parseFutureRequest = parseInstrumentLookupRequest;
+export const createFutureRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseFutureFormat(rawOptions: CommandRawOptions): FutureFormat {
-  return parseCommandOptions(
-    rawOptions,
-    futureCommandName,
-    futureFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, futureFormatOptionsSchema).format;
 }
 
 export function createFutureCommand(

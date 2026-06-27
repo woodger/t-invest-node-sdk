@@ -1,9 +1,9 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { assetsFormats, formatAssets, type AssetsFormat } from './reporter';
@@ -17,7 +17,6 @@ type AssetsSdk = {
 
 type AssetsSdkFactory = (options: TinkoffInvestOptions) => AssetsSdk;
 
-const assetsCommandName = 'instruments get-assets';
 const assetsCommandPath = ['instruments', 'get-assets'] as const;
 const defaultAssetsSdkFactory: AssetsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -58,30 +57,19 @@ const assetsOptionsSchema = withSdkOptions(
   assetsFormatOptionsSchema
 );
 
-function parseAssetsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, assetsCommandName, assetsOptionsSchema);
-}
+type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
+type AssetsRequestOptions = CommandRequestOptions<AssetsOptions, 'instrument-type'>;
+
 
 export function parseAssetsInstrumentType(rawOptions: CommandRawOptions): InstrumentType {
-  const options = parseCommandOptions(
-    rawOptions,
-    assetsCommandName,
-    assetsInstrumentTypeOptionsSchema
-  );
+  const options = parseCommandOptions(rawOptions, assetsInstrumentTypeOptionsSchema);
 
   return assetInstrumentTypes[options['instrument-type'] as AssetInstrumentTypeName];
 }
 
-export function parseAssetsRequest(rawOptions: CommandRawOptions): AssetsRequest {
-  return createAssetsRequest(parseAssetsOptions(rawOptions));
-}
 
 export function parseAssetsFormat(rawOptions: CommandRawOptions): AssetsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    assetsCommandName,
-    assetsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, assetsFormatOptionsSchema).format;
 }
 
 export function createAssetsCommand(
@@ -99,7 +87,7 @@ export function createAssetsCommand(
 export const assetsCommand = createAssetsCommand();
 
 async function runAssetsCommand(
-  options: ReturnType<typeof parseAssetsOptions>,
+  options: AssetsOptions,
   createSdk: AssetsSdkFactory
 ): Promise<string> {
   const request = createAssetsRequest(options);
@@ -118,8 +106,8 @@ async function runAssetsCommand(
 
 export { formatAssets };
 
-function createAssetsRequest(
-  options: ReturnType<typeof parseAssetsOptions>
+export function createAssetsRequest(
+  options: AssetsRequestOptions
 ): AssetsRequest {
   return {
     instrumentType: assetInstrumentTypes[options['instrument-type'] as AssetInstrumentTypeName]

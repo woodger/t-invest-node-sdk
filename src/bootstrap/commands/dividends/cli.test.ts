@@ -11,7 +11,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createDividendsCommand,
   parseDividendsFormat,
-  parseDividendsRequest
+  createDividendsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -53,13 +53,13 @@ function response(overrides: Partial<GetDividendsResponse> = {}): GetDividendsRe
 }
 
 describe('dividends command', () => {
-  describe('parseDividendsRequest', () => {
+  describe('createDividendsRequest', () => {
     test('returns generated getDividends request', () => {
-      const request = parseDividendsRequest(rawOptions({
+      const request = createDividendsRequest({
         figi: 'SHARE-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
-      }));
+      });
 
       assert.deepEqual(request, {
         figi: 'SHARE-FIGI',
@@ -70,11 +70,11 @@ describe('dividends command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseDividendsRequest(rawOptions({
+        () => createDividendsRequest({
           figi: 'SHARE-FIGI',
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
-        })),
+        }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });

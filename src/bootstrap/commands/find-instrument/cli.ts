@@ -1,9 +1,9 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest, FindInstrumentResponse } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -21,7 +21,6 @@ type FindInstrumentSdk = {
 
 type FindInstrumentSdkFactory = (options: TinkoffInvestOptions) => FindInstrumentSdk;
 
-const findInstrumentCommandName = 'instruments find-instrument';
 const findInstrumentCommandPath = ['instruments', 'find-instrument'] as const;
 const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -70,34 +69,19 @@ const findInstrumentOptionsSchema = withSdkOptions(
   findInstrumentFormatOptionsSchema
 );
 
-function parseFindInstrumentOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    findInstrumentCommandName,
-    findInstrumentOptionsSchema
-  );
-}
+type FindInstrumentOptions = InferOptions<typeof findInstrumentOptionsSchema>;
+type FindInstrumentRequestOptions = CommandRequestOptions<FindInstrumentOptions, 'instrument-kind' | 'api-trade-available' | 'query'>;
+
 
 export function parseFindInstrumentKind(rawOptions: CommandRawOptions): InstrumentType {
-  const instrumentKind = parseCommandOptions(
-    rawOptions,
-    findInstrumentCommandName,
-    { 'instrument-kind': findInstrumentRequestOptionsSchema['instrument-kind'] } as const
-  )['instrument-kind'];
+  const instrumentKind = parseCommandOptions(rawOptions, { 'instrument-kind': findInstrumentRequestOptionsSchema['instrument-kind'] } as const)['instrument-kind'];
 
   return instrumentKinds[instrumentKind as InstrumentKindName];
 }
 
-export function parseFindInstrumentRequest(rawOptions: CommandRawOptions): FindInstrumentRequest {
-  return createFindInstrumentRequest(parseFindInstrumentOptions(rawOptions));
-}
 
 export function parseFindInstrumentFormat(rawOptions: CommandRawOptions): FindInstrumentFormat {
-  return parseCommandOptions(
-    rawOptions,
-    findInstrumentCommandName,
-    findInstrumentFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, findInstrumentFormatOptionsSchema).format;
 }
 
 export function createFindInstrumentCommand(
@@ -115,7 +99,7 @@ export function createFindInstrumentCommand(
 export const findInstrumentCommand = createFindInstrumentCommand();
 
 async function runFindInstrumentCommand(
-  options: ReturnType<typeof parseFindInstrumentOptions>,
+  options: FindInstrumentOptions,
   createSdk: FindInstrumentSdkFactory
 ): Promise<string> {
   const request = createFindInstrumentRequest(options);
@@ -134,8 +118,8 @@ async function runFindInstrumentCommand(
 
 export { formatFindInstrument };
 
-function createFindInstrumentRequest(
-  options: ReturnType<typeof parseFindInstrumentOptions>
+export function createFindInstrumentRequest(
+  options: FindInstrumentRequestOptions
 ): FindInstrumentRequest {
   return {
     query: options.query,

@@ -25,7 +25,6 @@ describe('command mechanics', () => {
           format: 'json',
           cursor: 'next'
         }),
-        'users get-accounts',
         withSdkOptions(
           {
             format: {
@@ -58,7 +57,6 @@ describe('command mechanics', () => {
       assert.throws(
         () => parseCommandOptions(
           rawOptions({ unexpected: 'value' }),
-          'users get-accounts',
           withSdkOptions({})
         ),
         /Unexpected argument '--unexpected'/
@@ -69,7 +67,6 @@ describe('command mechanics', () => {
       assert.throws(
         () => parseCommandOptions(
           rawOptions({ token: ['token'] }),
-          'users get-accounts',
           withSdkOptions({})
         ),
         /Expected '--token' as scalar option/

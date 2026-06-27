@@ -10,7 +10,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBrokerReportCommand,
   parseBrokerReportFormat,
-  parseBrokerReportRequest
+  createBrokerReportRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -26,13 +26,13 @@ function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportRe
 }
 
 describe('broker-report command', () => {
-  describe('parseBrokerReportRequest', () => {
+  describe('createBrokerReportRequest', () => {
     test('returns generated generateBrokerReport request', () => {
-      const request = parseBrokerReportRequest(rawOptions({
+      const request = createBrokerReportRequest({
         'account-id': '2000000000',
         from: '2026-06-01T00:00:00.000Z',
         to: '2026-06-19T00:00:00.000Z'
-      }));
+      });
 
       assert.deepEqual(request, {
         generateBrokerReportRequest: {
@@ -45,10 +45,10 @@ describe('broker-report command', () => {
     });
 
     test('returns generated getBrokerReport request', () => {
-      const request = parseBrokerReportRequest(rawOptions({
+      const request = createBrokerReportRequest({
         'task-id': 'task-id',
         page: '2'
-      }));
+      });
 
       assert.deepEqual(request, {
         generateBrokerReportRequest: undefined,
@@ -60,9 +60,9 @@ describe('broker-report command', () => {
     });
 
     test('uses page zero by default in get mode', () => {
-      const request = parseBrokerReportRequest(rawOptions({
+      const request = createBrokerReportRequest({
         'task-id': 'task-id'
-      }));
+      });
 
       assert.deepEqual(request.getBrokerReportRequest, {
         taskId: 'task-id',
@@ -72,40 +72,40 @@ describe('broker-report command', () => {
 
     test('rejects mixed generate and get modes', () => {
       assert.throws(
-        () => parseBrokerReportRequest(rawOptions({
+        () => createBrokerReportRequest({
           'account-id': '2000000000',
           from: '2026-06-01T00:00:00.000Z',
           to: '2026-06-19T00:00:00.000Z',
           'task-id': 'task-id'
-        })),
+        }),
         /Expected either '--task-id' or '--account-id' with '--from' and '--to'/
       );
     });
 
     test('rejects page without task id', () => {
       assert.throws(
-        () => parseBrokerReportRequest(rawOptions({ page: '1' })),
+        () => createBrokerReportRequest({ page: '1' }),
         /Expected '--page' only with '--task-id'/
       );
     });
 
     test('rejects invalid page', () => {
       assert.throws(
-        () => parseBrokerReportRequest(rawOptions({
+        () => createBrokerReportRequest({
           'task-id': 'task-id',
           page: '-1'
-        })),
+        }),
         /Expected '--page' as integer greater than or equal to 0/
       );
     });
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseBrokerReportRequest(rawOptions({
+        () => createBrokerReportRequest({
           'account-id': '2000000000',
           from: '2026-06-19T00:00:00.000Z',
           to: '2026-06-01T00:00:00.000Z'
-        })),
+        }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });

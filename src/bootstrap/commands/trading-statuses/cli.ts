@@ -3,9 +3,9 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -27,7 +27,6 @@ type TradingStatusesSdk = {
 
 type TradingStatusesSdkFactory = (options: TinkoffInvestOptions) => TradingStatusesSdk;
 
-const tradingStatusesCommandName = 'marketdata get-trading-statuses';
 const tradingStatusesCommandPath = ['marketdata', 'get-trading-statuses'] as const;
 const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -51,34 +50,19 @@ const tradingStatusesOptionsSchema = withSdkOptions(
   tradingStatusesFormatOptionsSchema
 );
 
-function parseTradingStatusesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    tradingStatusesCommandName,
-    tradingStatusesOptionsSchema
-  );
-}
+type TradingStatusesOptions = InferOptions<typeof tradingStatusesOptionsSchema>;
+type TradingStatusesRequestOptions = CommandRequestOptions<TradingStatusesOptions, 'instrument-id'>;
+
 
 export function parseTradingStatusesInstrumentIds(rawOptions: CommandRawOptions): string[] {
-  const options = parseCommandOptions(
-    rawOptions,
-    tradingStatusesCommandName,
-    tradingStatusesInstrumentIdsOptionsSchema
-  );
+  const options = parseCommandOptions(rawOptions, tradingStatusesInstrumentIdsOptionsSchema);
 
   return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
-export function parseTradingStatusesRequest(rawOptions: CommandRawOptions): GetTradingStatusesRequest {
-  return createTradingStatusesRequest(parseTradingStatusesOptions(rawOptions));
-}
 
 export function parseTradingStatusesFormat(rawOptions: CommandRawOptions): TradingStatusesFormat {
-  return parseCommandOptions(
-    rawOptions,
-    tradingStatusesCommandName,
-    tradingStatusesFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, tradingStatusesFormatOptionsSchema).format;
 }
 
 export function createTradingStatusesCommand(
@@ -96,7 +80,7 @@ export function createTradingStatusesCommand(
 export const tradingStatusesCommand = createTradingStatusesCommand();
 
 async function runTradingStatusesCommand(
-  options: ReturnType<typeof parseTradingStatusesOptions>,
+  options: TradingStatusesOptions,
   createSdk: TradingStatusesSdkFactory
 ): Promise<string> {
   const request = createTradingStatusesRequest(options);
@@ -115,8 +99,8 @@ async function runTradingStatusesCommand(
 
 export { formatTradingStatuses };
 
-function createTradingStatusesRequest(
-  options: ReturnType<typeof parseTradingStatusesOptions>
+export function createTradingStatusesRequest(
+  options: TradingStatusesRequestOptions
 ): GetTradingStatusesRequest {
   return {
     instrumentId: parseCommaSeparatedStringListOption(

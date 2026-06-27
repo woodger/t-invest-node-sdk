@@ -94,30 +94,6 @@ export function parseInstrumentLookupIdType(rawOptions: CommandRawOptions): Inst
   return instrumentIdTypes[options['id-type']];
 }
 
-export function parseInstrumentLookupRequest(rawOptions: CommandRawOptions): InstrumentRequest {
-  const idType = parseInstrumentLookupIdType(rawOptions);
-  const classCodeOptions = parseOptions(
-    instrumentLookupClassCodeOptionsSchema,
-    toRawOptionValues(rawOptions, ['class-code'])
-  );
-  const classCode = classCodeOptions['class-code'] ?? '';
-
-  if (idType === InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER && classCode === '') {
-    throw new Error("Expected required argument '--class-code' when '--id-type=ticker'");
-  }
-
-  const idOptions = parseOptions(
-    instrumentLookupIdOptionsSchema,
-    toRawOptionValues(rawOptions, ['id'])
-  );
-
-  return {
-    id: idOptions.id,
-    idType,
-    classCode
-  };
-}
-
 export function createInstrumentLookupRequestFromOptions(
   options: {
     id?: string;
@@ -155,12 +131,6 @@ export function parseInstrumentStatus(rawOptions: CommandRawOptions): Instrument
   const status = options['instrument-status'];
 
   return instrumentStatuses[status];
-}
-
-export function parseInstrumentsRequest(rawOptions: CommandRawOptions): InstrumentsRequest {
-  return {
-    instrumentStatus: parseInstrumentStatus(rawOptions)
-  };
 }
 
 export function createInstrumentsRequestFromOptions(

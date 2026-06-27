@@ -12,7 +12,7 @@ import {
   createBondsCommand,
   parseBondsFormat,
   parseBondsInstrumentStatus,
-  parseBondsRequest
+  createBondsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,9 +55,9 @@ describe('bonds command', () => {
     });
   });
 
-  describe('parseBondsRequest', () => {
+  describe('createBondsRequest', () => {
     test('returns generated bonds request', () => {
-      assert.deepEqual(parseBondsRequest(rawOptions({ 'instrument-status': 'all' })), {
+      assert.deepEqual(createBondsRequest({ 'instrument-status': 'all' }), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });

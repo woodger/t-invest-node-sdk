@@ -12,7 +12,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBondCouponsCommand,
   parseBondCouponsFormat,
-  parseBondCouponsRequest
+  createBondCouponsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -46,13 +46,13 @@ function response(overrides: Partial<GetBondCouponsResponse> = {}): GetBondCoupo
 }
 
 describe('bond-coupons command', () => {
-  describe('parseBondCouponsRequest', () => {
+  describe('createBondCouponsRequest', () => {
     test('returns generated getBondCoupons request', () => {
-      const request = parseBondCouponsRequest(rawOptions({
+      const request = createBondCouponsRequest({
         figi: 'BOND-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
-      }));
+      });
 
       assert.deepEqual(request, {
         figi: 'BOND-FIGI',
@@ -63,11 +63,11 @@ describe('bond-coupons command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseBondCouponsRequest(rawOptions({
+        () => createBondCouponsRequest({
           figi: 'BOND-FIGI',
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
-        })),
+        }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });

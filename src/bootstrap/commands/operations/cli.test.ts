@@ -14,7 +14,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOperationsCommand,
   parseOperationsFormat,
-  parseOperationsRequest,
+  createOperationsRequest,
   parseOperationsState
 } from './cli';
 
@@ -80,15 +80,15 @@ describe('operations command', () => {
     });
   });
 
-  describe('parseOperationsRequest', () => {
+  describe('createOperationsRequest', () => {
     test('returns generated getOperations request', () => {
-      const request = parseOperationsRequest(rawOptions({
+      const request = createOperationsRequest({
         'account-id': 'account-id',
         from: '2026-06-01T00:00:00.000Z',
         to: '2026-06-19T00:00:00.000Z',
         state: 'executed',
         figi: 'BBG00QPYJ5H0'
-      }));
+      });
 
       assert.equal(request.accountId, 'account-id');
       assert.equal(request.from?.toISOString(), '2026-06-01T00:00:00.000Z');
@@ -99,11 +99,12 @@ describe('operations command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseOperationsRequest(rawOptions({
+        () => createOperationsRequest({
           'account-id': 'account-id',
           from: '2026-06-20T00:00:00.000Z',
-          to: '2026-06-19T00:00:00.000Z'
-        })),
+          to: '2026-06-19T00:00:00.000Z',
+          state: 'unspecified'
+        }),
         /Expected '--from' to be earlier/
       );
     });

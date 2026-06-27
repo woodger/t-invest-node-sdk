@@ -12,7 +12,7 @@ import {
   createOptionCommand,
   parseOptionFormat,
   parseOptionIdType,
-  parseOptionRequest
+  createOptionRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,12 +55,12 @@ describe('option command', () => {
     });
   });
 
-  describe('parseOptionRequest', () => {
+  describe('createOptionRequest', () => {
     test('returns generated optionBy request', () => {
-      const request = parseOptionRequest(rawOptions({
+      const request = createOptionRequest({
         id: 'OPTIONUID',
         'id-type': 'uid'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'OPTIONUID',
@@ -71,20 +71,20 @@ describe('option command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseOptionRequest(rawOptions({
+        () => createOptionRequest({
           id: 'OPTIONTICKER',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseOptionRequest(rawOptions({
+      const request = createOptionRequest({
         id: 'OPTIONTICKER',
         'id-type': 'ticker',
         'class-code': 'SPBOPT'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'OPTIONTICKER',

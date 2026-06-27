@@ -3,9 +3,9 @@ import type {
   GetBondCouponsRequest,
   GetBondCouponsResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -23,7 +23,6 @@ type BondCouponsSdk = {
 
 type BondCouponsSdkFactory = (options: TinkoffInvestOptions) => BondCouponsSdk;
 
-const bondCouponsCommandName = 'instruments get-bond-coupons';
 const bondCouponsCommandPath = ['instruments', 'get-bond-coupons'] as const;
 const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -55,24 +54,13 @@ const bondCouponsOptionsSchema = withSdkOptions(
   bondCouponsFormatOptionsSchema
 );
 
-function parseBondCouponsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    bondCouponsCommandName,
-    bondCouponsOptionsSchema
-  );
-}
+type BondCouponsOptions = InferOptions<typeof bondCouponsOptionsSchema>;
+type BondCouponsRequestOptions = CommandRequestOptions<BondCouponsOptions, 'from' | 'to' | 'figi'>;
 
-export function parseBondCouponsRequest(rawOptions: CommandRawOptions): GetBondCouponsRequest {
-  return createBondCouponsRequest(parseBondCouponsOptions(rawOptions));
-}
+
 
 export function parseBondCouponsFormat(rawOptions: CommandRawOptions): BondCouponsFormat {
-  return parseCommandOptions(
-    rawOptions,
-    bondCouponsCommandName,
-    bondCouponsFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, bondCouponsFormatOptionsSchema).format;
 }
 
 export function createBondCouponsCommand(
@@ -90,7 +78,7 @@ export function createBondCouponsCommand(
 export const bondCouponsCommand = createBondCouponsCommand();
 
 async function runBondCouponsCommand(
-  options: ReturnType<typeof parseBondCouponsOptions>,
+  options: BondCouponsOptions,
   createSdk: BondCouponsSdkFactory
 ): Promise<string> {
   const request = createBondCouponsRequest(options);
@@ -109,8 +97,8 @@ async function runBondCouponsCommand(
 
 export { formatBondCoupons };
 
-function createBondCouponsRequest(
-  options: ReturnType<typeof parseBondCouponsOptions>
+export function createBondCouponsRequest(
+  options: BondCouponsRequestOptions
 ): GetBondCouponsRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');

@@ -13,7 +13,7 @@ import {
   createClosePricesCommand,
   parseClosePricesFormat,
   parseClosePricesInstrumentIds,
-  parseClosePricesRequest
+  createClosePricesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -74,11 +74,11 @@ describe('close-prices command', () => {
     });
   });
 
-  describe('parseClosePricesRequest', () => {
+  describe('createClosePricesRequest', () => {
     test('returns generated getClosePrices request', () => {
-      const request = parseClosePricesRequest(rawOptions({
+      const request = createClosePricesRequest({
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
-      }));
+      });
 
       assert.deepEqual(request.instruments, [
         { instrumentId: 'BBG00QPYJ5H0' },

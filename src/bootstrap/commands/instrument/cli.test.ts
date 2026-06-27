@@ -8,7 +8,7 @@ import {
   createInstrumentCommand,
   parseInstrumentFormat,
   parseInstrumentIdType,
-  parseInstrumentRequest
+  createInstrumentRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -42,12 +42,12 @@ describe('instrument command', () => {
     });
   });
 
-  describe('parseInstrumentRequest', () => {
+  describe('createInstrumentRequest', () => {
     test('returns generated getInstrumentBy request', () => {
-      const request = parseInstrumentRequest(rawOptions({
+      const request = createInstrumentRequest({
         id: 'BBG00QPYJ5H0',
         'id-type': 'figi'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'BBG00QPYJ5H0',
@@ -58,20 +58,20 @@ describe('instrument command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseInstrumentRequest(rawOptions({
+        () => createInstrumentRequest({
           id: 'TCSG',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseInstrumentRequest(rawOptions({
+      const request = createInstrumentRequest({
         id: 'TCSG',
         'id-type': 'ticker',
         'class-code': 'TQBR'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'TCSG',

@@ -3,9 +3,9 @@ import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -23,7 +23,6 @@ type FuturesMarginSdk = {
 
 type FuturesMarginSdkFactory = (options: TinkoffInvestOptions) => FuturesMarginSdk;
 
-const futuresMarginCommandName = 'instruments get-futures-margin';
 const futuresMarginCommandPath = ['instruments', 'get-futures-margin'] as const;
 const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -47,20 +46,13 @@ const futuresMarginOptionsSchema = withSdkOptions(
   futuresMarginFormatOptionsSchema
 );
 
-function parseFuturesMarginOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, futuresMarginCommandName, futuresMarginOptionsSchema);
-}
+type FuturesMarginOptions = InferOptions<typeof futuresMarginOptionsSchema>;
+type FuturesMarginRequestOptions = CommandRequestOptions<FuturesMarginOptions, 'figi'>;
 
-export function parseFuturesMarginRequest(rawOptions: CommandRawOptions): GetFuturesMarginRequest {
-  return createFuturesMarginRequest(parseFuturesMarginOptions(rawOptions));
-}
+
 
 export function parseFuturesMarginFormat(rawOptions: CommandRawOptions): FuturesMarginFormat {
-  return parseCommandOptions(
-    rawOptions,
-    futuresMarginCommandName,
-    futuresMarginFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, futuresMarginFormatOptionsSchema).format;
 }
 
 export function createFuturesMarginCommand(
@@ -78,7 +70,7 @@ export function createFuturesMarginCommand(
 export const futuresMarginCommand = createFuturesMarginCommand();
 
 async function runFuturesMarginCommand(
-  options: ReturnType<typeof parseFuturesMarginOptions>,
+  options: FuturesMarginOptions,
   createSdk: FuturesMarginSdkFactory
 ): Promise<string> {
   const request = createFuturesMarginRequest(options);
@@ -97,8 +89,8 @@ async function runFuturesMarginCommand(
 
 export { formatFuturesMargin };
 
-function createFuturesMarginRequest(
-  options: ReturnType<typeof parseFuturesMarginOptions>
+export function createFuturesMarginRequest(
+  options: FuturesMarginRequestOptions
 ): GetFuturesMarginRequest {
   return {
     figi: options.figi

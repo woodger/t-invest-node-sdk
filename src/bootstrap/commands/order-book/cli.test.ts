@@ -13,7 +13,7 @@ import {
   createOrderBookCommand,
   parseOrderBookDepth,
   parseOrderBookFormat,
-  parseOrderBookRequest
+  createOrderBookRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -77,12 +77,12 @@ describe('order-book command', () => {
     });
   });
 
-  describe('parseOrderBookRequest', () => {
+  describe('createOrderBookRequest', () => {
     test('returns generated getOrderBook request', () => {
-      const request = parseOrderBookRequest(rawOptions({
+      const request = createOrderBookRequest({
         'instrument-id': 'BBG00QPYJ5H0',
-        depth: '10'
-      }));
+        depth: 10
+      });
 
       assert.deepEqual(request, {
         figi: '',

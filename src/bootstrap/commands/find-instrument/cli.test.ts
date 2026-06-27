@@ -13,7 +13,7 @@ import {
   createFindInstrumentCommand,
   parseFindInstrumentFormat,
   parseFindInstrumentKind,
-  parseFindInstrumentRequest
+  createFindInstrumentRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -75,13 +75,13 @@ describe('find-instrument command', () => {
     });
   });
 
-  describe('parseFindInstrumentRequest', () => {
+  describe('createFindInstrumentRequest', () => {
     test('returns generated findInstrument request', () => {
-      const request = parseFindInstrumentRequest(rawOptions({
+      const request = createFindInstrumentRequest({
         query: 'TCSG',
         'instrument-kind': 'share',
         'api-trade-available': true
-      }));
+      });
 
       assert.deepEqual(request, {
         query: 'TCSG',
@@ -90,12 +90,6 @@ describe('find-instrument command', () => {
       });
     });
 
-    test('requires query', () => {
-      assert.throws(
-        () => parseFindInstrumentRequest(rawOptions()),
-        /Expected required argument '--query'/
-      );
-    });
   });
 
   describe('parseFindInstrumentFormat', () => {

@@ -4,9 +4,9 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPortfolio, portfolioFormats, type PortfolioFormat } from './reporter';
@@ -20,7 +20,6 @@ type PortfolioSdk = {
 
 type PortfolioSdkFactory = (options: TinkoffInvestOptions) => PortfolioSdk;
 
-const portfolioCommandName = 'operations get-portfolio';
 const portfolioCommandPath = ['operations', 'get-portfolio'] as const;
 const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -59,30 +58,19 @@ const portfolioOptionsSchema = withSdkOptions(
   portfolioFormatOptionsSchema
 );
 
-function parsePortfolioOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, portfolioCommandName, portfolioOptionsSchema);
-}
+type PortfolioOptions = InferOptions<typeof portfolioOptionsSchema>;
+type PortfolioRequestOptions = CommandRequestOptions<PortfolioOptions, 'account-id' | 'currency'>;
+
 
 export function parsePortfolioCurrency(rawOptions: CommandRawOptions): PortfolioCurrency {
-  const { currency } = parseCommandOptions(
-    rawOptions,
-    portfolioCommandName,
-    { currency: portfolioRequestOptionsSchema.currency } as const
-  );
+  const { currency } = parseCommandOptions(rawOptions, { currency: portfolioRequestOptionsSchema.currency } as const);
 
   return portfolioCurrencies[currency];
 }
 
-export function parsePortfolioRequest(rawOptions: CommandRawOptions): PortfolioRequest {
-  return createPortfolioRequest(parsePortfolioOptions(rawOptions));
-}
 
 export function parsePortfolioFormat(rawOptions: CommandRawOptions): PortfolioFormat {
-  return parseCommandOptions(
-    rawOptions,
-    portfolioCommandName,
-    portfolioFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, portfolioFormatOptionsSchema).format;
 }
 
 export function createPortfolioCommand(
@@ -100,7 +88,7 @@ export function createPortfolioCommand(
 export const portfolioCommand = createPortfolioCommand();
 
 async function runPortfolioCommand(
-  options: ReturnType<typeof parsePortfolioOptions>,
+  options: PortfolioOptions,
   createSdk: PortfolioSdkFactory
 ): Promise<string> {
   const request = createPortfolioRequest(options);
@@ -119,7 +107,7 @@ async function runPortfolioCommand(
 
 export { formatPortfolio };
 
-function createPortfolioRequest(options: ReturnType<typeof parsePortfolioOptions>): PortfolioRequest {
+export function createPortfolioRequest(options: PortfolioRequestOptions): PortfolioRequest {
   return {
     accountId: options['account-id'],
     currency: portfolioCurrencies[options.currency]

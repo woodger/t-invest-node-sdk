@@ -12,7 +12,6 @@ import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-  parseInstrumentLookupRequest
 } from '../instruments-args';
 import { formatOption, optionFormats, type OptionFormat } from './reporter';
 
@@ -25,7 +24,6 @@ type OptionSdk = {
 
 type OptionSdkFactory = (options: TinkoffInvestOptions) => OptionSdk;
 
-const optionCommandName = 'instruments option-by';
 const optionCommandPath = ['instruments', 'option-by'] as const;
 const defaultOptionSdkFactory: OptionSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -45,14 +43,10 @@ const optionOptionsSchema = withSdkOptions(
 type OptionOptions = InferOptions<typeof optionOptionsSchema>;
 
 export const parseOptionIdType = parseInstrumentLookupIdType;
-export const parseOptionRequest = parseInstrumentLookupRequest;
+export const createOptionRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseOptionFormat(rawOptions: CommandRawOptions): OptionFormat {
-  return parseCommandOptions(
-    rawOptions,
-    optionCommandName,
-    optionFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, optionFormatOptionsSchema).format;
 }
 
 export function createOptionCommand(

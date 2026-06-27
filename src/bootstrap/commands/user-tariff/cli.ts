@@ -1,6 +1,6 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -16,7 +16,6 @@ type UserTariffSdk = {
 
 type UserTariffSdkFactory = (options: TinkoffInvestOptions) => UserTariffSdk;
 
-const userTariffCommandName = 'users get-user-tariff';
 const userTariffCommandPath = ['users', 'get-user-tariff'] as const;
 const defaultUserTariffSdkFactory: UserTariffSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -28,12 +27,10 @@ const userTariffOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseUserTariffOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, userTariffCommandName, userTariffOptionsSchema);
-}
+type UserTariffOptions = InferOptions<typeof userTariffOptionsSchema>;
 
 export function parseUserTariffFormat(rawOptions: CommandRawOptions): UserTariffFormat {
-  return parseUserTariffOptions(rawOptions).format;
+  return parseCommandOptions(rawOptions, userTariffOptionsSchema).format;
 }
 
 export function createUserTariffCommand(
@@ -51,7 +48,7 @@ export function createUserTariffCommand(
 export const userTariffCommand = createUserTariffCommand();
 
 async function runUserTariffCommand(
-  options: ReturnType<typeof parseUserTariffOptions>,
+  options: UserTariffOptions,
   createSdk: UserTariffSdkFactory
 ): Promise<string> {
   const { format } = options;

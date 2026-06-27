@@ -8,7 +8,7 @@ import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createPositionsCommand,
   parsePositionsFormat,
-  parsePositionsRequest
+  createPositionsRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -36,11 +36,11 @@ function positionsResponse(overrides: Partial<PositionsResponse> = {}): Position
 }
 
 describe('positions command', () => {
-  describe('parsePositionsRequest', () => {
+  describe('createPositionsRequest', () => {
     test('returns generated getPositions request', () => {
-      const request = parsePositionsRequest(rawOptions({
+      const request = createPositionsRequest({
         'account-id': 'account-id'
-      }));
+      });
 
       assert.equal(request.accountId, 'account-id');
     });

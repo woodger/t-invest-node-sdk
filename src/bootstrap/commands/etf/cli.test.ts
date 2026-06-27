@@ -12,7 +12,7 @@ import {
   createEtfCommand,
   parseEtfFormat,
   parseEtfIdType,
-  parseEtfRequest
+  createEtfRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,12 +55,12 @@ describe('etf command', () => {
     });
   });
 
-  describe('parseEtfRequest', () => {
+  describe('createEtfRequest', () => {
     test('returns generated etfBy request', () => {
-      const request = parseEtfRequest(rawOptions({
+      const request = createEtfRequest({
         id: 'BBG333333333',
         'id-type': 'figi'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'BBG333333333',
@@ -71,20 +71,20 @@ describe('etf command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseEtfRequest(rawOptions({
+        () => createEtfRequest({
           id: 'TMOS',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseEtfRequest(rawOptions({
+      const request = createEtfRequest({
         id: 'TMOS',
         'id-type': 'ticker',
         'class-code': 'TQTF'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'TMOS',

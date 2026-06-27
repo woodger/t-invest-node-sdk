@@ -12,7 +12,7 @@ import {
   createCurrencyCommand,
   parseCurrencyFormat,
   parseCurrencyIdType,
-  parseCurrencyRequest
+  createCurrencyRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,12 +55,12 @@ describe('currency command', () => {
     });
   });
 
-  describe('parseCurrencyRequest', () => {
+  describe('createCurrencyRequest', () => {
     test('returns generated currencyBy request', () => {
-      const request = parseCurrencyRequest(rawOptions({
+      const request = createCurrencyRequest({
         id: 'BBG0013HGFT4',
         'id-type': 'figi'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'BBG0013HGFT4',
@@ -71,20 +71,20 @@ describe('currency command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseCurrencyRequest(rawOptions({
+        () => createCurrencyRequest({
           id: 'USD000UTSTOM',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseCurrencyRequest(rawOptions({
+      const request = createCurrencyRequest({
         id: 'USD000UTSTOM',
         'id-type': 'ticker',
         'class-code': 'CETS'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'USD000UTSTOM',

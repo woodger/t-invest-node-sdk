@@ -3,9 +3,9 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
@@ -33,7 +33,6 @@ type DividendsForeignIssuerSdkFactory = (
   options: TinkoffInvestOptions
 ) => DividendsForeignIssuerSdk;
 
-const dividendsForeignIssuerCommandName = 'operations get-dividends-foreign-issuer';
 const dividendsForeignIssuerCommandPath = ['operations', 'get-dividends-foreign-issuer'] as const;
 const defaultDividendsForeignIssuerSdkFactory: DividendsForeignIssuerSdkFactory = (
   options
@@ -70,16 +69,19 @@ const dividendsForeignIssuerOptionsSchema = withSdkOptions(
   dividendsForeignIssuerFormatOptionsSchema
 );
 
-function parseDividendsForeignIssuerOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(
-    rawOptions,
-    dividendsForeignIssuerCommandName,
-    dividendsForeignIssuerOptionsSchema
-  );
-}
+type DividendsForeignIssuerOptions = InferOptions<typeof dividendsForeignIssuerOptionsSchema>;
+type DividendsForeignIssuerRequestOptions = CommandRequestOptions<
+  DividendsForeignIssuerOptions,
+  'task-id' |
+  'account-id' |
+  'from' |
+  'to' |
+  'page'
+>;
 
-function createDividendsForeignIssuerRequest(
-  options: ReturnType<typeof parseDividendsForeignIssuerOptions>
+
+export function createDividendsForeignIssuerRequest(
+  options: DividendsForeignIssuerRequestOptions
 ): GetDividendsForeignIssuerRequest {
   const taskId = options['task-id'];
   const hasGenerateArgs = options['account-id'] !== undefined
@@ -121,20 +123,11 @@ function createDividendsForeignIssuerRequest(
   };
 }
 
-export function parseDividendsForeignIssuerRequest(
-  rawOptions: CommandRawOptions
-): GetDividendsForeignIssuerRequest {
-  return createDividendsForeignIssuerRequest(parseDividendsForeignIssuerOptions(rawOptions));
-}
 
 export function parseDividendsForeignIssuerFormat(
   rawOptions: CommandRawOptions
 ): DividendsForeignIssuerFormat {
-  return parseCommandOptions(
-    rawOptions,
-    dividendsForeignIssuerCommandName,
-    dividendsForeignIssuerFormatOptionsSchema
-  ).format;
+  return parseCommandOptions(rawOptions, dividendsForeignIssuerFormatOptionsSchema).format;
 }
 
 export function createDividendsForeignIssuerCommand(
@@ -152,7 +145,7 @@ export function createDividendsForeignIssuerCommand(
 export const dividendsForeignIssuerCommand = createDividendsForeignIssuerCommand();
 
 async function runDividendsForeignIssuerCommand(
-  options: ReturnType<typeof parseDividendsForeignIssuerOptions>,
+  options: DividendsForeignIssuerOptions,
   createSdk: DividendsForeignIssuerSdkFactory
 ): Promise<string> {
   const request = createDividendsForeignIssuerRequest(options);

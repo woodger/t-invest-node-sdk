@@ -12,7 +12,7 @@ import {
   createShareCommand,
   parseShareFormat,
   parseShareIdType,
-  parseShareRequest
+  createShareRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -55,12 +55,12 @@ describe('share command', () => {
     });
   });
 
-  describe('parseShareRequest', () => {
+  describe('createShareRequest', () => {
     test('returns generated shareBy request', () => {
-      const request = parseShareRequest(rawOptions({
+      const request = createShareRequest({
         id: 'BBG004730N88',
         'id-type': 'figi'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'BBG004730N88',
@@ -71,20 +71,20 @@ describe('share command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseShareRequest(rawOptions({
+        () => createShareRequest({
           id: 'SBER',
           'id-type': 'ticker'
-        })),
+        }),
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseShareRequest(rawOptions({
+      const request = createShareRequest({
         id: 'SBER',
         'id-type': 'ticker',
         'class-code': 'TQBR'
-      }));
+      });
 
       assert.deepEqual(request, {
         id: 'SBER',

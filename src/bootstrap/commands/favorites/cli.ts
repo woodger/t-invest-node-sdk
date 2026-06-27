@@ -1,6 +1,6 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -16,7 +16,6 @@ type FavoritesSdk = {
 
 type FavoritesSdkFactory = (options: TinkoffInvestOptions) => FavoritesSdk;
 
-const favoritesCommandName = 'instruments get-favorites';
 const favoritesCommandPath = ['instruments', 'get-favorites'] as const;
 const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -28,12 +27,10 @@ const favoritesOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseFavoritesOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, favoritesCommandName, favoritesOptionsSchema);
-}
+type FavoritesOptions = InferOptions<typeof favoritesOptionsSchema>;
 
 export function parseFavoritesFormat(rawOptions: CommandRawOptions): FavoritesFormat {
-  return parseFavoritesOptions(rawOptions).format;
+  return parseCommandOptions(rawOptions, favoritesOptionsSchema).format;
 }
 
 export function createFavoritesCommand(
@@ -51,7 +48,7 @@ export function createFavoritesCommand(
 export const favoritesCommand = createFavoritesCommand();
 
 async function runFavoritesCommand(
-  options: ReturnType<typeof parseFavoritesOptions>,
+  options: FavoritesOptions,
   createSdk: FavoritesSdkFactory
 ): Promise<string> {
   const { format } = options;

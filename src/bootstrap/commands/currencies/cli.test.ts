@@ -12,7 +12,7 @@ import {
   createCurrenciesCommand,
   parseCurrenciesFormat,
   parseCurrenciesInstrumentStatus,
-  parseCurrenciesRequest
+  createCurrenciesRequest
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -58,9 +58,9 @@ describe('currencies command', () => {
     });
   });
 
-  describe('parseCurrenciesRequest', () => {
+  describe('createCurrenciesRequest', () => {
     test('returns generated currencies request', () => {
-      assert.deepEqual(parseCurrenciesRequest(rawOptions({ 'instrument-status': 'all' })), {
+      assert.deepEqual(createCurrenciesRequest({ 'instrument-status': 'all' }), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });

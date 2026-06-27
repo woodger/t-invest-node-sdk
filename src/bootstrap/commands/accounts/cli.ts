@@ -1,5 +1,5 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -16,7 +16,6 @@ type AccountsSdk = {
 
 type AccountsSdkFactory = (options: TinkoffInvestOptions) => AccountsSdk;
 
-const accountsCommandName = 'users get-accounts';
 const accountsCommandPath = ['users', 'get-accounts'] as const;
 const defaultAccountsSdkFactory: AccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
@@ -28,12 +27,10 @@ const accountsOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseAccountsOptions(rawOptions: CommandRawOptions) {
-  return parseCommandOptions(rawOptions, accountsCommandName, accountsOptionsSchema);
-}
+type AccountsOptions = InferOptions<typeof accountsOptionsSchema>;
 
 export function parseAccountsFormat(rawOptions: CommandRawOptions): AccountsFormat {
-  return parseAccountsOptions(rawOptions).format;
+  return parseCommandOptions(rawOptions, accountsOptionsSchema).format;
 }
 
 export function createAccountsCommand(
@@ -51,7 +48,7 @@ export function createAccountsCommand(
 export const accountsCommand = createAccountsCommand();
 
 async function runAccountsCommand(
-  options: ReturnType<typeof parseAccountsOptions>,
+  options: AccountsOptions,
   createSdk: AccountsSdkFactory
 ): Promise<string> {
   const { format } = options;
