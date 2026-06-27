@@ -3,7 +3,7 @@ import type {
   FutureResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const futureOptionsSchema = withSdkOptions(
   futureFormatOptionsSchema
 );
 
-function parseFutureOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, futureCommandName, futureOptionsSchema);
-}
+type FutureOptions = InferOptions<typeof futureOptionsSchema>;
 
 export const parseFutureIdType = parseInstrumentLookupIdType;
 export const parseFutureRequest = parseInstrumentLookupRequest;
@@ -69,17 +67,10 @@ export function createFutureCommand(
   });
 }
 
-export function future(argv: CliArgs): Promise<string> {
-  return runFutureCommand(
-    parseFutureOptions(argv),
-    defaultFutureSdkFactory
-  );
-}
-
 export const futureCommand = createFutureCommand();
 
 async function runFutureCommand(
-  options: ReturnType<typeof parseFutureOptions>,
+  options: FutureOptions,
   createSdk: FutureSdkFactory
 ): Promise<string> {
   const { format } = options;

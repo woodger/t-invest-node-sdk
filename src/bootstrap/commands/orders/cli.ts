@@ -68,13 +68,6 @@ export function createOrdersCommand(
   });
 }
 
-export function orders(argv: CliArgs): Promise<string> {
-  return runOrdersCommand(
-    parseOrdersOptions(argv),
-    defaultOrdersSdkFactory
-  );
-}
-
 export const ordersCommand = createOrdersCommand();
 
 async function runOrdersCommand(

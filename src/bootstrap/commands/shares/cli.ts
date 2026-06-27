@@ -3,7 +3,7 @@ import {
   type InstrumentsRequest,
   type SharesResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const sharesOptionsSchema = withSdkOptions(
   sharesFormatOptionsSchema
 );
 
-function parseSharesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, sharesCommandName, sharesOptionsSchema);
-}
+type SharesOptions = InferOptions<typeof sharesOptionsSchema>;
 
 export const parseSharesInstrumentStatus = parseInstrumentStatus;
 export const parseSharesRequest = parseInstrumentsRequest;
@@ -69,17 +67,10 @@ export function createSharesCommand(
   });
 }
 
-export function shares(argv: CliArgs): Promise<string> {
-  return runSharesCommand(
-    parseSharesOptions(argv),
-    defaultSharesSdkFactory
-  );
-}
-
 export const sharesCommand = createSharesCommand();
 
 async function runSharesCommand(
-  options: ReturnType<typeof parseSharesOptions>,
+  options: SharesOptions,
   createSdk: SharesSdkFactory
 ): Promise<string> {
   const { format } = options;

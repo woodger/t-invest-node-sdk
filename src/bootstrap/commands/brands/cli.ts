@@ -48,13 +48,6 @@ export function createBrandsCommand(
   });
 }
 
-export function brands(argv: CliArgs): Promise<string> {
-  return runBrandsCommand(
-    parseBrandsOptions(argv),
-    defaultBrandsSdkFactory
-  );
-}
-
 export const brandsCommand = createBrandsCommand();
 
 async function runBrandsCommand(

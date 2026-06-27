@@ -3,7 +3,7 @@ import type {
   EtfResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const etfOptionsSchema = withSdkOptions(
   etfFormatOptionsSchema
 );
 
-function parseEtfOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, etfCommandName, etfOptionsSchema);
-}
+type EtfOptions = InferOptions<typeof etfOptionsSchema>;
 
 export const parseEtfIdType = parseInstrumentLookupIdType;
 export const parseEtfRequest = parseInstrumentLookupRequest;
@@ -69,17 +67,10 @@ export function createEtfCommand(
   });
 }
 
-export function etf(argv: CliArgs): Promise<string> {
-  return runEtfCommand(
-    parseEtfOptions(argv),
-    defaultEtfSdkFactory
-  );
-}
-
 export const etfCommand = createEtfCommand();
 
 async function runEtfCommand(
-  options: ReturnType<typeof parseEtfOptions>,
+  options: EtfOptions,
   createSdk: EtfSdkFactory
 ): Promise<string> {
   const { format } = options;

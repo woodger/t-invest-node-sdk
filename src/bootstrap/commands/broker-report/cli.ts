@@ -135,13 +135,6 @@ export function createBrokerReportCommand(
   });
 }
 
-export function brokerReport(argv: CliArgs): Promise<string> {
-  return runBrokerReportCommand(
-    parseBrokerReportOptions(argv),
-    defaultBrokerReportSdkFactory
-  );
-}
-
 export const brokerReportCommand = createBrokerReportCommand();
 
 async function runBrokerReportCommand(

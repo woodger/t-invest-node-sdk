@@ -97,13 +97,6 @@ export function createPortfolioCommand(
   });
 }
 
-export function portfolio(argv: CliArgs): Promise<string> {
-  return runPortfolioCommand(
-    parsePortfolioOptions(argv),
-    defaultPortfolioSdkFactory
-  );
-}
-
 export const portfolioCommand = createPortfolioCommand();
 
 async function runPortfolioCommand(

@@ -48,13 +48,6 @@ export function createUserInfoCommand(
   });
 }
 
-export function userInfo(argv: CliArgs): Promise<string> {
-  return runUserInfoCommand(
-    parseUserInfoOptions(argv),
-    defaultUserInfoSdkFactory
-  );
-}
-
 export const userInfoCommand = createUserInfoCommand();
 
 async function runUserInfoCommand(

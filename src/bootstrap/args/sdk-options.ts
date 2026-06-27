@@ -10,15 +10,6 @@
  */
 
 import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
-import type { CliArgs } from '../cli-contract';
-import { ArgGuards } from './arg-guards';
-
-export const sdkOptionArgNames = new Set([
-  'token',
-  'endpoint',
-  'app-name',
-  'insecure'
-]);
 
 type SdkCommandOptions = {
   token?: string;
@@ -55,24 +46,24 @@ function requiredCliOrEnvValue(
   return value;
 }
 
-export function resolveSdkOptions(
-  argv: CliArgs,
+export function resolveSdkOptionsFromCommandOptions(
+  options: SdkCommandOptions,
   env: NodeJS.ProcessEnv = process.env
 ): TinkoffInvestOptions {
   const token = requiredCliOrEnvValue(
-    ArgGuards.optionalStringArgValue(argv, 'token'),
+    options.token,
     env,
     'TINKOFF_TOKEN',
     'token'
   );
   const endpoint = requiredCliOrEnvValue(
-    ArgGuards.optionalStringArgValue(argv, 'endpoint'),
+    options.endpoint,
     env,
     'TINKOFF_ENDPOINT',
     'endpoint'
   );
-  const appName = ArgGuards.optionalStringArgValue(argv, 'app-name');
-  const insecure = ArgGuards.optionalBooleanFlagArg(argv, 'insecure');
+  const appName = options['app-name'];
+  const insecure = options.insecure;
 
   return {
     token,
@@ -80,20 +71,4 @@ export function resolveSdkOptions(
     ...(appName === undefined ? {} : { appName }),
     ...(insecure === true ? { useSsl: false } : {})
   };
-}
-
-export function resolveSdkOptionsFromCommandOptions(
-  options: SdkCommandOptions,
-  env: NodeJS.ProcessEnv = process.env
-): TinkoffInvestOptions {
-  return resolveSdkOptions(
-    {
-      _: [''],
-      token: options.token,
-      endpoint: options.endpoint,
-      'app-name': options['app-name'],
-      insecure: options.insecure
-    },
-    env
-  );
 }

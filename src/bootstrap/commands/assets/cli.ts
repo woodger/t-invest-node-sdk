@@ -96,13 +96,6 @@ export function createAssetsCommand(
   });
 }
 
-export function assets(argv: CliArgs): Promise<string> {
-  return runAssetsCommand(
-    parseAssetsOptions(argv),
-    defaultAssetsSdkFactory
-  );
-}
-
 export const assetsCommand = createAssetsCommand();
 
 async function runAssetsCommand(

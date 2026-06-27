@@ -85,13 +85,6 @@ export function createLastPricesCommand(
   });
 }
 
-export function lastPrices(argv: CliArgs): Promise<string> {
-  return runLastPricesCommand(
-    parseLastPricesOptions(argv),
-    defaultLastPricesSdkFactory
-  );
-}
-
 export const lastPricesCommand = createLastPricesCommand();
 
 async function runLastPricesCommand(

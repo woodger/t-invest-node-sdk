@@ -48,13 +48,6 @@ export function createAccountsCommand(
   });
 }
 
-export function accounts(argv: CliArgs): Promise<string> {
-  return runAccountsCommand(
-    parseAccountsOptions(argv),
-    defaultAccountsSdkFactory
-  );
-}
-
 export const accountsCommand = createAccountsCommand();
 
 async function runAccountsCommand(

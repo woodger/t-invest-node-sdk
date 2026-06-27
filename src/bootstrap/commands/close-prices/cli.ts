@@ -85,13 +85,6 @@ export function createClosePricesCommand(
   });
 }
 
-export function closePrices(argv: CliArgs): Promise<string> {
-  return runClosePricesCommand(
-    parseClosePricesOptions(argv),
-    defaultClosePricesSdkFactory
-  );
-}
-
 export const closePricesCommand = createClosePricesCommand();
 
 async function runClosePricesCommand(

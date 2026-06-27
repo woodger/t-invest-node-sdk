@@ -99,13 +99,6 @@ export function createOrderBookCommand(
   });
 }
 
-export function orderBook(argv: CliArgs): Promise<string> {
-  return runOrderBookCommand(
-    parseOrderBookOptions(argv),
-    defaultOrderBookSdkFactory
-  );
-}
-
 export const orderBookCommand = createOrderBookCommand();
 
 async function runOrderBookCommand(

@@ -75,13 +75,6 @@ export function createFuturesMarginCommand(
   });
 }
 
-export function futuresMargin(argv: CliArgs): Promise<string> {
-  return runFuturesMarginCommand(
-    parseFuturesMarginOptions(argv),
-    defaultFuturesMarginSdkFactory
-  );
-}
-
 export const futuresMarginCommand = createFuturesMarginCommand();
 
 async function runFuturesMarginCommand(

@@ -91,13 +91,6 @@ export function createAccruedInterestsCommand(
   });
 }
 
-export function accruedInterests(argv: CliArgs): Promise<string> {
-  return runAccruedInterestsCommand(
-    parseAccruedInterestsOptions(argv),
-    defaultAccruedInterestsSdkFactory
-  );
-}
-
 export const accruedInterestsCommand = createAccruedInterestsCommand();
 
 async function runAccruedInterestsCommand(

@@ -3,7 +3,7 @@ import {
   type InstrumentRequest,
   type InstrumentResponse
 } from '../../../generated/instruments';
-import { defineCommand } from 'icore';
+import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
@@ -42,9 +42,7 @@ const instrumentOptionsSchema = withSdkOptions(
   instrumentFormatOptionsSchema
 );
 
-function parseInstrumentOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, instrumentCommandName, instrumentOptionsSchema);
-}
+type InstrumentOptions = InferOptions<typeof instrumentOptionsSchema>;
 
 export const parseInstrumentIdType = parseInstrumentLookupIdType;
 export const parseInstrumentRequest = parseInstrumentLookupRequest;
@@ -69,17 +67,10 @@ export function createInstrumentCommand(
   });
 }
 
-export function instrument(argv: CliArgs): Promise<string> {
-  return runInstrumentCommand(
-    parseInstrumentOptions(argv),
-    defaultInstrumentSdkFactory
-  );
-}
-
 export const instrumentCommand = createInstrumentCommand();
 
 async function runInstrumentCommand(
-  options: ReturnType<typeof parseInstrumentOptions>,
+  options: InstrumentOptions,
   createSdk: InstrumentSdkFactory
 ): Promise<string> {
   const { format } = options;
