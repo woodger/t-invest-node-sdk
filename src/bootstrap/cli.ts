@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import type { CliArgs } from './cli-contract';
+import { parseArgv, type OptionsSchema } from 'icore';
 import { createStderrWriter } from '../infrastructure/output/stderr-writer';
 import { createStdoutWriter } from '../infrastructure/output/stdout-writer';
 import { resolveCommand } from './command-registry';
@@ -17,61 +18,45 @@ type CliIO = {
   stderr: CliWritable;
 };
 
-const booleanOptionNames = new Set([
-  'help',
-  'version',
-  'insecure'
-]);
+const bootstrapOptionsSchema = {
+  help: {
+    type: 'boolean'
+  },
+  h: {
+    type: 'boolean'
+  },
+  version: {
+    type: 'boolean'
+  },
+  v: {
+    type: 'boolean'
+  },
+  insecure: {
+    type: 'boolean'
+  }
+} as const satisfies OptionsSchema;
 
 export function parseCliArgs(argv: string[]): CliArgs {
-  const parsed: CliArgs = {
-    _: []
+  const parsed = parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
+
+  return {
+    _: parsed.positionals,
+    ...parsed.options
   };
+}
 
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-
-    if (arg.startsWith('--')) {
-      const option = arg.slice(2);
-      const separatorIndex = option.indexOf('=');
-      const name = separatorIndex === -1
-        ? option
-        : option.slice(0, separatorIndex);
-      let value: string | boolean = separatorIndex === -1
-        ? true
-        : option.slice(separatorIndex + 1);
-
-      if (name === '') {
-        parsed._.push(arg);
-      }
-      else {
-        const nextArg = argv[index + 1];
-
-        if (
-          value === true &&
-          !booleanOptionNames.has(name) &&
-          nextArg !== undefined &&
-          !nextArg.startsWith('-')
-        ) {
-          value = nextArg;
-          index += 1;
-        }
-
-        parsed[name] = value;
-      }
+function normalizeCliAliases(argv: readonly string[]): string[] {
+  return argv.map((arg) => {
+    if (arg === '-h') {
+      return '--h';
     }
-    else if (arg === '-h') {
-      parsed.h = true;
-    }
-    else if (arg === '-v') {
-      parsed.v = true;
-    }
-    else {
-      parsed._.push(arg);
-    }
-  }
 
-  return parsed;
+    if (arg === '-v') {
+      return '--v';
+    }
+
+    return arg;
+  });
 }
 
 function renderCommandError(error: unknown): string {
