@@ -3,8 +3,13 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommandOptions,
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatTradingSchedules,
@@ -21,42 +26,60 @@ type TradingSchedulesSdk = {
 
 type TradingSchedulesSdkFactory = (options: TinkoffInvestOptions) => TradingSchedulesSdk;
 
-const tradingSchedulesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'exchange',
-  'from',
-  'to',
-  'format'
-]);
+const tradingSchedulesRequestOptionsSchema = {
+  exchange: {
+    type: 'string'
+  },
+  from: {
+    type: 'string',
+    required: true
+  },
+  to: {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const tradingSchedulesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: tradingSchedulesFormats,
+    default: 'table'
+  }
+} as const;
+
+const tradingSchedulesOptionsSchema = withSdkOptions({
+  ...tradingSchedulesRequestOptionsSchema,
+  ...tradingSchedulesFormatOptionsSchema
+} as const);
+
+function parseTradingSchedulesOptions(argv: CliArgs) {
+  return parseCommandOptions(
+    argv,
+    'instruments trading-schedules',
+    tradingSchedulesOptionsSchema
+  );
+}
 
 export function parseTradingSchedulesRequest(argv: CliArgs): TradingSchedulesRequest {
-  const from = ArgGuards.parseDateArg(argv, 'from');
-  const to = ArgGuards.parseDateArg(argv, 'to');
-
-  if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    exchange: ArgGuards.optionalStringArgValue(argv, 'exchange') ?? '',
-    from,
-    to
-  };
+  return createTradingSchedulesRequest(parseTradingSchedulesOptions(argv));
 }
 
 export function parseTradingSchedulesFormat(argv: CliArgs): TradingSchedulesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', tradingSchedulesFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments trading-schedules',
+    tradingSchedulesFormatOptionsSchema
+  ).format;
 }
 
 export function createTradingSchedulesCommand(
   createSdk: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function tradingSchedules(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, tradingSchedulesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments trading-schedules');
-
-    const request = parseTradingSchedulesRequest(argv);
-    const format = parseTradingSchedulesFormat(argv);
+    const options = parseTradingSchedulesOptions(argv);
+    const request = createTradingSchedulesRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -73,3 +96,20 @@ export function createTradingSchedulesCommand(
 export const tradingSchedules = createTradingSchedulesCommand();
 
 export { formatTradingSchedules };
+
+function createTradingSchedulesRequest(
+  options: ReturnType<typeof parseTradingSchedulesOptions>
+): TradingSchedulesRequest {
+  const from = parseDateTimeOption(options.from, 'from');
+  const to = parseDateTimeOption(options.to, 'to');
+
+  if (from.getTime() > to.getTime()) {
+    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+  }
+
+  return {
+    exchange: options.exchange ?? '',
+    from,
+    to
+  };
+}
