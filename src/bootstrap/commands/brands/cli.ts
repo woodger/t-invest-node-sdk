@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -15,6 +16,10 @@ type BrandsSdk = {
 
 type BrandsSdkFactory = (options: TinkoffInvestOptions) => BrandsSdk;
 
+const brandsCommandName = 'instruments get-brands';
+const brandsCommandPath = ['instruments', 'get-brands'] as const;
+const defaultBrandsSdkFactory: BrandsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const brandsOptionsSchema = withSdkOptions({
   format: {
     type: 'string',
@@ -24,7 +29,7 @@ const brandsOptionsSchema = withSdkOptions({
 } as const);
 
 function parseBrandsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments get-brands', brandsOptionsSchema);
+  return parseCommandOptions(argv, brandsCommandName, brandsOptionsSchema);
 }
 
 export function parseBrandsFormat(argv: CliArgs): BrandsFormat {
@@ -32,23 +37,41 @@ export function parseBrandsFormat(argv: CliArgs): BrandsFormat {
 }
 
 export function createBrandsCommand(
-  createSdk: BrandsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: BrandsSdkFactory = defaultBrandsSdkFactory
 ) {
-  return async function brands(argv: CliArgs): Promise<string> {
-    const { format } = parseBrandsOptions(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getBrands({});
-
-      return formatBrands(response.brands, format);
+  return defineCommand({
+    path: brandsCommandPath,
+    options: brandsOptionsSchema,
+    handle({ options }) {
+      return runBrandsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const brands = createBrandsCommand();
+export function brands(argv: CliArgs): Promise<string> {
+  return runBrandsCommand(
+    parseBrandsOptions(argv),
+    defaultBrandsSdkFactory
+  );
+}
+
+export const brandsCommand = createBrandsCommand();
+
+async function runBrandsCommand(
+  options: ReturnType<typeof parseBrandsOptions>,
+  createSdk: BrandsSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getBrands({});
+
+    return formatBrands(response.brands, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatBrands };

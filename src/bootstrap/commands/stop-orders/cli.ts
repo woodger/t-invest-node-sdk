@@ -3,7 +3,8 @@ import type {
   GetStopOrdersRequest,
   GetStopOrdersResponse
 } from '../../../generated/stoporders';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -17,6 +18,10 @@ type StopOrdersSdk = {
 };
 
 type StopOrdersSdkFactory = (options: TinkoffInvestOptions) => StopOrdersSdk;
+
+const stopOrdersCommandName = 'stoporders get-stop-orders';
+const stopOrdersCommandPath = ['stoporders', 'get-stop-orders'] as const;
+const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const stopOrdersRequestOptionsSchema = {
   'account-id': {
@@ -39,7 +44,7 @@ const stopOrdersOptionsSchema = withSdkOptions(
 );
 
 function parseStopOrdersOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'stoporders get-stop-orders', stopOrdersOptionsSchema);
+  return parseCommandOptions(argv, stopOrdersCommandName, stopOrdersOptionsSchema);
 }
 
 export function parseStopOrdersRequest(argv: CliArgs): GetStopOrdersRequest {
@@ -49,32 +54,49 @@ export function parseStopOrdersRequest(argv: CliArgs): GetStopOrdersRequest {
 export function parseStopOrdersFormat(argv: CliArgs): StopOrdersFormat {
   return parseCommandOptions(
     argv,
-    'stoporders get-stop-orders',
+    stopOrdersCommandName,
     stopOrdersFormatOptionsSchema
   ).format;
 }
 
 export function createStopOrdersCommand(
-  createSdk: StopOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: StopOrdersSdkFactory = defaultStopOrdersSdkFactory
 ) {
-  return async function stopOrders(argv: CliArgs): Promise<string> {
-    const options = parseStopOrdersOptions(argv);
-    const request = createStopOrdersRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.stoporders.getStopOrders(request);
-
-      return formatStopOrders(response, format);
+  return defineCommand({
+    path: stopOrdersCommandPath,
+    options: stopOrdersOptionsSchema,
+    handle({ options }) {
+      return runStopOrdersCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const stopOrders = createStopOrdersCommand();
+export function stopOrders(argv: CliArgs): Promise<string> {
+  return runStopOrdersCommand(
+    parseStopOrdersOptions(argv),
+    defaultStopOrdersSdkFactory
+  );
+}
+
+export const stopOrdersCommand = createStopOrdersCommand();
+
+async function runStopOrdersCommand(
+  options: ReturnType<typeof parseStopOrdersOptions>,
+  createSdk: StopOrdersSdkFactory
+): Promise<string> {
+  const request = createStopOrdersRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.stoporders.getStopOrders(request);
+
+    return formatStopOrders(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatStopOrders };
 

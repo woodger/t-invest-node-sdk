@@ -3,7 +3,8 @@ import type {
   GetOrderStateRequest,
   OrderState
 } from '../../../generated/orders';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -17,6 +18,10 @@ type OrderStateSdk = {
 };
 
 type OrderStateSdkFactory = (options: TinkoffInvestOptions) => OrderStateSdk;
+
+const orderStateCommandName = 'orders get-order-state';
+const orderStateCommandPath = ['orders', 'get-order-state'] as const;
+const defaultOrderStateSdkFactory: OrderStateSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const orderStateRequestOptionsSchema = {
   'account-id': {
@@ -43,7 +48,7 @@ const orderStateOptionsSchema = withSdkOptions(
 );
 
 function parseOrderStateOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'orders get-order-state', orderStateOptionsSchema);
+  return parseCommandOptions(argv, orderStateCommandName, orderStateOptionsSchema);
 }
 
 export function parseOrderStateRequest(argv: CliArgs): GetOrderStateRequest {
@@ -53,32 +58,49 @@ export function parseOrderStateRequest(argv: CliArgs): GetOrderStateRequest {
 export function parseOrderStateFormat(argv: CliArgs): OrderStateFormat {
   return parseCommandOptions(
     argv,
-    'orders get-order-state',
+    orderStateCommandName,
     orderStateFormatOptionsSchema
   ).format;
 }
 
 export function createOrderStateCommand(
-  createSdk: OrderStateSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: OrderStateSdkFactory = defaultOrderStateSdkFactory
 ) {
-  return async function orderState(argv: CliArgs): Promise<string> {
-    const options = parseOrderStateOptions(argv);
-    const request = createOrderStateRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.orders.getOrderState(request);
-
-      return formatOrderState(response, format);
+  return defineCommand({
+    path: orderStateCommandPath,
+    options: orderStateOptionsSchema,
+    handle({ options }) {
+      return runOrderStateCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const orderState = createOrderStateCommand();
+export function orderState(argv: CliArgs): Promise<string> {
+  return runOrderStateCommand(
+    parseOrderStateOptions(argv),
+    defaultOrderStateSdkFactory
+  );
+}
+
+export const orderStateCommand = createOrderStateCommand();
+
+async function runOrderStateCommand(
+  options: ReturnType<typeof parseOrderStateOptions>,
+  createSdk: OrderStateSdkFactory
+): Promise<string> {
+  const request = createOrderStateRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.orders.getOrderState(request);
+
+    return formatOrderState(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatOrderState };
 

@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -15,6 +16,10 @@ type FavoritesSdk = {
 
 type FavoritesSdkFactory = (options: TinkoffInvestOptions) => FavoritesSdk;
 
+const favoritesCommandName = 'instruments get-favorites';
+const favoritesCommandPath = ['instruments', 'get-favorites'] as const;
+const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const favoritesOptionsSchema = withSdkOptions({
   format: {
     type: 'string',
@@ -24,7 +29,7 @@ const favoritesOptionsSchema = withSdkOptions({
 } as const);
 
 function parseFavoritesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments get-favorites', favoritesOptionsSchema);
+  return parseCommandOptions(argv, favoritesCommandName, favoritesOptionsSchema);
 }
 
 export function parseFavoritesFormat(argv: CliArgs): FavoritesFormat {
@@ -32,23 +37,41 @@ export function parseFavoritesFormat(argv: CliArgs): FavoritesFormat {
 }
 
 export function createFavoritesCommand(
-  createSdk: FavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: FavoritesSdkFactory = defaultFavoritesSdkFactory
 ) {
-  return async function favorites(argv: CliArgs): Promise<string> {
-    const { format } = parseFavoritesOptions(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getFavorites({});
-
-      return formatFavorites(response.favoriteInstruments, format);
+  return defineCommand({
+    path: favoritesCommandPath,
+    options: favoritesOptionsSchema,
+    handle({ options }) {
+      return runFavoritesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const favorites = createFavoritesCommand();
+export function favorites(argv: CliArgs): Promise<string> {
+  return runFavoritesCommand(
+    parseFavoritesOptions(argv),
+    defaultFavoritesSdkFactory
+  );
+}
+
+export const favoritesCommand = createFavoritesCommand();
+
+async function runFavoritesCommand(
+  options: ReturnType<typeof parseFavoritesOptions>,
+  createSdk: FavoritesSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getFavorites({});
+
+    return formatFavorites(response.favoriteInstruments, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatFavorites };

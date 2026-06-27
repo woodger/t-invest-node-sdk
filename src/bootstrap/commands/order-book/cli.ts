@@ -3,7 +3,8 @@ import type {
   GetOrderBookRequest,
   GetOrderBookResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -17,6 +18,10 @@ type OrderBookSdk = {
 };
 
 type OrderBookSdkFactory = (options: TinkoffInvestOptions) => OrderBookSdk;
+
+const orderBookCommandName = 'marketdata get-order-book';
+const orderBookCommandPath = ['marketdata', 'get-order-book'] as const;
+const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const orderBookDepthOptionsSchema = {
   depth: {
@@ -50,7 +55,7 @@ const orderBookOptionsSchema = withSdkOptions(
 
 function parseOrderBookOptions(argv: CliArgs) {
   try {
-    return parseCommandOptions(argv, 'marketdata get-order-book', orderBookOptionsSchema);
+    return parseCommandOptions(argv, orderBookCommandName, orderBookOptionsSchema);
   }
   catch (error) {
     throw normalizeOrderBookDepthError(error);
@@ -61,7 +66,7 @@ export function parseOrderBookDepth(argv: CliArgs): number {
   try {
     return parseCommandOptions(
       argv,
-      'marketdata get-order-book',
+      orderBookCommandName,
       orderBookDepthOptionsSchema
     ).depth;
   }
@@ -77,32 +82,49 @@ export function parseOrderBookRequest(argv: CliArgs): GetOrderBookRequest {
 export function parseOrderBookFormat(argv: CliArgs): OrderBookFormat {
   return parseCommandOptions(
     argv,
-    'marketdata get-order-book',
+    orderBookCommandName,
     orderBookFormatOptionsSchema
   ).format;
 }
 
 export function createOrderBookCommand(
-  createSdk: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: OrderBookSdkFactory = defaultOrderBookSdkFactory
 ) {
-  return async function orderBook(argv: CliArgs): Promise<string> {
-    const options = parseOrderBookOptions(argv);
-    const request = createOrderBookRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.marketdata.getOrderBook(request);
-
-      return formatOrderBook(response, format);
+  return defineCommand({
+    path: orderBookCommandPath,
+    options: orderBookOptionsSchema,
+    handle({ options }) {
+      return runOrderBookCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const orderBook = createOrderBookCommand();
+export function orderBook(argv: CliArgs): Promise<string> {
+  return runOrderBookCommand(
+    parseOrderBookOptions(argv),
+    defaultOrderBookSdkFactory
+  );
+}
+
+export const orderBookCommand = createOrderBookCommand();
+
+async function runOrderBookCommand(
+  options: ReturnType<typeof parseOrderBookOptions>,
+  createSdk: OrderBookSdkFactory
+): Promise<string> {
+  const request = createOrderBookRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.marketdata.getOrderBook(request);
+
+    return formatOrderBook(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatOrderBook };
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import {
@@ -107,13 +108,19 @@ describe('order-state command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'account-id': 'account-id',
-        'order-id': 'order-id',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'orders',
+          'get-order-state',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--account-id=account-id',
+          '--order-id=order-id',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -141,12 +148,18 @@ describe('order-state command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          'account-id': 'account-id',
-          'order-id': 'order-id'
-        })),
+        () => runCommand(
+          command,
+          [
+            'orders',
+            'get-order-state',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--account-id=account-id',
+            '--order-id=order-id'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

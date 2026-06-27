@@ -3,7 +3,8 @@ import type {
   GetLastPricesRequest,
   GetLastPricesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommaSeparatedStringListOption,
@@ -21,6 +22,10 @@ type LastPricesSdk = {
 };
 
 type LastPricesSdkFactory = (options: TinkoffInvestOptions) => LastPricesSdk;
+
+const lastPricesCommandName = 'marketdata get-last-prices';
+const lastPricesCommandPath = ['marketdata', 'get-last-prices'] as const;
+const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const lastPricesInstrumentIdsOptionsSchema = {
   'instrument-id': {
@@ -43,13 +48,13 @@ const lastPricesOptionsSchema = withSdkOptions(
 );
 
 function parseLastPricesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'marketdata get-last-prices', lastPricesOptionsSchema);
+  return parseCommandOptions(argv, lastPricesCommandName, lastPricesOptionsSchema);
 }
 
 export function parseLastPricesInstrumentIds(argv: CliArgs): string[] {
   const options = parseCommandOptions(
     argv,
-    'marketdata get-last-prices',
+    lastPricesCommandName,
     lastPricesInstrumentIdsOptionsSchema
   );
 
@@ -63,32 +68,49 @@ export function parseLastPricesRequest(argv: CliArgs): GetLastPricesRequest {
 export function parseLastPricesFormat(argv: CliArgs): LastPricesFormat {
   return parseCommandOptions(
     argv,
-    'marketdata get-last-prices',
+    lastPricesCommandName,
     lastPricesFormatOptionsSchema
   ).format;
 }
 
 export function createLastPricesCommand(
-  createSdk: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: LastPricesSdkFactory = defaultLastPricesSdkFactory
 ) {
-  return async function lastPrices(argv: CliArgs): Promise<string> {
-    const options = parseLastPricesOptions(argv);
-    const request = createLastPricesRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.marketdata.getLastPrices(request);
-
-      return formatLastPrices(response.lastPrices, format);
+  return defineCommand({
+    path: lastPricesCommandPath,
+    options: lastPricesOptionsSchema,
+    handle({ options }) {
+      return runLastPricesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const lastPrices = createLastPricesCommand();
+export function lastPrices(argv: CliArgs): Promise<string> {
+  return runLastPricesCommand(
+    parseLastPricesOptions(argv),
+    defaultLastPricesSdkFactory
+  );
+}
+
+export const lastPricesCommand = createLastPricesCommand();
+
+async function runLastPricesCommand(
+  options: ReturnType<typeof parseLastPricesOptions>,
+  createSdk: LastPricesSdkFactory
+): Promise<string> {
+  const request = createLastPricesRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.marketdata.getLastPrices(request);
+
+    return formatLastPrices(response.lastPrices, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatLastPrices };
 

@@ -3,7 +3,8 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -25,6 +26,10 @@ type AccruedInterestsSdk = {
 };
 
 type AccruedInterestsSdkFactory = (options: TinkoffInvestOptions) => AccruedInterestsSdk;
+
+const accruedInterestsCommandName = 'instruments get-accrued-interests';
+const accruedInterestsCommandPath = ['instruments', 'get-accrued-interests'] as const;
+const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const accruedInterestsRequestOptionsSchema = {
   figi: {
@@ -57,7 +62,7 @@ const accruedInterestsOptionsSchema = withSdkOptions(
 function parseAccruedInterestsOptions(argv: CliArgs) {
   return parseCommandOptions(
     argv,
-    'instruments get-accrued-interests',
+    accruedInterestsCommandName,
     accruedInterestsOptionsSchema
   );
 }
@@ -69,32 +74,49 @@ export function parseAccruedInterestsRequest(argv: CliArgs): GetAccruedInterests
 export function parseAccruedInterestsFormat(argv: CliArgs): AccruedInterestsFormat {
   return parseCommandOptions(
     argv,
-    'instruments get-accrued-interests',
+    accruedInterestsCommandName,
     accruedInterestsFormatOptionsSchema
   ).format;
 }
 
 export function createAccruedInterestsCommand(
-  createSdk: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: AccruedInterestsSdkFactory = defaultAccruedInterestsSdkFactory
 ) {
-  return async function accruedInterests(argv: CliArgs): Promise<string> {
-    const options = parseAccruedInterestsOptions(argv);
-    const request = createAccruedInterestsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getAccruedInterests(request);
-
-      return formatAccruedInterests(response.accruedInterests, format);
+  return defineCommand({
+    path: accruedInterestsCommandPath,
+    options: accruedInterestsOptionsSchema,
+    handle({ options }) {
+      return runAccruedInterestsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const accruedInterests = createAccruedInterestsCommand();
+export function accruedInterests(argv: CliArgs): Promise<string> {
+  return runAccruedInterestsCommand(
+    parseAccruedInterestsOptions(argv),
+    defaultAccruedInterestsSdkFactory
+  );
+}
+
+export const accruedInterestsCommand = createAccruedInterestsCommand();
+
+async function runAccruedInterestsCommand(
+  options: ReturnType<typeof parseAccruedInterestsOptions>,
+  createSdk: AccruedInterestsSdkFactory
+): Promise<string> {
+  const request = createAccruedInterestsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getAccruedInterests(request);
+
+    return formatAccruedInterests(response.accruedInterests, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatAccruedInterests };
 

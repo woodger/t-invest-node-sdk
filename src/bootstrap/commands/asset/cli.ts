@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { AssetRequest, AssetResponse } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -14,6 +15,10 @@ type AssetSdk = {
 };
 
 type AssetSdkFactory = (options: TinkoffInvestOptions) => AssetSdk;
+
+const assetCommandName = 'instruments get-asset-by';
+const assetCommandPath = ['instruments', 'get-asset-by'] as const;
+const defaultAssetSdkFactory: AssetSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const assetRequestOptionsSchema = {
   id: {
@@ -36,7 +41,7 @@ const assetOptionsSchema = withSdkOptions(
 );
 
 function parseAssetOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments get-asset-by', assetOptionsSchema);
+  return parseCommandOptions(argv, assetCommandName, assetOptionsSchema);
 }
 
 export function parseAssetRequest(argv: CliArgs): AssetRequest {
@@ -46,32 +51,49 @@ export function parseAssetRequest(argv: CliArgs): AssetRequest {
 export function parseAssetFormat(argv: CliArgs): AssetFormat {
   return parseCommandOptions(
     argv,
-    'instruments get-asset-by',
+    assetCommandName,
     assetFormatOptionsSchema
   ).format;
 }
 
 export function createAssetCommand(
-  createSdk: AssetSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: AssetSdkFactory = defaultAssetSdkFactory
 ) {
-  return async function asset(argv: CliArgs): Promise<string> {
-    const options = parseAssetOptions(argv);
-    const request = createAssetRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getAssetBy(request);
-
-      return formatAsset(response, format);
+  return defineCommand({
+    path: assetCommandPath,
+    options: assetOptionsSchema,
+    handle({ options }) {
+      return runAssetCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const asset = createAssetCommand();
+export function asset(argv: CliArgs): Promise<string> {
+  return runAssetCommand(
+    parseAssetOptions(argv),
+    defaultAssetSdkFactory
+  );
+}
+
+export const assetCommand = createAssetCommand();
+
+async function runAssetCommand(
+  options: ReturnType<typeof parseAssetOptions>,
+  createSdk: AssetSdkFactory
+): Promise<string> {
+  const request = createAssetRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getAssetBy(request);
+
+    return formatAsset(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatAsset };
 

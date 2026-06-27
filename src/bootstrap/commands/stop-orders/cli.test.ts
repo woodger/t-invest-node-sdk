@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import {
@@ -106,12 +107,18 @@ describe('stop-orders command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'account-id': 'account-id',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'stoporders',
+          'get-stop-orders',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--account-id=account-id',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -138,11 +145,17 @@ describe('stop-orders command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          'account-id': 'account-id'
-        })),
+        () => runCommand(
+          command,
+          [
+            'stoporders',
+            'get-stop-orders',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--account-id=account-id'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

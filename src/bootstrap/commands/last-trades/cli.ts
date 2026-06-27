@@ -3,7 +3,8 @@ import type {
   GetLastTradesRequest,
   GetLastTradesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -21,6 +22,10 @@ type LastTradesSdk = {
 };
 
 type LastTradesSdkFactory = (options: TinkoffInvestOptions) => LastTradesSdk;
+
+const lastTradesCommandName = 'marketdata get-last-trades';
+const lastTradesCommandPath = ['marketdata', 'get-last-trades'] as const;
+const defaultLastTradesSdkFactory: LastTradesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const lastTradesRequestOptionsSchema = {
   'instrument-id': {
@@ -51,7 +56,7 @@ const lastTradesOptionsSchema = withSdkOptions(
 );
 
 function parseLastTradesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'marketdata get-last-trades', lastTradesOptionsSchema);
+  return parseCommandOptions(argv, lastTradesCommandName, lastTradesOptionsSchema);
 }
 
 export function parseLastTradesRequest(argv: CliArgs): GetLastTradesRequest {
@@ -61,32 +66,49 @@ export function parseLastTradesRequest(argv: CliArgs): GetLastTradesRequest {
 export function parseLastTradesFormat(argv: CliArgs): LastTradesFormat {
   return parseCommandOptions(
     argv,
-    'marketdata get-last-trades',
+    lastTradesCommandName,
     lastTradesFormatOptionsSchema
   ).format;
 }
 
 export function createLastTradesCommand(
-  createSdk: LastTradesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: LastTradesSdkFactory = defaultLastTradesSdkFactory
 ) {
-  return async function lastTrades(argv: CliArgs): Promise<string> {
-    const options = parseLastTradesOptions(argv);
-    const request = createLastTradesRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.marketdata.getLastTrades(request);
-
-      return formatLastTrades(response.trades, format);
+  return defineCommand({
+    path: lastTradesCommandPath,
+    options: lastTradesOptionsSchema,
+    handle({ options }) {
+      return runLastTradesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const lastTrades = createLastTradesCommand();
+export function lastTrades(argv: CliArgs): Promise<string> {
+  return runLastTradesCommand(
+    parseLastTradesOptions(argv),
+    defaultLastTradesSdkFactory
+  );
+}
+
+export const lastTradesCommand = createLastTradesCommand();
+
+async function runLastTradesCommand(
+  options: ReturnType<typeof parseLastTradesOptions>,
+  createSdk: LastTradesSdkFactory
+): Promise<string> {
+  const request = createLastTradesRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.marketdata.getLastTrades(request);
+
+    return formatLastTrades(response.trades, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatLastTrades };
 

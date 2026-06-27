@@ -3,7 +3,8 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -17,6 +18,10 @@ type OptionsBySdk = {
 };
 
 type OptionsBySdkFactory = (options: TinkoffInvestOptions) => OptionsBySdk;
+
+const optionsByCommandName = 'instruments options-by';
+const optionsByCommandPath = ['instruments', 'options-by'] as const;
+const defaultOptionsBySdkFactory: OptionsBySdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const optionsByRequestOptionsSchema = {
   'basic-asset-uid': {
@@ -42,7 +47,7 @@ const optionsByOptionsSchema = withSdkOptions(
 );
 
 function parseOptionsByOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments options-by', optionsByOptionsSchema);
+  return parseCommandOptions(argv, optionsByCommandName, optionsByOptionsSchema);
 }
 
 export function parseOptionsByRequest(argv: CliArgs): FilterOptionsRequest {
@@ -52,32 +57,49 @@ export function parseOptionsByRequest(argv: CliArgs): FilterOptionsRequest {
 export function parseOptionsByFormat(argv: CliArgs): OptionsByFormat {
   return parseCommandOptions(
     argv,
-    'instruments options-by',
+    optionsByCommandName,
     optionsByFormatOptionsSchema
   ).format;
 }
 
 export function createOptionsByCommand(
-  createSdk: OptionsBySdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: OptionsBySdkFactory = defaultOptionsBySdkFactory
 ) {
-  return async function optionsBy(argv: CliArgs): Promise<string> {
-    const options = parseOptionsByOptions(argv);
-    const request = createOptionsByRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.optionsBy(request);
-
-      return formatOptionsBy(response.instruments, format);
+  return defineCommand({
+    path: optionsByCommandPath,
+    options: optionsByOptionsSchema,
+    handle({ options }) {
+      return runOptionsByCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const optionsBy = createOptionsByCommand();
+export function optionsBy(argv: CliArgs): Promise<string> {
+  return runOptionsByCommand(
+    parseOptionsByOptions(argv),
+    defaultOptionsBySdkFactory
+  );
+}
+
+export const optionsByCommand = createOptionsByCommand();
+
+async function runOptionsByCommand(
+  options: ReturnType<typeof parseOptionsByOptions>,
+  createSdk: OptionsBySdkFactory
+): Promise<string> {
+  const request = createOptionsByRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.optionsBy(request);
+
+    return formatOptionsBy(response.instruments, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatOptionsBy };
 

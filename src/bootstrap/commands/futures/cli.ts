@@ -3,11 +3,13 @@ import type {
   FuturesResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
   parseInstrumentsRequest,
   parseInstrumentStatus
@@ -23,6 +25,10 @@ type FuturesSdk = {
 
 type FuturesSdkFactory = (options: TinkoffInvestOptions) => FuturesSdk;
 
+const futuresCommandName = 'instruments futures';
+const futuresCommandPath = ['instruments', 'futures'] as const;
+const defaultFuturesSdkFactory: FuturesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const futuresFormatOptionsSchema = {
   format: {
     type: 'string',
@@ -37,7 +43,7 @@ const futuresOptionsSchema = withSdkOptions(
 );
 
 function parseFuturesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments futures', futuresOptionsSchema);
+  return parseCommandOptions(argv, futuresCommandName, futuresOptionsSchema);
 }
 
 export const parseFuturesInstrumentStatus = parseInstrumentStatus;
@@ -46,30 +52,48 @@ export const parseFuturesRequest = parseInstrumentsRequest;
 export function parseFuturesFormat(argv: CliArgs): FuturesFormat {
   return parseCommandOptions(
     argv,
-    'instruments futures',
+    futuresCommandName,
     futuresFormatOptionsSchema
   ).format;
 }
 
 export function createFuturesCommand(
-  createSdk: FuturesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: FuturesSdkFactory = defaultFuturesSdkFactory
 ) {
-  return async function futures(argv: CliArgs): Promise<string> {
-    const { format } = parseFuturesOptions(argv);
-    const request = parseFuturesRequest(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.futures(request);
-
-      return formatFutures(response.instruments, format);
+  return defineCommand({
+    path: futuresCommandPath,
+    options: futuresOptionsSchema,
+    handle({ options }) {
+      return runFuturesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const futures = createFuturesCommand();
+export function futures(argv: CliArgs): Promise<string> {
+  return runFuturesCommand(
+    parseFuturesOptions(argv),
+    defaultFuturesSdkFactory
+  );
+}
+
+export const futuresCommand = createFuturesCommand();
+
+async function runFuturesCommand(
+  options: ReturnType<typeof parseFuturesOptions>,
+  createSdk: FuturesSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const request = createInstrumentsRequestFromOptions(options);
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.futures(request);
+
+    return formatFutures(response.instruments, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatFutures };

@@ -3,11 +3,13 @@ import type {
   BondResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
   parseInstrumentLookupRequest
@@ -23,6 +25,10 @@ type BondSdk = {
 
 type BondSdkFactory = (options: TinkoffInvestOptions) => BondSdk;
 
+const bondCommandName = 'instruments bond-by';
+const bondCommandPath = ['instruments', 'bond-by'] as const;
+const defaultBondSdkFactory: BondSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const bondFormatOptionsSchema = {
   format: {
     type: 'string',
@@ -37,7 +43,7 @@ const bondOptionsSchema = withSdkOptions(
 );
 
 function parseBondOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments bond-by', bondOptionsSchema);
+  return parseCommandOptions(argv, bondCommandName, bondOptionsSchema);
 }
 
 export const parseBondIdType = parseInstrumentLookupIdType;
@@ -46,30 +52,48 @@ export const parseBondRequest = parseInstrumentLookupRequest;
 export function parseBondFormat(argv: CliArgs): BondFormat {
   return parseCommandOptions(
     argv,
-    'instruments bond-by',
+    bondCommandName,
     bondFormatOptionsSchema
   ).format;
 }
 
 export function createBondCommand(
-  createSdk: BondSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: BondSdkFactory = defaultBondSdkFactory
 ) {
-  return async function bond(argv: CliArgs): Promise<string> {
-    const { format } = parseBondOptions(argv);
-    const request = parseBondRequest(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.bondBy(request);
-
-      return formatBond(response, format);
+  return defineCommand({
+    path: bondCommandPath,
+    options: bondOptionsSchema,
+    handle({ options }) {
+      return runBondCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const bond = createBondCommand();
+export function bond(argv: CliArgs): Promise<string> {
+  return runBondCommand(
+    parseBondOptions(argv),
+    defaultBondSdkFactory
+  );
+}
+
+export const bondCommand = createBondCommand();
+
+async function runBondCommand(
+  options: ReturnType<typeof parseBondOptions>,
+  createSdk: BondSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const request = createInstrumentLookupRequestFromOptions(options);
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.bondBy(request);
+
+    return formatBond(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatBond };

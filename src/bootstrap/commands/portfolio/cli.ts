@@ -4,7 +4,8 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -18,6 +19,10 @@ type PortfolioSdk = {
 };
 
 type PortfolioSdkFactory = (options: TinkoffInvestOptions) => PortfolioSdk;
+
+const portfolioCommandName = 'operations get-portfolio';
+const portfolioCommandPath = ['operations', 'get-portfolio'] as const;
+const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const portfolioCurrencies = {
   rub: PortfolioCurrency.RUB,
@@ -55,13 +60,13 @@ const portfolioOptionsSchema = withSdkOptions(
 );
 
 function parsePortfolioOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'operations get-portfolio', portfolioOptionsSchema);
+  return parseCommandOptions(argv, portfolioCommandName, portfolioOptionsSchema);
 }
 
 export function parsePortfolioCurrency(argv: CliArgs): PortfolioCurrency {
   const { currency } = parseCommandOptions(
     argv,
-    'operations get-portfolio',
+    portfolioCommandName,
     { currency: portfolioRequestOptionsSchema.currency } as const
   );
 
@@ -75,32 +80,49 @@ export function parsePortfolioRequest(argv: CliArgs): PortfolioRequest {
 export function parsePortfolioFormat(argv: CliArgs): PortfolioFormat {
   return parseCommandOptions(
     argv,
-    'operations get-portfolio',
+    portfolioCommandName,
     portfolioFormatOptionsSchema
   ).format;
 }
 
 export function createPortfolioCommand(
-  createSdk: PortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: PortfolioSdkFactory = defaultPortfolioSdkFactory
 ) {
-  return async function portfolio(argv: CliArgs): Promise<string> {
-    const options = parsePortfolioOptions(argv);
-    const request = createPortfolioRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.operations.getPortfolio(request);
-
-      return formatPortfolio(response, format);
+  return defineCommand({
+    path: portfolioCommandPath,
+    options: portfolioOptionsSchema,
+    handle({ options }) {
+      return runPortfolioCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const portfolio = createPortfolioCommand();
+export function portfolio(argv: CliArgs): Promise<string> {
+  return runPortfolioCommand(
+    parsePortfolioOptions(argv),
+    defaultPortfolioSdkFactory
+  );
+}
+
+export const portfolioCommand = createPortfolioCommand();
+
+async function runPortfolioCommand(
+  options: ReturnType<typeof parsePortfolioOptions>,
+  createSdk: PortfolioSdkFactory
+): Promise<string> {
+  const request = createPortfolioRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.operations.getPortfolio(request);
+
+    return formatPortfolio(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatPortfolio };
 

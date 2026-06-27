@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   InstrumentIdType,
@@ -131,14 +132,20 @@ describe('share command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        id: 'SBER',
-        'id-type': 'ticker',
-        'class-code': 'TQBR',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'instruments',
+          'share-by',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--id=SBER',
+          '--id-type=ticker',
+          '--class-code=TQBR',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -167,12 +174,18 @@ describe('share command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          id: 'BBG004730N88',
-          'id-type': 'figi'
-        })),
+        () => runCommand(
+          command,
+          [
+            'instruments',
+            'share-by',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--id=BBG004730N88',
+            '--id-type=figi'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

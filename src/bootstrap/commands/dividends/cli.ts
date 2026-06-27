@@ -3,7 +3,8 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import {
   parseCommandOptions,
@@ -21,6 +22,10 @@ type DividendsSdk = {
 };
 
 type DividendsSdkFactory = (options: TinkoffInvestOptions) => DividendsSdk;
+
+const dividendsCommandName = 'instruments get-dividends';
+const dividendsCommandPath = ['instruments', 'get-dividends'] as const;
+const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const dividendsRequestOptionsSchema = {
   figi: {
@@ -51,7 +56,7 @@ const dividendsOptionsSchema = withSdkOptions(
 );
 
 function parseDividendsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'instruments get-dividends', dividendsOptionsSchema);
+  return parseCommandOptions(argv, dividendsCommandName, dividendsOptionsSchema);
 }
 
 export function parseDividendsRequest(argv: CliArgs): GetDividendsRequest {
@@ -61,32 +66,49 @@ export function parseDividendsRequest(argv: CliArgs): GetDividendsRequest {
 export function parseDividendsFormat(argv: CliArgs): DividendsFormat {
   return parseCommandOptions(
     argv,
-    'instruments get-dividends',
+    dividendsCommandName,
     dividendsFormatOptionsSchema
   ).format;
 }
 
 export function createDividendsCommand(
-  createSdk: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: DividendsSdkFactory = defaultDividendsSdkFactory
 ) {
-  return async function dividends(argv: CliArgs): Promise<string> {
-    const options = parseDividendsOptions(argv);
-    const request = createDividendsRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.instruments.getDividends(request);
-
-      return formatDividends(response.dividends, format);
+  return defineCommand({
+    path: dividendsCommandPath,
+    options: dividendsOptionsSchema,
+    handle({ options }) {
+      return runDividendsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const dividends = createDividendsCommand();
+export function dividends(argv: CliArgs): Promise<string> {
+  return runDividendsCommand(
+    parseDividendsOptions(argv),
+    defaultDividendsSdkFactory
+  );
+}
+
+export const dividendsCommand = createDividendsCommand();
+
+async function runDividendsCommand(
+  options: ReturnType<typeof parseDividendsOptions>,
+  createSdk: DividendsSdkFactory
+): Promise<string> {
+  const request = createDividendsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.instruments.getDividends(request);
+
+    return formatDividends(response.dividends, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatDividends };
 

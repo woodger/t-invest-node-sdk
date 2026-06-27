@@ -10,53 +10,53 @@
  */
 
 import { accountsCommand } from './commands/accounts/cli';
-import { accruedInterests } from './commands/accrued-interests/cli';
-import { asset } from './commands/asset/cli';
-import { assets } from './commands/assets/cli';
-import { bond } from './commands/bond/cli';
-import { brand } from './commands/brand/cli';
-import { brands } from './commands/brands/cli';
-import { bondCoupons } from './commands/bond-coupons/cli';
-import { bonds } from './commands/bonds/cli';
-import { brokerReport } from './commands/broker-report/cli';
-import { candles } from './commands/candles/cli';
-import { closePrices } from './commands/close-prices/cli';
-import { countries } from './commands/countries/cli';
-import { currencies } from './commands/currencies/cli';
-import { currency } from './commands/currency/cli';
-import { dividendsForeignIssuer } from './commands/dividends-foreign-issuer/cli';
-import { dividends } from './commands/dividends/cli';
-import { etf } from './commands/etf/cli';
-import { etfs } from './commands/etfs/cli';
-import { favorites } from './commands/favorites/cli';
-import { findInstrument } from './commands/find-instrument/cli';
-import { future } from './commands/future/cli';
-import { futures } from './commands/futures/cli';
-import { futuresMargin } from './commands/futures-margin/cli';
+import { accruedInterestsCommand } from './commands/accrued-interests/cli';
+import { assetCommand } from './commands/asset/cli';
+import { assetsCommand } from './commands/assets/cli';
+import { bondCommand } from './commands/bond/cli';
+import { brandCommand } from './commands/brand/cli';
+import { brandsCommand } from './commands/brands/cli';
+import { bondCouponsCommand } from './commands/bond-coupons/cli';
+import { bondsCommand } from './commands/bonds/cli';
+import { brokerReportCommand } from './commands/broker-report/cli';
+import { candlesCommand } from './commands/candles/cli';
+import { closePricesCommand } from './commands/close-prices/cli';
+import { countriesCommand } from './commands/countries/cli';
+import { currenciesCommand } from './commands/currencies/cli';
+import { currencyCommand } from './commands/currency/cli';
+import { dividendsForeignIssuerCommand } from './commands/dividends-foreign-issuer/cli';
+import { dividendsCommand } from './commands/dividends/cli';
+import { etfCommand } from './commands/etf/cli';
+import { etfsCommand } from './commands/etfs/cli';
+import { favoritesCommand } from './commands/favorites/cli';
+import { findInstrumentCommand } from './commands/find-instrument/cli';
+import { futureCommand } from './commands/future/cli';
+import { futuresCommand } from './commands/futures/cli';
+import { futuresMarginCommand } from './commands/futures-margin/cli';
 import { helpCommand } from './commands/help/cli';
-import { instrument } from './commands/instrument/cli';
-import { lastPrices } from './commands/last-prices/cli';
-import { lastTrades } from './commands/last-trades/cli';
+import { instrumentCommand } from './commands/instrument/cli';
+import { lastPricesCommand } from './commands/last-prices/cli';
+import { lastTradesCommand } from './commands/last-trades/cli';
 import { marginAttributesCommand } from './commands/margin-attributes/cli';
-import { option } from './commands/option/cli';
-import { optionsBy } from './commands/options-by/cli';
-import { orderBook } from './commands/order-book/cli';
-import { orderState } from './commands/order-state/cli';
-import { orders } from './commands/orders/cli';
-import { operationsByCursor } from './commands/operations-by-cursor/cli';
-import { operations } from './commands/operations/cli';
-import { portfolio } from './commands/portfolio/cli';
-import { positions } from './commands/positions/cli';
-import { share } from './commands/share/cli';
-import { shares } from './commands/shares/cli';
-import { stopOrders } from './commands/stop-orders/cli';
-import { tradingSchedules } from './commands/trading-schedules/cli';
-import { tradingStatus } from './commands/trading-status/cli';
-import { tradingStatuses } from './commands/trading-statuses/cli';
+import { optionCommand } from './commands/option/cli';
+import { optionsByCommand } from './commands/options-by/cli';
+import { orderBookCommand } from './commands/order-book/cli';
+import { orderStateCommand } from './commands/order-state/cli';
+import { ordersCommand } from './commands/orders/cli';
+import { operationsByCursorCommand } from './commands/operations-by-cursor/cli';
+import { operationsCommand } from './commands/operations/cli';
+import { portfolioCommand } from './commands/portfolio/cli';
+import { positionsCommand } from './commands/positions/cli';
+import { shareCommand } from './commands/share/cli';
+import { sharesCommand } from './commands/shares/cli';
+import { stopOrdersCommand } from './commands/stop-orders/cli';
+import { tradingSchedulesCommand } from './commands/trading-schedules/cli';
+import { tradingStatusCommand } from './commands/trading-status/cli';
+import { tradingStatusesCommand } from './commands/trading-statuses/cli';
 import { userInfoCommand } from './commands/user-info/cli';
 import { userTariffCommand } from './commands/user-tariff/cli';
 import { versionCommand } from './commands/version/cli';
-import { withdrawLimits } from './commands/withdraw-limits/cli';
+import { withdrawLimitsCommand } from './commands/withdraw-limits/cli';
 import {
   defineCommandRegistry,
   isCommandName as isCommandLineCommandName,
@@ -76,184 +76,72 @@ export type ResolvedCommand = {
 
 type RegisteredCommand = Omit<ResolvedCommand, 'name' | 'path'>;
 
-const commandRegistry = {
-  'marketdata get-candles': {
-    requiresContext: false,
-    handler: candles
-  },
-  'marketdata get-close-prices': {
-    requiresContext: false,
-    handler: closePrices
-  },
-  'instruments get-accrued-interests': {
-    requiresContext: false,
-    handler: accruedInterests
-  },
-  'instruments get-asset-by': {
-    requiresContext: false,
-    handler: asset
-  },
-  'instruments get-assets': {
-    requiresContext: false,
-    handler: assets
-  },
-  'instruments get-bond-coupons': {
-    requiresContext: false,
-    handler: bondCoupons
-  },
-  'instruments bond-by': {
-    requiresContext: false,
-    handler: bond
-  },
-  'instruments bonds': {
-    requiresContext: false,
-    handler: bonds
-  },
-  'instruments get-brand-by': {
-    requiresContext: false,
-    handler: brand
-  },
-  'instruments get-brands': {
-    requiresContext: false,
-    handler: brands
-  },
-  'instruments get-countries': {
-    requiresContext: false,
-    handler: countries
-  },
-  'instruments currencies': {
-    requiresContext: false,
-    handler: currencies
-  },
-  'instruments currency-by': {
-    requiresContext: false,
-    handler: currency
-  },
-  'instruments get-dividends': {
-    requiresContext: false,
-    handler: dividends
-  },
-  'instruments etf-by': {
-    requiresContext: false,
-    handler: etf
-  },
-  'instruments etfs': {
-    requiresContext: false,
-    handler: etfs
-  },
-  'instruments get-favorites': {
-    requiresContext: false,
-    handler: favorites
-  },
-  'instruments find-instrument': {
-    requiresContext: false,
-    handler: findInstrument
-  },
-  'instruments future-by': {
-    requiresContext: false,
-    handler: future
-  },
-  'instruments futures': {
-    requiresContext: false,
-    handler: futures
-  },
-  'instruments get-futures-margin': {
-    requiresContext: false,
-    handler: futuresMargin
-  },
-  'instruments get-instrument-by': {
-    requiresContext: false,
-    handler: instrument
-  },
-  'instruments option-by': {
-    requiresContext: false,
-    handler: option
-  },
-  'instruments options-by': {
-    requiresContext: false,
-    handler: optionsBy
-  },
-  'instruments share-by': {
-    requiresContext: false,
-    handler: share
-  },
-  'instruments shares': {
-    requiresContext: false,
-    handler: shares
-  },
-  'instruments trading-schedules': {
-    requiresContext: false,
-    handler: tradingSchedules
-  },
-  'marketdata get-last-prices': {
-    requiresContext: false,
-    handler: lastPrices
-  },
-  'marketdata get-last-trades': {
-    requiresContext: false,
-    handler: lastTrades
-  },
-  'marketdata get-order-book': {
-    requiresContext: false,
-    handler: orderBook
-  },
-  'marketdata get-trading-status': {
-    requiresContext: false,
-    handler: tradingStatus
-  },
-  'marketdata get-trading-statuses': {
-    requiresContext: false,
-    handler: tradingStatuses
-  },
-  'orders get-orders': {
-    requiresContext: false,
-    handler: orders
-  },
-  'orders get-order-state': {
-    requiresContext: false,
-    handler: orderState
-  },
-  'operations get-operations': {
-    requiresContext: false,
-    handler: operations
-  },
-  'operations get-operations-by-cursor': {
-    requiresContext: false,
-    handler: operationsByCursor
-  },
-  'operations get-broker-report': {
-    requiresContext: false,
-    handler: brokerReport
-  },
-  'operations get-dividends-foreign-issuer': {
-    requiresContext: false,
-    handler: dividendsForeignIssuer
-  },
-  'operations get-portfolio': {
-    requiresContext: false,
-    handler: portfolio
-  },
-  'operations get-positions': {
-    requiresContext: false,
-    handler: positions
-  },
-  'operations get-withdraw-limits': {
-    requiresContext: false,
-    handler: withdrawLimits
-  },
-  'stoporders get-stop-orders': {
-    requiresContext: false,
-    handler: stopOrders
-  }
-} as const satisfies Record<string, RegisteredCommand>;
-
 type UsersCommandName =
   | 'users get-accounts'
   | 'users get-info'
   | 'users get-margin-attributes'
   | 'users get-user-tariff';
 
-export type CommandName = keyof typeof commandRegistry | UsersCommandName | 'help' | 'version';
+type OrdersCommandName =
+  | 'orders get-orders'
+  | 'orders get-order-state';
+
+type StopOrdersCommandName = 'stoporders get-stop-orders';
+
+type MarketDataCommandName =
+  | 'marketdata get-candles'
+  | 'marketdata get-close-prices'
+  | 'marketdata get-last-prices'
+  | 'marketdata get-last-trades'
+  | 'marketdata get-order-book'
+  | 'marketdata get-trading-status'
+  | 'marketdata get-trading-statuses';
+
+type OperationsCommandName =
+  | 'operations get-operations'
+  | 'operations get-operations-by-cursor'
+  | 'operations get-broker-report'
+  | 'operations get-dividends-foreign-issuer'
+  | 'operations get-portfolio'
+  | 'operations get-positions'
+  | 'operations get-withdraw-limits';
+
+type InstrumentsCommandLineName =
+  | 'instruments get-accrued-interests'
+  | 'instruments get-assets'
+  | 'instruments get-asset-by'
+  | 'instruments get-brand-by'
+  | 'instruments get-bond-coupons'
+  | 'instruments bond-by'
+  | 'instruments bonds'
+  | 'instruments currency-by'
+  | 'instruments get-dividends'
+  | 'instruments etf-by'
+  | 'instruments etfs'
+  | 'instruments future-by'
+  | 'instruments futures'
+  | 'instruments get-favorites'
+  | 'instruments find-instrument'
+  | 'instruments get-brands'
+  | 'instruments get-countries'
+  | 'instruments get-futures-margin'
+  | 'instruments get-instrument-by'
+  | 'instruments currencies'
+  | 'instruments option-by'
+  | 'instruments options-by'
+  | 'instruments share-by'
+  | 'instruments shares'
+  | 'instruments trading-schedules';
+
+export type CommandName =
+  | UsersCommandName
+  | OrdersCommandName
+  | StopOrdersCommandName
+  | MarketDataCommandName
+  | OperationsCommandName
+  | InstrumentsCommandLineName
+  | 'help'
+  | 'version';
 
 export function isCommandName(value: unknown): value is CommandName {
   return isCommandLineCommandName(commandLineRegistry, value);
@@ -299,13 +187,6 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   };
 }
 
-type LegacyCliCommandDefinition = CommandDefinition<
-  Record<never, never>,
-  CliArgs,
-  CliCommandOutput,
-  [string, ...string[]]
-> & RegisteredCommand;
-
 type CommandLineDefinition = CommandDefinition<
   OptionsSchema,
   undefined,
@@ -315,7 +196,6 @@ type CommandLineDefinition = CommandDefinition<
 
 const commandLineRegistry = defineCommandRegistry(
   [
-    ...Object.entries(commandRegistry).map(([name, command]) => defineLegacyCliCommand(name, command)),
     defineCommandLineCommand(accountsCommand, {
       requiresContext: false
     }),
@@ -328,6 +208,132 @@ const commandLineRegistry = defineCommandRegistry(
     defineCommandLineCommand(userTariffCommand, {
       requiresContext: false
     }),
+    defineCommandLineCommand(candlesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(ordersCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(orderStateCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(stopOrdersCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(closePricesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(lastPricesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(lastTradesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(orderBookCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(tradingStatusCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(tradingStatusesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(operationsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(operationsByCursorCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(brokerReportCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(dividendsForeignIssuerCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(portfolioCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(positionsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(withdrawLimitsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(brandsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(countriesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(currenciesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(bondsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(etfsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(futuresCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(sharesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(bondCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(etfCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(futureCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(shareCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(assetCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(brandCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(currencyCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(instrumentCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(optionCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(assetsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(favoritesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(findInstrumentCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(futuresMarginCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(optionsByCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(accruedInterestsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(bondCouponsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(dividendsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(tradingSchedulesCommand, {
+      requiresContext: false
+    }),
     defineCommandLineCommand(helpCommand, {
       requiresContext: false
     }),
@@ -336,28 +342,6 @@ const commandLineRegistry = defineCommandRegistry(
     })
   ]
 );
-
-function defineLegacyCliCommand(
-  name: string,
-  command: RegisteredCommand
-): LegacyCliCommandDefinition {
-  return {
-    path: commandPathFromName(name),
-    options: {},
-    allowExtraPositionals: true,
-    requiresContext: command.requiresContext,
-    handler: command.handler,
-    handle({ context, positionals }) {
-      return command.handler({
-        ...context,
-        _: [
-          name,
-          ...positionals
-        ]
-      });
-    }
-  };
-}
 
 function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   command: CommandDefinition<
@@ -410,14 +394,4 @@ function commandArgsFromCliArgs(path: readonly string[], argv: CliArgs): string[
   }
 
   return args;
-}
-
-function commandPathFromName(name: string): [string, ...string[]] {
-  const [first, ...rest] = name.split(' ');
-
-  if (first === undefined || first === '') {
-    throw new Error('Expected command name to be non-empty');
-  }
-
-  return [first, ...rest];
 }
