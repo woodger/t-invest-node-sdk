@@ -57,6 +57,12 @@ import { userInfo } from './commands/user-info/cli';
 import { userTariff } from './commands/user-tariff/cli';
 import { version } from './commands/version/cli';
 import { withdrawLimits } from './commands/withdraw-limits/cli';
+import {
+  defineCommandRegistry,
+  isCommandName as isIcoreCommandName,
+  resolveCommand as resolveIcoreCommand,
+  type CommandDefinition
+} from 'icore';
 import type { CliCommand } from './cli-contract';
 
 export type ResolvedCommand = {
@@ -266,7 +272,7 @@ const commandRegistry = {
 export type CommandName = keyof typeof commandRegistry;
 
 export function isCommandName(value: unknown): value is CommandName {
-  return typeof value === 'string' && value in commandRegistry;
+  return isIcoreCommandName(icoreCommandRegistry, value);
 }
 
 function commandNameFromPositionals(positionals: readonly unknown[]): string {
@@ -280,18 +286,62 @@ function commandNameFromPositionals(positionals: readonly unknown[]): string {
 }
 
 export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand {
-  const commandName = commandNameFromPositionals(positionals);
+  let resolvedCommand;
+
+  try {
+    resolvedCommand = resolveIcoreCommand(
+      icoreCommandRegistry,
+      positionals.map((value) => String(value))
+    );
+  }
+  catch {
+    const commandName = commandNameFromPositionals(positionals);
+
+    throw new Error(`'${commandName}' is not a program command`);
+  }
+
+  const commandName = resolvedCommand.name;
 
   if (!isCommandName(commandName)) {
     throw new Error(`'${commandName}' is not a program command`);
   }
 
   const command = commandRegistry[commandName];
-  const path = commandName.split(' ');
 
   return {
     ...command,
     name: commandName,
-    path
+    path: resolvedCommand.path
   };
+}
+
+type RegistryCommandDefinition = CommandDefinition<
+  Record<never, never>,
+  undefined,
+  undefined
+>;
+
+const icoreCommandRegistry = defineCommandRegistry(
+  Object.keys(commandRegistry).map((name) => defineRegistryCommand(name))
+);
+
+function defineRegistryCommand(name: string): RegistryCommandDefinition {
+  return {
+    path: commandPathFromName(name),
+    options: {},
+    // Command execution still uses SDK CliCommand handlers during migration.
+    handle() {
+      return undefined;
+    }
+  };
+}
+
+function commandPathFromName(name: string): [string, ...string[]] {
+  const [first, ...rest] = name.split(' ');
+
+  if (first === undefined || first === '') {
+    throw new Error('Expected command name to be non-empty');
+  }
+
+  return [first, ...rest];
 }
