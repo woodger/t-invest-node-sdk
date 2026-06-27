@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import type {
@@ -97,12 +98,18 @@ describe('margin-attributes command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        'account-id': 'account-id',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'users',
+          'get-margin-attributes',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--account-id=account-id',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -129,11 +136,17 @@ describe('margin-attributes command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          'account-id': 'account-id'
-        })),
+        () => runCommand(
+          command,
+          [
+            'users',
+            'get-margin-attributes',
+            '--token=token',
+            '--endpoint=localhost:50051',
+            '--account-id=account-id'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

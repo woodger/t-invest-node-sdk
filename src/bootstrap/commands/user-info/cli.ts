@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -15,6 +16,10 @@ type UserInfoSdk = {
 
 type UserInfoSdkFactory = (options: TinkoffInvestOptions) => UserInfoSdk;
 
+const userInfoCommandName = 'users get-info';
+const userInfoCommandPath = ['users', 'get-info'] as const;
+const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const userInfoOptionsSchema = withSdkOptions({
   format: {
     type: 'string',
@@ -24,7 +29,7 @@ const userInfoOptionsSchema = withSdkOptions({
 } as const);
 
 function parseUserInfoOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'users get-info', userInfoOptionsSchema);
+  return parseCommandOptions(argv, userInfoCommandName, userInfoOptionsSchema);
 }
 
 export function parseUserInfoFormat(argv: CliArgs): UserInfoFormat {
@@ -32,23 +37,41 @@ export function parseUserInfoFormat(argv: CliArgs): UserInfoFormat {
 }
 
 export function createUserInfoCommand(
-  createSdk: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: UserInfoSdkFactory = defaultUserInfoSdkFactory
 ) {
-  return async function userInfo(argv: CliArgs): Promise<string> {
-    const { format } = parseUserInfoOptions(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.users.getInfo({});
-
-      return formatUserInfo(response, format);
+  return defineCommand({
+    path: userInfoCommandPath,
+    options: userInfoOptionsSchema,
+    handle({ options }) {
+      return runUserInfoCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const userInfo = createUserInfoCommand();
+export function userInfo(argv: CliArgs): Promise<string> {
+  return runUserInfoCommand(
+    parseUserInfoOptions(argv),
+    defaultUserInfoSdkFactory
+  );
+}
+
+export const userInfoCommand = createUserInfoCommand();
+
+async function runUserInfoCommand(
+  options: ReturnType<typeof parseUserInfoOptions>,
+  createSdk: UserInfoSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.users.getInfo({});
+
+    return formatUserInfo(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatUserInfo };

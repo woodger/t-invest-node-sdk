@@ -1,6 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -15,6 +16,10 @@ type UserTariffSdk = {
 
 type UserTariffSdkFactory = (options: TinkoffInvestOptions) => UserTariffSdk;
 
+const userTariffCommandName = 'users get-user-tariff';
+const userTariffCommandPath = ['users', 'get-user-tariff'] as const;
+const defaultUserTariffSdkFactory: UserTariffSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const userTariffOptionsSchema = withSdkOptions({
   format: {
     type: 'string',
@@ -24,7 +29,7 @@ const userTariffOptionsSchema = withSdkOptions({
 } as const);
 
 function parseUserTariffOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'users get-user-tariff', userTariffOptionsSchema);
+  return parseCommandOptions(argv, userTariffCommandName, userTariffOptionsSchema);
 }
 
 export function parseUserTariffFormat(argv: CliArgs): UserTariffFormat {
@@ -32,23 +37,41 @@ export function parseUserTariffFormat(argv: CliArgs): UserTariffFormat {
 }
 
 export function createUserTariffCommand(
-  createSdk: UserTariffSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: UserTariffSdkFactory = defaultUserTariffSdkFactory
 ) {
-  return async function userTariff(argv: CliArgs): Promise<string> {
-    const { format } = parseUserTariffOptions(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.users.getUserTariff({});
-
-      return formatUserTariff(response, format);
+  return defineCommand({
+    path: userTariffCommandPath,
+    options: userTariffOptionsSchema,
+    handle({ options }) {
+      return runUserTariffCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const userTariff = createUserTariffCommand();
+export function userTariff(argv: CliArgs): Promise<string> {
+  return runUserTariffCommand(
+    parseUserTariffOptions(argv),
+    defaultUserTariffSdkFactory
+  );
+}
+
+export const userTariffCommand = createUserTariffCommand();
+
+async function runUserTariffCommand(
+  options: ReturnType<typeof parseUserTariffOptions>,
+  createSdk: UserTariffSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.users.getUserTariff({});
+
+    return formatUserTariff(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatUserTariff };

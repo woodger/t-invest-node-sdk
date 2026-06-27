@@ -20,6 +20,13 @@ export const sdkOptionArgNames = new Set([
   'insecure'
 ]);
 
+type SdkCommandOptions = {
+  token?: string;
+  endpoint?: string;
+  'app-name'?: string;
+  insecure?: boolean;
+};
+
 function stringFromEnv(
   env: NodeJS.ProcessEnv,
   name: string
@@ -73,4 +80,20 @@ export function resolveSdkOptions(
     ...(appName === undefined ? {} : { appName }),
     ...(insecure === true ? { useSsl: false } : {})
   };
+}
+
+export function resolveSdkOptionsFromCommandOptions(
+  options: SdkCommandOptions,
+  env: NodeJS.ProcessEnv = process.env
+): TinkoffInvestOptions {
+  return resolveSdkOptions(
+    {
+      _: [''],
+      token: options.token,
+      endpoint: options.endpoint,
+      'app-name': options['app-name'],
+      insecure: options.insecure
+    },
+    env
+  );
 }

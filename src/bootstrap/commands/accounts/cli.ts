@@ -1,5 +1,6 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -15,6 +16,10 @@ type AccountsSdk = {
 
 type AccountsSdkFactory = (options: TinkoffInvestOptions) => AccountsSdk;
 
+const accountsCommandName = 'users get-accounts';
+const accountsCommandPath = ['users', 'get-accounts'] as const;
+const defaultAccountsSdkFactory: AccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
 const accountsOptionsSchema = withSdkOptions({
   format: {
     type: 'string',
@@ -24,7 +29,7 @@ const accountsOptionsSchema = withSdkOptions({
 } as const);
 
 function parseAccountsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'users get-accounts', accountsOptionsSchema);
+  return parseCommandOptions(argv, accountsCommandName, accountsOptionsSchema);
 }
 
 export function parseAccountsFormat(argv: CliArgs): AccountsFormat {
@@ -32,23 +37,41 @@ export function parseAccountsFormat(argv: CliArgs): AccountsFormat {
 }
 
 export function createAccountsCommand(
-  createSdk: AccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: AccountsSdkFactory = defaultAccountsSdkFactory
 ) {
-  return async function accounts(argv: CliArgs): Promise<string> {
-    const { format } = parseAccountsOptions(argv);
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.users.getAccounts({});
-
-      return formatAccounts(response.accounts, format);
+  return defineCommand({
+    path: accountsCommandPath,
+    options: accountsOptionsSchema,
+    handle({ options }) {
+      return runAccountsCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const accounts = createAccountsCommand();
+export function accounts(argv: CliArgs): Promise<string> {
+  return runAccountsCommand(
+    parseAccountsOptions(argv),
+    defaultAccountsSdkFactory
+  );
+}
+
+export const accountsCommand = createAccountsCommand();
+
+async function runAccountsCommand(
+  options: ReturnType<typeof parseAccountsOptions>,
+  createSdk: AccountsSdkFactory
+): Promise<string> {
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.users.getAccounts({});
+
+    return formatAccounts(response.accounts, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatAccounts };

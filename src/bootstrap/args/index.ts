@@ -1,2 +1,6 @@
 export { ArgGuards } from './arg-guards';
-export { resolveSdkOptions, sdkOptionArgNames } from './sdk-options';
+export {
+  resolveSdkOptions,
+  resolveSdkOptionsFromCommandOptions,
+  sdkOptionArgNames
+} from './sdk-options';
