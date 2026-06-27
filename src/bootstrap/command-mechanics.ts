@@ -80,6 +80,42 @@ export function parseDateTimeOption(value: string, name: string): Date {
   return date;
 }
 
+export function requireStringOption(value: string | undefined, name: string): string {
+  if (value === undefined) {
+    throw new Error(`Expected required argument '--${name}'`);
+  }
+
+  return value;
+}
+
+export function parseRequiredDateTimeOption(
+  value: string | undefined,
+  name: string
+): Date {
+  return parseDateTimeOption(requireStringOption(value, name), name);
+}
+
+export function parseOptionalNonNegativeIntegerOption(
+  value: string | undefined,
+  name: string
+): number {
+  if (value === undefined) {
+    return 0;
+  }
+
+  if (!/^\d+$/.test(value)) {
+    throw new Error(`Expected '--${name}' as integer greater than or equal to 0`);
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isSafeInteger(parsed)) {
+    throw new Error(`Expected '--${name}' as integer greater than or equal to 0`);
+  }
+
+  return parsed;
+}
+
 function toRawOptions(argv: CliArgs): Record<string, RawOptionValue> {
   const options: Record<string, RawOptionValue> = {};
 
