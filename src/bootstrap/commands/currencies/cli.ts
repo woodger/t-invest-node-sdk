@@ -31,10 +31,10 @@ const currenciesFormatOptionsSchema = {
   }
 } as const;
 
-const currenciesOptionsSchema = withSdkOptions({
-  ...instrumentStatusOptionsSchema,
-  ...currenciesFormatOptionsSchema
-} as const);
+const currenciesOptionsSchema = withSdkOptions(
+  instrumentStatusOptionsSchema,
+  currenciesFormatOptionsSchema
+);
 
 function parseCurrenciesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments currencies', currenciesOptionsSchema);

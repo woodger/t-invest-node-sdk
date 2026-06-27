@@ -105,10 +105,10 @@ const operationsByCursorFormatOptionsSchema = {
   }
 } as const;
 
-const operationsByCursorOptionsSchema = withSdkOptions({
-  ...operationsByCursorRequestOptionsSchema,
-  ...operationsByCursorFormatOptionsSchema
-} as const);
+const operationsByCursorOptionsSchema = withSdkOptions(
+  operationsByCursorRequestOptionsSchema,
+  operationsByCursorFormatOptionsSchema
+);
 
 function parseOperationsByCursorOptions(argv: CliArgs) {
   return parseCommandOptions(

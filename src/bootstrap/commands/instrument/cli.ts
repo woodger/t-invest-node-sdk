@@ -31,10 +31,10 @@ const instrumentFormatOptionsSchema = {
   }
 } as const;
 
-const instrumentOptionsSchema = withSdkOptions({
-  ...instrumentLookupOptionsSchema,
-  ...instrumentFormatOptionsSchema
-} as const);
+const instrumentOptionsSchema = withSdkOptions(
+  instrumentLookupOptionsSchema,
+  instrumentFormatOptionsSchema
+);
 
 function parseInstrumentOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments get-instrument-by', instrumentOptionsSchema);

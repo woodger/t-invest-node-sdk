@@ -36,10 +36,10 @@ const optionsByFormatOptionsSchema = {
   }
 } as const;
 
-const optionsByOptionsSchema = withSdkOptions({
-  ...optionsByRequestOptionsSchema,
-  ...optionsByFormatOptionsSchema
-} as const);
+const optionsByOptionsSchema = withSdkOptions(
+  optionsByRequestOptionsSchema,
+  optionsByFormatOptionsSchema
+);
 
 function parseOptionsByOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments options-by', optionsByOptionsSchema);

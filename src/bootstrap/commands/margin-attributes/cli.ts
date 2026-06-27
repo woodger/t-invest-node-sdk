@@ -37,10 +37,10 @@ const marginAttributesFormatOptionsSchema = {
   }
 } as const;
 
-const marginAttributesOptionsSchema = withSdkOptions({
-  ...marginAttributesRequestOptionsSchema,
-  ...marginAttributesFormatOptionsSchema
-} as const);
+const marginAttributesOptionsSchema = withSdkOptions(
+  marginAttributesRequestOptionsSchema,
+  marginAttributesFormatOptionsSchema
+);
 
 function parseMarginAttributesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'users get-margin-attributes', marginAttributesOptionsSchema);

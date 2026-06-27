@@ -37,10 +37,10 @@ const futuresMarginFormatOptionsSchema = {
   }
 } as const;
 
-const futuresMarginOptionsSchema = withSdkOptions({
-  ...futuresMarginRequestOptionsSchema,
-  ...futuresMarginFormatOptionsSchema
-} as const);
+const futuresMarginOptionsSchema = withSdkOptions(
+  futuresMarginRequestOptionsSchema,
+  futuresMarginFormatOptionsSchema
+);
 
 function parseFuturesMarginOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments get-futures-margin', futuresMarginOptionsSchema);

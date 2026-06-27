@@ -31,10 +31,10 @@ const sharesFormatOptionsSchema = {
   }
 } as const;
 
-const sharesOptionsSchema = withSdkOptions({
-  ...instrumentStatusOptionsSchema,
-  ...sharesFormatOptionsSchema
-} as const);
+const sharesOptionsSchema = withSdkOptions(
+  instrumentStatusOptionsSchema,
+  sharesFormatOptionsSchema
+);
 
 function parseSharesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments shares', sharesOptionsSchema);

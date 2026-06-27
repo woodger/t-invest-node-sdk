@@ -31,10 +31,10 @@ const etfFormatOptionsSchema = {
   }
 } as const;
 
-const etfOptionsSchema = withSdkOptions({
-  ...instrumentLookupOptionsSchema,
-  ...etfFormatOptionsSchema
-} as const);
+const etfOptionsSchema = withSdkOptions(
+  instrumentLookupOptionsSchema,
+  etfFormatOptionsSchema
+);
 
 function parseEtfOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments etf-by', etfOptionsSchema);

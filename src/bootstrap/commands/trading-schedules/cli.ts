@@ -48,10 +48,10 @@ const tradingSchedulesFormatOptionsSchema = {
   }
 } as const;
 
-const tradingSchedulesOptionsSchema = withSdkOptions({
-  ...tradingSchedulesRequestOptionsSchema,
-  ...tradingSchedulesFormatOptionsSchema
-} as const);
+const tradingSchedulesOptionsSchema = withSdkOptions(
+  tradingSchedulesRequestOptionsSchema,
+  tradingSchedulesFormatOptionsSchema
+);
 
 function parseTradingSchedulesOptions(argv: CliArgs) {
   return parseCommandOptions(

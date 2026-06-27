@@ -58,10 +58,10 @@ const dividendsForeignIssuerFormatOptionsSchema = {
   }
 } as const;
 
-const dividendsForeignIssuerOptionsSchema = withSdkOptions({
-  ...dividendsForeignIssuerRequestOptionsSchema,
-  ...dividendsForeignIssuerFormatOptionsSchema
-} as const);
+const dividendsForeignIssuerOptionsSchema = withSdkOptions(
+  dividendsForeignIssuerRequestOptionsSchema,
+  dividendsForeignIssuerFormatOptionsSchema
+);
 
 function parseDividendsForeignIssuerOptions(argv: CliArgs) {
   return parseCommandOptions(

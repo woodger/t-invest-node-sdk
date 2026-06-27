@@ -30,10 +30,10 @@ const brandFormatOptionsSchema = {
   }
 } as const;
 
-const brandOptionsSchema = withSdkOptions({
-  ...brandRequestOptionsSchema,
-  ...brandFormatOptionsSchema
-} as const);
+const brandOptionsSchema = withSdkOptions(
+  brandRequestOptionsSchema,
+  brandFormatOptionsSchema
+);
 
 function parseBrandOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments get-brand-by', brandOptionsSchema);

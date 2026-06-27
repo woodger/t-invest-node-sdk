@@ -37,10 +37,10 @@ const closePricesFormatOptionsSchema = {
   }
 } as const;
 
-const closePricesOptionsSchema = withSdkOptions({
-  ...closePricesInstrumentIdsOptionsSchema,
-  ...closePricesFormatOptionsSchema
-} as const);
+const closePricesOptionsSchema = withSdkOptions(
+  closePricesInstrumentIdsOptionsSchema,
+  closePricesFormatOptionsSchema
+);
 
 function parseClosePricesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'marketdata get-close-prices', closePricesOptionsSchema);

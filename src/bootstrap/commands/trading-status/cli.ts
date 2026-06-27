@@ -37,10 +37,10 @@ const tradingStatusFormatOptionsSchema = {
   }
 } as const;
 
-const tradingStatusOptionsSchema = withSdkOptions({
-  ...tradingStatusRequestOptionsSchema,
-  ...tradingStatusFormatOptionsSchema
-} as const);
+const tradingStatusOptionsSchema = withSdkOptions(
+  tradingStatusRequestOptionsSchema,
+  tradingStatusFormatOptionsSchema
+);
 
 function parseTradingStatusOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'marketdata get-trading-status', tradingStatusOptionsSchema);

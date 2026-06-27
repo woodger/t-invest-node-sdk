@@ -35,14 +35,18 @@ const orderBookFormatOptionsSchema = {
   }
 } as const;
 
-const orderBookOptionsSchema = withSdkOptions({
+const orderBookRequestOptionsSchema = {
   'instrument-id': {
     type: 'string',
     required: true
   },
-  ...orderBookDepthOptionsSchema,
-  ...orderBookFormatOptionsSchema
-} as const);
+  ...orderBookDepthOptionsSchema
+} as const;
+
+const orderBookOptionsSchema = withSdkOptions(
+  orderBookRequestOptionsSchema,
+  orderBookFormatOptionsSchema
+);
 
 function parseOrderBookOptions(argv: CliArgs) {
   try {

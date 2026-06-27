@@ -41,10 +41,10 @@ const tradingStatusesFormatOptionsSchema = {
   }
 } as const;
 
-const tradingStatusesOptionsSchema = withSdkOptions({
-  ...tradingStatusesInstrumentIdsOptionsSchema,
-  ...tradingStatusesFormatOptionsSchema
-} as const);
+const tradingStatusesOptionsSchema = withSdkOptions(
+  tradingStatusesInstrumentIdsOptionsSchema,
+  tradingStatusesFormatOptionsSchema
+);
 
 function parseTradingStatusesOptions(argv: CliArgs) {
   return parseCommandOptions(

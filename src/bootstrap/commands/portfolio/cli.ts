@@ -49,10 +49,10 @@ const portfolioFormatOptionsSchema = {
   }
 } as const;
 
-const portfolioOptionsSchema = withSdkOptions({
-  ...portfolioRequestOptionsSchema,
-  ...portfolioFormatOptionsSchema
-} as const);
+const portfolioOptionsSchema = withSdkOptions(
+  portfolioRequestOptionsSchema,
+  portfolioFormatOptionsSchema
+);
 
 function parsePortfolioOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'operations get-portfolio', portfolioOptionsSchema);

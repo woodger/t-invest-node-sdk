@@ -31,10 +31,10 @@ const bondFormatOptionsSchema = {
   }
 } as const;
 
-const bondOptionsSchema = withSdkOptions({
-  ...instrumentLookupOptionsSchema,
-  ...bondFormatOptionsSchema
-} as const);
+const bondOptionsSchema = withSdkOptions(
+  instrumentLookupOptionsSchema,
+  bondFormatOptionsSchema
+);
 
 function parseBondOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments bond-by', bondOptionsSchema);

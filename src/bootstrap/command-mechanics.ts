@@ -16,8 +16,10 @@
  */
 
 import {
+  mergeOptionsSchema,
   parseOptions,
   type InferOptions,
+  type MergeOptionsSchemas,
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
@@ -38,13 +40,10 @@ export const sdkOptionsSchema = {
   }
 } as const satisfies OptionsSchema;
 
-export function withSdkOptions<const TSchema extends OptionsSchema>(
-  schema: TSchema
-): typeof sdkOptionsSchema & TSchema {
-  return {
-    ...sdkOptionsSchema,
-    ...schema
-  };
+export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
+  ...schemas: TSchemas
+): MergeOptionsSchemas<readonly [typeof sdkOptionsSchema, ...TSchemas]> {
+  return mergeOptionsSchema(sdkOptionsSchema, ...schemas);
 }
 
 export function parseCommandOptions<const TSchema extends OptionsSchema>(

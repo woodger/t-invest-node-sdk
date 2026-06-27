@@ -30,10 +30,10 @@ const positionsFormatOptionsSchema = {
   }
 } as const;
 
-const positionsOptionsSchema = withSdkOptions({
-  ...positionsRequestOptionsSchema,
-  ...positionsFormatOptionsSchema
-} as const);
+const positionsOptionsSchema = withSdkOptions(
+  positionsRequestOptionsSchema,
+  positionsFormatOptionsSchema
+);
 
 function parsePositionsOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'operations get-positions', positionsOptionsSchema);

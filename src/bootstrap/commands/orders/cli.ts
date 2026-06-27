@@ -30,10 +30,10 @@ const ordersFormatOptionsSchema = {
   }
 } as const;
 
-const ordersOptionsSchema = withSdkOptions({
-  ...ordersRequestOptionsSchema,
-  ...ordersFormatOptionsSchema
-} as const);
+const ordersOptionsSchema = withSdkOptions(
+  ordersRequestOptionsSchema,
+  ordersFormatOptionsSchema
+);
 
 function parseOrdersOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'orders get-orders', ordersOptionsSchema);

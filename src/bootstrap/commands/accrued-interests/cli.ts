@@ -49,10 +49,10 @@ const accruedInterestsFormatOptionsSchema = {
   }
 } as const;
 
-const accruedInterestsOptionsSchema = withSdkOptions({
-  ...accruedInterestsRequestOptionsSchema,
-  ...accruedInterestsFormatOptionsSchema
-} as const);
+const accruedInterestsOptionsSchema = withSdkOptions(
+  accruedInterestsRequestOptionsSchema,
+  accruedInterestsFormatOptionsSchema
+);
 
 function parseAccruedInterestsOptions(argv: CliArgs) {
   return parseCommandOptions(

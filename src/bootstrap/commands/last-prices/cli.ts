@@ -37,10 +37,10 @@ const lastPricesFormatOptionsSchema = {
   }
 } as const;
 
-const lastPricesOptionsSchema = withSdkOptions({
-  ...lastPricesInstrumentIdsOptionsSchema,
-  ...lastPricesFormatOptionsSchema
-} as const);
+const lastPricesOptionsSchema = withSdkOptions(
+  lastPricesInstrumentIdsOptionsSchema,
+  lastPricesFormatOptionsSchema
+);
 
 function parseLastPricesOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'marketdata get-last-prices', lastPricesOptionsSchema);

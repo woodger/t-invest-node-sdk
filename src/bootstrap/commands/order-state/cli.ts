@@ -37,10 +37,10 @@ const orderStateFormatOptionsSchema = {
   }
 } as const;
 
-const orderStateOptionsSchema = withSdkOptions({
-  ...orderStateRequestOptionsSchema,
-  ...orderStateFormatOptionsSchema
-} as const);
+const orderStateOptionsSchema = withSdkOptions(
+  orderStateRequestOptionsSchema,
+  orderStateFormatOptionsSchema
+);
 
 function parseOrderStateOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'orders get-order-state', orderStateOptionsSchema);

@@ -45,10 +45,10 @@ const dividendsFormatOptionsSchema = {
   }
 } as const;
 
-const dividendsOptionsSchema = withSdkOptions({
-  ...dividendsRequestOptionsSchema,
-  ...dividendsFormatOptionsSchema
-} as const);
+const dividendsOptionsSchema = withSdkOptions(
+  dividendsRequestOptionsSchema,
+  dividendsFormatOptionsSchema
+);
 
 function parseDividendsOptions(argv: CliArgs) {
   return parseCommandOptions(argv, 'instruments get-dividends', dividendsOptionsSchema);
