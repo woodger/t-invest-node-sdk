@@ -388,6 +388,13 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('returns executable legacy command handler', async () => {
+    const command = resolveCommand(['version']);
+    const output = await command.handler({ _: ['version'] });
+
+    assert.match(output ?? '', /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
+  });
+
   test('throws for unknown command', () => {
     assert.throws(
       () => resolveCommand(['unknown-command']),

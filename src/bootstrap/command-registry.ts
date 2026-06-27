@@ -63,7 +63,7 @@ import {
   resolveCommand as resolveIcoreCommand,
   type CommandDefinition
 } from 'icore';
-import type { CliCommand } from './cli-contract';
+import type { CliArgs, CliCommand, CliCommandOutput } from './cli-contract';
 
 export type ResolvedCommand = {
   name: CommandName;
@@ -301,37 +301,49 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   }
 
   const commandName = resolvedCommand.name;
+  const command = resolvedCommand.command;
 
   if (!isCommandName(commandName)) {
     throw new Error(`'${commandName}' is not a program command`);
   }
 
-  const command = commandRegistry[commandName];
-
   return {
-    ...command,
     name: commandName,
-    path: resolvedCommand.path
+    path: resolvedCommand.path,
+    requiresContext: command.requiresContext,
+    handler: command.handler
   };
 }
 
-type RegistryCommandDefinition = CommandDefinition<
+type LegacyCliCommandDefinition = CommandDefinition<
   Record<never, never>,
-  undefined,
-  undefined
->;
+  CliArgs,
+  CliCommandOutput,
+  [string, ...string[]]
+> & RegisteredCommand;
 
 const icoreCommandRegistry = defineCommandRegistry(
-  Object.keys(commandRegistry).map((name) => defineRegistryCommand(name))
+  Object.entries(commandRegistry).map(([name, command]) => defineLegacyCliCommand(name, command))
 );
 
-function defineRegistryCommand(name: string): RegistryCommandDefinition {
+function defineLegacyCliCommand(
+  name: string,
+  command: RegisteredCommand
+): LegacyCliCommandDefinition {
   return {
     path: commandPathFromName(name),
     options: {},
-    // Command execution still uses SDK CliCommand handlers during migration.
-    handle() {
-      return undefined;
+    allowExtraPositionals: true,
+    requiresContext: command.requiresContext,
+    handler: command.handler,
+    handle({ context, positionals }) {
+      return command.handler({
+        ...context,
+        _: [
+          name,
+          ...positionals
+        ]
+      });
     }
   };
 }
