@@ -3,8 +3,9 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOptionsBy, optionsByFormats, type OptionsByFormat } from './reporter';
 
@@ -17,33 +18,52 @@ type OptionsBySdk = {
 
 type OptionsBySdkFactory = (options: TinkoffInvestOptions) => OptionsBySdk;
 
-const optionsByArgNames = new Set([
-  ...sdkOptionArgNames,
-  'basic-asset-uid',
-  'basic-asset-position-uid',
-  'format'
-]);
+const optionsByRequestOptionsSchema = {
+  'basic-asset-uid': {
+    type: 'string',
+    required: true
+  },
+  'basic-asset-position-uid': {
+    type: 'string'
+  }
+} as const;
+
+const optionsByFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: optionsByFormats,
+    default: 'table'
+  }
+} as const;
+
+const optionsByOptionsSchema = withSdkOptions({
+  ...optionsByRequestOptionsSchema,
+  ...optionsByFormatOptionsSchema
+} as const);
+
+function parseOptionsByOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments options-by', optionsByOptionsSchema);
+}
 
 export function parseOptionsByRequest(argv: CliArgs): FilterOptionsRequest {
-  return {
-    basicAssetUid: ArgGuards.requireStringArg(argv, 'basic-asset-uid'),
-    basicAssetPositionUid: ArgGuards.optionalStringArgValue(argv, 'basic-asset-position-uid') ?? ''
-  };
+  return createOptionsByRequest(parseOptionsByOptions(argv));
 }
 
 export function parseOptionsByFormat(argv: CliArgs): OptionsByFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', optionsByFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments options-by',
+    optionsByFormatOptionsSchema
+  ).format;
 }
 
 export function createOptionsByCommand(
   createSdk: OptionsBySdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function optionsBy(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, optionsByArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments options-by');
-
-    const request = parseOptionsByRequest(argv);
-    const format = parseOptionsByFormat(argv);
+    const options = parseOptionsByOptions(argv);
+    const request = createOptionsByRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -60,3 +80,12 @@ export function createOptionsByCommand(
 export const optionsBy = createOptionsByCommand();
 
 export { formatOptionsBy };
+
+function createOptionsByRequest(
+  options: ReturnType<typeof parseOptionsByOptions>
+): FilterOptionsRequest {
+  return {
+    basicAssetUid: options['basic-asset-uid'],
+    basicAssetPositionUid: options['basic-asset-position-uid'] ?? ''
+  };
+}
