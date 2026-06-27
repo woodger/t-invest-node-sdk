@@ -3,8 +3,13 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommandOptions,
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   accruedInterestsFormats,
@@ -21,42 +26,61 @@ type AccruedInterestsSdk = {
 
 type AccruedInterestsSdkFactory = (options: TinkoffInvestOptions) => AccruedInterestsSdk;
 
-const accruedInterestsArgNames = new Set([
-  ...sdkOptionArgNames,
-  'figi',
-  'from',
-  'to',
-  'format'
-]);
+const accruedInterestsRequestOptionsSchema = {
+  figi: {
+    type: 'string',
+    required: true
+  },
+  from: {
+    type: 'string',
+    required: true
+  },
+  to: {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const accruedInterestsFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: accruedInterestsFormats,
+    default: 'table'
+  }
+} as const;
+
+const accruedInterestsOptionsSchema = withSdkOptions({
+  ...accruedInterestsRequestOptionsSchema,
+  ...accruedInterestsFormatOptionsSchema
+} as const);
+
+function parseAccruedInterestsOptions(argv: CliArgs) {
+  return parseCommandOptions(
+    argv,
+    'instruments get-accrued-interests',
+    accruedInterestsOptionsSchema
+  );
+}
 
 export function parseAccruedInterestsRequest(argv: CliArgs): GetAccruedInterestsRequest {
-  const from = ArgGuards.parseDateArg(argv, 'from');
-  const to = ArgGuards.parseDateArg(argv, 'to');
-
-  if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    figi: ArgGuards.requireStringArg(argv, 'figi'),
-    from,
-    to
-  };
+  return createAccruedInterestsRequest(parseAccruedInterestsOptions(argv));
 }
 
 export function parseAccruedInterestsFormat(argv: CliArgs): AccruedInterestsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', accruedInterestsFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments get-accrued-interests',
+    accruedInterestsFormatOptionsSchema
+  ).format;
 }
 
 export function createAccruedInterestsCommand(
   createSdk: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function accruedInterests(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, accruedInterestsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-accrued-interests');
-
-    const request = parseAccruedInterestsRequest(argv);
-    const format = parseAccruedInterestsFormat(argv);
+    const options = parseAccruedInterestsOptions(argv);
+    const request = createAccruedInterestsRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -73,3 +97,20 @@ export function createAccruedInterestsCommand(
 export const accruedInterests = createAccruedInterestsCommand();
 
 export { formatAccruedInterests };
+
+function createAccruedInterestsRequest(
+  options: ReturnType<typeof parseAccruedInterestsOptions>
+): GetAccruedInterestsRequest {
+  const from = parseDateTimeOption(options.from, 'from');
+  const to = parseDateTimeOption(options.to, 'to');
+
+  if (from.getTime() > to.getTime()) {
+    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+  }
+
+  return {
+    figi: options.figi,
+    from,
+    to
+  };
+}

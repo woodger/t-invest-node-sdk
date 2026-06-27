@@ -70,6 +70,16 @@ export function parseCommaSeparatedStringListOption(
   return values;
 }
 
+export function parseDateTimeOption(value: string, name: string): Date {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Expected '--${name}' as date-time`);
+  }
+
+  return date;
+}
+
 function toRawOptions(argv: CliArgs): Record<string, RawOptionValue> {
   const options: Record<string, RawOptionValue> = {};
 

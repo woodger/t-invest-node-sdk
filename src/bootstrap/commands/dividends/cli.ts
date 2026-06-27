@@ -3,8 +3,13 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommandOptions,
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { dividendsFormats, formatDividends, type DividendsFormat } from './reporter';
 
@@ -17,42 +22,57 @@ type DividendsSdk = {
 
 type DividendsSdkFactory = (options: TinkoffInvestOptions) => DividendsSdk;
 
-const dividendsArgNames = new Set([
-  ...sdkOptionArgNames,
-  'figi',
-  'from',
-  'to',
-  'format'
-]);
+const dividendsRequestOptionsSchema = {
+  figi: {
+    type: 'string',
+    required: true
+  },
+  from: {
+    type: 'string',
+    required: true
+  },
+  to: {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const dividendsFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: dividendsFormats,
+    default: 'table'
+  }
+} as const;
+
+const dividendsOptionsSchema = withSdkOptions({
+  ...dividendsRequestOptionsSchema,
+  ...dividendsFormatOptionsSchema
+} as const);
+
+function parseDividendsOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-dividends', dividendsOptionsSchema);
+}
 
 export function parseDividendsRequest(argv: CliArgs): GetDividendsRequest {
-  const from = ArgGuards.parseDateArg(argv, 'from');
-  const to = ArgGuards.parseDateArg(argv, 'to');
-
-  if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    figi: ArgGuards.requireStringArg(argv, 'figi'),
-    from,
-    to
-  };
+  return createDividendsRequest(parseDividendsOptions(argv));
 }
 
 export function parseDividendsFormat(argv: CliArgs): DividendsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', dividendsFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments get-dividends',
+    dividendsFormatOptionsSchema
+  ).format;
 }
 
 export function createDividendsCommand(
   createSdk: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function dividends(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, dividendsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-dividends');
-
-    const request = parseDividendsRequest(argv);
-    const format = parseDividendsFormat(argv);
+    const options = parseDividendsOptions(argv);
+    const request = createDividendsRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -69,3 +89,20 @@ export function createDividendsCommand(
 export const dividends = createDividendsCommand();
 
 export { formatDividends };
+
+function createDividendsRequest(
+  options: ReturnType<typeof parseDividendsOptions>
+): GetDividendsRequest {
+  const from = parseDateTimeOption(options.from, 'from');
+  const to = parseDateTimeOption(options.to, 'to');
+
+  if (from.getTime() > to.getTime()) {
+    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+  }
+
+  return {
+    figi: options.figi,
+    from,
+    to
+  };
+}

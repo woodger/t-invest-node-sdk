@@ -4,6 +4,7 @@ import type { CliArgs } from './cli-contract';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
+  parseDateTimeOption,
   withSdkOptions
 } from './command-mechanics';
 
@@ -90,6 +91,22 @@ describe('command mechanics', () => {
       assert.throws(
         () => parseCommaSeparatedStringListOption('first,,second', 'instrument-id'),
         /Expected '--instrument-id' as comma-separated list/
+      );
+    });
+  });
+
+  describe('parseDateTimeOption', () => {
+    test('returns parsed date-time', () => {
+      assert.deepEqual(
+        parseDateTimeOption('2026-01-01T00:00:00Z', 'from'),
+        new Date('2026-01-01T00:00:00Z')
+      );
+    });
+
+    test('rejects invalid date-time values', () => {
+      assert.throws(
+        () => parseDateTimeOption('not-a-date', 'from'),
+        /Expected '--from' as date-time/
       );
     });
   });
