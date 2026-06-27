@@ -402,6 +402,25 @@ describe('resolveCommand', () => {
     assert.match(output ?? '', /version - Show package and runtime version info/);
   });
 
+  test('passes named options to command-line definitions', async () => {
+    const command = resolveCommand(['users', 'get-accounts']);
+
+    for (const positionals of [
+      ['users get-accounts'],
+      ['users', 'get-accounts']
+    ]) {
+      await assert.rejects(
+        async () => {
+          await command.handler({
+            _: positionals,
+            format: 'xml'
+          });
+        },
+        /Expected '--format' as one of: json, table/
+      );
+    }
+  });
+
   test('throws for unknown command', () => {
     assert.throws(
       () => resolveCommand(['unknown-command']),

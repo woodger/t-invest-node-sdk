@@ -9,7 +9,7 @@
  * Здесь не должно быть исполнения команд, разбора argv или форматирования help/version output.
  */
 
-import { accounts } from './commands/accounts/cli';
+import { accountsCommand } from './commands/accounts/cli';
 import { accruedInterests } from './commands/accrued-interests/cli';
 import { asset } from './commands/asset/cli';
 import { assets } from './commands/assets/cli';
@@ -37,7 +37,7 @@ import { helpCommand } from './commands/help/cli';
 import { instrument } from './commands/instrument/cli';
 import { lastPrices } from './commands/last-prices/cli';
 import { lastTrades } from './commands/last-trades/cli';
-import { marginAttributes } from './commands/margin-attributes/cli';
+import { marginAttributesCommand } from './commands/margin-attributes/cli';
 import { option } from './commands/option/cli';
 import { optionsBy } from './commands/options-by/cli';
 import { orderBook } from './commands/order-book/cli';
@@ -53,8 +53,8 @@ import { stopOrders } from './commands/stop-orders/cli';
 import { tradingSchedules } from './commands/trading-schedules/cli';
 import { tradingStatus } from './commands/trading-status/cli';
 import { tradingStatuses } from './commands/trading-statuses/cli';
-import { userInfo } from './commands/user-info/cli';
-import { userTariff } from './commands/user-tariff/cli';
+import { userInfoCommand } from './commands/user-info/cli';
+import { userTariffCommand } from './commands/user-tariff/cli';
 import { versionCommand } from './commands/version/cli';
 import { withdrawLimits } from './commands/withdraw-limits/cli';
 import {
@@ -62,7 +62,8 @@ import {
   isCommandName as isCommandLineCommandName,
   resolveCommand as resolveCommandLineCommand,
   runCommand,
-  type CommandDefinition
+  type CommandDefinition,
+  type OptionsSchema
 } from 'icore';
 import type { CliArgs, CliCommand, CliCommandOutput } from './cli-contract';
 
@@ -76,22 +77,6 @@ export type ResolvedCommand = {
 type RegisteredCommand = Omit<ResolvedCommand, 'name' | 'path'>;
 
 const commandRegistry = {
-  'users get-accounts': {
-    requiresContext: false,
-    handler: accounts
-  },
-  'users get-info': {
-    requiresContext: false,
-    handler: userInfo
-  },
-  'users get-margin-attributes': {
-    requiresContext: false,
-    handler: marginAttributes
-  },
-  'users get-user-tariff': {
-    requiresContext: false,
-    handler: userTariff
-  },
   'marketdata get-candles': {
     requiresContext: false,
     handler: candles
@@ -262,7 +247,13 @@ const commandRegistry = {
   }
 } as const satisfies Record<string, RegisteredCommand>;
 
-export type CommandName = keyof typeof commandRegistry | 'help' | 'version';
+type UsersCommandName =
+  | 'users get-accounts'
+  | 'users get-info'
+  | 'users get-margin-attributes'
+  | 'users get-user-tariff';
+
+export type CommandName = keyof typeof commandRegistry | UsersCommandName | 'help' | 'version';
 
 export function isCommandName(value: unknown): value is CommandName {
   return isCommandLineCommandName(commandLineRegistry, value);
@@ -316,7 +307,7 @@ type LegacyCliCommandDefinition = CommandDefinition<
 > & RegisteredCommand;
 
 type CommandLineDefinition = CommandDefinition<
-  Record<never, never>,
+  OptionsSchema,
   undefined,
   CliCommandOutput,
   readonly [string, ...string[]]
@@ -325,6 +316,18 @@ type CommandLineDefinition = CommandDefinition<
 const commandLineRegistry = defineCommandRegistry(
   [
     ...Object.entries(commandRegistry).map(([name, command]) => defineLegacyCliCommand(name, command)),
+    defineCommandLineCommand(accountsCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(userInfoCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(marginAttributesCommand, {
+      requiresContext: false
+    }),
+    defineCommandLineCommand(userTariffCommand, {
+      requiresContext: false
+    }),
     defineCommandLineCommand(helpCommand, {
       requiresContext: false
     }),
@@ -356,9 +359,9 @@ function defineLegacyCliCommand(
   };
 }
 
-function defineCommandLineCommand(
+function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   command: CommandDefinition<
-    Record<never, never>,
+    TSchema,
     undefined,
     CliCommandOutput,
     readonly [string, ...string[]]
@@ -369,9 +372,44 @@ function defineCommandLineCommand(
     ...command,
     requiresContext: metadata.requiresContext,
     handler(argv) {
-      return runCommand(command, argv._, undefined);
+      return runCommand(command, commandArgsFromCliArgs(command.path, argv), undefined);
     }
   };
+}
+
+function commandArgsFromCliArgs(path: readonly string[], argv: CliArgs): string[] {
+  const positionals = argv._[0] === path.join(' ')
+    ? argv._.slice(1)
+    : argv._.slice(path.length);
+  const args = [
+    ...path,
+    ...positionals
+  ];
+
+  for (const name of Object.keys(argv)) {
+    if (name === '_') {
+      continue;
+    }
+
+    const value = argv[name];
+
+    if (value === undefined || value === false) {
+      continue;
+    }
+
+    if (value === true) {
+      args.push(`--${name}`);
+      continue;
+    }
+
+    if (typeof value !== 'string') {
+      throw new Error(`Expected '--${name}' as scalar option`);
+    }
+
+    args.push(`--${name}=${value}`);
+  }
+
+  return args;
 }
 
 function commandPathFromName(name: string): [string, ...string[]] {

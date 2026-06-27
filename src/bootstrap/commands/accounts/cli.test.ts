@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   AccessLevel,
@@ -71,11 +72,17 @@ describe('accounts command', () => {
         };
       });
 
-      const output = await command(argv({
-        token: 'token',
-        endpoint: 'localhost:50051',
-        format: 'json'
-      }));
+      const output = await runCommand(
+        command,
+        [
+          'users',
+          'get-accounts',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--format=json'
+        ],
+        undefined
+      );
 
       assert.deepEqual(receivedOptions, {
         token: 'token',
@@ -100,10 +107,16 @@ describe('accounts command', () => {
       }));
 
       await assert.rejects(
-        () => command(argv({
-          token: 'token',
-          endpoint: 'localhost:50051'
-        })),
+        () => runCommand(
+          command,
+          [
+            'users',
+            'get-accounts',
+            '--token=token',
+            '--endpoint=localhost:50051'
+          ],
+          undefined
+        ),
         /api failed/
       );
 

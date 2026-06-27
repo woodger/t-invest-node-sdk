@@ -3,7 +3,8 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import { resolveSdkOptions } from '../../args';
+import { defineCommand } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -21,6 +22,10 @@ type MarginAttributesSdk = {
 };
 
 type MarginAttributesSdkFactory = (options: TinkoffInvestOptions) => MarginAttributesSdk;
+
+const marginAttributesCommandName = 'users get-margin-attributes';
+const marginAttributesCommandPath = ['users', 'get-margin-attributes'] as const;
+const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const marginAttributesRequestOptionsSchema = {
   'account-id': {
@@ -43,7 +48,7 @@ const marginAttributesOptionsSchema = withSdkOptions(
 );
 
 function parseMarginAttributesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, 'users get-margin-attributes', marginAttributesOptionsSchema);
+  return parseCommandOptions(argv, marginAttributesCommandName, marginAttributesOptionsSchema);
 }
 
 export function parseMarginAttributesRequest(argv: CliArgs): GetMarginAttributesRequest {
@@ -53,32 +58,49 @@ export function parseMarginAttributesRequest(argv: CliArgs): GetMarginAttributes
 export function parseMarginAttributesFormat(argv: CliArgs): MarginAttributesFormat {
   return parseCommandOptions(
     argv,
-    'users get-margin-attributes',
+    marginAttributesCommandName,
     marginAttributesFormatOptionsSchema
   ).format;
 }
 
 export function createMarginAttributesCommand(
-  createSdk: MarginAttributesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
+  createSdk: MarginAttributesSdkFactory = defaultMarginAttributesSdkFactory
 ) {
-  return async function marginAttributes(argv: CliArgs): Promise<string> {
-    const options = parseMarginAttributesOptions(argv);
-    const request = createMarginAttributesRequest(options);
-    const { format } = options;
-    const sdk = createSdk(resolveSdkOptions(argv));
-
-    try {
-      const response = await sdk.users.getMarginAttributes(request);
-
-      return formatMarginAttributes(response, format);
+  return defineCommand({
+    path: marginAttributesCommandPath,
+    options: marginAttributesOptionsSchema,
+    handle({ options }) {
+      return runMarginAttributesCommand(options, createSdk);
     }
-    finally {
-      sdk.close();
-    }
-  };
+  });
 }
 
-export const marginAttributes = createMarginAttributesCommand();
+export function marginAttributes(argv: CliArgs): Promise<string> {
+  return runMarginAttributesCommand(
+    parseMarginAttributesOptions(argv),
+    defaultMarginAttributesSdkFactory
+  );
+}
+
+export const marginAttributesCommand = createMarginAttributesCommand();
+
+async function runMarginAttributesCommand(
+  options: ReturnType<typeof parseMarginAttributesOptions>,
+  createSdk: MarginAttributesSdkFactory
+): Promise<string> {
+  const request = createMarginAttributesRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.users.getMarginAttributes(request);
+
+    return formatMarginAttributes(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
 
 export { formatMarginAttributes };
 
