@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import type { CliArgs } from './cli-contract';
 import {
+  parseCommaSeparatedStringListOption,
   parseCommandOptions,
   withSdkOptions
 } from './command-mechanics';
@@ -73,6 +74,22 @@ describe('command mechanics', () => {
           withSdkOptions({})
         ),
         /Expected '--token' as scalar option/
+      );
+    });
+  });
+
+  describe('parseCommaSeparatedStringListOption', () => {
+    test('returns trimmed comma-separated values', () => {
+      assert.deepEqual(
+        parseCommaSeparatedStringListOption('first, second', 'instrument-id'),
+        ['first', 'second']
+      );
+    });
+
+    test('rejects empty comma-separated values', () => {
+      assert.throws(
+        () => parseCommaSeparatedStringListOption('first,,second', 'instrument-id'),
+        /Expected '--instrument-id' as comma-separated list/
       );
     });
   });

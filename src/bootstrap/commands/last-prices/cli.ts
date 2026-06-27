@@ -3,8 +3,13 @@ import type {
   GetLastPricesRequest,
   GetLastPricesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommaSeparatedStringListOption,
+  parseCommandOptions,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatLastPrices, lastPricesFormats, type LastPricesFormat } from './reporter';
 
@@ -17,36 +22,59 @@ type LastPricesSdk = {
 
 type LastPricesSdkFactory = (options: TinkoffInvestOptions) => LastPricesSdk;
 
-const lastPricesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'instrument-id',
-  'format'
-]);
+const lastPricesInstrumentIdsOptionsSchema = {
+  'instrument-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const lastPricesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: lastPricesFormats,
+    default: 'table'
+  }
+} as const;
+
+const lastPricesOptionsSchema = withSdkOptions({
+  ...lastPricesInstrumentIdsOptionsSchema,
+  ...lastPricesFormatOptionsSchema
+} as const);
+
+function parseLastPricesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'marketdata get-last-prices', lastPricesOptionsSchema);
+}
 
 export function parseLastPricesInstrumentIds(argv: CliArgs): string[] {
-  return ArgGuards.requireCommaSeparatedStringListArg(argv, 'instrument-id');
+  const options = parseCommandOptions(
+    argv,
+    'marketdata get-last-prices',
+    lastPricesInstrumentIdsOptionsSchema
+  );
+
+  return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
 export function parseLastPricesRequest(argv: CliArgs): GetLastPricesRequest {
-  return {
-    figi: [],
-    instrumentId: parseLastPricesInstrumentIds(argv)
-  };
+  return createLastPricesRequest(parseLastPricesOptions(argv));
 }
 
 export function parseLastPricesFormat(argv: CliArgs): LastPricesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', lastPricesFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'marketdata get-last-prices',
+    lastPricesFormatOptionsSchema
+  ).format;
 }
 
 export function createLastPricesCommand(
   createSdk: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function lastPrices(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, lastPricesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-last-prices');
-
-    const request = parseLastPricesRequest(argv);
-    const format = parseLastPricesFormat(argv);
+    const options = parseLastPricesOptions(argv);
+    const request = createLastPricesRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -63,3 +91,15 @@ export function createLastPricesCommand(
 export const lastPrices = createLastPricesCommand();
 
 export { formatLastPrices };
+
+function createLastPricesRequest(
+  options: ReturnType<typeof parseLastPricesOptions>
+): GetLastPricesRequest {
+  return {
+    figi: [],
+    instrumentId: parseCommaSeparatedStringListOption(
+      options['instrument-id'],
+      'instrument-id'
+    )
+  };
+}

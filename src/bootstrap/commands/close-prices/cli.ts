@@ -3,8 +3,13 @@ import type {
   GetClosePricesRequest,
   GetClosePricesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommaSeparatedStringListOption,
+  parseCommandOptions,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { closePricesFormats, formatClosePrices, type ClosePricesFormat } from './reporter';
 
@@ -17,37 +22,59 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TinkoffInvestOptions) => ClosePricesSdk;
 
-const closePricesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'instrument-id',
-  'format'
-]);
+const closePricesInstrumentIdsOptionsSchema = {
+  'instrument-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const closePricesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: closePricesFormats,
+    default: 'table'
+  }
+} as const;
+
+const closePricesOptionsSchema = withSdkOptions({
+  ...closePricesInstrumentIdsOptionsSchema,
+  ...closePricesFormatOptionsSchema
+} as const);
+
+function parseClosePricesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'marketdata get-close-prices', closePricesOptionsSchema);
+}
 
 export function parseClosePricesInstrumentIds(argv: CliArgs): string[] {
-  return ArgGuards.requireCommaSeparatedStringListArg(argv, 'instrument-id');
+  const options = parseCommandOptions(
+    argv,
+    'marketdata get-close-prices',
+    closePricesInstrumentIdsOptionsSchema
+  );
+
+  return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
 export function parseClosePricesRequest(argv: CliArgs): GetClosePricesRequest {
-  return {
-    instruments: parseClosePricesInstrumentIds(argv).map((instrumentId) => ({
-      instrumentId
-    }))
-  };
+  return createClosePricesRequest(parseClosePricesOptions(argv));
 }
 
 export function parseClosePricesFormat(argv: CliArgs): ClosePricesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', closePricesFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'marketdata get-close-prices',
+    closePricesFormatOptionsSchema
+  ).format;
 }
 
 export function createClosePricesCommand(
   createSdk: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function closePrices(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, closePricesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-close-prices');
-
-    const request = parseClosePricesRequest(argv);
-    const format = parseClosePricesFormat(argv);
+    const options = parseClosePricesOptions(argv);
+    const request = createClosePricesRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -64,3 +91,16 @@ export function createClosePricesCommand(
 export const closePrices = createClosePricesCommand();
 
 export { formatClosePrices };
+
+function createClosePricesRequest(
+  options: ReturnType<typeof parseClosePricesOptions>
+): GetClosePricesRequest {
+  return {
+    instruments: parseCommaSeparatedStringListOption(
+      options['instrument-id'],
+      'instrument-id'
+    ).map((instrumentId) => ({
+      instrumentId
+    }))
+  };
+}

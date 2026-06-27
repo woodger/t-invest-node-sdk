@@ -57,6 +57,19 @@ export function parseCommandOptions<const TSchema extends OptionsSchema>(
   return parseOptions(schema, toRawOptions(argv));
 }
 
+export function parseCommaSeparatedStringListOption(
+  value: string,
+  name: string
+): string[] {
+  const values = value.split(',').map((item) => item.trim());
+
+  if (values.some((item) => item === '')) {
+    throw new Error(`Expected '--${name}' as comma-separated list`);
+  }
+
+  return values;
+}
+
 function toRawOptions(argv: CliArgs): Record<string, RawOptionValue> {
   const options: Record<string, RawOptionValue> = {};
 
