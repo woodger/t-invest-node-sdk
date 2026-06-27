@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { favoritesFormats, formatFavorites, type FavoritesFormat } from './reporter';
 
@@ -14,23 +15,27 @@ type FavoritesSdk = {
 
 type FavoritesSdkFactory = (options: TinkoffInvestOptions) => FavoritesSdk;
 
-const favoritesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'format'
-]);
+const favoritesOptionsSchema = withSdkOptions({
+  format: {
+    type: 'string',
+    choices: favoritesFormats,
+    default: 'table'
+  }
+} as const);
+
+function parseFavoritesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-favorites', favoritesOptionsSchema);
+}
 
 export function parseFavoritesFormat(argv: CliArgs): FavoritesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', favoritesFormats) ?? 'table';
+  return parseFavoritesOptions(argv).format;
 }
 
 export function createFavoritesCommand(
   createSdk: FavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function favorites(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, favoritesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-favorites');
-
-    const format = parseFavoritesFormat(argv);
+    const { format } = parseFavoritesOptions(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

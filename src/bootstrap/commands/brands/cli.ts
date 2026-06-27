@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { brandsFormats, formatBrands, type BrandsFormat } from './reporter';
 
@@ -14,23 +15,27 @@ type BrandsSdk = {
 
 type BrandsSdkFactory = (options: TinkoffInvestOptions) => BrandsSdk;
 
-const brandsArgNames = new Set([
-  ...sdkOptionArgNames,
-  'format'
-]);
+const brandsOptionsSchema = withSdkOptions({
+  format: {
+    type: 'string',
+    choices: brandsFormats,
+    default: 'table'
+  }
+} as const);
+
+function parseBrandsOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-brands', brandsOptionsSchema);
+}
 
 export function parseBrandsFormat(argv: CliArgs): BrandsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', brandsFormats) ?? 'table';
+  return parseBrandsOptions(argv).format;
 }
 
 export function createBrandsCommand(
   createSdk: BrandsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function brands(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, brandsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-brands');
-
-    const format = parseBrandsFormat(argv);
+    const { format } = parseBrandsOptions(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

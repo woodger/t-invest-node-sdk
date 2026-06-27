@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { countriesFormats, formatCountries, type CountriesFormat } from './reporter';
 
@@ -14,23 +15,27 @@ type CountriesSdk = {
 
 type CountriesSdkFactory = (options: TinkoffInvestOptions) => CountriesSdk;
 
-const countriesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'format'
-]);
+const countriesOptionsSchema = withSdkOptions({
+  format: {
+    type: 'string',
+    choices: countriesFormats,
+    default: 'table'
+  }
+} as const);
+
+function parseCountriesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-countries', countriesOptionsSchema);
+}
 
 export function parseCountriesFormat(argv: CliArgs): CountriesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', countriesFormats) ?? 'table';
+  return parseCountriesOptions(argv).format;
 }
 
 export function createCountriesCommand(
   createSdk: CountriesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function countries(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, countriesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-countries');
-
-    const format = parseCountriesFormat(argv);
+    const { format } = parseCountriesOptions(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

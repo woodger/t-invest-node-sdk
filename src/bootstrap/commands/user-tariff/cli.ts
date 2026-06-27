@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatUserTariff, userTariffFormats, type UserTariffFormat } from './reporter';
 
@@ -14,23 +15,27 @@ type UserTariffSdk = {
 
 type UserTariffSdkFactory = (options: TinkoffInvestOptions) => UserTariffSdk;
 
-const userTariffArgNames = new Set([
-  ...sdkOptionArgNames,
-  'format'
-]);
+const userTariffOptionsSchema = withSdkOptions({
+  format: {
+    type: 'string',
+    choices: userTariffFormats,
+    default: 'table'
+  }
+} as const);
+
+function parseUserTariffOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'users get-user-tariff', userTariffOptionsSchema);
+}
 
 export function parseUserTariffFormat(argv: CliArgs): UserTariffFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', userTariffFormats) ?? 'table';
+  return parseUserTariffOptions(argv).format;
 }
 
 export function createUserTariffCommand(
   createSdk: UserTariffSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function userTariff(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, userTariffArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'users get-user-tariff');
-
-    const format = parseUserTariffFormat(argv);
+    const { format } = parseUserTariffOptions(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

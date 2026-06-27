@@ -1,7 +1,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatUserInfo, userInfoFormats, type UserInfoFormat } from './reporter';
 
@@ -14,23 +15,27 @@ type UserInfoSdk = {
 
 type UserInfoSdkFactory = (options: TinkoffInvestOptions) => UserInfoSdk;
 
-const userInfoArgNames = new Set([
-  ...sdkOptionArgNames,
-  'format'
-]);
+const userInfoOptionsSchema = withSdkOptions({
+  format: {
+    type: 'string',
+    choices: userInfoFormats,
+    default: 'table'
+  }
+} as const);
+
+function parseUserInfoOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'users get-info', userInfoOptionsSchema);
+}
 
 export function parseUserInfoFormat(argv: CliArgs): UserInfoFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', userInfoFormats) ?? 'table';
+  return parseUserInfoOptions(argv).format;
 }
 
 export function createUserInfoCommand(
   createSdk: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function userInfo(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, userInfoArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'users get-info');
-
-    const format = parseUserInfoFormat(argv);
+    const { format } = parseUserInfoOptions(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
