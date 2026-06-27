@@ -5,7 +5,7 @@ import {
 } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,9 +47,9 @@ type ShareOptions = InferOptions<typeof shareOptionsSchema>;
 export const parseShareIdType = parseInstrumentLookupIdType;
 export const parseShareRequest = parseInstrumentLookupRequest;
 
-export function parseShareFormat(argv: CliArgs): ShareFormat {
+export function parseShareFormat(rawOptions: CommandRawOptions): ShareFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     shareCommandName,
     shareFormatOptionsSchema
   ).format;

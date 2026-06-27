@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -51,17 +51,17 @@ const tradingStatusesOptionsSchema = withSdkOptions(
   tradingStatusesFormatOptionsSchema
 );
 
-function parseTradingStatusesOptions(argv: CliArgs) {
+function parseTradingStatusesOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     tradingStatusesCommandName,
     tradingStatusesOptionsSchema
   );
 }
 
-export function parseTradingStatusesInstrumentIds(argv: CliArgs): string[] {
+export function parseTradingStatusesInstrumentIds(rawOptions: CommandRawOptions): string[] {
   const options = parseCommandOptions(
-    argv,
+    rawOptions,
     tradingStatusesCommandName,
     tradingStatusesInstrumentIdsOptionsSchema
   );
@@ -69,13 +69,13 @@ export function parseTradingStatusesInstrumentIds(argv: CliArgs): string[] {
   return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
-export function parseTradingStatusesRequest(argv: CliArgs): GetTradingStatusesRequest {
-  return createTradingStatusesRequest(parseTradingStatusesOptions(argv));
+export function parseTradingStatusesRequest(rawOptions: CommandRawOptions): GetTradingStatusesRequest {
+  return createTradingStatusesRequest(parseTradingStatusesOptions(rawOptions));
 }
 
-export function parseTradingStatusesFormat(argv: CliArgs): TradingStatusesFormat {
+export function parseTradingStatusesFormat(rawOptions: CommandRawOptions): TradingStatusesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     tradingStatusesCommandName,
     tradingStatusesFormatOptionsSchema
   ).format;

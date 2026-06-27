@@ -7,18 +7,15 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createAccruedInterestsCommand,
   parseAccruedInterestsFormat,
   parseAccruedInterestsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-accrued-interests'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function accruedInterest(overrides: Partial<AccruedInterest> = {}): AccruedInterest {
@@ -52,7 +49,7 @@ function response(
 describe('accrued-interests command', () => {
   describe('parseAccruedInterestsRequest', () => {
     test('returns generated getAccruedInterests request', () => {
-      const request = parseAccruedInterestsRequest(argv({
+      const request = parseAccruedInterestsRequest(rawOptions({
         figi: 'BOND-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
@@ -67,7 +64,7 @@ describe('accrued-interests command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseAccruedInterestsRequest(argv({
+        () => parseAccruedInterestsRequest(rawOptions({
           figi: 'BOND-FIGI',
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
@@ -79,12 +76,12 @@ describe('accrued-interests command', () => {
 
   describe('parseAccruedInterestsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseAccruedInterestsFormat(argv()), 'table');
+      assert.equal(parseAccruedInterestsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseAccruedInterestsFormat(argv({ format: 'xml' })),
+        () => parseAccruedInterestsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

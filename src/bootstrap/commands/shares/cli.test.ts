@@ -7,7 +7,7 @@ import {
   type InstrumentsRequest,
   type SharesResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createSharesCommand,
   parseSharesFormat,
@@ -15,11 +15,8 @@ import {
   parseSharesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments shares'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<SharesResponse> = {}): SharesResponse {
@@ -32,27 +29,27 @@ function response(overrides: Partial<SharesResponse> = {}): SharesResponse {
 describe('shares command', () => {
   describe('parseSharesInstrumentStatus', () => {
     test('returns base by default', () => {
-      assert.equal(parseSharesInstrumentStatus(argv()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
+      assert.equal(parseSharesInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
     });
 
     test('maps public instrument status names to generated enum values', () => {
       assert.equal(
-        parseSharesInstrumentStatus(argv({ 'instrument-status': 'unspecified' })),
+        parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
         InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
       );
       assert.equal(
-        parseSharesInstrumentStatus(argv({ 'instrument-status': 'base' })),
+        parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
         InstrumentStatus.INSTRUMENT_STATUS_BASE
       );
       assert.equal(
-        parseSharesInstrumentStatus(argv({ 'instrument-status': 'all' })),
+        parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
         InstrumentStatus.INSTRUMENT_STATUS_ALL
       );
     });
 
     test('rejects unknown instrument status names', () => {
       assert.throws(
-        () => parseSharesInstrumentStatus(argv({ 'instrument-status': 'active' })),
+        () => parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
         /Expected '--instrument-status' as one of: unspecified, base, all/
       );
     });
@@ -60,7 +57,7 @@ describe('shares command', () => {
 
   describe('parseSharesRequest', () => {
     test('returns generated shares request', () => {
-      assert.deepEqual(parseSharesRequest(argv({ 'instrument-status': 'all' })), {
+      assert.deepEqual(parseSharesRequest(rawOptions({ 'instrument-status': 'all' })), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });
@@ -68,12 +65,12 @@ describe('shares command', () => {
 
   describe('parseSharesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseSharesFormat(argv()), 'table');
+      assert.equal(parseSharesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseSharesFormat(argv({ format: 'xml' })),
+        () => parseSharesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

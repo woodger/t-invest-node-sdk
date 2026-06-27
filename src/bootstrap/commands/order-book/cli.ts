@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrderBook, orderBookFormats, type OrderBookFormat } from './reporter';
@@ -53,19 +53,19 @@ const orderBookOptionsSchema = withSdkOptions(
   orderBookFormatOptionsSchema
 );
 
-function parseOrderBookOptions(argv: CliArgs) {
+function parseOrderBookOptions(rawOptions: CommandRawOptions) {
   try {
-    return parseCommandOptions(argv, orderBookCommandName, orderBookOptionsSchema);
+    return parseCommandOptions(rawOptions, orderBookCommandName, orderBookOptionsSchema);
   }
   catch (error) {
     throw normalizeOrderBookDepthError(error);
   }
 }
 
-export function parseOrderBookDepth(argv: CliArgs): number {
+export function parseOrderBookDepth(rawOptions: CommandRawOptions): number {
   try {
     return parseCommandOptions(
-      argv,
+      rawOptions,
       orderBookCommandName,
       orderBookDepthOptionsSchema
     ).depth;
@@ -75,13 +75,13 @@ export function parseOrderBookDepth(argv: CliArgs): number {
   }
 }
 
-export function parseOrderBookRequest(argv: CliArgs): GetOrderBookRequest {
-  return createOrderBookRequest(parseOrderBookOptions(argv));
+export function parseOrderBookRequest(rawOptions: CommandRawOptions): GetOrderBookRequest {
+  return createOrderBookRequest(parseOrderBookOptions(rawOptions));
 }
 
-export function parseOrderBookFormat(argv: CliArgs): OrderBookFormat {
+export function parseOrderBookFormat(rawOptions: CommandRawOptions): OrderBookFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     orderBookCommandName,
     orderBookFormatOptionsSchema
   ).format;

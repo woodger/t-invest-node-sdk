@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { favoritesFormats, formatFavorites, type FavoritesFormat } from './reporter';
@@ -28,12 +28,12 @@ const favoritesOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseFavoritesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, favoritesCommandName, favoritesOptionsSchema);
+function parseFavoritesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, favoritesCommandName, favoritesOptionsSchema);
 }
 
-export function parseFavoritesFormat(argv: CliArgs): FavoritesFormat {
-  return parseFavoritesOptions(argv).format;
+export function parseFavoritesFormat(rawOptions: CommandRawOptions): FavoritesFormat {
+  return parseFavoritesOptions(rawOptions).format;
 }
 
 export function createFavoritesCommand(

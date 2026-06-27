@@ -6,18 +6,15 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOptionsByCommand,
   parseOptionsByFormat,
   parseOptionsByRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments options-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<OptionsResponse> = {}): OptionsResponse {
@@ -30,7 +27,7 @@ function response(overrides: Partial<OptionsResponse> = {}): OptionsResponse {
 describe('options-by command', () => {
   describe('parseOptionsByRequest', () => {
     test('returns generated optionsBy request', () => {
-      const request = parseOptionsByRequest(argv({
+      const request = parseOptionsByRequest(rawOptions({
         'basic-asset-uid': 'asset-uid'
       }));
 
@@ -41,7 +38,7 @@ describe('options-by command', () => {
     });
 
     test('uses optional basic asset position uid', () => {
-      const request = parseOptionsByRequest(argv({
+      const request = parseOptionsByRequest(rawOptions({
         'basic-asset-uid': 'asset-uid',
         'basic-asset-position-uid': 'position-uid'
       }));
@@ -54,7 +51,7 @@ describe('options-by command', () => {
 
     test('requires basic asset uid', () => {
       assert.throws(
-        () => parseOptionsByRequest(argv()),
+        () => parseOptionsByRequest(rawOptions()),
         /Expected required argument '--basic-asset-uid'/
       );
     });
@@ -62,12 +59,12 @@ describe('options-by command', () => {
 
   describe('parseOptionsByFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOptionsByFormat(argv()), 'table');
+      assert.equal(parseOptionsByFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOptionsByFormat(argv({ format: 'xml' })),
+        () => parseOptionsByFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

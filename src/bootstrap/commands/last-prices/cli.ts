@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -47,13 +47,13 @@ const lastPricesOptionsSchema = withSdkOptions(
   lastPricesFormatOptionsSchema
 );
 
-function parseLastPricesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, lastPricesCommandName, lastPricesOptionsSchema);
+function parseLastPricesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, lastPricesCommandName, lastPricesOptionsSchema);
 }
 
-export function parseLastPricesInstrumentIds(argv: CliArgs): string[] {
+export function parseLastPricesInstrumentIds(rawOptions: CommandRawOptions): string[] {
   const options = parseCommandOptions(
-    argv,
+    rawOptions,
     lastPricesCommandName,
     lastPricesInstrumentIdsOptionsSchema
   );
@@ -61,13 +61,13 @@ export function parseLastPricesInstrumentIds(argv: CliArgs): string[] {
   return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
-export function parseLastPricesRequest(argv: CliArgs): GetLastPricesRequest {
-  return createLastPricesRequest(parseLastPricesOptions(argv));
+export function parseLastPricesRequest(rawOptions: CommandRawOptions): GetLastPricesRequest {
+  return createLastPricesRequest(parseLastPricesOptions(rawOptions));
 }
 
-export function parseLastPricesFormat(argv: CliArgs): LastPricesFormat {
+export function parseLastPricesFormat(rawOptions: CommandRawOptions): LastPricesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     lastPricesCommandName,
     lastPricesFormatOptionsSchema
   ).format;

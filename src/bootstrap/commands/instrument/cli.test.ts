@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentIdType, type InstrumentRequest, type InstrumentResponse } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createInstrumentCommand,
   parseInstrumentFormat,
@@ -11,11 +11,8 @@ import {
   parseInstrumentRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-instrument-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function instrumentResponse(overrides: Partial<InstrumentResponse> = {}): InstrumentResponse {
@@ -28,18 +25,18 @@ function instrumentResponse(overrides: Partial<InstrumentResponse> = {}): Instru
 describe('instrument command', () => {
   describe('parseInstrumentIdType', () => {
     test('maps public id type names to generated enum values', () => {
-      assert.equal(parseInstrumentIdType(argv({ 'id-type': 'figi' })), InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI);
-      assert.equal(parseInstrumentIdType(argv({ 'id-type': 'ticker' })), InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER);
-      assert.equal(parseInstrumentIdType(argv({ 'id-type': 'uid' })), InstrumentIdType.INSTRUMENT_ID_TYPE_UID);
+      assert.equal(parseInstrumentIdType(rawOptions({ 'id-type': 'figi' })), InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI);
+      assert.equal(parseInstrumentIdType(rawOptions({ 'id-type': 'ticker' })), InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER);
+      assert.equal(parseInstrumentIdType(rawOptions({ 'id-type': 'uid' })), InstrumentIdType.INSTRUMENT_ID_TYPE_UID);
       assert.equal(
-        parseInstrumentIdType(argv({ 'id-type': 'position-uid' })),
+        parseInstrumentIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseInstrumentIdType(argv({ 'id-type': 'isin' })),
+        () => parseInstrumentIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -47,7 +44,7 @@ describe('instrument command', () => {
 
   describe('parseInstrumentRequest', () => {
     test('returns generated getInstrumentBy request', () => {
-      const request = parseInstrumentRequest(argv({
+      const request = parseInstrumentRequest(rawOptions({
         id: 'BBG00QPYJ5H0',
         'id-type': 'figi'
       }));
@@ -61,7 +58,7 @@ describe('instrument command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseInstrumentRequest(argv({
+        () => parseInstrumentRequest(rawOptions({
           id: 'TCSG',
           'id-type': 'ticker'
         })),
@@ -70,7 +67,7 @@ describe('instrument command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseInstrumentRequest(argv({
+      const request = parseInstrumentRequest(rawOptions({
         id: 'TCSG',
         'id-type': 'ticker',
         'class-code': 'TQBR'
@@ -86,12 +83,12 @@ describe('instrument command', () => {
 
   describe('parseInstrumentFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseInstrumentFormat(argv()), 'table');
+      assert.equal(parseInstrumentFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseInstrumentFormat(argv({ format: 'xml' })),
+        () => parseInstrumentFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

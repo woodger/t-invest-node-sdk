@@ -3,10 +3,10 @@
  *
  * Здесь допустимы:
  * - декларативное описание доступных CLI-команд;
- * - валидация имени команды из argv;
+ * - валидация имени команды из positionals;
  * - возврат handler metadata для bootstrap CLI;
  *
- * Здесь не должно быть исполнения команд, разбора argv или форматирования help/version output.
+ * Здесь не должно быть исполнения команд, разбора raw argv или форматирования help/version output.
  */
 
 import { accountsCommand } from './commands/accounts/cli';
@@ -65,7 +65,9 @@ import {
   type CommandDefinition,
   type OptionsSchema
 } from 'icore';
-import type { CliArgs, CliCommand, CliCommandOutput } from './cli-contract';
+
+type CliCommandOutput = string | undefined;
+type CliCommand = (args: readonly string[]) => CliCommandOutput | Promise<CliCommandOutput>;
 
 export type ResolvedCommand = {
   name: CommandName;
@@ -355,43 +357,8 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   return {
     ...command,
     requiresContext: metadata.requiresContext,
-    handler(argv) {
-      return runCommand(command, commandArgsFromCliArgs(command.path, argv), undefined);
+    handler(args) {
+      return runCommand(command, args, undefined);
     }
   };
-}
-
-function commandArgsFromCliArgs(path: readonly string[], argv: CliArgs): string[] {
-  const positionals = argv._[0] === path.join(' ')
-    ? argv._.slice(1)
-    : argv._.slice(path.length);
-  const args = [
-    ...path,
-    ...positionals
-  ];
-
-  for (const name of Object.keys(argv)) {
-    if (name === '_') {
-      continue;
-    }
-
-    const value = argv[name];
-
-    if (value === undefined || value === false) {
-      continue;
-    }
-
-    if (value === true) {
-      args.push(`--${name}`);
-      continue;
-    }
-
-    if (typeof value !== 'string') {
-      throw new Error(`Expected '--${name}' as scalar option`);
-    }
-
-    args.push(`--${name}=${value}`);
-  }
-
-  return args;
 }

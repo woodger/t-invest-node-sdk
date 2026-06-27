@@ -9,18 +9,15 @@ import {
   type GetLastTradesResponse,
   type Trade
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createLastTradesCommand,
   parseLastTradesFormat,
   parseLastTradesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-last-trades'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function quotation(units: number, nano: number): Quotation {
@@ -54,7 +51,7 @@ function lastTradesResponse(
 describe('last-trades command', () => {
   describe('parseLastTradesRequest', () => {
     test('returns generated getLastTrades request', () => {
-      const request = parseLastTradesRequest(argv({
+      const request = parseLastTradesRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0',
         from: '2026-06-19T10:00:00.000Z',
         to: '2026-06-19T11:00:00.000Z'
@@ -68,7 +65,7 @@ describe('last-trades command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseLastTradesRequest(argv({
+        () => parseLastTradesRequest(rawOptions({
           'instrument-id': 'BBG00QPYJ5H0',
           from: '2026-06-19T11:00:00.000Z',
           to: '2026-06-19T10:00:00.000Z'
@@ -80,12 +77,12 @@ describe('last-trades command', () => {
 
   describe('parseLastTradesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseLastTradesFormat(argv()), 'table');
+      assert.equal(parseLastTradesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseLastTradesFormat(argv({ format: 'xml' })),
+        () => parseLastTradesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetInfoResponse } from '../../../generated/users';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatUserInfo, userInfoFormats, type UserInfoFormat } from './reporter';
@@ -28,12 +28,12 @@ const userInfoOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseUserInfoOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, userInfoCommandName, userInfoOptionsSchema);
+function parseUserInfoOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, userInfoCommandName, userInfoOptionsSchema);
 }
 
-export function parseUserInfoFormat(argv: CliArgs): UserInfoFormat {
-  return parseUserInfoOptions(argv).format;
+export function parseUserInfoFormat(rawOptions: CommandRawOptions): UserInfoFormat {
+  return parseUserInfoOptions(rawOptions).format;
 }
 
 export function createUserInfoCommand(

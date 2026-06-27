@@ -8,7 +8,7 @@ import type {
   FindInstrumentResponse,
   InstrumentShort
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createFindInstrumentCommand,
   parseFindInstrumentFormat,
@@ -16,11 +16,8 @@ import {
   parseFindInstrumentRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments find-instrument'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
@@ -56,23 +53,23 @@ describe('find-instrument command', () => {
   describe('parseFindInstrumentKind', () => {
     test('returns unspecified by default', () => {
       assert.equal(
-        parseFindInstrumentKind(argv()),
+        parseFindInstrumentKind(rawOptions()),
         InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED
       );
     });
 
     test('maps public instrument kind names to generated enum values', () => {
-      assert.equal(parseFindInstrumentKind(argv({ 'instrument-kind': 'share' })), InstrumentType.INSTRUMENT_TYPE_SHARE);
-      assert.equal(parseFindInstrumentKind(argv({ 'instrument-kind': 'bond' })), InstrumentType.INSTRUMENT_TYPE_BOND);
+      assert.equal(parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'share' })), InstrumentType.INSTRUMENT_TYPE_SHARE);
+      assert.equal(parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'bond' })), InstrumentType.INSTRUMENT_TYPE_BOND);
       assert.equal(
-        parseFindInstrumentKind(argv({ 'instrument-kind': 'clearing-certificate' })),
+        parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'clearing-certificate' })),
         InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
       );
     });
 
     test('rejects unknown instrument kind names', () => {
       assert.throws(
-        () => parseFindInstrumentKind(argv({ 'instrument-kind': 'stock' })),
+        () => parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'stock' })),
         /Expected '--instrument-kind' as one of: unspecified, bond, share/
       );
     });
@@ -80,7 +77,7 @@ describe('find-instrument command', () => {
 
   describe('parseFindInstrumentRequest', () => {
     test('returns generated findInstrument request', () => {
-      const request = parseFindInstrumentRequest(argv({
+      const request = parseFindInstrumentRequest(rawOptions({
         query: 'TCSG',
         'instrument-kind': 'share',
         'api-trade-available': true
@@ -95,7 +92,7 @@ describe('find-instrument command', () => {
 
     test('requires query', () => {
       assert.throws(
-        () => parseFindInstrumentRequest(argv()),
+        () => parseFindInstrumentRequest(rawOptions()),
         /Expected required argument '--query'/
       );
     });
@@ -103,12 +100,12 @@ describe('find-instrument command', () => {
 
   describe('parseFindInstrumentFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseFindInstrumentFormat(argv()), 'table');
+      assert.equal(parseFindInstrumentFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseFindInstrumentFormat(argv({ format: 'xml' })),
+        () => parseFindInstrumentFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

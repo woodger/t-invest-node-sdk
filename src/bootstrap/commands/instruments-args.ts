@@ -12,7 +12,7 @@ import {
   type InstrumentsRequest
 } from '../../generated/instruments';
 import { parseOptions, type RawOptionValue } from 'icore';
-import type { CliArgs } from '../cli-contract';
+import type { CommandRawOptions } from '../command-mechanics';
 
 export const instrumentLookupArgNames = new Set([
   'id',
@@ -85,20 +85,20 @@ export const instrumentStatusOptionsSchema = {
   }
 } as const;
 
-export function parseInstrumentLookupIdType(argv: CliArgs): InstrumentIdType {
+export function parseInstrumentLookupIdType(rawOptions: CommandRawOptions): InstrumentIdType {
   const options = parseOptions(
     instrumentLookupIdTypeOptionsSchema,
-    toRawOptionValues(argv, ['id-type'])
+    toRawOptionValues(rawOptions, ['id-type'])
   );
 
   return instrumentIdTypes[options['id-type']];
 }
 
-export function parseInstrumentLookupRequest(argv: CliArgs): InstrumentRequest {
-  const idType = parseInstrumentLookupIdType(argv);
+export function parseInstrumentLookupRequest(rawOptions: CommandRawOptions): InstrumentRequest {
+  const idType = parseInstrumentLookupIdType(rawOptions);
   const classCodeOptions = parseOptions(
     instrumentLookupClassCodeOptionsSchema,
-    toRawOptionValues(argv, ['class-code'])
+    toRawOptionValues(rawOptions, ['class-code'])
   );
   const classCode = classCodeOptions['class-code'] ?? '';
 
@@ -108,7 +108,7 @@ export function parseInstrumentLookupRequest(argv: CliArgs): InstrumentRequest {
 
   const idOptions = parseOptions(
     instrumentLookupIdOptionsSchema,
-    toRawOptionValues(argv, ['id'])
+    toRawOptionValues(rawOptions, ['id'])
   );
 
   return {
@@ -147,19 +147,19 @@ export function createInstrumentLookupRequestFromOptions(
   };
 }
 
-export function parseInstrumentStatus(argv: CliArgs): InstrumentStatus {
+export function parseInstrumentStatus(rawOptions: CommandRawOptions): InstrumentStatus {
   const options = parseOptions(
     instrumentStatusOptionsSchema,
-    toRawOptionValues(argv, ['instrument-status'])
+    toRawOptionValues(rawOptions, ['instrument-status'])
   );
   const status = options['instrument-status'];
 
   return instrumentStatuses[status];
 }
 
-export function parseInstrumentsRequest(argv: CliArgs): InstrumentsRequest {
+export function parseInstrumentsRequest(rawOptions: CommandRawOptions): InstrumentsRequest {
   return {
-    instrumentStatus: parseInstrumentStatus(argv)
+    instrumentStatus: parseInstrumentStatus(rawOptions)
   };
 }
 
@@ -172,13 +172,13 @@ export function createInstrumentsRequestFromOptions(
 }
 
 function toRawOptionValues(
-  argv: CliArgs,
+  rawOptions: CommandRawOptions,
   names: readonly string[]
 ): Record<string, RawOptionValue> {
   const options: Record<string, RawOptionValue> = {};
 
   for (const name of names) {
-    const value = argv[name];
+    const value = rawOptions[name];
 
     if (value === undefined) {
       continue;

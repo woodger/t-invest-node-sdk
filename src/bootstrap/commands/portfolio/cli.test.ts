@@ -8,7 +8,7 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createPortfolioCommand,
   parsePortfolioCurrency,
@@ -16,11 +16,8 @@ import {
   parsePortfolioRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-portfolio'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -59,17 +56,17 @@ function portfolioResponse(overrides: Partial<PortfolioResponse> = {}): Portfoli
 describe('portfolio command', () => {
   describe('parsePortfolioCurrency', () => {
     test('returns rub by default', () => {
-      assert.equal(parsePortfolioCurrency(argv()), PortfolioCurrency.RUB);
+      assert.equal(parsePortfolioCurrency(rawOptions()), PortfolioCurrency.RUB);
     });
 
     test('maps public currency names to generated enum values', () => {
-      assert.equal(parsePortfolioCurrency(argv({ currency: 'usd' })), PortfolioCurrency.USD);
-      assert.equal(parsePortfolioCurrency(argv({ currency: 'eur' })), PortfolioCurrency.EUR);
+      assert.equal(parsePortfolioCurrency(rawOptions({ currency: 'usd' })), PortfolioCurrency.USD);
+      assert.equal(parsePortfolioCurrency(rawOptions({ currency: 'eur' })), PortfolioCurrency.EUR);
     });
 
     test('rejects unknown currencies', () => {
       assert.throws(
-        () => parsePortfolioCurrency(argv({ currency: 'gbp' })),
+        () => parsePortfolioCurrency(rawOptions({ currency: 'gbp' })),
         /Expected '--currency' as one of: rub, usd, eur/
       );
     });
@@ -77,7 +74,7 @@ describe('portfolio command', () => {
 
   describe('parsePortfolioRequest', () => {
     test('returns generated getPortfolio request', () => {
-      const request = parsePortfolioRequest(argv({
+      const request = parsePortfolioRequest(rawOptions({
         'account-id': 'account-id',
         currency: 'usd'
       }));
@@ -89,12 +86,12 @@ describe('portfolio command', () => {
 
   describe('parsePortfolioFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parsePortfolioFormat(argv()), 'table');
+      assert.equal(parsePortfolioFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parsePortfolioFormat(argv({ format: 'xml' })),
+        () => parsePortfolioFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

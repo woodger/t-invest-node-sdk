@@ -7,7 +7,7 @@ import {
   type CurrencyResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createCurrencyCommand,
   parseCurrencyFormat,
@@ -15,11 +15,8 @@ import {
   parseCurrencyRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments currency-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function currencyResponse(overrides: Partial<CurrencyResponse> = {}): CurrencyResponse {
@@ -33,26 +30,26 @@ describe('currency command', () => {
   describe('parseCurrencyIdType', () => {
     test('maps public id type names to generated enum values', () => {
       assert.equal(
-        parseCurrencyIdType(argv({ 'id-type': 'figi' })),
+        parseCurrencyIdType(rawOptions({ 'id-type': 'figi' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
       );
       assert.equal(
-        parseCurrencyIdType(argv({ 'id-type': 'ticker' })),
+        parseCurrencyIdType(rawOptions({ 'id-type': 'ticker' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
       );
       assert.equal(
-        parseCurrencyIdType(argv({ 'id-type': 'uid' })),
+        parseCurrencyIdType(rawOptions({ 'id-type': 'uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_UID
       );
       assert.equal(
-        parseCurrencyIdType(argv({ 'id-type': 'position-uid' })),
+        parseCurrencyIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseCurrencyIdType(argv({ 'id-type': 'isin' })),
+        () => parseCurrencyIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -60,7 +57,7 @@ describe('currency command', () => {
 
   describe('parseCurrencyRequest', () => {
     test('returns generated currencyBy request', () => {
-      const request = parseCurrencyRequest(argv({
+      const request = parseCurrencyRequest(rawOptions({
         id: 'BBG0013HGFT4',
         'id-type': 'figi'
       }));
@@ -74,7 +71,7 @@ describe('currency command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseCurrencyRequest(argv({
+        () => parseCurrencyRequest(rawOptions({
           id: 'USD000UTSTOM',
           'id-type': 'ticker'
         })),
@@ -83,7 +80,7 @@ describe('currency command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseCurrencyRequest(argv({
+      const request = parseCurrencyRequest(rawOptions({
         id: 'USD000UTSTOM',
         'id-type': 'ticker',
         'class-code': 'CETS'
@@ -99,12 +96,12 @@ describe('currency command', () => {
 
   describe('parseCurrencyFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseCurrencyFormat(argv()), 'table');
+      assert.equal(parseCurrencyFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseCurrencyFormat(argv({ format: 'xml' })),
+        () => parseCurrencyFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

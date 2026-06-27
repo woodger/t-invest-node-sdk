@@ -7,18 +7,15 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createMarginAttributesCommand,
   parseMarginAttributesFormat,
   parseMarginAttributesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['users get-margin-attributes'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -53,7 +50,7 @@ function response(
 describe('margin-attributes command', () => {
   describe('parseMarginAttributesRequest', () => {
     test('returns generated getMarginAttributes request', () => {
-      const request = parseMarginAttributesRequest(argv({
+      const request = parseMarginAttributesRequest(rawOptions({
         'account-id': 'account-id'
       }));
 
@@ -65,12 +62,12 @@ describe('margin-attributes command', () => {
 
   describe('parseMarginAttributesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseMarginAttributesFormat(argv()), 'table');
+      assert.equal(parseMarginAttributesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseMarginAttributesFormat(argv({ format: 'xml' })),
+        () => parseMarginAttributesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

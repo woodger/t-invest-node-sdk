@@ -3,18 +3,15 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Brand, GetBrandRequest } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBrandCommand,
   parseBrandFormat,
   parseBrandRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-brand-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function brand(overrides: Partial<Brand> = {}): Brand {
@@ -34,7 +31,7 @@ function brand(overrides: Partial<Brand> = {}): Brand {
 describe('brand command', () => {
   describe('parseBrandRequest', () => {
     test('returns generated getBrandBy request', () => {
-      const request = parseBrandRequest(argv({ id: 'brand-uid' }));
+      const request = parseBrandRequest(rawOptions({ id: 'brand-uid' }));
 
       assert.deepEqual(request, {
         id: 'brand-uid'
@@ -44,12 +41,12 @@ describe('brand command', () => {
 
   describe('parseBrandFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseBrandFormat(argv()), 'table');
+      assert.equal(parseBrandFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseBrandFormat(argv({ format: 'xml' })),
+        () => parseBrandFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

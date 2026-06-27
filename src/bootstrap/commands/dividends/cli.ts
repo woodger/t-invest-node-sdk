@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -55,17 +55,17 @@ const dividendsOptionsSchema = withSdkOptions(
   dividendsFormatOptionsSchema
 );
 
-function parseDividendsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, dividendsCommandName, dividendsOptionsSchema);
+function parseDividendsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, dividendsCommandName, dividendsOptionsSchema);
 }
 
-export function parseDividendsRequest(argv: CliArgs): GetDividendsRequest {
-  return createDividendsRequest(parseDividendsOptions(argv));
+export function parseDividendsRequest(rawOptions: CommandRawOptions): GetDividendsRequest {
+  return createDividendsRequest(parseDividendsOptions(rawOptions));
 }
 
-export function parseDividendsFormat(argv: CliArgs): DividendsFormat {
+export function parseDividendsFormat(rawOptions: CommandRawOptions): DividendsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     dividendsCommandName,
     dividendsFormatOptionsSchema
   ).format;

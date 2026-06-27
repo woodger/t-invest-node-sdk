@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -58,21 +58,21 @@ const tradingSchedulesOptionsSchema = withSdkOptions(
   tradingSchedulesFormatOptionsSchema
 );
 
-function parseTradingSchedulesOptions(argv: CliArgs) {
+function parseTradingSchedulesOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     tradingSchedulesCommandName,
     tradingSchedulesOptionsSchema
   );
 }
 
-export function parseTradingSchedulesRequest(argv: CliArgs): TradingSchedulesRequest {
-  return createTradingSchedulesRequest(parseTradingSchedulesOptions(argv));
+export function parseTradingSchedulesRequest(rawOptions: CommandRawOptions): TradingSchedulesRequest {
+  return createTradingSchedulesRequest(parseTradingSchedulesOptions(rawOptions));
 }
 
-export function parseTradingSchedulesFormat(argv: CliArgs): TradingSchedulesFormat {
+export function parseTradingSchedulesFormat(rawOptions: CommandRawOptions): TradingSchedulesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     tradingSchedulesCommandName,
     tradingSchedulesFormatOptionsSchema
   ).format;

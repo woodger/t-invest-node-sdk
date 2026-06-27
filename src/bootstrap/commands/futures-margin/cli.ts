@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,17 +47,17 @@ const futuresMarginOptionsSchema = withSdkOptions(
   futuresMarginFormatOptionsSchema
 );
 
-function parseFuturesMarginOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, futuresMarginCommandName, futuresMarginOptionsSchema);
+function parseFuturesMarginOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, futuresMarginCommandName, futuresMarginOptionsSchema);
 }
 
-export function parseFuturesMarginRequest(argv: CliArgs): GetFuturesMarginRequest {
-  return createFuturesMarginRequest(parseFuturesMarginOptions(argv));
+export function parseFuturesMarginRequest(rawOptions: CommandRawOptions): GetFuturesMarginRequest {
+  return createFuturesMarginRequest(parseFuturesMarginOptions(rawOptions));
 }
 
-export function parseFuturesMarginFormat(argv: CliArgs): FuturesMarginFormat {
+export function parseFuturesMarginFormat(rawOptions: CommandRawOptions): FuturesMarginFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     futuresMarginCommandName,
     futuresMarginFormatOptionsSchema
   ).format;

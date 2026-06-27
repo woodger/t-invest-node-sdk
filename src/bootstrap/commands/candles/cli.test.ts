@@ -7,7 +7,7 @@ import {
   type GetCandlesRequest,
   type HistoricCandle
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createCandlesCommand,
   parseCandleInterval,
@@ -15,11 +15,8 @@ import {
   parseCandlesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-candles'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {
@@ -39,18 +36,18 @@ describe('candles command', () => {
   describe('parseCandleInterval', () => {
     test('maps public interval names to generated enum values', () => {
       assert.equal(
-        parseCandleInterval(argv({ interval: '1min' })),
+        parseCandleInterval(rawOptions({ interval: '1min' })),
         CandleInterval.CANDLE_INTERVAL_1_MIN
       );
       assert.equal(
-        parseCandleInterval(argv({ interval: 'day' })),
+        parseCandleInterval(rawOptions({ interval: 'day' })),
         CandleInterval.CANDLE_INTERVAL_DAY
       );
     });
 
     test('throws for unsupported interval names', () => {
       assert.throws(
-        () => parseCandleInterval(argv({ interval: 'year' })),
+        () => parseCandleInterval(rawOptions({ interval: 'year' })),
         /Expected '--interval' as one of:/
       );
     });
@@ -58,7 +55,7 @@ describe('candles command', () => {
 
   describe('parseCandlesRequest', () => {
     test('returns generated getCandles request', () => {
-      const request = parseCandlesRequest(argv({
+      const request = parseCandlesRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0',
         from: '2026-06-19T00:00:00.000Z',
         to: '2026-06-19T01:00:00.000Z',
@@ -74,7 +71,7 @@ describe('candles command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseCandlesRequest(argv({
+        () => parseCandlesRequest(rawOptions({
           'instrument-id': 'BBG00QPYJ5H0',
           from: '2026-06-20T00:00:00.000Z',
           to: '2026-06-19T00:00:00.000Z',
@@ -87,7 +84,7 @@ describe('candles command', () => {
 
   describe('parseCandlesFormat', () => {
     test('returns json by default', () => {
-      assert.equal(parseCandlesFormat(argv()), 'json');
+      assert.equal(parseCandlesFormat(rawOptions()), 'json');
     });
   });
 

@@ -6,7 +6,7 @@ import {
 } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPortfolio, portfolioFormats, type PortfolioFormat } from './reporter';
@@ -59,13 +59,13 @@ const portfolioOptionsSchema = withSdkOptions(
   portfolioFormatOptionsSchema
 );
 
-function parsePortfolioOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, portfolioCommandName, portfolioOptionsSchema);
+function parsePortfolioOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, portfolioCommandName, portfolioOptionsSchema);
 }
 
-export function parsePortfolioCurrency(argv: CliArgs): PortfolioCurrency {
+export function parsePortfolioCurrency(rawOptions: CommandRawOptions): PortfolioCurrency {
   const { currency } = parseCommandOptions(
-    argv,
+    rawOptions,
     portfolioCommandName,
     { currency: portfolioRequestOptionsSchema.currency } as const
   );
@@ -73,13 +73,13 @@ export function parsePortfolioCurrency(argv: CliArgs): PortfolioCurrency {
   return portfolioCurrencies[currency];
 }
 
-export function parsePortfolioRequest(argv: CliArgs): PortfolioRequest {
-  return createPortfolioRequest(parsePortfolioOptions(argv));
+export function parsePortfolioRequest(rawOptions: CommandRawOptions): PortfolioRequest {
+  return createPortfolioRequest(parsePortfolioOptions(rawOptions));
 }
 
-export function parsePortfolioFormat(argv: CliArgs): PortfolioFormat {
+export function parsePortfolioFormat(rawOptions: CommandRawOptions): PortfolioFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     portfolioCommandName,
     portfolioFormatOptionsSchema
   ).format;

@@ -10,7 +10,7 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOperationsCommand,
   parseOperationsFormat,
@@ -18,11 +18,8 @@ import {
   parseOperationsState
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-operations'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -66,18 +63,18 @@ function operationsResponse(overrides: Partial<OperationsResponse> = {}): Operat
 describe('operations command', () => {
   describe('parseOperationsState', () => {
     test('returns unspecified by default', () => {
-      assert.equal(parseOperationsState(argv()), OperationState.OPERATION_STATE_UNSPECIFIED);
+      assert.equal(parseOperationsState(rawOptions()), OperationState.OPERATION_STATE_UNSPECIFIED);
     });
 
     test('maps public state names to generated enum values', () => {
-      assert.equal(parseOperationsState(argv({ state: 'executed' })), OperationState.OPERATION_STATE_EXECUTED);
-      assert.equal(parseOperationsState(argv({ state: 'canceled' })), OperationState.OPERATION_STATE_CANCELED);
-      assert.equal(parseOperationsState(argv({ state: 'progress' })), OperationState.OPERATION_STATE_PROGRESS);
+      assert.equal(parseOperationsState(rawOptions({ state: 'executed' })), OperationState.OPERATION_STATE_EXECUTED);
+      assert.equal(parseOperationsState(rawOptions({ state: 'canceled' })), OperationState.OPERATION_STATE_CANCELED);
+      assert.equal(parseOperationsState(rawOptions({ state: 'progress' })), OperationState.OPERATION_STATE_PROGRESS);
     });
 
     test('rejects unknown states', () => {
       assert.throws(
-        () => parseOperationsState(argv({ state: 'done' })),
+        () => parseOperationsState(rawOptions({ state: 'done' })),
         /Expected '--state' as one of: unspecified, executed, canceled, progress/
       );
     });
@@ -85,7 +82,7 @@ describe('operations command', () => {
 
   describe('parseOperationsRequest', () => {
     test('returns generated getOperations request', () => {
-      const request = parseOperationsRequest(argv({
+      const request = parseOperationsRequest(rawOptions({
         'account-id': 'account-id',
         from: '2026-06-01T00:00:00.000Z',
         to: '2026-06-19T00:00:00.000Z',
@@ -102,7 +99,7 @@ describe('operations command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseOperationsRequest(argv({
+        () => parseOperationsRequest(rawOptions({
           'account-id': 'account-id',
           from: '2026-06-20T00:00:00.000Z',
           to: '2026-06-19T00:00:00.000Z'
@@ -114,12 +111,12 @@ describe('operations command', () => {
 
   describe('parseOperationsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOperationsFormat(argv()), 'table');
+      assert.equal(parseOperationsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOperationsFormat(argv({ format: 'xml' })),
+        () => parseOperationsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

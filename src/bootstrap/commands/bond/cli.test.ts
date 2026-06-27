@@ -7,7 +7,7 @@ import {
   type BondResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBondCommand,
   parseBondFormat,
@@ -15,11 +15,8 @@ import {
   parseBondRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments bond-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function bondResponse(overrides: Partial<BondResponse> = {}): BondResponse {
@@ -33,26 +30,26 @@ describe('bond command', () => {
   describe('parseBondIdType', () => {
     test('maps public id type names to generated enum values', () => {
       assert.equal(
-        parseBondIdType(argv({ 'id-type': 'figi' })),
+        parseBondIdType(rawOptions({ 'id-type': 'figi' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
       );
       assert.equal(
-        parseBondIdType(argv({ 'id-type': 'ticker' })),
+        parseBondIdType(rawOptions({ 'id-type': 'ticker' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
       );
       assert.equal(
-        parseBondIdType(argv({ 'id-type': 'uid' })),
+        parseBondIdType(rawOptions({ 'id-type': 'uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_UID
       );
       assert.equal(
-        parseBondIdType(argv({ 'id-type': 'position-uid' })),
+        parseBondIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseBondIdType(argv({ 'id-type': 'isin' })),
+        () => parseBondIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -60,7 +57,7 @@ describe('bond command', () => {
 
   describe('parseBondRequest', () => {
     test('returns generated bondBy request', () => {
-      const request = parseBondRequest(argv({
+      const request = parseBondRequest(rawOptions({
         id: 'BBG00B9XRY4J',
         'id-type': 'figi'
       }));
@@ -74,7 +71,7 @@ describe('bond command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseBondRequest(argv({
+        () => parseBondRequest(rawOptions({
           id: 'SU26238RMFS4',
           'id-type': 'ticker'
         })),
@@ -83,7 +80,7 @@ describe('bond command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseBondRequest(argv({
+      const request = parseBondRequest(rawOptions({
         id: 'SU26238RMFS4',
         'id-type': 'ticker',
         'class-code': 'TQOB'
@@ -99,12 +96,12 @@ describe('bond command', () => {
 
   describe('parseBondFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseBondFormat(argv()), 'table');
+      assert.equal(parseBondFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseBondFormat(argv({ format: 'xml' })),
+        () => parseBondFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

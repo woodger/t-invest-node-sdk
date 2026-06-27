@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,9 +47,9 @@ type FutureOptions = InferOptions<typeof futureOptionsSchema>;
 export const parseFutureIdType = parseInstrumentLookupIdType;
 export const parseFutureRequest = parseInstrumentLookupRequest;
 
-export function parseFutureFormat(argv: CliArgs): FutureFormat {
+export function parseFutureFormat(rawOptions: CommandRawOptions): FutureFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     futureCommandName,
     futureFormatOptionsSchema
   ).format;

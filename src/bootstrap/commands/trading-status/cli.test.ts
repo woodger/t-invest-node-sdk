@@ -7,18 +7,15 @@ import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createTradingStatusCommand,
   parseTradingStatusFormat,
   parseTradingStatusRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-trading-status'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(
@@ -38,7 +35,7 @@ function response(
 describe('trading-status command', () => {
   describe('parseTradingStatusRequest', () => {
     test('returns generated getTradingStatus request', () => {
-      const request = parseTradingStatusRequest(argv({
+      const request = parseTradingStatusRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0'
       }));
 
@@ -51,12 +48,12 @@ describe('trading-status command', () => {
 
   describe('parseTradingStatusFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseTradingStatusFormat(argv()), 'table');
+      assert.equal(parseTradingStatusFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseTradingStatusFormat(argv({ format: 'xml' })),
+        () => parseTradingStatusFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

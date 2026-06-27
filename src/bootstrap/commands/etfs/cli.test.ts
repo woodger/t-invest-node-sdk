@@ -7,7 +7,7 @@ import {
   type EtfsResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createEtfsCommand,
   parseEtfsFormat,
@@ -15,11 +15,8 @@ import {
   parseEtfsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments etfs'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<EtfsResponse> = {}): EtfsResponse {
@@ -32,27 +29,27 @@ function response(overrides: Partial<EtfsResponse> = {}): EtfsResponse {
 describe('etfs command', () => {
   describe('parseEtfsInstrumentStatus', () => {
     test('returns base by default', () => {
-      assert.equal(parseEtfsInstrumentStatus(argv()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
+      assert.equal(parseEtfsInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
     });
 
     test('maps public instrument status names to generated enum values', () => {
       assert.equal(
-        parseEtfsInstrumentStatus(argv({ 'instrument-status': 'unspecified' })),
+        parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
         InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
       );
       assert.equal(
-        parseEtfsInstrumentStatus(argv({ 'instrument-status': 'base' })),
+        parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
         InstrumentStatus.INSTRUMENT_STATUS_BASE
       );
       assert.equal(
-        parseEtfsInstrumentStatus(argv({ 'instrument-status': 'all' })),
+        parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
         InstrumentStatus.INSTRUMENT_STATUS_ALL
       );
     });
 
     test('rejects unknown instrument status names', () => {
       assert.throws(
-        () => parseEtfsInstrumentStatus(argv({ 'instrument-status': 'active' })),
+        () => parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
         /Expected '--instrument-status' as one of: unspecified, base, all/
       );
     });
@@ -60,7 +57,7 @@ describe('etfs command', () => {
 
   describe('parseEtfsRequest', () => {
     test('returns generated etfs request', () => {
-      assert.deepEqual(parseEtfsRequest(argv({ 'instrument-status': 'all' })), {
+      assert.deepEqual(parseEtfsRequest(rawOptions({ 'instrument-status': 'all' })), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });
@@ -68,12 +65,12 @@ describe('etfs command', () => {
 
   describe('parseEtfsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseEtfsFormat(argv()), 'table');
+      assert.equal(parseEtfsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseEtfsFormat(argv({ format: 'xml' })),
+        () => parseEtfsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

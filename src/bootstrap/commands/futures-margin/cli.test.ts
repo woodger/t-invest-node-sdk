@@ -6,18 +6,15 @@ import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createFuturesMarginCommand,
   parseFuturesMarginFormat,
   parseFuturesMarginRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-futures-margin'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFuturesMarginResponse {
@@ -47,7 +44,7 @@ function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFutures
 describe('futures-margin command', () => {
   describe('parseFuturesMarginRequest', () => {
     test('returns generated getFuturesMargin request', () => {
-      const request = parseFuturesMarginRequest(argv({
+      const request = parseFuturesMarginRequest(rawOptions({
         figi: 'FUTFIGI'
       }));
 
@@ -59,12 +56,12 @@ describe('futures-margin command', () => {
 
   describe('parseFuturesMarginFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseFuturesMarginFormat(argv()), 'table');
+      assert.equal(parseFuturesMarginFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseFuturesMarginFormat(argv({ format: 'xml' })),
+        () => parseFuturesMarginFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

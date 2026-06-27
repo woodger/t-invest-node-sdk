@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { CliArgs } from './cli-contract';
+import type { CommandRawOptions } from './command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -11,18 +11,15 @@ import {
   withSdkOptions
 } from './command-mechanics';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['users get-accounts'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 describe('command mechanics', () => {
   describe('withSdkOptions', () => {
     test('allows common SDK options with command-specific options', () => {
       const options = parseCommandOptions(
-        argv({
+        rawOptions({
           token: 'token',
           endpoint: 'localhost:50051',
           format: 'json',
@@ -60,7 +57,7 @@ describe('command mechanics', () => {
     test('rejects unexpected named options', () => {
       assert.throws(
         () => parseCommandOptions(
-          argv({ unexpected: 'value' }),
+          rawOptions({ unexpected: 'value' }),
           'users get-accounts',
           withSdkOptions({})
         ),
@@ -68,21 +65,10 @@ describe('command mechanics', () => {
       );
     });
 
-    test('rejects extra positionals', () => {
+    test('rejects non-scalar raw option values', () => {
       assert.throws(
         () => parseCommandOptions(
-          argv({ _: ['users get-accounts', 'extra'] }),
-          'users get-accounts',
-          withSdkOptions({})
-        ),
-        /Unexpected positional argument for 'users get-accounts': extra/
-      );
-    });
-
-    test('rejects non-scalar option values from legacy CliArgs', () => {
-      assert.throws(
-        () => parseCommandOptions(
-          argv({ token: ['token'] }),
+          rawOptions({ token: ['token'] }),
           'users get-accounts',
           withSdkOptions({})
         ),

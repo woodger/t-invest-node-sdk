@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,9 +47,9 @@ type EtfsOptions = InferOptions<typeof etfsOptionsSchema>;
 export const parseEtfsInstrumentStatus = parseInstrumentStatus;
 export const parseEtfsRequest = parseInstrumentsRequest;
 
-export function parseEtfsFormat(argv: CliArgs): EtfsFormat {
+export function parseEtfsFormat(rawOptions: CommandRawOptions): EtfsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     etfsCommandName,
     etfsFormatOptionsSchema
   ).format;

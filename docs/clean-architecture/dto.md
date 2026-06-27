@@ -9,7 +9,8 @@
 - proto-generated DTO из `src/generated/**`;
 - application DTO из `src/application/dto/**`;
 - application report contracts из `src/application/reports/**`;
-- CLI args contract из `src/bootstrap/cli-contract.ts` и `src/bootstrap/args/**`.
+- CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options
+  из `src/bootstrap/args/**`.
 
 ## Generated DTO
 
@@ -64,25 +65,28 @@ Reports отвечают на вопрос:
 
 Форматирование должно жить во внешнем adapter/presentation слое.
 
-## CLI Args
+## CLI Input
 
-CLI args - это boundary contract bootstrap-слоя:
+Raw `process.argv` остается на границе `bootstrap/cli.ts` и дальше
+обрабатывается через `icore` command registry:
 
 ```text
-process.argv -> CliArgs -> command handler
+process.argv -> icore command registry -> typed command options -> command handler
 ```
 
-`src/bootstrap/args/**` проверяет primitive CLI values и нормализует общие SDK
-options. Он не должен создавать SDK clients, вызывать API или форматировать
-reports.
+Command-specific primitive options описываются декларативными `icore` schemas в
+`src/bootstrap/commands/**`. Общие SDK options нормализуются в
+`src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API
+или форматировать reports.
 
 ## Mapping
 
 Текущий flow API-команды:
 
 ```text
-CliArgs
-  -> command parser
+process.argv
+  -> icore parser/validator
+  -> typed command options
   -> generated SDK call
   -> application report
   -> CLI output
@@ -92,7 +96,7 @@ CliArgs
 
 | Mapping | Текущее место | Возможное целевое место |
 | --- | --- | --- |
-| CLI args -> `TinkoffInvestOptions` | `bootstrap/args` | без изменений |
+| typed command options -> `TinkoffInvestOptions` | `bootstrap/args` | без изменений |
 | generated API response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | application report -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
 | output values -> JSON/CSV/table | `infrastructure/renderers/*` | без изменений, пока renderer-ы остаются механическими |

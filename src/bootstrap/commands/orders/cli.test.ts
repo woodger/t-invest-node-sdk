@@ -10,18 +10,15 @@ import {
   type GetOrdersRequest,
   type GetOrdersResponse
 } from '../../../generated/orders';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOrdersCommand,
   parseOrdersFormat,
   parseOrdersRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['orders get-orders'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -65,7 +62,7 @@ function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersRe
 describe('orders command', () => {
   describe('parseOrdersRequest', () => {
     test('returns generated getOrders request', () => {
-      const request = parseOrdersRequest(argv({
+      const request = parseOrdersRequest(rawOptions({
         'account-id': 'account-id'
       }));
 
@@ -75,12 +72,12 @@ describe('orders command', () => {
 
   describe('parseOrdersFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOrdersFormat(argv()), 'table');
+      assert.equal(parseOrdersFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOrdersFormat(argv({ format: 'xml' })),
+        () => parseOrdersFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

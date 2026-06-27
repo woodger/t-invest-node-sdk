@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrders, ordersFormats, type OrdersFormat } from './reporter';
@@ -40,17 +40,17 @@ const ordersOptionsSchema = withSdkOptions(
   ordersFormatOptionsSchema
 );
 
-function parseOrdersOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, ordersCommandName, ordersOptionsSchema);
+function parseOrdersOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, ordersCommandName, ordersOptionsSchema);
 }
 
-export function parseOrdersRequest(argv: CliArgs): GetOrdersRequest {
-  return createOrdersRequest(parseOrdersOptions(argv));
+export function parseOrdersRequest(rawOptions: CommandRawOptions): GetOrdersRequest {
+  return createOrdersRequest(parseOrdersOptions(rawOptions));
 }
 
-export function parseOrdersFormat(argv: CliArgs): OrdersFormat {
+export function parseOrdersFormat(rawOptions: CommandRawOptions): OrdersFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     ordersCommandName,
     ordersFormatOptionsSchema
   ).format;

@@ -6,7 +6,7 @@ import {
 } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -79,13 +79,13 @@ const operationsOptionsSchema = withSdkOptions(
   operationsFormatOptionsSchema
 );
 
-function parseOperationsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, operationsCommandName, operationsOptionsSchema);
+function parseOperationsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, operationsCommandName, operationsOptionsSchema);
 }
 
-export function parseOperationsState(argv: CliArgs): OperationState {
+export function parseOperationsState(rawOptions: CommandRawOptions): OperationState {
   const { state } = parseCommandOptions(
-    argv,
+    rawOptions,
     operationsCommandName,
     operationsStateOptionsSchema
   );
@@ -93,13 +93,13 @@ export function parseOperationsState(argv: CliArgs): OperationState {
   return operationStates[state];
 }
 
-export function parseOperationsRequest(argv: CliArgs): OperationsRequest {
-  return createOperationsRequest(parseOperationsOptions(argv));
+export function parseOperationsRequest(rawOptions: CommandRawOptions): OperationsRequest {
+  return createOperationsRequest(parseOperationsOptions(rawOptions));
 }
 
-export function parseOperationsFormat(argv: CliArgs): OperationsFormat {
+export function parseOperationsFormat(rawOptions: CommandRawOptions): OperationsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     operationsCommandName,
     operationsFormatOptionsSchema
   ).format;

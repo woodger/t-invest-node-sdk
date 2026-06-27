@@ -7,7 +7,7 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createCurrenciesCommand,
   parseCurrenciesFormat,
@@ -15,11 +15,8 @@ import {
   parseCurrenciesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments currencies'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<CurrenciesResponse> = {}): CurrenciesResponse {
@@ -33,29 +30,29 @@ describe('currencies command', () => {
   describe('parseCurrenciesInstrumentStatus', () => {
     test('returns base by default', () => {
       assert.equal(
-        parseCurrenciesInstrumentStatus(argv()),
+        parseCurrenciesInstrumentStatus(rawOptions()),
         InstrumentStatus.INSTRUMENT_STATUS_BASE
       );
     });
 
     test('maps public instrument status names to generated enum values', () => {
       assert.equal(
-        parseCurrenciesInstrumentStatus(argv({ 'instrument-status': 'unspecified' })),
+        parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
         InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
       );
       assert.equal(
-        parseCurrenciesInstrumentStatus(argv({ 'instrument-status': 'base' })),
+        parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
         InstrumentStatus.INSTRUMENT_STATUS_BASE
       );
       assert.equal(
-        parseCurrenciesInstrumentStatus(argv({ 'instrument-status': 'all' })),
+        parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
         InstrumentStatus.INSTRUMENT_STATUS_ALL
       );
     });
 
     test('rejects unknown instrument status names', () => {
       assert.throws(
-        () => parseCurrenciesInstrumentStatus(argv({ 'instrument-status': 'active' })),
+        () => parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
         /Expected '--instrument-status' as one of: unspecified, base, all/
       );
     });
@@ -63,7 +60,7 @@ describe('currencies command', () => {
 
   describe('parseCurrenciesRequest', () => {
     test('returns generated currencies request', () => {
-      assert.deepEqual(parseCurrenciesRequest(argv({ 'instrument-status': 'all' })), {
+      assert.deepEqual(parseCurrenciesRequest(rawOptions({ 'instrument-status': 'all' })), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });
@@ -71,12 +68,12 @@ describe('currencies command', () => {
 
   describe('parseCurrenciesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseCurrenciesFormat(argv()), 'table');
+      assert.equal(parseCurrenciesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseCurrenciesFormat(argv({ format: 'xml' })),
+        () => parseCurrenciesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

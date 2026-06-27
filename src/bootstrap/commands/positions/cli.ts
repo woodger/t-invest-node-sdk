@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPositions, positionsFormats, type PositionsFormat } from './reporter';
@@ -40,17 +40,17 @@ const positionsOptionsSchema = withSdkOptions(
   positionsFormatOptionsSchema
 );
 
-function parsePositionsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, positionsCommandName, positionsOptionsSchema);
+function parsePositionsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, positionsCommandName, positionsOptionsSchema);
 }
 
-export function parsePositionsRequest(argv: CliArgs): PositionsRequest {
-  return createPositionsRequest(parsePositionsOptions(argv));
+export function parsePositionsRequest(rawOptions: CommandRawOptions): PositionsRequest {
+  return createPositionsRequest(parsePositionsOptions(rawOptions));
 }
 
-export function parsePositionsFormat(argv: CliArgs): PositionsFormat {
+export function parsePositionsFormat(rawOptions: CommandRawOptions): PositionsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     positionsCommandName,
     positionsFormatOptionsSchema
   ).format;

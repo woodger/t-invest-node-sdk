@@ -390,14 +390,14 @@ describe('resolveCommand', () => {
 
   test('returns executable command handler', async () => {
     const command = resolveCommand(['version']);
-    const output = await command.handler({ _: ['version'] });
+    const output = await command.handler(['version']);
 
     assert.match(output ?? '', /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
   });
 
   test('returns executable help command handler', async () => {
     const command = resolveCommand(['help']);
-    const output = await command.handler({ _: ['help', 'version'] });
+    const output = await command.handler(['help', 'version']);
 
     assert.match(output ?? '', /version - Show package and runtime version info/);
   });
@@ -405,20 +405,12 @@ describe('resolveCommand', () => {
   test('passes named options to command-line definitions', async () => {
     const command = resolveCommand(['users', 'get-accounts']);
 
-    for (const positionals of [
-      ['users get-accounts'],
-      ['users', 'get-accounts']
-    ]) {
-      await assert.rejects(
-        async () => {
-          await command.handler({
-            _: positionals,
-            format: 'xml'
-          });
-        },
-        /Expected '--format' as one of: json, table/
-      );
-    }
+    await assert.rejects(
+      async () => {
+        await command.handler(['users', 'get-accounts', '--format=xml']);
+      },
+      /Expected '--format' as one of: json, table/
+    );
   });
 
   test('throws for unknown command', () => {

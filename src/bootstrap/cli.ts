@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import type { CliArgs } from './cli-contract';
 import { parseArgv, type OptionsSchema } from 'icore';
 import { createStderrWriter } from '../infrastructure/output/stderr-writer';
 import { createStdoutWriter } from '../infrastructure/output/stdout-writer';
@@ -36,13 +35,8 @@ const bootstrapOptionsSchema = {
   }
 } as const satisfies OptionsSchema;
 
-export function parseCliArgs(argv: string[]): CliArgs {
-  const parsed = parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
-
-  return {
-    _: parsed.positionals,
-    ...parsed.options
-  };
+export function parseCliInput(argv: readonly string[]) {
+  return parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
 }
 
 function normalizeCliAliases(argv: readonly string[]): string[] {
@@ -74,21 +68,28 @@ export async function runCli(
     stderr: createStderrWriter()
   }
 ): Promise<number> {
-  const parsedArgv = parseCliArgs(argv);
+  const normalizedArgv = normalizeCliAliases(argv);
+  const parsedArgv = parseCliInput(normalizedArgv);
 
-  if (isHelpRequested(parsedArgv)) {
-    io.stdout.write(renderHelp(parsedArgv));
+  if (isHelpRequested(parsedArgv.options)) {
+    io.stdout.write(renderHelp(parsedArgv.positionals));
 
     return 0;
   }
 
-  if (isVersionRequested(parsedArgv)) {
+  if (isVersionRequested(parsedArgv.options)) {
     io.stdout.write(renderVersionInfo());
 
     return 0;
   }
 
-  const action = parsedArgv._.length === 0 ? ['help'] : parsedArgv._;
+  if (parsedArgv.positionals.length === 0) {
+    io.stdout.write(renderCliHelp());
+
+    return 0;
+  }
+
+  const action = parsedArgv.positionals;
   let command;
 
   try {
@@ -102,13 +103,7 @@ export async function runCli(
   }
 
   try {
-    const output = await command.handler({
-      ...parsedArgv,
-      _: [
-        command.name,
-        ...parsedArgv._.slice(command.path.length)
-      ]
-    });
+    const output = await command.handler(normalizedArgv);
 
     if (output !== undefined) {
       io.stdout.write(output);

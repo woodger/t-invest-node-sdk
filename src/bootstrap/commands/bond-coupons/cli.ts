@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -55,21 +55,21 @@ const bondCouponsOptionsSchema = withSdkOptions(
   bondCouponsFormatOptionsSchema
 );
 
-function parseBondCouponsOptions(argv: CliArgs) {
+function parseBondCouponsOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     bondCouponsCommandName,
     bondCouponsOptionsSchema
   );
 }
 
-export function parseBondCouponsRequest(argv: CliArgs): GetBondCouponsRequest {
-  return createBondCouponsRequest(parseBondCouponsOptions(argv));
+export function parseBondCouponsRequest(rawOptions: CommandRawOptions): GetBondCouponsRequest {
+  return createBondCouponsRequest(parseBondCouponsOptions(rawOptions));
 }
 
-export function parseBondCouponsFormat(argv: CliArgs): BondCouponsFormat {
+export function parseBondCouponsFormat(rawOptions: CommandRawOptions): BondCouponsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     bondCouponsCommandName,
     bondCouponsFormatOptionsSchema
   ).format;

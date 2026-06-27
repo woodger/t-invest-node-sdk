@@ -2,7 +2,7 @@
  * Модуль CLI-репортинга команды `users get-user-tariff`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор argv и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
  */
 
 import type { UserTariffReport } from '../../../application/reports';

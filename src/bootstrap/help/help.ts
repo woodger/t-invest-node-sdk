@@ -8,16 +8,20 @@
  * Здесь не должно быть разбора command arguments или зависимости от application/infrastructure слоя.
  */
 
-import type { CliArgs } from '../cli-contract';
 import { resolveCommandHelpName } from './commands';
 import { renderCliHelp, renderCommandHelp } from './renderer';
 
-export function isHelpRequested(argv: CliArgs): boolean {
-  return argv.help === true || argv.h === true;
+type HelpOptions = {
+  help?: unknown;
+  h?: unknown;
+};
+
+export function isHelpRequested(options: HelpOptions): boolean {
+  return options.help === true || options.h === true;
 }
 
-export function renderHelp(argv: CliArgs): string {
-  const commandName = resolveCommandHelpName(argv._);
+export function renderHelp(positionals: readonly unknown[]): string {
+  const commandName = resolveCommandHelpName(positionals);
 
   if (commandName === undefined) {
     return renderCliHelp();

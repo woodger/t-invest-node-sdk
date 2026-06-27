@@ -3,17 +3,14 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createUserTariffCommand,
   parseUserTariffFormat
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['users get-user-tariff'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariffResponse {
@@ -38,12 +35,12 @@ function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariff
 describe('user-tariff command', () => {
   describe('parseUserTariffFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseUserTariffFormat(argv()), 'table');
+      assert.equal(parseUserTariffFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseUserTariffFormat(argv({ format: 'xml' })),
+        () => parseUserTariffFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

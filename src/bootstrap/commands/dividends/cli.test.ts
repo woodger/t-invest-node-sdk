@@ -7,18 +7,15 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createDividendsCommand,
   parseDividendsFormat,
   parseDividendsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-dividends'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function dividend(overrides: Partial<Dividend> = {}): Dividend {
@@ -58,7 +55,7 @@ function response(overrides: Partial<GetDividendsResponse> = {}): GetDividendsRe
 describe('dividends command', () => {
   describe('parseDividendsRequest', () => {
     test('returns generated getDividends request', () => {
-      const request = parseDividendsRequest(argv({
+      const request = parseDividendsRequest(rawOptions({
         figi: 'SHARE-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
@@ -73,7 +70,7 @@ describe('dividends command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseDividendsRequest(argv({
+        () => parseDividendsRequest(rawOptions({
           figi: 'SHARE-FIGI',
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
@@ -85,12 +82,12 @@ describe('dividends command', () => {
 
   describe('parseDividendsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseDividendsFormat(argv()), 'table');
+      assert.equal(parseDividendsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseDividendsFormat(argv({ format: 'xml' })),
+        () => parseDividendsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

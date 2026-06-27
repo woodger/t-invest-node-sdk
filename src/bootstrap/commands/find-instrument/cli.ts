@@ -3,7 +3,7 @@ import { InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest, FindInstrumentResponse } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -70,17 +70,17 @@ const findInstrumentOptionsSchema = withSdkOptions(
   findInstrumentFormatOptionsSchema
 );
 
-function parseFindInstrumentOptions(argv: CliArgs) {
+function parseFindInstrumentOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     findInstrumentCommandName,
     findInstrumentOptionsSchema
   );
 }
 
-export function parseFindInstrumentKind(argv: CliArgs): InstrumentType {
+export function parseFindInstrumentKind(rawOptions: CommandRawOptions): InstrumentType {
   const instrumentKind = parseCommandOptions(
-    argv,
+    rawOptions,
     findInstrumentCommandName,
     { 'instrument-kind': findInstrumentRequestOptionsSchema['instrument-kind'] } as const
   )['instrument-kind'];
@@ -88,13 +88,13 @@ export function parseFindInstrumentKind(argv: CliArgs): InstrumentType {
   return instrumentKinds[instrumentKind as InstrumentKindName];
 }
 
-export function parseFindInstrumentRequest(argv: CliArgs): FindInstrumentRequest {
-  return createFindInstrumentRequest(parseFindInstrumentOptions(argv));
+export function parseFindInstrumentRequest(rawOptions: CommandRawOptions): FindInstrumentRequest {
+  return createFindInstrumentRequest(parseFindInstrumentOptions(rawOptions));
 }
 
-export function parseFindInstrumentFormat(argv: CliArgs): FindInstrumentFormat {
+export function parseFindInstrumentFormat(rawOptions: CommandRawOptions): FindInstrumentFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     findInstrumentCommandName,
     findInstrumentFormatOptionsSchema
   ).format;

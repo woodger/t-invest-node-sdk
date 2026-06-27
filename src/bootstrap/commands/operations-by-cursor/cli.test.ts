@@ -10,7 +10,7 @@ import {
   type GetOperationsByCursorResponse,
   type OperationItem
 } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOperationsByCursorCommand,
   parseOperationsByCursorFormat,
@@ -20,11 +20,8 @@ import {
   parseOperationsByCursorState
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-operations-by-cursor'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -83,22 +80,22 @@ describe('operations-by-cursor command', () => {
   describe('parseOperationsByCursorState', () => {
     test('returns unspecified by default', () => {
       assert.equal(
-        parseOperationsByCursorState(argv()),
+        parseOperationsByCursorState(rawOptions()),
         OperationState.OPERATION_STATE_UNSPECIFIED
       );
     });
 
     test('maps public state names to generated enum values', () => {
       assert.equal(
-        parseOperationsByCursorState(argv({ state: 'executed' })),
+        parseOperationsByCursorState(rawOptions({ state: 'executed' })),
         OperationState.OPERATION_STATE_EXECUTED
       );
       assert.equal(
-        parseOperationsByCursorState(argv({ state: 'canceled' })),
+        parseOperationsByCursorState(rawOptions({ state: 'canceled' })),
         OperationState.OPERATION_STATE_CANCELED
       );
       assert.equal(
-        parseOperationsByCursorState(argv({ state: 'progress' })),
+        parseOperationsByCursorState(rawOptions({ state: 'progress' })),
         OperationState.OPERATION_STATE_PROGRESS
       );
     });
@@ -106,20 +103,20 @@ describe('operations-by-cursor command', () => {
 
   describe('parseOperationsByCursorLimit', () => {
     test('returns zero when limit is absent to keep provider default', () => {
-      assert.equal(parseOperationsByCursorLimit(argv()), 0);
+      assert.equal(parseOperationsByCursorLimit(rawOptions()), 0);
     });
 
     test('returns a limit from 1 to 1000', () => {
-      assert.equal(parseOperationsByCursorLimit(argv({ limit: '1000' })), 1000);
+      assert.equal(parseOperationsByCursorLimit(rawOptions({ limit: '1000' })), 1000);
     });
 
     test('rejects invalid limits', () => {
       assert.throws(
-        () => parseOperationsByCursorLimit(argv({ limit: '0' })),
+        () => parseOperationsByCursorLimit(rawOptions({ limit: '0' })),
         /Expected '--limit' as integer from 1 to 1000/
       );
       assert.throws(
-        () => parseOperationsByCursorLimit(argv({ limit: '1001' })),
+        () => parseOperationsByCursorLimit(rawOptions({ limit: '1001' })),
         /Expected '--limit' as integer from 1 to 1000/
       );
     });
@@ -127,12 +124,12 @@ describe('operations-by-cursor command', () => {
 
   describe('parseOperationsByCursorOperationTypes', () => {
     test('returns empty list when operation-type is absent', () => {
-      assert.deepEqual(parseOperationsByCursorOperationTypes(argv()), []);
+      assert.deepEqual(parseOperationsByCursorOperationTypes(rawOptions()), []);
     });
 
     test('maps generated OperationType names to enum values', () => {
       assert.deepEqual(
-        parseOperationsByCursorOperationTypes(argv({
+        parseOperationsByCursorOperationTypes(rawOptions({
           'operation-type': 'OPERATION_TYPE_BUY, OPERATION_TYPE_SELL'
         })),
         [
@@ -144,7 +141,7 @@ describe('operations-by-cursor command', () => {
 
     test('rejects unknown operation types', () => {
       assert.throws(
-        () => parseOperationsByCursorOperationTypes(argv({ 'operation-type': 'buy' })),
+        () => parseOperationsByCursorOperationTypes(rawOptions({ 'operation-type': 'buy' })),
         /Expected '--operation-type' as generated OperationType name/
       );
     });
@@ -152,7 +149,7 @@ describe('operations-by-cursor command', () => {
 
   describe('parseOperationsByCursorRequest', () => {
     test('returns generated getOperationsByCursor request', () => {
-      const request = parseOperationsByCursorRequest(argv({
+      const request = parseOperationsByCursorRequest(rawOptions({
         'account-id': 'account-id',
         'instrument-id': 'instrument-uid',
         from: '2026-06-01T00:00:00.000Z',
@@ -181,7 +178,7 @@ describe('operations-by-cursor command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => parseOperationsByCursorRequest(argv({
+        () => parseOperationsByCursorRequest(rawOptions({
           'account-id': 'account-id',
           from: '2026-06-20T00:00:00.000Z',
           to: '2026-06-19T00:00:00.000Z'
@@ -193,12 +190,12 @@ describe('operations-by-cursor command', () => {
 
   describe('parseOperationsByCursorFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOperationsByCursorFormat(argv()), 'table');
+      assert.equal(parseOperationsByCursorFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOperationsByCursorFormat(argv({ format: 'xml' })),
+        () => parseOperationsByCursorFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });
