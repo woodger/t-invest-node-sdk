@@ -1,8 +1,9 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest, FindInstrumentResponse } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   findInstrumentFormats,
@@ -18,14 +19,6 @@ type FindInstrumentSdk = {
 };
 
 type FindInstrumentSdkFactory = (options: TinkoffInvestOptions) => FindInstrumentSdk;
-
-const findInstrumentArgNames = new Set([
-  ...sdkOptionArgNames,
-  'query',
-  'instrument-kind',
-  'api-trade-available',
-  'format'
-]);
 
 const instrumentKinds = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -43,37 +36,72 @@ export const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<key
 
 type InstrumentKindName = typeof findInstrumentKindNames[number];
 
-export function parseFindInstrumentKind(argv: CliArgs): InstrumentType {
-  const instrumentKind = ArgGuards.optionalStringArgValue(argv, 'instrument-kind') ?? 'unspecified';
-
-  if (!(instrumentKind in instrumentKinds)) {
-    throw new Error(`Expected '--instrument-kind' as one of: ${findInstrumentKindNames.join(', ')}`);
+const findInstrumentRequestOptionsSchema = {
+  query: {
+    type: 'string',
+    required: true
+  },
+  'instrument-kind': {
+    type: 'string',
+    choices: findInstrumentKindNames,
+    default: 'unspecified'
+  },
+  'api-trade-available': {
+    type: 'boolean',
+    default: false
   }
+} as const;
+
+const findInstrumentFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: findInstrumentFormats,
+    default: 'table'
+  }
+} as const;
+
+const findInstrumentOptionsSchema = withSdkOptions({
+  ...findInstrumentRequestOptionsSchema,
+  ...findInstrumentFormatOptionsSchema
+} as const);
+
+function parseFindInstrumentOptions(argv: CliArgs) {
+  return parseCommandOptions(
+    argv,
+    'instruments find-instrument',
+    findInstrumentOptionsSchema
+  );
+}
+
+export function parseFindInstrumentKind(argv: CliArgs): InstrumentType {
+  const instrumentKind = parseCommandOptions(
+    argv,
+    'instruments find-instrument',
+    { 'instrument-kind': findInstrumentRequestOptionsSchema['instrument-kind'] } as const
+  )['instrument-kind'];
 
   return instrumentKinds[instrumentKind as InstrumentKindName];
 }
 
 export function parseFindInstrumentRequest(argv: CliArgs): FindInstrumentRequest {
-  return {
-    query: ArgGuards.requireStringArg(argv, 'query'),
-    instrumentKind: parseFindInstrumentKind(argv),
-    apiTradeAvailableFlag: ArgGuards.optionalBooleanFlagArg(argv, 'api-trade-available') ?? false
-  };
+  return createFindInstrumentRequest(parseFindInstrumentOptions(argv));
 }
 
 export function parseFindInstrumentFormat(argv: CliArgs): FindInstrumentFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', findInstrumentFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments find-instrument',
+    findInstrumentFormatOptionsSchema
+  ).format;
 }
 
 export function createFindInstrumentCommand(
   createSdk: FindInstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function findInstrument(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, findInstrumentArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments find-instrument');
-
-    const request = parseFindInstrumentRequest(argv);
-    const format = parseFindInstrumentFormat(argv);
+    const options = parseFindInstrumentOptions(argv);
+    const request = createFindInstrumentRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -90,3 +118,13 @@ export function createFindInstrumentCommand(
 export const findInstrument = createFindInstrumentCommand();
 
 export { formatFindInstrument };
+
+function createFindInstrumentRequest(
+  options: ReturnType<typeof parseFindInstrumentOptions>
+): FindInstrumentRequest {
+  return {
+    query: options.query,
+    instrumentKind: instrumentKinds[options['instrument-kind'] as InstrumentKindName],
+    apiTradeAvailableFlag: options['api-trade-available']
+  };
+}
