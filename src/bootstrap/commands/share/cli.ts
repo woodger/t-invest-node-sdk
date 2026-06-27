@@ -3,11 +3,12 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentLookupArgNames,
+  instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
   parseInstrumentLookupRequest
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type ShareSdk = {
 
 type ShareSdkFactory = (options: TinkoffInvestOptions) => ShareSdk;
 
-const shareArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentLookupArgNames,
-  'format'
-]);
+const shareFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: shareFormats,
+    default: 'table'
+  }
+} as const;
+
+const shareOptionsSchema = withSdkOptions({
+  ...instrumentLookupOptionsSchema,
+  ...shareFormatOptionsSchema
+} as const);
+
+function parseShareOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments share-by', shareOptionsSchema);
+}
 
 export const parseShareIdType = parseInstrumentLookupIdType;
 export const parseShareRequest = parseInstrumentLookupRequest;
 
 export function parseShareFormat(argv: CliArgs): ShareFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', shareFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments share-by',
+    shareFormatOptionsSchema
+  ).format;
 }
 
 export function createShareCommand(
   createSdk: ShareSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function share(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, shareArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments share-by');
-
+    const { format } = parseShareOptions(argv);
     const request = parseShareRequest(argv);
-    const format = parseShareFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

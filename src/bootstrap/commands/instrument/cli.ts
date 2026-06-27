@@ -3,11 +3,12 @@ import {
   type InstrumentRequest,
   type InstrumentResponse
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentLookupArgNames,
+  instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
   parseInstrumentLookupRequest
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type InstrumentSdk = {
 
 type InstrumentSdkFactory = (options: TinkoffInvestOptions) => InstrumentSdk;
 
-const instrumentArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentLookupArgNames,
-  'format'
-]);
+const instrumentFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: instrumentFormats,
+    default: 'table'
+  }
+} as const;
+
+const instrumentOptionsSchema = withSdkOptions({
+  ...instrumentLookupOptionsSchema,
+  ...instrumentFormatOptionsSchema
+} as const);
+
+function parseInstrumentOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments get-instrument-by', instrumentOptionsSchema);
+}
 
 export const parseInstrumentIdType = parseInstrumentLookupIdType;
 export const parseInstrumentRequest = parseInstrumentLookupRequest;
 
 export function parseInstrumentFormat(argv: CliArgs): InstrumentFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', instrumentFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments get-instrument-by',
+    instrumentFormatOptionsSchema
+  ).format;
 }
 
 export function createInstrumentCommand(
   createSdk: InstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function instrument(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, instrumentArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments get-instrument-by');
-
+    const { format } = parseInstrumentOptions(argv);
     const request = parseInstrumentRequest(argv);
-    const format = parseInstrumentFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
