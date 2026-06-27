@@ -3,8 +3,13 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommaSeparatedStringListOption,
+  parseCommandOptions,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatTradingStatuses,
@@ -21,42 +26,63 @@ type TradingStatusesSdk = {
 
 type TradingStatusesSdkFactory = (options: TinkoffInvestOptions) => TradingStatusesSdk;
 
-const tradingStatusesArgNames = new Set([
-  ...sdkOptionArgNames,
-  'instrument-id',
-  'format'
-]);
+const tradingStatusesInstrumentIdsOptionsSchema = {
+  'instrument-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const tradingStatusesFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: tradingStatusesFormats,
+    default: 'table'
+  }
+} as const;
+
+const tradingStatusesOptionsSchema = withSdkOptions({
+  ...tradingStatusesInstrumentIdsOptionsSchema,
+  ...tradingStatusesFormatOptionsSchema
+} as const);
+
+function parseTradingStatusesOptions(argv: CliArgs) {
+  return parseCommandOptions(
+    argv,
+    'marketdata get-trading-statuses',
+    tradingStatusesOptionsSchema
+  );
+}
 
 export function parseTradingStatusesInstrumentIds(argv: CliArgs): string[] {
-  const rawValue = ArgGuards.requireStringArg(argv, 'instrument-id');
-  const instrumentIds = rawValue.split(',').map((value) => value.trim());
+  const options = parseCommandOptions(
+    argv,
+    'marketdata get-trading-statuses',
+    tradingStatusesInstrumentIdsOptionsSchema
+  );
 
-  if (instrumentIds.some((value) => value === '')) {
-    throw new Error("Expected '--instrument-id' as comma-separated list");
-  }
-
-  return instrumentIds;
+  return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
 export function parseTradingStatusesRequest(argv: CliArgs): GetTradingStatusesRequest {
-  return {
-    instrumentId: parseTradingStatusesInstrumentIds(argv)
-  };
+  return createTradingStatusesRequest(parseTradingStatusesOptions(argv));
 }
 
 export function parseTradingStatusesFormat(argv: CliArgs): TradingStatusesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', tradingStatusesFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'marketdata get-trading-statuses',
+    tradingStatusesFormatOptionsSchema
+  ).format;
 }
 
 export function createTradingStatusesCommand(
   createSdk: TradingStatusesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function tradingStatuses(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, tradingStatusesArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'marketdata get-trading-statuses');
-
-    const request = parseTradingStatusesRequest(argv);
-    const format = parseTradingStatusesFormat(argv);
+    const options = parseTradingStatusesOptions(argv);
+    const request = createTradingStatusesRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -73,3 +99,14 @@ export function createTradingStatusesCommand(
 export const tradingStatuses = createTradingStatusesCommand();
 
 export { formatTradingStatuses };
+
+function createTradingStatusesRequest(
+  options: ReturnType<typeof parseTradingStatusesOptions>
+): GetTradingStatusesRequest {
+  return {
+    instrumentId: parseCommaSeparatedStringListOption(
+      options['instrument-id'],
+      'instrument-id'
+    )
+  };
+}
