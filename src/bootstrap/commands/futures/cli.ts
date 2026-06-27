@@ -3,11 +3,12 @@ import type {
   FuturesResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentStatusArgNames,
+  instrumentStatusOptionsSchema,
   parseInstrumentsRequest,
   parseInstrumentStatus
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type FuturesSdk = {
 
 type FuturesSdkFactory = (options: TinkoffInvestOptions) => FuturesSdk;
 
-const futuresArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentStatusArgNames,
-  'format'
-]);
+const futuresFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: futuresFormats,
+    default: 'table'
+  }
+} as const;
+
+const futuresOptionsSchema = withSdkOptions({
+  ...instrumentStatusOptionsSchema,
+  ...futuresFormatOptionsSchema
+} as const);
+
+function parseFuturesOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments futures', futuresOptionsSchema);
+}
 
 export const parseFuturesInstrumentStatus = parseInstrumentStatus;
 export const parseFuturesRequest = parseInstrumentsRequest;
 
 export function parseFuturesFormat(argv: CliArgs): FuturesFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', futuresFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments futures',
+    futuresFormatOptionsSchema
+  ).format;
 }
 
 export function createFuturesCommand(
   createSdk: FuturesSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function futures(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, futuresArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments futures');
-
+    const { format } = parseFuturesOptions(argv);
     const request = parseFuturesRequest(argv);
-    const format = parseFuturesFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
