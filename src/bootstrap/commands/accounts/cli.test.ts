@@ -8,17 +8,14 @@ import {
   AccountType,
   type Account
 } from '../../../generated/users';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createAccountsCommand,
   parseAccountsFormat
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['users get-accounts'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function account(overrides: Partial<Account> = {}): Account {
@@ -37,12 +34,12 @@ function account(overrides: Partial<Account> = {}): Account {
 describe('accounts command', () => {
   describe('parseAccountsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseAccountsFormat(argv()), 'table');
+      assert.equal(parseAccountsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseAccountsFormat(argv({ format: 'xml' })),
+        () => parseAccountsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

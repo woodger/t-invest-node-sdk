@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -59,21 +59,21 @@ const accruedInterestsOptionsSchema = withSdkOptions(
   accruedInterestsFormatOptionsSchema
 );
 
-function parseAccruedInterestsOptions(argv: CliArgs) {
+function parseAccruedInterestsOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     accruedInterestsCommandName,
     accruedInterestsOptionsSchema
   );
 }
 
-export function parseAccruedInterestsRequest(argv: CliArgs): GetAccruedInterestsRequest {
-  return createAccruedInterestsRequest(parseAccruedInterestsOptions(argv));
+export function parseAccruedInterestsRequest(rawOptions: CommandRawOptions): GetAccruedInterestsRequest {
+  return createAccruedInterestsRequest(parseAccruedInterestsOptions(rawOptions));
 }
 
-export function parseAccruedInterestsFormat(argv: CliArgs): AccruedInterestsFormat {
+export function parseAccruedInterestsFormat(rawOptions: CommandRawOptions): AccruedInterestsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     accruedInterestsCommandName,
     accruedInterestsFormatOptionsSchema
   ).format;

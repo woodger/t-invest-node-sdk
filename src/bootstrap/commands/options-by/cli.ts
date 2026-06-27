@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOptionsBy, optionsByFormats, type OptionsByFormat } from './reporter';
@@ -46,17 +46,17 @@ const optionsByOptionsSchema = withSdkOptions(
   optionsByFormatOptionsSchema
 );
 
-function parseOptionsByOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, optionsByCommandName, optionsByOptionsSchema);
+function parseOptionsByOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, optionsByCommandName, optionsByOptionsSchema);
 }
 
-export function parseOptionsByRequest(argv: CliArgs): FilterOptionsRequest {
-  return createOptionsByRequest(parseOptionsByOptions(argv));
+export function parseOptionsByRequest(rawOptions: CommandRawOptions): FilterOptionsRequest {
+  return createOptionsByRequest(parseOptionsByOptions(rawOptions));
 }
 
-export function parseOptionsByFormat(argv: CliArgs): OptionsByFormat {
+export function parseOptionsByFormat(rawOptions: CommandRawOptions): OptionsByFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     optionsByCommandName,
     optionsByFormatOptionsSchema
   ).format;

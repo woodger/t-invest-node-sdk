@@ -6,18 +6,15 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createDividendsForeignIssuerCommand,
   parseDividendsForeignIssuerFormat,
   parseDividendsForeignIssuerRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-dividends-foreign-issuer'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(
@@ -33,7 +30,7 @@ function response(
 describe('dividends-foreign-issuer command', () => {
   describe('parseDividendsForeignIssuerRequest', () => {
     test('returns generated generateDivForeignIssuerReport request', () => {
-      const request = parseDividendsForeignIssuerRequest(argv({
+      const request = parseDividendsForeignIssuerRequest(rawOptions({
         'account-id': '2000000000',
         from: '2026-01-01T00:00:00.000Z',
         to: '2026-12-31T00:00:00.000Z'
@@ -50,7 +47,7 @@ describe('dividends-foreign-issuer command', () => {
     });
 
     test('returns generated getDivForeignIssuerReport request', () => {
-      const request = parseDividendsForeignIssuerRequest(argv({
+      const request = parseDividendsForeignIssuerRequest(rawOptions({
         'task-id': 'task-id',
         page: '2'
       }));
@@ -65,7 +62,7 @@ describe('dividends-foreign-issuer command', () => {
     });
 
     test('uses page zero by default in get mode', () => {
-      const request = parseDividendsForeignIssuerRequest(argv({
+      const request = parseDividendsForeignIssuerRequest(rawOptions({
         'task-id': 'task-id'
       }));
 
@@ -77,7 +74,7 @@ describe('dividends-foreign-issuer command', () => {
 
     test('rejects mixed generate and get modes', () => {
       assert.throws(
-        () => parseDividendsForeignIssuerRequest(argv({
+        () => parseDividendsForeignIssuerRequest(rawOptions({
           'account-id': '2000000000',
           from: '2026-01-01T00:00:00.000Z',
           to: '2026-12-31T00:00:00.000Z',
@@ -89,14 +86,14 @@ describe('dividends-foreign-issuer command', () => {
 
     test('rejects page without task id', () => {
       assert.throws(
-        () => parseDividendsForeignIssuerRequest(argv({ page: '1' })),
+        () => parseDividendsForeignIssuerRequest(rawOptions({ page: '1' })),
         /Expected '--page' only with '--task-id'/
       );
     });
 
     test('rejects invalid page', () => {
       assert.throws(
-        () => parseDividendsForeignIssuerRequest(argv({
+        () => parseDividendsForeignIssuerRequest(rawOptions({
           'task-id': 'task-id',
           page: '-1'
         })),
@@ -106,7 +103,7 @@ describe('dividends-foreign-issuer command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseDividendsForeignIssuerRequest(argv({
+        () => parseDividendsForeignIssuerRequest(rawOptions({
           'account-id': '2000000000',
           from: '2026-12-31T00:00:00.000Z',
           to: '2026-01-01T00:00:00.000Z'
@@ -118,12 +115,12 @@ describe('dividends-foreign-issuer command', () => {
 
   describe('parseDividendsForeignIssuerFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseDividendsForeignIssuerFormat(argv()), 'table');
+      assert.equal(parseDividendsForeignIssuerFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseDividendsForeignIssuerFormat(argv({ format: 'xml' })),
+        () => parseDividendsForeignIssuerFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

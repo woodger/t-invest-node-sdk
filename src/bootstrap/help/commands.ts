@@ -6,7 +6,7 @@
  * - централизация usage и examples;
  * - экспорт presentation-only metadata для renderer-а.
  *
- * Здесь не должно быть исполнения команд или разбора argv.
+ * Здесь не должно быть исполнения команд или разбора raw CLI input.
  */
 
 export interface CommandHelp {

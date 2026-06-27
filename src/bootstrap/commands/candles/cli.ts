@@ -6,7 +6,7 @@ import {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -82,13 +82,13 @@ const candlesOptionsSchema = withSdkOptions(
   candlesFormatOptionsSchema
 );
 
-function parseCandlesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, candlesCommandName, candlesOptionsSchema);
+function parseCandlesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, candlesCommandName, candlesOptionsSchema);
 }
 
-export function parseCandleInterval(argv: CliArgs): CandleInterval {
+export function parseCandleInterval(rawOptions: CommandRawOptions): CandleInterval {
   const { interval } = parseCommandOptions(
-    argv,
+    rawOptions,
     candlesCommandName,
     { interval: candlesRequestOptionsSchema.interval } as const
   );
@@ -96,13 +96,13 @@ export function parseCandleInterval(argv: CliArgs): CandleInterval {
   return candleIntervals[interval as CandleIntervalName];
 }
 
-export function parseCandlesRequest(argv: CliArgs): GetCandlesRequest {
-  return createCandlesRequest(parseCandlesOptions(argv));
+export function parseCandlesRequest(rawOptions: CommandRawOptions): GetCandlesRequest {
+  return createCandlesRequest(parseCandlesOptions(rawOptions));
 }
 
-export function parseCandlesFormat(argv: CliArgs): CandlesFormat {
+export function parseCandlesFormat(rawOptions: CommandRawOptions): CandlesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     candlesCommandName,
     candlesFormatOptionsSchema
   ).format;

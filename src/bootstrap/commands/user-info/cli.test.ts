@@ -3,17 +3,14 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createUserInfoCommand,
   parseUserInfoFormat
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['users get-info'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
@@ -29,12 +26,12 @@ function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
 describe('user-info command', () => {
   describe('parseUserInfoFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseUserInfoFormat(argv()), 'table');
+      assert.equal(parseUserInfoFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseUserInfoFormat(argv({ format: 'xml' })),
+        () => parseUserInfoFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

@@ -3,7 +3,7 @@ import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { assetsFormats, formatAssets, type AssetsFormat } from './reporter';
@@ -58,13 +58,13 @@ const assetsOptionsSchema = withSdkOptions(
   assetsFormatOptionsSchema
 );
 
-function parseAssetsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, assetsCommandName, assetsOptionsSchema);
+function parseAssetsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, assetsCommandName, assetsOptionsSchema);
 }
 
-export function parseAssetsInstrumentType(argv: CliArgs): InstrumentType {
+export function parseAssetsInstrumentType(rawOptions: CommandRawOptions): InstrumentType {
   const options = parseCommandOptions(
-    argv,
+    rawOptions,
     assetsCommandName,
     assetsInstrumentTypeOptionsSchema
   );
@@ -72,13 +72,13 @@ export function parseAssetsInstrumentType(argv: CliArgs): InstrumentType {
   return assetInstrumentTypes[options['instrument-type'] as AssetInstrumentTypeName];
 }
 
-export function parseAssetsRequest(argv: CliArgs): AssetsRequest {
-  return createAssetsRequest(parseAssetsOptions(argv));
+export function parseAssetsRequest(rawOptions: CommandRawOptions): AssetsRequest {
+  return createAssetsRequest(parseAssetsOptions(rawOptions));
 }
 
-export function parseAssetsFormat(argv: CliArgs): AssetsFormat {
+export function parseAssetsFormat(rawOptions: CommandRawOptions): AssetsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     assetsCommandName,
     assetsFormatOptionsSchema
   ).format;

@@ -8,18 +8,15 @@ import {
   type GetBondCouponsRequest,
   type GetBondCouponsResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBondCouponsCommand,
   parseBondCouponsFormat,
   parseBondCouponsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-bond-coupons'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function coupon(overrides: Partial<Coupon> = {}): Coupon {
@@ -51,7 +48,7 @@ function response(overrides: Partial<GetBondCouponsResponse> = {}): GetBondCoupo
 describe('bond-coupons command', () => {
   describe('parseBondCouponsRequest', () => {
     test('returns generated getBondCoupons request', () => {
-      const request = parseBondCouponsRequest(argv({
+      const request = parseBondCouponsRequest(rawOptions({
         figi: 'BOND-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
@@ -66,7 +63,7 @@ describe('bond-coupons command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseBondCouponsRequest(argv({
+        () => parseBondCouponsRequest(rawOptions({
           figi: 'BOND-FIGI',
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
@@ -78,12 +75,12 @@ describe('bond-coupons command', () => {
 
   describe('parseBondCouponsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseBondCouponsFormat(argv()), 'table');
+      assert.equal(parseBondCouponsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseBondCouponsFormat(argv({ format: 'xml' })),
+        () => parseBondCouponsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

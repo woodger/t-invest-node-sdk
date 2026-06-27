@@ -7,7 +7,7 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createShareCommand,
   parseShareFormat,
@@ -15,11 +15,8 @@ import {
   parseShareRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments share-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function shareResponse(overrides: Partial<ShareResponse> = {}): ShareResponse {
@@ -33,26 +30,26 @@ describe('share command', () => {
   describe('parseShareIdType', () => {
     test('maps public id type names to generated enum values', () => {
       assert.equal(
-        parseShareIdType(argv({ 'id-type': 'figi' })),
+        parseShareIdType(rawOptions({ 'id-type': 'figi' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
       );
       assert.equal(
-        parseShareIdType(argv({ 'id-type': 'ticker' })),
+        parseShareIdType(rawOptions({ 'id-type': 'ticker' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
       );
       assert.equal(
-        parseShareIdType(argv({ 'id-type': 'uid' })),
+        parseShareIdType(rawOptions({ 'id-type': 'uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_UID
       );
       assert.equal(
-        parseShareIdType(argv({ 'id-type': 'position-uid' })),
+        parseShareIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseShareIdType(argv({ 'id-type': 'isin' })),
+        () => parseShareIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -60,7 +57,7 @@ describe('share command', () => {
 
   describe('parseShareRequest', () => {
     test('returns generated shareBy request', () => {
-      const request = parseShareRequest(argv({
+      const request = parseShareRequest(rawOptions({
         id: 'BBG004730N88',
         'id-type': 'figi'
       }));
@@ -74,7 +71,7 @@ describe('share command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseShareRequest(argv({
+        () => parseShareRequest(rawOptions({
           id: 'SBER',
           'id-type': 'ticker'
         })),
@@ -83,7 +80,7 @@ describe('share command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseShareRequest(argv({
+      const request = parseShareRequest(rawOptions({
         id: 'SBER',
         'id-type': 'ticker',
         'class-code': 'TQBR'
@@ -99,12 +96,12 @@ describe('share command', () => {
 
   describe('parseShareFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseShareFormat(argv()), 'table');
+      assert.equal(parseShareFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseShareFormat(argv({ format: 'xml' })),
+        () => parseShareFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

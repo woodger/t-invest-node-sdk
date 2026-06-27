@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatUserTariff, userTariffFormats, type UserTariffFormat } from './reporter';
@@ -28,12 +28,12 @@ const userTariffOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseUserTariffOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, userTariffCommandName, userTariffOptionsSchema);
+function parseUserTariffOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, userTariffCommandName, userTariffOptionsSchema);
 }
 
-export function parseUserTariffFormat(argv: CliArgs): UserTariffFormat {
-  return parseUserTariffOptions(argv).format;
+export function parseUserTariffFormat(rawOptions: CommandRawOptions): UserTariffFormat {
+  return parseUserTariffOptions(rawOptions).format;
 }
 
 export function createUserTariffCommand(

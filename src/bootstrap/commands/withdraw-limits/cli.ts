@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,17 +47,17 @@ const withdrawLimitsOptionsSchema = withSdkOptions(
   withdrawLimitsFormatOptionsSchema
 );
 
-function parseWithdrawLimitsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, withdrawLimitsCommandName, withdrawLimitsOptionsSchema);
+function parseWithdrawLimitsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, withdrawLimitsCommandName, withdrawLimitsOptionsSchema);
 }
 
-export function parseWithdrawLimitsRequest(argv: CliArgs): WithdrawLimitsRequest {
-  return createWithdrawLimitsRequest(parseWithdrawLimitsOptions(argv));
+export function parseWithdrawLimitsRequest(rawOptions: CommandRawOptions): WithdrawLimitsRequest {
+  return createWithdrawLimitsRequest(parseWithdrawLimitsOptions(rawOptions));
 }
 
-export function parseWithdrawLimitsFormat(argv: CliArgs): WithdrawLimitsFormat {
+export function parseWithdrawLimitsFormat(rawOptions: CommandRawOptions): WithdrawLimitsFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     withdrawLimitsCommandName,
     withdrawLimitsFormatOptionsSchema
   ).format;

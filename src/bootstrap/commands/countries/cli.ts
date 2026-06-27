@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { countriesFormats, formatCountries, type CountriesFormat } from './reporter';
@@ -28,12 +28,12 @@ const countriesOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseCountriesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, countriesCommandName, countriesOptionsSchema);
+function parseCountriesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, countriesCommandName, countriesOptionsSchema);
 }
 
-export function parseCountriesFormat(argv: CliArgs): CountriesFormat {
-  return parseCountriesOptions(argv).format;
+export function parseCountriesFormat(rawOptions: CommandRawOptions): CountriesFormat {
+  return parseCountriesOptions(rawOptions).format;
 }
 
 export function createCountriesCommand(

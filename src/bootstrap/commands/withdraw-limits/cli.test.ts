@@ -7,18 +7,15 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createWithdrawLimitsCommand,
   parseWithdrawLimitsFormat,
   parseWithdrawLimitsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-withdraw-limits'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -43,7 +40,7 @@ function withdrawLimitsResponse(
 describe('withdraw-limits command', () => {
   describe('parseWithdrawLimitsRequest', () => {
     test('returns generated getWithdrawLimits request', () => {
-      const request = parseWithdrawLimitsRequest(argv({
+      const request = parseWithdrawLimitsRequest(rawOptions({
         'account-id': 'account-id'
       }));
 
@@ -55,12 +52,12 @@ describe('withdraw-limits command', () => {
 
   describe('parseWithdrawLimitsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseWithdrawLimitsFormat(argv()), 'table');
+      assert.equal(parseWithdrawLimitsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseWithdrawLimitsFormat(argv({ format: 'xml' })),
+        () => parseWithdrawLimitsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

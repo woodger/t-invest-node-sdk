@@ -3,17 +3,14 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createCountriesCommand,
   parseCountriesFormat
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-countries'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<GetCountriesResponse> = {}): GetCountriesResponse {
@@ -33,12 +30,12 @@ function response(overrides: Partial<GetCountriesResponse> = {}): GetCountriesRe
 describe('countries command', () => {
   describe('parseCountriesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseCountriesFormat(argv()), 'table');
+      assert.equal(parseCountriesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseCountriesFormat(argv({ format: 'xml' })),
+        () => parseCountriesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

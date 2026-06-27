@@ -1,14 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { CliArgs } from './cli-contract';
 import { appVersion, isVersionRequested, renderVersionInfo } from './version';
-
-function argv(args: Partial<CliArgs>): CliArgs {
-  return {
-    _: [],
-    ...args
-  };
-}
 
 describe('version', () => {
   test('exposes package version', () => {
@@ -16,9 +8,9 @@ describe('version', () => {
   });
 
   test('detects version flag aliases', () => {
-    assert.equal(isVersionRequested(argv({ version: true })), true);
-    assert.equal(isVersionRequested(argv({ v: true })), true);
-    assert.equal(isVersionRequested(argv({ version: false })), false);
+    assert.equal(isVersionRequested({ version: true }), true);
+    assert.equal(isVersionRequested({ v: true }), true);
+    assert.equal(isVersionRequested({ version: false }), false);
   });
 
   test('renders detailed version info', () => {

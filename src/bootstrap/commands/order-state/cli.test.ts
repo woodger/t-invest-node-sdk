@@ -10,18 +10,15 @@ import {
   type GetOrderStateRequest,
   type OrderState
 } from '../../../generated/orders';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOrderStateCommand,
   parseOrderStateFormat,
   parseOrderStateRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['orders get-order-state'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -61,7 +58,7 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 describe('order-state command', () => {
   describe('parseOrderStateRequest', () => {
     test('returns generated getOrderState request', () => {
-      const request = parseOrderStateRequest(argv({
+      const request = parseOrderStateRequest(rawOptions({
         'account-id': 'account-id',
         'order-id': 'order-id'
       }));
@@ -75,12 +72,12 @@ describe('order-state command', () => {
 
   describe('parseOrderStateFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOrderStateFormat(argv()), 'table');
+      assert.equal(parseOrderStateFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOrderStateFormat(argv({ format: 'xml' })),
+        () => parseOrderStateFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

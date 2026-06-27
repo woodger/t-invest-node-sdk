@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/users';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,17 +47,17 @@ const marginAttributesOptionsSchema = withSdkOptions(
   marginAttributesFormatOptionsSchema
 );
 
-function parseMarginAttributesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, marginAttributesCommandName, marginAttributesOptionsSchema);
+function parseMarginAttributesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, marginAttributesCommandName, marginAttributesOptionsSchema);
 }
 
-export function parseMarginAttributesRequest(argv: CliArgs): GetMarginAttributesRequest {
-  return createMarginAttributesRequest(parseMarginAttributesOptions(argv));
+export function parseMarginAttributesRequest(rawOptions: CommandRawOptions): GetMarginAttributesRequest {
+  return createMarginAttributesRequest(parseMarginAttributesOptions(rawOptions));
 }
 
-export function parseMarginAttributesFormat(argv: CliArgs): MarginAttributesFormat {
+export function parseMarginAttributesFormat(rawOptions: CommandRawOptions): MarginAttributesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     marginAttributesCommandName,
     marginAttributesFormatOptionsSchema
   ).format;

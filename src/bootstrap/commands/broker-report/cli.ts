@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
@@ -64,8 +64,8 @@ const brokerReportOptionsSchema = withSdkOptions(
   brokerReportFormatOptionsSchema
 );
 
-function parseBrokerReportOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, brokerReportCommandName, brokerReportOptionsSchema);
+function parseBrokerReportOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, brokerReportCommandName, brokerReportOptionsSchema);
 }
 
 function createBrokerReportRequest(
@@ -111,13 +111,13 @@ function createBrokerReportRequest(
   };
 }
 
-export function parseBrokerReportRequest(argv: CliArgs): BrokerReportRequest {
-  return createBrokerReportRequest(parseBrokerReportOptions(argv));
+export function parseBrokerReportRequest(rawOptions: CommandRawOptions): BrokerReportRequest {
+  return createBrokerReportRequest(parseBrokerReportOptions(rawOptions));
 }
 
-export function parseBrokerReportFormat(argv: CliArgs): BrokerReportFormat {
+export function parseBrokerReportFormat(rawOptions: CommandRawOptions): BrokerReportFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     brokerReportCommandName,
     brokerReportFormatOptionsSchema
   ).format;

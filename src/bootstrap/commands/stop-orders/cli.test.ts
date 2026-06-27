@@ -10,18 +10,15 @@ import {
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createStopOrdersCommand,
   parseStopOrdersFormat,
   parseStopOrdersRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['stoporders get-stop-orders'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -62,7 +59,7 @@ function stopOrdersResponse(
 describe('stop-orders command', () => {
   describe('parseStopOrdersRequest', () => {
     test('returns generated getStopOrders request', () => {
-      const request = parseStopOrdersRequest(argv({
+      const request = parseStopOrdersRequest(rawOptions({
         'account-id': 'account-id'
       }));
 
@@ -74,12 +71,12 @@ describe('stop-orders command', () => {
 
   describe('parseStopOrdersFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseStopOrdersFormat(argv()), 'table');
+      assert.equal(parseStopOrdersFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseStopOrdersFormat(argv({ format: 'xml' })),
+        () => parseStopOrdersFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

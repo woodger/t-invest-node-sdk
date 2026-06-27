@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseDateTimeOption,
@@ -55,17 +55,17 @@ const lastTradesOptionsSchema = withSdkOptions(
   lastTradesFormatOptionsSchema
 );
 
-function parseLastTradesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, lastTradesCommandName, lastTradesOptionsSchema);
+function parseLastTradesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, lastTradesCommandName, lastTradesOptionsSchema);
 }
 
-export function parseLastTradesRequest(argv: CliArgs): GetLastTradesRequest {
-  return createLastTradesRequest(parseLastTradesOptions(argv));
+export function parseLastTradesRequest(rawOptions: CommandRawOptions): GetLastTradesRequest {
+  return createLastTradesRequest(parseLastTradesOptions(rawOptions));
 }
 
-export function parseLastTradesFormat(argv: CliArgs): LastTradesFormat {
+export function parseLastTradesFormat(rawOptions: CommandRawOptions): LastTradesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     lastTradesCommandName,
     lastTradesFormatOptionsSchema
   ).format;

@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -47,13 +47,13 @@ const closePricesOptionsSchema = withSdkOptions(
   closePricesFormatOptionsSchema
 );
 
-function parseClosePricesOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, closePricesCommandName, closePricesOptionsSchema);
+function parseClosePricesOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, closePricesCommandName, closePricesOptionsSchema);
 }
 
-export function parseClosePricesInstrumentIds(argv: CliArgs): string[] {
+export function parseClosePricesInstrumentIds(rawOptions: CommandRawOptions): string[] {
   const options = parseCommandOptions(
-    argv,
+    rawOptions,
     closePricesCommandName,
     closePricesInstrumentIdsOptionsSchema
   );
@@ -61,13 +61,13 @@ export function parseClosePricesInstrumentIds(argv: CliArgs): string[] {
   return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
 }
 
-export function parseClosePricesRequest(argv: CliArgs): GetClosePricesRequest {
-  return createClosePricesRequest(parseClosePricesOptions(argv));
+export function parseClosePricesRequest(rawOptions: CommandRawOptions): GetClosePricesRequest {
+  return createClosePricesRequest(parseClosePricesOptions(rawOptions));
 }
 
-export function parseClosePricesFormat(argv: CliArgs): ClosePricesFormat {
+export function parseClosePricesFormat(rawOptions: CommandRawOptions): ClosePricesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     closePricesCommandName,
     closePricesFormatOptionsSchema
   ).format;

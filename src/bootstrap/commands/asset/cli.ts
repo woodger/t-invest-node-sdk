@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { AssetRequest, AssetResponse } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { assetFormats, formatAsset, type AssetFormat } from './reporter';
@@ -40,17 +40,17 @@ const assetOptionsSchema = withSdkOptions(
   assetFormatOptionsSchema
 );
 
-function parseAssetOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, assetCommandName, assetOptionsSchema);
+function parseAssetOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, assetCommandName, assetOptionsSchema);
 }
 
-export function parseAssetRequest(argv: CliArgs): AssetRequest {
-  return createAssetRequest(parseAssetOptions(argv));
+export function parseAssetRequest(rawOptions: CommandRawOptions): AssetRequest {
+  return createAssetRequest(parseAssetOptions(rawOptions));
 }
 
-export function parseAssetFormat(argv: CliArgs): AssetFormat {
+export function parseAssetFormat(rawOptions: CommandRawOptions): AssetFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     assetCommandName,
     assetFormatOptionsSchema
   ).format;

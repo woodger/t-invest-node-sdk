@@ -10,12 +10,16 @@
  */
 
 import packageJson from '../../package.json';
-import type { CliArgs } from './cli-contract';
 
 export const appVersion = packageJson.version;
 
-export function isVersionRequested(argv: CliArgs): boolean {
-  return argv.version === true || argv.v === true;
+type VersionOptions = {
+  version?: unknown;
+  v?: unknown;
+};
+
+export function isVersionRequested(options: VersionOptions): boolean {
+  return options.version === true || options.v === true;
 }
 
 export function renderVersionInfo(): string {

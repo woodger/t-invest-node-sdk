@@ -6,18 +6,15 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBrokerReportCommand,
   parseBrokerReportFormat,
   parseBrokerReportRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-broker-report'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportResponse {
@@ -31,7 +28,7 @@ function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportRe
 describe('broker-report command', () => {
   describe('parseBrokerReportRequest', () => {
     test('returns generated generateBrokerReport request', () => {
-      const request = parseBrokerReportRequest(argv({
+      const request = parseBrokerReportRequest(rawOptions({
         'account-id': '2000000000',
         from: '2026-06-01T00:00:00.000Z',
         to: '2026-06-19T00:00:00.000Z'
@@ -48,7 +45,7 @@ describe('broker-report command', () => {
     });
 
     test('returns generated getBrokerReport request', () => {
-      const request = parseBrokerReportRequest(argv({
+      const request = parseBrokerReportRequest(rawOptions({
         'task-id': 'task-id',
         page: '2'
       }));
@@ -63,7 +60,7 @@ describe('broker-report command', () => {
     });
 
     test('uses page zero by default in get mode', () => {
-      const request = parseBrokerReportRequest(argv({
+      const request = parseBrokerReportRequest(rawOptions({
         'task-id': 'task-id'
       }));
 
@@ -75,7 +72,7 @@ describe('broker-report command', () => {
 
     test('rejects mixed generate and get modes', () => {
       assert.throws(
-        () => parseBrokerReportRequest(argv({
+        () => parseBrokerReportRequest(rawOptions({
           'account-id': '2000000000',
           from: '2026-06-01T00:00:00.000Z',
           to: '2026-06-19T00:00:00.000Z',
@@ -87,14 +84,14 @@ describe('broker-report command', () => {
 
     test('rejects page without task id', () => {
       assert.throws(
-        () => parseBrokerReportRequest(argv({ page: '1' })),
+        () => parseBrokerReportRequest(rawOptions({ page: '1' })),
         /Expected '--page' only with '--task-id'/
       );
     });
 
     test('rejects invalid page', () => {
       assert.throws(
-        () => parseBrokerReportRequest(argv({
+        () => parseBrokerReportRequest(rawOptions({
           'task-id': 'task-id',
           page: '-1'
         })),
@@ -104,7 +101,7 @@ describe('broker-report command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseBrokerReportRequest(argv({
+        () => parseBrokerReportRequest(rawOptions({
           'account-id': '2000000000',
           from: '2026-06-19T00:00:00.000Z',
           to: '2026-06-01T00:00:00.000Z'
@@ -116,12 +113,12 @@ describe('broker-report command', () => {
 
   describe('parseBrokerReportFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseBrokerReportFormat(argv()), 'table');
+      assert.equal(parseBrokerReportFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseBrokerReportFormat(argv({ format: 'xml' })),
+        () => parseBrokerReportFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

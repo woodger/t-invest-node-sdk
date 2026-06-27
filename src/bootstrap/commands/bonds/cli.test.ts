@@ -7,7 +7,7 @@ import {
   type BondsResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createBondsCommand,
   parseBondsFormat,
@@ -15,11 +15,8 @@ import {
   parseBondsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments bonds'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<BondsResponse> = {}): BondsResponse {
@@ -32,27 +29,27 @@ function response(overrides: Partial<BondsResponse> = {}): BondsResponse {
 describe('bonds command', () => {
   describe('parseBondsInstrumentStatus', () => {
     test('returns base by default', () => {
-      assert.equal(parseBondsInstrumentStatus(argv()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
+      assert.equal(parseBondsInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
     });
 
     test('maps public instrument status names to generated enum values', () => {
       assert.equal(
-        parseBondsInstrumentStatus(argv({ 'instrument-status': 'unspecified' })),
+        parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
         InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
       );
       assert.equal(
-        parseBondsInstrumentStatus(argv({ 'instrument-status': 'base' })),
+        parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
         InstrumentStatus.INSTRUMENT_STATUS_BASE
       );
       assert.equal(
-        parseBondsInstrumentStatus(argv({ 'instrument-status': 'all' })),
+        parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
         InstrumentStatus.INSTRUMENT_STATUS_ALL
       );
     });
 
     test('rejects unknown instrument status names', () => {
       assert.throws(
-        () => parseBondsInstrumentStatus(argv({ 'instrument-status': 'active' })),
+        () => parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
         /Expected '--instrument-status' as one of: unspecified, base, all/
       );
     });
@@ -60,7 +57,7 @@ describe('bonds command', () => {
 
   describe('parseBondsRequest', () => {
     test('returns generated bonds request', () => {
-      assert.deepEqual(parseBondsRequest(argv({ 'instrument-status': 'all' })), {
+      assert.deepEqual(parseBondsRequest(rawOptions({ 'instrument-status': 'all' })), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });
@@ -68,12 +65,12 @@ describe('bonds command', () => {
 
   describe('parseBondsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseBondsFormat(argv()), 'table');
+      assert.equal(parseBondsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseBondsFormat(argv({ format: 'xml' })),
+        () => parseBondsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

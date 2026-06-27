@@ -3,18 +3,15 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { AssetRequest, AssetResponse } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createAssetCommand,
   parseAssetFormat,
   parseAssetRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-asset-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<AssetResponse> = {}): AssetResponse {
@@ -27,7 +24,7 @@ function response(overrides: Partial<AssetResponse> = {}): AssetResponse {
 describe('asset command', () => {
   describe('parseAssetRequest', () => {
     test('returns generated getAssetBy request', () => {
-      const request = parseAssetRequest(argv({ id: 'asset-uid' }));
+      const request = parseAssetRequest(rawOptions({ id: 'asset-uid' }));
 
       assert.deepEqual(request, {
         id: 'asset-uid'
@@ -36,7 +33,7 @@ describe('asset command', () => {
 
     test('requires id', () => {
       assert.throws(
-        () => parseAssetRequest(argv()),
+        () => parseAssetRequest(rawOptions()),
         /Expected required argument '--id'/
       );
     });
@@ -44,12 +41,12 @@ describe('asset command', () => {
 
   describe('parseAssetFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseAssetFormat(argv()), 'table');
+      assert.equal(parseAssetFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseAssetFormat(argv({ format: 'xml' })),
+        () => parseAssetFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

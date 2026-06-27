@@ -4,18 +4,15 @@ import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createPositionsCommand,
   parsePositionsFormat,
   parsePositionsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['operations get-positions'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -41,7 +38,7 @@ function positionsResponse(overrides: Partial<PositionsResponse> = {}): Position
 describe('positions command', () => {
   describe('parsePositionsRequest', () => {
     test('returns generated getPositions request', () => {
-      const request = parsePositionsRequest(argv({
+      const request = parsePositionsRequest(rawOptions({
         'account-id': 'account-id'
       }));
 
@@ -51,12 +48,12 @@ describe('positions command', () => {
 
   describe('parsePositionsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parsePositionsFormat(argv()), 'table');
+      assert.equal(parsePositionsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parsePositionsFormat(argv({ format: 'xml' })),
+        () => parsePositionsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

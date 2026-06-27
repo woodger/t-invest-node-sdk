@@ -5,7 +5,7 @@ import {
 } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,9 +47,9 @@ type CurrenciesOptions = InferOptions<typeof currenciesOptionsSchema>;
 export const parseCurrenciesInstrumentStatus = parseInstrumentStatus;
 export const parseCurrenciesRequest = parseInstrumentsRequest;
 
-export function parseCurrenciesFormat(argv: CliArgs): CurrenciesFormat {
+export function parseCurrenciesFormat(rawOptions: CommandRawOptions): CurrenciesFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     currenciesCommandName,
     currenciesFormatOptionsSchema
   ).format;

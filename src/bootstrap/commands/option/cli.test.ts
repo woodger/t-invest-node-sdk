@@ -7,7 +7,7 @@ import {
   type InstrumentRequest,
   type OptionResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOptionCommand,
   parseOptionFormat,
@@ -15,11 +15,8 @@ import {
   parseOptionRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments option-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function optionResponse(overrides: Partial<OptionResponse> = {}): OptionResponse {
@@ -33,26 +30,26 @@ describe('option command', () => {
   describe('parseOptionIdType', () => {
     test('maps public id type names to generated enum values', () => {
       assert.equal(
-        parseOptionIdType(argv({ 'id-type': 'figi' })),
+        parseOptionIdType(rawOptions({ 'id-type': 'figi' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
       );
       assert.equal(
-        parseOptionIdType(argv({ 'id-type': 'ticker' })),
+        parseOptionIdType(rawOptions({ 'id-type': 'ticker' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
       );
       assert.equal(
-        parseOptionIdType(argv({ 'id-type': 'uid' })),
+        parseOptionIdType(rawOptions({ 'id-type': 'uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_UID
       );
       assert.equal(
-        parseOptionIdType(argv({ 'id-type': 'position-uid' })),
+        parseOptionIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseOptionIdType(argv({ 'id-type': 'isin' })),
+        () => parseOptionIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -60,7 +57,7 @@ describe('option command', () => {
 
   describe('parseOptionRequest', () => {
     test('returns generated optionBy request', () => {
-      const request = parseOptionRequest(argv({
+      const request = parseOptionRequest(rawOptions({
         id: 'OPTIONUID',
         'id-type': 'uid'
       }));
@@ -74,7 +71,7 @@ describe('option command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseOptionRequest(argv({
+        () => parseOptionRequest(rawOptions({
           id: 'OPTIONTICKER',
           'id-type': 'ticker'
         })),
@@ -83,7 +80,7 @@ describe('option command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseOptionRequest(argv({
+      const request = parseOptionRequest(rawOptions({
         id: 'OPTIONTICKER',
         'id-type': 'ticker',
         'class-code': 'SPBOPT'
@@ -99,12 +96,12 @@ describe('option command', () => {
 
   describe('parseOptionFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOptionFormat(argv()), 'table');
+      assert.equal(parseOptionFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOptionFormat(argv({ format: 'xml' })),
+        () => parseOptionFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

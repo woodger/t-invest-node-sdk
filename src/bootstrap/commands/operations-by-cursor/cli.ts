@@ -8,7 +8,7 @@ import {
 } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -115,17 +115,17 @@ const operationsByCursorOptionsSchema = withSdkOptions(
   operationsByCursorFormatOptionsSchema
 );
 
-function parseOperationsByCursorOptions(argv: CliArgs) {
+function parseOperationsByCursorOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     operationsByCursorCommandName,
     operationsByCursorOptionsSchema
   );
 }
 
-export function parseOperationsByCursorState(argv: CliArgs): OperationState {
+export function parseOperationsByCursorState(rawOptions: CommandRawOptions): OperationState {
   const { state } = parseCommandOptions(
-    argv,
+    rawOptions,
     operationsByCursorCommandName,
     operationsByCursorStateOptionsSchema
   );
@@ -133,9 +133,9 @@ export function parseOperationsByCursorState(argv: CliArgs): OperationState {
   return operationStates[state];
 }
 
-export function parseOperationsByCursorLimit(argv: CliArgs): number {
+export function parseOperationsByCursorLimit(rawOptions: CommandRawOptions): number {
   const { limit } = parseCommandOptions(
-    argv,
+    rawOptions,
     operationsByCursorCommandName,
     operationsByCursorLimitOptionsSchema
   );
@@ -161,9 +161,9 @@ function parseOperationsByCursorLimitOption(rawValue: string | undefined): numbe
   return limit;
 }
 
-export function parseOperationsByCursorOperationTypes(argv: CliArgs): OperationType[] {
+export function parseOperationsByCursorOperationTypes(rawOptions: CommandRawOptions): OperationType[] {
   const options = parseCommandOptions(
-    argv,
+    rawOptions,
     operationsByCursorCommandName,
     operationsByCursorOperationTypesOptionsSchema
   );
@@ -191,13 +191,13 @@ function parseOperationsByCursorOperationTypesOption(
   });
 }
 
-export function parseOperationsByCursorRequest(argv: CliArgs): GetOperationsByCursorRequest {
-  return createOperationsByCursorRequest(parseOperationsByCursorOptions(argv));
+export function parseOperationsByCursorRequest(rawOptions: CommandRawOptions): GetOperationsByCursorRequest {
+  return createOperationsByCursorRequest(parseOperationsByCursorOptions(rawOptions));
 }
 
-export function parseOperationsByCursorFormat(argv: CliArgs): OperationsByCursorFormat {
+export function parseOperationsByCursorFormat(rawOptions: CommandRawOptions): OperationsByCursorFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     operationsByCursorCommandName,
     operationsByCursorFormatOptionsSchema
   ).format;

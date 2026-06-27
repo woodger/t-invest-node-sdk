@@ -7,18 +7,15 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createTradingSchedulesCommand,
   parseTradingSchedulesFormat,
   parseTradingSchedulesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments trading-schedules'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
@@ -57,7 +54,7 @@ function response(overrides: Partial<TradingSchedulesResponse> = {}): TradingSch
 describe('trading-schedules command', () => {
   describe('parseTradingSchedulesRequest', () => {
     test('returns generated tradingSchedules request', () => {
-      const request = parseTradingSchedulesRequest(argv({
+      const request = parseTradingSchedulesRequest(rawOptions({
         exchange: 'MOEX',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
@@ -71,7 +68,7 @@ describe('trading-schedules command', () => {
     });
 
     test('uses empty exchange when omitted', () => {
-      const request = parseTradingSchedulesRequest(argv({
+      const request = parseTradingSchedulesRequest(rawOptions({
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
       }));
@@ -81,7 +78,7 @@ describe('trading-schedules command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => parseTradingSchedulesRequest(argv({
+        () => parseTradingSchedulesRequest(rawOptions({
           from: '2026-02-01T00:00:00Z',
           to: '2026-01-01T00:00:00Z'
         })),
@@ -92,12 +89,12 @@ describe('trading-schedules command', () => {
 
   describe('parseTradingSchedulesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseTradingSchedulesFormat(argv()), 'table');
+      assert.equal(parseTradingSchedulesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseTradingSchedulesFormat(argv({ format: 'xml' })),
+        () => parseTradingSchedulesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

@@ -1,10 +1,10 @@
 /**
- * The command mechanics module adapts SDK bootstrap `CliArgs` to the generic
- * `icore` option schema runtime.
+ * The command mechanics module contains reusable helpers for SDK bootstrap
+ * commands on top of the generic `icore` option schema runtime.
  *
  * Allowed here:
  * - composing common SDK option schemas with command-specific schemas;
- * - converting current bootstrap `CliArgs` into raw option values;
+ * - validating raw command option maps in command parser tests;
  * - validating known options and extra positionals through `icore`;
  * - preserving command handlers as the place for API-specific request logic.
  *
@@ -23,7 +23,8 @@ import {
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
-import type { CliArgs } from './cli-contract';
+
+export type CommandRawOptions = Record<string, unknown>;
 
 export const sdkOptionsSchema = {
   token: {
@@ -47,13 +48,13 @@ export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
 }
 
 export function parseCommandOptions<const TSchema extends OptionsSchema>(
-  argv: CliArgs,
+  options: CommandRawOptions,
   commandName: string,
   schema: TSchema
 ): InferOptions<TSchema> {
-  assertNoExtraPositionals(argv, commandName);
+  void commandName;
 
-  return parseOptions(schema, toRawOptions(argv));
+  return parseOptions(schema, toRawOptions(options));
 }
 
 export function parseCommaSeparatedStringListOption(
@@ -115,15 +116,11 @@ export function parseOptionalNonNegativeIntegerOption(
   return parsed;
 }
 
-function toRawOptions(argv: CliArgs): Record<string, RawOptionValue> {
+function toRawOptions(values: CommandRawOptions): Record<string, RawOptionValue> {
   const options: Record<string, RawOptionValue> = {};
 
-  for (const name of Object.keys(argv)) {
-    if (name === '_') {
-      continue;
-    }
-
-    const value = argv[name];
+  for (const name of Object.keys(values)) {
+    const value = values[name];
 
     if (value === undefined) {
       continue;
@@ -137,12 +134,4 @@ function toRawOptions(argv: CliArgs): Record<string, RawOptionValue> {
   }
 
   return options;
-}
-
-function assertNoExtraPositionals(argv: CliArgs, commandName: string): void {
-  const [, ...extra] = argv._;
-
-  if (extra.length > 0) {
-    throw new Error(`Unexpected positional argument for '${commandName}': ${extra[0]}`);
-  }
 }

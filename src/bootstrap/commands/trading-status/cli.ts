@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
@@ -47,17 +47,17 @@ const tradingStatusOptionsSchema = withSdkOptions(
   tradingStatusFormatOptionsSchema
 );
 
-function parseTradingStatusOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, tradingStatusCommandName, tradingStatusOptionsSchema);
+function parseTradingStatusOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, tradingStatusCommandName, tradingStatusOptionsSchema);
 }
 
-export function parseTradingStatusRequest(argv: CliArgs): GetTradingStatusRequest {
-  return createTradingStatusRequest(parseTradingStatusOptions(argv));
+export function parseTradingStatusRequest(rawOptions: CommandRawOptions): GetTradingStatusRequest {
+  return createTradingStatusRequest(parseTradingStatusOptions(rawOptions));
 }
 
-export function parseTradingStatusFormat(argv: CliArgs): TradingStatusFormat {
+export function parseTradingStatusFormat(rawOptions: CommandRawOptions): TradingStatusFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     tradingStatusCommandName,
     tradingStatusFormatOptionsSchema
   ).format;

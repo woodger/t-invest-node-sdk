@@ -4,7 +4,7 @@ import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createAssetsCommand,
   parseAssetsFormat,
@@ -12,11 +12,8 @@ import {
   parseAssetsRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments get-assets'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<AssetsResponse> = {}): AssetsResponse {
@@ -30,23 +27,23 @@ describe('assets command', () => {
   describe('parseAssetsInstrumentType', () => {
     test('returns unspecified by default', () => {
       assert.equal(
-        parseAssetsInstrumentType(argv()),
+        parseAssetsInstrumentType(rawOptions()),
         InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED
       );
     });
 
     test('maps public instrument type names to generated enum values', () => {
-      assert.equal(parseAssetsInstrumentType(argv({ 'instrument-type': 'share' })), InstrumentType.INSTRUMENT_TYPE_SHARE);
-      assert.equal(parseAssetsInstrumentType(argv({ 'instrument-type': 'bond' })), InstrumentType.INSTRUMENT_TYPE_BOND);
+      assert.equal(parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'share' })), InstrumentType.INSTRUMENT_TYPE_SHARE);
+      assert.equal(parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'bond' })), InstrumentType.INSTRUMENT_TYPE_BOND);
       assert.equal(
-        parseAssetsInstrumentType(argv({ 'instrument-type': 'clearing-certificate' })),
+        parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'clearing-certificate' })),
         InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
       );
     });
 
     test('rejects unknown instrument type names', () => {
       assert.throws(
-        () => parseAssetsInstrumentType(argv({ 'instrument-type': 'stock' })),
+        () => parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'stock' })),
         /Expected '--instrument-type' as one of: unspecified, bond, share/
       );
     });
@@ -54,7 +51,7 @@ describe('assets command', () => {
 
   describe('parseAssetsRequest', () => {
     test('returns generated getAssets request', () => {
-      const request = parseAssetsRequest(argv({ 'instrument-type': 'share' }));
+      const request = parseAssetsRequest(rawOptions({ 'instrument-type': 'share' }));
 
       assert.deepEqual(request, {
         instrumentType: InstrumentType.INSTRUMENT_TYPE_SHARE
@@ -64,12 +61,12 @@ describe('assets command', () => {
 
   describe('parseAssetsFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseAssetsFormat(argv()), 'table');
+      assert.equal(parseAssetsFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseAssetsFormat(argv({ format: 'xml' })),
+        () => parseAssetsFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

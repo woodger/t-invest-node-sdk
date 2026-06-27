@@ -2,7 +2,7 @@
  * Модуль CLI-репортинга команды `marketdata get-last-prices`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор argv и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
  */
 
 import type { LastPricesReport, LastPricesReportPrice } from '../../../application/reports';

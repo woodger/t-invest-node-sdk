@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { parseCliArgs, runCli } from './cli';
+import { parseCliInput, runCli } from './cli';
 
 function createIo() {
   let stdout = '';
@@ -29,21 +29,23 @@ function createIo() {
 }
 
 describe('bootstrap cli', () => {
-  describe('parseCliArgs', () => {
+  describe('parseCliInput', () => {
     test('maps help and version flag aliases', () => {
       assert.deepEqual(
-        parseCliArgs(['version', '--help', '-v']),
+        parseCliInput(['version', '--help', '-v']),
         {
-          _: ['version'],
-          help: true,
-          v: true
+          positionals: ['version'],
+          options: {
+            help: true,
+            v: true
+          }
         }
       );
     });
 
     test('maps long options with values and boolean flags', () => {
       assert.deepEqual(
-        parseCliArgs([
+        parseCliInput([
           'users',
           'get-accounts',
           '--format',
@@ -53,22 +55,26 @@ describe('bootstrap cli', () => {
           '--insecure'
         ]),
         {
-          _: ['users', 'get-accounts'],
-          format: 'json',
-          token: 'secret',
-          endpoint: 'invest.example:443',
-          insecure: true
+          positionals: ['users', 'get-accounts'],
+          options: {
+            format: 'json',
+            token: 'secret',
+            endpoint: 'invest.example:443',
+            insecure: true
+          }
         }
       );
     });
 
     test('does not consume values after known boolean flags', () => {
       assert.deepEqual(
-        parseCliArgs(['--help', 'users', 'get-accounts', '--version', 'marketdata', 'get-candles']),
+        parseCliInput(['--help', 'users', 'get-accounts', '--version', 'marketdata', 'get-candles']),
         {
-          _: ['users', 'get-accounts', 'marketdata', 'get-candles'],
-          help: true,
-          version: true
+          positionals: ['users', 'get-accounts', 'marketdata', 'get-candles'],
+          options: {
+            help: true,
+            version: true
+          }
         }
       );
     });

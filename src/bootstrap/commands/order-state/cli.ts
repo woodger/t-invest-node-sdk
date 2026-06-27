@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/orders';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrderState, orderStateFormats, type OrderStateFormat } from './reporter';
@@ -47,17 +47,17 @@ const orderStateOptionsSchema = withSdkOptions(
   orderStateFormatOptionsSchema
 );
 
-function parseOrderStateOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, orderStateCommandName, orderStateOptionsSchema);
+function parseOrderStateOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, orderStateCommandName, orderStateOptionsSchema);
 }
 
-export function parseOrderStateRequest(argv: CliArgs): GetOrderStateRequest {
-  return createOrderStateRequest(parseOrderStateOptions(argv));
+export function parseOrderStateRequest(rawOptions: CommandRawOptions): GetOrderStateRequest {
+  return createOrderStateRequest(parseOrderStateOptions(rawOptions));
 }
 
-export function parseOrderStateFormat(argv: CliArgs): OrderStateFormat {
+export function parseOrderStateFormat(rawOptions: CommandRawOptions): OrderStateFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     orderStateCommandName,
     orderStateFormatOptionsSchema
   ).format;

@@ -7,7 +7,7 @@ import {
   type FuturesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createFuturesCommand,
   parseFuturesFormat,
@@ -15,11 +15,8 @@ import {
   parseFuturesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments futures'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function response(overrides: Partial<FuturesResponse> = {}): FuturesResponse {
@@ -32,27 +29,27 @@ function response(overrides: Partial<FuturesResponse> = {}): FuturesResponse {
 describe('futures command', () => {
   describe('parseFuturesInstrumentStatus', () => {
     test('returns base by default', () => {
-      assert.equal(parseFuturesInstrumentStatus(argv()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
+      assert.equal(parseFuturesInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
     });
 
     test('maps public instrument status names to generated enum values', () => {
       assert.equal(
-        parseFuturesInstrumentStatus(argv({ 'instrument-status': 'unspecified' })),
+        parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
         InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
       );
       assert.equal(
-        parseFuturesInstrumentStatus(argv({ 'instrument-status': 'base' })),
+        parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
         InstrumentStatus.INSTRUMENT_STATUS_BASE
       );
       assert.equal(
-        parseFuturesInstrumentStatus(argv({ 'instrument-status': 'all' })),
+        parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
         InstrumentStatus.INSTRUMENT_STATUS_ALL
       );
     });
 
     test('rejects unknown instrument status names', () => {
       assert.throws(
-        () => parseFuturesInstrumentStatus(argv({ 'instrument-status': 'active' })),
+        () => parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
         /Expected '--instrument-status' as one of: unspecified, base, all/
       );
     });
@@ -60,7 +57,7 @@ describe('futures command', () => {
 
   describe('parseFuturesRequest', () => {
     test('returns generated futures request', () => {
-      assert.deepEqual(parseFuturesRequest(argv({ 'instrument-status': 'all' })), {
+      assert.deepEqual(parseFuturesRequest(rawOptions({ 'instrument-status': 'all' })), {
         instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
       });
     });
@@ -68,12 +65,12 @@ describe('futures command', () => {
 
   describe('parseFuturesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseFuturesFormat(argv()), 'table');
+      assert.equal(parseFuturesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseFuturesFormat(argv({ format: 'xml' })),
+        () => parseFuturesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

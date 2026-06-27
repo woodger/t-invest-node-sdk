@@ -8,7 +8,7 @@ import type {
   GetLastPricesResponse,
   LastPrice
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createLastPricesCommand,
   parseLastPricesFormat,
@@ -16,11 +16,8 @@ import {
   parseLastPricesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-last-prices'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function quotation(units: number, nano: number): Quotation {
@@ -53,14 +50,14 @@ describe('last-prices command', () => {
   describe('parseLastPricesInstrumentIds', () => {
     test('returns one instrument id', () => {
       assert.deepEqual(
-        parseLastPricesInstrumentIds(argv({ 'instrument-id': 'BBG00QPYJ5H0' })),
+        parseLastPricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0' })),
         ['BBG00QPYJ5H0']
       );
     });
 
     test('returns trimmed comma-separated instrument ids', () => {
       assert.deepEqual(
-        parseLastPricesInstrumentIds(argv({
+        parseLastPricesInstrumentIds(rawOptions({
           'instrument-id': 'BBG00QPYJ5H0, instrument-uid'
         })),
         ['BBG00QPYJ5H0', 'instrument-uid']
@@ -69,7 +66,7 @@ describe('last-prices command', () => {
 
     test('rejects empty comma-separated items', () => {
       assert.throws(
-        () => parseLastPricesInstrumentIds(argv({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
+        () => parseLastPricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
         /Expected '--instrument-id' as comma-separated list/
       );
     });
@@ -77,7 +74,7 @@ describe('last-prices command', () => {
 
   describe('parseLastPricesRequest', () => {
     test('returns generated getLastPrices request', () => {
-      const request = parseLastPricesRequest(argv({
+      const request = parseLastPricesRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
       }));
 
@@ -88,12 +85,12 @@ describe('last-prices command', () => {
 
   describe('parseLastPricesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseLastPricesFormat(argv()), 'table');
+      assert.equal(parseLastPricesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseLastPricesFormat(argv({ format: 'xml' })),
+        () => parseLastPricesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

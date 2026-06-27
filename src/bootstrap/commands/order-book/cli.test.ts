@@ -8,7 +8,7 @@ import type {
   GetOrderBookResponse,
   Order
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createOrderBookCommand,
   parseOrderBookDepth,
@@ -16,11 +16,8 @@ import {
   parseOrderBookRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-order-book'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function quotation(units: number, nano: number): Quotation {
@@ -61,20 +58,20 @@ function orderBookResponse(
 describe('order-book command', () => {
   describe('parseOrderBookDepth', () => {
     test('returns positive integer depth', () => {
-      assert.equal(parseOrderBookDepth(argv({ depth: '10' })), 10);
+      assert.equal(parseOrderBookDepth(rawOptions({ depth: '10' })), 10);
     });
 
     test('rejects non-positive or non-integer depth', () => {
       assert.throws(
-        () => parseOrderBookDepth(argv({ depth: '0' })),
+        () => parseOrderBookDepth(rawOptions({ depth: '0' })),
         /Expected '--depth' as positive integer/
       );
       assert.throws(
-        () => parseOrderBookDepth(argv({ depth: '1.5' })),
+        () => parseOrderBookDepth(rawOptions({ depth: '1.5' })),
         /Expected '--depth' as positive integer/
       );
       assert.throws(
-        () => parseOrderBookDepth(argv({ depth: '1e2' })),
+        () => parseOrderBookDepth(rawOptions({ depth: '1e2' })),
         /Expected '--depth' as positive integer/
       );
     });
@@ -82,7 +79,7 @@ describe('order-book command', () => {
 
   describe('parseOrderBookRequest', () => {
     test('returns generated getOrderBook request', () => {
-      const request = parseOrderBookRequest(argv({
+      const request = parseOrderBookRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0',
         depth: '10'
       }));
@@ -97,12 +94,12 @@ describe('order-book command', () => {
 
   describe('parseOrderBookFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseOrderBookFormat(argv()), 'table');
+      assert.equal(parseOrderBookFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseOrderBookFormat(argv({ format: 'xml' })),
+        () => parseOrderBookFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

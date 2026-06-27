@@ -2,7 +2,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { brandsFormats, formatBrands, type BrandsFormat } from './reporter';
@@ -28,12 +28,12 @@ const brandsOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseBrandsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, brandsCommandName, brandsOptionsSchema);
+function parseBrandsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, brandsCommandName, brandsOptionsSchema);
 }
 
-export function parseBrandsFormat(argv: CliArgs): BrandsFormat {
-  return parseBrandsOptions(argv).format;
+export function parseBrandsFormat(rawOptions: CommandRawOptions): BrandsFormat {
+  return parseBrandsOptions(rawOptions).format;
 }
 
 export function createBrandsCommand(

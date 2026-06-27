@@ -7,7 +7,7 @@ import {
   type FutureResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createFutureCommand,
   parseFutureFormat,
@@ -15,11 +15,8 @@ import {
   parseFutureRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments future-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function futureResponse(overrides: Partial<FutureResponse> = {}): FutureResponse {
@@ -33,26 +30,26 @@ describe('future command', () => {
   describe('parseFutureIdType', () => {
     test('maps public id type names to generated enum values', () => {
       assert.equal(
-        parseFutureIdType(argv({ 'id-type': 'figi' })),
+        parseFutureIdType(rawOptions({ 'id-type': 'figi' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
       );
       assert.equal(
-        parseFutureIdType(argv({ 'id-type': 'ticker' })),
+        parseFutureIdType(rawOptions({ 'id-type': 'ticker' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
       );
       assert.equal(
-        parseFutureIdType(argv({ 'id-type': 'uid' })),
+        parseFutureIdType(rawOptions({ 'id-type': 'uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_UID
       );
       assert.equal(
-        parseFutureIdType(argv({ 'id-type': 'position-uid' })),
+        parseFutureIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseFutureIdType(argv({ 'id-type': 'isin' })),
+        () => parseFutureIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -60,7 +57,7 @@ describe('future command', () => {
 
   describe('parseFutureRequest', () => {
     test('returns generated futureBy request', () => {
-      const request = parseFutureRequest(argv({
+      const request = parseFutureRequest(rawOptions({
         id: 'FUTFIGI',
         'id-type': 'figi'
       }));
@@ -74,7 +71,7 @@ describe('future command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseFutureRequest(argv({
+        () => parseFutureRequest(rawOptions({
           id: 'SiM6',
           'id-type': 'ticker'
         })),
@@ -83,7 +80,7 @@ describe('future command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseFutureRequest(argv({
+      const request = parseFutureRequest(rawOptions({
         id: 'SiM6',
         'id-type': 'ticker',
         'class-code': 'SPBFUT'
@@ -99,12 +96,12 @@ describe('future command', () => {
 
   describe('parseFutureFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseFutureFormat(argv()), 'table');
+      assert.equal(parseFutureFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseFutureFormat(argv({ format: 'xml' })),
+        () => parseFutureFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

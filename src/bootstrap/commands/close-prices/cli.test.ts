@@ -8,7 +8,7 @@ import type {
   GetClosePricesResponse,
   InstrumentClosePriceResponse
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createClosePricesCommand,
   parseClosePricesFormat,
@@ -16,11 +16,8 @@ import {
   parseClosePricesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-close-prices'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function quotation(units: number, nano: number): Quotation {
@@ -55,14 +52,14 @@ describe('close-prices command', () => {
   describe('parseClosePricesInstrumentIds', () => {
     test('returns one instrument id', () => {
       assert.deepEqual(
-        parseClosePricesInstrumentIds(argv({ 'instrument-id': 'BBG00QPYJ5H0' })),
+        parseClosePricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0' })),
         ['BBG00QPYJ5H0']
       );
     });
 
     test('returns trimmed comma-separated instrument ids', () => {
       assert.deepEqual(
-        parseClosePricesInstrumentIds(argv({
+        parseClosePricesInstrumentIds(rawOptions({
           'instrument-id': 'BBG00QPYJ5H0, instrument-uid'
         })),
         ['BBG00QPYJ5H0', 'instrument-uid']
@@ -71,7 +68,7 @@ describe('close-prices command', () => {
 
     test('rejects empty comma-separated items', () => {
       assert.throws(
-        () => parseClosePricesInstrumentIds(argv({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
+        () => parseClosePricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
         /Expected '--instrument-id' as comma-separated list/
       );
     });
@@ -79,7 +76,7 @@ describe('close-prices command', () => {
 
   describe('parseClosePricesRequest', () => {
     test('returns generated getClosePrices request', () => {
-      const request = parseClosePricesRequest(argv({
+      const request = parseClosePricesRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
       }));
 
@@ -92,12 +89,12 @@ describe('close-prices command', () => {
 
   describe('parseClosePricesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseClosePricesFormat(argv()), 'table');
+      assert.equal(parseClosePricesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseClosePricesFormat(argv({ format: 'xml' })),
+        () => parseClosePricesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

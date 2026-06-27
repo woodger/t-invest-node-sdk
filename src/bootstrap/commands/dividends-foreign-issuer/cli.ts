@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/operations';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
@@ -70,9 +70,9 @@ const dividendsForeignIssuerOptionsSchema = withSdkOptions(
   dividendsForeignIssuerFormatOptionsSchema
 );
 
-function parseDividendsForeignIssuerOptions(argv: CliArgs) {
+function parseDividendsForeignIssuerOptions(rawOptions: CommandRawOptions) {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     dividendsForeignIssuerCommandName,
     dividendsForeignIssuerOptionsSchema
   );
@@ -122,16 +122,16 @@ function createDividendsForeignIssuerRequest(
 }
 
 export function parseDividendsForeignIssuerRequest(
-  argv: CliArgs
+  rawOptions: CommandRawOptions
 ): GetDividendsForeignIssuerRequest {
-  return createDividendsForeignIssuerRequest(parseDividendsForeignIssuerOptions(argv));
+  return createDividendsForeignIssuerRequest(parseDividendsForeignIssuerOptions(rawOptions));
 }
 
 export function parseDividendsForeignIssuerFormat(
-  argv: CliArgs
+  rawOptions: CommandRawOptions
 ): DividendsForeignIssuerFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     dividendsForeignIssuerCommandName,
     dividendsForeignIssuerFormatOptionsSchema
   ).format;

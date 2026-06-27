@@ -8,7 +8,7 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createTradingStatusesCommand,
   parseTradingStatusesFormat,
@@ -16,11 +16,8 @@ import {
   parseTradingStatusesRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['marketdata get-trading-statuses'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function tradingStatus(
@@ -57,14 +54,14 @@ describe('trading-statuses command', () => {
   describe('parseTradingStatusesInstrumentIds', () => {
     test('returns one instrument id', () => {
       assert.deepEqual(
-        parseTradingStatusesInstrumentIds(argv({ 'instrument-id': 'BBG00QPYJ5H0' })),
+        parseTradingStatusesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0' })),
         ['BBG00QPYJ5H0']
       );
     });
 
     test('returns trimmed comma-separated instrument ids', () => {
       assert.deepEqual(
-        parseTradingStatusesInstrumentIds(argv({
+        parseTradingStatusesInstrumentIds(rawOptions({
           'instrument-id': 'BBG00QPYJ5H0, instrument-uid'
         })),
         ['BBG00QPYJ5H0', 'instrument-uid']
@@ -73,7 +70,7 @@ describe('trading-statuses command', () => {
 
     test('rejects empty comma-separated items', () => {
       assert.throws(
-        () => parseTradingStatusesInstrumentIds(argv({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
+        () => parseTradingStatusesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
         /Expected '--instrument-id' as comma-separated list/
       );
     });
@@ -81,7 +78,7 @@ describe('trading-statuses command', () => {
 
   describe('parseTradingStatusesRequest', () => {
     test('returns generated getTradingStatuses request', () => {
-      const request = parseTradingStatusesRequest(argv({
+      const request = parseTradingStatusesRequest(rawOptions({
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
       }));
 
@@ -91,12 +88,12 @@ describe('trading-statuses command', () => {
 
   describe('parseTradingStatusesFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseTradingStatusesFormat(argv()), 'table');
+      assert.equal(parseTradingStatusesFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseTradingStatusesFormat(argv({ format: 'xml' })),
+        () => parseTradingStatusesFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

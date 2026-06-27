@@ -7,7 +7,7 @@ import {
   type EtfResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import {
   createEtfCommand,
   parseEtfFormat,
@@ -15,11 +15,8 @@ import {
   parseEtfRequest
 } from './cli';
 
-function argv(args: Partial<CliArgs> = {}): CliArgs {
-  return {
-    _: ['instruments etf-by'],
-    ...args
-  };
+function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
+  return args;
 }
 
 function etfResponse(overrides: Partial<EtfResponse> = {}): EtfResponse {
@@ -33,26 +30,26 @@ describe('etf command', () => {
   describe('parseEtfIdType', () => {
     test('maps public id type names to generated enum values', () => {
       assert.equal(
-        parseEtfIdType(argv({ 'id-type': 'figi' })),
+        parseEtfIdType(rawOptions({ 'id-type': 'figi' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
       );
       assert.equal(
-        parseEtfIdType(argv({ 'id-type': 'ticker' })),
+        parseEtfIdType(rawOptions({ 'id-type': 'ticker' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
       );
       assert.equal(
-        parseEtfIdType(argv({ 'id-type': 'uid' })),
+        parseEtfIdType(rawOptions({ 'id-type': 'uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_UID
       );
       assert.equal(
-        parseEtfIdType(argv({ 'id-type': 'position-uid' })),
+        parseEtfIdType(rawOptions({ 'id-type': 'position-uid' })),
         InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
       );
     });
 
     test('rejects unknown id type names', () => {
       assert.throws(
-        () => parseEtfIdType(argv({ 'id-type': 'isin' })),
+        () => parseEtfIdType(rawOptions({ 'id-type': 'isin' })),
         /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
       );
     });
@@ -60,7 +57,7 @@ describe('etf command', () => {
 
   describe('parseEtfRequest', () => {
     test('returns generated etfBy request', () => {
-      const request = parseEtfRequest(argv({
+      const request = parseEtfRequest(rawOptions({
         id: 'BBG333333333',
         'id-type': 'figi'
       }));
@@ -74,7 +71,7 @@ describe('etf command', () => {
 
     test('requires class code for ticker id type', () => {
       assert.throws(
-        () => parseEtfRequest(argv({
+        () => parseEtfRequest(rawOptions({
           id: 'TMOS',
           'id-type': 'ticker'
         })),
@@ -83,7 +80,7 @@ describe('etf command', () => {
     });
 
     test('uses class code for ticker id type', () => {
-      const request = parseEtfRequest(argv({
+      const request = parseEtfRequest(rawOptions({
         id: 'TMOS',
         'id-type': 'ticker',
         'class-code': 'TQTF'
@@ -99,12 +96,12 @@ describe('etf command', () => {
 
   describe('parseEtfFormat', () => {
     test('returns table by default', () => {
-      assert.equal(parseEtfFormat(argv()), 'table');
+      assert.equal(parseEtfFormat(rawOptions()), 'table');
     });
 
     test('rejects unknown formats', () => {
       assert.throws(
-        () => parseEtfFormat(argv({ format: 'xml' })),
+        () => parseEtfFormat(rawOptions({ format: 'xml' })),
         /Expected '--format' as one of: json, table/
       );
     });

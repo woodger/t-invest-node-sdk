@@ -1,7 +1,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import type { GetAccountsResponse } from '../../../generated/users';
@@ -28,12 +28,12 @@ const accountsOptionsSchema = withSdkOptions({
   }
 } as const);
 
-function parseAccountsOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, accountsCommandName, accountsOptionsSchema);
+function parseAccountsOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, accountsCommandName, accountsOptionsSchema);
 }
 
-export function parseAccountsFormat(argv: CliArgs): AccountsFormat {
-  return parseAccountsOptions(argv).format;
+export function parseAccountsFormat(rawOptions: CommandRawOptions): AccountsFormat {
+  return parseAccountsOptions(rawOptions).format;
 }
 
 export function createAccountsCommand(

@@ -5,7 +5,7 @@ import type {
 } from '../../../generated/stoporders';
 import { defineCommand } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CliArgs } from '../../cli-contract';
+import type { CommandRawOptions } from '../../command-mechanics';
 import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatStopOrders, stopOrdersFormats, type StopOrdersFormat } from './reporter';
@@ -43,17 +43,17 @@ const stopOrdersOptionsSchema = withSdkOptions(
   stopOrdersFormatOptionsSchema
 );
 
-function parseStopOrdersOptions(argv: CliArgs) {
-  return parseCommandOptions(argv, stopOrdersCommandName, stopOrdersOptionsSchema);
+function parseStopOrdersOptions(rawOptions: CommandRawOptions) {
+  return parseCommandOptions(rawOptions, stopOrdersCommandName, stopOrdersOptionsSchema);
 }
 
-export function parseStopOrdersRequest(argv: CliArgs): GetStopOrdersRequest {
-  return createStopOrdersRequest(parseStopOrdersOptions(argv));
+export function parseStopOrdersRequest(rawOptions: CommandRawOptions): GetStopOrdersRequest {
+  return createStopOrdersRequest(parseStopOrdersOptions(rawOptions));
 }
 
-export function parseStopOrdersFormat(argv: CliArgs): StopOrdersFormat {
+export function parseStopOrdersFormat(rawOptions: CommandRawOptions): StopOrdersFormat {
   return parseCommandOptions(
-    argv,
+    rawOptions,
     stopOrdersCommandName,
     stopOrdersFormatOptionsSchema
   ).format;
