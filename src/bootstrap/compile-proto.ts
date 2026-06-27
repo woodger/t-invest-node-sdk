@@ -10,7 +10,7 @@ import { pfs } from 'pwd-fs';
 // Скрипт ожидает запуск из корня репозитория и строит все пути относительно него.
 const contractsDir = path.join(pfs.pwd, 'contracts');
 const generatedDir = path.join(pfs.pwd, 'src', 'generated');
-const compilerPath = path.join(pfs.pwd, 'node_modules', '.bin', 'grpc_tools_node_protoc');
+const compilerCommand = 'protoc';
 const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', 'protoc-gen-ts_proto');
 
 function collectProtoFiles(dir: string): string[] {
@@ -31,12 +31,22 @@ if (!pfs.test(contractsDir, { sync: true })) {
   throw new Error(`Missing contracts directory at ${contractsDir}`);
 }
 
-if (!pfs.test(compilerPath, { sync: true })) {
-  throw new Error(`Missing local protoc compiler at ${compilerPath}`);
-}
-
 if (!pfs.test(pluginPath, { sync: true })) {
   throw new Error(`Missing ts-proto plugin at ${pluginPath}`);
+}
+
+try {
+  execFileSync(compilerCommand, ['--version'], {
+    cwd: pfs.pwd,
+    stdio: 'ignore',
+  });
+}
+catch (error) {
+  if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+    throw new Error('System protoc compiler is not installed or is not available in PATH', { cause: error });
+  }
+
+  throw error;
 }
 
 const protoFiles = collectProtoFiles(contractsDir);
@@ -46,8 +56,8 @@ if (!protoFiles.length) {
 }
 
 try {
-  // Вызов локального compiler повторяет параметры legacy shell-скрипта без изменения поведения.
-  execFileSync(compilerPath, [
+  // Вызов compiler повторяет параметры legacy shell-скрипта без изменения поведения.
+  execFileSync(compilerCommand, [
     `--plugin=protoc-gen-ts_proto=${pluginPath}`,
     `--proto_path=${contractsDir}`,
     `--ts_proto_out=${generatedDir}`,
@@ -62,7 +72,7 @@ try {
 }
 catch (error) {
   if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-    throw new Error('Local protoc compiler is not installed or is not available', { cause: error });
+    throw new Error('System protoc compiler is not installed or is not available in PATH', { cause: error });
   }
 
   throw error;

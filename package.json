@@ -33,7 +33,6 @@
     "eslint": "^10.2.1",
     "fwa": "2.0.0-alpha",
     "globals": "^17.5.0",
-    "grpc-tools": "^1.13.1",
     "pwd-fs": "^3.4.0",
     "ts-proto": "^2.11.6",
     "typescript": "^6.0.3",
