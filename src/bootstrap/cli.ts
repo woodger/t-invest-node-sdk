@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/**
+ * Модуль CLI entrypoint владеет raw `process.argv`, глобальными help/version
+ * shortcuts и stdout/stderr wiring.
+ *
+ * API-команды запускаются через `icore` command definitions; этот файл не
+ * собирает промежуточный argv contract и не выполняет command-specific parsing.
+ */
+
 import { parseArgv, type OptionsSchema } from 'icore';
 import { createStderrWriter } from '../infrastructure/output/stderr-writer';
 import { createStdoutWriter } from '../infrastructure/output/stdout-writer';
@@ -40,6 +48,8 @@ export function parseCliInput(argv: readonly string[]) {
 }
 
 function normalizeCliAliases(argv: readonly string[]): string[] {
+  // `icore` parses long options only; normalize public short aliases before
+  // command resolution so every later layer sees one option shape.
   return argv.map((arg) => {
     if (arg === '-h') {
       return '--h';
@@ -71,6 +81,8 @@ export async function runCli(
   const normalizedArgv = normalizeCliAliases(argv);
   const parsedArgv = parseCliInput(normalizedArgv);
 
+  // Global flags are handled before command execution, so `--help` and
+  // `--version` never need SDK credentials or command-specific required flags.
   if (isHelpRequested(parsedArgv.options)) {
     io.stdout.write(renderHelp(parsedArgv.positionals));
 
@@ -89,6 +101,8 @@ export async function runCli(
     return 0;
   }
 
+  // Keep the raw normalized args for `icore.runCommand`; the registry only
+  // resolves metadata from positionals and does not recreate a synthetic argv.
   const action = parsedArgv.positionals;
   let command;
 
