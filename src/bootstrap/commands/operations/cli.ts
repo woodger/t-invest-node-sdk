@@ -4,8 +4,13 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import {
+  parseCommandOptions,
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOperations, operationsFormats, type OperationsFormat } from './reporter';
 
@@ -18,16 +23,6 @@ type OperationsSdk = {
 
 type OperationsSdkFactory = (options: TinkoffInvestOptions) => OperationsSdk;
 
-const operationsArgNames = new Set([
-  ...sdkOptionArgNames,
-  'account-id',
-  'from',
-  'to',
-  'state',
-  'figi',
-  'format'
-]);
-
 const operationStates = {
   unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
   executed: OperationState.OPERATION_STATE_EXECUTED,
@@ -37,46 +32,81 @@ const operationStates = {
 
 type OperationStateName = keyof typeof operationStates;
 
+const operationStateNames = Object.keys(operationStates) as OperationStateName[];
+
+const operationsStateOptionsSchema = {
+  state: {
+    type: 'string',
+    choices: operationStateNames,
+    default: 'unspecified'
+  }
+} as const;
+
+const operationsRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  },
+  from: {
+    type: 'string',
+    required: true
+  },
+  to: {
+    type: 'string',
+    required: true
+  },
+  figi: {
+    type: 'string'
+  }
+} as const;
+
+const operationsFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: operationsFormats,
+    default: 'table'
+  }
+} as const;
+
+const operationsOptionsSchema = withSdkOptions({
+  ...operationsRequestOptionsSchema,
+  ...operationsStateOptionsSchema,
+  ...operationsFormatOptionsSchema
+} as const);
+
+function parseOperationsOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'operations get-operations', operationsOptionsSchema);
+}
+
 export function parseOperationsState(argv: CliArgs): OperationState {
-  const state = ArgGuards.optionalEnumArgValue(
+  const { state } = parseCommandOptions(
     argv,
-    'state',
-    Object.keys(operationStates) as OperationStateName[]
-  ) ?? 'unspecified';
+    'operations get-operations',
+    operationsStateOptionsSchema
+  );
 
   return operationStates[state];
 }
 
 export function parseOperationsRequest(argv: CliArgs): OperationsRequest {
-  const from = ArgGuards.parseDateArg(argv, 'from');
-  const to = ArgGuards.parseDateArg(argv, 'to');
-
-  if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    accountId: ArgGuards.requireStringArg(argv, 'account-id'),
-    from,
-    to,
-    state: parseOperationsState(argv),
-    figi: ArgGuards.optionalStringArgValue(argv, 'figi') ?? ''
-  };
+  return createOperationsRequest(parseOperationsOptions(argv));
 }
 
 export function parseOperationsFormat(argv: CliArgs): OperationsFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', operationsFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'operations get-operations',
+    operationsFormatOptionsSchema
+  ).format;
 }
 
 export function createOperationsCommand(
   createSdk: OperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function operations(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, operationsArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'operations get-operations');
-
-    const request = parseOperationsRequest(argv);
-    const format = parseOperationsFormat(argv);
+    const options = parseOperationsOptions(argv);
+    const request = createOperationsRequest(options);
+    const { format } = options;
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
@@ -93,3 +123,22 @@ export function createOperationsCommand(
 export const operations = createOperationsCommand();
 
 export { formatOperations };
+
+function createOperationsRequest(
+  options: ReturnType<typeof parseOperationsOptions>
+): OperationsRequest {
+  const from = parseDateTimeOption(options.from, 'from');
+  const to = parseDateTimeOption(options.to, 'to');
+
+  if (from.getTime() > to.getTime()) {
+    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+  }
+
+  return {
+    accountId: options['account-id'],
+    from,
+    to,
+    state: operationStates[options.state],
+    figi: options.figi ?? ''
+  };
+}
