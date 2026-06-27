@@ -3,11 +3,12 @@ import type {
   EtfResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentLookupArgNames,
+  instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
   parseInstrumentLookupRequest
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type EtfSdk = {
 
 type EtfSdkFactory = (options: TinkoffInvestOptions) => EtfSdk;
 
-const etfArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentLookupArgNames,
-  'format'
-]);
+const etfFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: etfFormats,
+    default: 'table'
+  }
+} as const;
+
+const etfOptionsSchema = withSdkOptions({
+  ...instrumentLookupOptionsSchema,
+  ...etfFormatOptionsSchema
+} as const);
+
+function parseEtfOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments etf-by', etfOptionsSchema);
+}
 
 export const parseEtfIdType = parseInstrumentLookupIdType;
 export const parseEtfRequest = parseInstrumentLookupRequest;
 
 export function parseEtfFormat(argv: CliArgs): EtfFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', etfFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments etf-by',
+    etfFormatOptionsSchema
+  ).format;
 }
 
 export function createEtfCommand(
   createSdk: EtfSdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function etf(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, etfArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments etf-by');
-
+    const { format } = parseEtfOptions(argv);
     const request = parseEtfRequest(argv);
-    const format = parseEtfFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {

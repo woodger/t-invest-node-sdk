@@ -12,7 +12,6 @@ import {
   type InstrumentsRequest
 } from '../../generated/instruments';
 import { parseOptions, type RawOptionValue } from 'icore';
-import { ArgGuards } from '../args';
 import type { CliArgs } from '../cli-contract';
 
 export const instrumentLookupArgNames = new Set([
@@ -34,6 +33,40 @@ const instrumentIdTypes = {
 
 type InstrumentIdTypeName = keyof typeof instrumentIdTypes;
 
+const instrumentIdTypeNames = Object.keys(instrumentIdTypes) as InstrumentIdTypeName[];
+
+const instrumentLookupIdOptionsSchema = {
+  id: {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const instrumentLookupIdTypeOptionsSchema = {
+  'id-type': {
+    type: 'string',
+    choices: instrumentIdTypeNames,
+    required: true
+  }
+} as const;
+
+const instrumentLookupClassCodeOptionsSchema = {
+  'class-code': {
+    type: 'string'
+  }
+} as const;
+
+export const instrumentLookupOptionsSchema = {
+  id: {
+    type: 'string'
+  },
+  'id-type': {
+    type: 'string',
+    choices: instrumentIdTypeNames
+  },
+  ...instrumentLookupClassCodeOptionsSchema
+} as const;
+
 const instrumentStatuses = {
   unspecified: InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED,
   base: InstrumentStatus.INSTRUMENT_STATUS_BASE,
@@ -53,25 +86,33 @@ export const instrumentStatusOptionsSchema = {
 } as const;
 
 export function parseInstrumentLookupIdType(argv: CliArgs): InstrumentIdType {
-  const idType = ArgGuards.requireStringArg(argv, 'id-type');
+  const options = parseOptions(
+    instrumentLookupIdTypeOptionsSchema,
+    toRawOptionValues(argv, ['id-type'])
+  );
 
-  if (!(idType in instrumentIdTypes)) {
-    throw new Error(`Expected '--id-type' as one of: ${Object.keys(instrumentIdTypes).join(', ')}`);
-  }
-
-  return instrumentIdTypes[idType as InstrumentIdTypeName];
+  return instrumentIdTypes[options['id-type']];
 }
 
 export function parseInstrumentLookupRequest(argv: CliArgs): InstrumentRequest {
   const idType = parseInstrumentLookupIdType(argv);
-  const classCode = ArgGuards.optionalStringArgValue(argv, 'class-code') ?? '';
+  const classCodeOptions = parseOptions(
+    instrumentLookupClassCodeOptionsSchema,
+    toRawOptionValues(argv, ['class-code'])
+  );
+  const classCode = classCodeOptions['class-code'] ?? '';
 
   if (idType === InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER && classCode === '') {
     throw new Error("Expected required argument '--class-code' when '--id-type=ticker'");
   }
 
+  const idOptions = parseOptions(
+    instrumentLookupIdOptionsSchema,
+    toRawOptionValues(argv, ['id'])
+  );
+
   return {
-    id: ArgGuards.requireStringArg(argv, 'id'),
+    id: idOptions.id,
     idType,
     classCode
   };
@@ -80,7 +121,7 @@ export function parseInstrumentLookupRequest(argv: CliArgs): InstrumentRequest {
 export function parseInstrumentStatus(argv: CliArgs): InstrumentStatus {
   const options = parseOptions(
     instrumentStatusOptionsSchema,
-    toRawInstrumentStatusOption(argv)
+    toRawOptionValues(argv, ['instrument-status'])
   );
   const status = options['instrument-status'];
 
@@ -93,18 +134,25 @@ export function parseInstrumentsRequest(argv: CliArgs): InstrumentsRequest {
   };
 }
 
-function toRawInstrumentStatusOption(argv: CliArgs): Record<string, RawOptionValue> {
-  const value = argv['instrument-status'];
+function toRawOptionValues(
+  argv: CliArgs,
+  names: readonly string[]
+): Record<string, RawOptionValue> {
+  const options: Record<string, RawOptionValue> = {};
 
-  if (value === undefined) {
-    return {};
+  for (const name of names) {
+    const value = argv[name];
+
+    if (value === undefined) {
+      continue;
+    }
+
+    if (typeof value !== 'string' && typeof value !== 'boolean') {
+      throw new Error(`Expected '--${name}' as scalar option`);
+    }
+
+    options[name] = value;
   }
 
-  if (typeof value !== 'string' && typeof value !== 'boolean') {
-    throw new Error("Expected '--instrument-status' as scalar option");
-  }
-
-  return {
-    'instrument-status': value
-  };
+  return options;
 }

@@ -3,11 +3,12 @@ import {
   type CurrencyResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import { resolveSdkOptions, sdkOptionArgNames, ArgGuards } from '../../args';
+import { resolveSdkOptions } from '../../args';
 import type { CliArgs } from '../../cli-contract';
+import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
-  instrumentLookupArgNames,
+  instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
   parseInstrumentLookupRequest
 } from '../instruments-args';
@@ -22,28 +23,40 @@ type CurrencySdk = {
 
 type CurrencySdkFactory = (options: TinkoffInvestOptions) => CurrencySdk;
 
-const currencyArgNames = new Set([
-  ...sdkOptionArgNames,
-  ...instrumentLookupArgNames,
-  'format'
-]);
+const currencyFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: currencyFormats,
+    default: 'table'
+  }
+} as const;
+
+const currencyOptionsSchema = withSdkOptions({
+  ...instrumentLookupOptionsSchema,
+  ...currencyFormatOptionsSchema
+} as const);
+
+function parseCurrencyOptions(argv: CliArgs) {
+  return parseCommandOptions(argv, 'instruments currency-by', currencyOptionsSchema);
+}
 
 export const parseCurrencyIdType = parseInstrumentLookupIdType;
 export const parseCurrencyRequest = parseInstrumentLookupRequest;
 
 export function parseCurrencyFormat(argv: CliArgs): CurrencyFormat {
-  return ArgGuards.optionalEnumArgValue(argv, 'format', currencyFormats) ?? 'table';
+  return parseCommandOptions(
+    argv,
+    'instruments currency-by',
+    currencyFormatOptionsSchema
+  ).format;
 }
 
 export function createCurrencyCommand(
   createSdk: CurrencySdkFactory = (options) => new TinkoffInvestNodeSDK(options)
 ) {
   return async function currency(argv: CliArgs): Promise<string> {
-    ArgGuards.assertKnownArgs(argv, currencyArgNames);
-    ArgGuards.assertNoExtraPositionals(argv, 'instruments currency-by');
-
+    const { format } = parseCurrencyOptions(argv);
     const request = parseCurrencyRequest(argv);
-    const format = parseCurrencyFormat(argv);
     const sdk = createSdk(resolveSdkOptions(argv));
 
     try {
