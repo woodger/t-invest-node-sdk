@@ -74,55 +74,55 @@ interface TinkoffInvestOptions {
 После сборки CLI можно вызвать напрямую:
 
 ```bash
-node dist/cli.js --help
-node dist/cli.js help
-node dist/cli.js version
-node dist/cli.js users get-accounts --help
-node dist/cli.js users get-info --help
-node dist/cli.js users get-margin-attributes --help
-node dist/cli.js users get-user-tariff --help
-node dist/cli.js marketdata get-candles --help
-node dist/cli.js marketdata get-close-prices --help
-node dist/cli.js instruments find-instrument --help
-node dist/cli.js instruments get-accrued-interests --help
-node dist/cli.js instruments get-asset-by --help
-node dist/cli.js instruments get-assets --help
-node dist/cli.js instruments get-bond-coupons --help
-node dist/cli.js instruments bond-by --help
-node dist/cli.js instruments bonds --help
-node dist/cli.js instruments get-brand-by --help
-node dist/cli.js instruments get-brands --help
-node dist/cli.js instruments get-countries --help
-node dist/cli.js instruments currencies --help
-node dist/cli.js instruments currency-by --help
-node dist/cli.js instruments etf-by --help
-node dist/cli.js instruments etfs --help
-node dist/cli.js instruments get-dividends --help
-node dist/cli.js instruments get-favorites --help
-node dist/cli.js instruments future-by --help
-node dist/cli.js instruments futures --help
-node dist/cli.js instruments get-futures-margin --help
-node dist/cli.js instruments get-instrument-by --help
-node dist/cli.js instruments option-by --help
-node dist/cli.js instruments options-by --help
-node dist/cli.js instruments share-by --help
-node dist/cli.js instruments shares --help
-node dist/cli.js instruments trading-schedules --help
-node dist/cli.js marketdata get-last-prices --help
-node dist/cli.js marketdata get-last-trades --help
-node dist/cli.js marketdata get-order-book --help
-node dist/cli.js marketdata get-trading-status --help
-node dist/cli.js marketdata get-trading-statuses --help
-node dist/cli.js orders get-orders --help
-node dist/cli.js orders get-order-state --help
-node dist/cli.js operations get-broker-report --help
-node dist/cli.js operations get-dividends-foreign-issuer --help
-node dist/cli.js operations get-operations --help
-node dist/cli.js operations get-operations-by-cursor --help
-node dist/cli.js operations get-portfolio --help
-node dist/cli.js operations get-positions --help
-node dist/cli.js operations get-withdraw-limits --help
-node dist/cli.js stoporders get-stop-orders --help
+node dist/bootstrap/bin/cli.js --help
+node dist/bootstrap/bin/cli.js help
+node dist/bootstrap/bin/cli.js version
+node dist/bootstrap/bin/cli.js users get-accounts --help
+node dist/bootstrap/bin/cli.js users get-info --help
+node dist/bootstrap/bin/cli.js users get-margin-attributes --help
+node dist/bootstrap/bin/cli.js users get-user-tariff --help
+node dist/bootstrap/bin/cli.js marketdata get-candles --help
+node dist/bootstrap/bin/cli.js marketdata get-close-prices --help
+node dist/bootstrap/bin/cli.js instruments find-instrument --help
+node dist/bootstrap/bin/cli.js instruments get-accrued-interests --help
+node dist/bootstrap/bin/cli.js instruments get-asset-by --help
+node dist/bootstrap/bin/cli.js instruments get-assets --help
+node dist/bootstrap/bin/cli.js instruments get-bond-coupons --help
+node dist/bootstrap/bin/cli.js instruments bond-by --help
+node dist/bootstrap/bin/cli.js instruments bonds --help
+node dist/bootstrap/bin/cli.js instruments get-brand-by --help
+node dist/bootstrap/bin/cli.js instruments get-brands --help
+node dist/bootstrap/bin/cli.js instruments get-countries --help
+node dist/bootstrap/bin/cli.js instruments currencies --help
+node dist/bootstrap/bin/cli.js instruments currency-by --help
+node dist/bootstrap/bin/cli.js instruments etf-by --help
+node dist/bootstrap/bin/cli.js instruments etfs --help
+node dist/bootstrap/bin/cli.js instruments get-dividends --help
+node dist/bootstrap/bin/cli.js instruments get-favorites --help
+node dist/bootstrap/bin/cli.js instruments future-by --help
+node dist/bootstrap/bin/cli.js instruments futures --help
+node dist/bootstrap/bin/cli.js instruments get-futures-margin --help
+node dist/bootstrap/bin/cli.js instruments get-instrument-by --help
+node dist/bootstrap/bin/cli.js instruments option-by --help
+node dist/bootstrap/bin/cli.js instruments options-by --help
+node dist/bootstrap/bin/cli.js instruments share-by --help
+node dist/bootstrap/bin/cli.js instruments shares --help
+node dist/bootstrap/bin/cli.js instruments trading-schedules --help
+node dist/bootstrap/bin/cli.js marketdata get-last-prices --help
+node dist/bootstrap/bin/cli.js marketdata get-last-trades --help
+node dist/bootstrap/bin/cli.js marketdata get-order-book --help
+node dist/bootstrap/bin/cli.js marketdata get-trading-status --help
+node dist/bootstrap/bin/cli.js marketdata get-trading-statuses --help
+node dist/bootstrap/bin/cli.js orders get-orders --help
+node dist/bootstrap/bin/cli.js orders get-order-state --help
+node dist/bootstrap/bin/cli.js operations get-broker-report --help
+node dist/bootstrap/bin/cli.js operations get-dividends-foreign-issuer --help
+node dist/bootstrap/bin/cli.js operations get-operations --help
+node dist/bootstrap/bin/cli.js operations get-operations-by-cursor --help
+node dist/bootstrap/bin/cli.js operations get-portfolio --help
+node dist/bootstrap/bin/cli.js operations get-positions --help
+node dist/bootstrap/bin/cli.js operations get-withdraw-limits --help
+node dist/bootstrap/bin/cli.js stoporders get-stop-orders --help
 ```
 
 Сейчас CLI содержит первые API-команды:
@@ -219,7 +219,7 @@ npm run proto
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
 TypeScript plugin берется из dev-зависимости `ts-proto`.
 
-Скрипт использует `dist/bootstrap/compile-proto.js`, поэтому после изменений в `src/bootstrap/compile-proto.ts` сначала нужно пересобрать проект:
+Скрипт использует `dist/bootstrap/bin/compile-proto.js`, поэтому после изменений в `src/bootstrap/bin/compile-proto.ts` сначала нужно пересобрать проект:
 
 ```bash
 npm run build

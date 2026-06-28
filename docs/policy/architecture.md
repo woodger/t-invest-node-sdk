@@ -179,7 +179,7 @@ Bootstrap
 - `domain`;
 - `application`;
 - `infrastructure`;
-- root executable entrypoints вроде `src/cli.ts`, `bootstrap`, `bootstrap/cli-runner.ts` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
+- executable entrypoints в `bootstrap/bin`, bootstrap mechanics вроде `bootstrap/cli-runner.ts` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
 - `internal`;
 - `generated`;
 - `docs`;
