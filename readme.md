@@ -137,6 +137,33 @@ API-команды используют `--token` / `TINKOFF_TOKEN` и
 `--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным
 интерфейсом пакета.
 
+### Migration note: CLI JSON money values
+
+CLI JSON reports возвращают денежные значения структурно, без склейки суммы и
+валюты в одну строку.
+
+Раньше:
+
+```json
+{
+  "totalAmountPortfolio": "1000 rub"
+}
+```
+
+Теперь:
+
+```json
+{
+  "totalAmountPortfolio": {
+    "amount": "1000",
+    "currency": "rub"
+  }
+}
+```
+
+Если provider не вернул денежное значение, поле будет `null`. Table/text вывод
+не изменился и по-прежнему показывает деньги в виде `amount currency`.
+
 Отложенные группы CLI-команд (`To introduce`) описаны в
 [docs/clean-architecture/api-commands.md](docs/clean-architecture/api-commands.md):
 весь `sandbox` service и команды с side effects вводятся отдельно от read-only
