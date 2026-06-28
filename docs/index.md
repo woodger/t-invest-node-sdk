@@ -71,58 +71,58 @@ interface TinkoffInvestOptions {
 
 ## CLI
 
-После сборки CLI можно вызвать напрямую:
+Локально после сборки CLI можно вызвать через `yarn cli`:
 
 ```bash
-node dist/bootstrap/bin/cli.js --help
-node dist/bootstrap/bin/cli.js help
-node dist/bootstrap/bin/cli.js version
-node dist/bootstrap/bin/cli.js users get-accounts --help
-node dist/bootstrap/bin/cli.js users get-info --help
-node dist/bootstrap/bin/cli.js users get-margin-attributes --help
-node dist/bootstrap/bin/cli.js users get-user-tariff --help
-node dist/bootstrap/bin/cli.js marketdata get-candles --help
-node dist/bootstrap/bin/cli.js marketdata get-close-prices --help
-node dist/bootstrap/bin/cli.js instruments find-instrument --help
-node dist/bootstrap/bin/cli.js instruments get-accrued-interests --help
-node dist/bootstrap/bin/cli.js instruments get-asset-by --help
-node dist/bootstrap/bin/cli.js instruments get-assets --help
-node dist/bootstrap/bin/cli.js instruments get-bond-coupons --help
-node dist/bootstrap/bin/cli.js instruments bond-by --help
-node dist/bootstrap/bin/cli.js instruments bonds --help
-node dist/bootstrap/bin/cli.js instruments get-brand-by --help
-node dist/bootstrap/bin/cli.js instruments get-brands --help
-node dist/bootstrap/bin/cli.js instruments get-countries --help
-node dist/bootstrap/bin/cli.js instruments currencies --help
-node dist/bootstrap/bin/cli.js instruments currency-by --help
-node dist/bootstrap/bin/cli.js instruments etf-by --help
-node dist/bootstrap/bin/cli.js instruments etfs --help
-node dist/bootstrap/bin/cli.js instruments get-dividends --help
-node dist/bootstrap/bin/cli.js instruments get-favorites --help
-node dist/bootstrap/bin/cli.js instruments future-by --help
-node dist/bootstrap/bin/cli.js instruments futures --help
-node dist/bootstrap/bin/cli.js instruments get-futures-margin --help
-node dist/bootstrap/bin/cli.js instruments get-instrument-by --help
-node dist/bootstrap/bin/cli.js instruments option-by --help
-node dist/bootstrap/bin/cli.js instruments options-by --help
-node dist/bootstrap/bin/cli.js instruments share-by --help
-node dist/bootstrap/bin/cli.js instruments shares --help
-node dist/bootstrap/bin/cli.js instruments trading-schedules --help
-node dist/bootstrap/bin/cli.js marketdata get-last-prices --help
-node dist/bootstrap/bin/cli.js marketdata get-last-trades --help
-node dist/bootstrap/bin/cli.js marketdata get-order-book --help
-node dist/bootstrap/bin/cli.js marketdata get-trading-status --help
-node dist/bootstrap/bin/cli.js marketdata get-trading-statuses --help
-node dist/bootstrap/bin/cli.js orders get-orders --help
-node dist/bootstrap/bin/cli.js orders get-order-state --help
-node dist/bootstrap/bin/cli.js operations get-broker-report --help
-node dist/bootstrap/bin/cli.js operations get-dividends-foreign-issuer --help
-node dist/bootstrap/bin/cli.js operations get-operations --help
-node dist/bootstrap/bin/cli.js operations get-operations-by-cursor --help
-node dist/bootstrap/bin/cli.js operations get-portfolio --help
-node dist/bootstrap/bin/cli.js operations get-positions --help
-node dist/bootstrap/bin/cli.js operations get-withdraw-limits --help
-node dist/bootstrap/bin/cli.js stoporders get-stop-orders --help
+yarn cli --help
+yarn cli help
+yarn cli version
+yarn cli users get-accounts --help
+yarn cli users get-info --help
+yarn cli users get-margin-attributes --help
+yarn cli users get-user-tariff --help
+yarn cli marketdata get-candles --help
+yarn cli marketdata get-close-prices --help
+yarn cli instruments find-instrument --help
+yarn cli instruments get-accrued-interests --help
+yarn cli instruments get-asset-by --help
+yarn cli instruments get-assets --help
+yarn cli instruments get-bond-coupons --help
+yarn cli instruments bond-by --help
+yarn cli instruments bonds --help
+yarn cli instruments get-brand-by --help
+yarn cli instruments get-brands --help
+yarn cli instruments get-countries --help
+yarn cli instruments currencies --help
+yarn cli instruments currency-by --help
+yarn cli instruments etf-by --help
+yarn cli instruments etfs --help
+yarn cli instruments get-dividends --help
+yarn cli instruments get-favorites --help
+yarn cli instruments future-by --help
+yarn cli instruments futures --help
+yarn cli instruments get-futures-margin --help
+yarn cli instruments get-instrument-by --help
+yarn cli instruments option-by --help
+yarn cli instruments options-by --help
+yarn cli instruments share-by --help
+yarn cli instruments shares --help
+yarn cli instruments trading-schedules --help
+yarn cli marketdata get-last-prices --help
+yarn cli marketdata get-last-trades --help
+yarn cli marketdata get-order-book --help
+yarn cli marketdata get-trading-status --help
+yarn cli marketdata get-trading-statuses --help
+yarn cli orders get-orders --help
+yarn cli orders get-order-state --help
+yarn cli operations get-broker-report --help
+yarn cli operations get-dividends-foreign-issuer --help
+yarn cli operations get-operations --help
+yarn cli operations get-operations-by-cursor --help
+yarn cli operations get-portfolio --help
+yarn cli operations get-positions --help
+yarn cli operations get-withdraw-limits --help
+yarn cli stoporders get-stop-orders --help
 ```
 
 Сейчас CLI содержит первые API-команды:
