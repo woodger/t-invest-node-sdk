@@ -113,18 +113,18 @@ test('returns undefined for an unknown path', () => {
 
 ```ts
 /**
- * Сценарий: suite runner синхронизирует compiled tests с source tests.
+ * Сценарий: CLI reporter формирует стабильный output contract.
  *
  * Защищает:
- * - запуск только актуальных compiled tests;
- * - удаление orphaned test artifacts;
- * - явную ошибку при stale build.
+ * - отсутствие generated DTO в stdout-формате;
+ * - одинаковую структуру table и JSON вывода;
+ * - предсказуемые empty values для optional API fields.
  *
  * Не проверяет:
- * - behavior отдельных SDK tests;
- * - TypeScript compiler output.
+ * - gRPC transport behavior;
+ * - механическое выравнивание table renderer-а.
  */
-describe('suite runner helpers', () => {
+describe('accounts reporter', () => {
   // ...
 });
 ```
@@ -133,9 +133,9 @@ describe('suite runner helpers', () => {
 
 ```ts
 /**
- * Тесты suite runner.
+ * Тесты accounts reporter.
  */
-describe('suite runner helpers', () => {
+describe('accounts reporter', () => {
   // ...
 });
 ```
@@ -149,33 +149,34 @@ describe('suite runner helpers', () => {
 Хорошо:
 
 ```ts
-test('throws when compiled test is older than source test', async () => {
-  await touch(staleCompiled);
-  await touch(freshSource);
+test('throws for mixed broker report modes', () => {
+  // Generate and get modes map to different API request contracts.
+  // The command must reject ambiguous input before calling SDK.
+  const options = {
+    accountId: 'account-id',
+    from: '2024-01-01T00:00:00Z',
+    to: '2024-01-02T00:00:00Z',
+    taskId: 'task-id'
+  };
 
-  // Source намеренно новее compiled file:
-  // runner должен требовать rebuild, а не запускать stale artifact.
-  await utimes(staleCompiled, oldTime, oldTime);
-  await utimes(freshSource, freshTime, freshTime);
-
-  assert.throws(() => removeCompiledTestsWithoutSource([staleCompiled], options));
+  assert.throws(() => createBrokerReportRequest(options));
 });
 ```
 
 Плохо:
 
 ```ts
-test('throws when compiled test is older than source test', async () => {
-  // Create files
-  await touch(staleCompiled);
-  await touch(freshSource);
-
-  // Set times
-  await utimes(staleCompiled, oldTime, oldTime);
-  await utimes(freshSource, freshTime, freshTime);
+test('throws for mixed broker report modes', () => {
+  // Prepare options
+  const options = {
+    accountId: 'account-id',
+    from: '2024-01-01T00:00:00Z',
+    to: '2024-01-02T00:00:00Z',
+    taskId: 'task-id'
+  };
 
   // Check error
-  assert.throws(() => removeCompiledTestsWithoutSource([staleCompiled], options));
+  assert.throws(() => createBrokerReportRequest(options));
 });
 ```
 
@@ -186,28 +187,27 @@ Regression-комментарий нужен, если без него непо�
 Хорошо:
 
 ```ts
-test('does not rewrite runnable compiled tests', async () => {
-  // Regression: cleanup должен удалять только orphaned artifacts.
-  // Перезапись runnable compiled tests маскирует stale build и ломает воспроизводимость.
-  await writeFile(runnableCompiled, 'compiled test');
+test('renders pretty JSON with the trailing newline used by CLI output', () => {
+  // Regression: CLI output is line-oriented.
+  // Missing trailing newline glues the shell prompt to JSON output.
+  const output = renderJson({
+    id: 'account-id'
+  });
 
-  const runnableFiles = removeCompiledTestsWithoutSource([runnableCompiled], options);
-
-  assert.deepStrictEqual(runnableFiles, [runnableCompiled]);
-  assert.strictEqual(await readFile(runnableCompiled, 'utf8'), 'compiled test');
+  assert.strictEqual(output, '{\n  "id": "account-id"\n}\n');
 });
 ```
 
 Плохо:
 
 ```ts
-test('does not rewrite runnable compiled tests', async () => {
+test('renders pretty JSON with the trailing newline used by CLI output', () => {
   // Bugfix test
-  await writeFile(runnableCompiled, 'compiled test');
+  const output = renderJson({
+    id: 'account-id'
+  });
 
-  const runnableFiles = removeCompiledTestsWithoutSource([runnableCompiled], options);
-
-  assert.deepStrictEqual(runnableFiles, [runnableCompiled]);
+  assert.strictEqual(output, '{\n  "id": "account-id"\n}\n');
 });
 ```
 

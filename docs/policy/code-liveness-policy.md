@@ -37,7 +37,7 @@ Production graph начинается от runtime entrypoints и рабочих
 
 ### Test Graph
 
-Test graph начинается от `*.test.ts` и test runner.
+Test graph начинается от `*.test.ts` и `package.json` `test` script, который вызывает test runner `fwa`.
 
 Тесты подтверждают, что код имеет проверяемое поведение. Тесты не доказывают, что код используется SDK в runtime.
 
