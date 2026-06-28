@@ -9,44 +9,23 @@ import type {
   CurrencyReport,
   CurrencyReportInstrument
 } from '../../../application/reports';
-import {
-  securityTradingStatusToJSON,
-  type MoneyValue,
-  type Quotation
-} from '../../../generated/common';
+import { securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Currency,
   CurrencyResponse
 } from '../../../generated/instruments';
 import { realExchangeToJSON } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const currencyFormats = ['json', 'table'] as const;
 
 export type CurrencyFormat = typeof currencyFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
 
 export function createCurrencyReportInstrument(
   instrument: Currency
@@ -64,14 +43,14 @@ export function createCurrencyReportInstrument(
     lot: instrument.lot,
     exchange: instrument.exchange,
     realExchange: realExchangeToJSON(instrument.realExchange),
-    nominal: formatMoney(instrument.nominal),
-    klong: formatDecimal(instrument.klong),
-    kshort: formatDecimal(instrument.kshort),
-    dlong: formatDecimal(instrument.dlong),
-    dshort: formatDecimal(instrument.dshort),
-    dlongMin: formatDecimal(instrument.dlongMin),
-    dshortMin: formatDecimal(instrument.dshortMin),
-    minPriceIncrement: formatDecimal(instrument.minPriceIncrement),
+    nominal: formatReportMoney(instrument.nominal),
+    klong: formatReportDecimal(instrument.klong),
+    kshort: formatReportDecimal(instrument.kshort),
+    dlong: formatReportDecimal(instrument.dlong),
+    dshort: formatReportDecimal(instrument.dshort),
+    dlongMin: formatReportDecimal(instrument.dlongMin),
+    dshortMin: formatReportDecimal(instrument.dshortMin),
+    minPriceIncrement: formatReportDecimal(instrument.minPriceIncrement),
     tradingStatus: securityTradingStatusToJSON(instrument.tradingStatus),
     countryOfRisk: instrument.countryOfRisk,
     countryOfRiskName: instrument.countryOfRiskName,
@@ -84,8 +63,8 @@ export function createCurrencyReportInstrument(
     forQualInvestorFlag: instrument.forQualInvestorFlag,
     weekendFlag: instrument.weekendFlag,
     blockedTcaFlag: instrument.blockedTcaFlag,
-    first1minCandleDate: formatDate(instrument.first1minCandleDate),
-    first1dayCandleDate: formatDate(instrument.first1dayCandleDate)
+    first1minCandleDate: formatReportDate(instrument.first1minCandleDate),
+    first1dayCandleDate: formatReportDate(instrument.first1dayCandleDate)
   };
 }
 

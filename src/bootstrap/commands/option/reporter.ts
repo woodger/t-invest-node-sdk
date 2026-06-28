@@ -9,11 +9,7 @@ import type {
   OptionReport,
   OptionReportInstrument
 } from '../../../application/reports';
-import {
-  securityTradingStatusToJSON,
-  type MoneyValue,
-  type Quotation
-} from '../../../generated/common';
+import { securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Option,
   OptionResponse
@@ -25,34 +21,17 @@ import {
   optionStyleToJSON,
   realExchangeToJSON
 } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const optionFormats = ['json', 'table'] as const;
 
 export type OptionFormat = typeof optionFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
 
 export function createOptionReportInstrument(instrument: Option): OptionReportInstrument {
   return {
@@ -74,19 +53,19 @@ export function createOptionReportInstrument(instrument: Option): OptionReportIn
     settlementType: optionSettlementTypeToJSON(instrument.settlementType),
     assetType: instrument.assetType,
     basicAsset: instrument.basicAsset,
-    basicAssetSize: formatDecimal(instrument.basicAssetSize),
+    basicAssetSize: formatReportDecimal(instrument.basicAssetSize),
     basicAssetPositionUid: instrument.basicAssetPositionUid,
-    strikePrice: formatMoney(instrument.strikePrice),
-    expirationDate: formatDate(instrument.expirationDate),
-    firstTradeDate: formatDate(instrument.firstTradeDate),
-    lastTradeDate: formatDate(instrument.lastTradeDate),
-    klong: formatDecimal(instrument.klong),
-    kshort: formatDecimal(instrument.kshort),
-    dlong: formatDecimal(instrument.dlong),
-    dshort: formatDecimal(instrument.dshort),
-    dlongMin: formatDecimal(instrument.dlongMin),
-    dshortMin: formatDecimal(instrument.dshortMin),
-    minPriceIncrement: formatDecimal(instrument.minPriceIncrement),
+    strikePrice: formatReportMoney(instrument.strikePrice),
+    expirationDate: formatReportDate(instrument.expirationDate),
+    firstTradeDate: formatReportDate(instrument.firstTradeDate),
+    lastTradeDate: formatReportDate(instrument.lastTradeDate),
+    klong: formatReportDecimal(instrument.klong),
+    kshort: formatReportDecimal(instrument.kshort),
+    dlong: formatReportDecimal(instrument.dlong),
+    dshort: formatReportDecimal(instrument.dshort),
+    dlongMin: formatReportDecimal(instrument.dlongMin),
+    dshortMin: formatReportDecimal(instrument.dshortMin),
+    minPriceIncrement: formatReportDecimal(instrument.minPriceIncrement),
     countryOfRisk: instrument.countryOfRisk,
     countryOfRiskName: instrument.countryOfRiskName,
     otcFlag: instrument.otcFlag,
@@ -98,8 +77,8 @@ export function createOptionReportInstrument(instrument: Option): OptionReportIn
     forQualInvestorFlag: instrument.forQualInvestorFlag,
     weekendFlag: instrument.weekendFlag,
     blockedTcaFlag: instrument.blockedTcaFlag,
-    first1minCandleDate: formatDate(instrument.first1minCandleDate),
-    first1dayCandleDate: formatDate(instrument.first1dayCandleDate)
+    first1minCandleDate: formatReportDate(instrument.first1minCandleDate),
+    first1dayCandleDate: formatReportDate(instrument.first1dayCandleDate)
   };
 }
 

@@ -9,34 +9,22 @@ import type {
   EtfReport,
   EtfReportInstrument
 } from '../../../application/reports';
-import {
-  securityTradingStatusToJSON,
-  type MoneyValue,
-  type Quotation
-} from '../../../generated/common';
+import { securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Etf,
   EtfResponse
 } from '../../../generated/instruments';
 import { realExchangeToJSON } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportDecimal
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const etfFormats = ['json', 'table'] as const;
 
 export type EtfFormat = typeof etfFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
 
 export function createEtfReportInstrument(instrument: Etf): EtfReportInstrument {
   return {
@@ -54,16 +42,16 @@ export function createEtfReportInstrument(instrument: Etf): EtfReportInstrument 
     sector: instrument.sector,
     focusType: instrument.focusType,
     rebalancingFreq: instrument.rebalancingFreq,
-    fixedCommission: formatDecimal(instrument.fixedCommission),
-    releasedDate: formatDate(instrument.releasedDate),
-    numShares: formatDecimal(instrument.numShares),
-    klong: formatDecimal(instrument.klong),
-    kshort: formatDecimal(instrument.kshort),
-    dlong: formatDecimal(instrument.dlong),
-    dshort: formatDecimal(instrument.dshort),
-    dlongMin: formatDecimal(instrument.dlongMin),
-    dshortMin: formatDecimal(instrument.dshortMin),
-    minPriceIncrement: formatDecimal(instrument.minPriceIncrement),
+    fixedCommission: formatReportDecimal(instrument.fixedCommission),
+    releasedDate: formatReportDate(instrument.releasedDate),
+    numShares: formatReportDecimal(instrument.numShares),
+    klong: formatReportDecimal(instrument.klong),
+    kshort: formatReportDecimal(instrument.kshort),
+    dlong: formatReportDecimal(instrument.dlong),
+    dshort: formatReportDecimal(instrument.dshort),
+    dlongMin: formatReportDecimal(instrument.dlongMin),
+    dshortMin: formatReportDecimal(instrument.dshortMin),
+    minPriceIncrement: formatReportDecimal(instrument.minPriceIncrement),
     tradingStatus: securityTradingStatusToJSON(instrument.tradingStatus),
     countryOfRisk: instrument.countryOfRisk,
     countryOfRiskName: instrument.countryOfRiskName,
@@ -77,8 +65,8 @@ export function createEtfReportInstrument(instrument: Etf): EtfReportInstrument 
     weekendFlag: instrument.weekendFlag,
     blockedTcaFlag: instrument.blockedTcaFlag,
     liquidityFlag: instrument.liquidityFlag,
-    first1minCandleDate: formatDate(instrument.first1minCandleDate),
-    first1dayCandleDate: formatDate(instrument.first1dayCandleDate)
+    first1minCandleDate: formatReportDate(instrument.first1minCandleDate),
+    first1dayCandleDate: formatReportDate(instrument.first1dayCandleDate)
   };
 }
 

@@ -6,8 +6,11 @@
  */
 
 import type { FuturesMarginReport } from '../../../application/reports';
-import type { MoneyValue, Quotation } from '../../../generated/common';
 import type { GetFuturesMarginResponse } from '../../../generated/instruments';
+import {
+  formatReportDecimal,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -15,30 +18,12 @@ export const futuresMarginFormats = ['json', 'table'] as const;
 
 export type FuturesMarginFormat = typeof futuresMarginFormats[number];
 
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
 export function createFuturesMarginReport(response: GetFuturesMarginResponse): FuturesMarginReport {
   return {
-    initialMarginOnBuy: formatMoney(response.initialMarginOnBuy),
-    initialMarginOnSell: formatMoney(response.initialMarginOnSell),
-    minPriceIncrement: formatDecimal(response.minPriceIncrement),
-    minPriceIncrementAmount: formatDecimal(response.minPriceIncrementAmount)
+    initialMarginOnBuy: formatReportMoney(response.initialMarginOnBuy),
+    initialMarginOnSell: formatReportMoney(response.initialMarginOnSell),
+    minPriceIncrement: formatReportDecimal(response.minPriceIncrement),
+    minPriceIncrementAmount: formatReportDecimal(response.minPriceIncrementAmount)
   };
 }
 

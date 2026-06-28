@@ -12,13 +12,16 @@ import type {
   PositionsReportOption,
   PositionsReportSecurity
 } from '../../../application/reports';
-import type { MoneyValue } from '../../../generated/common';
 import type {
   PositionsFutures,
   PositionsOptions,
   PositionsResponse,
   PositionsSecurities
 } from '../../../generated/operations';
+import type { MoneyValue } from '../../../generated/common';
+import {
+  formatReportDecimal
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -26,14 +29,10 @@ export const positionsFormats = ['json', 'table'] as const;
 
 export type PositionsFormat = typeof positionsFormats[number];
 
-function formatDecimal(value: MoneyValue): string {
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportMoney(value: MoneyValue): PositionsReportMoney {
   return {
     currency: value.currency,
-    amount: formatDecimal(value)
+    amount: formatReportDecimal(value)
   };
 }
 

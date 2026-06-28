@@ -9,11 +9,7 @@ import type {
   BondReport,
   BondReportInstrument
 } from '../../../application/reports';
-import {
-  securityTradingStatusToJSON,
-  type MoneyValue,
-  type Quotation
-} from '../../../generated/common';
+import { securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Bond,
   BondResponse
@@ -22,34 +18,17 @@ import {
   realExchangeToJSON,
   riskLevelToJSON
 } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const bondFormats = ['json', 'table'] as const;
 
 export type BondFormat = typeof bondFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
 
 export function createBondReportInstrument(instrument: Bond): BondReportInstrument {
   return {
@@ -66,23 +45,23 @@ export function createBondReportInstrument(instrument: Bond): BondReportInstrume
     realExchange: realExchangeToJSON(instrument.realExchange),
     sector: instrument.sector,
     couponQuantityPerYear: instrument.couponQuantityPerYear,
-    maturityDate: formatDate(instrument.maturityDate),
-    nominal: formatMoney(instrument.nominal),
-    initialNominal: formatMoney(instrument.initialNominal),
-    stateRegDate: formatDate(instrument.stateRegDate),
-    placementDate: formatDate(instrument.placementDate),
-    placementPrice: formatMoney(instrument.placementPrice),
-    aciValue: formatMoney(instrument.aciValue),
+    maturityDate: formatReportDate(instrument.maturityDate),
+    nominal: formatReportMoney(instrument.nominal),
+    initialNominal: formatReportMoney(instrument.initialNominal),
+    stateRegDate: formatReportDate(instrument.stateRegDate),
+    placementDate: formatReportDate(instrument.placementDate),
+    placementPrice: formatReportMoney(instrument.placementPrice),
+    aciValue: formatReportMoney(instrument.aciValue),
     issueKind: instrument.issueKind,
     issueSize: instrument.issueSize,
     issueSizePlan: instrument.issueSizePlan,
-    klong: formatDecimal(instrument.klong),
-    kshort: formatDecimal(instrument.kshort),
-    dlong: formatDecimal(instrument.dlong),
-    dshort: formatDecimal(instrument.dshort),
-    dlongMin: formatDecimal(instrument.dlongMin),
-    dshortMin: formatDecimal(instrument.dshortMin),
-    minPriceIncrement: formatDecimal(instrument.minPriceIncrement),
+    klong: formatReportDecimal(instrument.klong),
+    kshort: formatReportDecimal(instrument.kshort),
+    dlong: formatReportDecimal(instrument.dlong),
+    dshort: formatReportDecimal(instrument.dshort),
+    dlongMin: formatReportDecimal(instrument.dlongMin),
+    dshortMin: formatReportDecimal(instrument.dshortMin),
+    minPriceIncrement: formatReportDecimal(instrument.minPriceIncrement),
     tradingStatus: securityTradingStatusToJSON(instrument.tradingStatus),
     riskLevel: riskLevelToJSON(instrument.riskLevel),
     countryOfRisk: instrument.countryOfRisk,
@@ -101,8 +80,8 @@ export function createBondReportInstrument(instrument: Bond): BondReportInstrume
     blockedTcaFlag: instrument.blockedTcaFlag,
     subordinatedFlag: instrument.subordinatedFlag,
     liquidityFlag: instrument.liquidityFlag,
-    first1minCandleDate: formatDate(instrument.first1minCandleDate),
-    first1dayCandleDate: formatDate(instrument.first1dayCandleDate)
+    first1minCandleDate: formatReportDate(instrument.first1minCandleDate),
+    first1dayCandleDate: formatReportDate(instrument.first1dayCandleDate)
   };
 }
 

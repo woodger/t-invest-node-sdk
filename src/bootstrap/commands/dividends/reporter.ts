@@ -6,8 +6,12 @@
  */
 
 import type { DividendsReport, DividendsReportItem } from '../../../application/reports';
-import type { MoneyValue, Quotation } from '../../../generated/common';
 import type { Dividend } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportMoney,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -15,44 +19,18 @@ export const dividendsFormats = ['json', 'table'] as const;
 
 export type DividendsFormat = typeof dividendsFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  return formatDecimal(value);
-}
-
 function toReportDividend(dividend: Dividend): DividendsReportItem {
   return {
-    dividendNet: formatMoney(dividend.dividendNet),
-    paymentDate: formatDate(dividend.paymentDate),
-    declaredDate: formatDate(dividend.declaredDate),
-    lastBuyDate: formatDate(dividend.lastBuyDate),
+    dividendNet: formatReportMoney(dividend.dividendNet),
+    paymentDate: formatReportDate(dividend.paymentDate),
+    declaredDate: formatReportDate(dividend.declaredDate),
+    lastBuyDate: formatReportDate(dividend.lastBuyDate),
     dividendType: dividend.dividendType,
-    recordDate: formatDate(dividend.recordDate),
+    recordDate: formatReportDate(dividend.recordDate),
     regularity: dividend.regularity,
-    closePrice: formatMoney(dividend.closePrice),
-    yieldValue: formatQuotation(dividend.yieldValue),
-    createdAt: formatDate(dividend.createdAt)
+    closePrice: formatReportMoney(dividend.closePrice),
+    yieldValue: formatReportQuotation(dividend.yieldValue),
+    createdAt: formatReportDate(dividend.createdAt)
   };
 }
 

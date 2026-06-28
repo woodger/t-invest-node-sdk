@@ -6,12 +6,15 @@
  */
 
 import type { OperationsReport, OperationsReportOperation } from '../../../application/reports';
-import type { MoneyValue } from '../../../generated/common';
 import {
   operationStateToJSON,
   operationTypeToJSON,
   type Operation
 } from '../../../generated/operations';
+import {
+  formatReportDate,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -19,35 +22,17 @@ export const operationsFormats = ['json', 'table'] as const;
 
 export type OperationsFormat = typeof operationsFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue): string {
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
 function toReportOperation(operation: Operation): OperationsReportOperation {
   return {
     id: operation.id,
     parentOperationId: operation.parentOperationId,
-    date: formatDate(operation.date),
+    date: formatReportDate(operation.date),
     type: operation.type,
     operationType: operationTypeToJSON(operation.operationType),
     state: operationStateToJSON(operation.state),
     currency: operation.currency,
-    payment: formatMoney(operation.payment),
-    price: formatMoney(operation.price),
+    payment: formatReportMoney(operation.payment),
+    price: formatReportMoney(operation.price),
     quantity: operation.quantity,
     quantityRest: operation.quantityRest,
     figi: operation.figi,

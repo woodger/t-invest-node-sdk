@@ -9,33 +9,22 @@ import type {
   FutureReport,
   FutureReportInstrument
 } from '../../../application/reports';
-import {
-  securityTradingStatusToJSON,
-  type Quotation
-} from '../../../generated/common';
+import { securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Future,
   FutureResponse
 } from '../../../generated/instruments';
 import { realExchangeToJSON } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const futureFormats = ['json', 'table'] as const;
 
 export type FutureFormat = typeof futureFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
 
 export function createFutureReportInstrument(instrument: Future): FutureReportInstrument {
   return {
@@ -50,21 +39,21 @@ export function createFutureReportInstrument(instrument: Future): FutureReportIn
     exchange: instrument.exchange,
     realExchange: realExchangeToJSON(instrument.realExchange),
     sector: instrument.sector,
-    firstTradeDate: formatDate(instrument.firstTradeDate),
-    lastTradeDate: formatDate(instrument.lastTradeDate),
-    expirationDate: formatDate(instrument.expirationDate),
+    firstTradeDate: formatReportDate(instrument.firstTradeDate),
+    lastTradeDate: formatReportDate(instrument.lastTradeDate),
+    expirationDate: formatReportDate(instrument.expirationDate),
     futuresType: instrument.futuresType,
     assetType: instrument.assetType,
     basicAsset: instrument.basicAsset,
-    basicAssetSize: formatQuotation(instrument.basicAssetSize),
+    basicAssetSize: formatReportQuotation(instrument.basicAssetSize),
     basicAssetPositionUid: instrument.basicAssetPositionUid,
-    klong: formatQuotation(instrument.klong),
-    kshort: formatQuotation(instrument.kshort),
-    dlong: formatQuotation(instrument.dlong),
-    dshort: formatQuotation(instrument.dshort),
-    dlongMin: formatQuotation(instrument.dlongMin),
-    dshortMin: formatQuotation(instrument.dshortMin),
-    minPriceIncrement: formatQuotation(instrument.minPriceIncrement),
+    klong: formatReportQuotation(instrument.klong),
+    kshort: formatReportQuotation(instrument.kshort),
+    dlong: formatReportQuotation(instrument.dlong),
+    dshort: formatReportQuotation(instrument.dshort),
+    dlongMin: formatReportQuotation(instrument.dlongMin),
+    dshortMin: formatReportQuotation(instrument.dshortMin),
+    minPriceIncrement: formatReportQuotation(instrument.minPriceIncrement),
     tradingStatus: securityTradingStatusToJSON(instrument.tradingStatus),
     countryOfRisk: instrument.countryOfRisk,
     countryOfRiskName: instrument.countryOfRiskName,
@@ -77,8 +66,8 @@ export function createFutureReportInstrument(instrument: Future): FutureReportIn
     forQualInvestorFlag: instrument.forQualInvestorFlag,
     weekendFlag: instrument.weekendFlag,
     blockedTcaFlag: instrument.blockedTcaFlag,
-    first1minCandleDate: formatDate(instrument.first1minCandleDate),
-    first1dayCandleDate: formatDate(instrument.first1dayCandleDate)
+    first1minCandleDate: formatReportDate(instrument.first1minCandleDate),
+    first1dayCandleDate: formatReportDate(instrument.first1dayCandleDate)
   };
 }
 

@@ -6,11 +6,14 @@
  */
 
 import type { LastTradesReport, LastTradesReportTrade } from '../../../application/reports';
-import type { Quotation } from '../../../generated/common';
 import {
   tradeDirectionToJSON,
   type Trade
 } from '../../../generated/marketdata';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -18,26 +21,14 @@ export const lastTradesFormats = ['json', 'table'] as const;
 
 export type LastTradesFormat = typeof lastTradesFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportTrade(trade: Trade): LastTradesReportTrade {
   return {
     figi: trade.figi,
     instrumentUid: trade.instrumentUid,
     direction: tradeDirectionToJSON(trade.direction),
-    price: formatQuotation(trade.price),
+    price: formatReportQuotation(trade.price),
     quantity: trade.quantity,
-    time: formatDate(trade.time)
+    time: formatReportDate(trade.time)
   };
 }
 

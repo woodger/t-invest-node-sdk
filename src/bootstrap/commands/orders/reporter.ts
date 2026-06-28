@@ -10,7 +10,6 @@ import type {
   OrdersReportOrder,
   OrdersReportStage
 } from '../../../application/reports';
-import type { MoneyValue } from '../../../generated/common';
 import {
   type GetOrdersResponse,
   type OrderStage,
@@ -19,6 +18,10 @@ import {
   orderExecutionReportStatusToJSON,
   orderTypeToJSON
 } from '../../../generated/orders';
+import {
+  formatReportDate,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -26,31 +29,9 @@ export const ordersFormats = ['json', 'table'] as const;
 
 export type OrdersFormat = typeof ordersFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
 function toReportStage(stage: OrderStage): OrdersReportStage {
   return {
-    price: formatMoney(stage.price),
+    price: formatReportMoney(stage.price),
     quantity: stage.quantity,
     tradeId: stage.tradeId
   };
@@ -67,15 +48,15 @@ export function createOrderStateReport(order: OrderState): OrdersReportOrder {
     orderType: orderTypeToJSON(order.orderType),
     lotsRequested: order.lotsRequested,
     lotsExecuted: order.lotsExecuted,
-    initialOrderPrice: formatMoney(order.initialOrderPrice),
-    executedOrderPrice: formatMoney(order.executedOrderPrice),
-    totalOrderAmount: formatMoney(order.totalOrderAmount),
-    averagePositionPrice: formatMoney(order.averagePositionPrice),
-    initialCommission: formatMoney(order.initialCommission),
-    executedCommission: formatMoney(order.executedCommission),
-    serviceCommission: formatMoney(order.serviceCommission),
+    initialOrderPrice: formatReportMoney(order.initialOrderPrice),
+    executedOrderPrice: formatReportMoney(order.executedOrderPrice),
+    totalOrderAmount: formatReportMoney(order.totalOrderAmount),
+    averagePositionPrice: formatReportMoney(order.averagePositionPrice),
+    initialCommission: formatReportMoney(order.initialCommission),
+    executedCommission: formatReportMoney(order.executedCommission),
+    serviceCommission: formatReportMoney(order.serviceCommission),
     currency: order.currency,
-    orderDate: formatDate(order.orderDate),
+    orderDate: formatReportDate(order.orderDate),
     stages: order.stages.map(toReportStage)
   };
 }

@@ -20,16 +20,15 @@ import type {
   Brand
 } from '../../../generated/instruments';
 import { assetTypeToJSON } from '../../../generated/instruments';
+import {
+  formatReportDate
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const assetFormats = ['json', 'table'] as const;
 
 export type AssetFormat = typeof assetFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
 
 function createAssetReportBrand(brand: Brand | undefined): AssetReportBrand | null {
   if (brand === undefined) {
@@ -85,7 +84,7 @@ export function createAssetReport(response: AssetResponse): AssetReport {
     ...summary,
     nameBrief: asset.nameBrief,
     description: asset.description,
-    deletedAt: formatDate(asset.deletedAt),
+    deletedAt: formatReportDate(asset.deletedAt),
     requiredTests: [...asset.requiredTests],
     currencyBaseCurrency: asset.currency?.baseCurrency ?? '',
     securityIsin: asset.security?.isin ?? '',
@@ -98,7 +97,7 @@ export function createAssetReport(response: AssetResponse): AssetReport {
     codeNsd: asset.codeNsd,
     status: asset.status,
     brand: createAssetReportBrand(asset.brand),
-    updatedAt: formatDate(asset.updatedAt),
+    updatedAt: formatReportDate(asset.updatedAt),
     brCode: asset.brCode,
     brCodeName: asset.brCodeName
   };

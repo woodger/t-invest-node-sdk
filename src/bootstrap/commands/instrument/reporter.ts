@@ -18,16 +18,15 @@ import type {
   InstrumentResponse
 } from '../../../generated/instruments';
 import { realExchangeToJSON } from '../../../generated/instruments';
+import {
+  formatReportDate
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const instrumentFormats = ['json', 'table'] as const;
 
 export type InstrumentFormat = typeof instrumentFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
 
 function toReportInstrument(instrument: Instrument): InstrumentReportInstrument {
   return {
@@ -56,8 +55,8 @@ function toReportInstrument(instrument: Instrument): InstrumentReportInstrument 
     forQualInvestorFlag: instrument.forQualInvestorFlag,
     weekendFlag: instrument.weekendFlag,
     blockedTcaFlag: instrument.blockedTcaFlag,
-    first1minCandleDate: formatDate(instrument.first1minCandleDate),
-    first1dayCandleDate: formatDate(instrument.first1dayCandleDate)
+    first1minCandleDate: formatReportDate(instrument.first1minCandleDate),
+    first1dayCandleDate: formatReportDate(instrument.first1dayCandleDate)
   };
 }
 

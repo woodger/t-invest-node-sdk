@@ -9,11 +9,14 @@ import type {
   OrderBookReport,
   OrderBookReportLevel
 } from '../../../application/reports';
-import type { Quotation } from '../../../generated/common';
 import type {
   GetOrderBookResponse,
   Order
 } from '../../../generated/marketdata';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -21,22 +24,10 @@ export const orderBookFormats = ['json', 'table'] as const;
 
 export type OrderBookFormat = typeof orderBookFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportLevel(side: OrderBookReportLevel['side'], order: Order): OrderBookReportLevel {
   return {
     side,
-    price: formatQuotation(order.price),
+    price: formatReportQuotation(order.price),
     quantity: order.quantity
   };
 }
@@ -46,13 +37,13 @@ export function createOrderBookReport(response: GetOrderBookResponse): OrderBook
     figi: response.figi,
     instrumentUid: response.instrumentUid,
     depth: response.depth,
-    lastPrice: formatQuotation(response.lastPrice),
-    closePrice: formatQuotation(response.closePrice),
-    limitUp: formatQuotation(response.limitUp),
-    limitDown: formatQuotation(response.limitDown),
-    lastPriceTime: formatDate(response.lastPriceTs),
-    closePriceTime: formatDate(response.closePriceTs),
-    orderBookTime: formatDate(response.orderbookTs),
+    lastPrice: formatReportQuotation(response.lastPrice),
+    closePrice: formatReportQuotation(response.closePrice),
+    limitUp: formatReportQuotation(response.limitUp),
+    limitDown: formatReportQuotation(response.limitDown),
+    lastPriceTime: formatReportDate(response.lastPriceTs),
+    closePriceTime: formatReportDate(response.closePriceTs),
+    orderBookTime: formatReportDate(response.orderbookTs),
     levels: [
       ...response.bids.map((order) => toReportLevel('bid', order)),
       ...response.asks.map((order) => toReportLevel('ask', order))
