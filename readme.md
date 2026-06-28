@@ -84,54 +84,17 @@ utility- и API-команды можно запускать через `yarn cl
 
 ```sh
 yarn cli --help
-yarn cli help
 yarn cli version
-yarn cli users get-accounts --help
-yarn cli users get-info --help
-yarn cli users get-margin-attributes --help
-yarn cli users get-user-tariff --help
-yarn cli marketdata get-candles --help
-yarn cli marketdata get-close-prices --help
-yarn cli instruments find-instrument --help
-yarn cli instruments get-accrued-interests --help
-yarn cli instruments get-asset-by --help
-yarn cli instruments get-assets --help
-yarn cli instruments get-bond-coupons --help
-yarn cli instruments bond-by --help
-yarn cli instruments bonds --help
-yarn cli instruments get-brand-by --help
-yarn cli instruments get-brands --help
-yarn cli instruments get-countries --help
-yarn cli instruments currencies --help
-yarn cli instruments currency-by --help
-yarn cli instruments etf-by --help
-yarn cli instruments etfs --help
-yarn cli instruments get-dividends --help
-yarn cli instruments get-favorites --help
-yarn cli instruments future-by --help
-yarn cli instruments futures --help
-yarn cli instruments get-futures-margin --help
-yarn cli instruments get-instrument-by --help
-yarn cli instruments option-by --help
-yarn cli instruments options-by --help
-yarn cli instruments share-by --help
-yarn cli instruments shares --help
-yarn cli instruments trading-schedules --help
-yarn cli marketdata get-last-prices --help
-yarn cli marketdata get-last-trades --help
-yarn cli marketdata get-order-book --help
-yarn cli marketdata get-trading-status --help
-yarn cli marketdata get-trading-statuses --help
-yarn cli orders get-orders --help
-yarn cli orders get-order-state --help
-yarn cli operations get-broker-report --help
-yarn cli operations get-operations --help
-yarn cli operations get-operations-by-cursor --help
-yarn cli operations get-portfolio --help
-yarn cli operations get-positions --help
-yarn cli operations get-withdraw-limits --help
-yarn cli stoporders get-stop-orders --help
+yarn cli help <service> <method>
+yarn cli <service> <method> [options]
+
+yarn cli help users get-accounts
+yarn cli users get-accounts --format=json
 ```
+
+Актуальный список команд выводит `yarn cli help`. Подробности отдельной
+команды можно посмотреть через `yarn cli help <service> <method>` или
+`yarn cli <service> <method> --help`.
 
 API-команды используют `--token` / `TINKOFF_TOKEN` и
 `--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным
