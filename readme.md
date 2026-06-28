@@ -9,7 +9,7 @@
 
 ## Установка
 
-```bash
+```sh
 yarn add tinkoff-invest-node-sdk
 ```
 
@@ -32,7 +32,7 @@ yarn add tinkoff-invest-node-sdk
 
 Генерация TypeScript-кода из `contracts/**/*.proto` запускается через npm-скрипт:
 
-```bash
+```sh
 npm run proto
 ```
 
@@ -41,7 +41,7 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 
 Скрипт использует собранный файл `dist/bootstrap/bin/compile-proto.js`, поэтому перед первым запуском после изменений в `src/bootstrap/bin/compile-proto.ts` нужно выполнить:
 
-```bash
+```sh
 npm run build
 ```
 
@@ -82,7 +82,7 @@ interface TinkoffInvestOptions {
 В проекте есть bootstrap CLI layer с command registry. Локально после сборки
 utility- и API-команды можно запускать через `yarn cli`:
 
-```bash
+```sh
 yarn cli --help
 yarn cli help
 yarn cli version
