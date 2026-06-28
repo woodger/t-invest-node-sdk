@@ -8,7 +8,7 @@ import type {
   GetOrderBookResponse,
   Order
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createOrderBookCommand,
   parseOrderBookDepth,

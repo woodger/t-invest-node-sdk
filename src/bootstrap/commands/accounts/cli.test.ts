@@ -8,7 +8,7 @@ import {
   AccountType,
   type Account
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createAccountsCommand,
   parseAccountsFormat

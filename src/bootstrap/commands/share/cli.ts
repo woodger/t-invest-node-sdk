@@ -5,8 +5,8 @@ import {
 } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
-import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
+import { parseCommandOptions, withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,

@@ -2,8 +2,8 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-mechanics';
-import { parseCommandOptions, withSdkOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
+import { parseCommandOptions, withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { favoritesFormats, formatFavorites, type FavoritesFormat } from './reporter';
 

@@ -8,7 +8,7 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createPortfolioCommand,
   parsePortfolioCurrency,

@@ -5,12 +5,12 @@ import type {
 } from '../../../generated/marketdata';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   withSdkOptions
-} from '../../command-mechanics';
+} from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatLastPrices, lastPricesFormats, type LastPricesFormat } from './reporter';
 
