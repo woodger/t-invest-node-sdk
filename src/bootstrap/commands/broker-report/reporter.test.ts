@@ -103,14 +103,32 @@ describe('broker-report reporter', () => {
             direction: 'Buy',
             name: 'T-Bank',
             ticker: 'TCSG',
-            price: '100.5 rub',
+            price: {
+              currency: 'rub',
+              amount: '100.5'
+            },
             quantity: 2,
-            orderAmount: '201 rub',
+            orderAmount: {
+              currency: 'rub',
+              amount: '201'
+            },
             aciValue: '0.1',
-            totalOrderAmount: '201.1 rub',
-            brokerCommission: '1 rub',
-            exchangeCommission: '0.5 rub',
-            exchangeClearingCommission: '0.1 rub',
+            totalOrderAmount: {
+              currency: 'rub',
+              amount: '201.1'
+            },
+            brokerCommission: {
+              currency: 'rub',
+              amount: '1'
+            },
+            exchangeCommission: {
+              currency: 'rub',
+              amount: '0.5'
+            },
+            exchangeClearingCommission: {
+              currency: 'rub',
+              amount: '0.1'
+            },
             repoRate: '0.25',
             party: 'Broker',
             clearValueDate: '2026-06-11T00:00:00.000Z',
@@ -177,7 +195,10 @@ describe('broker-report reporter', () => {
 
       assert.equal(parsed.type, 'page');
       assert.equal(parsed.items[0].tradeId, 'trade-id');
-      assert.equal(parsed.items[0].exchangeClearingCommission, '0.1 rub');
+      assert.deepEqual(parsed.items[0].exchangeClearingCommission, {
+        currency: 'rub',
+        amount: '0.1'
+      });
     });
 
     test('formats empty report as table', () => {

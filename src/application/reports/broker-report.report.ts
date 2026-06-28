@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 export interface BrokerReportTaskReport {
   /** Тип отчета для ответа запуска формирования. */
   type: 'generate';
@@ -35,22 +37,22 @@ export interface BrokerReportItemReport {
   name: string;
   /** Тикер инструмента. */
   ticker: string;
-  /** Цена сделки в денежном строковом формате отчета. */
-  price: string;
+  /** Цена сделки или `null`, если provider не вернул значение. */
+  price: ReportMoney | null;
   /** Количество инструментов в сделке. */
   quantity: number;
-  /** Сумма заявки в денежном строковом формате отчета. */
-  orderAmount: string;
+  /** Сумма заявки или `null`, если provider не вернул значение. */
+  orderAmount: ReportMoney | null;
   /** НКД в строковом формате quotation. */
   aciValue: string;
-  /** Полная сумма заявки в денежном строковом формате отчета. */
-  totalOrderAmount: string;
-  /** Комиссия брокера в денежном строковом формате отчета. */
-  brokerCommission: string;
-  /** Комиссия биржи в денежном строковом формате отчета. */
-  exchangeCommission: string;
-  /** Клиринговая комиссия биржи в денежном строковом формате отчета. */
-  exchangeClearingCommission: string;
+  /** Полная сумма заявки или `null`, если provider не вернул значение. */
+  totalOrderAmount: ReportMoney | null;
+  /** Комиссия брокера или `null`, если provider не вернул значение. */
+  brokerCommission: ReportMoney | null;
+  /** Комиссия биржи или `null`, если provider не вернул значение. */
+  exchangeCommission: ReportMoney | null;
+  /** Клиринговая комиссия биржи или `null`, если provider не вернул значение. */
+  exchangeClearingCommission: ReportMoney | null;
   /** Ставка РЕПО в строковом формате quotation. */
   repoRate: string;
   /** Сторона сделки. */

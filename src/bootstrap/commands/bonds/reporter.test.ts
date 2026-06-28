@@ -93,12 +93,24 @@ describe('bonds reporter', () => {
           sector: 'Government',
           couponQuantityPerYear: 2,
           maturityDate: '2041-05-15T00:00:00.000Z',
-          nominal: '1000 rub',
-          initialNominal: '1000 rub',
+          nominal: {
+            currency: 'rub',
+            amount: '1000'
+          },
+          initialNominal: {
+            currency: 'rub',
+            amount: '1000'
+          },
           stateRegDate: '2021-06-16T00:00:00.000Z',
           placementDate: '2021-06-30T00:00:00.000Z',
-          placementPrice: '99.5 rub',
-          aciValue: '12.34 rub',
+          placementPrice: {
+            currency: 'rub',
+            amount: '99.5'
+          },
+          aciValue: {
+            currency: 'rub',
+            amount: '12.34'
+          },
           issueKind: 'non_documentary',
           issueSize: 1000000,
           issueSizePlan: 2000000,
@@ -149,7 +161,10 @@ describe('bonds reporter', () => {
       const parsed = JSON.parse(output);
 
       assert.equal(parsed[0].figi, 'BBG00B9XRY4J');
-      assert.equal(parsed[0].placementPrice, '99.5 rub');
+      assert.deepEqual(parsed[0].placementPrice, {
+        currency: 'rub',
+        amount: '99.5'
+      });
       assert.equal(parsed[0].riskLevel, 'RISK_LEVEL_LOW');
       assert.equal(parsed[0].maturityDate, '2041-05-15T00:00:00.000Z');
     });

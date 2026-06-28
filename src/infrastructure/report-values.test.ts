@@ -4,8 +4,9 @@ import type { MoneyValue, Quotation } from '../generated/common';
 import {
   formatReportDate,
   formatReportDecimal,
-  formatReportMoney,
-  formatReportQuotation
+  formatReportMoneyText,
+  formatReportQuotation,
+  toReportMoney
 } from './report-values';
 
 describe('report values', () => {
@@ -30,15 +31,31 @@ describe('report values', () => {
     });
   });
 
-  describe('formatReportMoney', () => {
-    test('formats money amount with currency when currency is present', () => {
+  describe('toReportMoney', () => {
+    test('maps money amount and currency to a report value', () => {
       const value: MoneyValue = {
         currency: 'rub',
         units: 100,
         nano: 500_000_000
       };
 
-      assert.equal(formatReportMoney(value), '100.5 rub');
+      assert.deepEqual(toReportMoney(value), {
+        currency: 'rub',
+        amount: '100.5'
+      });
+    });
+
+    test('returns null for missing values', () => {
+      assert.equal(toReportMoney(undefined), null);
+    });
+  });
+
+  describe('formatReportMoneyText', () => {
+    test('formats money text with currency when currency is present', () => {
+      assert.equal(formatReportMoneyText({
+        currency: 'rub',
+        amount: '100.5'
+      }), '100.5 rub');
     });
 
     test('formats only amount when currency is empty', () => {
@@ -48,11 +65,11 @@ describe('report values', () => {
         nano: 500_000_000
       };
 
-      assert.equal(formatReportMoney(value), '100.5');
+      assert.equal(formatReportMoneyText(toReportMoney(value)), '100.5');
     });
 
     test('returns an empty string for missing values', () => {
-      assert.equal(formatReportMoney(undefined), '');
+      assert.equal(formatReportMoneyText(null), '');
     });
   });
 

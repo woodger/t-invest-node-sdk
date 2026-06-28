@@ -18,7 +18,7 @@ import { realExchangeToJSON } from '../../../generated/instruments';
 import {
   formatReportDate,
   formatReportDecimal,
-  formatReportMoney
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -43,7 +43,7 @@ export function createCurrencyReportInstrument(
     lot: instrument.lot,
     exchange: instrument.exchange,
     realExchange: realExchangeToJSON(instrument.realExchange),
-    nominal: formatReportMoney(instrument.nominal),
+    nominal: toReportMoney(instrument.nominal),
     klong: formatReportDecimal(instrument.klong),
     kshort: formatReportDecimal(instrument.kshort),
     dlong: formatReportDecimal(instrument.dlong),

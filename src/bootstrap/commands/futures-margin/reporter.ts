@@ -9,7 +9,8 @@ import type { FuturesMarginReport } from '../../../application/reports';
 import type { GetFuturesMarginResponse } from '../../../generated/instruments';
 import {
   formatReportDecimal,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -20,8 +21,8 @@ export type FuturesMarginFormat = typeof futuresMarginFormats[number];
 
 export function createFuturesMarginReport(response: GetFuturesMarginResponse): FuturesMarginReport {
   return {
-    initialMarginOnBuy: formatReportMoney(response.initialMarginOnBuy),
-    initialMarginOnSell: formatReportMoney(response.initialMarginOnSell),
+    initialMarginOnBuy: toReportMoney(response.initialMarginOnBuy),
+    initialMarginOnSell: toReportMoney(response.initialMarginOnSell),
     minPriceIncrement: formatReportDecimal(response.minPriceIncrement),
     minPriceIncrementAmount: formatReportDecimal(response.minPriceIncrementAmount)
   };
@@ -38,8 +39,8 @@ export function formatFuturesMarginReport(
   return renderTextTable([
     ['initialMarginOnBuy', 'initialMarginOnSell', 'minPriceIncrement', 'minPriceIncrementAmount'],
     [
-      report.initialMarginOnBuy,
-      report.initialMarginOnSell,
+      formatReportMoneyText(report.initialMarginOnBuy),
+      formatReportMoneyText(report.initialMarginOnSell),
       report.minPriceIncrement,
       report.minPriceIncrementAmount
     ]

@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Метаданные страницы в отчете команды `operations get-operations-by-cursor`. */
 export interface OperationsByCursorReportPage {
   /** Есть ли следующая страница операций. */
@@ -38,18 +40,18 @@ export interface OperationsByCursorReportItem {
   instrumentKind: string;
   /** UID позиции инструмента. */
   positionUid: string;
-  /** Платеж по операции в денежном строковом формате отчета. */
-  payment: string;
-  /** Цена операции в денежном строковом формате отчета. */
-  price: string;
-  /** Комиссия в денежном строковом формате отчета. */
-  commission: string;
-  /** Доходность в денежном строковом формате отчета. */
-  yield: string;
+  /** Платеж по операции или `null`, если provider не вернул значение. */
+  payment: ReportMoney | null;
+  /** Цена операции или `null`, если provider не вернул значение. */
+  price: ReportMoney | null;
+  /** Комиссия или `null`, если provider не вернул значение. */
+  commission: ReportMoney | null;
+  /** Доходность или `null`, если provider не вернул значение. */
+  yield: ReportMoney | null;
   /** Относительная доходность в строковом формате quotation. */
   yieldRelative: string;
-  /** НКД в денежном строковом формате отчета. */
-  accruedInt: string;
+  /** НКД или `null`, если provider не вернул значение. */
+  accruedInt: ReportMoney | null;
   /** Количество инструментов в операции. */
   quantity: number;
   /** Остаток количества по операции. */

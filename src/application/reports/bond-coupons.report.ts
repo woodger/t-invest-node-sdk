@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Один купон в отчете команды `instruments get-bond-coupons`. */
 export interface BondCouponsReportCoupon {
   /** FIGI облигации. */
@@ -8,8 +10,8 @@ export interface BondCouponsReportCoupon {
   couponNumber: number;
   /** Дата фиксации реестра в ISO-формате или пустая строка. */
   fixDate: string;
-  /** Выплата на одну облигацию в денежном строковом формате отчета. */
-  payOneBond: string;
+  /** Выплата на одну облигацию или `null`, если provider не вернул значение. */
+  payOneBond: ReportMoney | null;
   /** Тип купона в формате generated enum JSON name. */
   couponType: string;
   /** Начало купонного периода в ISO-формате или пустая строка. */

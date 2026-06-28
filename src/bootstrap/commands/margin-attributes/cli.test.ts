@@ -116,7 +116,10 @@ describe('margin-attributes command', () => {
         accountId: 'account-id'
       });
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output).liquidPortfolio, '1000 rub');
+      assert.deepEqual(JSON.parse(output).liquidPortfolio, {
+        currency: 'rub',
+        amount: '1000'
+      });
     });
 
     test('closes sdk when getMarginAttributes rejects', async () => {

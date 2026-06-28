@@ -13,7 +13,8 @@ import type {
 import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
 import {
   formatReportDecimal,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -25,14 +26,14 @@ export type PortfolioFormat = typeof portfolioFormats[number];
 function toSummary(response: PortfolioResponse): PortfolioReportSummary {
   return {
     accountId: response.accountId,
-    totalAmountPortfolio: formatReportMoney(response.totalAmountPortfolio),
-    totalAmountShares: formatReportMoney(response.totalAmountShares),
-    totalAmountBonds: formatReportMoney(response.totalAmountBonds),
-    totalAmountEtf: formatReportMoney(response.totalAmountEtf),
-    totalAmountCurrencies: formatReportMoney(response.totalAmountCurrencies),
-    totalAmountFutures: formatReportMoney(response.totalAmountFutures),
-    totalAmountOptions: formatReportMoney(response.totalAmountOptions),
-    totalAmountSp: formatReportMoney(response.totalAmountSp),
+    totalAmountPortfolio: toReportMoney(response.totalAmountPortfolio),
+    totalAmountShares: toReportMoney(response.totalAmountShares),
+    totalAmountBonds: toReportMoney(response.totalAmountBonds),
+    totalAmountEtf: toReportMoney(response.totalAmountEtf),
+    totalAmountCurrencies: toReportMoney(response.totalAmountCurrencies),
+    totalAmountFutures: toReportMoney(response.totalAmountFutures),
+    totalAmountOptions: toReportMoney(response.totalAmountOptions),
+    totalAmountSp: toReportMoney(response.totalAmountSp),
     expectedYield: formatReportDecimal(response.expectedYield)
   };
 }
@@ -44,8 +45,8 @@ function toReportPosition(position: PortfolioPosition): PortfolioReportPosition 
     positionUid: position.positionUid,
     instrumentType: position.instrumentType,
     quantity: formatReportDecimal(position.quantity),
-    averagePositionPrice: formatReportMoney(position.averagePositionPrice),
-    currentPrice: formatReportMoney(position.currentPrice),
+    averagePositionPrice: toReportMoney(position.averagePositionPrice),
+    currentPrice: toReportMoney(position.currentPrice),
     expectedYield: formatReportDecimal(position.expectedYield),
     blocked: position.blocked
   };
@@ -61,14 +62,14 @@ export function createPortfolioReport(response: PortfolioResponse): PortfolioRep
 function renderPortfolioSummary(summary: PortfolioReportSummary): string {
   return [
     `accountId: ${summary.accountId}`,
-    `totalAmountPortfolio: ${summary.totalAmountPortfolio}`,
-    `totalAmountShares: ${summary.totalAmountShares}`,
-    `totalAmountBonds: ${summary.totalAmountBonds}`,
-    `totalAmountEtf: ${summary.totalAmountEtf}`,
-    `totalAmountCurrencies: ${summary.totalAmountCurrencies}`,
-    `totalAmountFutures: ${summary.totalAmountFutures}`,
-    `totalAmountOptions: ${summary.totalAmountOptions}`,
-    `totalAmountSp: ${summary.totalAmountSp}`,
+    `totalAmountPortfolio: ${formatReportMoneyText(summary.totalAmountPortfolio)}`,
+    `totalAmountShares: ${formatReportMoneyText(summary.totalAmountShares)}`,
+    `totalAmountBonds: ${formatReportMoneyText(summary.totalAmountBonds)}`,
+    `totalAmountEtf: ${formatReportMoneyText(summary.totalAmountEtf)}`,
+    `totalAmountCurrencies: ${formatReportMoneyText(summary.totalAmountCurrencies)}`,
+    `totalAmountFutures: ${formatReportMoneyText(summary.totalAmountFutures)}`,
+    `totalAmountOptions: ${formatReportMoneyText(summary.totalAmountOptions)}`,
+    `totalAmountSp: ${formatReportMoneyText(summary.totalAmountSp)}`,
     `expectedYield: ${summary.expectedYield}`
   ].join('\n');
 }
@@ -96,8 +97,8 @@ export function formatPortfolioReport(report: PortfolioReport, format: Portfolio
       position.positionUid,
       position.instrumentType,
       position.quantity,
-      position.averagePositionPrice,
-      position.currentPrice,
+      formatReportMoneyText(position.averagePositionPrice),
+      formatReportMoneyText(position.currentPrice),
       position.expectedYield,
       String(position.blocked)
     ])

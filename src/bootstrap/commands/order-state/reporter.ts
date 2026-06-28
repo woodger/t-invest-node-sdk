@@ -7,6 +7,7 @@
 
 import type { OrderStateReport } from '../../../application/reports';
 import type { OrderState } from '../../../generated/orders';
+import { formatReportMoneyText } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 import {
@@ -55,9 +56,9 @@ export function formatOrderStateReport(
       report.orderType,
       String(report.lotsRequested),
       String(report.lotsExecuted),
-      report.initialOrderPrice,
-      report.executedOrderPrice,
-      report.totalOrderAmount,
+      formatReportMoneyText(report.initialOrderPrice),
+      formatReportMoneyText(report.executedOrderPrice),
+      formatReportMoneyText(report.totalOrderAmount),
       report.orderDate
     ]
   ]);

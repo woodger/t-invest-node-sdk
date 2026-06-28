@@ -21,7 +21,7 @@ import {
 import {
   formatReportDate,
   formatReportDecimal,
-  formatReportMoney
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -44,7 +44,7 @@ export function createShareReportInstrument(instrument: Share): ShareReportInstr
     exchange: instrument.exchange,
     realExchange: realExchangeToJSON(instrument.realExchange),
     sector: instrument.sector,
-    nominal: formatReportMoney(instrument.nominal),
+    nominal: toReportMoney(instrument.nominal),
     ipoDate: formatReportDate(instrument.ipoDate),
     issueSize: instrument.issueSize,
     issueSizePlan: instrument.issueSizePlan,

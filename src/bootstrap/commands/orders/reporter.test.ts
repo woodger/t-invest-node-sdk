@@ -72,18 +72,42 @@ describe('orders reporter', () => {
         orderType: 'ORDER_TYPE_LIMIT',
         lotsRequested: 10,
         lotsExecuted: 2,
-        initialOrderPrice: '100.5 rub',
-        executedOrderPrice: '20.25 rub',
-        totalOrderAmount: '200 rub',
-        averagePositionPrice: '10 rub',
-        initialCommission: '1 rub',
-        executedCommission: '0.5 rub',
-        serviceCommission: '0.25 rub',
+        initialOrderPrice: {
+          currency: 'rub',
+          amount: '100.5'
+        },
+        executedOrderPrice: {
+          currency: 'rub',
+          amount: '20.25'
+        },
+        totalOrderAmount: {
+          currency: 'rub',
+          amount: '200'
+        },
+        averagePositionPrice: {
+          currency: 'rub',
+          amount: '10'
+        },
+        initialCommission: {
+          currency: 'rub',
+          amount: '1'
+        },
+        executedCommission: {
+          currency: 'rub',
+          amount: '0.5'
+        },
+        serviceCommission: {
+          currency: 'rub',
+          amount: '0.25'
+        },
         currency: 'rub',
         orderDate: '2026-06-19T10:00:00.000Z',
         stages: [
           {
-            price: '10 rub',
+            price: {
+              currency: 'rub',
+              amount: '10'
+            },
             quantity: 2,
             tradeId: 'trade-id'
           }
@@ -91,7 +115,7 @@ describe('orders reporter', () => {
       });
     });
 
-    test('maps missing optional values to empty strings', () => {
+    test('maps missing optional values to nulls and empty strings', () => {
       const report = createOrdersReport(orders({
         orders: [
           order({
@@ -114,15 +138,15 @@ describe('orders reporter', () => {
         ]
       }));
 
-      assert.equal(report[0].initialOrderPrice, '');
-      assert.equal(report[0].executedOrderPrice, '');
-      assert.equal(report[0].totalOrderAmount, '');
-      assert.equal(report[0].averagePositionPrice, '');
-      assert.equal(report[0].initialCommission, '');
-      assert.equal(report[0].executedCommission, '');
-      assert.equal(report[0].serviceCommission, '');
+      assert.equal(report[0].initialOrderPrice, null);
+      assert.equal(report[0].executedOrderPrice, null);
+      assert.equal(report[0].totalOrderAmount, null);
+      assert.equal(report[0].averagePositionPrice, null);
+      assert.equal(report[0].initialCommission, null);
+      assert.equal(report[0].executedCommission, null);
+      assert.equal(report[0].serviceCommission, null);
       assert.equal(report[0].orderDate, '');
-      assert.equal(report[0].stages[0].price, '');
+      assert.equal(report[0].stages[0].price, null);
     });
   });
 
@@ -142,7 +166,10 @@ describe('orders reporter', () => {
 
       assert.equal(parsed[0].orderId, 'order-id');
       assert.equal(parsed[0].status, 'EXECUTION_REPORT_STATUS_NEW');
-      assert.equal(parsed[0].initialOrderPrice, '100.5 rub');
+      assert.deepEqual(parsed[0].initialOrderPrice, {
+        currency: 'rub',
+        amount: '100.5'
+      });
       assert.equal(parsed[0].stages[0].tradeId, 'trade-id');
     });
   });

@@ -54,8 +54,9 @@ provider-neutral правилами или моделями.
   формируются command-specific output contracts.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
   provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные
-  строковые значения report contracts. Здесь не выбираются поля команд и не
-  формируются command-specific output contracts.
+  report values. `MoneyValue` становится структурным `ReportMoney`, а
+  command-specific table/text представление строится отдельно. Здесь не
+  выбираются поля команд и не формируются command-specific output contracts.
 - `infrastructure/output` - технические sinks для записи готового текста в
   `stdout` и `stderr`.
 

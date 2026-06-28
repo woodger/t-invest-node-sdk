@@ -21,7 +21,7 @@ import {
 import {
   formatReportDate,
   formatReportDecimal,
-  formatReportMoney
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -46,12 +46,12 @@ export function createBondReportInstrument(instrument: Bond): BondReportInstrume
     sector: instrument.sector,
     couponQuantityPerYear: instrument.couponQuantityPerYear,
     maturityDate: formatReportDate(instrument.maturityDate),
-    nominal: formatReportMoney(instrument.nominal),
-    initialNominal: formatReportMoney(instrument.initialNominal),
+    nominal: toReportMoney(instrument.nominal),
+    initialNominal: toReportMoney(instrument.initialNominal),
     stateRegDate: formatReportDate(instrument.stateRegDate),
     placementDate: formatReportDate(instrument.placementDate),
-    placementPrice: formatReportMoney(instrument.placementPrice),
-    aciValue: formatReportMoney(instrument.aciValue),
+    placementPrice: toReportMoney(instrument.placementPrice),
+    aciValue: toReportMoney(instrument.aciValue),
     issueKind: instrument.issueKind,
     issueSize: instrument.issueSize,
     issueSizePlan: instrument.issueSizePlan,

@@ -1,11 +1,12 @@
 /**
  * Scalar value adapters for stable CLI report contracts.
  *
- * The module converts provider scalar DTO values into the string values used by
- * application reports. It must not know command names, report shapes, renderers
- * or stdout/stderr delivery.
+ * The module converts provider scalar DTO values into reusable application
+ * report values and presentation strings. It must not know command names,
+ * command report shapes, renderers or stdout/stderr delivery.
  */
 
+import type { ReportMoney } from '../application/reports/money.report';
 import type { MoneyValue, Quotation } from '../generated/common';
 
 type DecimalValue = {
@@ -25,14 +26,25 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
   return String(value.units + value.nano / 1e9);
 }
 
-export function formatReportMoney(value: MoneyValue | undefined): string {
+export function toReportMoney(value: MoneyValue): ReportMoney;
+export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null;
+export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null {
   if (value === undefined) {
+    return null;
+  }
+
+  return {
+    currency: value.currency,
+    amount: formatReportDecimal(value)
+  };
+}
+
+export function formatReportMoneyText(value: ReportMoney | null | undefined): string {
+  if (value == null) {
     return '';
   }
 
-  const amount = formatReportDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
+  return value.currency === '' ? value.amount : `${value.amount} ${value.currency}`;
 }
 
 export function formatReportQuotation(value: Quotation | undefined): string {

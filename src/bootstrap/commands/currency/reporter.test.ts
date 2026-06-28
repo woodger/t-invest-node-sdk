@@ -82,7 +82,10 @@ describe('currency reporter', () => {
         lot: 1000,
         exchange: 'MOEX',
         realExchange: 'REAL_EXCHANGE_MOEX',
-        nominal: '1 usd',
+        nominal: {
+          currency: 'usd',
+          amount: '1'
+        },
         klong: '2',
         kshort: '1.5',
         dlong: '0.1',
@@ -127,7 +130,10 @@ describe('currency reporter', () => {
       const parsed = JSON.parse(output);
 
       assert.equal(parsed.figi, 'BBG0013HGFT4');
-      assert.equal(parsed.nominal, '1 usd');
+      assert.deepEqual(parsed.nominal, {
+        currency: 'usd',
+        amount: '1'
+      });
       assert.equal(parsed.minPriceIncrement, '0.0025');
       assert.equal(parsed.tradingStatus, 'SECURITY_TRADING_STATUS_NORMAL_TRADING');
     });

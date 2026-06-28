@@ -64,18 +64,42 @@ describe('order-state reporter', () => {
         orderType: 'ORDER_TYPE_LIMIT',
         lotsRequested: 10,
         lotsExecuted: 2,
-        initialOrderPrice: '100.5 rub',
-        executedOrderPrice: '20.25 rub',
-        totalOrderAmount: '200 rub',
-        averagePositionPrice: '10 rub',
-        initialCommission: '1 rub',
-        executedCommission: '0.5 rub',
-        serviceCommission: '0.25 rub',
+        initialOrderPrice: {
+          currency: 'rub',
+          amount: '100.5'
+        },
+        executedOrderPrice: {
+          currency: 'rub',
+          amount: '20.25'
+        },
+        totalOrderAmount: {
+          currency: 'rub',
+          amount: '200'
+        },
+        averagePositionPrice: {
+          currency: 'rub',
+          amount: '10'
+        },
+        initialCommission: {
+          currency: 'rub',
+          amount: '1'
+        },
+        executedCommission: {
+          currency: 'rub',
+          amount: '0.5'
+        },
+        serviceCommission: {
+          currency: 'rub',
+          amount: '0.25'
+        },
         currency: 'rub',
         orderDate: '2026-06-19T10:00:00.000Z',
         stages: [
           {
-            price: '10 rub',
+            price: {
+              currency: 'rub',
+              amount: '10'
+            },
             quantity: 2,
             tradeId: 'trade-id'
           }
@@ -100,7 +124,10 @@ describe('order-state reporter', () => {
 
       assert.equal(parsed.orderId, 'order-id');
       assert.equal(parsed.status, 'EXECUTION_REPORT_STATUS_NEW');
-      assert.equal(parsed.initialOrderPrice, '100.5 rub');
+      assert.deepEqual(parsed.initialOrderPrice, {
+        currency: 'rub',
+        amount: '100.5'
+      });
       assert.equal(parsed.stages[0].tradeId, 'trade-id');
     });
   });

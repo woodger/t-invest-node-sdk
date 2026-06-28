@@ -105,8 +105,11 @@ presentation policy. `infrastructure` содержит только технич
 
 `infrastructure/report-values.ts` находится между reporter-ами и renderer-ами:
 он адаптирует повторяющиеся scalar DTO values (`MoneyValue`, `Quotation`,
-`Date`) в строковые значения report contracts, но не выбирает поля команды, не
-строит таблицу и не решает JSON contract.
+`Date`) в reusable report values. `MoneyValue` преобразуется в структурный
+`ReportMoney`, чтобы JSON output не склеивал `amount` и `currency` в одну
+строку. Text-представление `"amount currency"` допускается только на
+presentation-этапе, например для table cell. Этот модуль не выбирает поля
+команды, не строит таблицу и не решает JSON contract конкретной команды.
 
 ## Что Остается В Reporter Команды
 

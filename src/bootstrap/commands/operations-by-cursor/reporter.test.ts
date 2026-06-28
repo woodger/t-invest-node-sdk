@@ -108,12 +108,27 @@ describe('operations-by-cursor reporter', () => {
         instrumentType: 'share',
         instrumentKind: 'INSTRUMENT_TYPE_SHARE',
         positionUid: 'position-uid',
-        payment: '100 rub',
-        price: '10.5 rub',
-        commission: '1 rub',
-        yield: '2 rub',
+        payment: {
+          currency: 'rub',
+          amount: '100'
+        },
+        price: {
+          currency: 'rub',
+          amount: '10.5'
+        },
+        commission: {
+          currency: 'rub',
+          amount: '1'
+        },
+        yield: {
+          currency: 'rub',
+          amount: '2'
+        },
         yieldRelative: '1.25',
-        accruedInt: '3 rub',
+        accruedInt: {
+          currency: 'rub',
+          amount: '3'
+        },
         quantity: 10,
         quantityRest: 1,
         quantityDone: 9,
@@ -124,7 +139,7 @@ describe('operations-by-cursor reporter', () => {
       });
     });
 
-    test('maps missing optional values to empty strings and zero trades', () => {
+    test('maps missing optional values to nulls, empty strings and zero trades', () => {
       const report = createOperationsByCursorReport(response({
         items: [
           operationItem({
@@ -142,12 +157,12 @@ describe('operations-by-cursor reporter', () => {
       }));
 
       assert.equal(report.items[0].date, '');
-      assert.equal(report.items[0].payment, '');
-      assert.equal(report.items[0].price, '');
-      assert.equal(report.items[0].commission, '');
-      assert.equal(report.items[0].yield, '');
+      assert.equal(report.items[0].payment, null);
+      assert.equal(report.items[0].price, null);
+      assert.equal(report.items[0].commission, null);
+      assert.equal(report.items[0].yield, null);
       assert.equal(report.items[0].yieldRelative, '');
-      assert.equal(report.items[0].accruedInt, '');
+      assert.equal(report.items[0].accruedInt, null);
       assert.equal(report.items[0].cancelDateTime, '');
       assert.equal(report.items[0].tradesCount, 0);
     });

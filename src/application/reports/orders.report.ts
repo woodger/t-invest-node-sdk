@@ -1,7 +1,9 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна стадия исполнения заявки в отчете команды `orders get-orders`. */
 export interface OrdersReportStage {
-  /** Цена исполнения стадии в денежном строковом формате отчета. */
-  price: string;
+  /** Цена исполнения стадии или `null`, если provider не вернул значение. */
+  price: ReportMoney | null;
   /** Количество лотов в стадии исполнения. */
   quantity: number;
   /** Идентификатор сделки стадии исполнения. */
@@ -28,20 +30,20 @@ export interface OrdersReportOrder {
   lotsRequested: number;
   /** Исполненное количество лотов. */
   lotsExecuted: number;
-  /** Начальная цена заявки в денежном строковом формате отчета. */
-  initialOrderPrice: string;
-  /** Исполненная цена заявки в денежном строковом формате отчета. */
-  executedOrderPrice: string;
-  /** Полная сумма заявки в денежном строковом формате отчета. */
-  totalOrderAmount: string;
-  /** Средняя цена позиции в денежном строковом формате отчета. */
-  averagePositionPrice: string;
-  /** Начальная комиссия в денежном строковом формате отчета. */
-  initialCommission: string;
-  /** Исполненная комиссия в денежном строковом формате отчета. */
-  executedCommission: string;
-  /** Сервисная комиссия в денежном строковом формате отчета. */
-  serviceCommission: string;
+  /** Начальная цена заявки или `null`, если provider не вернул значение. */
+  initialOrderPrice: ReportMoney | null;
+  /** Исполненная цена заявки или `null`, если provider не вернул значение. */
+  executedOrderPrice: ReportMoney | null;
+  /** Полная сумма заявки или `null`, если provider не вернул значение. */
+  totalOrderAmount: ReportMoney | null;
+  /** Средняя цена позиции или `null`, если provider не вернул значение. */
+  averagePositionPrice: ReportMoney | null;
+  /** Начальная комиссия или `null`, если provider не вернул значение. */
+  initialCommission: ReportMoney | null;
+  /** Исполненная комиссия или `null`, если provider не вернул значение. */
+  executedCommission: ReportMoney | null;
+  /** Сервисная комиссия или `null`, если provider не вернул значение. */
+  serviceCommission: ReportMoney | null;
   /** Валюта заявки. */
   currency: string;
   /** Дата заявки в ISO-формате или пустая строка. */

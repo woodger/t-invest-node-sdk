@@ -17,8 +17,9 @@ import type {
 } from '../../../generated/operations';
 import {
   formatReportDate,
-  formatReportMoney,
-  formatReportQuotation
+  formatReportMoneyText,
+  formatReportQuotation,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -39,14 +40,14 @@ function toReportItem(item: BrokerReport): BrokerReportItemReport {
     direction: item.direction,
     name: item.name,
     ticker: item.ticker,
-    price: formatReportMoney(item.price),
+    price: toReportMoney(item.price),
     quantity: item.quantity,
-    orderAmount: formatReportMoney(item.orderAmount),
+    orderAmount: toReportMoney(item.orderAmount),
     aciValue: formatReportQuotation(item.aciValue),
-    totalOrderAmount: formatReportMoney(item.totalOrderAmount),
-    brokerCommission: formatReportMoney(item.brokerCommission),
-    exchangeCommission: formatReportMoney(item.exchangeCommission),
-    exchangeClearingCommission: formatReportMoney(item.exchangeClearingCommission),
+    totalOrderAmount: toReportMoney(item.totalOrderAmount),
+    brokerCommission: toReportMoney(item.brokerCommission),
+    exchangeCommission: toReportMoney(item.exchangeCommission),
+    exchangeClearingCommission: toReportMoney(item.exchangeClearingCommission),
     repoRate: formatReportQuotation(item.repoRate),
     party: item.party,
     clearValueDate: formatReportDate(item.clearValueDate),
@@ -110,11 +111,11 @@ function formatBrokerReportPage(report: BrokerReportPageReport): string {
       item.figi,
       item.ticker,
       item.direction,
-      item.price,
+      formatReportMoneyText(item.price),
       String(item.quantity),
-      item.orderAmount,
-      item.totalOrderAmount,
-      item.brokerCommission
+      formatReportMoneyText(item.orderAmount),
+      formatReportMoneyText(item.totalOrderAmount),
+      formatReportMoneyText(item.brokerCommission)
     ])
   ]);
 

@@ -1,10 +1,4 @@
-/** Денежная позиция в отчете команды `operations get-positions`. */
-export interface PositionsReportMoney {
-  /** Валюта денежной позиции. */
-  currency: string;
-  /** Сумма в строковом формате quotation. */
-  amount: string;
-}
+import type { ReportMoney } from './money.report';
 
 /** Позиция ценной бумаги в отчете команды `operations get-positions`. */
 export interface PositionsReportSecurity {
@@ -55,9 +49,9 @@ export interface PositionsReport {
   /** Признак загрузки лимитов. */
   limitsLoadingInProgress: boolean;
   /** Денежные позиции. */
-  money: PositionsReportMoney[];
+  money: ReportMoney[];
   /** Заблокированные денежные позиции. */
-  blocked: PositionsReportMoney[];
+  blocked: ReportMoney[];
   /** Позиции ценных бумаг. */
   securities: PositionsReportSecurity[];
   /** Позиции фьючерсов. */

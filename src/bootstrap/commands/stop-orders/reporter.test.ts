@@ -58,12 +58,18 @@ describe('stop-orders reporter', () => {
         createDate: '2026-06-19T10:00:00.000Z',
         activationDateTime: '2026-06-19T10:30:00.000Z',
         expirationTime: '2026-06-20T10:00:00.000Z',
-        price: '100 rub',
-        stopPrice: '95.5 rub'
+        price: {
+          currency: 'rub',
+          amount: '100'
+        },
+        stopPrice: {
+          currency: 'rub',
+          amount: '95.5'
+        }
       });
     });
 
-    test('maps missing optional values to empty strings', () => {
+    test('maps missing optional values to nulls and empty strings', () => {
       const report = createStopOrdersReport(response({
         stopOrders: [
           stopOrder({
@@ -79,8 +85,8 @@ describe('stop-orders reporter', () => {
       assert.equal(report[0].createDate, '');
       assert.equal(report[0].activationDateTime, '');
       assert.equal(report[0].expirationTime, '');
-      assert.equal(report[0].price, '');
-      assert.equal(report[0].stopPrice, '');
+      assert.equal(report[0].price, null);
+      assert.equal(report[0].stopPrice, null);
     });
   });
 
@@ -102,8 +108,14 @@ describe('stop-orders reporter', () => {
       assert.equal(parsed[0].stopOrderId, 'stop-order-id');
       assert.equal(parsed[0].direction, 'STOP_ORDER_DIRECTION_BUY');
       assert.equal(parsed[0].orderType, 'STOP_ORDER_TYPE_STOP_LOSS');
-      assert.equal(parsed[0].price, '100 rub');
-      assert.equal(parsed[0].stopPrice, '95.5 rub');
+      assert.deepEqual(parsed[0].price, {
+        currency: 'rub',
+        amount: '100'
+      });
+      assert.deepEqual(parsed[0].stopPrice, {
+        currency: 'rub',
+        amount: '95.5'
+      });
     });
   });
 });

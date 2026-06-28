@@ -20,7 +20,8 @@ import {
 } from '../../../generated/orders';
 import {
   formatReportDate,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -31,7 +32,7 @@ export type OrdersFormat = typeof ordersFormats[number];
 
 function toReportStage(stage: OrderStage): OrdersReportStage {
   return {
-    price: formatReportMoney(stage.price),
+    price: toReportMoney(stage.price),
     quantity: stage.quantity,
     tradeId: stage.tradeId
   };
@@ -48,13 +49,13 @@ export function createOrderStateReport(order: OrderState): OrdersReportOrder {
     orderType: orderTypeToJSON(order.orderType),
     lotsRequested: order.lotsRequested,
     lotsExecuted: order.lotsExecuted,
-    initialOrderPrice: formatReportMoney(order.initialOrderPrice),
-    executedOrderPrice: formatReportMoney(order.executedOrderPrice),
-    totalOrderAmount: formatReportMoney(order.totalOrderAmount),
-    averagePositionPrice: formatReportMoney(order.averagePositionPrice),
-    initialCommission: formatReportMoney(order.initialCommission),
-    executedCommission: formatReportMoney(order.executedCommission),
-    serviceCommission: formatReportMoney(order.serviceCommission),
+    initialOrderPrice: toReportMoney(order.initialOrderPrice),
+    executedOrderPrice: toReportMoney(order.executedOrderPrice),
+    totalOrderAmount: toReportMoney(order.totalOrderAmount),
+    averagePositionPrice: toReportMoney(order.averagePositionPrice),
+    initialCommission: toReportMoney(order.initialCommission),
+    executedCommission: toReportMoney(order.executedCommission),
+    serviceCommission: toReportMoney(order.serviceCommission),
     currency: order.currency,
     orderDate: formatReportDate(order.orderDate),
     stages: order.stages.map(toReportStage)
@@ -94,9 +95,9 @@ export function formatOrdersReport(report: OrdersReport, format: OrdersFormat): 
       order.orderType,
       String(order.lotsRequested),
       String(order.lotsExecuted),
-      order.initialOrderPrice,
-      order.executedOrderPrice,
-      order.totalOrderAmount,
+      formatReportMoneyText(order.initialOrderPrice),
+      formatReportMoneyText(order.executedOrderPrice),
+      formatReportMoneyText(order.totalOrderAmount),
       order.orderDate
     ])
   ]);

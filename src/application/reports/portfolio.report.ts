@@ -1,23 +1,25 @@
+import type { ReportMoney } from './money.report';
+
 /** Сводка портфеля в отчете команды `operations get-portfolio`. */
 export interface PortfolioReportSummary {
   /** Идентификатор счета. */
   accountId: string;
-  /** Полная стоимость портфеля в денежном строковом формате отчета. */
-  totalAmountPortfolio: string;
-  /** Стоимость акций в денежном строковом формате отчета. */
-  totalAmountShares: string;
-  /** Стоимость облигаций в денежном строковом формате отчета. */
-  totalAmountBonds: string;
-  /** Стоимость ETF в денежном строковом формате отчета. */
-  totalAmountEtf: string;
-  /** Стоимость валют в денежном строковом формате отчета. */
-  totalAmountCurrencies: string;
-  /** Стоимость фьючерсов в денежном строковом формате отчета. */
-  totalAmountFutures: string;
-  /** Стоимость опционов в денежном строковом формате отчета. */
-  totalAmountOptions: string;
-  /** Стоимость структурных продуктов в денежном строковом формате отчета. */
-  totalAmountSp: string;
+  /** Полная стоимость портфеля или `null`, если provider не вернул значение. */
+  totalAmountPortfolio: ReportMoney | null;
+  /** Стоимость акций или `null`, если provider не вернул значение. */
+  totalAmountShares: ReportMoney | null;
+  /** Стоимость облигаций или `null`, если provider не вернул значение. */
+  totalAmountBonds: ReportMoney | null;
+  /** Стоимость ETF или `null`, если provider не вернул значение. */
+  totalAmountEtf: ReportMoney | null;
+  /** Стоимость валют или `null`, если provider не вернул значение. */
+  totalAmountCurrencies: ReportMoney | null;
+  /** Стоимость фьючерсов или `null`, если provider не вернул значение. */
+  totalAmountFutures: ReportMoney | null;
+  /** Стоимость опционов или `null`, если provider не вернул значение. */
+  totalAmountOptions: ReportMoney | null;
+  /** Стоимость структурных продуктов или `null`, если provider не вернул значение. */
+  totalAmountSp: ReportMoney | null;
   /** Ожидаемая доходность в строковом формате quotation. */
   expectedYield: string;
 }
@@ -34,10 +36,10 @@ export interface PortfolioReportPosition {
   instrumentType: string;
   /** Количество инструмента в строковом формате quotation. */
   quantity: string;
-  /** Средняя цена позиции в денежном строковом формате отчета. */
-  averagePositionPrice: string;
-  /** Текущая цена в денежном строковом формате отчета. */
-  currentPrice: string;
+  /** Средняя цена позиции или `null`, если provider не вернул значение. */
+  averagePositionPrice: ReportMoney | null;
+  /** Текущая цена или `null`, если provider не вернул значение. */
+  currentPrice: ReportMoney | null;
   /** Ожидаемая доходность в строковом формате quotation. */
   expectedYield: string;
   /** Признак заблокированной позиции. */
