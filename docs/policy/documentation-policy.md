@@ -18,8 +18,8 @@
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
 - throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/config.ts` и `src/config.types.ts`;
-- CLI entrypoint: `src/cli.ts`, `src/bootstrap/cli-runner.ts`, `src/bootstrap/args/**`, `src/bootstrap/command-registry.ts`, `src/bootstrap/commands/**`, `src/bootstrap/help/**`, `src/bootstrap/version.ts`;
-- proto generation entrypoint: `src/bootstrap/compile-proto.ts`;
+- CLI entrypoint: `src/bootstrap/bin/cli.ts`, `src/bootstrap/cli-runner.ts`, `src/bootstrap/args/**`, `src/bootstrap/command-registry.ts`, `src/bootstrap/commands/**`, `src/bootstrap/help/**`, `src/bootstrap/version.ts`;
+- proto generation entrypoint: `src/bootstrap/bin/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
 - proto wire contracts: `contracts/**/*.proto`;
 - generated exports: `src/generated-exports.ts` и `src/generated/**`;

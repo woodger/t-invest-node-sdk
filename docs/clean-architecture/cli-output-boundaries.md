@@ -219,7 +219,7 @@ infrastructure/output/*          -> пишет готовую строку
 Текущий проект использует Inventory-style CLI placement:
 
 ```text
-CLI executable -> src/cli.ts -> dist/cli.js
+CLI executable -> src/bootstrap/bin/cli.ts -> dist/bootstrap/bin/cli.js
 CLI runner     -> bootstrap/cli-runner.ts
 CLI commands   -> bootstrap/commands
 format mechanics -> infrastructure/renderers

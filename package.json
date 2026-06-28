@@ -14,12 +14,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "tinkoff-invest-node-sdk": "dist/cli.js"
+    "tinkoff-invest-node-sdk": "dist/bootstrap/bin/cli.js"
   },
   "scripts": {
     "build": "tsc",
     "test": "fwa --prune",
-    "proto": "node dist/bootstrap/compile-proto.js",
+    "proto": "node dist/bootstrap/bin/compile-proto.js",
     "lint": "eslint src eslint.config.mjs"
   },
   "dependencies": {

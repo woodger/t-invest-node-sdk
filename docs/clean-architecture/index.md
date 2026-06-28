@@ -46,8 +46,10 @@ src/infrastructure
 
 src/bootstrap
   args/
-  cli.ts
-  compile-proto.ts
+  bin/
+    cli.ts
+    compile-proto.ts
+  cli-runner.ts
   command-registry.ts
   commands/
   help/

@@ -67,11 +67,11 @@ Reports отвечают на вопрос:
 
 ## CLI Input
 
-Raw `process.argv` остается на executable-границе `src/cli.ts`; дальше
+Raw `process.argv` остается на executable-границе `src/bootstrap/bin/cli.ts`; дальше
 `bootstrap/cli-runner.ts` обрабатывает argv через `icore` command registry:
 
 ```text
-process.argv -> src/cli.ts -> bootstrap/cli-runner.ts -> icore command registry -> typed command options -> command handler
+process.argv -> src/bootstrap/bin/cli.ts -> bootstrap/cli-runner.ts -> icore command registry -> typed command options -> command handler
 ```
 
 Command-specific primitive options описываются декларативными `icore` schemas в

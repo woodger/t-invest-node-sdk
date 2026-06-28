@@ -3,6 +3,8 @@ import { execFileSync } from 'node:child_process';
 import { pfs } from 'pwd-fs';
 
 /**
+ * Executable proto generation script.
+ *
  * Создание TS-сервисов из proto-файлов.
  * См.: https://github.com/stephenh/ts-proto
  */
