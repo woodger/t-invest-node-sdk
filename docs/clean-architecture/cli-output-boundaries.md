@@ -219,11 +219,13 @@ infrastructure/output/*          -> пишет готовую строку
 Текущий проект использует Inventory-style CLI placement:
 
 ```text
-CLI entrypoint -> bootstrap/cli.ts
+CLI executable -> src/cli.ts -> dist/cli.js
+CLI runner     -> bootstrap/cli-runner.ts
 CLI commands   -> bootstrap/commands
 format mechanics -> infrastructure/renderers
 stdout/stderr sinks -> infrastructure/output
 ```
 
-Это сохраняет компактную структуру без отдельного `src/cli` и не смешивает
-presentation policy с технической записью в системные потоки.
+Это держит package binary рядом с публичным package entrypoint, но оставляет
+CLI mechanics в `bootstrap` и не смешивает presentation policy с технической
+записью в системные потоки.

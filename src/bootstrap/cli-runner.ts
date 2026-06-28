@@ -1,8 +1,6 @@
-#!/usr/bin/env node
-
 /**
- * Модуль CLI entrypoint владеет raw `process.argv`, глобальными help/version
- * shortcuts и stdout/stderr wiring.
+ * Модуль CLI runner владеет глобальными help/version shortcuts и
+ * stdout/stderr wiring.
  *
  * API-команды запускаются через `icore` command definitions; этот файл не
  * собирает промежуточный argv contract и не выполняет command-specific parsing.
@@ -72,7 +70,7 @@ function renderCommandError(error: unknown): string {
 }
 
 export async function runCli(
-  argv = process.argv.slice(2),
+  argv: readonly string[] = [],
   io: CliIO = {
     stdout: createStdoutWriter(),
     stderr: createStderrWriter()
@@ -130,15 +128,4 @@ export async function runCli(
   }
 
   return 1;
-}
-
-if (require.main === module) {
-  void runCli()
-    .then((exitCode) => {
-      process.exitCode = exitCode;
-    })
-    .catch((error: unknown) => {
-      console.error(error);
-      process.exitCode = 1;
-    });
 }

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { parseCliInput, runCli } from './cli';
+import { parseCliInput, runCli } from './cli-runner';
 
 function createIo() {
   let stdout = '';
@@ -28,7 +28,7 @@ function createIo() {
   };
 }
 
-describe('bootstrap cli', () => {
+describe('bootstrap cli runner', () => {
   describe('parseCliInput', () => {
     test('maps help and version flag aliases', () => {
       assert.deepEqual(

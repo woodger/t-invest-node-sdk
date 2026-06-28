@@ -11,10 +11,10 @@
     "node": ">=20.19.0"
   },
   "version": "0.1.40",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "tinkoff-invest-node-sdk": "./dist/bootstrap/cli.js"
+    "tinkoff-invest-node-sdk": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
