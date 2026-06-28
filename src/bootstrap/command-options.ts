@@ -1,5 +1,5 @@
 /**
- * The command mechanics module contains reusable helpers for SDK bootstrap
+ * The command options module contains reusable helpers for SDK bootstrap
  * commands on top of the generic `icore` option schema runtime.
  *
  * Allowed here:

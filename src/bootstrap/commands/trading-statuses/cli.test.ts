@@ -8,7 +8,7 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createTradingStatusesCommand,
   parseTradingStatusesFormat,

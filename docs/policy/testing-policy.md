@@ -242,7 +242,7 @@ describe('createSdkMetadata', () => {
   // ...
 });
 
-describe('command mechanics', () => {
+describe('command options', () => {
   // ...
 });
 ```
@@ -282,7 +282,7 @@ describe('Throttle', () => {
   });
 });
 
-describe('command mechanics', () => {
+describe('command options', () => {
   describe('parseCommandOptions', () => {
     // ...
   });

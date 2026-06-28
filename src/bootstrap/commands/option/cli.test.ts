@@ -7,7 +7,7 @@ import {
   type InstrumentRequest,
   type OptionResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createOptionCommand,
   parseOptionFormat,

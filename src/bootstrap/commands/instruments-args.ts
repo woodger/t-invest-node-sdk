@@ -12,7 +12,7 @@ import {
   type InstrumentsRequest
 } from '../../generated/instruments';
 import { parseOptions, type RawOptionValue } from 'icore';
-import type { CommandRawOptions } from '../command-mechanics';
+import type { CommandRawOptions } from '../command-options';
 
 export const instrumentLookupArgNames = new Set([
   'id',

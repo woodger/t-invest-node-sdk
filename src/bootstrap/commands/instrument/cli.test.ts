@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentIdType, type InstrumentRequest, type InstrumentResponse } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createInstrumentCommand,
   parseInstrumentFormat,

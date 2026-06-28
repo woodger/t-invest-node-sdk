@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { CommandRawOptions } from './command-mechanics';
+import type { CommandRawOptions } from './command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
@@ -9,13 +9,13 @@ import {
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
-} from './command-mechanics';
+} from './command-options';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
   return args;
 }
 
-describe('command mechanics', () => {
+describe('command options', () => {
   describe('withSdkOptions', () => {
     test('allows common SDK options with command-specific options', () => {
       const options = parseCommandOptions(

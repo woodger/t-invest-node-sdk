@@ -10,7 +10,7 @@ import {
   type GetOrderStateRequest,
   type OrderState
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createOrderStateCommand,
   parseOrderStateFormat,

@@ -4,7 +4,7 @@ import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createPositionsCommand,
   parsePositionsFormat,

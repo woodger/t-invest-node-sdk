@@ -7,7 +7,7 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createAccruedInterestsCommand,
   parseAccruedInterestsFormat,

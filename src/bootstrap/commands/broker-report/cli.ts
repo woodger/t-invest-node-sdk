@@ -5,14 +5,14 @@ import type {
 } from '../../../generated/operations';
 import { defineCommand, type InferOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-mechanics';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
-} from '../../command-mechanics';
+} from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   brokerReportFormats,

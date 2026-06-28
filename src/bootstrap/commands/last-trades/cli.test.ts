@@ -9,7 +9,7 @@ import {
   type GetLastTradesResponse,
   type Trade
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../command-mechanics';
+import type { CommandRawOptions } from '../../command-options';
 import {
   createLastTradesCommand,
   parseLastTradesFormat,
