@@ -67,11 +67,11 @@ Reports отвечают на вопрос:
 
 ## CLI Input
 
-Raw `process.argv` остается на границе `bootstrap/cli.ts` и дальше
-обрабатывается через `icore` command registry:
+Raw `process.argv` остается на executable-границе `src/cli.ts`; дальше
+`bootstrap/cli-runner.ts` обрабатывает argv через `icore` command registry:
 
 ```text
-process.argv -> icore command registry -> typed command options -> command handler
+process.argv -> src/cli.ts -> bootstrap/cli-runner.ts -> icore command registry -> typed command options -> command handler
 ```
 
 Command-specific primitive options описываются декларативными `icore` schemas в
@@ -108,7 +108,7 @@ process.argv
 | generated API response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | application report -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
 | output values -> JSON/CSV/table | `infrastructure/renderers/*` | без изменений, пока renderer-ы остаются механическими |
-| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli.ts` | без изменений |
+| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli-runner.ts` | без изменений |
 
 ## Типичные Ошибки
 
