@@ -6,41 +6,22 @@
  */
 
 import type { StopOrdersReport, StopOrdersReportOrder } from '../../../application/reports';
-import type { MoneyValue } from '../../../generated/common';
 import {
   stopOrderDirectionToJSON,
   stopOrderTypeToJSON,
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
+import {
+  formatReportDate,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const stopOrdersFormats = ['json', 'table'] as const;
 
 export type StopOrdersFormat = typeof stopOrdersFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
 
 function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
   return {
@@ -51,11 +32,11 @@ function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
     direction: stopOrderDirectionToJSON(order.direction),
     currency: order.currency,
     orderType: stopOrderTypeToJSON(order.orderType),
-    createDate: formatDate(order.createDate),
-    activationDateTime: formatDate(order.activationDateTime),
-    expirationTime: formatDate(order.expirationTime),
-    price: formatMoney(order.price),
-    stopPrice: formatMoney(order.stopPrice)
+    createDate: formatReportDate(order.createDate),
+    activationDateTime: formatReportDate(order.activationDateTime),
+    expirationTime: formatReportDate(order.expirationTime),
+    price: formatReportMoney(order.price),
+    stopPrice: formatReportMoney(order.stopPrice)
   };
 }
 

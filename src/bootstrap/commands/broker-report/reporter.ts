@@ -10,12 +10,16 @@ import type {
   BrokerReportPageReport,
   BrokerReportReport
 } from '../../../application/reports';
-import type { MoneyValue, Quotation } from '../../../generated/common';
 import type {
   BrokerReport,
   BrokerReportResponse,
   GetBrokerReportResponse
 } from '../../../generated/operations';
+import {
+  formatReportDate,
+  formatReportMoney,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -23,52 +27,30 @@ export const brokerReportFormats = ['json', 'table'] as const;
 
 export type BrokerReportFormat = typeof brokerReportFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation): string {
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  return value === undefined ? '' : formatDecimal(value);
-}
-
 function toReportItem(item: BrokerReport): BrokerReportItemReport {
   return {
     tradeId: item.tradeId,
     orderId: item.orderId,
     figi: item.figi,
     executeSign: item.executeSign,
-    tradeDatetime: formatDate(item.tradeDatetime),
+    tradeDatetime: formatReportDate(item.tradeDatetime),
     exchange: item.exchange,
     classCode: item.classCode,
     direction: item.direction,
     name: item.name,
     ticker: item.ticker,
-    price: formatMoney(item.price),
+    price: formatReportMoney(item.price),
     quantity: item.quantity,
-    orderAmount: formatMoney(item.orderAmount),
-    aciValue: formatQuotation(item.aciValue),
-    totalOrderAmount: formatMoney(item.totalOrderAmount),
-    brokerCommission: formatMoney(item.brokerCommission),
-    exchangeCommission: formatMoney(item.exchangeCommission),
-    exchangeClearingCommission: formatMoney(item.exchangeClearingCommission),
-    repoRate: formatQuotation(item.repoRate),
+    orderAmount: formatReportMoney(item.orderAmount),
+    aciValue: formatReportQuotation(item.aciValue),
+    totalOrderAmount: formatReportMoney(item.totalOrderAmount),
+    brokerCommission: formatReportMoney(item.brokerCommission),
+    exchangeCommission: formatReportMoney(item.exchangeCommission),
+    exchangeClearingCommission: formatReportMoney(item.exchangeClearingCommission),
+    repoRate: formatReportQuotation(item.repoRate),
     party: item.party,
-    clearValueDate: formatDate(item.clearValueDate),
-    secValueDate: formatDate(item.secValueDate),
+    clearValueDate: formatReportDate(item.clearValueDate),
+    secValueDate: formatReportDate(item.secValueDate),
     brokerStatus: item.brokerStatus,
     separateAgreementType: item.separateAgreementType,
     separateAgreementNumber: item.separateAgreementNumber,

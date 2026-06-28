@@ -10,6 +10,9 @@ import type {
   TradingSchedulesReportDay
 } from '../../../application/reports';
 import type { TradingDay, TradingSchedule } from '../../../generated/instruments';
+import {
+  formatReportDate
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -17,28 +20,24 @@ export const tradingSchedulesFormats = ['json', 'table'] as const;
 
 export type TradingSchedulesFormat = typeof tradingSchedulesFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
 function toReportDay(exchange: string, day: TradingDay): TradingSchedulesReportDay {
   return {
     exchange,
-    date: formatDate(day.date),
+    date: formatReportDate(day.date),
     isTradingDay: day.isTradingDay,
-    startTime: formatDate(day.startTime),
-    endTime: formatDate(day.endTime),
-    openingAuctionStartTime: formatDate(day.openingAuctionStartTime),
-    openingAuctionEndTime: formatDate(day.openingAuctionEndTime),
-    closingAuctionStartTime: formatDate(day.closingAuctionStartTime),
-    closingAuctionEndTime: formatDate(day.closingAuctionEndTime),
-    eveningOpeningAuctionStartTime: formatDate(day.eveningOpeningAuctionStartTime),
-    eveningStartTime: formatDate(day.eveningStartTime),
-    eveningEndTime: formatDate(day.eveningEndTime),
-    clearingStartTime: formatDate(day.clearingStartTime),
-    clearingEndTime: formatDate(day.clearingEndTime),
-    premarketStartTime: formatDate(day.premarketStartTime),
-    premarketEndTime: formatDate(day.premarketEndTime)
+    startTime: formatReportDate(day.startTime),
+    endTime: formatReportDate(day.endTime),
+    openingAuctionStartTime: formatReportDate(day.openingAuctionStartTime),
+    openingAuctionEndTime: formatReportDate(day.openingAuctionEndTime),
+    closingAuctionStartTime: formatReportDate(day.closingAuctionStartTime),
+    closingAuctionEndTime: formatReportDate(day.closingAuctionEndTime),
+    eveningOpeningAuctionStartTime: formatReportDate(day.eveningOpeningAuctionStartTime),
+    eveningStartTime: formatReportDate(day.eveningStartTime),
+    eveningEndTime: formatReportDate(day.eveningEndTime),
+    clearingStartTime: formatReportDate(day.clearingStartTime),
+    clearingEndTime: formatReportDate(day.clearingEndTime),
+    premarketStartTime: formatReportDate(day.premarketStartTime),
+    premarketEndTime: formatReportDate(day.premarketEndTime)
   };
 }
 

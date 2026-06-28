@@ -11,6 +11,9 @@ import type {
 } from '../../../application/reports';
 import type { MoneyValue } from '../../../generated/common';
 import type { WithdrawLimitsResponse } from '../../../generated/operations';
+import {
+  formatReportDecimal
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -18,14 +21,10 @@ export const withdrawLimitsFormats = ['json', 'table'] as const;
 
 export type WithdrawLimitsFormat = typeof withdrawLimitsFormats[number];
 
-function formatDecimal(value: MoneyValue): string {
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportMoney(value: MoneyValue): WithdrawLimitsReportMoney {
   return {
     currency: value.currency,
-    amount: formatDecimal(value)
+    amount: formatReportDecimal(value)
   };
 }
 

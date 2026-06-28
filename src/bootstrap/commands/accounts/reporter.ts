@@ -12,16 +12,15 @@ import {
   accountTypeToJSON,
   type Account
 } from '../../../generated/users';
+import {
+  formatReportDate
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const accountsFormats = ['json', 'table'] as const;
 
 export type AccountsFormat = typeof accountsFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
 
 function toReportAccount(account: Account): AccountsReportAccount {
   return {
@@ -30,8 +29,8 @@ function toReportAccount(account: Account): AccountsReportAccount {
     type: accountTypeToJSON(account.type),
     status: accountStatusToJSON(account.status),
     accessLevel: accessLevelToJSON(account.accessLevel),
-    openedDate: formatDate(account.openedDate),
-    closedDate: formatDate(account.closedDate)
+    openedDate: formatReportDate(account.openedDate),
+    closedDate: formatReportDate(account.closedDate)
   };
 }
 

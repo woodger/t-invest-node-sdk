@@ -6,8 +6,11 @@
  */
 
 import type { CandlesReport, CandlesReportCandle } from '../../../application/reports';
-import type { Quotation } from '../../../generated/common';
 import type { HistoricCandle } from '../../../generated/marketdata';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderCsvRow } from '../../../infrastructure/renderers/csv-renderer';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 
@@ -15,25 +18,13 @@ export const candlesFormats = ['json', 'csv'] as const;
 
 export type CandlesFormat = typeof candlesFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportCandle(candle: HistoricCandle): CandlesReportCandle {
   return {
-    time: formatDate(candle.time),
-    open: formatQuotation(candle.open),
-    high: formatQuotation(candle.high),
-    low: formatQuotation(candle.low),
-    close: formatQuotation(candle.close),
+    time: formatReportDate(candle.time),
+    open: formatReportQuotation(candle.open),
+    high: formatReportQuotation(candle.high),
+    low: formatReportQuotation(candle.low),
+    close: formatReportQuotation(candle.close),
     volume: candle.volume,
     isComplete: candle.isComplete
   };

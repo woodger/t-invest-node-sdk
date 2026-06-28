@@ -6,8 +6,11 @@
  */
 
 import type { ClosePricesReport, ClosePricesReportPrice } from '../../../application/reports';
-import type { Quotation } from '../../../generated/common';
 import type { InstrumentClosePriceResponse } from '../../../generated/marketdata';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -15,24 +18,12 @@ export const closePricesFormats = ['json', 'table'] as const;
 
 export type ClosePricesFormat = typeof closePricesFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportPrice(price: InstrumentClosePriceResponse): ClosePricesReportPrice {
   return {
     figi: price.figi,
     instrumentUid: price.instrumentUid,
-    price: formatQuotation(price.price),
-    time: formatDate(price.time)
+    price: formatReportQuotation(price.price),
+    time: formatReportDate(price.time)
   };
 }
 

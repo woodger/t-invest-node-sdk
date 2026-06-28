@@ -9,8 +9,11 @@ import type {
   AccruedInterestsReport,
   AccruedInterestsReportItem
 } from '../../../application/reports';
-import type { Quotation } from '../../../generated/common';
 import type { AccruedInterest } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -18,26 +21,14 @@ export const accruedInterestsFormats = ['json', 'table'] as const;
 
 export type AccruedInterestsFormat = typeof accruedInterestsFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportAccruedInterest(
   accruedInterest: AccruedInterest
 ): AccruedInterestsReportItem {
   return {
-    date: formatDate(accruedInterest.date),
-    value: formatQuotation(accruedInterest.value),
-    valuePercent: formatQuotation(accruedInterest.valuePercent),
-    nominal: formatQuotation(accruedInterest.nominal)
+    date: formatReportDate(accruedInterest.date),
+    value: formatReportQuotation(accruedInterest.value),
+    valuePercent: formatReportQuotation(accruedInterest.valuePercent),
+    nominal: formatReportQuotation(accruedInterest.nominal)
   };
 }
 

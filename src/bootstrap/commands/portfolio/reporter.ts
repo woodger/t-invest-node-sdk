@@ -10,8 +10,11 @@ import type {
   PortfolioReportPosition,
   PortfolioReportSummary
 } from '../../../application/reports';
-import type { MoneyValue, Quotation } from '../../../generated/common';
 import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
+import {
+  formatReportDecimal,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -19,36 +22,18 @@ export const portfolioFormats = ['json', 'table'] as const;
 
 export type PortfolioFormat = typeof portfolioFormats[number];
 
-function formatDecimal(value: MoneyValue | Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
 function toSummary(response: PortfolioResponse): PortfolioReportSummary {
   return {
     accountId: response.accountId,
-    totalAmountPortfolio: formatMoney(response.totalAmountPortfolio),
-    totalAmountShares: formatMoney(response.totalAmountShares),
-    totalAmountBonds: formatMoney(response.totalAmountBonds),
-    totalAmountEtf: formatMoney(response.totalAmountEtf),
-    totalAmountCurrencies: formatMoney(response.totalAmountCurrencies),
-    totalAmountFutures: formatMoney(response.totalAmountFutures),
-    totalAmountOptions: formatMoney(response.totalAmountOptions),
-    totalAmountSp: formatMoney(response.totalAmountSp),
-    expectedYield: formatDecimal(response.expectedYield)
+    totalAmountPortfolio: formatReportMoney(response.totalAmountPortfolio),
+    totalAmountShares: formatReportMoney(response.totalAmountShares),
+    totalAmountBonds: formatReportMoney(response.totalAmountBonds),
+    totalAmountEtf: formatReportMoney(response.totalAmountEtf),
+    totalAmountCurrencies: formatReportMoney(response.totalAmountCurrencies),
+    totalAmountFutures: formatReportMoney(response.totalAmountFutures),
+    totalAmountOptions: formatReportMoney(response.totalAmountOptions),
+    totalAmountSp: formatReportMoney(response.totalAmountSp),
+    expectedYield: formatReportDecimal(response.expectedYield)
   };
 }
 
@@ -58,10 +43,10 @@ function toReportPosition(position: PortfolioPosition): PortfolioReportPosition 
     instrumentUid: position.instrumentUid,
     positionUid: position.positionUid,
     instrumentType: position.instrumentType,
-    quantity: formatDecimal(position.quantity),
-    averagePositionPrice: formatMoney(position.averagePositionPrice),
-    currentPrice: formatMoney(position.currentPrice),
-    expectedYield: formatDecimal(position.expectedYield),
+    quantity: formatReportDecimal(position.quantity),
+    averagePositionPrice: formatReportMoney(position.averagePositionPrice),
+    currentPrice: formatReportMoney(position.currentPrice),
+    expectedYield: formatReportDecimal(position.expectedYield),
     blocked: position.blocked
   };
 }

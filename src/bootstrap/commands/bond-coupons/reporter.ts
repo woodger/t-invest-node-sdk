@@ -6,11 +6,14 @@
  */
 
 import type { BondCouponsReport, BondCouponsReportCoupon } from '../../../application/reports';
-import type { MoneyValue } from '../../../generated/common';
 import {
   couponTypeToJSON,
   type Coupon
 } from '../../../generated/instruments';
+import {
+  formatReportDate,
+  formatReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -18,38 +21,16 @@ export const bondCouponsFormats = ['json', 'table'] as const;
 
 export type BondCouponsFormat = typeof bondCouponsFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
 function toReportCoupon(coupon: Coupon): BondCouponsReportCoupon {
   return {
     figi: coupon.figi,
-    couponDate: formatDate(coupon.couponDate),
+    couponDate: formatReportDate(coupon.couponDate),
     couponNumber: coupon.couponNumber,
-    fixDate: formatDate(coupon.fixDate),
-    payOneBond: formatMoney(coupon.payOneBond),
+    fixDate: formatReportDate(coupon.fixDate),
+    payOneBond: formatReportMoney(coupon.payOneBond),
     couponType: couponTypeToJSON(coupon.couponType),
-    couponStartDate: formatDate(coupon.couponStartDate),
-    couponEndDate: formatDate(coupon.couponEndDate),
+    couponStartDate: formatReportDate(coupon.couponStartDate),
+    couponEndDate: formatReportDate(coupon.couponEndDate),
     couponPeriod: coupon.couponPeriod
   };
 }

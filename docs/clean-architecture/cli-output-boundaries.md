@@ -45,6 +45,7 @@ src/bootstrap
       reporter.ts
 
 src/infrastructure
+  report-values.ts
   renderers/
     csv-renderer.ts
     json-renderer.ts
@@ -101,6 +102,11 @@ stdout/stderr
 `bootstrap` остается местом command orchestration и command-specific
 presentation policy. `infrastructure` содержит только технические механизмы,
 которые можно использовать повторно без знания о командах.
+
+`infrastructure/report-values.ts` находится между reporter-ами и renderer-ами:
+он адаптирует повторяющиеся scalar DTO values (`MoneyValue`, `Quotation`,
+`Date`) в строковые значения report contracts, но не выбирает поля команды, не
+строит таблицу и не решает JSON contract.
 
 ## Что Остается В Reporter Команды
 
@@ -189,6 +195,8 @@ infrastructure/output/*          -> пишет готовую строку
   закрывает SDK;
 - `reporter.ts` строит stable report и command-specific output;
 - общий JSON/CSV/table код переиспользуется из `infrastructure/renderers`;
+- повторяющиеся scalar value conversions переиспользуются из
+  `infrastructure/report-values.ts`;
 - запись в `stdout`/`stderr` проходит через `infrastructure/output`;
 - generated DTO не становится стабильным CLI output contract;
 - output contract выбирается для конкретной команды, а не для будущего

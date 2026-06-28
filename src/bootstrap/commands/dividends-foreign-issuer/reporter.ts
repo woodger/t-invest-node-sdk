@@ -10,12 +10,15 @@ import type {
   DividendsForeignIssuerPageReport,
   DividendsForeignIssuerReport
 } from '../../../application/reports';
-import type { Quotation } from '../../../generated/common';
 import type {
   DividendsForeignIssuerReport as GeneratedDividendsForeignIssuerReport,
   GetDividendsForeignIssuerReportResponse,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
+import {
+  formatReportDate,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
@@ -23,33 +26,21 @@ export const dividendsForeignIssuerFormats = ['json', 'table'] as const;
 
 export type DividendsForeignIssuerFormat = typeof dividendsForeignIssuerFormats[number];
 
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  return String(value.units + value.nano / 1e9);
-}
-
 function toReportItem(
   item: GeneratedDividendsForeignIssuerReport
 ): DividendsForeignIssuerItemReport {
   return {
-    recordDate: formatDate(item.recordDate),
-    paymentDate: formatDate(item.paymentDate),
+    recordDate: formatReportDate(item.recordDate),
+    paymentDate: formatReportDate(item.paymentDate),
     securityName: item.securityName,
     isin: item.isin,
     issuerCountry: item.issuerCountry,
     quantity: item.quantity,
-    dividend: formatQuotation(item.dividend),
-    externalCommission: formatQuotation(item.externalCommission),
-    dividendGross: formatQuotation(item.dividendGross),
-    tax: formatQuotation(item.tax),
-    dividendAmount: formatQuotation(item.dividendAmount),
+    dividend: formatReportQuotation(item.dividend),
+    externalCommission: formatReportQuotation(item.externalCommission),
+    dividendGross: formatReportQuotation(item.dividendGross),
+    tax: formatReportQuotation(item.tax),
+    dividendAmount: formatReportQuotation(item.dividendAmount),
     currency: item.currency
   };
 }

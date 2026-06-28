@@ -23,6 +23,7 @@ Focused правила по JSON/CSV/table formatting и stdout delivery опи�
 src/infrastructure
   transport/
     grpc/
+  report-values.ts
   output/
     stderr-writer.ts
     stdout-writer.ts
@@ -50,6 +51,12 @@ src/bootstrap
 
 Renderer-ы не знают про конкретные команды, generated DTO или application
 services. Они получают уже выбранные значения и возвращают строку.
+
+`infrastructure/report-values.ts` - technical scalar value adapter:
+
+- преобразует повторяющиеся provider scalar DTO values в report strings;
+- не знает command names, report shapes, columns или output format;
+- не импортирует `application/reports`.
 
 `infrastructure/output` - технические sinks:
 
@@ -84,6 +91,7 @@ policy. Поэтому output sinks и renderers разделены:
 
 ```text
 src/infrastructure
+  report-values.ts
   renderers/
     json-renderer.ts
     csv-renderer.ts
@@ -96,6 +104,8 @@ src/infrastructure
 Граница:
 
 - `bootstrap/commands/*/reporter.ts` знает про команду и ее output contract;
+- `infrastructure/report-values.ts` знает только про повторяющиеся scalar DTO
+  conversions;
 - `infrastructure/renderers` знает только про механику формата;
 - `infrastructure/output` знает только про запись готовой строки;
 - `application` не импортирует adapters.

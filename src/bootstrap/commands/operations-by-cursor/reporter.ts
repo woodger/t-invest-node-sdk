@@ -9,45 +9,24 @@ import type {
   OperationsByCursorReport,
   OperationsByCursorReportItem
 } from '../../../application/reports';
-import {
-  instrumentTypeToJSON,
-  type MoneyValue,
-  type Quotation
-} from '../../../generated/common';
+import { instrumentTypeToJSON } from '../../../generated/common';
 import {
   operationStateToJSON,
   operationTypeToJSON,
   type GetOperationsByCursorResponse,
   type OperationItem
 } from '../../../generated/operations';
+import {
+  formatReportDate,
+  formatReportMoney,
+  formatReportQuotation
+} from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
 
 export const operationsByCursorFormats = ['json', 'table'] as const;
 
 export type OperationsByCursorFormat = typeof operationsByCursorFormats[number];
-
-function formatDate(value: Date | undefined): string {
-  return value?.toISOString() ?? '';
-}
-
-function formatDecimal(value: MoneyValue | Quotation): string {
-  return String(value.units + value.nano / 1e9);
-}
-
-function formatMoney(value: MoneyValue | undefined): string {
-  if (value === undefined) {
-    return '';
-  }
-
-  const amount = formatDecimal(value);
-
-  return value.currency === '' ? amount : `${amount} ${value.currency}`;
-}
-
-function formatQuotation(value: Quotation | undefined): string {
-  return value === undefined ? '' : formatDecimal(value);
-}
 
 function toReportItem(item: OperationItem): OperationsByCursorReportItem {
   return {
@@ -56,7 +35,7 @@ function toReportItem(item: OperationItem): OperationsByCursorReportItem {
     id: item.id,
     parentOperationId: item.parentOperationId,
     name: item.name,
-    date: formatDate(item.date),
+    date: formatReportDate(item.date),
     type: operationTypeToJSON(item.type),
     description: item.description,
     state: operationStateToJSON(item.state),
@@ -65,16 +44,16 @@ function toReportItem(item: OperationItem): OperationsByCursorReportItem {
     instrumentType: item.instrumentType,
     instrumentKind: instrumentTypeToJSON(item.instrumentKind),
     positionUid: item.positionUid,
-    payment: formatMoney(item.payment),
-    price: formatMoney(item.price),
-    commission: formatMoney(item.commission),
-    yield: formatMoney(item.yield),
-    yieldRelative: formatQuotation(item.yieldRelative),
-    accruedInt: formatMoney(item.accruedInt),
+    payment: formatReportMoney(item.payment),
+    price: formatReportMoney(item.price),
+    commission: formatReportMoney(item.commission),
+    yield: formatReportMoney(item.yield),
+    yieldRelative: formatReportQuotation(item.yieldRelative),
+    accruedInt: formatReportMoney(item.accruedInt),
     quantity: item.quantity,
     quantityRest: item.quantityRest,
     quantityDone: item.quantityDone,
-    cancelDateTime: formatDate(item.cancelDateTime),
+    cancelDateTime: formatReportDate(item.cancelDateTime),
     cancelReason: item.cancelReason,
     assetUid: item.assetUid,
     tradesCount: item.tradesInfo?.trades.length ?? 0
