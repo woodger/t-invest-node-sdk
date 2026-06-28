@@ -30,22 +30,23 @@ npm run build
 npm test
 ```
 
-`npm test` запускает compiled runner:
+`npm test` запускает внешний compiled runner `fwa`:
 
 ```bash
-node dist/suite.js
+fwa --prune
 ```
 
-Runner из `src/suite.ts`:
+Runner `fwa`:
 
-- рекурсивно собирает `dist/**/*.test.js`;
-- не запускает сам себя;
-- удаляет stale compiled tests, если для них больше нет пары в `src`;
+- читает `rootDir` и `outDir` из `tsconfig.json`;
+- рекурсивно собирает compiled tests из `dist`;
+- удаляет stale compiled tests без source-пары через `--prune`;
 - останавливает запуск, если compiled test старше своего source test;
-- запускает `node:test` с `spec` reporter;
+- делегирует выполнение стандартному `node:test`;
 - запускает тестовые файлы в отдельных процессах.
 
 Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run build` и повторить запуск.
+Если `npm test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
 
 ## Обязательность тестов
 
@@ -78,7 +79,7 @@ Runner из `src/suite.ts`:
 - validation helpers;
 - edge cases, которые могут привести к silent data corruption;
 - regression cases, которые уже ломались или выглядят хрупкими;
-- test runner helper-ы, если меняется test pipeline.
+- project-specific test pipeline behavior, если оно реализовано в коде проекта.
 
 ## Что обычно не требует отдельного теста
 
@@ -241,7 +242,7 @@ describe('createSdkMetadata', () => {
   // ...
 });
 
-describe('suite runner helpers', () => {
+describe('command mechanics', () => {
   // ...
 });
 ```
@@ -281,8 +282,8 @@ describe('Throttle', () => {
   });
 });
 
-describe('suite runner helpers', () => {
-  describe('collectTestFiles', () => {
+describe('command mechanics', () => {
+  describe('parseCommandOptions', () => {
     // ...
   });
 });
@@ -376,7 +377,7 @@ Private implementation details should not normally have dedicated suite names.
 
 Приватные детали нужно тестировать через публичное поведение.
 
-Исключение допустимо только если helper является reusable export и сам по себе становится частью module contract. Например, helper-ы `collectTestFiles` и `removeCompiledTestsWithoutSource` экспортируются из test runner-а именно для проверки runner behavior.
+Исключение допустимо только если helper является reusable export и сам по себе становится частью module contract. В этом случае тест должен проверять наблюдаемое поведение helper-а, а не private implementation.
 
 ## Error cases и boundary cases
 

@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "node dist/suite.js",
+    "test": "fwa --prune",
     "proto": "node dist/bootstrap/compile-proto.js",
     "lint": "eslint src eslint.config.mjs"
   },
@@ -28,9 +28,9 @@
     "nice-grpc": "^2.1.15"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.4",
     "@types/node": "^25.6.0",
-    "eslint": "^10.2.1",
+    "eslint": "^9.39.4",
     "fwa": "2.0.0-alpha",
     "globals": "^17.5.0",
     "pwd-fs": "^3.4.0",

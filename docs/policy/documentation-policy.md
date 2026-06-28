@@ -23,7 +23,7 @@
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
 - proto wire contracts: `contracts/**/*.proto`;
 - generated exports: `src/generated-exports.ts` и `src/generated/**`;
-- test runner contract: `src/suite.ts`;
+- test runner contract: `package.json` `test` script and `fwa` package behavior;
 - package scripts: `package.json`.
 
 Markdown должен объяснять, где находится актуальный контракт и как с ним работать.
@@ -50,8 +50,7 @@ Markdown должен объяснять, где находится актуал
 
 Если меняется test runner, stale artifact behavior или порядок запуска тестов, нужно обновить:
 
-- `src/suite.ts`;
-- tests runner helper-ов;
+- `package.json` `test` script;
 - [Политика тестирования](./testing-policy.md);
 - README summary, если меняется пользовательская команда.
 
