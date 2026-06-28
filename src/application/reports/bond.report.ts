@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна облигация в отчете команд `instruments bond-by` и `instruments bonds`. */
 export interface BondReportInstrument {
   /** FIGI облигации. */
@@ -28,18 +30,18 @@ export interface BondReportInstrument {
   couponQuantityPerYear: number;
   /** Дата погашения в ISO-формате или пустая строка. */
   maturityDate: string;
-  /** Номинал в денежном строковом формате отчета. */
-  nominal: string;
-  /** Первоначальный номинал в денежном строковом формате отчета. */
-  initialNominal: string;
+  /** Номинал или `null`, если provider не вернул значение. */
+  nominal: ReportMoney | null;
+  /** Первоначальный номинал или `null`, если provider не вернул значение. */
+  initialNominal: ReportMoney | null;
   /** Дата государственной регистрации в ISO-формате или пустая строка. */
   stateRegDate: string;
   /** Дата размещения в ISO-формате или пустая строка. */
   placementDate: string;
-  /** Цена размещения в денежном строковом формате отчета. */
-  placementPrice: string;
-  /** НКД в денежном строковом формате отчета. */
-  aciValue: string;
+  /** Цена размещения или `null`, если provider не вернул значение. */
+  placementPrice: ReportMoney | null;
+  /** НКД или `null`, если provider не вернул значение. */
+  aciValue: ReportMoney | null;
   /** Вид выпуска. */
   issueKind: string;
   /** Размер выпуска. */

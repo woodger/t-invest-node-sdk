@@ -1,7 +1,9 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна дивидендная выплата в отчете команды `instruments get-dividends`. */
 export interface DividendsReportItem {
-  /** Размер дивиденда после налога в денежном строковом формате отчета. */
-  dividendNet: string;
+  /** Размер дивиденда после налога или `null`, если provider не вернул значение. */
+  dividendNet: ReportMoney | null;
   /** Дата выплаты в ISO-формате или пустая строка. */
   paymentDate: string;
   /** Дата объявления в ISO-формате или пустая строка. */
@@ -14,8 +16,8 @@ export interface DividendsReportItem {
   recordDate: string;
   /** Регулярность выплаты. */
   regularity: string;
-  /** Цена закрытия в денежном строковом формате отчета. */
-  closePrice: string;
+  /** Цена закрытия или `null`, если provider не вернул значение. */
+  closePrice: ReportMoney | null;
   /** Дивидендная доходность в строковом формате quotation. */
   yieldValue: string;
   /** Дата создания записи в ISO-формате или пустая строка. */

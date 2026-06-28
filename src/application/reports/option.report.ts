@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Один опцион в отчете команд `instruments option-by` и `instruments options-by`. */
 export interface OptionReportInstrument {
   /** UID опциона. */
@@ -40,8 +42,8 @@ export interface OptionReportInstrument {
   basicAssetSize: string;
   /** UID позиции базового актива. */
   basicAssetPositionUid: string;
-  /** Цена страйка в денежном строковом формате отчета. */
-  strikePrice: string;
+  /** Цена страйка или `null`, если provider не вернул значение. */
+  strikePrice: ReportMoney | null;
   /** Дата экспирации в ISO-формате или пустая строка. */
   expirationDate: string;
   /** Дата начала торгов в ISO-формате или пустая строка. */

@@ -39,16 +39,31 @@ describe('margin-attributes reporter', () => {
       const report = createMarginAttributesReport(response());
 
       assert.deepEqual(report, {
-        liquidPortfolio: '1000 rub',
-        startingMargin: '200 rub',
-        minimalMargin: '100 rub',
+        liquidPortfolio: {
+          currency: 'rub',
+          amount: '1000'
+        },
+        startingMargin: {
+          currency: 'rub',
+          amount: '200'
+        },
+        minimalMargin: {
+          currency: 'rub',
+          amount: '100'
+        },
         fundsSufficiencyLevel: '5.5',
-        amountOfMissingFunds: '0 rub',
-        correctedMargin: '250.25 rub'
+        amountOfMissingFunds: {
+          currency: 'rub',
+          amount: '0'
+        },
+        correctedMargin: {
+          currency: 'rub',
+          amount: '250.25'
+        }
       });
     });
 
-    test('maps missing optional values to empty strings', () => {
+    test('maps missing optional values to nulls and empty strings', () => {
       const report = createMarginAttributesReport(response({
         liquidPortfolio: undefined,
         startingMargin: undefined,
@@ -59,12 +74,12 @@ describe('margin-attributes reporter', () => {
       }));
 
       assert.deepEqual(report, {
-        liquidPortfolio: '',
-        startingMargin: '',
-        minimalMargin: '',
+        liquidPortfolio: null,
+        startingMargin: null,
+        minimalMargin: null,
         fundsSufficiencyLevel: '',
-        amountOfMissingFunds: '',
-        correctedMargin: ''
+        amountOfMissingFunds: null,
+        correctedMargin: null
       });
     });
   });
@@ -84,11 +99,23 @@ describe('margin-attributes reporter', () => {
       const output = formatMarginAttributesReport(createMarginAttributesReport(response()), 'json');
       const parsed = JSON.parse(output);
 
-      assert.equal(parsed.liquidPortfolio, '1000 rub');
-      assert.equal(parsed.startingMargin, '200 rub');
-      assert.equal(parsed.minimalMargin, '100 rub');
+      assert.deepEqual(parsed.liquidPortfolio, {
+        currency: 'rub',
+        amount: '1000'
+      });
+      assert.deepEqual(parsed.startingMargin, {
+        currency: 'rub',
+        amount: '200'
+      });
+      assert.deepEqual(parsed.minimalMargin, {
+        currency: 'rub',
+        amount: '100'
+      });
       assert.equal(parsed.fundsSufficiencyLevel, '5.5');
-      assert.equal(parsed.correctedMargin, '250.25 rub');
+      assert.deepEqual(parsed.correctedMargin, {
+        currency: 'rub',
+        amount: '250.25'
+      });
     });
   });
 });

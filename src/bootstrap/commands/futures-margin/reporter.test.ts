@@ -33,14 +33,20 @@ describe('futures-margin reporter', () => {
       const report = createFuturesMarginReport(response());
 
       assert.deepEqual(report, {
-        initialMarginOnBuy: '1000.25 rub',
-        initialMarginOnSell: '1100 rub',
+        initialMarginOnBuy: {
+          currency: 'rub',
+          amount: '1000.25'
+        },
+        initialMarginOnSell: {
+          currency: 'rub',
+          amount: '1100'
+        },
         minPriceIncrement: '1',
         minPriceIncrementAmount: '10.5'
       });
     });
 
-    test('maps missing values to empty strings', () => {
+    test('maps missing values to nulls and empty strings', () => {
       const report = createFuturesMarginReport(response({
         initialMarginOnBuy: undefined,
         initialMarginOnSell: undefined,
@@ -49,8 +55,8 @@ describe('futures-margin reporter', () => {
       }));
 
       assert.deepEqual(report, {
-        initialMarginOnBuy: '',
-        initialMarginOnSell: '',
+        initialMarginOnBuy: null,
+        initialMarginOnSell: null,
         minPriceIncrement: '',
         minPriceIncrementAmount: ''
       });
@@ -69,7 +75,10 @@ describe('futures-margin reporter', () => {
       const output = formatFuturesMarginReport(createFuturesMarginReport(response()), 'json');
       const parsed = JSON.parse(output);
 
-      assert.equal(parsed.initialMarginOnBuy, '1000.25 rub');
+      assert.deepEqual(parsed.initialMarginOnBuy, {
+        currency: 'rub',
+        amount: '1000.25'
+      });
       assert.equal(parsed.minPriceIncrementAmount, '10.5');
     });
   });

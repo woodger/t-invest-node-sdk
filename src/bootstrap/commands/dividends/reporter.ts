@@ -9,8 +9,9 @@ import type { DividendsReport, DividendsReportItem } from '../../../application/
 import type { Dividend } from '../../../generated/instruments';
 import {
   formatReportDate,
-  formatReportMoney,
-  formatReportQuotation
+  formatReportMoneyText,
+  formatReportQuotation,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -21,14 +22,14 @@ export type DividendsFormat = typeof dividendsFormats[number];
 
 function toReportDividend(dividend: Dividend): DividendsReportItem {
   return {
-    dividendNet: formatReportMoney(dividend.dividendNet),
+    dividendNet: toReportMoney(dividend.dividendNet),
     paymentDate: formatReportDate(dividend.paymentDate),
     declaredDate: formatReportDate(dividend.declaredDate),
     lastBuyDate: formatReportDate(dividend.lastBuyDate),
     dividendType: dividend.dividendType,
     recordDate: formatReportDate(dividend.recordDate),
     regularity: dividend.regularity,
-    closePrice: formatReportMoney(dividend.closePrice),
+    closePrice: toReportMoney(dividend.closePrice),
     yieldValue: formatReportQuotation(dividend.yieldValue),
     createdAt: formatReportDate(dividend.createdAt)
   };
@@ -61,8 +62,8 @@ export function formatDividendsReport(
       dividend.recordDate,
       dividend.paymentDate,
       dividend.lastBuyDate,
-      dividend.dividendNet,
-      dividend.closePrice,
+      formatReportMoneyText(dividend.dividendNet),
+      formatReportMoneyText(dividend.closePrice),
       dividend.yieldValue,
       dividend.dividendType,
       dividend.regularity

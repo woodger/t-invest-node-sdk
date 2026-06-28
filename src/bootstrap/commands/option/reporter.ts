@@ -24,7 +24,8 @@ import {
 import {
   formatReportDate,
   formatReportDecimal,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -55,7 +56,7 @@ export function createOptionReportInstrument(instrument: Option): OptionReportIn
     basicAsset: instrument.basicAsset,
     basicAssetSize: formatReportDecimal(instrument.basicAssetSize),
     basicAssetPositionUid: instrument.basicAssetPositionUid,
-    strikePrice: formatReportMoney(instrument.strikePrice),
+    strikePrice: toReportMoney(instrument.strikePrice),
     expirationDate: formatReportDate(instrument.expirationDate),
     firstTradeDate: formatReportDate(instrument.firstTradeDate),
     lastTradeDate: formatReportDate(instrument.lastTradeDate),
@@ -125,7 +126,7 @@ export function renderOptionRows(report: OptionReportInstrument[]): string {
       instrument.paymentType,
       instrument.style,
       instrument.settlementType,
-      instrument.strikePrice,
+      formatReportMoneyText(instrument.strikePrice),
       instrument.expirationDate,
       instrument.tradingStatus,
       String(instrument.buyAvailableFlag),

@@ -54,9 +54,11 @@ services. Они получают уже выбранные значения и 
 
 `infrastructure/report-values.ts` - technical scalar value adapter:
 
-- преобразует повторяющиеся provider scalar DTO values в report strings;
+- преобразует повторяющиеся provider scalar DTO values в reusable report values;
+- сохраняет `MoneyValue` в JSON как структурный `ReportMoney`;
+- предоставляет text helper для table cells вида `"amount currency"`;
 - не знает command names, report shapes, columns или output format;
-- не импортирует `application/reports`.
+- не импортирует command-specific `application/reports`.
 
 `infrastructure/output` - технические sinks:
 

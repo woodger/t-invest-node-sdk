@@ -143,7 +143,10 @@ describe('dividends command', () => {
         to: new Date('2026-01-31T00:00:00Z')
       });
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output)[0].dividendNet, '12.5 rub');
+      assert.deepEqual(JSON.parse(output)[0].dividendNet, {
+        currency: 'rub',
+        amount: '12.5'
+      });
     });
 
     test('closes sdk when getDividends rejects', async () => {

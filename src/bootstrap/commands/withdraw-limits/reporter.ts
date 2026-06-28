@@ -6,13 +6,11 @@
  */
 
 import type {
-  WithdrawLimitsReport,
-  WithdrawLimitsReportMoney
+  WithdrawLimitsReport
 } from '../../../application/reports';
-import type { MoneyValue } from '../../../generated/common';
 import type { WithdrawLimitsResponse } from '../../../generated/operations';
 import {
-  formatReportDecimal
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -21,20 +19,13 @@ export const withdrawLimitsFormats = ['json', 'table'] as const;
 
 export type WithdrawLimitsFormat = typeof withdrawLimitsFormats[number];
 
-function toReportMoney(value: MoneyValue): WithdrawLimitsReportMoney {
-  return {
-    currency: value.currency,
-    amount: formatReportDecimal(value)
-  };
-}
-
 export function createWithdrawLimitsReport(
   response: WithdrawLimitsResponse
 ): WithdrawLimitsReport {
   return {
-    money: response.money.map(toReportMoney),
-    blocked: response.blocked.map(toReportMoney),
-    blockedGuarantee: response.blockedGuarantee.map(toReportMoney)
+    money: response.money.map((value) => toReportMoney(value)),
+    blocked: response.blocked.map((value) => toReportMoney(value)),
+    blockedGuarantee: response.blockedGuarantee.map((value) => toReportMoney(value))
   };
 }
 

@@ -14,7 +14,8 @@ import {
 } from '../../../generated/stoporders';
 import {
   formatReportDate,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -35,8 +36,8 @@ function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
     createDate: formatReportDate(order.createDate),
     activationDateTime: formatReportDate(order.activationDateTime),
     expirationTime: formatReportDate(order.expirationTime),
-    price: formatReportMoney(order.price),
-    stopPrice: formatReportMoney(order.stopPrice)
+    price: toReportMoney(order.price),
+    stopPrice: toReportMoney(order.stopPrice)
   };
 }
 
@@ -72,8 +73,8 @@ export function formatStopOrdersReport(
       order.direction,
       order.orderType,
       String(order.lotsRequested),
-      order.price,
-      order.stopPrice,
+      formatReportMoneyText(order.price),
+      formatReportMoneyText(order.stopPrice),
       order.createDate,
       order.expirationTime
     ])

@@ -18,8 +18,9 @@ import {
 } from '../../../generated/operations';
 import {
   formatReportDate,
-  formatReportMoney,
-  formatReportQuotation
+  formatReportMoneyText,
+  formatReportQuotation,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -44,12 +45,12 @@ function toReportItem(item: OperationItem): OperationsByCursorReportItem {
     instrumentType: item.instrumentType,
     instrumentKind: instrumentTypeToJSON(item.instrumentKind),
     positionUid: item.positionUid,
-    payment: formatReportMoney(item.payment),
-    price: formatReportMoney(item.price),
-    commission: formatReportMoney(item.commission),
-    yield: formatReportMoney(item.yield),
+    payment: toReportMoney(item.payment),
+    price: toReportMoney(item.price),
+    commission: toReportMoney(item.commission),
+    yield: toReportMoney(item.yield),
     yieldRelative: formatReportQuotation(item.yieldRelative),
-    accruedInt: formatReportMoney(item.accruedInt),
+    accruedInt: toReportMoney(item.accruedInt),
     quantity: item.quantity,
     quantityRest: item.quantityRest,
     quantityDone: item.quantityDone,
@@ -105,9 +106,9 @@ export function formatOperationsByCursorReport(
       item.name,
       item.type,
       item.state,
-      item.payment,
-      item.price,
-      item.commission,
+      formatReportMoneyText(item.payment),
+      formatReportMoneyText(item.price),
+      formatReportMoneyText(item.commission),
       String(item.quantity),
       String(item.quantityDone),
       item.figi,

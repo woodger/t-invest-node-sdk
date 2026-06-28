@@ -12,7 +12,8 @@ import {
 } from '../../../generated/instruments';
 import {
   formatReportDate,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -27,7 +28,7 @@ function toReportCoupon(coupon: Coupon): BondCouponsReportCoupon {
     couponDate: formatReportDate(coupon.couponDate),
     couponNumber: coupon.couponNumber,
     fixDate: formatReportDate(coupon.fixDate),
-    payOneBond: formatReportMoney(coupon.payOneBond),
+    payOneBond: toReportMoney(coupon.payOneBond),
     couponType: couponTypeToJSON(coupon.couponType),
     couponStartDate: formatReportDate(coupon.couponStartDate),
     couponEndDate: formatReportDate(coupon.couponEndDate),
@@ -64,7 +65,7 @@ export function formatBondCouponsReport(
       coupon.couponDate,
       String(coupon.couponNumber),
       coupon.fixDate,
-      coupon.payOneBond,
+      formatReportMoneyText(coupon.payOneBond),
       coupon.couponType,
       coupon.couponStartDate,
       coupon.couponEndDate,

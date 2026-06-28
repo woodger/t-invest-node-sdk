@@ -1,17 +1,11 @@
-/** Денежная строка в отчете команды `operations get-withdraw-limits`. */
-export interface WithdrawLimitsReportMoney {
-  /** Валюта денежной строки. */
-  currency: string;
-  /** Сумма в строковом формате quotation. */
-  amount: string;
-}
+import type { ReportMoney } from './money.report';
 
 /** Отчет команды `operations get-withdraw-limits` на application/output boundary. */
 export interface WithdrawLimitsReport {
   /** Доступные к выводу денежные позиции. */
-  money: WithdrawLimitsReportMoney[];
+  money: ReportMoney[];
   /** Заблокированные денежные позиции. */
-  blocked: WithdrawLimitsReportMoney[];
+  blocked: ReportMoney[];
   /** Заблокированные гарантийные денежные позиции. */
-  blockedGuarantee: WithdrawLimitsReportMoney[];
+  blockedGuarantee: ReportMoney[];
 }

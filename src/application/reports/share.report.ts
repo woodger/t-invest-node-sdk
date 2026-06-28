@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна акция в отчете команд `instruments share-by` и `instruments shares`. */
 export interface ShareReportInstrument {
   /** FIGI акции. */
@@ -24,8 +26,8 @@ export interface ShareReportInstrument {
   realExchange: string;
   /** Сектор экономики. */
   sector: string;
-  /** Номинал в денежном строковом формате отчета. */
-  nominal: string;
+  /** Номинал или `null`, если provider не вернул значение. */
+  nominal: ReportMoney | null;
   /** Дата IPO в ISO-формате или пустая строка. */
   ipoDate: string;
   /** Размер выпуска. */

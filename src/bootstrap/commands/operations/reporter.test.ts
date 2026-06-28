@@ -63,8 +63,14 @@ describe('operations reporter', () => {
         operationType: 'OPERATION_TYPE_BUY',
         state: 'OPERATION_STATE_EXECUTED',
         currency: 'rub',
-        payment: '100 rub',
-        price: '10.5 rub',
+        payment: {
+          currency: 'rub',
+          amount: '100'
+        },
+        price: {
+          currency: 'rub',
+          amount: '10.5'
+        },
         quantity: 10,
         quantityRest: 2,
         figi: 'BBG00QPYJ5H0',
@@ -76,7 +82,7 @@ describe('operations reporter', () => {
       });
     });
 
-    test('maps missing optional values to empty strings', () => {
+    test('maps missing optional values to nulls and empty strings', () => {
       const report = createOperationsReport([
         operation({
           payment: undefined,
@@ -85,8 +91,8 @@ describe('operations reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].payment, '');
-      assert.equal(report[0].price, '');
+      assert.equal(report[0].payment, null);
+      assert.equal(report[0].price, null);
       assert.equal(report[0].date, '');
     });
   });
@@ -109,7 +115,10 @@ describe('operations reporter', () => {
       assert.equal(parsed[0].id, 'operation-id');
       assert.equal(parsed[0].operationType, 'OPERATION_TYPE_BUY');
       assert.equal(parsed[0].state, 'OPERATION_STATE_EXECUTED');
-      assert.equal(parsed[0].payment, '100 rub');
+      assert.deepEqual(parsed[0].payment, {
+        currency: 'rub',
+        amount: '100'
+      });
       assert.equal(parsed[0].tradesCount, 1);
     });
   });

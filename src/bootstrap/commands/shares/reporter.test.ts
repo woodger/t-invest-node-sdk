@@ -81,7 +81,10 @@ describe('shares reporter', () => {
           exchange: 'MOEX',
           realExchange: 'REAL_EXCHANGE_MOEX',
           sector: 'Financials',
-          nominal: '3 rub',
+          nominal: {
+            currency: 'rub',
+            amount: '3'
+          },
           ipoDate: '2007-07-20T00:00:00.000Z',
           issueSize: 21586948000,
           issueSizePlan: 21586948000,
@@ -129,7 +132,10 @@ describe('shares reporter', () => {
       const parsed = JSON.parse(output);
 
       assert.equal(parsed[0].figi, 'BBG004730N88');
-      assert.equal(parsed[0].nominal, '3 rub');
+      assert.deepEqual(parsed[0].nominal, {
+        currency: 'rub',
+        amount: '3'
+      });
       assert.equal(parsed[0].shareType, 'SHARE_TYPE_COMMON');
       assert.equal(parsed[0].ipoDate, '2007-07-20T00:00:00.000Z');
     });

@@ -37,21 +37,27 @@ describe('dividends reporter', () => {
 
       assert.deepEqual(report, [
         {
-          dividendNet: '12.5 rub',
+          dividendNet: {
+            currency: 'rub',
+            amount: '12.5'
+          },
           paymentDate: '2026-02-01T00:00:00.000Z',
           declaredDate: '2026-01-01T00:00:00.000Z',
           lastBuyDate: '2026-01-20T00:00:00.000Z',
           dividendType: 'Regular Cash',
           recordDate: '2026-01-22T00:00:00.000Z',
           regularity: 'Annual',
-          closePrice: '100.25 rub',
+          closePrice: {
+            currency: 'rub',
+            amount: '100.25'
+          },
           yieldValue: '5.125',
           createdAt: '2026-01-03T00:00:00.000Z'
         }
       ]);
     });
 
-    test('maps missing values to empty strings', () => {
+    test('maps missing values to nulls and empty strings', () => {
       const report = createDividendsReport([
         dividend({
           dividendNet: undefined,
@@ -65,7 +71,7 @@ describe('dividends reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].dividendNet, '');
+      assert.equal(report[0].dividendNet, null);
       assert.equal(report[0].paymentDate, '');
       assert.equal(report[0].yieldValue, '');
       assert.equal(report[0].createdAt, '');
@@ -85,7 +91,10 @@ describe('dividends reporter', () => {
       const output = formatDividendsReport(createDividendsReport([dividend()]), 'json');
       const parsed = JSON.parse(output);
 
-      assert.equal(parsed[0].dividendNet, '12.5 rub');
+      assert.deepEqual(parsed[0].dividendNet, {
+        currency: 'rub',
+        amount: '12.5'
+      });
       assert.equal(parsed[0].yieldValue, '5.125');
     });
   });

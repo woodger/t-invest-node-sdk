@@ -33,7 +33,10 @@ describe('bond-coupons reporter', () => {
           couponDate: '2026-02-01T00:00:00.000Z',
           couponNumber: 3,
           fixDate: '2026-01-20T00:00:00.000Z',
-          payOneBond: '25.5 rub',
+          payOneBond: {
+            currency: 'rub',
+            amount: '25.5'
+          },
           couponType: 'COUPON_TYPE_CONSTANT',
           couponStartDate: '2026-01-01T00:00:00.000Z',
           couponEndDate: '2026-02-01T00:00:00.000Z',
@@ -42,7 +45,7 @@ describe('bond-coupons reporter', () => {
       ]);
     });
 
-    test('maps missing optional values to empty strings', () => {
+    test('maps missing optional values to nulls and empty strings', () => {
       const report = createBondCouponsReport([
         coupon({
           couponDate: undefined,
@@ -55,7 +58,7 @@ describe('bond-coupons reporter', () => {
 
       assert.equal(report[0].couponDate, '');
       assert.equal(report[0].fixDate, '');
-      assert.equal(report[0].payOneBond, '');
+      assert.equal(report[0].payOneBond, null);
       assert.equal(report[0].couponStartDate, '');
       assert.equal(report[0].couponEndDate, '');
     });
@@ -74,7 +77,10 @@ describe('bond-coupons reporter', () => {
       const output = formatBondCouponsReport(createBondCouponsReport([coupon()]), 'json');
       const parsed = JSON.parse(output);
 
-      assert.equal(parsed[0].payOneBond, '25.5 rub');
+      assert.deepEqual(parsed[0].payOneBond, {
+        currency: 'rub',
+        amount: '25.5'
+      });
       assert.equal(parsed[0].couponType, 'COUPON_TYPE_CONSTANT');
     });
   });

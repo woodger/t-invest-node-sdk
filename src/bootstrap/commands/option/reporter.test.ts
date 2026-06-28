@@ -107,7 +107,10 @@ describe('option reporter', () => {
         basicAsset: 'USD/RUB',
         basicAssetSize: '1000',
         basicAssetPositionUid: 'asset-position-uid',
-        strikePrice: '12500.5 rub',
+        strikePrice: {
+          currency: 'rub',
+          amount: '12500.5'
+        },
         expirationDate: '2026-06-19T00:00:00.000Z',
         firstTradeDate: '2026-03-01T00:00:00.000Z',
         lastTradeDate: '2026-06-18T00:00:00.000Z',
@@ -158,7 +161,10 @@ describe('option reporter', () => {
       assert.equal(parsed.direction, 'OPTION_DIRECTION_CALL');
       assert.equal(parsed.basicAsset, 'USD/RUB');
       assert.equal(parsed.basicAssetPositionUid, 'asset-position-uid');
-      assert.equal(parsed.strikePrice, '12500.5 rub');
+      assert.deepEqual(parsed.strikePrice, {
+        currency: 'rub',
+        amount: '12500.5'
+      });
     });
 
     test('formats missing option as json null and table header', () => {

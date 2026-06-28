@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна валюта в отчете команд `instruments currency-by` и `instruments currencies`. */
 export interface CurrencyReportInstrument {
   /** FIGI валюты. */
@@ -24,8 +26,8 @@ export interface CurrencyReportInstrument {
   exchange: string;
   /** Реальная площадка исполнения в формате generated enum JSON name. */
   realExchange: string;
-  /** Номинал в денежном строковом формате отчета. */
-  nominal: string;
+  /** Номинал или `null`, если provider не вернул значение. */
+  nominal: ReportMoney | null;
   /** Коэффициент ставки риска long. */
   klong: string;
   /** Коэффициент ставки риска short. */

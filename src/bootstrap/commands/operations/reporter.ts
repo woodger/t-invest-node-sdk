@@ -13,7 +13,8 @@ import {
 } from '../../../generated/operations';
 import {
   formatReportDate,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -31,8 +32,8 @@ function toReportOperation(operation: Operation): OperationsReportOperation {
     operationType: operationTypeToJSON(operation.operationType),
     state: operationStateToJSON(operation.state),
     currency: operation.currency,
-    payment: formatReportMoney(operation.payment),
-    price: formatReportMoney(operation.price),
+    payment: toReportMoney(operation.payment),
+    price: toReportMoney(operation.price),
     quantity: operation.quantity,
     quantityRest: operation.quantityRest,
     figi: operation.figi,
@@ -77,8 +78,8 @@ export function formatOperationsReport(
       operation.type,
       operation.operationType,
       operation.state,
-      operation.payment,
-      operation.price,
+      formatReportMoneyText(operation.payment),
+      formatReportMoneyText(operation.price),
       String(operation.quantity),
       String(operation.quantityRest),
       operation.figi,

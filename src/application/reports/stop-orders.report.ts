@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна активная стоп-заявка в отчете команды `stoporders get-stop-orders`. */
 export interface StopOrdersReportOrder {
   /** Идентификатор стоп-заявки. */
@@ -20,10 +22,10 @@ export interface StopOrdersReportOrder {
   activationDateTime: string;
   /** Дата истечения в ISO-формате или пустая строка. */
   expirationTime: string;
-  /** Цена заявки в денежном строковом формате отчета. */
-  price: string;
-  /** Стоп-цена в денежном строковом формате отчета. */
-  stopPrice: string;
+  /** Цена заявки или `null`, если provider не вернул значение. */
+  price: ReportMoney | null;
+  /** Стоп-цена или `null`, если provider не вернул значение. */
+  stopPrice: ReportMoney | null;
 }
 
 /** Отчет команды `stoporders get-stop-orders` на application/output boundary. */

@@ -8,7 +8,6 @@
 import type {
   PositionsReport,
   PositionsReportFuture,
-  PositionsReportMoney,
   PositionsReportOption,
   PositionsReportSecurity
 } from '../../../application/reports';
@@ -18,9 +17,8 @@ import type {
   PositionsResponse,
   PositionsSecurities
 } from '../../../generated/operations';
-import type { MoneyValue } from '../../../generated/common';
 import {
-  formatReportDecimal
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -28,13 +26,6 @@ import { renderTextTable } from '../../../infrastructure/renderers/table-rendere
 export const positionsFormats = ['json', 'table'] as const;
 
 export type PositionsFormat = typeof positionsFormats[number];
-
-function toReportMoney(value: MoneyValue): PositionsReportMoney {
-  return {
-    currency: value.currency,
-    amount: formatReportDecimal(value)
-  };
-}
 
 function toReportSecurity(position: PositionsSecurities): PositionsReportSecurity {
   return {
@@ -70,8 +61,8 @@ function toReportOption(position: PositionsOptions): PositionsReportOption {
 export function createPositionsReport(response: PositionsResponse): PositionsReport {
   return {
     limitsLoadingInProgress: response.limitsLoadingInProgress,
-    money: response.money.map(toReportMoney),
-    blocked: response.blocked.map(toReportMoney),
+    money: response.money.map((value) => toReportMoney(value)),
+    blocked: response.blocked.map((value) => toReportMoney(value)),
     securities: response.securities.map(toReportSecurity),
     futures: response.futures.map(toReportFuture),
     options: response.options.map(toReportOption)

@@ -9,7 +9,8 @@ import type { MarginAttributesReport } from '../../../application/reports';
 import type { GetMarginAttributesResponse } from '../../../generated/users';
 import {
   formatReportDecimal,
-  formatReportMoney
+  formatReportMoneyText,
+  toReportMoney
 } from '../../../infrastructure/report-values';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
@@ -22,12 +23,12 @@ export function createMarginAttributesReport(
   response: GetMarginAttributesResponse
 ): MarginAttributesReport {
   return {
-    liquidPortfolio: formatReportMoney(response.liquidPortfolio),
-    startingMargin: formatReportMoney(response.startingMargin),
-    minimalMargin: formatReportMoney(response.minimalMargin),
+    liquidPortfolio: toReportMoney(response.liquidPortfolio),
+    startingMargin: toReportMoney(response.startingMargin),
+    minimalMargin: toReportMoney(response.minimalMargin),
     fundsSufficiencyLevel: formatReportDecimal(response.fundsSufficiencyLevel),
-    amountOfMissingFunds: formatReportMoney(response.amountOfMissingFunds),
-    correctedMargin: formatReportMoney(response.correctedMargin)
+    amountOfMissingFunds: toReportMoney(response.amountOfMissingFunds),
+    correctedMargin: toReportMoney(response.correctedMargin)
   };
 }
 
@@ -49,12 +50,12 @@ export function formatMarginAttributesReport(
       'correctedMargin'
     ],
     [
-      report.liquidPortfolio,
-      report.startingMargin,
-      report.minimalMargin,
+      formatReportMoneyText(report.liquidPortfolio),
+      formatReportMoneyText(report.startingMargin),
+      formatReportMoneyText(report.minimalMargin),
       report.fundsSufficiencyLevel,
-      report.amountOfMissingFunds,
-      report.correctedMargin
+      formatReportMoneyText(report.amountOfMissingFunds),
+      formatReportMoneyText(report.correctedMargin)
     ]
   ]);
 }

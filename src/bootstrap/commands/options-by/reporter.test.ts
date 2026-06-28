@@ -100,7 +100,10 @@ describe('options-by reporter', () => {
           basicAsset: 'USD/RUB',
           basicAssetSize: '1000',
           basicAssetPositionUid: 'asset-position-uid',
-          strikePrice: '12500.5 rub',
+          strikePrice: {
+            currency: 'rub',
+            amount: '12500.5'
+          },
           expirationDate: '2026-06-19T00:00:00.000Z',
           firstTradeDate: '2026-03-01T00:00:00.000Z',
           lastTradeDate: '2026-06-18T00:00:00.000Z',
@@ -148,7 +151,10 @@ describe('options-by reporter', () => {
       assert.equal(parsed[0].direction, 'OPTION_DIRECTION_CALL');
       assert.equal(parsed[0].basicAsset, 'USD/RUB');
       assert.equal(parsed[0].basicAssetPositionUid, 'asset-position-uid');
-      assert.equal(parsed[0].strikePrice, '12500.5 rub');
+      assert.deepEqual(parsed[0].strikePrice, {
+        currency: 'rub',
+        amount: '12500.5'
+      });
     });
   });
 });

@@ -113,7 +113,10 @@ describe('futures-margin command', () => {
         figi: 'FUTFIGI'
       });
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output).initialMarginOnBuy, '1000.25 rub');
+      assert.deepEqual(JSON.parse(output).initialMarginOnBuy, {
+        currency: 'rub',
+        amount: '1000.25'
+      });
     });
 
     test('closes sdk when getFuturesMargin rejects', async () => {

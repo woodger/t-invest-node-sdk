@@ -66,14 +66,38 @@ describe('portfolio reporter', () => {
 
       assert.deepEqual(report.summary, {
         accountId: 'account-id',
-        totalAmountPortfolio: '3700.5 rub',
-        totalAmountShares: '1000 rub',
-        totalAmountBonds: '200 rub',
-        totalAmountEtf: '300 rub',
-        totalAmountCurrencies: '400 rub',
-        totalAmountFutures: '500 rub',
-        totalAmountOptions: '600 rub',
-        totalAmountSp: '700 rub',
+        totalAmountPortfolio: {
+          currency: 'rub',
+          amount: '3700.5'
+        },
+        totalAmountShares: {
+          currency: 'rub',
+          amount: '1000'
+        },
+        totalAmountBonds: {
+          currency: 'rub',
+          amount: '200'
+        },
+        totalAmountEtf: {
+          currency: 'rub',
+          amount: '300'
+        },
+        totalAmountCurrencies: {
+          currency: 'rub',
+          amount: '400'
+        },
+        totalAmountFutures: {
+          currency: 'rub',
+          amount: '500'
+        },
+        totalAmountOptions: {
+          currency: 'rub',
+          amount: '600'
+        },
+        totalAmountSp: {
+          currency: 'rub',
+          amount: '700'
+        },
         expectedYield: '15.25'
       });
       assert.deepEqual(report.positions[0], {
@@ -82,8 +106,14 @@ describe('portfolio reporter', () => {
         positionUid: 'position-uid',
         instrumentType: 'share',
         quantity: '2.5',
-        averagePositionPrice: '100.25 rub',
-        currentPrice: '105.75 rub',
+        averagePositionPrice: {
+          currency: 'rub',
+          amount: '100.25'
+        },
+        currentPrice: {
+          currency: 'rub',
+          amount: '105.75'
+        },
         expectedYield: '12.5',
         blocked: false
       });
@@ -105,10 +135,16 @@ describe('portfolio reporter', () => {
       const parsed = JSON.parse(output);
 
       assert.equal(parsed.summary.accountId, 'account-id');
-      assert.equal(parsed.summary.totalAmountPortfolio, '3700.5 rub');
+      assert.deepEqual(parsed.summary.totalAmountPortfolio, {
+        currency: 'rub',
+        amount: '3700.5'
+      });
       assert.equal(parsed.summary.expectedYield, '15.25');
       assert.equal(parsed.positions[0].figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed.positions[0].averagePositionPrice, '100.25 rub');
+      assert.deepEqual(parsed.positions[0].averagePositionPrice, {
+        currency: 'rub',
+        amount: '100.25'
+      });
     });
   });
 });

@@ -1,3 +1,5 @@
+import type { ReportMoney } from './money.report';
+
 /** Одна операция в отчете команды `operations get-operations`. */
 export interface OperationsReportOperation {
   /** Идентификатор операции. */
@@ -14,10 +16,10 @@ export interface OperationsReportOperation {
   state: string;
   /** Валюта операции. */
   currency: string;
-  /** Платеж по операции в денежном строковом формате отчета. */
-  payment: string;
-  /** Цена операции в денежном строковом формате отчета. */
-  price: string;
+  /** Платеж по операции или `null`, если provider не вернул значение. */
+  payment: ReportMoney | null;
+  /** Цена операции или `null`, если provider не вернул значение. */
+  price: ReportMoney | null;
   /** Количество инструментов в операции. */
   quantity: number;
   /** Остаток количества по операции. */
