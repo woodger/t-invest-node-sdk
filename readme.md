@@ -129,9 +129,8 @@ CLI JSON reports возвращают денежные значения стру
 
 Отложенные группы CLI-команд (`To introduce`) описаны в
 [docs/clean-architecture/api-commands.md](docs/clean-architecture/api-commands.md):
-оставшиеся sandbox lifecycle/side-effect команды и stream API вводятся
-отдельно от unary read/report CLI-команд. Команды с side effects уже доступны,
-но требуют явный флаг `--confirm`.
+stream API вводится отдельно от unary CLI-команд. Команды с side effects уже
+доступны, но требуют явный флаг `--confirm`.
 
 ## Доступные сервисы
 

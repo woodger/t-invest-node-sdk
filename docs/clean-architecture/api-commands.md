@@ -59,13 +59,19 @@
 - `stoporders get-stop-orders` -> `sdk.stoporders.getStopOrders`;
 - `stoporders post-stop-order` -> `sdk.stoporders.postStopOrder`;
 - `stoporders cancel-stop-order` -> `sdk.stoporders.cancelStopOrder`;
+- `sandbox open-sandbox-account` -> `sdk.sandbox.openSandboxAccount`;
 - `sandbox get-sandbox-accounts` -> `sdk.sandbox.getSandboxAccounts`;
+- `sandbox close-sandbox-account` -> `sdk.sandbox.closeSandboxAccount`;
+- `sandbox post-sandbox-order` -> `sdk.sandbox.postSandboxOrder`;
+- `sandbox replace-sandbox-order` -> `sdk.sandbox.replaceSandboxOrder`;
 - `sandbox get-sandbox-orders` -> `sdk.sandbox.getSandboxOrders`;
+- `sandbox cancel-sandbox-order` -> `sdk.sandbox.cancelSandboxOrder`;
 - `sandbox get-sandbox-order-state` -> `sdk.sandbox.getSandboxOrderState`;
 - `sandbox get-sandbox-positions` -> `sdk.sandbox.getSandboxPositions`;
 - `sandbox get-sandbox-operations` -> `sdk.sandbox.getSandboxOperations`;
 - `sandbox get-sandbox-operations-by-cursor` -> `sdk.sandbox.getSandboxOperationsByCursor`;
 - `sandbox get-sandbox-portfolio` -> `sdk.sandbox.getSandboxPortfolio`;
+- `sandbox sandbox-pay-in` -> `sdk.sandbox.sandboxPayIn`;
 - `sandbox get-sandbox-withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`.
 
 Этот список не считается конечным. Новые API-команды добавляются
@@ -79,19 +85,14 @@ framework заранее не вводится.
 Команды ниже пока не являются текущим CLI-контрактом. Этот список фиксирует
 отложенные группы API-команд, которые нужно вводить отдельно и осознанно.
 
-Оставшиеся sandbox lifecycle/side-effect команды откладываются отдельно:
-
-- `sandbox open-sandbox-account`;
-- `sandbox close-sandbox-account`;
-- `sandbox post-sandbox-order`;
-- `sandbox replace-sandbox-order`;
-- `sandbox cancel-sandbox-order`;
-- `sandbox sandbox-pay-in`.
-
 Реализованные команды с side effects являются текущим CLI-контрактом, но
 требуют явный `--confirm`. CLI не генерирует idempotency keys автоматически:
 `orders post-order` принимает `--order-id`, а `orders replace-order` принимает
 `--idempotency-key`.
+
+`sandbox sandbox-pay-in` принимает `--currency=rub|usd`. Неизвестные currency
+значения отклоняются CLI parser-ом, а `--currency=usd` завершается ошибкой как
+явно неподдержанный provider-кейс.
 
 Stream API откладывается отдельно от unary CLI-команд. CLI-контракт для
 долгоживущих подписок, завершения процесса, backpressure и формата событий
@@ -108,9 +109,9 @@ Deprecated generated methods не вводятся как публичные CLI
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
   используется `instruments options-by` / `sdk.instruments.optionsBy`.
 
-Перед реализацией отложенных sandbox lifecycle/side-effect и stream команд
-нужно явно определить CLI-контракт, идемпотентность/повторный запуск, формат
-подтверждения опасных действий и ожидаемое поведение при ошибках provider-а.
+Перед реализацией отложенных stream команд нужно явно определить CLI-контракт,
+идемпотентность/повторный запуск, формат завершения процесса и ожидаемое
+поведение при ошибках provider-а.
 
 Команда делает несколько разных вещей:
 

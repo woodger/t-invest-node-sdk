@@ -1,0 +1,135 @@
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type {
+  SandboxPayInRequest,
+  SandboxPayInResponse
+} from '../../../generated/sandbox';
+import { defineCommand, type InferOptions } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  assertSideEffectConfirmed,
+  parsePositiveQuotationOption,
+  sideEffectConfirmationOptionsSchema
+} from '../side-effect-args';
+import {
+  formatSandboxPayIn,
+  sandboxPayInFormats,
+  type SandboxPayInFormat
+} from './reporter';
+
+type SandboxPayInSdk = {
+  sandbox: {
+    sandboxPayIn(request: SandboxPayInRequest): Promise<SandboxPayInResponse>;
+  };
+  close(): void;
+};
+
+type SandboxPayInSdkFactory = (options: TinkoffInvestOptions) => SandboxPayInSdk;
+
+const sandboxPayInCommandPath = ['sandbox', 'sandbox-pay-in'] as const;
+const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
+const sandboxPayInCurrencies = ['rub', 'usd'] as const;
+
+type SandboxPayInCurrency = typeof sandboxPayInCurrencies[number];
+
+const sandboxPayInRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  },
+  amount: {
+    type: 'string',
+    required: true
+  },
+  currency: {
+    type: 'string',
+    choices: sandboxPayInCurrencies,
+    default: 'rub'
+  }
+} as const;
+
+const sandboxPayInFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: sandboxPayInFormats,
+    default: 'table'
+  }
+} as const;
+
+const sandboxPayInOptionsSchema = withSdkOptions(
+  sandboxPayInRequestOptionsSchema,
+  sideEffectConfirmationOptionsSchema,
+  sandboxPayInFormatOptionsSchema
+);
+
+type SandboxPayInOptions = InferOptions<typeof sandboxPayInOptionsSchema>;
+type SandboxPayInRequestOptions = CommandRequestOptions<
+  SandboxPayInOptions,
+  'account-id' | 'amount' | 'currency'
+>;
+
+export function parseSandboxPayInCurrency(rawOptions: CommandRawOptions): SandboxPayInCurrency {
+  return parseCommandOptions(rawOptions, sandboxPayInRequestOptionsSchema).currency;
+}
+
+export function parseSandboxPayInFormat(rawOptions: CommandRawOptions): SandboxPayInFormat {
+  return parseCommandOptions(rawOptions, sandboxPayInFormatOptionsSchema).format;
+}
+
+export function createSandboxPayInCommand(
+  createSdk: SandboxPayInSdkFactory = defaultSandboxPayInSdkFactory
+) {
+  return defineCommand({
+    path: sandboxPayInCommandPath,
+    options: sandboxPayInOptionsSchema,
+    handle({ options }) {
+      return runSandboxPayInCommand(options, createSdk);
+    }
+  });
+}
+
+export const sandboxPayInCommand = createSandboxPayInCommand();
+
+async function runSandboxPayInCommand(
+  options: SandboxPayInOptions,
+  createSdk: SandboxPayInSdkFactory
+): Promise<string> {
+  assertSideEffectConfirmed(options.confirm);
+
+  const request = createSandboxPayInRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.sandbox.sandboxPayIn(request);
+
+    return formatSandboxPayIn(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
+
+export { formatSandboxPayIn };
+
+export function createSandboxPayInRequest(
+  options: SandboxPayInRequestOptions
+): SandboxPayInRequest {
+  if (options.currency === 'usd') {
+    throw new Error("Unsupported '--currency=usd' for sandbox-pay-in");
+  }
+
+  const amount = parsePositiveQuotationOption(options.amount, 'amount');
+
+  return {
+    accountId: options['account-id'],
+    amount: {
+      units: amount.units,
+      nano: amount.nano,
+      currency: options.currency
+    }
+  };
+}

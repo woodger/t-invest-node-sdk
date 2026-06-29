@@ -1,0 +1,109 @@
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type {
+  CancelOrderRequest,
+  CancelOrderResponse
+} from '../../../generated/orders';
+import { defineCommand, type InferOptions } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { createCancelOrderRequest } from '../cancel-order/cli';
+import {
+  cancelOrderFormats,
+  formatCancelOrder,
+  type CancelOrderFormat
+} from '../cancel-order/reporter';
+import {
+  assertSideEffectConfirmed,
+  sideEffectConfirmationOptionsSchema
+} from '../side-effect-args';
+
+type SandboxCancelOrderSdk = {
+  sandbox: {
+    cancelSandboxOrder(request: CancelOrderRequest): Promise<CancelOrderResponse>;
+  };
+  close(): void;
+};
+
+type SandboxCancelOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxCancelOrderSdk;
+
+const sandboxCancelOrderCommandPath = ['sandbox', 'cancel-sandbox-order'] as const;
+const defaultSandboxCancelOrderSdkFactory: SandboxCancelOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
+const sandboxCancelOrderRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  },
+  'order-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const sandboxCancelOrderFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: cancelOrderFormats,
+    default: 'table'
+  }
+} as const;
+
+const sandboxCancelOrderOptionsSchema = withSdkOptions(
+  sandboxCancelOrderRequestOptionsSchema,
+  sideEffectConfirmationOptionsSchema,
+  sandboxCancelOrderFormatOptionsSchema
+);
+
+type SandboxCancelOrderOptions = InferOptions<typeof sandboxCancelOrderOptionsSchema>;
+type SandboxCancelOrderRequestOptions = CommandRequestOptions<
+  SandboxCancelOrderOptions,
+  'account-id' | 'order-id'
+>;
+
+export function parseSandboxCancelOrderFormat(rawOptions: CommandRawOptions): CancelOrderFormat {
+  return parseCommandOptions(rawOptions, sandboxCancelOrderFormatOptionsSchema).format;
+}
+
+export function createSandboxCancelOrderCommand(
+  createSdk: SandboxCancelOrderSdkFactory = defaultSandboxCancelOrderSdkFactory
+) {
+  return defineCommand({
+    path: sandboxCancelOrderCommandPath,
+    options: sandboxCancelOrderOptionsSchema,
+    handle({ options }) {
+      return runSandboxCancelOrderCommand(options, createSdk);
+    }
+  });
+}
+
+export const sandboxCancelOrderCommand = createSandboxCancelOrderCommand();
+
+async function runSandboxCancelOrderCommand(
+  options: SandboxCancelOrderOptions,
+  createSdk: SandboxCancelOrderSdkFactory
+): Promise<string> {
+  assertSideEffectConfirmed(options.confirm);
+
+  const request = createSandboxCancelOrderRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.sandbox.cancelSandboxOrder(request);
+
+    return formatCancelOrder(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
+
+export { formatCancelOrder };
+
+export function createSandboxCancelOrderRequest(
+  options: SandboxCancelOrderRequestOptions
+): CancelOrderRequest {
+  return createCancelOrderRequest(options);
+}
