@@ -1,3 +1,14 @@
+/**
+ * Модуль CLI-команды `stream run` запускает configured stream session.
+ *
+ * Здесь допустимы:
+ * - чтение stream config и применение runtime overrides;
+ * - выбор generated stream method через SDK facade;
+ * - управление lifecycle долгоживущего stream-процесса;
+ *
+ * Здесь не должно быть JSONL event formatting rules или transport adapter logic.
+ */
+
 import { readFile } from 'node:fs/promises';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {

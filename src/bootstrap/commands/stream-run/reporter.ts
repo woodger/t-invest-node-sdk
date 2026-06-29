@@ -1,3 +1,14 @@
+/**
+ * Модуль stream run reporter нормализует provider stream events в JSONL output.
+ *
+ * Здесь допустимы:
+ * - определение observable event type;
+ * - фильтрация ping/subscription events по runtime options;
+ * - сборка стабильного JSONL envelope;
+ *
+ * Здесь не должно быть stream lifecycle management или SDK request creation.
+ */
+
 import type { MarketDataResponse } from '../../../generated/marketdata';
 import type {
   PortfolioStreamResponse,

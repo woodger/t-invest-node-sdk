@@ -1,3 +1,14 @@
+/**
+ * Модуль CLI-команды `instruments get-countries`.
+ *
+ * Здесь допустимы:
+ * - объявление command path и option schema;
+ * - преобразование CLI options в generated request;
+ * - создание SDK через bootstrap factory и закрытие SDK resource;
+ *
+ * Здесь не должно быть ручного table/json rendering или application report contracts.
+ */
+
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
 import { defineCommand, type InferOptions } from 'icore';

@@ -1,13 +1,17 @@
+/**
+ * Модуль bootstrap script генерирует TypeScript contracts из локальных proto-файлов.
+ *
+ * Здесь допустимы:
+ * - поиск proto-файлов в contracts directory;
+ * - вызов системного `protoc` с текущими ts-proto options;
+ * - проверка обязательных tool/runtime prerequisites перед генерацией;
+ *
+ * Здесь не должно быть post-processing generated sources или SDK runtime wiring.
+ */
+
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pfs } from 'pwd-fs';
-
-/**
- * Executable proto generation script.
- *
- * Создание TS-сервисов из proto-файлов.
- * См.: https://github.com/stephenh/ts-proto
- */
 
 // Скрипт ожидает запуск из корня репозитория и строит все пути относительно него.
 const contractsDir = path.join(pfs.pwd, 'contracts');

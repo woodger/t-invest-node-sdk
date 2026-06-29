@@ -1,3 +1,14 @@
+/**
+ * Модуль gRPC middleware adapter связывает transport calls с application throttling.
+ *
+ * Здесь допустимы:
+ * - применение unary throttling policy;
+ * - пропуск response stream calls без unary задержки;
+ * - делегирование actual call execution в nice-grpc middleware chain;
+ *
+ * Здесь не должно быть retry policy или stream lifecycle management.
+ */
+
 import type {
   CallOptions,
   ClientMiddlewareCall
