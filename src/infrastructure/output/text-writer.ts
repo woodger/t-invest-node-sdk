@@ -1,3 +1,3 @@
 export type TextWriter = {
-  write(chunk: string): unknown;
+  write(chunk: string): unknown | Promise<unknown>;
 };
