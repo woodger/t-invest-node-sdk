@@ -14,4 +14,8 @@ export type { UnaryLimits };
 
 export interface TinkoffInvestNodeSDKConfig {
   unaryLimits: UnaryLimits;
+  /**
+   * Command-line defaults for the package binary.
+   */
+  requireSideEffectConfirmation: boolean;
 }

@@ -77,7 +77,7 @@ describe('sandbox-operations command', () => {
         from: '2026-06-01T00:00:00.000Z',
         to: '2026-06-19T00:00:00.000Z',
         state: 'executed',
-        figi: 'BBG00QPYJ5H0'
+        'instrument-id': 'BBG00QPYJ5H0'
       });
 
       assert.equal(request.accountId, 'sandbox-account-id');

@@ -2,6 +2,7 @@
  * Модуль package config задает default runtime policies SDK.
  *
  * Здесь допустимы:
+ * - значения CLI safety policy;
  * - значения throttling policy по generated service names;
  * - экспорт config types как часть public config surface;
  *
@@ -12,8 +13,8 @@ import type { TinkoffInvestNodeSDKConfig } from './config.types';
 
 export * from './config.types';
 
-// Ключи сопоставляются с gRPC path и могут быть как сервисными, так и метод-специфичными.
 export const defaultConfig: TinkoffInvestNodeSDKConfig = {
+  // Ключи сопоставляются с gRPC path и могут быть как сервисными, так и метод-специфичными.
   unaryLimits: {
     /**
      * Сервис инструментов
@@ -54,5 +55,14 @@ export const defaultConfig: TinkoffInvestNodeSDKConfig = {
      * Предназначен для получения информации о пользователе и его счетах в Т-Инвестициях.
      */
     UsersService: 100
-  }
+  },
+
+  /**
+   * Локальная policy для package CLI.
+   *
+   * Требует явный `--confirm` перед CLI-командами с side effects. Значение
+   * управляет поведением bootstrap-команд SDK и не является частью Tinkoff
+   * Invest API contract.
+   */
+  requireSideEffectConfirmation: true
 };

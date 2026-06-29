@@ -20,6 +20,10 @@ import type { CommandRawOptions, CommandRequestOptions } from '../../command-opt
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  instrumentIdWithDeprecatedFigiOptionsSchema,
+  resolveInstrumentIdOption
+} from '../instrument-id-options';
+import {
   formatFuturesMargin,
   futuresMarginFormats,
   type FuturesMarginFormat
@@ -38,10 +42,7 @@ const futuresMarginCommandPath = ['instruments', 'get-futures-margin'] as const;
 const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const futuresMarginRequestOptionsSchema = {
-  figi: {
-    type: 'string',
-    required: true
-  }
+  ...instrumentIdWithDeprecatedFigiOptionsSchema
 } as const;
 
 const futuresMarginFormatOptionsSchema = {
@@ -58,7 +59,10 @@ const futuresMarginOptionsSchema = withSdkOptions(
 );
 
 type FuturesMarginOptions = InferOptions<typeof futuresMarginOptionsSchema>;
-type FuturesMarginRequestOptions = CommandRequestOptions<FuturesMarginOptions, 'figi'>;
+type FuturesMarginRequestOptions = CommandRequestOptions<
+  FuturesMarginOptions,
+  'instrument-id' | 'figi'
+>;
 
 
 
@@ -104,6 +108,6 @@ export function createFuturesMarginRequest(
   options: FuturesMarginRequestOptions
 ): GetFuturesMarginRequest {
   return {
-    figi: options.figi
+    figi: resolveInstrumentIdOption(options)
   };
 }

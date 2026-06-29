@@ -243,6 +243,29 @@ type CommandLineDefinition = CommandDefinition<
   readonly [string, ...string[]]
 > & RegisteredCommand;
 
+const deprecatedFigiOptionCommandNames = new Set<CommandName>([
+  'instruments get-accrued-interests',
+  'instruments get-bond-coupons',
+  'instruments get-dividends',
+  'instruments edit-favorites',
+  'instruments get-futures-margin',
+  'operations get-operations',
+  'sandbox get-sandbox-operations'
+]);
+
+export function resolveCommandWarnings(
+  commandName: CommandName,
+  args: readonly string[]
+): string[] {
+  if (!deprecatedFigiOptionCommandNames.has(commandName) || !hasOption(args, 'figi')) {
+    return [];
+  }
+
+  return [
+    "Warning: '--figi' is deprecated for this command; use '--instrument-id' instead.\n"
+  ];
+}
+
 const commandLineRegistry = defineCommandRegistry(
   [
     defineCommandLineCommand(accountsCommand),
@@ -333,4 +356,10 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
       return runCommand(command, args, undefined);
     }
   };
+}
+
+function hasOption(args: readonly string[], name: string): boolean {
+  const optionName = `--${name}`;
+
+  return args.some((arg) => arg === optionName || arg.startsWith(`${optionName}=`));
 }

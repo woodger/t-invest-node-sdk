@@ -29,6 +29,10 @@ import {
   sideEffectConfirmationOptionsSchema
 } from '../side-effect-args';
 import {
+  instrumentIdWithDeprecatedFigiOptionsSchema,
+  resolveInstrumentIdOption
+} from '../instrument-id-options';
+import {
   editFavoritesFormats,
   formatEditFavorites,
   type EditFavoritesFormat
@@ -56,10 +60,7 @@ type EditFavoritesActionName = keyof typeof editFavoriteActions;
 const editFavoriteActionNames = Object.keys(editFavoriteActions) as EditFavoritesActionName[];
 
 const editFavoritesRequestOptionsSchema = {
-  figi: {
-    type: 'string',
-    required: true
-  },
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
   action: {
     type: 'string',
     choices: editFavoriteActionNames,
@@ -84,7 +85,7 @@ const editFavoritesOptionsSchema = withSdkOptions(
 type EditFavoritesOptions = InferOptions<typeof editFavoritesOptionsSchema>;
 type EditFavoritesRequestOptions = CommandRequestOptions<
   EditFavoritesOptions,
-  'figi' | 'action'
+  'instrument-id' | 'figi' | 'action'
 >;
 
 export function parseEditFavoritesFormat(rawOptions: CommandRawOptions): EditFavoritesFormat {
@@ -131,7 +132,10 @@ export function createEditFavoritesRequest(
   options: EditFavoritesRequestOptions
 ): EditFavoritesRequest {
   return {
-    instruments: parseCommaSeparatedStringListOption(options.figi, 'figi').map((figi) => ({
+    instruments: parseCommaSeparatedStringListOption(
+      resolveInstrumentIdOption(options),
+      'instrument-id'
+    ).map((figi) => ({
       figi
     })),
     actionType: editFavoriteActions[options.action]

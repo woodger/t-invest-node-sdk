@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { defaultConfig } from '../../config';
 import {
   assertSideEffectConfirmed,
   parseOptionalPositiveQuotationOption,
@@ -8,7 +9,7 @@ import {
 
 describe('side-effect command args', () => {
   describe('assertSideEffectConfirmed', () => {
-    test('accepts explicit confirmation only', () => {
+    test('requires explicit confirmation by default', () => {
       assert.doesNotThrow(() => assertSideEffectConfirmed(true));
       assert.throws(
         () => assertSideEffectConfirmed(false),
@@ -18,6 +19,24 @@ describe('side-effect command args', () => {
         () => assertSideEffectConfirmed(undefined),
         /Expected '--confirm' to execute side-effect command/
       );
+    });
+
+    test('accepts missing confirmation when config policy disables it', () => {
+      assert.doesNotThrow(() => assertSideEffectConfirmed(undefined, false));
+      assert.doesNotThrow(() => assertSideEffectConfirmed(false, false));
+    });
+
+    test('uses default config policy when explicit policy is omitted', () => {
+      const previousPolicy = defaultConfig.requireSideEffectConfirmation;
+
+      try {
+        defaultConfig.requireSideEffectConfirmation = false;
+
+        assert.doesNotThrow(() => assertSideEffectConfirmed(undefined));
+        assert.doesNotThrow(() => assertSideEffectConfirmed(false));
+      } finally {
+        defaultConfig.requireSideEffectConfirmation = previousPolicy;
+      }
     });
   });
 

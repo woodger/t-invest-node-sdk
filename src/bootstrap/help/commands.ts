@@ -178,14 +178,15 @@ export const commandHelp = {
     sdkCall: 'sdk.instruments.getAccruedInterests',
     grpcMethod: 'InstrumentsService/GetAccruedInterests',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-accrued-interests --figi=FIGI --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
-      '--figi=FIGI           Bond FIGI',
+      '--instrument-id=ID    Bond instrument identifier',
       '--from=ISO             Start timestamp, inclusive',
       '--to=ISO               End timestamp, inclusive'
     ],
     optional: [
+      '--figi=FIGI            Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -197,10 +198,11 @@ export const commandHelp = {
       'TINKOFF_ENDPOINT'
     ],
     examples: [
-      'tinkoff-invest-node-sdk instruments get-accrued-interests --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments get-accrued-interests --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
     ],
     notes: [
+      "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -265,14 +267,15 @@ export const commandHelp = {
     sdkCall: 'sdk.instruments.getBondCoupons',
     grpcMethod: 'InstrumentsService/GetBondCoupons',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-bond-coupons --figi=FIGI --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
-      '--figi=FIGI           Bond FIGI',
+      '--instrument-id=ID    Bond instrument identifier',
       '--from=ISO             Start timestamp, inclusive',
       '--to=ISO               End timestamp, inclusive'
     ],
     optional: [
+      '--figi=FIGI            Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -284,10 +287,11 @@ export const commandHelp = {
       'TINKOFF_ENDPOINT'
     ],
     examples: [
-      'tinkoff-invest-node-sdk instruments get-bond-coupons --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments get-bond-coupons --figi=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
     ],
     notes: [
+      "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -545,14 +549,15 @@ export const commandHelp = {
     sdkCall: 'sdk.instruments.getDividends',
     grpcMethod: 'InstrumentsService/GetDividends',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-dividends --figi=FIGI --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
-      '--figi=FIGI           Share FIGI',
+      '--instrument-id=ID    Share instrument identifier',
       '--from=ISO             Start timestamp, inclusive',
       '--to=ISO               End timestamp, inclusive'
     ],
     optional: [
+      '--figi=FIGI            Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -564,10 +569,11 @@ export const commandHelp = {
       'TINKOFF_ENDPOINT'
     ],
     examples: [
-      'tinkoff-invest-node-sdk instruments get-dividends --figi=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments get-dividends --figi=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
     ],
     notes: [
+      "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -599,14 +605,15 @@ export const commandHelp = {
     sdkCall: 'sdk.instruments.editFavorites',
     grpcMethod: 'InstrumentsService/EditFavorites',
     usage: [
-      'tinkoff-invest-node-sdk instruments edit-favorites --figi=FIGI[,FIGI] --action=add|del --confirm [options]'
+      'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=ID[,ID] --action=add|del --confirm [options]'
     ],
     required: [
-      '--figi=FIGI[,FIGI]   Comma-separated FIGI list',
+      '--instrument-id=ID[,ID] Comma-separated instrument identifiers',
       '--action=ACTION       add|del',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
+      '--figi=FIGI[,FIGI]    Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -618,11 +625,12 @@ export const commandHelp = {
       'TINKOFF_ENDPOINT'
     ],
     examples: [
-      'tinkoff-invest-node-sdk instruments edit-favorites --figi=BBG00QPYJ5H0 --action=add --confirm',
-      'tinkoff-invest-node-sdk instruments edit-favorites --figi=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
+      'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=BBG00QPYJ5H0 --action=add --confirm',
+      'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
     ],
     notes: [
-      'This command changes account favorites and refuses to run without --confirm.'
+      'Deprecated --figi is still accepted and prints a warning to stderr.',
+      'This command changes account favorites and refuses to run without --confirm by default CLI policy.'
     ]
   },
   'instruments find-instrument': {
@@ -716,12 +724,13 @@ export const commandHelp = {
     sdkCall: 'sdk.instruments.getFuturesMargin',
     grpcMethod: 'InstrumentsService/GetFuturesMargin',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-futures-margin --figi=FIGI [options]'
+      'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=ID [options]'
     ],
     required: [
-      '--figi=FIGI           Futures FIGI'
+      '--instrument-id=ID    Futures instrument identifier'
     ],
     optional: [
+      '--figi=FIGI            Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -733,8 +742,11 @@ export const commandHelp = {
       'TINKOFF_ENDPOINT'
     ],
     examples: [
-      'tinkoff-invest-node-sdk instruments get-futures-margin --figi=FUTFIGI',
-      'tinkoff-invest-node-sdk instruments get-futures-margin --figi=FUTFIGI --format=json'
+      'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=FUTFIGI',
+      'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=FUTFIGI --format=json'
+    ],
+    notes: [
+      'Deprecated --figi is still accepted and prints a warning to stderr.'
     ]
   },
   'instruments get-instrument-by': {
@@ -1117,7 +1129,7 @@ export const commandHelp = {
       '--direction=DIR       buy|sell',
       '--order-type=TYPE     limit|market|bestprice',
       '--order-id=KEY        Idempotency key, max provider length is 36 chars',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--price=DECIMAL       Price per instrument, up to 9 fractional digits; omitted for market orders',
@@ -1136,7 +1148,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
     ],
     notes: [
-      'This command places an order and refuses to run without --confirm.',
+      'This command places an order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
@@ -1150,7 +1162,7 @@ export const commandHelp = {
     required: [
       '--account-id=ID       Account identifier from users get-accounts',
       '--order-id=ID         Exchange order identifier',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1168,7 +1180,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
     ],
     notes: [
-      'This command cancels an order and refuses to run without --confirm.'
+      'This command cancels an order and refuses to run without --confirm by default CLI policy.'
     ]
   },
   'orders replace-order': {
@@ -1185,7 +1197,7 @@ export const commandHelp = {
       '--quantity=N          Positive integer lots count',
       '--price=DECIMAL       Price per instrument, up to 9 fractional digits',
       '--price-type=TYPE     point|currency',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1203,7 +1215,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
     ],
     notes: [
-      'This command changes an existing order and refuses to run without --confirm.',
+      'This command changes an existing order and refuses to run without --confirm by default CLI policy.',
       'The CLI does not generate idempotency keys automatically.'
     ]
   },
@@ -1221,7 +1233,8 @@ export const commandHelp = {
     ],
     optional: [
       '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
-      '--figi=FIGI            Optional instrument FIGI filter',
+      '--instrument-id=ID    Optional instrument identifier filter',
+      '--figi=FIGI            Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -1234,9 +1247,10 @@ export const commandHelp = {
     ],
     examples: [
       'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --state=executed --format=json'
+      'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
     ],
     notes: [
+      'Deprecated --figi is still accepted and prints a warning to stderr.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -1464,7 +1478,7 @@ export const commandHelp = {
       '--direction=DIR       buy|sell',
       '--expiration-type=TYPE good-till-cancel|good-till-date',
       '--stop-order-type=TYPE take-profit|stop-loss|stop-limit',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--price=DECIMAL       Order price, up to 9 fractional digits',
@@ -1484,7 +1498,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
     ],
     notes: [
-      'This command places a stop order and refuses to run without --confirm.',
+      'This command places a stop order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
@@ -1498,7 +1512,7 @@ export const commandHelp = {
     required: [
       '--account-id=ID       Account identifier from users get-accounts',
       '--stop-order-id=ID    Stop order identifier',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1516,7 +1530,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
     ],
     notes: [
-      'This command cancels a stop order and refuses to run without --confirm.'
+      'This command cancels a stop order and refuses to run without --confirm by default CLI policy.'
     ]
   },
   'sandbox get-sandbox-accounts': {
@@ -1550,7 +1564,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm [options]'
     ],
     required: [
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1568,7 +1582,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm --format=json'
     ],
     notes: [
-      'This command opens a sandbox account and refuses to run without --confirm.'
+      'This command opens a sandbox account and refuses to run without --confirm by default CLI policy.'
     ]
   },
   'sandbox close-sandbox-account': {
@@ -1580,7 +1594,7 @@ export const commandHelp = {
     ],
     required: [
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1598,7 +1612,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm --format=json'
     ],
     notes: [
-      'This command closes a sandbox account and refuses to run without --confirm.'
+      'This command closes a sandbox account and refuses to run without --confirm by default CLI policy.'
     ]
   },
   'sandbox post-sandbox-order': {
@@ -1615,7 +1629,7 @@ export const commandHelp = {
       '--direction=DIR       buy|sell',
       '--order-type=TYPE     limit|market|bestprice',
       '--order-id=KEY        Idempotency key, max provider length is 36 chars',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--price=DECIMAL       Price per instrument, up to 9 fractional digits; omitted for market orders',
@@ -1634,7 +1648,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
     ],
     notes: [
-      'This command places a sandbox order and refuses to run without --confirm.',
+      'This command places a sandbox order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
@@ -1652,7 +1666,7 @@ export const commandHelp = {
       '--quantity=N          Positive integer lots count',
       '--price=DECIMAL       Price per instrument, up to 9 fractional digits',
       '--price-type=TYPE     point|currency',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1670,7 +1684,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
     ],
     notes: [
-      'This command changes an existing sandbox order and refuses to run without --confirm.',
+      'This command changes an existing sandbox order and refuses to run without --confirm by default CLI policy.',
       'The CLI does not generate idempotency keys automatically.'
     ]
   },
@@ -1684,7 +1698,7 @@ export const commandHelp = {
     required: [
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
       '--order-id=ID         Exchange order identifier',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
@@ -1702,7 +1716,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
     ],
     notes: [
-      'This command cancels a sandbox order and refuses to run without --confirm.'
+      'This command cancels a sandbox order and refuses to run without --confirm by default CLI policy.'
     ]
   },
   'sandbox get-sandbox-orders': {
@@ -1798,7 +1812,8 @@ export const commandHelp = {
     ],
     optional: [
       '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
-      '--figi=FIGI            Optional instrument FIGI filter',
+      '--instrument-id=ID    Optional instrument identifier filter',
+      '--figi=FIGI            Deprecated alias for --instrument-id',
       '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
       '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
       '--app-name=NAME        Optional x-app-name metadata value',
@@ -1811,9 +1826,10 @@ export const commandHelp = {
     ],
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --state=executed --format=json'
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
     ],
     notes: [
+      'Deprecated --figi is still accepted and prints a warning to stderr.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -1894,7 +1910,7 @@ export const commandHelp = {
     required: [
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
       '--amount=DECIMAL      Positive decimal amount, up to 9 fractional digits',
-      '--confirm             Required side-effect confirmation flag'
+      '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
       '--currency=rub|usd    Pay-in currency (default: rub)',
@@ -1913,7 +1929,7 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm --format=json'
     ],
     notes: [
-      'This command changes sandbox account balance and refuses to run without --confirm.',
+      'This command changes sandbox account balance and refuses to run without --confirm by default CLI policy.',
       'Unknown currency values are rejected by CLI parsing; --currency=usd is accepted by the parser but fails as unsupported.'
     ]
   },

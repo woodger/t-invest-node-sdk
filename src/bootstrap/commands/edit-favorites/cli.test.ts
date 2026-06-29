@@ -40,7 +40,7 @@ describe('edit-favorites command', () => {
   describe('createEditFavoritesRequest', () => {
     test('returns generated editFavorites request', () => {
       assert.deepEqual(createEditFavoritesRequest({
-        figi: 'figi-1,figi-2',
+        'instrument-id': 'figi-1,figi-2',
         action: 'add'
       }), {
         instruments: [
@@ -69,7 +69,7 @@ describe('edit-favorites command', () => {
       await assert.rejects(
         () => runCommand(
           command,
-          ['instruments', 'edit-favorites', '--figi=figi-1', '--action=add'],
+          ['instruments', 'edit-favorites', '--instrument-id=figi-1', '--action=add'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -105,7 +105,7 @@ describe('edit-favorites command', () => {
           'edit-favorites',
           '--token=token',
           '--endpoint=localhost:50051',
-          '--figi=BBG00QPYJ5H0',
+          '--instrument-id=BBG00QPYJ5H0',
           '--action=add',
           '--confirm',
           '--format=json'

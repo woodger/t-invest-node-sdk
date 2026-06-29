@@ -9,7 +9,7 @@
 import { parseArgv, type OptionsSchema } from 'icore';
 import { createStderrWriter } from '../infrastructure/output/stderr-writer';
 import { createStdoutWriter } from '../infrastructure/output/stdout-writer';
-import { resolveCommand } from './command-registry';
+import { resolveCommand, resolveCommandWarnings } from './command-registry';
 import { isHelpRequested, renderHelp } from './help/help';
 import { renderCliHelp } from './help/renderer';
 import { isVersionRequested, renderVersionInfo } from './version';
@@ -117,6 +117,10 @@ export async function runCli(
   }
 
   try {
+    for (const warning of resolveCommandWarnings(command.name, normalizedArgv)) {
+      await io.stderr.write(warning);
+    }
+
     await writeCommandOutput(await command.handler(normalizedArgv), io.stdout);
 
     return 0;

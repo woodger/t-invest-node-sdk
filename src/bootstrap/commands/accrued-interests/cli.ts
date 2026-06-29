@@ -24,6 +24,10 @@ import {
 } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  instrumentIdWithDeprecatedFigiOptionsSchema,
+  resolveInstrumentIdOption
+} from '../instrument-id-options';
+import {
   accruedInterestsFormats,
   formatAccruedInterests,
   type AccruedInterestsFormat
@@ -42,10 +46,7 @@ const accruedInterestsCommandPath = ['instruments', 'get-accrued-interests'] as 
 const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const accruedInterestsRequestOptionsSchema = {
-  figi: {
-    type: 'string',
-    required: true
-  },
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
     type: 'string',
     required: true
@@ -70,7 +71,10 @@ const accruedInterestsOptionsSchema = withSdkOptions(
 );
 
 type AccruedInterestsOptions = InferOptions<typeof accruedInterestsOptionsSchema>;
-type AccruedInterestsRequestOptions = CommandRequestOptions<AccruedInterestsOptions, 'from' | 'to' | 'figi'>;
+type AccruedInterestsRequestOptions = CommandRequestOptions<
+  AccruedInterestsOptions,
+  'from' | 'to' | 'instrument-id' | 'figi'
+>;
 
 
 
@@ -123,7 +127,7 @@ export function createAccruedInterestsRequest(
   }
 
   return {
-    figi: options.figi,
+    figi: resolveInstrumentIdOption(options),
     from,
     to
   };

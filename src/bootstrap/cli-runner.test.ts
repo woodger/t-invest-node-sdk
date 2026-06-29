@@ -188,6 +188,35 @@ describe('bootstrap cli runner', () => {
       assert.match(read().stderr, /Usage:/);
     });
 
+    test('prints deprecated figi option warnings to stderr', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli([
+        'instruments',
+        'get-futures-margin',
+        '--figi=FUTFIGI'
+      ], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.match(read().stderr, /Warning: '--figi' is deprecated/);
+      assert.match(read().stderr, /use '--instrument-id' instead/);
+      assert.match(read().stderr, /Expected '--token' or TINKOFF_TOKEN/);
+    });
+
+    test('does not warn for canonical instrument-id option', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli([
+        'instruments',
+        'get-futures-margin',
+        '--instrument-id=FUTFIGI'
+      ], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.doesNotMatch(read().stderr, /deprecated/);
+      assert.match(read().stderr, /Expected '--token' or TINKOFF_TOKEN/);
+    });
+
     test('waits for async stderr writes', async () => {
       let finishWrite: (() => void) | undefined;
       let commandFinished = false;
