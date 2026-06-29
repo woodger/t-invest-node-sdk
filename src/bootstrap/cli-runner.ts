@@ -138,12 +138,16 @@ async function writeCommandOutput(
 
   if (isAsyncIterable(output)) {
     for await (const chunk of output) {
+      // Await each chunk so long-running commands respect stdout backpressure
+      // instead of buffering provider output faster than the consumer reads it.
       await stdout.write(chunk);
     }
 
     return;
   }
 
+  // Single-response commands share the same writer contract; this keeps help,
+  // version and API command output consistent with stream output.
   await stdout.write(output);
 }
 
