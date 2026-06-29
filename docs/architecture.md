@@ -37,6 +37,8 @@ provider-neutral правилами или моделями.
 Текущие зоны:
 
 - `application/dto` - входные SDK options и другие application-level contracts;
+- `application/dto/tinkoff-invest-services.ts` - публичные package-owned
+  service interfaces SDK facade, отделенные от generated `*ServiceClient`;
 - `application/reports` - стабильные output/report contracts API-команд;
 - `application/services` - reusable application services, например unary
   throttling.
@@ -121,7 +123,8 @@ primitive CLI-контракты и нормализует общие `TinkoffIn
 ## Public Entrypoints
 
 Корневые файлы держат только package entrypoint, runtime config и generated
-exports exception:
+exports exception. Public service interfaces экспортируются из application DTO,
+а generated service definitions/clients остаются внутри bootstrap/infrastructure:
 
 - `src/index.ts` - основной package entrypoint;
 - `src/config.ts` - публичная конфигурация unary limits;
@@ -134,6 +137,7 @@ compatibility wrappers не создаются.
 ## Generated Code
 
 `src/generated/**` воспроизводится из `contracts/**/*.proto` и не редактируется
-вручную. `src/generated/**` и `src/generated-exports.ts` являются
-top-level исключением из компактной структуры `src`, потому что package
-entrypoint реэкспортирует generated public API.
+вручную. `src/generated/**` и `src/generated-exports.ts` являются top-level
+исключением из компактной структуры `src`, потому что package entrypoint
+реэкспортирует generated DTO/enums public API. Generated `*ServiceDefinition`,
+`*ServiceClient` и `*ServiceImplementation` не являются root public exports.

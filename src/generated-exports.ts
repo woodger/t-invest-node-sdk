@@ -220,10 +220,7 @@ export {
   InstrumentShort,
   GetBrandsRequest,
   GetBrandRequest,
-  GetBrandsResponse,
-  InstrumentsServiceDefinition,
-  InstrumentsServiceImplementation,
-  InstrumentsServiceClient
+  GetBrandsResponse
 } from './generated/instruments';
 
 export {
@@ -288,14 +285,7 @@ export {
   GetClosePricesRequest,
   InstrumentClosePriceRequest,
   GetClosePricesResponse,
-  InstrumentClosePriceResponse,
-  MarketDataServiceDefinition,
-  MarketDataServiceImplementation,
-  MarketDataServiceClient,
-  MarketDataStreamServiceDefinition,
-  MarketDataStreamServiceImplementation,
-  MarketDataStreamServiceClient,
-  ServerStreamingMethodResult
+  InstrumentClosePriceResponse
 } from './generated/marketdata';
 
 export {
@@ -357,13 +347,7 @@ export {
   PositionsSubscriptionResult,
   PositionsSubscriptionStatus,
   PositionData,
-  PositionsMoney,
-  OperationsServiceDefinition,
-  OperationsServiceImplementation,
-  OperationsServiceClient,
-  OperationsStreamServiceDefinition,
-  OperationsStreamServiceImplementation,
-  OperationsStreamServiceClient
+  PositionsMoney
 } from './generated/operations';
 
 export {
@@ -390,13 +374,7 @@ export {
   GetOrdersResponse,
   OrderState,
   OrderStage,
-  ReplaceOrderRequest,
-  OrdersStreamServiceDefinition,
-  OrdersStreamServiceImplementation,
-  OrdersStreamServiceClient,
-  OrdersServiceDefinition,
-  OrdersServiceImplementation,
-  OrdersServiceClient
+  ReplaceOrderRequest
 } from './generated/orders';
 
 export {
@@ -405,10 +383,7 @@ export {
   CloseSandboxAccountRequest,
   CloseSandboxAccountResponse,
   SandboxPayInRequest,
-  SandboxPayInResponse,
-  SandboxServiceDefinition,
-  SandboxServiceImplementation,
-  SandboxServiceClient
+  SandboxPayInResponse
 } from './generated/sandbox';
 
 export {
@@ -427,10 +402,7 @@ export {
   GetStopOrdersResponse,
   CancelStopOrderRequest,
   CancelStopOrderResponse,
-  StopOrder,
-  StopOrdersServiceDefinition,
-  StopOrdersServiceImplementation,
-  StopOrdersServiceClient
+  StopOrder
 } from './generated/stoporders';
 
 export {
@@ -453,8 +425,5 @@ export {
   UnaryLimit,
   StreamLimit,
   GetInfoRequest,
-  GetInfoResponse,
-  UsersServiceDefinition,
-  UsersServiceImplementation,
-  UsersServiceClient
+  GetInfoResponse
 } from './generated/users';
