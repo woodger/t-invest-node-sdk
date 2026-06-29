@@ -29,6 +29,10 @@ Policy source of truth по ограничениям и направлению �
 - [Adapters](./adapters.md) - место CLI adapters, renderers и stdout sink.
 - [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) -
   границы JSON/CSV/table formatting и записи в stdout.
+- [Stream CLI Reference](../cli-stream-reference.md) - целевой контракт
+  stream CLI перед реализацией.
+- [Stream CLI Configuration Reference](../cli-stream-configuration.md) -
+  целевой JSON config для stream CLI.
 
 ## Текущая Карта
 

@@ -160,6 +160,11 @@ yarn cli users get-accounts --format=json
 [API Commands](./clean-architecture/api-commands.md): stream API вводится
 отдельно от unary CLI-команд. Команды с side effects требуют явный флаг
 `--confirm`.
+
+Целевой контракт для stream CLI зафиксирован отдельно:
+[Stream CLI Reference](./cli-stream-reference.md) и
+[Stream CLI Configuration Reference](./cli-stream-configuration.md).
+
 Deprecated `sdk.instruments.options` не вводится как публичная CLI-команда;
 для опционов используется `instruments options-by`.
 
@@ -185,6 +190,8 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 - Карта слоев SDK: [Архитектура SDK](./architecture.md)
 - Clean Architecture design notes: [Clean Architecture Notes](./clean-architecture/index.md)
 - Границы CLI formatting и stdout: [Разделение форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md)
+- Целевой stream CLI контракт: [Stream CLI Reference](./cli-stream-reference.md)
+- Целевой stream config контракт: [Stream CLI Configuration Reference](./cli-stream-configuration.md)
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
 - Правила тестирования и test pipeline: [Политики проекта](./policy/index.md)
 - Правила запуска и написания тестов: [Политика тестирования](./policy/testing-policy.md)
