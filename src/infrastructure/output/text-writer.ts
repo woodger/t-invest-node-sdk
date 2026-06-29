@@ -1,3 +1,14 @@
+/**
+ * Модуль text writer содержит общий adapter для writable text sinks.
+ *
+ * Здесь допустимы:
+ * - минимальный output writer contract;
+ * - ожидание writable backpressure через `drain`;
+ * - поддержка простых test doubles без Node stream surface;
+ *
+ * Здесь не должно быть CLI command semantics или JSON rendering.
+ */
+
 export type TextWriter = {
   write(chunk: string): unknown | Promise<unknown>;
 };

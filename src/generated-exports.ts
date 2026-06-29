@@ -1,3 +1,13 @@
+/**
+ * Модуль public generated exports задает стабильную export surface generated DTO.
+ *
+ * Здесь допустимы:
+ * - выборочный реэкспорт generated runtime contracts;
+ * - сохранение публичного SDK import path для потребителей пакета;
+ *
+ * Здесь не должно быть generated implementation changes или CLI-only exports.
+ */
+
 export { Timestamp } from './generated/google/protobuf/timestamp';
 
 export {

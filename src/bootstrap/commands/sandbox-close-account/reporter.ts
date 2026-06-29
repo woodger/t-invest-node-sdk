@@ -1,3 +1,10 @@
+/**
+ * Модуль CLI-репортинга команды `sandbox close-sandbox-account`.
+ *
+ * Здесь допустимы mapping generated DTO в application report contract и presentation formatting.
+ * Разбор command options и запуск SDK остаются в `cli.ts`.
+ */
+
 import type { CloseSandboxAccountReport } from '../../../application/reports';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';
 import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';

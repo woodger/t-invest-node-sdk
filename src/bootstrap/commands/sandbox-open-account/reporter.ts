@@ -1,3 +1,10 @@
+/**
+ * Модуль CLI-репортинга команды `sandbox open-sandbox-account`.
+ *
+ * Здесь допустимы mapping generated DTO в application report contract и presentation formatting.
+ * Разбор command options и запуск SDK остаются в `cli.ts`.
+ */
+
 import type { OpenSandboxAccountReport } from '../../../application/reports';
 import type { OpenSandboxAccountResponse } from '../../../generated/sandbox';
 import { renderJson } from '../../../infrastructure/renderers/json-renderer';

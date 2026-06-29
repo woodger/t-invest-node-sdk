@@ -1,3 +1,14 @@
+/**
+ * Модуль gRPC client adapter создает generated service client.
+ *
+ * Здесь допустимы:
+ * - подключение shared metadata;
+ * - wiring middleware к nice-grpc client factory;
+ * - возврат typed generated client facade;
+ *
+ * Здесь не должно быть SDK lifecycle ownership или API request mapping.
+ */
+
 import type {
   Channel,
   Metadata

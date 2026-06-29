@@ -1,3 +1,13 @@
+/**
+ * Модуль application report contracts описывает стабильный output shape.
+ *
+ * Здесь допустимы:
+ * - DTO отчетов на границе application/output;
+ * - scalar values без зависимости от generated transport DTO;
+ *
+ * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
+ */
+
 /** Одна цена закрытия торговой сессии в отчете команды `marketdata get-close-prices`. */
 export interface ClosePricesReportPrice {
   /** FIGI инструмента. */

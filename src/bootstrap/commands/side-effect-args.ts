@@ -1,3 +1,14 @@
+/**
+ * Модуль side-effect command args хранит общую защиту mutating CLI-команд.
+ *
+ * Здесь допустимы:
+ * - общий `--confirm` contract;
+ * - parsing денежных decimal values для generated quotation;
+ * - ошибки, останавливающие side-effect command до SDK call;
+ *
+ * Здесь не должно быть конкретных order/sandbox request mappings.
+ */
+
 import type { Quotation } from '../../generated/common';
 
 export const sideEffectConfirmationOptionsSchema = {

@@ -1,3 +1,13 @@
+/**
+ * Модуль package config задает default runtime policies SDK.
+ *
+ * Здесь допустимы:
+ * - значения throttling policy по generated service names;
+ * - экспорт config types как часть public config surface;
+ *
+ * Здесь не должно быть environment parsing или transport initialization.
+ */
+
 import type { TinkoffInvestNodeSDKConfig } from './config.types';
 
 export * from './config.types';

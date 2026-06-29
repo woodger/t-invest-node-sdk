@@ -1,3 +1,14 @@
+/**
+ * Модуль application service управляет локальным throttling unary-запросов.
+ *
+ * Здесь допустимы:
+ * - разрешение лимита по gRPC path;
+ * - расчет задержки между unary-вызовами;
+ * - хранение in-memory состояния throttling окна;
+ *
+ * Здесь не должно быть gRPC client wiring или CLI policy.
+ */
+
 export type UnaryLimits = Record<string, number>;
 
 /**

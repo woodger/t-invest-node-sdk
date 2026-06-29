@@ -1,3 +1,14 @@
+/**
+ * Модуль bootstrap SDK facade собирает публичный `TinkoffInvestNodeSDK` runtime.
+ *
+ * Здесь допустимы:
+ * - lazy creation generated service clients;
+ * - владение shared gRPC channel и metadata;
+ * - подключение application throttling policy к transport adapters;
+ *
+ * Здесь не должно быть CLI command logic или generated DTO mapping.
+ */
+
 import {
   Channel, Metadata
 } from 'nice-grpc';

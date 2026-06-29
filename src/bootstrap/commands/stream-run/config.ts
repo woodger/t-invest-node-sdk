@@ -1,3 +1,14 @@
+/**
+ * Модуль stream run config описывает JSON contract для stream sessions.
+ *
+ * Здесь допустимы:
+ * - валидация stream config до создания SDK;
+ * - mapping typed config в generated stream requests;
+ * - runtime defaults для долгоживущих stream-команд;
+ *
+ * Здесь не должно быть SDK calls или stdout/stderr output logic.
+ */
+
 import {
   type MarketDataRequest,
   SubscriptionAction,
