@@ -375,6 +375,41 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves sandbox-open-account command', () => {
+    const command = resolveCommand(['sandbox', 'open-sandbox-account']);
+
+    assert.equal(command.name, 'sandbox open-sandbox-account');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-close-account command', () => {
+    const command = resolveCommand(['sandbox', 'close-sandbox-account']);
+
+    assert.equal(command.name, 'sandbox close-sandbox-account');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-post-order command', () => {
+    const command = resolveCommand(['sandbox', 'post-sandbox-order']);
+
+    assert.equal(command.name, 'sandbox post-sandbox-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-replace-order command', () => {
+    const command = resolveCommand(['sandbox', 'replace-sandbox-order']);
+
+    assert.equal(command.name, 'sandbox replace-sandbox-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-cancel-order command', () => {
+    const command = resolveCommand(['sandbox', 'cancel-sandbox-order']);
+
+    assert.equal(command.name, 'sandbox cancel-sandbox-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves sandbox-orders command', () => {
     const command = resolveCommand(['sandbox', 'get-sandbox-orders']);
 
@@ -414,6 +449,13 @@ describe('resolveCommand', () => {
     const command = resolveCommand(['sandbox', 'get-sandbox-portfolio']);
 
     assert.equal(command.name, 'sandbox get-sandbox-portfolio');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-pay-in command', () => {
+    const command = resolveCommand(['sandbox', 'sandbox-pay-in']);
+
+    assert.equal(command.name, 'sandbox sandbox-pay-in');
     assert.equal(typeof command.handler, 'function');
   });
 
@@ -532,13 +574,19 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('stoporders get-stop-orders'), true);
     assert.equal(isCommandName('stoporders post-stop-order'), true);
     assert.equal(isCommandName('stoporders cancel-stop-order'), true);
+    assert.equal(isCommandName('sandbox open-sandbox-account'), true);
     assert.equal(isCommandName('sandbox get-sandbox-accounts'), true);
+    assert.equal(isCommandName('sandbox close-sandbox-account'), true);
+    assert.equal(isCommandName('sandbox post-sandbox-order'), true);
+    assert.equal(isCommandName('sandbox replace-sandbox-order'), true);
     assert.equal(isCommandName('sandbox get-sandbox-orders'), true);
+    assert.equal(isCommandName('sandbox cancel-sandbox-order'), true);
     assert.equal(isCommandName('sandbox get-sandbox-order-state'), true);
     assert.equal(isCommandName('sandbox get-sandbox-positions'), true);
     assert.equal(isCommandName('sandbox get-sandbox-operations'), true);
     assert.equal(isCommandName('sandbox get-sandbox-operations-by-cursor'), true);
     assert.equal(isCommandName('sandbox get-sandbox-portfolio'), true);
+    assert.equal(isCommandName('sandbox sandbox-pay-in'), true);
     assert.equal(isCommandName('sandbox get-sandbox-withdraw-limits'), true);
     assert.equal(isCommandName('help'), true);
     assert.equal(isCommandName('version'), true);

@@ -1,0 +1,35 @@
+import type { CloseSandboxAccountReport } from '../../../application/reports';
+import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+
+export const closeSandboxAccountFormats = ['json', 'table'] as const;
+
+export type CloseSandboxAccountFormat = typeof closeSandboxAccountFormats[number];
+
+export function createCloseSandboxAccountReport(accountId: string): CloseSandboxAccountReport {
+  return {
+    accountId,
+    status: 'closed'
+  };
+}
+
+export function formatCloseSandboxAccountReport(
+  report: CloseSandboxAccountReport,
+  format: CloseSandboxAccountFormat
+): string {
+  if (format === 'json') {
+    return renderJson(report);
+  }
+
+  return renderTextTable([
+    ['accountId', 'status'],
+    [report.accountId, report.status]
+  ]);
+}
+
+export function formatCloseSandboxAccount(
+  accountId: string,
+  format: CloseSandboxAccountFormat
+): string {
+  return formatCloseSandboxAccountReport(createCloseSandboxAccountReport(accountId), format);
+}

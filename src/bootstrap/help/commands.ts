@@ -1542,6 +1542,169 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox get-sandbox-accounts --format=json'
     ]
   },
+  'sandbox open-sandbox-account': {
+    description: 'Open a sandbox account',
+    sdkCall: 'sdk.sandbox.openSandboxAccount',
+    grpcMethod: 'SandboxService/OpenSandboxAccount',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm [options]'
+    ],
+    required: [
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm',
+      'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm --format=json'
+    ],
+    notes: [
+      'This command opens a sandbox account and refuses to run without --confirm.'
+    ]
+  },
+  'sandbox close-sandbox-account': {
+    description: 'Close a sandbox account',
+    sdkCall: 'sdk.sandbox.closeSandboxAccount',
+    grpcMethod: 'SandboxService/CloseSandboxAccount',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=ID --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm',
+      'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm --format=json'
+    ],
+    notes: [
+      'This command closes a sandbox account and refuses to run without --confirm.'
+    ]
+  },
+  'sandbox post-sandbox-order': {
+    description: 'Post a sandbox order',
+    sdkCall: 'sdk.sandbox.postSandboxOrder',
+    grpcMethod: 'SandboxService/PostSandboxOrder',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=ID --instrument-id=ID --quantity=N --direction=buy|sell --order-type=TYPE --order-id=KEY --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--instrument-id=ID    FIGI or instrument UID',
+      '--quantity=N          Positive integer lots count',
+      '--direction=DIR       buy|sell',
+      '--order-type=TYPE     limit|market|bestprice',
+      '--order-id=KEY        Idempotency key, max provider length is 36 chars',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--price=DECIMAL       Price per instrument, up to 9 fractional digits; omitted for market orders',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
+      'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
+    ],
+    notes: [
+      'This command places a sandbox order and refuses to run without --confirm.',
+      'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
+    ]
+  },
+  'sandbox replace-sandbox-order': {
+    description: 'Replace a sandbox order',
+    sdkCall: 'sdk.sandbox.replaceSandboxOrder',
+    grpcMethod: 'SandboxService/ReplaceSandboxOrder',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=ID --order-id=ID --idempotency-key=KEY --quantity=N --price=DECIMAL --price-type=TYPE --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--order-id=ID         Exchange order identifier',
+      '--idempotency-key=KEY New idempotency key, max provider length is 36 chars',
+      '--quantity=N          Positive integer lots count',
+      '--price=DECIMAL       Price per instrument, up to 9 fractional digits',
+      '--price-type=TYPE     point|currency',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
+      'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
+    ],
+    notes: [
+      'This command changes an existing sandbox order and refuses to run without --confirm.',
+      'The CLI does not generate idempotency keys automatically.'
+    ]
+  },
+  'sandbox cancel-sandbox-order': {
+    description: 'Cancel a sandbox order',
+    sdkCall: 'sdk.sandbox.cancelSandboxOrder',
+    grpcMethod: 'SandboxService/CancelSandboxOrder',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=ID --order-id=ID --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--order-id=ID         Exchange order identifier',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm',
+      'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
+    ],
+    notes: [
+      'This command cancels a sandbox order and refuses to run without --confirm.'
+    ]
+  },
   'sandbox get-sandbox-orders': {
     description: 'Print active sandbox orders',
     sdkCall: 'sdk.sandbox.getSandboxOrders',
@@ -1719,6 +1882,39 @@ export const commandHelp = {
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000',
       'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000 --currency=usd --format=json'
+    ]
+  },
+  'sandbox sandbox-pay-in': {
+    description: 'Pay in to a sandbox account',
+    sdkCall: 'sdk.sandbox.sandboxPayIn',
+    grpcMethod: 'SandboxService/SandboxPayIn',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=ID --amount=DECIMAL --currency=rub|usd --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--amount=DECIMAL      Positive decimal amount, up to 9 fractional digits',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--currency=rub|usd    Pay-in currency (default: rub)',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm',
+      'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm --format=json'
+    ],
+    notes: [
+      'This command changes sandbox account balance and refuses to run without --confirm.',
+      'Unknown currency values are rejected by CLI parsing; --currency=usd is accepted by the parser but fails as unsupported.'
     ]
   },
   'sandbox get-sandbox-withdraw-limits': {
