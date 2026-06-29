@@ -466,6 +466,13 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves stream run command', () => {
+    const command = resolveCommand(['stream', 'run']);
+
+    assert.equal(command.name, 'stream run');
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves help command', () => {
     const command = resolveCommand(['help']);
 
@@ -484,14 +491,22 @@ describe('resolveCommand', () => {
     const command = resolveCommand(['version']);
     const output = await command.handler(['version']);
 
-    assert.match(output ?? '', /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
+    if (typeof output !== 'string') {
+      throw new Error('Expected version command output as string');
+    }
+
+    assert.match(output, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
   });
 
   test('returns executable help command handler', async () => {
     const command = resolveCommand(['help']);
     const output = await command.handler(['help', 'version']);
 
-    assert.match(output ?? '', /version - Show package and runtime version info/);
+    if (typeof output !== 'string') {
+      throw new Error('Expected help command output as string');
+    }
+
+    assert.match(output, /version - Show package and runtime version info/);
   });
 
   test('passes named options to command-line definitions', async () => {
@@ -588,6 +603,7 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('sandbox get-sandbox-portfolio'), true);
     assert.equal(isCommandName('sandbox sandbox-pay-in'), true);
     assert.equal(isCommandName('sandbox get-sandbox-withdraw-limits'), true);
+    assert.equal(isCommandName('stream run'), true);
     assert.equal(isCommandName('help'), true);
     assert.equal(isCommandName('version'), true);
     assert.equal(isCommandName('instruments options'), false);

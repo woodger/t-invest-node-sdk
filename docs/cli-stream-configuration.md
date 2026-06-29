@@ -1,7 +1,7 @@
 # Stream CLI Configuration Reference
 
-> Type: Reference Draft. Документ описывает целевой JSON config для будущей
-> команды `tinkoff-invest-node-sdk stream run --config=PATH`.
+> Type: Reference. Документ описывает JSON config для команды
+> `tinkoff-invest-node-sdk stream run --config=PATH`.
 
 ## Цель
 
@@ -33,11 +33,13 @@ generated DTO вручную для типовых подписок.
 
 Allowed `stream` values:
 
-- `marketdata.marketDataStream`;
 - `marketdata.marketDataServerSideStream`;
 - `operations.portfolioStream`;
 - `operations.positionsStream`;
 - `orders.tradesStream`.
+
+`marketdata.marketDataStream` является известным bidirectional stream selector,
+но текущая команда намеренно отклоняет его до проектирования input contract.
 
 ## Runtime
 
@@ -118,30 +120,23 @@ Subscription defaults:
 - `waitingClose` defaults to `false`;
 - `orderBooks[].depth` is required and must be a positive integer.
 
-Supported candle interval aliases should match existing CLI language:
+Supported candle interval aliases:
 
 - `1min`;
-- `2min`;
-- `3min`;
-- `5min`;
-- `10min`;
-- `15min`;
-- `30min`;
-- `hour`;
-- `2hour`;
-- `4hour`;
-- `day`;
-- `week`;
-- `month`.
+- `5min`.
+
+Другие aliases из unary historical candles CLI не принимаются здесь, потому
+что generated `SubscriptionInterval` для stream contract сейчас содержит
+только one-minute и five-minutes интервалы.
 
 ## MarketDataStream vs MarketDataServerSideStream
 
 `marketdata.marketDataServerSideStream` sends one initial request and then reads
 events. It is the preferred first implementation target.
 
-`marketdata.marketDataStream` is bidirectional. Initial implementation can still
-start from config-defined initial requests, but later versions may support
-dynamic request sources.
+`marketdata.marketDataStream` is bidirectional and is not implemented by the
+current `stream run` command. Later versions may support dynamic request
+sources.
 
 Advanced raw bidirectional form:
 
@@ -168,8 +163,8 @@ Advanced raw bidirectional form:
 }
 ```
 
-Raw mode is for users who need generated contract fidelity before the typed
-config surface covers their case.
+Raw bidirectional request mode is a future extension for users who need
+generated contract fidelity before the typed config surface covers their case.
 
 ## Account Streams
 

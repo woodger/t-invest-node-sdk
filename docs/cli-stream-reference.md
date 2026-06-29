@@ -1,8 +1,7 @@
 # Stream CLI Reference
 
-> Type: Reference Draft. Документ фиксирует целевой CLI-контракт для stream
-> API перед реализацией. Описанные здесь stream-команды пока не являются
-> текущим CLI-контрактом.
+> Type: Reference. Документ фиксирует текущий CLI-контракт `stream run` для
+> server-side streams и отдельно отмечает будущие расширения.
 
 ## Статус
 
@@ -16,7 +15,7 @@ Stream API требует отдельного контракта: команд�
 не завершается сразу. Она открывает долгоживущий stream, печатает события и
 завершается по лимиту, таймауту, сигналу или ошибке provider-а.
 
-Целевая точка входа:
+Текущая точка входа:
 
 ```bash
 tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
@@ -26,11 +25,21 @@ tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
 конкретный generated stream method выбирается внутри config-файла. Это нужно,
 чтобы не угадывать десятки specialized flags для разных stream-сценариев.
 
+Текущая реализация поддерживает только server-side streams:
+
+- `marketdata.marketDataServerSideStream`;
+- `operations.portfolioStream`;
+- `operations.positionsStream`;
+- `orders.tradesStream`.
+
+Bidirectional `marketdata.marketDataStream` распознается как stream selector,
+но намеренно отклоняется до проектирования input contract.
+
 ## Доступные Stream Methods
 
 | Config `stream` | SDK method | gRPC method | Stream type |
 | --- | --- | --- | --- |
-| `marketdata.marketDataStream` | `sdk.marketdataStream.marketDataStream` | `MarketDataStreamService/MarketDataStream` | bidirectional |
+| `marketdata.marketDataStream` | `sdk.marketdataStream.marketDataStream` | `MarketDataStreamService/MarketDataStream` | bidirectional, not implemented |
 | `marketdata.marketDataServerSideStream` | `sdk.marketdataStream.marketDataServerSideStream` | `MarketDataStreamService/MarketDataServerSideStream` | server-side |
 | `operations.portfolioStream` | `sdk.operationsStream.portfolioStream` | `OperationsStreamService/PortfolioStream` | server-side |
 | `operations.positionsStream` | `sdk.operationsStream.positionsStream` | `OperationsStreamService/PositionsStream` | server-side |
@@ -38,7 +47,7 @@ tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
 
 ## Runtime Model
 
-`stream run` должен выполнять один stream session:
+`stream run` выполняет один stream session:
 
 1. прочитать и провалидировать config;
 2. применить CLI runtime overrides;
@@ -46,8 +55,8 @@ tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
 4. открыть stream;
 5. писать события в `stdout`;
 6. писать diagnostics/errors/status в `stderr`;
-7. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, `SIGINT`,
-   `SIGTERM` или provider error;
+7. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию stream
+   или provider error;
 8. закрыть SDK channel в `finally`.
 
 ## Output Contract
@@ -120,7 +129,7 @@ tinkoff-invest-node-sdk stream run \
   --include-pings
 ```
 
-Целевые runtime options:
+Runtime options:
 
 - `--config=PATH` - путь к JSON config, required;
 - `--max-events=N` - завершиться после N output events;
@@ -139,12 +148,13 @@ tinkoff-invest-node-sdk stream run \
 
 При любом завершении SDK должен закрываться в `finally`.
 
-## Backpressure
+## Backpressure Target
 
-Печать в `stdout` должна уважать backpressure writable stream-а. CLI не должен
-быстро буферизовать бесконечный stream в памяти, если consumer читает медленно.
+`stream run` отдает output как последовательность chunks, чтобы не собирать
+бесконечный stream в одну строку. Полная поддержка writable backpressure через
+ожидание `drain` остается отдельным улучшением CLI runner-а.
 
-## Не Цели Первой Реализации
+## Не Цели Текущей Реализации
 
 - table/csv output для stream events;
 - automatic reconnect;
@@ -153,8 +163,7 @@ tinkoff-invest-node-sdk stream run \
 - агрегация событий в application report;
 - file output вместо stdout.
 
-Эти возможности можно добавить позднее, когда базовый `stream run --config`
-контракт станет стабильным.
+Эти возможности можно добавить позднее отдельными изменениями контракта.
 
 ## Связанная Документация
 

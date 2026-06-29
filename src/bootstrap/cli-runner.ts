@@ -14,6 +14,8 @@ import { isHelpRequested, renderHelp } from './help/help';
 import { renderCliHelp } from './help/renderer';
 import { isVersionRequested, renderVersionInfo } from './version';
 
+type CliCommandOutput = string | AsyncIterable<string> | undefined;
+
 type CliWritable = {
   write(chunk: string): unknown;
 };
@@ -115,11 +117,7 @@ export async function runCli(
   }
 
   try {
-    const output = await command.handler(normalizedArgv);
-
-    if (output !== undefined) {
-      io.stdout.write(output);
-    }
+    await writeCommandOutput(await command.handler(normalizedArgv), io.stdout);
 
     return 0;
   }
@@ -128,4 +126,31 @@ export async function runCli(
   }
 
   return 1;
+}
+
+async function writeCommandOutput(
+  output: CliCommandOutput,
+  stdout: CliWritable
+): Promise<void> {
+  if (output === undefined) {
+    return;
+  }
+
+  if (isAsyncIterable(output)) {
+    for await (const chunk of output) {
+      stdout.write(chunk);
+    }
+
+    return;
+  }
+
+  stdout.write(output);
+}
+
+function isAsyncIterable(value: unknown): value is AsyncIterable<string> {
+  return (
+    typeof value === 'object'
+    && value !== null
+    && Symbol.asyncIterator in value
+  );
 }

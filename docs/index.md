@@ -154,14 +154,15 @@ yarn cli users get-accounts --format=json
 - `sandbox get-sandbox-operations-by-cursor` - страница sandbox-операций по cursor-контракту;
 - `sandbox get-sandbox-portfolio` - текущий sandbox-портфель по счету;
 - `sandbox sandbox-pay-in` - пополнение sandbox-счета;
-- `sandbox get-sandbox-withdraw-limits` - sandbox-остаток для вывода.
+- `sandbox get-sandbox-withdraw-limits` - sandbox-остаток для вывода;
+- `stream run` - запуск server-side stream по JSON config.
 
 Отложенные группы команд (`To introduce`) описаны в
-[API Commands](./clean-architecture/api-commands.md): stream API вводится
-отдельно от unary CLI-команд. Команды с side effects требуют явный флаг
-`--confirm`.
+[API Commands](./clean-architecture/api-commands.md). Команды с side effects
+требуют явный флаг `--confirm`; bidirectional stream остается отложенным
+контрактом.
 
-Целевой контракт для stream CLI зафиксирован отдельно:
+Контракт для stream CLI зафиксирован отдельно:
 [Stream CLI Reference](./cli-stream-reference.md) и
 [Stream CLI Configuration Reference](./cli-stream-configuration.md).
 
@@ -190,8 +191,8 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 - Карта слоев SDK: [Архитектура SDK](./architecture.md)
 - Clean Architecture design notes: [Clean Architecture Notes](./clean-architecture/index.md)
 - Границы CLI formatting и stdout: [Разделение форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md)
-- Целевой stream CLI контракт: [Stream CLI Reference](./cli-stream-reference.md)
-- Целевой stream config контракт: [Stream CLI Configuration Reference](./cli-stream-configuration.md)
+- Stream CLI контракт: [Stream CLI Reference](./cli-stream-reference.md)
+- Stream config контракт: [Stream CLI Configuration Reference](./cli-stream-configuration.md)
 - Подробности по лимитам API: [Лимитная политика](./limits-policy.md)
 - Правила тестирования и test pipeline: [Политики проекта](./policy/index.md)
 - Правила запуска и написания тестов: [Политика тестирования](./policy/testing-policy.md)

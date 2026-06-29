@@ -74,6 +74,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /sandbox get-sandbox-portfolio/);
     assert.match(help, /sandbox sandbox-pay-in/);
     assert.match(help, /sandbox get-sandbox-withdraw-limits/);
+    assert.match(help, /stream run/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /Examples:/);
@@ -98,5 +99,13 @@ describe('renderCommandHelp', () => {
 
     assert.match(help, /help - Show top-level or command-specific help/);
     assert.match(help, /tinkoff-invest-node-sdk help <service> <method>/);
+  });
+
+  test('renders stream run command page', () => {
+    const help = renderCommandHelp('stream run');
+
+    assert.match(help, /stream run - Run a configured server-side stream/);
+    assert.match(help, /tinkoff-invest-node-sdk stream run --config=PATH/);
+    assert.match(help, /Current implementation supports server-side streams only/);
   });
 });

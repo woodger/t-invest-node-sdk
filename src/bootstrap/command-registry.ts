@@ -70,6 +70,7 @@ import { sandboxWithdrawLimitsCommand } from './commands/sandbox-withdraw-limits
 import { shareCommand } from './commands/share/cli';
 import { sharesCommand } from './commands/shares/cli';
 import { stopOrdersCommand } from './commands/stop-orders/cli';
+import { streamRunCommand } from './commands/stream-run/cli';
 import { tradingSchedulesCommand } from './commands/trading-schedules/cli';
 import { tradingStatusCommand } from './commands/trading-status/cli';
 import { tradingStatusesCommand } from './commands/trading-statuses/cli';
@@ -86,7 +87,7 @@ import {
   type OptionsSchema
 } from 'icore';
 
-type CliCommandOutput = string | undefined;
+type CliCommandOutput = string | AsyncIterable<string> | undefined;
 type CliCommand = (args: readonly string[]) => CliCommandOutput | Promise<CliCommandOutput>;
 
 export type ResolvedCommand = {
@@ -177,6 +178,9 @@ type InstrumentsCommandLineName =
   | 'instruments shares'
   | 'instruments trading-schedules';
 
+type StreamCommandName =
+  | 'stream run';
+
 export type CommandName =
   | UsersCommandName
   | OrdersCommandName
@@ -185,6 +189,7 @@ export type CommandName =
   | MarketDataCommandName
   | OperationsCommandName
   | InstrumentsCommandLineName
+  | StreamCommandName
   | 'help'
   | 'version';
 
@@ -306,6 +311,7 @@ const commandLineRegistry = defineCommandRegistry(
     defineCommandLineCommand(bondCouponsCommand),
     defineCommandLineCommand(dividendsCommand),
     defineCommandLineCommand(tradingSchedulesCommand),
+    defineCommandLineCommand(streamRunCommand),
     defineCommandLineCommand(helpCommand),
     defineCommandLineCommand(versionCommand)
   ]

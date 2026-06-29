@@ -1943,6 +1943,39 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000 --format=json'
     ]
   },
+  'stream run': {
+    description: 'Run a configured server-side stream and print JSONL events',
+    usage: [
+      'tinkoff-invest-node-sdk stream run --config=PATH [options]'
+    ],
+    required: [
+      '--config=PATH        Path to stream JSON config'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--max-events=N         Stop after N printed events',
+      '--duration-ms=N        Stop after N milliseconds from stream start',
+      '--idle-timeout-ms=N    Stop after N milliseconds without provider events',
+      '--include-pings        Print ping events',
+      '--raw                  Print generated response shape without envelope',
+      '--format=jsonl         Output format (default: jsonl)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk stream run --config=portfolio-stream.json --max-events=10',
+      'tinkoff-invest-node-sdk stream run --config=marketdata-stream.json --include-pings'
+    ],
+    notes: [
+      'Current implementation supports server-side streams only.',
+      'Bidirectional marketdata.marketDataStream is intentionally rejected until its input contract is designed.'
+    ]
+  },
   help: {
     description: 'Show top-level or command-specific help',
     usage: [
