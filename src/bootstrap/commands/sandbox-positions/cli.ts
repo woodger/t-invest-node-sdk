@@ -1,0 +1,88 @@
+import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
+import { defineCommand, type InferOptions } from 'icore';
+import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { createPositionsRequest } from '../positions/cli';
+import { formatPositions, positionsFormats, type PositionsFormat } from '../positions/reporter';
+
+type SandboxPositionsSdk = {
+  sandbox: {
+    getSandboxPositions(request: PositionsRequest): Promise<PositionsResponse>;
+  };
+  close(): void;
+};
+
+type SandboxPositionsSdkFactory = (options: TinkoffInvestOptions) => SandboxPositionsSdk;
+
+const sandboxPositionsCommandPath = ['sandbox', 'get-sandbox-positions'] as const;
+const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+
+const sandboxPositionsRequestOptionsSchema = {
+  'account-id': {
+    type: 'string',
+    required: true
+  }
+} as const;
+
+const sandboxPositionsFormatOptionsSchema = {
+  format: {
+    type: 'string',
+    choices: positionsFormats,
+    default: 'table'
+  }
+} as const;
+
+const sandboxPositionsOptionsSchema = withSdkOptions(
+  sandboxPositionsRequestOptionsSchema,
+  sandboxPositionsFormatOptionsSchema
+);
+
+type SandboxPositionsOptions = InferOptions<typeof sandboxPositionsOptionsSchema>;
+type SandboxPositionsRequestOptions = CommandRequestOptions<SandboxPositionsOptions, 'account-id'>;
+
+export function parseSandboxPositionsFormat(rawOptions: CommandRawOptions): PositionsFormat {
+  return parseCommandOptions(rawOptions, sandboxPositionsFormatOptionsSchema).format;
+}
+
+export function createSandboxPositionsCommand(
+  createSdk: SandboxPositionsSdkFactory = defaultSandboxPositionsSdkFactory
+) {
+  return defineCommand({
+    path: sandboxPositionsCommandPath,
+    options: sandboxPositionsOptionsSchema,
+    handle({ options }) {
+      return runSandboxPositionsCommand(options, createSdk);
+    }
+  });
+}
+
+export const sandboxPositionsCommand = createSandboxPositionsCommand();
+
+async function runSandboxPositionsCommand(
+  options: SandboxPositionsOptions,
+  createSdk: SandboxPositionsSdkFactory
+): Promise<string> {
+  const request = createSandboxPositionsRequest(options);
+  const { format } = options;
+  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
+
+  try {
+    const response = await sdk.sandbox.getSandboxPositions(request);
+
+    return formatPositions(response, format);
+  }
+  finally {
+    sdk.close();
+  }
+}
+
+export { formatPositions };
+
+export function createSandboxPositionsRequest(
+  options: SandboxPositionsRequestOptions
+): PositionsRequest {
+  return createPositionsRequest(options);
+}

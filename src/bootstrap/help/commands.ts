@@ -1519,6 +1519,234 @@ export const commandHelp = {
       'This command cancels a stop order and refuses to run without --confirm.'
     ]
   },
+  'sandbox get-sandbox-accounts': {
+    description: 'Print sandbox accounts',
+    sdkCall: 'sdk.sandbox.getSandboxAccounts',
+    grpcMethod: 'SandboxService/GetSandboxAccounts',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-accounts [options]'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-accounts',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-accounts --format=json'
+    ]
+  },
+  'sandbox get-sandbox-orders': {
+    description: 'Print active sandbox orders',
+    sdkCall: 'sdk.sandbox.getSandboxOrders',
+    grpcMethod: 'SandboxService/GetSandboxOrders',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=2000000000 --format=json'
+    ]
+  },
+  'sandbox get-sandbox-order-state': {
+    description: 'Print sandbox order state',
+    sdkCall: 'sdk.sandbox.getSandboxOrderState',
+    grpcMethod: 'SandboxService/GetSandboxOrderState',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=ID --order-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--order-id=ID         Exchange order identifier'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=2000000000 --order-id=12345',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=2000000000 --order-id=12345 --format=json'
+    ]
+  },
+  'sandbox get-sandbox-positions': {
+    description: 'Print sandbox positions',
+    sdkCall: 'sdk.sandbox.getSandboxPositions',
+    grpcMethod: 'SandboxService/GetSandboxPositions',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=2000000000 --format=json'
+    ]
+  },
+  'sandbox get-sandbox-operations': {
+    description: 'Print sandbox operations',
+    sdkCall: 'sdk.sandbox.getSandboxOperations',
+    grpcMethod: 'SandboxService/GetSandboxOperations',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=ID --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
+      '--figi=FIGI            Optional instrument FIGI filter',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --state=executed --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
+  'sandbox get-sandbox-operations-by-cursor': {
+    description: 'Print one cursor page of sandbox operations',
+    sdkCall: 'sdk.sandbox.getSandboxOperationsByCursor',
+    grpcMethod: 'SandboxService/GetSandboxOperationsByCursor',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+    ],
+    optional: [
+      '--instrument-id=ID    Optional FIGI or instrument UID filter',
+      '--from=ISO             Optional start timestamp, inclusive',
+      '--to=ISO               Optional end timestamp, inclusive',
+      '--cursor=CURSOR        Cursor returned as nextCursor by the previous page',
+      '--limit=N              Page size from 1 to 1000; provider default is used when omitted',
+      '--operation-type=TYPE  Generated OperationType name; comma-separated list is allowed',
+      '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
+      '--without-commissions  Exclude commissions',
+      '--without-trades       Exclude trades',
+      '--without-overnights   Exclude overnight operations',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=2000000000 --limit=100',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
+    ],
+    notes: [
+      'The command returns one page; pass nextCursor as --cursor to request the next page.',
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
+  'sandbox get-sandbox-portfolio': {
+    description: 'Print sandbox portfolio',
+    sdkCall: 'sdk.sandbox.getSandboxPortfolio',
+    grpcMethod: 'SandboxService/GetSandboxPortfolio',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--currency=rub|usd|eur Portfolio valuation currency (default: rub)',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000 --currency=usd --format=json'
+    ]
+  },
+  'sandbox get-sandbox-withdraw-limits': {
+    description: 'Print sandbox withdraw limits',
+    sdkCall: 'sdk.sandbox.getSandboxWithdrawLimits',
+    grpcMethod: 'SandboxService/GetSandboxWithdrawLimits',
+    usage: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=ID [options]'
+    ],
+    required: [
+      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000 --format=json'
+    ]
+  },
   help: {
     description: 'Show top-level or command-specific help',
     usage: [

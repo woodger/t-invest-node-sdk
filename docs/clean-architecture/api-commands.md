@@ -58,7 +58,15 @@
 - `operations get-withdraw-limits` -> `sdk.operations.getWithdrawLimits`;
 - `stoporders get-stop-orders` -> `sdk.stoporders.getStopOrders`;
 - `stoporders post-stop-order` -> `sdk.stoporders.postStopOrder`;
-- `stoporders cancel-stop-order` -> `sdk.stoporders.cancelStopOrder`.
+- `stoporders cancel-stop-order` -> `sdk.stoporders.cancelStopOrder`;
+- `sandbox get-sandbox-accounts` -> `sdk.sandbox.getSandboxAccounts`;
+- `sandbox get-sandbox-orders` -> `sdk.sandbox.getSandboxOrders`;
+- `sandbox get-sandbox-order-state` -> `sdk.sandbox.getSandboxOrderState`;
+- `sandbox get-sandbox-positions` -> `sdk.sandbox.getSandboxPositions`;
+- `sandbox get-sandbox-operations` -> `sdk.sandbox.getSandboxOperations`;
+- `sandbox get-sandbox-operations-by-cursor` -> `sdk.sandbox.getSandboxOperationsByCursor`;
+- `sandbox get-sandbox-portfolio` -> `sdk.sandbox.getSandboxPortfolio`;
+- `sandbox get-sandbox-withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -71,26 +79,18 @@ framework заранее не вводится.
 Команды ниже пока не являются текущим CLI-контрактом. Этот список фиксирует
 отложенные группы API-команд, которые нужно вводить отдельно и осознанно.
 
-Sandbox service откладывается целиком:
+Оставшиеся sandbox lifecycle/side-effect команды откладываются отдельно:
 
 - `sandbox open-sandbox-account`;
-- `sandbox get-sandbox-accounts`;
 - `sandbox close-sandbox-account`;
 - `sandbox post-sandbox-order`;
 - `sandbox replace-sandbox-order`;
-- `sandbox get-sandbox-orders`;
 - `sandbox cancel-sandbox-order`;
-- `sandbox get-sandbox-order-state`;
-- `sandbox get-sandbox-positions`;
-- `sandbox get-sandbox-operations`;
-- `sandbox get-sandbox-operations-by-cursor`;
-- `sandbox get-sandbox-portfolio`;
-- `sandbox sandbox-pay-in`;
-- `sandbox get-sandbox-withdraw-limits`.
+- `sandbox sandbox-pay-in`.
 
-Команды с side effects являются текущим CLI-контрактом, но требуют явный
-`--confirm`. CLI не генерирует idempotency keys автоматически: `orders
-post-order` принимает `--order-id`, а `orders replace-order` принимает
+Реализованные команды с side effects являются текущим CLI-контрактом, но
+требуют явный `--confirm`. CLI не генерирует idempotency keys автоматически:
+`orders post-order` принимает `--order-id`, а `orders replace-order` принимает
 `--idempotency-key`.
 
 Stream API откладывается отдельно от unary CLI-команд. CLI-контракт для
@@ -108,9 +108,9 @@ Deprecated generated methods не вводятся как публичные CLI
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
   используется `instruments options-by` / `sdk.instruments.optionsBy`.
 
-Перед реализацией отложенных sandbox/stream команд нужно явно определить
-CLI-контракт, идемпотентность/повторный запуск, формат подтверждения опасных
-действий и ожидаемое поведение при ошибках provider-а.
+Перед реализацией отложенных sandbox lifecycle/side-effect и stream команд
+нужно явно определить CLI-контракт, идемпотентность/повторный запуск, формат
+подтверждения опасных действий и ожидаемое поведение при ошибках provider-а.
 
 Команда делает несколько разных вещей:
 

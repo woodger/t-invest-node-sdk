@@ -140,12 +140,20 @@ yarn cli users get-accounts --format=json
 - `operations get-withdraw-limits` - доступный остаток для вывода;
 - `stoporders get-stop-orders` - активные стоп-заявки по счету;
 - `stoporders post-stop-order` - выставление стоп-заявки;
-- `stoporders cancel-stop-order` - отмена стоп-заявки.
+- `stoporders cancel-stop-order` - отмена стоп-заявки;
+- `sandbox get-sandbox-accounts` - список sandbox-счетов;
+- `sandbox get-sandbox-orders` - активные sandbox-поручения;
+- `sandbox get-sandbox-order-state` - статус sandbox-поручения;
+- `sandbox get-sandbox-positions` - sandbox-позиции по счету;
+- `sandbox get-sandbox-operations` - sandbox-операции по счету за период;
+- `sandbox get-sandbox-operations-by-cursor` - страница sandbox-операций по cursor-контракту;
+- `sandbox get-sandbox-portfolio` - текущий sandbox-портфель по счету;
+- `sandbox get-sandbox-withdraw-limits` - sandbox-остаток для вывода.
 
 Отложенные группы команд (`To introduce`) описаны в
-[API Commands](./clean-architecture/api-commands.md): весь `sandbox` service,
-stream API вводятся отдельно от unary CLI-команд. Команды с side effects
-требуют явный флаг `--confirm`.
+[API Commands](./clean-architecture/api-commands.md): оставшиеся sandbox
+lifecycle/side-effect команды и stream API вводятся отдельно от unary
+read/report CLI-команд. Команды с side effects требуют явный флаг `--confirm`.
 Deprecated `sdk.instruments.options` не вводится как публичная CLI-команда;
 для опционов используется `instruments options-by`.
 
