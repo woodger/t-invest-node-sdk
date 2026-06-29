@@ -53,6 +53,14 @@ import { postOrderCommand } from './commands/post-order/cli';
 import { postStopOrderCommand } from './commands/post-stop-order/cli';
 import { positionsCommand } from './commands/positions/cli';
 import { replaceOrderCommand } from './commands/replace-order/cli';
+import { sandboxAccountsCommand } from './commands/sandbox-accounts/cli';
+import { sandboxOperationsCommand } from './commands/sandbox-operations/cli';
+import { sandboxOperationsByCursorCommand } from './commands/sandbox-operations-by-cursor/cli';
+import { sandboxOrdersCommand } from './commands/sandbox-orders/cli';
+import { sandboxOrderStateCommand } from './commands/sandbox-order-state/cli';
+import { sandboxPortfolioCommand } from './commands/sandbox-portfolio/cli';
+import { sandboxPositionsCommand } from './commands/sandbox-positions/cli';
+import { sandboxWithdrawLimitsCommand } from './commands/sandbox-withdraw-limits/cli';
 import { shareCommand } from './commands/share/cli';
 import { sharesCommand } from './commands/shares/cli';
 import { stopOrdersCommand } from './commands/stop-orders/cli';
@@ -100,6 +108,16 @@ type StopOrdersCommandName =
   | 'stoporders get-stop-orders'
   | 'stoporders post-stop-order'
   | 'stoporders cancel-stop-order';
+
+type SandboxCommandName =
+  | 'sandbox get-sandbox-accounts'
+  | 'sandbox get-sandbox-orders'
+  | 'sandbox get-sandbox-order-state'
+  | 'sandbox get-sandbox-positions'
+  | 'sandbox get-sandbox-operations'
+  | 'sandbox get-sandbox-operations-by-cursor'
+  | 'sandbox get-sandbox-portfolio'
+  | 'sandbox get-sandbox-withdraw-limits';
 
 type MarketDataCommandName =
   | 'marketdata get-candles'
@@ -151,6 +169,7 @@ export type CommandName =
   | UsersCommandName
   | OrdersCommandName
   | StopOrdersCommandName
+  | SandboxCommandName
   | MarketDataCommandName
   | OperationsCommandName
   | InstrumentsCommandLineName
@@ -222,6 +241,14 @@ const commandLineRegistry = defineCommandRegistry(
     defineCommandLineCommand(stopOrdersCommand),
     defineCommandLineCommand(postStopOrderCommand),
     defineCommandLineCommand(cancelStopOrderCommand),
+    defineCommandLineCommand(sandboxAccountsCommand),
+    defineCommandLineCommand(sandboxOrdersCommand),
+    defineCommandLineCommand(sandboxOrderStateCommand),
+    defineCommandLineCommand(sandboxPositionsCommand),
+    defineCommandLineCommand(sandboxOperationsCommand),
+    defineCommandLineCommand(sandboxOperationsByCursorCommand),
+    defineCommandLineCommand(sandboxPortfolioCommand),
+    defineCommandLineCommand(sandboxWithdrawLimitsCommand),
     defineCommandLineCommand(closePricesCommand),
     defineCommandLineCommand(lastPricesCommand),
     defineCommandLineCommand(lastTradesCommand),

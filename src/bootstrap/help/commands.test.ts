@@ -53,6 +53,14 @@ describe('commandHelp', () => {
         'orders get-orders',
         'orders post-order',
         'orders replace-order',
+        'sandbox get-sandbox-accounts',
+        'sandbox get-sandbox-operations',
+        'sandbox get-sandbox-operations-by-cursor',
+        'sandbox get-sandbox-order-state',
+        'sandbox get-sandbox-orders',
+        'sandbox get-sandbox-portfolio',
+        'sandbox get-sandbox-positions',
+        'sandbox get-sandbox-withdraw-limits',
         'stoporders cancel-stop-order',
         'stoporders get-stop-orders',
         'stoporders post-stop-order',
@@ -120,6 +128,14 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('stoporders get-stop-orders'), true);
     assert.equal(isCommandHelpName('stoporders post-stop-order'), true);
     assert.equal(isCommandHelpName('stoporders cancel-stop-order'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-accounts'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-orders'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-order-state'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-positions'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-operations'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-operations-by-cursor'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-portfolio'), true);
+    assert.equal(isCommandHelpName('sandbox get-sandbox-withdraw-limits'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
     assert.equal(isCommandHelpName('instruments options'), false);

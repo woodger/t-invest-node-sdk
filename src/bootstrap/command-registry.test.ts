@@ -368,6 +368,62 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves sandbox-accounts command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-accounts']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-accounts');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-orders command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-orders']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-orders');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-order-state command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-order-state']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-order-state');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-positions command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-positions']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-positions');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-operations command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-operations']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-operations');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-operations-by-cursor command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-operations-by-cursor']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-operations-by-cursor');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-portfolio command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-portfolio']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-portfolio');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves sandbox-withdraw-limits command', () => {
+    const command = resolveCommand(['sandbox', 'get-sandbox-withdraw-limits']);
+
+    assert.equal(command.name, 'sandbox get-sandbox-withdraw-limits');
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves help command', () => {
     const command = resolveCommand(['help']);
 
@@ -476,6 +532,14 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('stoporders get-stop-orders'), true);
     assert.equal(isCommandName('stoporders post-stop-order'), true);
     assert.equal(isCommandName('stoporders cancel-stop-order'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-accounts'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-orders'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-order-state'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-positions'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-operations'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-operations-by-cursor'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-portfolio'), true);
+    assert.equal(isCommandName('sandbox get-sandbox-withdraw-limits'), true);
     assert.equal(isCommandName('help'), true);
     assert.equal(isCommandName('version'), true);
     assert.equal(isCommandName('instruments options'), false);

@@ -60,6 +60,14 @@ describe('renderCliHelp', () => {
     assert.match(help, /stoporders post-stop-order/);
     assert.match(help, /stoporders cancel-stop-order/);
     assert.match(help, /stoporders get-stop-orders/);
+    assert.match(help, /sandbox get-sandbox-accounts/);
+    assert.match(help, /sandbox get-sandbox-orders/);
+    assert.match(help, /sandbox get-sandbox-order-state/);
+    assert.match(help, /sandbox get-sandbox-positions/);
+    assert.match(help, /sandbox get-sandbox-operations/);
+    assert.match(help, /sandbox get-sandbox-operations-by-cursor/);
+    assert.match(help, /sandbox get-sandbox-portfolio/);
+    assert.match(help, /sandbox get-sandbox-withdraw-limits/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /Examples:/);
