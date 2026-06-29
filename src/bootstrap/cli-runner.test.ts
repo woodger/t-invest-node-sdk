@@ -188,6 +188,47 @@ describe('bootstrap cli runner', () => {
       assert.match(read().stderr, /Usage:/);
     });
 
+    test('waits for async stderr writes', async () => {
+      let finishWrite: (() => void) | undefined;
+      let commandFinished = false;
+      let stderrWrites = 0;
+      const exitCode = runCli(['unknown-command'], {
+        stdout: {
+          write() {}
+        },
+        stderr: {
+          write() {
+            stderrWrites += 1;
+
+            if (stderrWrites === 1) {
+              return new Promise<void>((resolve) => {
+                finishWrite = resolve;
+              });
+            }
+          }
+        }
+      }).then((code) => {
+        commandFinished = true;
+
+        return code;
+      });
+
+      await Promise.resolve();
+
+      assert.equal(commandFinished, false);
+      assert.equal(stderrWrites, 1);
+
+      if (finishWrite === undefined) {
+        throw new Error('Expected stderr write to start');
+      }
+
+      finishWrite();
+
+      assert.equal(await exitCode, 1);
+      assert.equal(commandFinished, true);
+      assert.equal(stderrWrites, 2);
+    });
+
     test('does not resolve legacy shortcut commands', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['portfolio'], io);

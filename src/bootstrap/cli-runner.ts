@@ -110,8 +110,8 @@ export async function runCli(
     command = resolveCommand(action);
   }
   catch {
-    io.stderr.write(`Unknown command: ${action.join(' ')}\n\n`);
-    io.stderr.write(renderCliHelp());
+    await io.stderr.write(`Unknown command: ${action.join(' ')}\n\n`);
+    await io.stderr.write(renderCliHelp());
 
     return 1;
   }
@@ -122,7 +122,7 @@ export async function runCli(
     return 0;
   }
   catch (error) {
-    io.stderr.write(renderCommandError(error));
+    await io.stderr.write(renderCommandError(error));
   }
 
   return 1;
