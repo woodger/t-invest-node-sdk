@@ -49,7 +49,7 @@ describe('bond-coupons command', () => {
   describe('createBondCouponsRequest', () => {
     test('returns generated getBondCoupons request', () => {
       const request = createBondCouponsRequest({
-        figi: 'BOND-FIGI',
+        'instrument-id': 'BOND-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
       });
@@ -117,7 +117,7 @@ describe('bond-coupons command', () => {
           'get-bond-coupons',
           '--token=token',
           '--endpoint=localhost:50051',
-          '--figi=BOND-FIGI',
+          '--instrument-id=BOND-FIGI',
           '--from=2026-01-01T00:00:00Z',
           '--to=2026-01-31T00:00:00Z',
           '--format=json'
@@ -160,7 +160,7 @@ describe('bond-coupons command', () => {
             'get-bond-coupons',
             '--token=token',
             '--endpoint=localhost:50051',
-            '--figi=BOND-FIGI',
+            '--instrument-id=BOND-FIGI',
             '--from=2026-01-01T00:00:00Z',
             '--to=2026-01-31T00:00:00Z'
           ],

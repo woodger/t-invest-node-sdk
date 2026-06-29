@@ -45,7 +45,7 @@ describe('futures-margin command', () => {
   describe('createFuturesMarginRequest', () => {
     test('returns generated getFuturesMargin request', () => {
       const request = createFuturesMarginRequest({
-        figi: 'FUTFIGI'
+        'instrument-id': 'FUTFIGI'
       });
 
       assert.deepEqual(request, {
@@ -98,7 +98,7 @@ describe('futures-margin command', () => {
           'get-futures-margin',
           '--token=token',
           '--endpoint=localhost:50051',
-          '--figi=FUTFIGI',
+          '--instrument-id=FUTFIGI',
           '--format=json'
         ],
         undefined
@@ -140,7 +140,7 @@ describe('futures-margin command', () => {
             'get-futures-margin',
             '--token=token',
             '--endpoint=localhost:50051',
-            '--figi=FUTFIGI'
+            '--instrument-id=FUTFIGI'
           ],
           undefined
         ),

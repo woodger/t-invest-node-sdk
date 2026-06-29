@@ -77,6 +77,17 @@ interface TinkoffInvestOptions {
 - `useSsl` - использовать TLS, по умолчанию `true`.
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
 
+## Опции `defaultConfig`
+
+```ts
+interface TinkoffInvestNodeSDKConfig {
+  requireSideEffectConfirmation: boolean;
+}
+```
+
+- `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
+  side effects, по умолчанию `true`.
+
 Подробности по официальной лимитной политике API и её связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
 
 ## CLI
@@ -134,7 +145,8 @@ CLI JSON reports возвращают денежные значения стру
 `stream run --config=PATH` уже доступен для server-side streams и статических
 initial requests `marketdata.marketDataStream`. Динамические bidirectional
 request sources остаются отложенным контрактом. Команды с side effects уже
-доступны, но требуют явный флаг `--confirm`.
+доступны и по умолчанию требуют явный флаг `--confirm` через
+`defaultConfig.requireSideEffectConfirmation`.
 
 Контракт stream CLI описан в
 [docs/cli-stream-reference.md](docs/cli-stream-reference.md) и

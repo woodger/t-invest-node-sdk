@@ -3,6 +3,7 @@
  *
  * Здесь допустимы:
  * - общий `--confirm` contract;
+ * - применение package config policy для side-effect confirmation;
  * - parsing денежных decimal values для generated quotation;
  * - ошибки, останавливающие side-effect command до SDK call;
  *
@@ -10,6 +11,7 @@
  */
 
 import type { Quotation } from '../../generated/common';
+import { defaultConfig } from '../../config';
 
 export const sideEffectConfirmationOptionsSchema = {
   confirm: {
@@ -17,8 +19,11 @@ export const sideEffectConfirmationOptionsSchema = {
   }
 } as const;
 
-export function assertSideEffectConfirmed(confirm: boolean | undefined): void {
-  if (confirm !== true) {
+export function assertSideEffectConfirmed(
+  confirm: boolean | undefined,
+  requireConfirmation: boolean = defaultConfig.requireSideEffectConfirmation
+): void {
+  if (requireConfirmation && confirm !== true) {
     throw new Error("Expected '--confirm' to execute side-effect command");
   }
 }

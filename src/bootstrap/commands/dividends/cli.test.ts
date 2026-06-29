@@ -56,7 +56,7 @@ describe('dividends command', () => {
   describe('createDividendsRequest', () => {
     test('returns generated getDividends request', () => {
       const request = createDividendsRequest({
-        figi: 'SHARE-FIGI',
+        'instrument-id': 'SHARE-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
       });
@@ -124,7 +124,7 @@ describe('dividends command', () => {
           'get-dividends',
           '--token=token',
           '--endpoint=localhost:50051',
-          '--figi=SHARE-FIGI',
+          '--instrument-id=SHARE-FIGI',
           '--from=2026-01-01T00:00:00Z',
           '--to=2026-01-31T00:00:00Z',
           '--format=json'
@@ -170,7 +170,7 @@ describe('dividends command', () => {
             'get-dividends',
             '--token=token',
             '--endpoint=localhost:50051',
-            '--figi=SHARE-FIGI',
+            '--instrument-id=SHARE-FIGI',
             '--from=2026-01-01T00:00:00Z',
             '--to=2026-01-31T00:00:00Z'
           ],

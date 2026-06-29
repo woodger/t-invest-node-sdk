@@ -45,6 +45,17 @@ interface TinkoffInvestOptions {
 - `useSsl` - использовать TLS, по умолчанию `true`.
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
 
+## Опции `defaultConfig`
+
+```ts
+interface TinkoffInvestNodeSDKConfig {
+  requireSideEffectConfirmation: boolean;
+}
+```
+
+- `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
+  side effects, по умолчанию `true`.
+
 ## Доступные сервисы
 
 Экземпляр `TinkoffInvestNodeSDK` лениво создает unary-клиенты для сервисов:
@@ -159,8 +170,9 @@ yarn cli users get-accounts --format=json
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md). Команды с side effects
-требуют явный флаг `--confirm`; динамические bidirectional stream request
-sources остаются отложенным контрактом.
+по умолчанию требуют явный флаг `--confirm` через
+`defaultConfig.requireSideEffectConfirmation`; динамические bidirectional
+stream request sources остаются отложенным контрактом.
 
 Контракт для stream CLI зафиксирован отдельно:
 [Stream CLI Reference](./cli-stream-reference.md) и

@@ -24,6 +24,10 @@ import {
   withSdkOptions
 } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  instrumentIdWithDeprecatedFigiOptionsSchema,
+  resolveOptionalInstrumentIdOption
+} from '../instrument-id-options';
 import { formatOperations, operationsFormats, type OperationsFormat } from './reporter';
 
 type OperationsSdk = {
@@ -70,9 +74,7 @@ const operationsRequestOptionsSchema = {
     type: 'string',
     required: true
   },
-  figi: {
-    type: 'string'
-  }
+  ...instrumentIdWithDeprecatedFigiOptionsSchema
 } as const;
 
 const operationsFormatOptionsSchema = {
@@ -96,6 +98,7 @@ type OperationsRequestOptions = CommandRequestOptions<
   'from' |
   'to' |
   'state' |
+  'instrument-id' |
   'figi'
 >;
 
@@ -160,6 +163,6 @@ export function createOperationsRequest(
     from,
     to,
     state: operationStates[options.state],
-    figi: options.figi ?? ''
+    figi: resolveOptionalInstrumentIdOption(options) ?? ''
   };
 }

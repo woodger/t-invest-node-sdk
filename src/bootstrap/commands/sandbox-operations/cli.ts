@@ -16,6 +16,7 @@ import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../instrument-id-options';
 import {
   createOperationsRequest,
   parseOperationsState
@@ -47,9 +48,7 @@ const sandboxOperationsRequestOptionsSchema = {
     type: 'string',
     required: true
   },
-  figi: {
-    type: 'string'
-  },
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
   state: {
     type: 'string',
     choices: ['unspecified', 'executed', 'canceled', 'progress'],
@@ -73,7 +72,7 @@ const sandboxOperationsOptionsSchema = withSdkOptions(
 type SandboxOperationsOptions = InferOptions<typeof sandboxOperationsOptionsSchema>;
 type SandboxOperationsRequestOptions = CommandRequestOptions<
   SandboxOperationsOptions,
-  'account-id' | 'from' | 'to' | 'figi' | 'state'
+  'account-id' | 'from' | 'to' | 'instrument-id' | 'figi' | 'state'
 >;
 
 export function parseSandboxOperationsState(rawOptions: CommandRawOptions) {

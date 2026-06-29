@@ -50,7 +50,7 @@ describe('accrued-interests command', () => {
   describe('createAccruedInterestsRequest', () => {
     test('returns generated getAccruedInterests request', () => {
       const request = createAccruedInterestsRequest({
-        figi: 'BOND-FIGI',
+        'instrument-id': 'BOND-FIGI',
         from: '2026-01-01T00:00:00Z',
         to: '2026-01-31T00:00:00Z'
       });
@@ -118,7 +118,7 @@ describe('accrued-interests command', () => {
           'get-accrued-interests',
           '--token=token',
           '--endpoint=localhost:50051',
-          '--figi=BOND-FIGI',
+          '--instrument-id=BOND-FIGI',
           '--from=2026-01-01T00:00:00Z',
           '--to=2026-01-31T00:00:00Z',
           '--format=json'
@@ -161,7 +161,7 @@ describe('accrued-interests command', () => {
             'get-accrued-interests',
             '--token=token',
             '--endpoint=localhost:50051',
-            '--figi=BOND-FIGI',
+            '--instrument-id=BOND-FIGI',
             '--from=2026-01-01T00:00:00Z',
             '--to=2026-01-31T00:00:00Z'
           ],

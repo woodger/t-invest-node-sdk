@@ -23,6 +23,10 @@ import {
   withSdkOptions
 } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  instrumentIdWithDeprecatedFigiOptionsSchema,
+  resolveInstrumentIdOption
+} from '../instrument-id-options';
 import { dividendsFormats, formatDividends, type DividendsFormat } from './reporter';
 
 type DividendsSdk = {
@@ -38,10 +42,7 @@ const dividendsCommandPath = ['instruments', 'get-dividends'] as const;
 const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const dividendsRequestOptionsSchema = {
-  figi: {
-    type: 'string',
-    required: true
-  },
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
     type: 'string',
     required: true
@@ -66,7 +67,10 @@ const dividendsOptionsSchema = withSdkOptions(
 );
 
 type DividendsOptions = InferOptions<typeof dividendsOptionsSchema>;
-type DividendsRequestOptions = CommandRequestOptions<DividendsOptions, 'from' | 'to' | 'figi'>;
+type DividendsRequestOptions = CommandRequestOptions<
+  DividendsOptions,
+  'from' | 'to' | 'instrument-id' | 'figi'
+>;
 
 
 
@@ -119,7 +123,7 @@ export function createDividendsRequest(
   }
 
   return {
-    figi: options.figi,
+    figi: resolveInstrumentIdOption(options),
     from,
     to
   };

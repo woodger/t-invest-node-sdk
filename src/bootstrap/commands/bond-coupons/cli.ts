@@ -23,6 +23,10 @@ import {
   withSdkOptions
 } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import {
+  instrumentIdWithDeprecatedFigiOptionsSchema,
+  resolveInstrumentIdOption
+} from '../instrument-id-options';
 import { bondCouponsFormats, formatBondCoupons, type BondCouponsFormat } from './reporter';
 
 type BondCouponsSdk = {
@@ -38,10 +42,7 @@ const bondCouponsCommandPath = ['instruments', 'get-bond-coupons'] as const;
 const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const bondCouponsRequestOptionsSchema = {
-  figi: {
-    type: 'string',
-    required: true
-  },
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
     type: 'string',
     required: true
@@ -66,7 +67,10 @@ const bondCouponsOptionsSchema = withSdkOptions(
 );
 
 type BondCouponsOptions = InferOptions<typeof bondCouponsOptionsSchema>;
-type BondCouponsRequestOptions = CommandRequestOptions<BondCouponsOptions, 'from' | 'to' | 'figi'>;
+type BondCouponsRequestOptions = CommandRequestOptions<
+  BondCouponsOptions,
+  'from' | 'to' | 'instrument-id' | 'figi'
+>;
 
 
 
@@ -119,7 +123,7 @@ export function createBondCouponsRequest(
   }
 
   return {
-    figi: options.figi,
+    figi: resolveInstrumentIdOption(options),
     from,
     to
   };

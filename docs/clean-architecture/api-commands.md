@@ -86,8 +86,10 @@ framework заранее не вводится.
 Команды ниже пока не являются текущим CLI-контрактом. Этот список фиксирует
 отложенные группы API-команд, которые нужно вводить отдельно и осознанно.
 
-Реализованные команды с side effects являются текущим CLI-контрактом, но
-требуют явный `--confirm`. CLI не генерирует idempotency keys автоматически:
+Реализованные команды с side effects являются текущим CLI-контрактом и по
+умолчанию требуют явный `--confirm` через
+`defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency
+keys автоматически:
 `orders post-order` принимает `--order-id`, а `orders replace-order` принимает
 `--idempotency-key`.
 
