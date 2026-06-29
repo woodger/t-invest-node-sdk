@@ -26,20 +26,23 @@ generated DTO вручную для типовых подписок.
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `stream` | string | yes | Stream method selector |
-| `subscriptions` | object | for marketdata streams | Market data subscriptions |
+| `subscriptions` | object | for server-side marketdata stream | Market data subscriptions |
+| `requests` | object[] | for bidirectional marketdata stream | Static initial market data stream requests |
 | `accounts` | string[] | for account streams | Account ids for operations/orders streams |
 | `runtime` | object | no | Output and process lifecycle options |
-| `rawRequests` | object[] | no | Advanced generated-request-like mode |
+| `rawRequests` | object[] | no | Reserved future generated-request-like mode |
 
 Allowed `stream` values:
 
+- `marketdata.marketDataStream`;
 - `marketdata.marketDataServerSideStream`;
 - `operations.portfolioStream`;
 - `operations.positionsStream`;
 - `orders.tradesStream`.
 
-`marketdata.marketDataStream` является известным bidirectional stream selector,
-но текущая команда намеренно отклоняет его до проектирования input contract.
+`marketdata.marketDataStream` использует отдельное поле `requests`, потому что
+это bidirectional stream: CLI сначала отправляет заданный в config набор
+request-ов, а затем читает события provider-а.
 
 ## Runtime
 
@@ -132,11 +135,55 @@ Supported candle interval aliases:
 ## MarketDataStream vs MarketDataServerSideStream
 
 `marketdata.marketDataServerSideStream` sends one initial request and then reads
-events. It is the preferred first implementation target.
+events. Its request is derived from the `subscriptions` field.
 
-`marketdata.marketDataStream` is bidirectional and is not implemented by the
-current `stream run` command. Later versions may support dynamic request
-sources.
+`marketdata.marketDataStream` is bidirectional. Current `stream run`
+implementation supports only static initial typed requests from config. It does
+not read additional requests from stdin, files, timers or interactive input.
+
+Typed bidirectional form:
+
+```json
+{
+  "stream": "marketdata.marketDataStream",
+  "requests": [
+    {
+      "type": "subscribeTrades",
+      "instruments": [
+        {
+          "instrumentId": "BBG00QPYJ5H0"
+        }
+      ]
+    },
+    {
+      "type": "getMySubscriptions"
+    }
+  ],
+  "runtime": {
+    "format": "jsonl",
+    "maxEvents": 50
+  }
+}
+```
+
+Supported request `type` values:
+
+- `subscribeCandles`;
+- `subscribeOrderBook`;
+- `subscribeTrades`;
+- `subscribeInfo`;
+- `subscribeLastPrice`;
+- `getMySubscriptions`.
+
+Subscription request items use the same instrument fields as server-side market
+data subscriptions:
+
+- `subscribeCandles` requires `instrumentId` and `interval`, optional
+  `waitingClose`;
+- `subscribeOrderBook` requires `instrumentId` and `depth`;
+- `subscribeTrades`, `subscribeInfo` and `subscribeLastPrice` require
+  `instrumentId`;
+- `getMySubscriptions` does not accept `instruments`.
 
 Advanced raw bidirectional form:
 
@@ -221,6 +268,7 @@ The first implementation should reject:
 - unknown `stream` values;
 - missing `accounts` for account streams;
 - empty `subscriptions` for marketdata server-side streams;
+- missing or empty `requests` for `marketdata.marketDataStream`;
 - unknown top-level fields, except explicitly supported future extension fields;
 - unsupported `runtime.format`;
 - non-positive numeric runtime limits;

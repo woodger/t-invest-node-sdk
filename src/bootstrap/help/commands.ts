@@ -1944,7 +1944,7 @@ export const commandHelp = {
     ]
   },
   'stream run': {
-    description: 'Run a configured server-side stream and print JSONL events',
+    description: 'Run a configured stream and print JSONL events',
     usage: [
       'tinkoff-invest-node-sdk stream run --config=PATH [options]'
     ],
@@ -1972,8 +1972,8 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk stream run --config=marketdata-stream.json --include-pings'
     ],
     notes: [
-      'Current implementation supports server-side streams only.',
-      'Bidirectional marketdata.marketDataStream is intentionally rejected until its input contract is designed.'
+      'Supports server-side streams and static initial requests for marketdata.marketDataStream.',
+      'Dynamic bidirectional request sources are not implemented.'
     ]
   },
   help: {

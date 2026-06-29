@@ -6,6 +6,7 @@ import {
 } from '../../../generated/marketdata';
 import {
   createAccountStreamRequest,
+  createMarketDataStreamRequests,
   createMarketDataServerSideStreamRequest,
   parseStreamRunConfig
 } from './config';
@@ -37,13 +38,53 @@ describe('stream run config', () => {
       assert.equal(config.runtime.raw, false);
     });
 
-    test('rejects bidirectional market data stream', () => {
+    test('returns bidirectional market data stream requests', () => {
+      const config = parseStreamRunConfig(configJson({
+        stream: 'marketdata.marketDataStream',
+        requests: [
+          {
+            type: 'subscribeTrades',
+            instruments: [
+              {
+                instrumentId: 'trade-id'
+              }
+            ]
+          },
+          {
+            type: 'getMySubscriptions'
+          }
+        ],
+        runtime: {
+          maxEvents: 2
+        }
+      }));
+
+      assert.equal(config.stream, 'marketdata.marketDataStream');
+      assert.deepEqual(createMarketDataStreamRequests(config), [
+        {
+          subscribeTradesRequest: {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: [
+              {
+                figi: '',
+                instrumentId: 'trade-id'
+              }
+            ]
+          }
+        },
+        {
+          getMySubscriptions: {}
+        }
+      ]);
+    });
+
+    test('rejects bidirectional market data stream without initial requests', () => {
       assert.throws(
         () => parseStreamRunConfig(configJson({
           stream: 'marketdata.marketDataStream',
-          rawRequests: []
+          requests: []
         })),
-        /marketdata\.marketDataStream' is not supported/
+        /Expected 'requests' to contain at least one market data stream request/
       );
     });
 

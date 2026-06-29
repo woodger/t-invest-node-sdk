@@ -2,6 +2,11 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { runCommand } from 'icore';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import {
+  SubscriptionAction,
+  type MarketDataRequest,
+  type MarketDataResponse
+} from '../../../generated/marketdata';
 import type {
   PortfolioStreamRequest,
   PortfolioStreamResponse
@@ -23,6 +28,16 @@ async function* responses<T>(...items: T[]): AsyncIterable<T> {
   for (const item of items) {
     yield item;
   }
+}
+
+async function collectRequests<T>(requests: AsyncIterable<T>): Promise<T[]> {
+  const result: T[] = [];
+
+  for await (const request of requests) {
+    result.push(request);
+  }
+
+  return result;
 }
 
 function createUnusedStream(name: string) {
@@ -51,6 +66,7 @@ describe('stream run command', () => {
 
           return {
             marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
               marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
             },
             operationsStream: {
@@ -121,6 +137,7 @@ describe('stream run command', () => {
         createSdk() {
           return {
             marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
               marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
             },
             operationsStream: {
@@ -185,7 +202,7 @@ describe('stream run command', () => {
       const command = createStreamRunCommand({
         readConfig: async () => JSON.stringify({
           stream: 'marketdata.marketDataStream',
-          rawRequests: []
+          requests: []
         }),
         createSdk() {
           createSdkCalls += 1;
@@ -204,9 +221,97 @@ describe('stream run command', () => {
           ],
           undefined
         ),
-        /marketdata\.marketDataStream' is not supported/
+        /Expected 'requests' to contain at least one market data stream request/
       );
       assert.equal(createSdkCalls, 0);
+    });
+
+    test('runs market data bidirectional stream with initial requests', async () => {
+      let receivedRequests: Promise<MarketDataRequest[]> | undefined;
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'marketdata.marketDataStream',
+          requests: [
+            {
+              type: 'subscribeTrades',
+              instruments: [
+                {
+                  instrumentId: 'trade-id'
+                }
+              ]
+            }
+          ],
+          runtime: {
+            maxEvents: 1
+          }
+        }),
+        now: () => new Date('2026-06-29T12:00:00.000Z'),
+        createSdk() {
+          return {
+            marketdataStream: {
+              marketDataStream(requests) {
+                receivedRequests = collectRequests(requests);
+
+                return responses({
+                  trade: {
+                    instrumentUid: 'trade-id'
+                  }
+                } as unknown as MarketDataResponse);
+              },
+              marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+            },
+            operationsStream: {
+              portfolioStream: createUnusedStream('portfolioStream'),
+              positionsStream: createUnusedStream('positionsStream')
+            },
+            ordersStream: {
+              tradesStream: createUnusedStream('tradesStream')
+            },
+            close() {}
+          };
+        }
+      });
+
+      const output = await runCommand(
+        command,
+        [
+          'stream',
+          'run',
+          '--config=stream.json',
+          '--token=token',
+          '--endpoint=localhost:50051'
+        ],
+        undefined
+      );
+
+      const result = await collectOutput(output);
+
+      if (receivedRequests === undefined) {
+        throw new Error('Expected marketDataStream to receive initial requests');
+      }
+
+      assert.deepEqual(await receivedRequests, [
+        {
+          subscribeTradesRequest: {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: [
+              {
+                figi: '',
+                instrumentId: 'trade-id'
+              }
+            ]
+          }
+        }
+      ]);
+      assert.deepEqual(JSON.parse(result.trim()), {
+        stream: 'marketdata.marketDataStream',
+        sequence: 1,
+        receivedAt: '2026-06-29T12:00:00.000Z',
+        type: 'trade',
+        payload: {
+          instrumentUid: 'trade-id'
+        }
+      });
     });
   });
 });

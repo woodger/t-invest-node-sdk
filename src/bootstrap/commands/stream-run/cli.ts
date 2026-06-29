@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
+  MarketDataRequest,
   MarketDataResponse,
   MarketDataServerSideStreamRequest
 } from '../../../generated/marketdata';
@@ -19,6 +20,7 @@ import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import { withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
+  createMarketDataStreamRequests,
   createMarketDataServerSideStreamRequest,
   parseStreamRunConfig,
   type StreamRunConfig,
@@ -33,6 +35,9 @@ import {
 
 type StreamRunSdk = {
   marketdataStream: {
+    marketDataStream(
+      request: AsyncIterable<MarketDataRequest>
+    ): AsyncIterable<MarketDataResponse>;
     marketDataServerSideStream(
       request: MarketDataServerSideStreamRequest
     ): AsyncIterable<MarketDataResponse>;
@@ -169,6 +174,11 @@ function createStreamResponses(
   sdk: StreamRunSdk
 ): AsyncIterable<StreamRunResponse> {
   switch (config.stream) {
+    case 'marketdata.marketDataStream':
+      return sdk.marketdataStream.marketDataStream(
+        createInitialMarketDataRequestStream(createMarketDataStreamRequests(config))
+      );
+
     case 'marketdata.marketDataServerSideStream':
       return sdk.marketdataStream.marketDataServerSideStream(
         createMarketDataServerSideStreamRequest(config)
@@ -182,6 +192,14 @@ function createStreamResponses(
 
     case 'orders.tradesStream':
       return sdk.ordersStream.tradesStream(createAccountRequest(config));
+  }
+}
+
+async function* createInitialMarketDataRequestStream(
+  requests: readonly MarketDataRequest[]
+): AsyncIterable<MarketDataRequest> {
+  for (const request of requests) {
+    yield request;
   }
 }
 

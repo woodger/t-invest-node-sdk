@@ -1,4 +1,5 @@
 import {
+  type MarketDataRequest,
   SubscriptionAction,
   SubscriptionInterval,
   type MarketDataServerSideStreamRequest
@@ -18,10 +19,7 @@ export const streamRunStreamNames = [
 ] as const;
 
 export type StreamRunStreamName = typeof streamRunStreamNames[number];
-export type SupportedStreamRunStreamName = Exclude<
-  StreamRunStreamName,
-  'marketdata.marketDataStream'
->;
+export type SupportedStreamRunStreamName = StreamRunStreamName;
 
 export type StreamRunRuntime = {
   format: 'jsonl';
@@ -36,6 +34,7 @@ export type StreamRunRuntime = {
 export type StreamRunConfig = {
   stream: SupportedStreamRunStreamName;
   accounts?: string[];
+  requests?: MarketDataRequest[];
   subscriptions?: MarketDataSubscriptions;
   runtime: StreamRunRuntime;
 };
@@ -61,15 +60,11 @@ type InstrumentSubscriptionConfig = {
   instrumentId: string;
 };
 
-const supportedStreamRunStreamNames = streamRunStreamNames.filter(
-  (name) => name !== 'marketdata.marketDataStream'
-) as SupportedStreamRunStreamName[];
-
 const streamRunStreamNameSet = new Set<string>(streamRunStreamNames);
-const supportedStreamRunStreamNameSet = new Set<string>(supportedStreamRunStreamNames);
 
 const allowedTopLevelFields = new Set([
   'stream',
+  'requests',
   'subscriptions',
   'accounts',
   'runtime',
@@ -94,6 +89,19 @@ const allowedSubscriptionFields = new Set([
   'lastPrices'
 ]);
 
+const allowedMarketDataStreamRequestTypes = [
+  'subscribeCandles',
+  'subscribeOrderBook',
+  'subscribeTrades',
+  'subscribeInfo',
+  'subscribeLastPrice',
+  'getMySubscriptions'
+] as const;
+
+type MarketDataStreamRequestType = typeof allowedMarketDataStreamRequestTypes[number];
+
+const allowedMarketDataStreamRequestTypeSet = new Set<string>(allowedMarketDataStreamRequestTypes);
+
 const candleIntervalAliases = {
   '1min': SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
   '5min': SubscriptionInterval.SUBSCRIPTION_INTERVAL_FIVE_MINUTES
@@ -115,8 +123,21 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
   const stream = parseStreamName(config.stream);
   const runtime = parseRuntime(config.runtime);
 
+  if (stream === 'marketdata.marketDataStream') {
+    assertAbsent(config.accounts, "Expected 'accounts' to be omitted for marketdata stream config");
+    assertAbsent(config.subscriptions, "Expected 'subscriptions' to be omitted for marketdata bidirectional stream config");
+    assertAbsent(config.rawRequests, "Expected 'rawRequests' to be omitted for marketdata bidirectional stream config");
+
+    return {
+      stream,
+      requests: parseMarketDataStreamRequests(config.requests),
+      runtime
+    };
+  }
+
   if (stream === 'marketdata.marketDataServerSideStream') {
     assertAbsent(config.accounts, "Expected 'accounts' to be omitted for marketdata stream config");
+    assertAbsent(config.requests, "Expected 'requests' to be omitted for marketdata server-side stream config");
     assertAbsent(config.rawRequests, "Expected 'rawRequests' to be omitted for marketdata server-side stream config");
 
     return {
@@ -127,6 +148,7 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
   }
 
   assertAbsent(config.subscriptions, `Expected 'subscriptions' to be omitted for ${stream} config`);
+  assertAbsent(config.requests, `Expected 'requests' to be omitted for ${stream} config`);
   assertAbsent(config.rawRequests, `Expected 'rawRequests' to be omitted for ${stream} config`);
 
   return {
@@ -134,6 +156,14 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
     accounts: parseAccountIds(config.accounts, stream),
     runtime
   };
+}
+
+export function createMarketDataStreamRequests(config: StreamRunConfig): MarketDataRequest[] {
+  if (config.stream !== 'marketdata.marketDataStream') {
+    throw new Error(`Expected marketdata bidirectional stream config, got '${config.stream}'`);
+  }
+
+  return config.requests ?? [];
 }
 
 export function createMarketDataServerSideStreamRequest(
@@ -223,10 +253,6 @@ function parseStreamName(value: unknown): SupportedStreamRunStreamName {
     throw new Error(`Expected 'stream' as one of: ${streamRunStreamNames.join(', ')}`);
   }
 
-  if (!supportedStreamRunStreamNameSet.has(value)) {
-    throw new Error("Stream 'marketdata.marketDataStream' is not supported by stream run yet");
-  }
-
   return value as SupportedStreamRunStreamName;
 }
 
@@ -269,15 +295,124 @@ function parseRuntimeFormat(value: unknown): 'jsonl' {
   throw new Error("Expected 'runtime.format' as one of: jsonl");
 }
 
+function parseMarketDataStreamRequests(value: unknown): MarketDataRequest[] {
+  const requests = parseArray(value, 'requests').map(parseMarketDataStreamRequest);
+
+  if (requests.length === 0) {
+    throw new Error("Expected 'requests' to contain at least one market data stream request");
+  }
+
+  return requests;
+}
+
+function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
+  const request = requireObject(value, 'requests[]');
+  const requestType = parseMarketDataStreamRequestType(request.type);
+
+  switch (requestType) {
+    case 'subscribeCandles': {
+      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+
+      const instruments = parseArray(request.instruments, 'requests[].instruments')
+        .map((item) => parseCandleSubscription(item, 'requests[].instruments[]'));
+
+      validateCandlesWaitingClose(instruments);
+
+      return {
+        subscribeCandlesRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: instruments.map((item) => ({
+            figi: '',
+            interval: item.interval,
+            instrumentId: item.instrumentId
+          })),
+          waitingClose: resolveCandlesWaitingClose(instruments)
+        }
+      };
+    }
+
+    case 'subscribeOrderBook':
+      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+
+      return {
+        subscribeOrderBookRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: parseArray(request.instruments, 'requests[].instruments')
+            .map((item) => parseOrderBookSubscription(item, 'requests[].instruments[]'))
+            .map((item) => ({
+              figi: '',
+              depth: item.depth,
+              instrumentId: item.instrumentId
+            }))
+        }
+      };
+
+    case 'subscribeTrades':
+      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+
+      return {
+        subscribeTradesRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: parseArray(request.instruments, 'requests[].instruments')
+            .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
+            .map(createInstrumentRequest)
+        }
+      };
+
+    case 'subscribeInfo':
+      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+
+      return {
+        subscribeInfoRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: parseArray(request.instruments, 'requests[].instruments')
+            .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
+            .map(createInstrumentRequest)
+        }
+      };
+
+    case 'subscribeLastPrice':
+      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+
+      return {
+        subscribeLastPriceRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: parseArray(request.instruments, 'requests[].instruments')
+            .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
+            .map(createInstrumentRequest)
+        }
+      };
+
+    case 'getMySubscriptions':
+      rejectUnknownFields(request, new Set(['type']), 'requests[]');
+
+      return {
+        getMySubscriptions: {}
+      };
+  }
+}
+
+function parseMarketDataStreamRequestType(value: unknown): MarketDataStreamRequestType {
+  if (typeof value !== 'string') {
+    throw new Error("Expected 'requests[].type' as string");
+  }
+
+  if (!allowedMarketDataStreamRequestTypeSet.has(value)) {
+    throw new Error(`Expected 'requests[].type' as one of: ${allowedMarketDataStreamRequestTypes.join(', ')}`);
+  }
+
+  return value as MarketDataStreamRequestType;
+}
+
 function parseMarketDataSubscriptions(value: unknown): MarketDataSubscriptions {
   const subscriptions = requireObject(value, 'subscriptions');
   rejectUnknownFields(subscriptions, allowedSubscriptionFields, 'subscriptions');
 
   const result = {
     candles: parseOptionalArray(subscriptions.candles, 'subscriptions.candles')
-      ?.map(parseCandleSubscription),
+      ?.map((item) => parseCandleSubscription(item, 'subscriptions.candles[]')),
     orderBooks: parseOptionalArray(subscriptions.orderBooks, 'subscriptions.orderBooks')
-      ?.map(parseOrderBookSubscription),
+      ?.map((item) => parseOrderBookSubscription(item, 'subscriptions.orderBooks[]')),
     trades: parseOptionalArray(subscriptions.trades, 'subscriptions.trades')
       ?.map((item) => parseInstrumentSubscription(item, 'subscriptions.trades[]')),
     info: parseOptionalArray(subscriptions.info, 'subscriptions.info')
@@ -299,35 +434,41 @@ function parseMarketDataSubscriptions(value: unknown): MarketDataSubscriptions {
   return result;
 }
 
-function parseCandleSubscription(value: unknown): CandleSubscriptionConfig {
-  const candle = requireObject(value, 'subscriptions.candles[]');
+function parseCandleSubscription(
+  value: unknown,
+  path: string
+): CandleSubscriptionConfig {
+  const candle = requireObject(value, path);
   rejectUnknownFields(
     candle,
     new Set(['instrumentId', 'interval', 'waitingClose']),
-    'subscriptions.candles[]'
+    path
   );
 
   return {
-    instrumentId: parseInstrumentId(candle.instrumentId, 'subscriptions.candles[].instrumentId'),
-    interval: parseCandleInterval(candle.interval),
+    instrumentId: parseInstrumentId(candle.instrumentId, `${path}.instrumentId`),
+    interval: parseCandleInterval(candle.interval, `${path}.interval`),
     waitingClose: parseOptionalBoolean(
       candle.waitingClose,
-      'subscriptions.candles[].waitingClose'
+      `${path}.waitingClose`
     ) ?? false
   };
 }
 
-function parseOrderBookSubscription(value: unknown): OrderBookSubscriptionConfig {
-  const orderBook = requireObject(value, 'subscriptions.orderBooks[]');
+function parseOrderBookSubscription(
+  value: unknown,
+  path: string
+): OrderBookSubscriptionConfig {
+  const orderBook = requireObject(value, path);
   rejectUnknownFields(
     orderBook,
     new Set(['instrumentId', 'depth']),
-    'subscriptions.orderBooks[]'
+    path
   );
 
   return {
-    instrumentId: parseInstrumentId(orderBook.instrumentId, 'subscriptions.orderBooks[].instrumentId'),
-    depth: parsePositiveInteger(orderBook.depth, 'subscriptions.orderBooks[].depth')
+    instrumentId: parseInstrumentId(orderBook.instrumentId, `${path}.instrumentId`),
+    depth: parsePositiveInteger(orderBook.depth, `${path}.depth`)
   };
 }
 
@@ -343,13 +484,13 @@ function parseInstrumentSubscription(
   };
 }
 
-function parseCandleInterval(value: unknown): SubscriptionInterval {
+function parseCandleInterval(value: unknown, path: string): SubscriptionInterval {
   if (typeof value !== 'string') {
-    throw new Error("Expected 'subscriptions.candles[].interval' as string");
+    throw new Error(`Expected '${path}' as string`);
   }
 
   if (!(value in candleIntervalAliases)) {
-    throw new Error("Expected 'subscriptions.candles[].interval' as one of: 1min, 5min");
+    throw new Error(`Expected '${path}' as one of: 1min, 5min`);
   }
 
   return candleIntervalAliases[value as keyof typeof candleIntervalAliases];

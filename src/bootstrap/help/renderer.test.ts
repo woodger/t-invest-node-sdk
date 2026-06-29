@@ -104,8 +104,8 @@ describe('renderCommandHelp', () => {
   test('renders stream run command page', () => {
     const help = renderCommandHelp('stream run');
 
-    assert.match(help, /stream run - Run a configured server-side stream/);
+    assert.match(help, /stream run - Run a configured stream/);
     assert.match(help, /tinkoff-invest-node-sdk stream run --config=PATH/);
-    assert.match(help, /Current implementation supports server-side streams only/);
+    assert.match(help, /static initial requests for marketdata\.marketDataStream/);
   });
 });
