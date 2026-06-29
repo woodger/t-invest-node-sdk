@@ -17,7 +17,7 @@ import { isVersionRequested, renderVersionInfo } from './version';
 type CliCommandOutput = string | AsyncIterable<string> | undefined;
 
 type CliWritable = {
-  write(chunk: string): unknown;
+  write(chunk: string): unknown | Promise<unknown>;
 };
 
 type CliIO = {
@@ -84,19 +84,19 @@ export async function runCli(
   // Global flags are handled before command execution, so `--help` and
   // `--version` never need SDK credentials or command-specific required flags.
   if (isHelpRequested(parsedArgv.options)) {
-    io.stdout.write(renderHelp(parsedArgv.positionals));
+    await io.stdout.write(renderHelp(parsedArgv.positionals));
 
     return 0;
   }
 
   if (isVersionRequested(parsedArgv.options)) {
-    io.stdout.write(renderVersionInfo());
+    await io.stdout.write(renderVersionInfo());
 
     return 0;
   }
 
   if (parsedArgv.positionals.length === 0) {
-    io.stdout.write(renderCliHelp());
+    await io.stdout.write(renderCliHelp());
 
     return 0;
   }
@@ -138,13 +138,13 @@ async function writeCommandOutput(
 
   if (isAsyncIterable(output)) {
     for await (const chunk of output) {
-      stdout.write(chunk);
+      await stdout.write(chunk);
     }
 
     return;
   }
 
-  stdout.write(output);
+  await stdout.write(output);
 }
 
 function isAsyncIterable(value: unknown): value is AsyncIterable<string> {

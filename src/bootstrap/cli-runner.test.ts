@@ -144,6 +144,40 @@ describe('bootstrap cli runner', () => {
       }
     });
 
+    test('waits for async stdout writes', async () => {
+      let finishWrite: (() => void) | undefined;
+      let commandFinished = false;
+      const exitCode = runCli(['version'], {
+        stdout: {
+          write() {
+            return new Promise<void>((resolve) => {
+              finishWrite = resolve;
+            });
+          }
+        },
+        stderr: {
+          write() {}
+        }
+      }).then((code) => {
+        commandFinished = true;
+
+        return code;
+      });
+
+      await Promise.resolve();
+
+      assert.equal(commandFinished, false);
+
+      if (finishWrite === undefined) {
+        throw new Error('Expected stdout write to start');
+      }
+
+      finishWrite();
+
+      assert.equal(await exitCode, 0);
+      assert.equal(commandFinished, true);
+    });
+
     test('returns a failure for unknown commands', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['unknown-command'], io);

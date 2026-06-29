@@ -1,9 +1,30 @@
 import type { TextWriter } from './text-writer';
 
-export function createStdoutWriter(stdout: TextWriter = process.stdout): TextWriter {
+type StdoutSink = {
+  write(chunk: string): unknown;
+  once?(event: 'drain', listener: () => void): unknown;
+};
+
+export function createStdoutWriter(stdout: StdoutSink = process.stdout): TextWriter {
   return {
-    write(chunk: string): unknown {
-      return stdout.write(chunk);
+    async write(chunk: string): Promise<void> {
+      if (stdout.write(chunk) !== false) {
+        return;
+      }
+
+      if (typeof stdout.once !== 'function') {
+        return;
+      }
+
+      await waitForDrain(stdout.once.bind(stdout));
     }
   };
+}
+
+function waitForDrain(
+  onceDrain: (event: 'drain', listener: () => void) => unknown
+): Promise<void> {
+  return new Promise((resolve) => {
+    onceDrain('drain', resolve);
+  });
 }
