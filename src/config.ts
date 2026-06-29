@@ -1,6 +1,6 @@
 import type { TinkoffInvestNodeSDKConfig } from './config.types';
 
-export type { TinkoffInvestNodeSDKConfig, UnaryLimits } from './config.types';
+export * from './config.types';
 
 // Ключи сопоставляются с gRPC path и могут быть как сервисными, так и метод-специфичными.
 export const defaultConfig: TinkoffInvestNodeSDKConfig = {

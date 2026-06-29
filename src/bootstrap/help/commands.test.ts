@@ -12,6 +12,7 @@ describe('commandHelp', () => {
         'instruments bonds',
         'instruments currencies',
         'instruments currency-by',
+        'instruments edit-favorites',
         'instruments etf-by',
         'instruments etfs',
         'instruments find-instrument',
@@ -47,9 +48,14 @@ describe('commandHelp', () => {
         'operations get-portfolio',
         'operations get-positions',
         'operations get-withdraw-limits',
+        'orders cancel-order',
         'orders get-order-state',
         'orders get-orders',
+        'orders post-order',
+        'orders replace-order',
+        'stoporders cancel-stop-order',
         'stoporders get-stop-orders',
+        'stoporders post-stop-order',
         'users get-accounts',
         'users get-info',
         'users get-margin-attributes',
@@ -83,6 +89,7 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('instruments etfs'), true);
     assert.equal(isCommandHelpName('instruments get-dividends'), true);
     assert.equal(isCommandHelpName('instruments get-favorites'), true);
+    assert.equal(isCommandHelpName('instruments edit-favorites'), true);
     assert.equal(isCommandHelpName('instruments find-instrument'), true);
     assert.equal(isCommandHelpName('instruments future-by'), true);
     assert.equal(isCommandHelpName('instruments futures'), true);
@@ -100,6 +107,9 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('marketdata get-trading-statuses'), true);
     assert.equal(isCommandHelpName('orders get-orders'), true);
     assert.equal(isCommandHelpName('orders get-order-state'), true);
+    assert.equal(isCommandHelpName('orders post-order'), true);
+    assert.equal(isCommandHelpName('orders cancel-order'), true);
+    assert.equal(isCommandHelpName('orders replace-order'), true);
     assert.equal(isCommandHelpName('operations get-broker-report'), true);
     assert.equal(isCommandHelpName('operations get-dividends-foreign-issuer'), true);
     assert.equal(isCommandHelpName('operations get-operations-by-cursor'), true);
@@ -108,6 +118,8 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('operations get-positions'), true);
     assert.equal(isCommandHelpName('operations get-withdraw-limits'), true);
     assert.equal(isCommandHelpName('stoporders get-stop-orders'), true);
+    assert.equal(isCommandHelpName('stoporders post-stop-order'), true);
+    assert.equal(isCommandHelpName('stoporders cancel-stop-order'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
     assert.equal(isCommandHelpName('instruments options'), false);

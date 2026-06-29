@@ -20,12 +20,15 @@ import { bondCouponsCommand } from './commands/bond-coupons/cli';
 import { bondsCommand } from './commands/bonds/cli';
 import { brokerReportCommand } from './commands/broker-report/cli';
 import { candlesCommand } from './commands/candles/cli';
+import { cancelOrderCommand } from './commands/cancel-order/cli';
+import { cancelStopOrderCommand } from './commands/cancel-stop-order/cli';
 import { closePricesCommand } from './commands/close-prices/cli';
 import { countriesCommand } from './commands/countries/cli';
 import { currenciesCommand } from './commands/currencies/cli';
 import { currencyCommand } from './commands/currency/cli';
 import { dividendsForeignIssuerCommand } from './commands/dividends-foreign-issuer/cli';
 import { dividendsCommand } from './commands/dividends/cli';
+import { editFavoritesCommand } from './commands/edit-favorites/cli';
 import { etfCommand } from './commands/etf/cli';
 import { etfsCommand } from './commands/etfs/cli';
 import { favoritesCommand } from './commands/favorites/cli';
@@ -46,7 +49,10 @@ import { ordersCommand } from './commands/orders/cli';
 import { operationsByCursorCommand } from './commands/operations-by-cursor/cli';
 import { operationsCommand } from './commands/operations/cli';
 import { portfolioCommand } from './commands/portfolio/cli';
+import { postOrderCommand } from './commands/post-order/cli';
+import { postStopOrderCommand } from './commands/post-stop-order/cli';
 import { positionsCommand } from './commands/positions/cli';
+import { replaceOrderCommand } from './commands/replace-order/cli';
 import { shareCommand } from './commands/share/cli';
 import { sharesCommand } from './commands/shares/cli';
 import { stopOrdersCommand } from './commands/stop-orders/cli';
@@ -85,9 +91,15 @@ type UsersCommandName =
 
 type OrdersCommandName =
   | 'orders get-orders'
-  | 'orders get-order-state';
+  | 'orders get-order-state'
+  | 'orders post-order'
+  | 'orders cancel-order'
+  | 'orders replace-order';
 
-type StopOrdersCommandName = 'stoporders get-stop-orders';
+type StopOrdersCommandName =
+  | 'stoporders get-stop-orders'
+  | 'stoporders post-stop-order'
+  | 'stoporders cancel-stop-order';
 
 type MarketDataCommandName =
   | 'marketdata get-candles'
@@ -117,6 +129,7 @@ type InstrumentsCommandLineName =
   | 'instruments bonds'
   | 'instruments currency-by'
   | 'instruments get-dividends'
+  | 'instruments edit-favorites'
   | 'instruments etf-by'
   | 'instruments etfs'
   | 'instruments future-by'
@@ -203,7 +216,12 @@ const commandLineRegistry = defineCommandRegistry(
     defineCommandLineCommand(candlesCommand),
     defineCommandLineCommand(ordersCommand),
     defineCommandLineCommand(orderStateCommand),
+    defineCommandLineCommand(postOrderCommand),
+    defineCommandLineCommand(cancelOrderCommand),
+    defineCommandLineCommand(replaceOrderCommand),
     defineCommandLineCommand(stopOrdersCommand),
+    defineCommandLineCommand(postStopOrderCommand),
+    defineCommandLineCommand(cancelStopOrderCommand),
     defineCommandLineCommand(closePricesCommand),
     defineCommandLineCommand(lastPricesCommand),
     defineCommandLineCommand(lastTradesCommand),
@@ -235,6 +253,7 @@ const commandLineRegistry = defineCommandRegistry(
     defineCommandLineCommand(optionCommand),
     defineCommandLineCommand(assetsCommand),
     defineCommandLineCommand(favoritesCommand),
+    defineCommandLineCommand(editFavoritesCommand),
     defineCommandLineCommand(findInstrumentCommand),
     defineCommandLineCommand(futuresMarginCommand),
     defineCommandLineCommand(optionsByCommand),

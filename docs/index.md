@@ -111,6 +111,7 @@ yarn cli users get-accounts --format=json
 - `instruments etfs` - список ETF;
 - `instruments get-dividends` - дивиденды по инструменту;
 - `instruments get-favorites` - избранные инструменты пользователя;
+- `instruments edit-favorites` - добавление или удаление избранных инструментов;
 - `instruments future-by` - информация о фьючерсе по идентификатору;
 - `instruments futures` - список фьючерсов;
 - `instruments get-futures-margin` - гарантийное обеспечение по фьючерсу;
@@ -127,6 +128,9 @@ yarn cli users get-accounts --format=json
 - `marketdata get-trading-statuses` - торговые статусы инструментов;
 - `orders get-orders` - активные торговые поручения по счету;
 - `orders get-order-state` - статус торгового поручения;
+- `orders post-order` - выставление торгового поручения;
+- `orders cancel-order` - отмена торгового поручения;
+- `orders replace-order` - изменение торгового поручения;
 - `operations get-broker-report` - брокерский отчет: запуск формирования или страница по `taskId`;
 - `operations get-dividends-foreign-issuer` - отчет по дивидендам иностранных эмитентов: запуск формирования или страница по `taskId`;
 - `operations get-operations` - операции по счету за период;
@@ -134,11 +138,14 @@ yarn cli users get-accounts --format=json
 - `operations get-portfolio` - текущий портфель по счету;
 - `operations get-positions` - позиции по счету;
 - `operations get-withdraw-limits` - доступный остаток для вывода;
-- `stoporders get-stop-orders` - активные стоп-заявки по счету.
+- `stoporders get-stop-orders` - активные стоп-заявки по счету;
+- `stoporders post-stop-order` - выставление стоп-заявки;
+- `stoporders cancel-stop-order` - отмена стоп-заявки.
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md): весь `sandbox` service,
-stream API и команды с side effects вводятся отдельно от read-only CLI-команд.
+stream API вводятся отдельно от unary CLI-команд. Команды с side effects
+требуют явный флаг `--confirm`.
 Deprecated `sdk.instruments.options` не вводится как публичная CLI-команда;
 для опционов используется `instruments options-by`.
 

@@ -594,6 +594,37 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-favorites --format=json'
     ]
   },
+  'instruments edit-favorites': {
+    description: 'Add or remove favorite instruments',
+    sdkCall: 'sdk.instruments.editFavorites',
+    grpcMethod: 'InstrumentsService/EditFavorites',
+    usage: [
+      'tinkoff-invest-node-sdk instruments edit-favorites --figi=FIGI[,FIGI] --action=add|del --confirm [options]'
+    ],
+    required: [
+      '--figi=FIGI[,FIGI]   Comma-separated FIGI list',
+      '--action=ACTION       add|del',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk instruments edit-favorites --figi=BBG00QPYJ5H0 --action=add --confirm',
+      'tinkoff-invest-node-sdk instruments edit-favorites --figi=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
+    ],
+    notes: [
+      'This command changes account favorites and refuses to run without --confirm.'
+    ]
+  },
   'instruments find-instrument': {
     description: 'Search instruments',
     sdkCall: 'sdk.instruments.findInstrument',
@@ -1072,6 +1103,110 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345 --format=json'
     ]
   },
+  'orders post-order': {
+    description: 'Post an order',
+    sdkCall: 'sdk.orders.postOrder',
+    grpcMethod: 'OrdersService/PostOrder',
+    usage: [
+      'tinkoff-invest-node-sdk orders post-order --account-id=ID --instrument-id=ID --quantity=N --direction=buy|sell --order-type=TYPE --order-id=KEY --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts',
+      '--instrument-id=ID    FIGI or instrument UID',
+      '--quantity=N          Positive integer lots count',
+      '--direction=DIR       buy|sell',
+      '--order-type=TYPE     limit|market|bestprice',
+      '--order-id=KEY        Idempotency key, max provider length is 36 chars',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--price=DECIMAL       Price per instrument, up to 9 fractional digits; omitted for market orders',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
+      'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
+    ],
+    notes: [
+      'This command places an order and refuses to run without --confirm.',
+      'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
+    ]
+  },
+  'orders cancel-order': {
+    description: 'Cancel an order',
+    sdkCall: 'sdk.orders.cancelOrder',
+    grpcMethod: 'OrdersService/CancelOrder',
+    usage: [
+      'tinkoff-invest-node-sdk orders cancel-order --account-id=ID --order-id=ID --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts',
+      '--order-id=ID         Exchange order identifier',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm',
+      'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
+    ],
+    notes: [
+      'This command cancels an order and refuses to run without --confirm.'
+    ]
+  },
+  'orders replace-order': {
+    description: 'Replace an order',
+    sdkCall: 'sdk.orders.replaceOrder',
+    grpcMethod: 'OrdersService/ReplaceOrder',
+    usage: [
+      'tinkoff-invest-node-sdk orders replace-order --account-id=ID --order-id=ID --idempotency-key=KEY --quantity=N --price=DECIMAL --price-type=TYPE --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts',
+      '--order-id=ID         Exchange order identifier',
+      '--idempotency-key=KEY New idempotency key, max provider length is 36 chars',
+      '--quantity=N          Positive integer lots count',
+      '--price=DECIMAL       Price per instrument, up to 9 fractional digits',
+      '--price-type=TYPE     point|currency',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
+      'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
+    ],
+    notes: [
+      'This command changes an existing order and refuses to run without --confirm.',
+      'The CLI does not generate idempotency keys automatically.'
+    ]
+  },
   'operations get-operations': {
     description: 'Print account operations',
     sdkCall: 'sdk.operations.getOperations',
@@ -1312,6 +1447,76 @@ export const commandHelp = {
     examples: [
       'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000',
       'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000 --format=json'
+    ]
+  },
+  'stoporders post-stop-order': {
+    description: 'Post a stop order',
+    sdkCall: 'sdk.stoporders.postStopOrder',
+    grpcMethod: 'StopOrdersService/PostStopOrder',
+    usage: [
+      'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=ID --instrument-id=ID --quantity=N --stop-price=DECIMAL --direction=buy|sell --expiration-type=TYPE --stop-order-type=TYPE --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts',
+      '--instrument-id=ID    FIGI or instrument UID',
+      '--quantity=N          Positive integer lots count',
+      '--stop-price=DECIMAL  Stop price, up to 9 fractional digits',
+      '--direction=DIR       buy|sell',
+      '--expiration-type=TYPE good-till-cancel|good-till-date',
+      '--stop-order-type=TYPE take-profit|stop-loss|stop-limit',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--price=DECIMAL       Order price, up to 9 fractional digits',
+      '--expire-date=ISO     Required when --expiration-type=good-till-date',
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --stop-price=95.5 --direction=sell --expiration-type=good-till-cancel --stop-order-type=stop-loss --confirm',
+      'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
+    ],
+    notes: [
+      'This command places a stop order and refuses to run without --confirm.',
+      'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
+    ]
+  },
+  'stoporders cancel-stop-order': {
+    description: 'Cancel a stop order',
+    sdkCall: 'sdk.stoporders.cancelStopOrder',
+    grpcMethod: 'StopOrdersService/CancelStopOrder',
+    usage: [
+      'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=ID --stop-order-id=ID --confirm [options]'
+    ],
+    required: [
+      '--account-id=ID       Account identifier from users get-accounts',
+      '--stop-order-id=ID    Stop order identifier',
+      '--confirm             Required side-effect confirmation flag'
+    ],
+    optional: [
+      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+      '--app-name=NAME        Optional x-app-name metadata value',
+      '--insecure             Disable TLS for local or test endpoints',
+      '--format=json|table    Output format (default: table)'
+    ],
+    environment: [
+      'TINKOFF_TOKEN',
+      'TINKOFF_ENDPOINT'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm',
+      'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
+    ],
+    notes: [
+      'This command cancels a stop order and refuses to run without --confirm.'
     ]
   },
   help: {
