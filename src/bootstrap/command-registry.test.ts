@@ -137,6 +137,13 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves edit-favorites command', () => {
+    const command = resolveCommand(['instruments', 'edit-favorites']);
+
+    assert.equal(command.name, 'instruments edit-favorites');
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves dividends command', () => {
     const command = resolveCommand(['instruments', 'get-dividends']);
 
@@ -291,6 +298,27 @@ describe('resolveCommand', () => {
     assert.equal(typeof command.handler, 'function');
   });
 
+  test('resolves post-order command', () => {
+    const command = resolveCommand(['orders', 'post-order']);
+
+    assert.equal(command.name, 'orders post-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves cancel-order command', () => {
+    const command = resolveCommand(['orders', 'cancel-order']);
+
+    assert.equal(command.name, 'orders cancel-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves replace-order command', () => {
+    const command = resolveCommand(['orders', 'replace-order']);
+
+    assert.equal(command.name, 'orders replace-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
   test('resolves operations command', () => {
     const command = resolveCommand(['operations', 'get-operations']);
 
@@ -323,6 +351,20 @@ describe('resolveCommand', () => {
     const command = resolveCommand(['stoporders', 'get-stop-orders']);
 
     assert.equal(command.name, 'stoporders get-stop-orders');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves post-stop-order command', () => {
+    const command = resolveCommand(['stoporders', 'post-stop-order']);
+
+    assert.equal(command.name, 'stoporders post-stop-order');
+    assert.equal(typeof command.handler, 'function');
+  });
+
+  test('resolves cancel-stop-order command', () => {
+    const command = resolveCommand(['stoporders', 'cancel-stop-order']);
+
+    assert.equal(command.name, 'stoporders cancel-stop-order');
     assert.equal(typeof command.handler, 'function');
   });
 
@@ -403,6 +445,7 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('instruments etf-by'), true);
     assert.equal(isCommandName('instruments etfs'), true);
     assert.equal(isCommandName('instruments get-favorites'), true);
+    assert.equal(isCommandName('instruments edit-favorites'), true);
     assert.equal(isCommandName('instruments find-instrument'), true);
     assert.equal(isCommandName('instruments future-by'), true);
     assert.equal(isCommandName('instruments futures'), true);
@@ -420,6 +463,9 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('marketdata get-trading-statuses'), true);
     assert.equal(isCommandName('orders get-orders'), true);
     assert.equal(isCommandName('orders get-order-state'), true);
+    assert.equal(isCommandName('orders post-order'), true);
+    assert.equal(isCommandName('orders cancel-order'), true);
+    assert.equal(isCommandName('orders replace-order'), true);
     assert.equal(isCommandName('operations get-broker-report'), true);
     assert.equal(isCommandName('operations get-dividends-foreign-issuer'), true);
     assert.equal(isCommandName('operations get-operations'), true);
@@ -428,6 +474,8 @@ describe('isCommandName', () => {
     assert.equal(isCommandName('operations get-positions'), true);
     assert.equal(isCommandName('operations get-withdraw-limits'), true);
     assert.equal(isCommandName('stoporders get-stop-orders'), true);
+    assert.equal(isCommandName('stoporders post-stop-order'), true);
+    assert.equal(isCommandName('stoporders cancel-stop-order'), true);
     assert.equal(isCommandName('help'), true);
     assert.equal(isCommandName('version'), true);
     assert.equal(isCommandName('instruments options'), false);

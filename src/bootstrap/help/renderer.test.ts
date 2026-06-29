@@ -32,6 +32,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /instruments etfs/);
     assert.match(help, /instruments get-dividends/);
     assert.match(help, /instruments get-favorites/);
+    assert.match(help, /instruments edit-favorites/);
     assert.match(help, /instruments future-by/);
     assert.match(help, /instruments futures/);
     assert.match(help, /instruments get-futures-margin/);
@@ -53,6 +54,11 @@ describe('renderCliHelp', () => {
     assert.match(help, /operations get-positions/);
     assert.match(help, /operations get-withdraw-limits/);
     assert.match(help, /orders get-order-state/);
+    assert.match(help, /orders post-order/);
+    assert.match(help, /orders cancel-order/);
+    assert.match(help, /orders replace-order/);
+    assert.match(help, /stoporders post-stop-order/);
+    assert.match(help, /stoporders cancel-stop-order/);
     assert.match(help, /stoporders get-stop-orders/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);

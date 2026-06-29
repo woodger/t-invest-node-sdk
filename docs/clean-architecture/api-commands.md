@@ -29,6 +29,7 @@
 - `instruments etfs` -> `sdk.instruments.etfs`;
 - `instruments get-dividends` -> `sdk.instruments.getDividends`;
 - `instruments get-favorites` -> `sdk.instruments.getFavorites`;
+- `instruments edit-favorites` -> `sdk.instruments.editFavorites`;
 - `instruments future-by` -> `sdk.instruments.futureBy`;
 - `instruments futures` -> `sdk.instruments.futures`;
 - `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
@@ -45,6 +46,9 @@
 - `marketdata get-trading-statuses` -> `sdk.marketdata.getTradingStatuses`;
 - `orders get-orders` -> `sdk.orders.getOrders`;
 - `orders get-order-state` -> `sdk.orders.getOrderState`;
+- `orders post-order` -> `sdk.orders.postOrder`;
+- `orders cancel-order` -> `sdk.orders.cancelOrder`;
+- `orders replace-order` -> `sdk.orders.replaceOrder`;
 - `operations get-broker-report` -> `sdk.operations.getBrokerReport`;
 - `operations get-dividends-foreign-issuer` -> `sdk.operations.getDividendsForeignIssuer`;
 - `operations get-operations` -> `sdk.operations.getOperations`;
@@ -52,7 +56,9 @@
 - `operations get-portfolio` -> `sdk.operations.getPortfolio`;
 - `operations get-positions` -> `sdk.operations.getPositions`;
 - `operations get-withdraw-limits` -> `sdk.operations.getWithdrawLimits`;
-- `stoporders get-stop-orders` -> `sdk.stoporders.getStopOrders`.
+- `stoporders get-stop-orders` -> `sdk.stoporders.getStopOrders`;
+- `stoporders post-stop-order` -> `sdk.stoporders.postStopOrder`;
+- `stoporders cancel-stop-order` -> `sdk.stoporders.cancelStopOrder`.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -82,14 +88,10 @@ Sandbox service откладывается целиком:
 - `sandbox sandbox-pay-in`;
 - `sandbox get-sandbox-withdraw-limits`.
 
-Команды с side effects откладываются отдельно от read-only CLI-команд:
-
-- `orders post-order`;
-- `orders cancel-order`;
-- `orders replace-order`;
-- `stoporders post-stop-order`;
-- `stoporders cancel-stop-order`;
-- `instruments edit-favorites`.
+Команды с side effects являются текущим CLI-контрактом, но требуют явный
+`--confirm`. CLI не генерирует idempotency keys автоматически: `orders
+post-order` принимает `--order-id`, а `orders replace-order` принимает
+`--idempotency-key`.
 
 Stream API откладывается отдельно от unary CLI-команд. CLI-контракт для
 долгоживущих подписок, завершения процесса, backpressure и формата событий
@@ -106,9 +108,9 @@ Deprecated generated methods не вводятся как публичные CLI
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
   используется `instruments options-by` / `sdk.instruments.optionsBy`.
 
-Перед реализацией таких команд нужно явно определить CLI-контракт,
-идемпотентность/повторный запуск, формат подтверждения опасных действий и
-ожидаемое поведение при ошибках provider-а.
+Перед реализацией отложенных sandbox/stream команд нужно явно определить
+CLI-контракт, идемпотентность/повторный запуск, формат подтверждения опасных
+действий и ожидаемое поведение при ошибках provider-а.
 
 Команда делает несколько разных вещей:
 
@@ -128,146 +130,13 @@ Deprecated generated methods не вводятся как публичные CLI
 ```text
 src/bootstrap
   args/
-  cli.ts
+  bin/
+    cli.ts
   command-registry.ts
   commands/
     instruments-args.ts
-    accounts/
-      cli.ts
-      reporter.ts
-    user-info/
-      cli.ts
-      reporter.ts
-    margin-attributes/
-      cli.ts
-      reporter.ts
-    user-tariff/
-      cli.ts
-      reporter.ts
-    candles/
-      cli.ts
-      reporter.ts
-    close-prices/
-      cli.ts
-      reporter.ts
-    find-instrument/
-      cli.ts
-      reporter.ts
-    accrued-interests/
-      cli.ts
-      reporter.ts
-    asset/
-      cli.ts
-      reporter.ts
-    assets/
-      cli.ts
-      reporter.ts
-    bond-coupons/
-      cli.ts
-      reporter.ts
-    bond/
-      cli.ts
-      reporter.ts
-    bonds/
-      cli.ts
-      reporter.ts
-    brand/
-      cli.ts
-      reporter.ts
-    brands/
-      cli.ts
-      reporter.ts
-    countries/
-      cli.ts
-      reporter.ts
-    currencies/
-      cli.ts
-      reporter.ts
-    currency/
-      cli.ts
-      reporter.ts
-    etf/
-      cli.ts
-      reporter.ts
-    etfs/
-      cli.ts
-      reporter.ts
-    dividends/
-      cli.ts
-      reporter.ts
-    favorites/
-      cli.ts
-      reporter.ts
-    future/
-      cli.ts
-      reporter.ts
-    futures/
-      cli.ts
-      reporter.ts
-    futures-margin/
-      cli.ts
-      reporter.ts
-    instrument/
-      cli.ts
-      reporter.ts
-    option/
-      cli.ts
-      reporter.ts
-    options-by/
-      cli.ts
-      reporter.ts
-    share/
-      cli.ts
-      reporter.ts
-    shares/
-      cli.ts
-      reporter.ts
-    trading-schedules/
-      cli.ts
-      reporter.ts
-    last-prices/
-      cli.ts
-      reporter.ts
-    last-trades/
-      cli.ts
-      reporter.ts
-    order-book/
-      cli.ts
-      reporter.ts
-    trading-status/
-      cli.ts
-      reporter.ts
-    trading-statuses/
-      cli.ts
-      reporter.ts
-    orders/
-      cli.ts
-      reporter.ts
-    order-state/
-      cli.ts
-      reporter.ts
-    broker-report/
-      cli.ts
-      reporter.ts
-    dividends-foreign-issuer/
-      cli.ts
-      reporter.ts
-    operations/
-      cli.ts
-      reporter.ts
-    operations-by-cursor/
-      cli.ts
-      reporter.ts
-    portfolio/
-      cli.ts
-      reporter.ts
-    positions/
-      cli.ts
-      reporter.ts
-    withdraw-limits/
-      cli.ts
-      reporter.ts
-    stop-orders/
+    side-effect-args.ts
+    <command-adapter>/
       cli.ts
       reporter.ts
 
@@ -376,146 +245,13 @@ string -> stdout
 ```text
 src/bootstrap
   args/
-  cli.ts
+  bin/
+    cli.ts
   command-registry.ts
   commands/
     instruments-args.ts
-    accounts/
-      cli.ts
-      reporter.ts
-    user-info/
-      cli.ts
-      reporter.ts
-    margin-attributes/
-      cli.ts
-      reporter.ts
-    user-tariff/
-      cli.ts
-      reporter.ts
-    candles/
-      cli.ts
-      reporter.ts
-    close-prices/
-      cli.ts
-      reporter.ts
-    find-instrument/
-      cli.ts
-      reporter.ts
-    accrued-interests/
-      cli.ts
-      reporter.ts
-    asset/
-      cli.ts
-      reporter.ts
-    assets/
-      cli.ts
-      reporter.ts
-    bond-coupons/
-      cli.ts
-      reporter.ts
-    bond/
-      cli.ts
-      reporter.ts
-    bonds/
-      cli.ts
-      reporter.ts
-    brand/
-      cli.ts
-      reporter.ts
-    brands/
-      cli.ts
-      reporter.ts
-    countries/
-      cli.ts
-      reporter.ts
-    currencies/
-      cli.ts
-      reporter.ts
-    currency/
-      cli.ts
-      reporter.ts
-    etf/
-      cli.ts
-      reporter.ts
-    etfs/
-      cli.ts
-      reporter.ts
-    dividends/
-      cli.ts
-      reporter.ts
-    favorites/
-      cli.ts
-      reporter.ts
-    future/
-      cli.ts
-      reporter.ts
-    futures/
-      cli.ts
-      reporter.ts
-    futures-margin/
-      cli.ts
-      reporter.ts
-    instrument/
-      cli.ts
-      reporter.ts
-    option/
-      cli.ts
-      reporter.ts
-    options-by/
-      cli.ts
-      reporter.ts
-    share/
-      cli.ts
-      reporter.ts
-    shares/
-      cli.ts
-      reporter.ts
-    trading-schedules/
-      cli.ts
-      reporter.ts
-    last-prices/
-      cli.ts
-      reporter.ts
-    last-trades/
-      cli.ts
-      reporter.ts
-    order-book/
-      cli.ts
-      reporter.ts
-    trading-status/
-      cli.ts
-      reporter.ts
-    trading-statuses/
-      cli.ts
-      reporter.ts
-    orders/
-      cli.ts
-      reporter.ts
-    order-state/
-      cli.ts
-      reporter.ts
-    broker-report/
-      cli.ts
-      reporter.ts
-    dividends-foreign-issuer/
-      cli.ts
-      reporter.ts
-    operations/
-      cli.ts
-      reporter.ts
-    operations-by-cursor/
-      cli.ts
-      reporter.ts
-    portfolio/
-      cli.ts
-      reporter.ts
-    positions/
-      cli.ts
-      reporter.ts
-    withdraw-limits/
-      cli.ts
-      reporter.ts
-    stop-orders/
+    side-effect-args.ts
+    <command-adapter>/
       cli.ts
       reporter.ts
 
