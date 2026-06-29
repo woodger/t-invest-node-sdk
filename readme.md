@@ -324,7 +324,10 @@ finally {
 Пакет реэкспортирует:
 - `Timestamp`;
 - типы и enum'ы из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `stoporders`, `users`;
-- service definition и client/implementation types для этих сервисов.
+- package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
+
+Generated `*ServiceDefinition`, `*ServiceClient` и `*ServiceImplementation`
+остаются внутренними transport contracts и не входят в root exports.
 
 Основная точка входа:
 
@@ -332,7 +335,7 @@ finally {
 import {
   TinkoffInvestNodeSDK,
   CandleInterval,
-  InstrumentsServiceDefinition,
-  MarketDataStreamServiceDefinition,
+  InstrumentsService,
+  MarketDataStreamService,
 } from 'tinkoff-invest-node-sdk';
 ```

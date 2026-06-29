@@ -35,6 +35,18 @@ import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/san
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
 import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
+import type {
+  InstrumentsService,
+  MarketDataService,
+  MarketDataStreamService,
+  OperationsService,
+  OperationsStreamService,
+  OrdersService,
+  OrdersStreamService,
+  SandboxService,
+  StopOrdersService,
+  UsersService
+} from '../application/dto/tinkoff-invest-services';
 import { Throttle } from '../application/services/unary-throttle.service';
 import { defaultConfig } from '../config';
 import { createSdkChannel, createSdkClient, createSdkMetadata } from '../infrastructure/transport/grpc';
@@ -62,12 +74,12 @@ type ServiceClient = InstrumentsServiceClient
   | UsersServiceClient;
 
 export class TinkoffInvestNodeSDK {
-  protected options: TinkoffInvestOptions;
+  private options: TinkoffInvestOptions;
   // Кэширует лениво созданные клиенты сервисов на время жизни SDK-инстанса.
-  protected storage: Map<ServiceDefinition, ServiceClient> = new Map();
-  protected channel: Channel;
-  protected metadata: Metadata;
-  protected throttle: Throttle;
+  private storage: Map<ServiceDefinition, ServiceClient> = new Map();
+  private channel: Channel;
+  private metadata: Metadata;
+  private throttle: Throttle;
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
@@ -82,43 +94,47 @@ export class TinkoffInvestNodeSDK {
   }
 
   get instruments() {
-    return this.useServiceAsClient<InstrumentsServiceClient>(InstrumentsServiceDefinition);
+    return this.useServiceAsClient<InstrumentsServiceClient>(InstrumentsServiceDefinition) as InstrumentsService;
   }
   
   get marketdata() {
-    return this.useServiceAsClient<MarketDataServiceClient>(MarketDataServiceDefinition);
+    return this.useServiceAsClient<MarketDataServiceClient>(MarketDataServiceDefinition) as MarketDataService;
   }
 
   get marketdataStream() {
-    return this.useServiceAsClient<MarketDataStreamServiceClient>(MarketDataStreamServiceDefinition);
+    return this.useServiceAsClient<MarketDataStreamServiceClient>(
+      MarketDataStreamServiceDefinition
+    ) as MarketDataStreamService;
   }
 
   get operations() {
-    return this.useServiceAsClient<OperationsServiceClient>(OperationsServiceDefinition);
+    return this.useServiceAsClient<OperationsServiceClient>(OperationsServiceDefinition) as OperationsService;
   }
 
   get operationsStream() {
-    return this.useServiceAsClient<OperationsStreamServiceClient>(OperationsStreamServiceDefinition);
+    return this.useServiceAsClient<OperationsStreamServiceClient>(
+      OperationsStreamServiceDefinition
+    ) as OperationsStreamService;
   }
   
   get orders() {
-    return this.useServiceAsClient<OrdersServiceClient>(OrdersServiceDefinition);
+    return this.useServiceAsClient<OrdersServiceClient>(OrdersServiceDefinition) as OrdersService;
   }
 
   get ordersStream() {
-    return this.useServiceAsClient<OrdersStreamServiceClient>(OrdersStreamServiceDefinition);
+    return this.useServiceAsClient<OrdersStreamServiceClient>(OrdersStreamServiceDefinition) as OrdersStreamService;
   }
 
   get sandbox() {
-    return this.useServiceAsClient<SandboxServiceClient>(SandboxServiceDefinition);
+    return this.useServiceAsClient<SandboxServiceClient>(SandboxServiceDefinition) as SandboxService;
   }
 
   get stoporders() {
-    return this.useServiceAsClient<StopOrdersServiceClient>(StopOrdersServiceDefinition);
+    return this.useServiceAsClient<StopOrdersServiceClient>(StopOrdersServiceDefinition) as StopOrdersService;
   }
   
   get users() {
-    return this.useServiceAsClient<UsersServiceClient>(UsersServiceDefinition);
+    return this.useServiceAsClient<UsersServiceClient>(UsersServiceDefinition) as UsersService;
   }
 
   close(): void {

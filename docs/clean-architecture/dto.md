@@ -22,15 +22,18 @@
 Допустимо:
 
 - импортировать generated types в infrastructure adapters;
-- использовать generated service definitions при создании gRPC clients;
-- возвращать generated clients из публичного SDK facade, потому что SDK
-  сохраняет совместимость с T-Invest API.
+- использовать generated service definitions при создании gRPC clients внутри
+  bootstrap/infrastructure;
+- использовать generated request/response DTO в package-owned public service
+  interfaces SDK facade.
 
 Нежелательно:
 
 - делать generated DTO основой новых application reports;
 - добавлять handwritten mapping или helpers в generated файлы;
 - завязывать CLI output format на нестабильный generated JSON shape.
+- экспортировать generated service definitions, clients или implementation
+  contracts как root public API.
 
 ## Application DTO
 
@@ -46,6 +49,12 @@ CLI/env parsing -> TinkoffInvestOptions -> SDK facade/infrastructure
 ```
 
 `application/dto` не должен читать env и не должен знать про CLI flags.
+
+`src/application/dto/tinkoff-invest-services.ts` описывает публичные service
+interfaces SDK facade: `UsersService`, `OrdersService`,
+`MarketDataStreamService` и т.п. Эти interfaces сохраняют Tinkoff method names
+и generated request/response DTO, но не раскрывают `nice-grpc`
+`*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
 
 ## Reports
 
