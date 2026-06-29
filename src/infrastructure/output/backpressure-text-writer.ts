@@ -1,5 +1,13 @@
 import type { TextWriter } from './text-writer';
 
+/**
+ * Minimal writable stream surface needed by CLI output sinks.
+ *
+ * Node writable streams return `false` from `write()` when their internal
+ * buffer is full. In that case the CLI must pause output until `drain`, or a
+ * long-running stream command can keep reading provider events faster than the
+ * consumer reads stdout/stderr.
+ */
 export type BackpressureTextSink = {
   write(chunk: string): unknown;
   once?(event: 'drain', listener: () => void): unknown;
@@ -14,6 +22,9 @@ export function createBackpressureTextWriter(
         return;
       }
 
+      // Test doubles and simple in-memory writers may not expose `drain`.
+      // They are treated as already flushed because they do not have a real
+      // OS-level buffer to protect.
       if (typeof sink.once !== 'function') {
         return;
       }
@@ -27,6 +38,7 @@ function waitForDrain(
   onceDrain: (event: 'drain', listener: () => void) => unknown
 ): Promise<void> {
   return new Promise((resolve) => {
+    // `drain` is emitted once the writable stream is ready for more data.
     onceDrain('drain', resolve);
   });
 }
