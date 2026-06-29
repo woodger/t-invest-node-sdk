@@ -72,7 +72,8 @@
 - `sandbox get-sandbox-operations-by-cursor` -> `sdk.sandbox.getSandboxOperationsByCursor`;
 - `sandbox get-sandbox-portfolio` -> `sdk.sandbox.getSandboxPortfolio`;
 - `sandbox sandbox-pay-in` -> `sdk.sandbox.sandboxPayIn`;
-- `sandbox get-sandbox-withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`.
+- `sandbox get-sandbox-withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`;
+- `stream run` -> server-side stream selected by JSON config.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -94,24 +95,30 @@ framework заранее не вводится.
 значения отклоняются CLI parser-ом, а `--currency=usd` завершается ошибкой как
 явно неподдержанный provider-кейс.
 
-Stream API откладывается отдельно от unary CLI-команд. CLI-контракт для
-долгоживущих подписок, завершения процесса, backpressure и формата событий
-описан в [Stream CLI Reference](../cli-stream-reference.md) и
-[Stream CLI Configuration Reference](../cli-stream-configuration.md):
+Stream API вводится отдельно от unary CLI-команд через utility-команду
+`stream run --config=PATH`. CLI-контракт для долгоживущих подписок, завершения
+процесса и формата событий описан в
+[Stream CLI Reference](../cli-stream-reference.md) и
+[Stream CLI Configuration Reference](../cli-stream-configuration.md).
 
-- `sdk.marketdataStream.marketDataStream`;
+Текущая реализация поддерживает server-side streams:
+
 - `sdk.marketdataStream.marketDataServerSideStream`;
 - `sdk.operationsStream.portfolioStream`;
 - `sdk.operationsStream.positionsStream`;
 - `sdk.ordersStream.tradesStream`.
+
+Bidirectional stream остается отложенным API-контрактом:
+
+- `sdk.marketdataStream.marketDataStream`.
 
 Deprecated generated methods не вводятся как публичные CLI-команды:
 
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
   используется `instruments options-by` / `sdk.instruments.optionsBy`.
 
-Перед кодовой реализацией отложенных stream команд нужно сверять поведение с
-этими reference-документами и отдельно фиксировать любые изменения контракта.
+Перед расширением stream command нужно сверять поведение с этими
+reference-документами и отдельно фиксировать любые изменения контракта.
 
 Команда делает несколько разных вещей:
 

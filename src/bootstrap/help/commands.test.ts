@@ -70,6 +70,7 @@ describe('commandHelp', () => {
         'stoporders cancel-stop-order',
         'stoporders get-stop-orders',
         'stoporders post-stop-order',
+        'stream run',
         'users get-accounts',
         'users get-info',
         'users get-margin-attributes',
@@ -148,6 +149,7 @@ describe('isCommandHelpName', () => {
     assert.equal(isCommandHelpName('sandbox get-sandbox-portfolio'), true);
     assert.equal(isCommandHelpName('sandbox sandbox-pay-in'), true);
     assert.equal(isCommandHelpName('sandbox get-sandbox-withdraw-limits'), true);
+    assert.equal(isCommandHelpName('stream run'), true);
     assert.equal(isCommandHelpName('help'), true);
     assert.equal(isCommandHelpName('version'), true);
     assert.equal(isCommandHelpName('instruments options'), false);

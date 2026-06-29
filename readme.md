@@ -131,10 +131,11 @@ CLI JSON reports возвращают денежные значения стру
 
 Отложенные группы CLI-команд (`To introduce`) описаны в
 [docs/clean-architecture/api-commands.md](docs/clean-architecture/api-commands.md):
-stream API вводится отдельно от unary CLI-команд. Команды с side effects уже
-доступны, но требуют явный флаг `--confirm`.
+`stream run --config=PATH` уже доступен для server-side streams, а
+bidirectional stream остается отложенным контрактом. Команды с side effects
+уже доступны, но требуют явный флаг `--confirm`.
 
-Целевой контракт stream CLI описан в
+Контракт stream CLI описан в
 [docs/cli-stream-reference.md](docs/cli-stream-reference.md) и
 [docs/cli-stream-configuration.md](docs/cli-stream-configuration.md).
 
