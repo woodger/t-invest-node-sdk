@@ -155,12 +155,12 @@ yarn cli users get-accounts --format=json
 - `sandbox get-sandbox-portfolio` - текущий sandbox-портфель по счету;
 - `sandbox sandbox-pay-in` - пополнение sandbox-счета;
 - `sandbox get-sandbox-withdraw-limits` - sandbox-остаток для вывода;
-- `stream run` - запуск server-side stream по JSON config.
+- `stream run` - запуск stream по JSON config.
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md). Команды с side effects
-требуют явный флаг `--confirm`; bidirectional stream остается отложенным
-контрактом.
+требуют явный флаг `--confirm`; динамические bidirectional stream request
+sources остаются отложенным контрактом.
 
 Контракт для stream CLI зафиксирован отдельно:
 [Stream CLI Reference](./cli-stream-reference.md) и

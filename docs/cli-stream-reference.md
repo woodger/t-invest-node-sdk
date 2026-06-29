@@ -1,7 +1,8 @@
 # Stream CLI Reference
 
 > Type: Reference. Документ фиксирует текущий CLI-контракт `stream run` для
-> server-side streams и отдельно отмечает будущие расширения.
+> server-side streams, статических bidirectional market data requests и
+> отдельно отмечает будущие расширения.
 
 ## Статус
 
@@ -25,21 +26,22 @@ tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
 конкретный generated stream method выбирается внутри config-файла. Это нужно,
 чтобы не угадывать десятки specialized flags для разных stream-сценариев.
 
-Текущая реализация поддерживает только server-side streams:
+Текущая реализация поддерживает:
 
+- `marketdata.marketDataStream` со статическими initial requests из config;
 - `marketdata.marketDataServerSideStream`;
 - `operations.portfolioStream`;
 - `operations.positionsStream`;
 - `orders.tradesStream`.
 
-Bidirectional `marketdata.marketDataStream` распознается как stream selector,
-но намеренно отклоняется до проектирования input contract.
+Динамические bidirectional request sources не реализованы: команда не читает
+дополнительные request-ы из stdin, файлов, таймеров или interactive input.
 
 ## Доступные Stream Methods
 
 | Config `stream` | SDK method | gRPC method | Stream type |
 | --- | --- | --- | --- |
-| `marketdata.marketDataStream` | `sdk.marketdataStream.marketDataStream` | `MarketDataStreamService/MarketDataStream` | bidirectional, not implemented |
+| `marketdata.marketDataStream` | `sdk.marketdataStream.marketDataStream` | `MarketDataStreamService/MarketDataStream` | bidirectional, static initial requests |
 | `marketdata.marketDataServerSideStream` | `sdk.marketdataStream.marketDataServerSideStream` | `MarketDataStreamService/MarketDataServerSideStream` | server-side |
 | `operations.portfolioStream` | `sdk.operationsStream.portfolioStream` | `OperationsStreamService/PortfolioStream` | server-side |
 | `operations.positionsStream` | `sdk.operationsStream.positionsStream` | `OperationsStreamService/PositionsStream` | server-side |
@@ -52,12 +54,14 @@ Bidirectional `marketdata.marketDataStream` распознается как stre
 1. прочитать и провалидировать config;
 2. применить CLI runtime overrides;
 3. создать `TinkoffInvestNodeSDK`;
-4. открыть stream;
-5. писать события в `stdout`;
-6. писать diagnostics/errors/status в `stderr`;
-7. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию stream
+4. создать initial request для server-side stream или конечный initial request
+   iterator для `marketdata.marketDataStream`;
+5. открыть stream;
+6. писать события в `stdout`;
+7. писать diagnostics/errors/status в `stderr`;
+8. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию stream
    или provider error;
-8. закрыть SDK channel в `finally`.
+9. закрыть SDK channel в `finally`.
 
 ## Output Contract
 
@@ -148,11 +152,12 @@ Runtime options:
 
 При любом завершении SDK должен закрываться в `finally`.
 
-## Backpressure Target
+## Backpressure
 
 `stream run` отдает output как последовательность chunks, чтобы не собирать
-бесконечный stream в одну строку. Полная поддержка writable backpressure через
-ожидание `drain` остается отдельным улучшением CLI runner-а.
+бесконечный stream в одну строку. Запись в `stdout` и `stderr` учитывает
+writable backpressure: если stream buffer заполнен, CLI ждет событие `drain`
+или ошибку записи.
 
 ## Не Цели Текущей Реализации
 
@@ -160,6 +165,7 @@ Runtime options:
 - automatic reconnect;
 - durable checkpoints;
 - интерактивная смена подписок после старта;
+- stdin/file/timer request sources для bidirectional stream;
 - агрегация событий в application report;
 - file output вместо stdout.
 

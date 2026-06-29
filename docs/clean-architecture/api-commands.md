@@ -73,7 +73,7 @@
 - `sandbox get-sandbox-portfolio` -> `sdk.sandbox.getSandboxPortfolio`;
 - `sandbox sandbox-pay-in` -> `sdk.sandbox.sandboxPayIn`;
 - `sandbox get-sandbox-withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`;
-- `stream run` -> server-side stream selected by JSON config.
+- `stream run` -> stream selected by JSON config.
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
@@ -101,16 +101,16 @@ Stream API вводится отдельно от unary CLI-команд чер�
 [Stream CLI Reference](../cli-stream-reference.md) и
 [Stream CLI Configuration Reference](../cli-stream-configuration.md).
 
-Текущая реализация поддерживает server-side streams:
+Текущая реализация поддерживает server-side streams и статический initial
+request contract для bidirectional market data stream:
 
+- `sdk.marketdataStream.marketDataStream`;
 - `sdk.marketdataStream.marketDataServerSideStream`;
 - `sdk.operationsStream.portfolioStream`;
 - `sdk.operationsStream.positionsStream`;
 - `sdk.ordersStream.tradesStream`.
 
-Bidirectional stream остается отложенным API-контрактом:
-
-- `sdk.marketdataStream.marketDataStream`.
+Динамические bidirectional request sources остаются отложенным API-контрактом.
 
 Deprecated generated methods не вводятся как публичные CLI-команды:
 
