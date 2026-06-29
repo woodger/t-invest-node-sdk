@@ -96,7 +96,8 @@ framework заранее не вводится.
 
 Stream API откладывается отдельно от unary CLI-команд. CLI-контракт для
 долгоживущих подписок, завершения процесса, backpressure и формата событий
-нужно проектировать отдельно:
+описан в [Stream CLI Reference](../cli-stream-reference.md) и
+[Stream CLI Configuration Reference](../cli-stream-configuration.md):
 
 - `sdk.marketdataStream.marketDataStream`;
 - `sdk.marketdataStream.marketDataServerSideStream`;
@@ -109,9 +110,8 @@ Deprecated generated methods не вводятся как публичные CLI
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
   используется `instruments options-by` / `sdk.instruments.optionsBy`.
 
-Перед реализацией отложенных stream команд нужно явно определить CLI-контракт,
-идемпотентность/повторный запуск, формат завершения процесса и ожидаемое
-поведение при ошибках provider-а.
+Перед кодовой реализацией отложенных stream команд нужно сверять поведение с
+этими reference-документами и отдельно фиксировать любые изменения контракта.
 
 Команда делает несколько разных вещей:
 

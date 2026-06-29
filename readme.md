@@ -21,6 +21,8 @@ yarn add tinkoff-invest-node-sdk
 - [Архитектура SDK](docs/architecture.md)
 - [Clean Architecture Notes](docs/clean-architecture/index.md)
 - [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
+- [Stream CLI Reference](docs/cli-stream-reference.md)
+- [Stream CLI Configuration Reference](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
 - [Политики проекта](docs/policy/index.md)
 - [Политика тестирования](docs/policy/testing-policy.md)
@@ -131,6 +133,10 @@ CLI JSON reports возвращают денежные значения стру
 [docs/clean-architecture/api-commands.md](docs/clean-architecture/api-commands.md):
 stream API вводится отдельно от unary CLI-команд. Команды с side effects уже
 доступны, но требуют явный флаг `--confirm`.
+
+Целевой контракт stream CLI описан в
+[docs/cli-stream-reference.md](docs/cli-stream-reference.md) и
+[docs/cli-stream-configuration.md](docs/cli-stream-configuration.md).
 
 ## Доступные сервисы
 
