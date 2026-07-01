@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { Throttle } from '../../../application/services/unary-throttle.service';
 import { UsersServiceDefinition } from '../../../generated/users';
 import {
@@ -9,41 +10,61 @@ import {
   createSdkMiddleware
 } from './index';
 
-function createUnaryResponseIterator<Response>(response: Response): AsyncIterableIterator<Response> {
-  const iterator: AsyncIterableIterator<Response> = {
-    async next() {
-      return { done: true, value: response };
-    },
-    [Symbol.asyncIterator]() {
-      return iterator;
-    }
-  };
+type TestRequest = Record<string, never>;
+const defaultUnaryResponse = { ok: true };
 
-  return iterator;
+async function* createUnaryResponseIterator<Response>(
+  response: Response
+): AsyncGenerator<never, Response, undefined> {
+  const emptyUnaryResponses: never[] = [];
+
+  for (const value of emptyUnaryResponses) {
+    yield value;
+  }
+
+  return response;
 }
 
-function createUnaryCall(path: string, response = { ok: true }) {
+function createUnaryCall<Response = typeof defaultUnaryResponse>(
+  path: string,
+  response: Response = defaultUnaryResponse as Response
+): ClientMiddlewareCall<TestRequest, Response, CallOptions> {
   return {
+    requestStream: false,
     request: {},
     responseStream: false,
-    method: { path },
+    method: {
+      path,
+      requestStream: false,
+      responseStream: false,
+      options: {}
+    },
     next() {
       return createUnaryResponseIterator(response);
     }
-  } as any;
+  };
 }
 
-function createResponseStreamCall(path: string, responses: unknown[]) {
+function createResponseStreamCall<Response>(
+  path: string,
+  responses: Response[]
+): ClientMiddlewareCall<TestRequest, Response, CallOptions> {
   return {
+    requestStream: false,
     request: {},
     responseStream: true,
-    method: { path },
+    method: {
+      path,
+      requestStream: false,
+      responseStream: true,
+      options: {}
+    },
     next: async function*() {
       for (const response of responses) {
         yield response;
       }
     }
-  } as any;
+  };
 }
 
 describe('infrastructure transport grpc', () => {

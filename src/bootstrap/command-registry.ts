@@ -340,6 +340,8 @@ const commandLineRegistry = defineCommandRegistry(
   ]
 );
 
+export const commandNames = commandLineRegistry.commandNames;
+
 function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   command: CommandDefinition<
     TSchema,

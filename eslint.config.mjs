@@ -4,39 +4,31 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'src/generated/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**'
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['src/**/*.ts'],
+    files: [
+      'src/**/*.ts'
+    ],
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'commonjs',
       globals: {
-        ...globals.node,
-      },
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-    },
+        ...globals.node
+      }
+    }
   },
   {
-    files: ['src/**/*.test.ts', 'src/**/suite.test.ts'],
+    files: [
+      'eslint.config.mjs'
+    ],
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'commonjs',
       globals: {
-        ...globals.node,
-      },
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
+        ...globals.node
+      }
+    }
+  }
 );
