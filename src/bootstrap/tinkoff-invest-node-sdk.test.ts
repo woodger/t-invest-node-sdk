@@ -1,31 +1,41 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { Throttle } from '../application/services/unary-throttle.service';
 import { createSdkMiddleware } from '../infrastructure/transport/grpc';
 import { TinkoffInvestNodeSDK } from './tinkoff-invest-node-sdk';
 
-function createUnaryResponseIterator<Response>(response: Response): AsyncIterableIterator<Response> {
-  const iterator: AsyncIterableIterator<Response> = {
-    async next() {
-      return { done: true, value: response };
-    },
-    [Symbol.asyncIterator]() {
-      return iterator;
-    }
-  };
+type TestRequest = Record<string, never>;
 
-  return iterator;
+async function* createUnaryResponseIterator<Response>(
+  response: Response
+): AsyncGenerator<never, Response, undefined> {
+  const emptyUnaryResponses: never[] = [];
+
+  for (const value of emptyUnaryResponses) {
+    yield value;
+  }
+
+  return response;
 }
 
-function createUnaryCall(path: string) {
+function createUnaryCall(
+  path: string
+): ClientMiddlewareCall<TestRequest, { ok: boolean }, CallOptions> {
   return {
+    requestStream: false,
     request: {},
     responseStream: false,
-    method: { path },
+    method: {
+      path,
+      requestStream: false,
+      responseStream: false,
+      options: {}
+    },
     next() {
       return createUnaryResponseIterator({ ok: true });
     }
-  } as any;
+  };
 }
 
 describe('createSdkMiddleware', () => {
