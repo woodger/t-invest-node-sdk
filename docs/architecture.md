@@ -139,5 +139,7 @@ compatibility wrappers не создаются.
 `src/generated/**` воспроизводится из `contracts/**/*.proto` и не редактируется
 вручную. `src/generated/**` и `src/generated-exports.ts` являются top-level
 исключением из компактной структуры `src`, потому что package entrypoint
-реэкспортирует generated DTO/enums public API. Generated `*ServiceDefinition`,
-`*ServiceClient` и `*ServiceImplementation` не являются root public exports.
+реэкспортирует generated DTO/enums public API и server-side
+`*ServiceDefinition` / `*ServiceImplementation` contracts. Generated
+`*ServiceClient` contracts остаются внутренними transport contracts и не
+являются root public exports.

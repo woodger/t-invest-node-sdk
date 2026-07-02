@@ -325,9 +325,11 @@ finally {
 - `Timestamp`;
 - типы и enum'ы из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `stoporders`, `users`;
 - package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
+- generated server-side `*ServiceDefinition` и `*ServiceImplementation`
+  contracts для nice-grpc server adapters.
 
-Generated `*ServiceDefinition`, `*ServiceClient` и `*ServiceImplementation`
-остаются внутренними transport contracts и не входят в root exports.
+Generated `*ServiceClient` contracts остаются внутренними transport contracts и
+не входят в root exports.
 
 Основная точка входа:
 
