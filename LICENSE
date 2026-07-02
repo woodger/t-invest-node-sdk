@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2018-present Stanislav Potemkin
+Copyright (c) 2025 Stanislav Potemkin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,20 +23,16 @@ SOFTWARE.
 Third-party notices
 -------------------
 
-The MIT License above applies to the original SDK code owned by Stanislav
-Potemkin.
+The MIT License above applies to the original SDK source code in this project.
 
-This package can include generated TypeScript files under `dist/generated/**`.
-Those files are generated from protocol buffer contract definitions and can
-contain code derived from third-party API contracts.
+This package may include files generated from or otherwise derived from
+third-party protocol buffer contract definitions. Those upstream contract
+definitions remain subject to their own notices.
 
 Tinkoff Invest API contracts
 
-Files under `dist/generated/common.*`, `dist/generated/instruments.*`,
-`dist/generated/marketdata.*`, `dist/generated/operations.*`,
-`dist/generated/orders.*`, `dist/generated/sandbox.*`,
-`dist/generated/stoporders.*`, and `dist/generated/users.*` are generated from
-Tinkoff Invest API protocol buffer contract definitions.
+This package may include artifacts derived from Tinkoff Invest API protocol
+buffer contract definitions.
 
 This project does not claim ownership of those API contract definitions and is
 not affiliated with, endorsed by, sponsored by, or otherwise connected to
@@ -44,8 +40,8 @@ Tinkoff, T-Bank, or their affiliates.
 
 Google API field behavior contract
 
-Files under `dist/generated/google/api/field_behavior.*` are generated from the
-Google API `field_behavior.proto` contract.
+This package may include artifacts derived from Google API contract
+definitions.
 
 The source contract contains the following notice:
 
@@ -65,8 +61,8 @@ limitations under the License.
 
 Google Protocol Buffers contracts
 
-Files under `dist/generated/google/protobuf/**` are generated from Google
-Protocol Buffers contracts.
+This package may include artifacts derived from Google Protocol Buffers
+contract definitions.
 
 The source contracts contain the following notice:
 
