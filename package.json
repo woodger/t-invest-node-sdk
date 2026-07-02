@@ -1,5 +1,6 @@
 {
   "name": "tinkoff-invest-node-sdk",
+  "version": "0.2.3",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
   "author": {
@@ -9,13 +10,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:woodger/tinkoff-invest-node-sdk.git"
+    "url": "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git"
   },
   "engines": {
     "node": ">=20.19.0"
   },
-  "packageManager": "yarn@1.22.22",
-  "version": "0.2.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
