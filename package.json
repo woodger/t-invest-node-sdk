@@ -22,6 +22,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "yarn build",
     "cli": "node dist/bootstrap/bin/cli.js",
     "test": "fwa --prune",
     "proto": "node dist/bootstrap/bin/compile-proto.js",
