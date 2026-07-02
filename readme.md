@@ -32,10 +32,10 @@ yarn add tinkoff-invest-node-sdk
 
 ## Генерация proto
 
-Генерация TypeScript-кода из `contracts/**/*.proto` запускается через npm-скрипт:
+Генерация TypeScript-кода из `contracts/**/*.proto` запускается через Yarn-скрипт:
 
 ```sh
-npm run proto
+yarn proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
@@ -44,7 +44,7 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 Скрипт использует собранный файл `dist/bootstrap/bin/compile-proto.js`, поэтому перед первым запуском после изменений в `src/bootstrap/bin/compile-proto.ts` нужно выполнить:
 
 ```sh
-npm run prepare
+yarn prepare
 ```
 
 ## Быстрый старт

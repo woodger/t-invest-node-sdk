@@ -26,11 +26,11 @@
 Перед запуском тестов после изменений в `src` нужно пересобрать проект:
 
 ```bash
-npm run prepare
-npm test
+yarn prepare
+yarn test
 ```
 
-`npm test` запускает внешний compiled runner `fwa`:
+`yarn test` запускает внешний compiled runner `fwa`:
 
 ```bash
 fwa --prune
@@ -45,8 +45,8 @@ Runner `fwa`:
 - делегирует выполнение стандартному `node:test`;
 - запускает тестовые файлы в отдельных процессах.
 
-Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run prepare` и повторить запуск.
-Если `npm test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
+Если `yarn test` сообщает, что compiled tests старше source tests, нужно выполнить `yarn prepare` и повторить запуск.
+Если `yarn test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
 
 ## Обязательность тестов
 
