@@ -26,7 +26,7 @@
 Перед запуском тестов после изменений в `src` нужно пересобрать проект:
 
 ```bash
-yarn prepare
+yarn build
 yarn test
 ```
 
@@ -45,7 +45,7 @@ Runner `fwa`:
 - делегирует выполнение стандартному `node:test`;
 - запускает тестовые файлы в отдельных процессах.
 
-Если `yarn test` сообщает, что compiled tests старше source tests, нужно выполнить `yarn prepare` и повторить запуск.
+Если `yarn test` сообщает, что compiled tests старше source tests, нужно выполнить `yarn build` и повторить запуск.
 Если `yarn test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
 
 ## Обязательность тестов
