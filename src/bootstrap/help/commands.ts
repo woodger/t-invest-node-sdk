@@ -21,6 +21,22 @@ export interface CommandHelp {
   notes?: readonly string[];
 }
 
+const sdkConnectionOptions = [
+  '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
+  '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
+  '--app-name=NAME        Optional x-app-name metadata value',
+  '--insecure             Disable TLS for local or test endpoints'
+] as const;
+
+const sdkEnvironment = [
+  'TINKOFF_TOKEN',
+  'TINKOFF_ENDPOINT'
+] as const;
+
+const tableFormatOption = '--format=json|table    Output format (default: table)';
+const csvFormatOption = '--format=json|csv      Output format (default: json)';
+const jsonlFormatOption = '--format=jsonl         Output format (default: jsonl)';
+
 export const commandHelp = {
   'users get-accounts': {
     description: 'Print user accounts',
@@ -30,16 +46,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk users get-accounts [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk users get-accounts --format=json'
     ]
@@ -52,16 +62,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk users get-info [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk users get-info',
       'tinkoff-invest-node-sdk users get-info --format=json'
@@ -78,16 +82,10 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from users get-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000',
       'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000 --format=json'
@@ -101,16 +99,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk users get-user-tariff [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk users get-user-tariff',
       'tinkoff-invest-node-sdk users get-user-tariff --format=json'
@@ -130,16 +122,10 @@ export const commandHelp = {
       '--interval=INTERVAL    1min|2min|3min|5min|10min|15min|30min|hour|2hour|4hour|day|week|month'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|csv      Output format (default: json)'
+      ...sdkConnectionOptions,
+      csvFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv'
     ],
@@ -158,16 +144,10 @@ export const commandHelp = {
       '--instrument-id=ID[,ID] FIGI or instrument UID list'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0',
       'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
@@ -187,16 +167,10 @@ export const commandHelp = {
     ],
     optional: [
       '--figi=FIGI            Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
       'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
@@ -217,16 +191,10 @@ export const commandHelp = {
       '--id=UID              Asset UID'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-asset-by --id=asset-uid',
       'tinkoff-invest-node-sdk instruments get-asset-by --id=asset-uid --format=json'
@@ -244,16 +212,10 @@ export const commandHelp = {
     ],
     optional: [
       '--instrument-type=TYPE unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate (default: unspecified)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-assets',
       'tinkoff-invest-node-sdk instruments get-assets --instrument-type=share --format=json'
@@ -276,16 +238,10 @@ export const commandHelp = {
     ],
     optional: [
       '--figi=FIGI            Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
       'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
@@ -308,16 +264,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments bond-by --id=BBG00B9XRY4J --id-type=figi',
       'tinkoff-invest-node-sdk instruments bond-by --id=SU26238RMFS4 --id-type=ticker --class-code=TQOB --format=json'
@@ -335,16 +285,10 @@ export const commandHelp = {
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments bonds',
       'tinkoff-invest-node-sdk instruments bonds --instrument-status=all --format=json'
@@ -364,16 +308,10 @@ export const commandHelp = {
       '--id=ID               Brand UID'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-brand-by --id=brand-uid',
       'tinkoff-invest-node-sdk instruments get-brand-by --id=brand-uid --format=json'
@@ -387,16 +325,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-brands [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-brands',
       'tinkoff-invest-node-sdk instruments get-brands --format=json'
@@ -413,16 +345,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-countries [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-countries',
       'tinkoff-invest-node-sdk instruments get-countries --format=json'
@@ -437,16 +363,10 @@ export const commandHelp = {
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments currencies',
       'tinkoff-invest-node-sdk instruments currencies --instrument-status=all --format=json'
@@ -468,16 +388,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments currency-by --id=BBG0013HGFT4 --id-type=figi',
       'tinkoff-invest-node-sdk instruments currency-by --id=USD000UTSTOM --id-type=ticker --class-code=CETS --format=json'
@@ -499,16 +413,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments etf-by --id=BBG333333333 --id-type=figi',
       'tinkoff-invest-node-sdk instruments etf-by --id=TMOS --id-type=ticker --class-code=TQTF --format=json'
@@ -526,16 +434,10 @@ export const commandHelp = {
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments etfs',
       'tinkoff-invest-node-sdk instruments etfs --instrument-status=all --format=json'
@@ -558,16 +460,10 @@ export const commandHelp = {
     ],
     optional: [
       '--figi=FIGI            Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
       'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
@@ -585,16 +481,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk instruments get-favorites [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-favorites',
       'tinkoff-invest-node-sdk instruments get-favorites --format=json'
@@ -614,16 +504,10 @@ export const commandHelp = {
     ],
     optional: [
       '--figi=FIGI[,FIGI]    Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=BBG00QPYJ5H0 --action=add --confirm',
       'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
@@ -646,16 +530,10 @@ export const commandHelp = {
     optional: [
       '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate',
       '--api-trade-available Only instruments available for API trading',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG',
       'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG --instrument-kind=share --api-trade-available --format=json'
@@ -674,16 +552,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments future-by --id=FUTFIGI --id-type=figi',
       'tinkoff-invest-node-sdk instruments future-by --id=SiM6 --id-type=ticker --class-code=SPBFUT --format=json'
@@ -701,16 +573,10 @@ export const commandHelp = {
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments futures',
       'tinkoff-invest-node-sdk instruments futures --instrument-status=all --format=json'
@@ -731,16 +597,10 @@ export const commandHelp = {
     ],
     optional: [
       '--figi=FIGI            Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=FUTFIGI',
       'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=FUTFIGI --format=json'
@@ -762,16 +622,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments get-instrument-by --id=BBG00QPYJ5H0 --id-type=figi',
       'tinkoff-invest-node-sdk instruments get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
@@ -790,16 +644,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments option-by --id=OPTIONUID --id-type=uid',
       'tinkoff-invest-node-sdk instruments option-by --id=OPTIONTICKER --id-type=ticker --class-code=SPBOPT --format=json'
@@ -820,16 +668,10 @@ export const commandHelp = {
     ],
     optional: [
       '--basic-asset-position-uid=UID Underlying asset position UID',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=asset-uid',
       'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=asset-uid --basic-asset-position-uid=position-uid --format=json'
@@ -852,16 +694,10 @@ export const commandHelp = {
     ],
     optional: [
       '--class-code=CODE     Required when --id-type=ticker',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments share-by --id=BBG004730N88 --id-type=figi',
       'tinkoff-invest-node-sdk instruments share-by --id=SBER --id-type=ticker --class-code=TQBR --format=json'
@@ -879,16 +715,10 @@ export const commandHelp = {
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments shares',
       'tinkoff-invest-node-sdk instruments shares --instrument-status=all --format=json'
@@ -910,16 +740,10 @@ export const commandHelp = {
     ],
     optional: [
       '--exchange=EXCHANGE    Optional exchange or settlement calendar code',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk instruments trading-schedules --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
       'tinkoff-invest-node-sdk instruments trading-schedules --exchange=MOEX --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
@@ -939,16 +763,10 @@ export const commandHelp = {
       '--instrument-id=ID[,ID] FIGI or instrument UID list'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-last-prices --instrument-id=BBG00QPYJ5H0 --format=json'
     ]
@@ -966,16 +784,10 @@ export const commandHelp = {
       '--to=ISO               End timestamp, inclusive'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z',
       'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z --format=json'
@@ -996,16 +808,10 @@ export const commandHelp = {
       '--depth=DEPTH          Order book depth as positive integer'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=BBG00QPYJ5H0 --depth=10',
       'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=instrument-uid --depth=20 --format=json'
@@ -1022,16 +828,10 @@ export const commandHelp = {
       '--instrument-id=ID     FIGI or instrument UID'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-trading-status --instrument-id=BBG00QPYJ5H0',
       'tinkoff-invest-node-sdk marketdata get-trading-status --instrument-id=instrument-uid --format=json'
@@ -1048,16 +848,10 @@ export const commandHelp = {
       '--instrument-id=ID[,ID] FIGI or instrument UID list'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=BBG00QPYJ5H0,instrument-uid',
       'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=BBG00QPYJ5H0 --format=json'
@@ -1074,16 +868,10 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from users get-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk orders get-orders --account-id=2000000000 --format=json'
     ]
@@ -1100,16 +888,10 @@ export const commandHelp = {
       '--order-id=ID         Exchange order identifier'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345',
       'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345 --format=json'
@@ -1133,16 +915,10 @@ export const commandHelp = {
     ],
     optional: [
       '--price=DECIMAL       Price per instrument, up to 9 fractional digits; omitted for market orders',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
       'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
@@ -1165,16 +941,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm',
       'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
@@ -1200,16 +970,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
       'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
@@ -1235,16 +999,10 @@ export const commandHelp = {
       '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
       '--instrument-id=ID    Optional instrument identifier filter',
       '--figi=FIGI            Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
       'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
@@ -1275,16 +1033,10 @@ export const commandHelp = {
       '--without-commissions  Exclude commissions',
       '--without-trades       Exclude trades',
       '--without-overnights   Exclude overnight operations',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=2000000000 --limit=100',
       'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
@@ -1308,16 +1060,10 @@ export const commandHelp = {
     ],
     optional: [
       '--page=N              Report page number, only with --task-id (default: 0)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-broker-report --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
       'tinkoff-invest-node-sdk operations get-broker-report --task-id=TASK --page=1 --format=json'
@@ -1341,16 +1087,10 @@ export const commandHelp = {
     ],
     optional: [
       '--page=N              Report page number, only with --task-id (default: 0)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-dividends-foreign-issuer --account-id=2000000000 --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
       'tinkoff-invest-node-sdk operations get-dividends-foreign-issuer --task-id=TASK --page=1 --format=json'
@@ -1371,17 +1111,11 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from users get-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
+      ...sdkConnectionOptions,
       '--currency=rub|usd|eur Portfolio valuation currency (default: rub)',
-      '--format=json|table    Output format (default: table)'
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-portfolio --account-id=2000000000 --format=json'
     ]
@@ -1397,16 +1131,10 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from users get-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-positions --account-id=2000000000 --format=json'
     ]
@@ -1422,16 +1150,10 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from users get-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=2000000000',
       'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=2000000000 --format=json'
@@ -1448,16 +1170,10 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from users get-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000',
       'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000 --format=json'
@@ -1483,16 +1199,10 @@ export const commandHelp = {
     optional: [
       '--price=DECIMAL       Order price, up to 9 fractional digits',
       '--expire-date=ISO     Required when --expiration-type=good-till-date',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --stop-price=95.5 --direction=sell --expiration-type=good-till-cancel --stop-order-type=stop-loss --confirm',
       'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
@@ -1515,16 +1225,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm',
       'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
@@ -1541,16 +1245,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk sandbox get-sandbox-accounts [options]'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-accounts',
       'tinkoff-invest-node-sdk sandbox get-sandbox-accounts --format=json'
@@ -1567,16 +1265,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm',
       'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm --format=json'
@@ -1597,16 +1289,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm',
       'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm --format=json'
@@ -1633,16 +1319,10 @@ export const commandHelp = {
     ],
     optional: [
       '--price=DECIMAL       Price per instrument, up to 9 fractional digits; omitted for market orders',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
       'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
@@ -1669,16 +1349,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
       'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
@@ -1701,16 +1375,10 @@ export const commandHelp = {
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm',
       'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
@@ -1730,16 +1398,10 @@ export const commandHelp = {
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=2000000000',
       'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=2000000000 --format=json'
@@ -1757,16 +1419,10 @@ export const commandHelp = {
       '--order-id=ID         Exchange order identifier'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=2000000000 --order-id=12345',
       'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=2000000000 --order-id=12345 --format=json'
@@ -1783,16 +1439,10 @@ export const commandHelp = {
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=2000000000',
       'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=2000000000 --format=json'
@@ -1814,16 +1464,10 @@ export const commandHelp = {
       '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
       '--instrument-id=ID    Optional instrument identifier filter',
       '--figi=FIGI            Deprecated alias for --instrument-id',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
       'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
@@ -1854,16 +1498,10 @@ export const commandHelp = {
       '--without-commissions  Exclude commissions',
       '--without-trades       Exclude trades',
       '--without-overnights   Exclude overnight operations',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=2000000000 --limit=100',
       'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
@@ -1884,17 +1522,11 @@ export const commandHelp = {
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
+      ...sdkConnectionOptions,
       '--currency=rub|usd|eur Portfolio valuation currency (default: rub)',
-      '--format=json|table    Output format (default: table)'
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000',
       'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000 --currency=usd --format=json'
@@ -1914,16 +1546,10 @@ export const commandHelp = {
     ],
     optional: [
       '--currency=rub|usd    Pay-in currency (default: rub)',
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm',
       'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm --format=json'
@@ -1944,16 +1570,10 @@ export const commandHelp = {
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
-      '--format=json|table    Output format (default: table)'
+      ...sdkConnectionOptions,
+      tableFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000',
       'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000 --format=json'
@@ -1968,21 +1588,15 @@ export const commandHelp = {
       '--config=PATH        Path to stream JSON config'
     ],
     optional: [
-      '--token=TOKEN          OAuth token, overrides TINKOFF_TOKEN',
-      '--endpoint=HOST:PORT   gRPC endpoint, overrides TINKOFF_ENDPOINT',
-      '--app-name=NAME        Optional x-app-name metadata value',
-      '--insecure             Disable TLS for local or test endpoints',
+      ...sdkConnectionOptions,
       '--max-events=N         Stop after N printed events',
       '--duration-ms=N        Stop after N milliseconds from stream start',
       '--idle-timeout-ms=N    Stop after N milliseconds without provider events',
       '--include-pings        Print ping events',
       '--raw                  Print generated response shape without envelope',
-      '--format=jsonl         Output format (default: jsonl)'
+      jsonlFormatOption
     ],
-    environment: [
-      'TINKOFF_TOKEN',
-      'TINKOFF_ENDPOINT'
-    ],
+    environment: sdkEnvironment,
     examples: [
       'tinkoff-invest-node-sdk stream run --config=portfolio-stream.json --max-events=10',
       'tinkoff-invest-node-sdk stream run --config=marketdata-stream.json --include-pings'
