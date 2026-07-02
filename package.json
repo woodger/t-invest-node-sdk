@@ -14,17 +14,16 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "tinkoff-invest-node-sdk": "dist/bootstrap/bin/cli.js"
   },
   "scripts": {
-    "build": "tsc",
-    "prepare": "yarn build",
-    "cli": "node dist/bootstrap/bin/cli.js",
+    "prepare": "tsc",
     "test": "fwa --prune",
+    "cli": "node dist/bootstrap/bin/cli.js",
     "proto": "node dist/bootstrap/bin/compile-proto.js",
     "lint": "eslint src eslint.config.mjs"
   },

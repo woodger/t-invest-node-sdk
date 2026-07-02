@@ -44,7 +44,7 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 Скрипт использует собранный файл `dist/bootstrap/bin/compile-proto.js`, поэтому перед первым запуском после изменений в `src/bootstrap/bin/compile-proto.ts` нужно выполнить:
 
 ```sh
-npm run build
+npm run prepare
 ```
 
 ## Быстрый старт

@@ -26,7 +26,7 @@
 Перед запуском тестов после изменений в `src` нужно пересобрать проект:
 
 ```bash
-npm run build
+npm run prepare
 npm test
 ```
 
@@ -45,7 +45,7 @@ Runner `fwa`:
 - делегирует выполнение стандартному `node:test`;
 - запускает тестовые файлы в отдельных процессах.
 
-Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run build` и повторить запуск.
+Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run prepare` и повторить запуск.
 Если `npm test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
 
 ## Обязательность тестов
