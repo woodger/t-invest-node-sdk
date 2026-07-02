@@ -3,6 +3,13 @@
   "version": "0.2.3",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
+  "keywords": [
+    "tinkoff",
+    "invest",
+    "sdk",
+    "grpc",
+    "typescript"
+  ],
   "author": {
     "name": "Stanislav Potemkin",
     "email": "woodger@ya.ru"
