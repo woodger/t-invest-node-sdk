@@ -14,7 +14,8 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "version": "0.2.1",
+  "packageManager": "yarn@1.22.22",
+  "version": "0.2.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -22,11 +23,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "yarn build",
-    "cli": "node dist/bootstrap/bin/cli.js",
+    "prepare": "tsc",
     "test": "fwa --prune",
+    "lint": "eslint src eslint.config.mjs",
     "proto": "node dist/bootstrap/bin/compile-proto.js",
-    "lint": "eslint src eslint.config.mjs"
+    "cli": "node dist/bootstrap/bin/cli.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",

@@ -216,7 +216,7 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 TypeScript-код из `contracts/**/*.proto` генерируется через:
 
 ```bash
-npm run proto
+yarn proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
@@ -225,5 +225,5 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 Скрипт использует `dist/bootstrap/bin/compile-proto.js`, поэтому после изменений в `src/bootstrap/bin/compile-proto.ts` сначала нужно пересобрать проект:
 
 ```bash
-npm run build
+yarn build
 ```

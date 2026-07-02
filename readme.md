@@ -32,10 +32,10 @@ yarn add tinkoff-invest-node-sdk
 
 ## Генерация proto
 
-Генерация TypeScript-кода из `contracts/**/*.proto` запускается через npm-скрипт:
+Генерация TypeScript-кода из `contracts/**/*.proto` запускается через Yarn-скрипт:
 
 ```sh
-npm run proto
+yarn proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
@@ -44,7 +44,7 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 Скрипт использует собранный файл `dist/bootstrap/bin/compile-proto.js`, поэтому перед первым запуском после изменений в `src/bootstrap/bin/compile-proto.ts` нужно выполнить:
 
 ```sh
-npm run build
+yarn build
 ```
 
 ## Быстрый старт
@@ -325,9 +325,11 @@ finally {
 - `Timestamp`;
 - типы и enum'ы из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `stoporders`, `users`;
 - package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
+- generated server-side `*ServiceDefinition` и `*ServiceImplementation`
+  contracts для nice-grpc server adapters.
 
-Generated `*ServiceDefinition`, `*ServiceClient` и `*ServiceImplementation`
-остаются внутренними transport contracts и не входят в root exports.
+Generated `*ServiceClient` contracts остаются внутренними transport contracts и
+не входят в root exports.
 
 Основная точка входа:
 
