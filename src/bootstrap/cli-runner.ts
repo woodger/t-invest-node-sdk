@@ -7,10 +7,10 @@
  */
 
 import {
-  createStderrWriter,
-  createStdoutWriter,
+  createOutput,
   parseArgv,
   parseOptions,
+  type Output as CliIO,
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
@@ -21,14 +21,7 @@ import { isVersionRequested, renderVersionInfo } from './version';
 
 type CliCommandOutput = string | AsyncIterable<string> | undefined;
 
-type CliWritable = {
-  write(chunk: string): unknown | Promise<unknown>;
-};
-
-type CliIO = {
-  stdout: CliWritable;
-  stderr: CliWritable;
-};
+type CliWritable = CliIO['stdout'];
 
 const bootstrapOptionsSchema = {
   help: {
@@ -98,10 +91,7 @@ function renderCommandError(error: unknown): string {
 
 export async function runCli(
   argv: readonly string[] = [],
-  io: CliIO = {
-    stdout: createStdoutWriter(),
-    stderr: createStderrWriter()
-  }
+  io: CliIO = createOutput()
 ): Promise<number> {
   const normalizedArgv = normalizeCliAliases(argv);
   let parsedArgv: ReturnType<typeof parseCliInput>;
