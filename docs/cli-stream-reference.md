@@ -143,6 +143,10 @@ Runtime options:
 - `--raw` - печатать generated response shape без normalized envelope;
 - `--format=jsonl` - output format, initially only `jsonl`.
 
+Boolean runtime flags support `--flag` / `--no-flag` syntax. Use
+`--no-include-pings` or `--no-raw` to override a `true` value from config;
+`--flag=true` and `--flag=false` are not supported.
+
 ## Exit Behavior
 
 - `0` - stream завершился по лимиту, таймауту или нормальному закрытию;

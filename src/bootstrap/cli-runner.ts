@@ -6,7 +6,12 @@
  * собирает промежуточный argv contract и не выполняет command-specific parsing.
  */
 
-import { parseArgv, type OptionsSchema } from 'icore';
+import {
+  parseArgv,
+  parseOptions,
+  type OptionsSchema,
+  type RawOptionValue
+} from 'icore';
 import { createStderrWriter } from '../infrastructure/output/stderr-writer';
 import { createStdoutWriter } from '../infrastructure/output/stdout-writer';
 import { resolveCommand, resolveCommandWarnings } from './command-registry';
@@ -43,8 +48,28 @@ const bootstrapOptionsSchema = {
   }
 } as const satisfies OptionsSchema;
 
+const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
+
 export function parseCliInput(argv: readonly string[]) {
-  return parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
+  const parsedArgv = parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
+
+  validateBootstrapOptions(parsedArgv.options);
+
+  return parsedArgv;
+}
+
+function validateBootstrapOptions(options: Record<string, RawOptionValue>): void {
+  const bootstrapOptions: Record<string, RawOptionValue> = {};
+
+  for (const name of bootstrapOptionNames) {
+    if (Object.hasOwn(options, name)) {
+      bootstrapOptions[name] = options[name] as RawOptionValue;
+    }
+  }
+
+  // Command-specific options are intentionally left to `icore.runCommand`.
+  // This check validates only global boolean flags handled by this runner.
+  parseOptions(bootstrapOptionsSchema, bootstrapOptions);
 }
 
 function normalizeCliAliases(argv: readonly string[]): string[] {
@@ -79,7 +104,16 @@ export async function runCli(
   }
 ): Promise<number> {
   const normalizedArgv = normalizeCliAliases(argv);
-  const parsedArgv = parseCliInput(normalizedArgv);
+  let parsedArgv: ReturnType<typeof parseCliInput>;
+
+  try {
+    parsedArgv = parseCliInput(normalizedArgv);
+  }
+  catch (error) {
+    await io.stderr.write(renderCommandError(error));
+
+    return 1;
+  }
 
   // Global flags are handled before command execution, so `--help` and
   // `--version` never need SDK credentials or command-specific required flags.

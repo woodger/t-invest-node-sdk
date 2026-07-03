@@ -26,7 +26,7 @@ import type {
   TradesStreamRequest,
   TradesStreamResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import { defineCommand, type InferOptions, type InferProvidedOptions } from 'icore';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import { withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -111,6 +111,7 @@ const streamRunOptionsSchema = withSdkOptions({
 } as const);
 
 type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
+type StreamRunProvidedOptions = InferProvidedOptions<typeof streamRunOptionsSchema>;
 
 export function createStreamRunCommand(
   dependencies: StreamRunDependencies = {}
@@ -122,8 +123,8 @@ export function createStreamRunCommand(
   return defineCommand({
     path: streamRunCommandPath,
     options: streamRunOptionsSchema,
-    async handle({ options }) {
-      return createStreamRunOutput(options, {
+    async handle({ options, provided }) {
+      return createStreamRunOutput(options, provided, {
         createSdk,
         readConfig,
         now
@@ -136,10 +137,11 @@ export const streamRunCommand = createStreamRunCommand();
 
 async function createStreamRunOutput(
   options: StreamRunOptions,
+  provided: StreamRunProvidedOptions,
   dependencies: Required<StreamRunDependencies>
 ): Promise<AsyncIterable<string>> {
   const config = parseStreamRunConfig(await dependencies.readConfig(options.config));
-  const runtime = resolveStreamRunRuntime(config.runtime, options);
+  const runtime = resolveStreamRunRuntime(config.runtime, options, provided);
   const sdkOptions = resolveSdkOptionsFromCommandOptions(options);
 
   return runStreamRunSession(config, runtime, sdkOptions, dependencies);
@@ -147,7 +149,8 @@ async function createStreamRunOutput(
 
 function resolveStreamRunRuntime(
   runtime: StreamRunRuntime,
-  options: StreamRunOptions
+  options: StreamRunOptions,
+  provided: StreamRunProvidedOptions
 ): StreamRunRuntime {
   return {
     ...runtime,
@@ -155,8 +158,12 @@ function resolveStreamRunRuntime(
     maxEvents: options['max-events'] ?? runtime.maxEvents,
     durationMs: options['duration-ms'] ?? runtime.durationMs,
     idleTimeoutMs: options['idle-timeout-ms'] ?? runtime.idleTimeoutMs,
-    includePings: options['include-pings'] === true ? true : runtime.includePings,
-    raw: options.raw === true ? true : runtime.raw
+    includePings: provided['include-pings']
+      ? options['include-pings'] === true
+      : runtime.includePings,
+    raw: provided.raw
+      ? options.raw === true
+      : runtime.raw
   };
 }
 

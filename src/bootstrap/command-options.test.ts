@@ -72,6 +72,16 @@ describe('command options', () => {
         /Expected '--token' as scalar option/
       );
     });
+
+    test('rejects text values for boolean options', () => {
+      assert.throws(
+        () => parseCommandOptions(
+          rawOptions({ insecure: 'false' }),
+          withSdkOptions({})
+        ),
+        /Expected '--insecure' as boolean flag/
+      );
+    });
   });
 
   describe('parseCommaSeparatedStringListOption', () => {
