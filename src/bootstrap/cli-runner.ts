@@ -21,8 +21,6 @@ import { isVersionRequested, renderVersionInfo } from './version';
 
 type CliCommandOutput = string | AsyncIterable<string> | undefined;
 
-type CliWritable = CliIO['stdout'];
-
 const bootstrapOptionsSchema = {
   help: {
     type: 'boolean'
@@ -100,7 +98,7 @@ export async function runCli(
     parsedArgv = parseCliInput(normalizedArgv);
   }
   catch (error) {
-    await io.stderr.write(renderCommandError(error));
+    await io.error(renderCommandError(error));
 
     return 1;
   }
@@ -108,19 +106,19 @@ export async function runCli(
   // Global flags are handled before command execution, so `--help` and
   // `--version` never need SDK credentials or command-specific required flags.
   if (isHelpRequested(parsedArgv.options)) {
-    await io.stdout.write(renderHelp(parsedArgv.positionals));
+    await io.write(renderHelp(parsedArgv.positionals));
 
     return 0;
   }
 
   if (isVersionRequested(parsedArgv.options)) {
-    await io.stdout.write(renderVersionInfo());
+    await io.write(renderVersionInfo());
 
     return 0;
   }
 
   if (parsedArgv.positionals.length === 0) {
-    await io.stdout.write(renderCliHelp());
+    await io.write(renderCliHelp());
 
     return 0;
   }
@@ -134,23 +132,23 @@ export async function runCli(
     command = resolveCommand(action);
   }
   catch {
-    await io.stderr.write(`Unknown command: ${action.join(' ')}\n\n`);
-    await io.stderr.write(renderCliHelp());
+    await io.error(`Unknown command: ${action.join(' ')}\n\n`);
+    await io.error(renderCliHelp());
 
     return 1;
   }
 
   try {
     for (const warning of resolveCommandWarnings(command.name, normalizedArgv)) {
-      await io.stderr.write(warning);
+      await io.error(warning);
     }
 
-    await writeCommandOutput(await command.handler(normalizedArgv), io.stdout);
+    await writeCommandOutput(await command.handler(normalizedArgv), io);
 
     return 0;
   }
   catch (error) {
-    await io.stderr.write(renderCommandError(error));
+    await io.error(renderCommandError(error));
   }
 
   return 1;
@@ -158,7 +156,7 @@ export async function runCli(
 
 async function writeCommandOutput(
   output: CliCommandOutput,
-  stdout: CliWritable
+  io: CliIO
 ): Promise<void> {
   if (output === undefined) {
     return;
@@ -168,7 +166,7 @@ async function writeCommandOutput(
     for await (const chunk of output) {
       // Await each chunk so long-running commands respect stdout backpressure
       // instead of buffering provider output faster than the consumer reads it.
-      await stdout.write(chunk);
+      await io.write(chunk);
     }
 
     return;
@@ -176,7 +174,7 @@ async function writeCommandOutput(
 
   // Single-response commands share the same writer contract; this keeps help,
   // version and API command output consistent with stream output.
-  await stdout.write(output);
+  await io.write(output);
 }
 
 function isAsyncIterable(value: unknown): value is AsyncIterable<string> {

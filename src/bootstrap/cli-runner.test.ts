@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { createOutput } from 'icore';
 import { parseCliInput, runCli } from './cli-runner';
 
 function createIo() {
@@ -7,7 +8,7 @@ function createIo() {
   let stderr = '';
 
   return {
-    io: {
+    io: createOutput({
       stdout: {
         write(chunk: string) {
           stdout += chunk;
@@ -18,7 +19,7 @@ function createIo() {
           stderr += chunk;
         }
       }
-    },
+    }),
     read() {
       return {
         stdout,
@@ -167,7 +168,7 @@ describe('bootstrap cli runner', () => {
     test('waits for async stdout writes', async () => {
       let finishWrite: (() => void) | undefined;
       let commandFinished = false;
-      const exitCode = runCli(['version'], {
+      const exitCode = runCli(['version'], createOutput({
         stdout: {
           write() {
             return new Promise<void>((resolve) => {
@@ -178,7 +179,7 @@ describe('bootstrap cli runner', () => {
         stderr: {
           write() {}
         }
-      }).then((code) => {
+      })).then((code) => {
         commandFinished = true;
 
         return code;
@@ -243,7 +244,7 @@ describe('bootstrap cli runner', () => {
       let finishWrite: (() => void) | undefined;
       let commandFinished = false;
       let stderrWrites = 0;
-      const exitCode = runCli(['unknown-command'], {
+      const exitCode = runCli(['unknown-command'], createOutput({
         stdout: {
           write() {}
         },
@@ -258,7 +259,7 @@ describe('bootstrap cli runner', () => {
             }
           }
         }
-      }).then((code) => {
+      })).then((code) => {
         commandFinished = true;
 
         return code;
