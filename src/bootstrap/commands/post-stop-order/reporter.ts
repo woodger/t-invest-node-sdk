@@ -7,8 +7,7 @@
 
 import type { PostStopOrderReport } from '../../../application/reports';
 import type { PostStopOrderResponse } from '../../../generated/stoporders';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const postStopOrderFormats = ['json', 'table'] as const;
 

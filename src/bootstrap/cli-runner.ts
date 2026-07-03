@@ -7,13 +7,13 @@
  */
 
 import {
+  createStderrWriter,
+  createStdoutWriter,
   parseArgv,
   parseOptions,
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
-import { createStderrWriter } from '../infrastructure/output/stderr-writer';
-import { createStdoutWriter } from '../infrastructure/output/stdout-writer';
 import { resolveCommand, resolveCommandWarnings } from './command-registry';
 import { isHelpRequested, renderHelp } from './help/help';
 import { renderCliHelp } from './help/renderer';

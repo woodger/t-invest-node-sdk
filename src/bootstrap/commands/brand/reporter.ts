@@ -7,8 +7,7 @@
 
 import type { BrandReport } from '../../../application/reports';
 import type { Brand } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 import {
   brandsFormats,
   createBrandReport,

@@ -6,8 +6,7 @@
  */
 
 import type { CloseSandboxAccountReport } from '../../../application/reports';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const closeSandboxAccountFormats = ['json', 'table'] as const;
 

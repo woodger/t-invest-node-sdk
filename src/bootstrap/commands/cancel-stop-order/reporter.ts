@@ -8,8 +8,7 @@
 import type { CancelStopOrderReport } from '../../../application/reports';
 import type { CancelStopOrderResponse } from '../../../generated/stoporders';
 import { formatReportDate } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const cancelStopOrderFormats = ['json', 'table'] as const;
 
