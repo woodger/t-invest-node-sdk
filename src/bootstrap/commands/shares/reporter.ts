@@ -7,7 +7,7 @@
 
 import type { SharesReport } from '../../../application/reports';
 import type { Share } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   createShareReportInstrument,
   renderShareRows,

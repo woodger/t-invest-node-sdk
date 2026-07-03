@@ -7,7 +7,7 @@
 
 import type { CurrenciesReport } from '../../../application/reports';
 import type { Currency } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   createCurrencyReportInstrument,
   currencyFormats,

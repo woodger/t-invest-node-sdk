@@ -7,8 +7,7 @@
 
 import type { TradingStatusesReport } from '../../../application/reports';
 import type { GetTradingStatusesResponse } from '../../../generated/marketdata';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 import {
   createTradingStatusReport,
   tradingStatusFormats,

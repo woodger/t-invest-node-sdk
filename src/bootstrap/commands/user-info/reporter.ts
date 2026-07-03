@@ -7,8 +7,7 @@
 
 import type { UserInfoReport } from '../../../application/reports';
 import type { GetInfoResponse } from '../../../generated/users';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const userInfoFormats = ['json', 'table'] as const;
 

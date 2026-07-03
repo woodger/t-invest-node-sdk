@@ -11,8 +11,7 @@ import type {
 } from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
 import type { FavoriteInstrument } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const favoritesFormats = ['json', 'table'] as const;
 

@@ -11,8 +11,7 @@ import {
   formatReportMoneyText,
   toReportMoney
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const sandboxPayInFormats = ['json', 'table'] as const;
 

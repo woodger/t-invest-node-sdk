@@ -7,7 +7,7 @@
 
 import type { FuturesReport } from '../../../application/reports';
 import type { Future } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   createFutureReportInstrument,
   futureFormats,

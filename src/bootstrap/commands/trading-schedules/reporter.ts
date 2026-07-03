@@ -13,8 +13,7 @@ import type { TradingDay, TradingSchedule } from '../../../generated/instruments
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const tradingSchedulesFormats = ['json', 'table'] as const;
 

@@ -7,7 +7,7 @@
 
 import type { BondsReport } from '../../../application/reports';
 import type { Bond } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   bondFormats,
   createBondReportInstrument,

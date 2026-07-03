@@ -7,7 +7,7 @@
 
 import type { OptionsByReport } from '../../../application/reports';
 import type { Option } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   createOptionReportInstrument,
   optionFormats,

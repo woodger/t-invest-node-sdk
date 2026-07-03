@@ -7,8 +7,7 @@
 
 import type { OpenSandboxAccountReport } from '../../../application/reports';
 import type { OpenSandboxAccountResponse } from '../../../generated/sandbox';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const openSandboxAccountFormats = ['json', 'table'] as const;
 

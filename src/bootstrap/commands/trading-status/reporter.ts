@@ -8,8 +8,7 @@
 import type { TradingStatusReport } from '../../../application/reports';
 import { securityTradingStatusToJSON } from '../../../generated/common';
 import type { GetTradingStatusResponse } from '../../../generated/marketdata';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const tradingStatusFormats = ['json', 'table'] as const;
 

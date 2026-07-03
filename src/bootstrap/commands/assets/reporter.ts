@@ -7,7 +7,7 @@
 
 import type { AssetsReport } from '../../../application/reports';
 import type { Asset } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   assetFormats,
   createAssetReportSummary,

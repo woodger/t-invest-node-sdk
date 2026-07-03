@@ -11,8 +11,7 @@ import {
   formatReportDate,
   formatReportQuotation
 } from '../../../infrastructure/report-values';
-import { renderCsvRow } from '../../../infrastructure/renderers/csv-renderer';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderCsvRow, renderJson } from 'icore';
 
 export const candlesFormats = ['json', 'csv'] as const;
 
