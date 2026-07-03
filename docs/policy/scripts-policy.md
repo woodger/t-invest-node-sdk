@@ -1,6 +1,6 @@
 # Политика скриптов и сборки
 
-> Type: Policy. Этот документ задает ограничения на изменение scripts, build и test pipeline.
+> Type: Policy. Этот документ задает ограничения на изменение scripts, compile и test pipeline.
 
 Скрипты сборки, тестирования и запуска считаются частью runtime pipeline.
 
@@ -10,9 +10,9 @@
 
 - добавлять удаление файлов
 - добавлять очистку dist
-- добавлять `clean`-script для автоматической очистки перед `build` или `test`
+- добавлять `clean`-script для автоматической очистки перед `prepare` или `test`
 - добавлять rm / fs.rmSync / rimraf
-- добавлять prebuild / postbuild
+- добавлять preprepare / postprepare
 - добавлять pretest / posttest
 - менять порядок команд
 - добавлять &&
@@ -20,19 +20,19 @@
 
 Пример правильного скрипта:
 
-"build": "tsc"
+"prepare": "tsc"
 
 Пример неправильного изменения:
 
-"build": "rm -rf dist && tsc"
+"prepare": "rm -rf dist && tsc"
 
 Также запрещено:
 
 ```json
 "clean": "rm -rf dist",
-"build": "yarn clean && tsc",
+"prepare": "yarn clean && tsc",
 "test": "yarn clean && fwa",
-"prebuild": "rm -rf dist",
+"preprepare": "rm -rf dist",
 "pretest": "rm -rf dist"
 ```
 
@@ -51,16 +51,16 @@ pipeline проекта.
 
 Допустимо:
 
-- оставить существующий `build` без изменений и исправить причину ошибки в коде
+- оставить существующий `prepare` без изменений и исправить причину ошибки в коде
 - добавить новый script только если задача прямо требует новый entrypoint
 - менять реализацию вызываемого файла, не меняя сам сценарий запуска, если задача про поведение этого файла
 
 Недопустимо:
 
 - `"test": "yarn lint && vitest"` вместо существующего `"test": "vitest"`
-- `"build": "node scripts/build.js"` вместо существующего `"build": "tsc"` без прямого требования задачи
+- `"prepare": "node scripts/build.js"` вместо существующего `"prepare": "tsc"` без прямого требования задачи
 - добавлять очистку временных директорий "на всякий случай"
-- добавлять автоматическую очистку `dist` перед `build` или `test`
+- добавлять автоматическую очистку `dist` перед `prepare` или `test`
 
 ## Хорошие практики
 
