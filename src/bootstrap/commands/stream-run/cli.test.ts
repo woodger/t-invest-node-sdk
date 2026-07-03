@@ -197,6 +197,96 @@ describe('stream run command', () => {
       );
     });
 
+    test('applies negated boolean runtime overrides from CLI options', async () => {
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime: {
+            maxEvents: 1,
+            includePings: true,
+            raw: true
+          }
+        }),
+        now: () => new Date('2026-06-29T12:00:00.000Z'),
+        createSdk() {
+          return {
+            marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
+              marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+            },
+            operationsStream: {
+              portfolioStream: createUnusedStream('portfolioStream'),
+              positionsStream: createUnusedStream('positionsStream')
+            },
+            ordersStream: {
+              tradesStream() {
+                return responses(
+                  {
+                    ping: {
+                      time: new Date('2026-06-29T12:00:00.000Z')
+                    }
+                  } as unknown as TradesStreamResponse,
+                  {
+                    orderTrades: {
+                      orderId: 'order-id'
+                    }
+                  } as unknown as TradesStreamResponse
+                );
+              }
+            },
+            close() {}
+          };
+        }
+      });
+
+      const output = await runCommand(
+        command,
+        [
+          'stream',
+          'run',
+          '--config=stream.json',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--no-include-pings',
+          '--no-raw'
+        ],
+        undefined
+      );
+
+      assert.deepEqual(JSON.parse((await collectOutput(output)).trim()), {
+        stream: 'orders.tradesStream',
+        sequence: 1,
+        receivedAt: '2026-06-29T12:00:00.000Z',
+        type: 'orderTrades',
+        payload: {
+          orderId: 'order-id'
+        }
+      });
+    });
+
+    test('rejects assigned values for boolean runtime options', async () => {
+      const command = createStreamRunCommand({
+        readConfig() {
+          throw new Error('Config should not be read');
+        }
+      });
+
+      await assert.rejects(
+        () => runCommand(
+          command,
+          [
+            'stream',
+            'run',
+            '--config=stream.json',
+            '--raw=false'
+          ],
+          undefined
+        ),
+        /Expected '--raw' as boolean flag/
+      );
+    });
+
     test('rejects invalid config before sdk creation', async () => {
       let createSdkCalls = 0;
       const command = createStreamRunCommand({

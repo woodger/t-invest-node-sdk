@@ -169,6 +169,10 @@ src/infrastructure
 - вызов API;
 - закрытие SDK.
 
+Boolean CLI options follow `icore` flag syntax: `--flag` and, when the
+command supports a negative override, `--no-flag`. Assigned boolean values
+like `--flag=true` or `--flag=false` are not part of the public CLI contract.
+
 Внутри command module нужно различать два вида helper-ов:
 
 ```text

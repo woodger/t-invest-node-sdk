@@ -78,6 +78,17 @@ describe('bootstrap cli runner', () => {
         }
       );
     });
+
+    test('rejects assigned values for global boolean flags', () => {
+      assert.throws(
+        () => parseCliInput(['--help=false']),
+        /Expected '--help' as boolean flag/
+      );
+      assert.throws(
+        () => parseCliInput(['users', 'get-accounts', '--insecure=true']),
+        /Expected '--insecure' as boolean flag/
+      );
+    });
   });
 
   describe('runCli', () => {
@@ -144,6 +155,15 @@ describe('bootstrap cli runner', () => {
       }
     });
 
+    test('returns a failure for assigned global boolean flag values', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['--help=false'], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.match(read().stderr, /Expected '--help' as boolean flag/);
+    });
+
     test('waits for async stdout writes', async () => {
       let finishWrite: (() => void) | undefined;
       let commandFinished = false;
@@ -164,7 +184,9 @@ describe('bootstrap cli runner', () => {
         return code;
       });
 
-      await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setImmediate(resolve);
+      });
 
       assert.equal(commandFinished, false);
 

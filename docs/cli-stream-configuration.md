@@ -288,6 +288,10 @@ tinkoff-invest-node-sdk stream run \
   --include-pings
 ```
 
+Boolean runtime flags use `--flag` / `--no-flag` syntax. For example,
+`--no-include-pings` or `--no-raw` can turn off a `true` value from config;
+`--flag=true` and `--flag=false` are not supported.
+
 Subscription and account selection should stay in config. This keeps command
 line usage stable and avoids a large set of fragile stream-specific flags.
 

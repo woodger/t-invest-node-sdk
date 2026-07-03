@@ -109,6 +109,10 @@ yarn cli users get-accounts --format=json
 команды можно посмотреть через `yarn cli help <service> <method>` или
 `yarn cli <service> <method> --help`.
 
+Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
+negative overrides use `--no-raw`; assigned values like `--raw=true` or
+`--raw=false` are not part of the public CLI contract.
+
 API-команды используют `--token` / `TINKOFF_TOKEN` и
 `--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным
 интерфейсом пакета.
