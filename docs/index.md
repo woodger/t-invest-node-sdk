@@ -229,5 +229,5 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 Скрипт использует `dist/bootstrap/bin/compile-proto.js`, поэтому после изменений в `src/bootstrap/bin/compile-proto.ts` сначала нужно пересобрать проект:
 
 ```bash
-yarn build
+yarn prepare
 ```
