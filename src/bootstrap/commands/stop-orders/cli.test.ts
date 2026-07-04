@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../command';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import {
@@ -104,7 +104,7 @@ describe('stop-orders command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'stoporders',
@@ -142,7 +142,7 @@ describe('stop-orders command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'stoporders',

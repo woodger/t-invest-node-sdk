@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../command';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { SandboxPayInRequest } from '../../../generated/sandbox';
 import type { CommandRawOptions } from '../../command-options';
@@ -79,7 +79,7 @@ describe('sandbox-pay-in command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'sandbox',
@@ -121,7 +121,7 @@ describe('sandbox-pay-in command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'sandbox',
