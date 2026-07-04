@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../command';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { CloseSandboxAccountRequest } from '../../../generated/sandbox';
 import type { CommandRawOptions } from '../../command-options';
@@ -40,7 +40,7 @@ describe('sandbox-close-account command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           ['sandbox', 'close-sandbox-account', '--account-id=sandbox-account-id'],
           undefined
@@ -71,7 +71,7 @@ describe('sandbox-close-account command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'sandbox',
