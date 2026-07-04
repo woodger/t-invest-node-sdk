@@ -15,7 +15,8 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -117,7 +118,7 @@ export function parseOperationsFormat(rawOptions: CommandRawOptions): Operations
 export function createOperationsCommand(
   createSdk: OperationsSdkFactory = defaultOperationsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: operationsCommandPath,
     options: operationsOptionsSchema,
     handle({ options }) {

@@ -14,7 +14,8 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -136,7 +137,7 @@ export function parseBrokerReportFormat(rawOptions: CommandRawOptions): BrokerRe
 export function createBrokerReportCommand(
   createSdk: BrokerReportSdkFactory = defaultBrokerReportSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: brokerReportCommandPath,
     options: brokerReportOptionsSchema,
     handle({ options }) {

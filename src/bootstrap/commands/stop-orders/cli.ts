@@ -14,7 +14,8 @@ import type {
   GetStopOrdersRequest,
   GetStopOrdersResponse
 } from '../../../generated/stoporders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -65,7 +66,7 @@ export function parseStopOrdersFormat(rawOptions: CommandRawOptions): StopOrders
 export function createStopOrdersCommand(
   createSdk: StopOrdersSdkFactory = defaultStopOrdersSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: stopOrdersCommandPath,
     options: stopOrdersOptionsSchema,
     handle({ options }) {

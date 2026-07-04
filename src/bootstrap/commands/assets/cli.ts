@@ -12,7 +12,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -86,7 +87,7 @@ export function parseAssetsFormat(rawOptions: CommandRawOptions): AssetsFormat {
 export function createAssetsCommand(
   createSdk: AssetsSdkFactory = defaultAssetsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: assetsCommandPath,
     options: assetsOptionsSchema,
     handle({ options }) {

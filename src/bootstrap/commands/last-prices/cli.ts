@@ -14,7 +14,8 @@ import type {
   GetLastPricesRequest,
   GetLastPricesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -75,7 +76,7 @@ export function parseLastPricesFormat(rawOptions: CommandRawOptions): LastPrices
 export function createLastPricesCommand(
   createSdk: LastPricesSdkFactory = defaultLastPricesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: lastPricesCommandPath,
     options: lastPricesOptionsSchema,
     handle({ options }) {

@@ -15,7 +15,8 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -114,7 +115,7 @@ export function parseReplaceOrderFormat(rawOptions: CommandRawOptions): ReplaceO
 export function createReplaceOrderCommand(
   createSdk: ReplaceOrderSdkFactory = defaultReplaceOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: replaceOrderCommandPath,
     options: replaceOrderOptionsSchema,
     handle({ options }) {

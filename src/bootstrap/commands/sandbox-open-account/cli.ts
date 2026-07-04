@@ -14,7 +14,8 @@ import type {
   OpenSandboxAccountRequest,
   OpenSandboxAccountResponse
 } from '../../../generated/sandbox';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -65,7 +66,7 @@ export function parseSandboxOpenAccountFormat(
 export function createSandboxOpenAccountCommand(
   createSdk: SandboxOpenAccountSdkFactory = defaultSandboxOpenAccountSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxOpenAccountCommandPath,
     options: sandboxOpenAccountOptionsSchema,
     handle({ options }) {

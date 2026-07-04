@@ -17,7 +17,8 @@ import {
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -206,7 +207,7 @@ export function parseOperationsByCursorFormat(rawOptions: CommandRawOptions): Op
 export function createOperationsByCursorCommand(
   createSdk: OperationsByCursorSdkFactory = defaultOperationsByCursorSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: operationsByCursorCommandPath,
     options: operationsByCursorOptionsSchema,
     handle({ options }) {

@@ -14,7 +14,8 @@ import type {
   GetOrderStateRequest,
   OrderState
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -69,7 +70,7 @@ export function parseOrderStateFormat(rawOptions: CommandRawOptions): OrderState
 export function createOrderStateCommand(
   createSdk: OrderStateSdkFactory = defaultOrderStateSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: orderStateCommandPath,
     options: orderStateOptionsSchema,
     handle({ options }) {

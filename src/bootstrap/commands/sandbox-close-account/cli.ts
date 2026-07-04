@@ -14,7 +14,8 @@ import type {
   CloseSandboxAccountRequest,
   CloseSandboxAccountResponse
 } from '../../../generated/sandbox';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -77,7 +78,7 @@ export function parseSandboxCloseAccountFormat(
 export function createSandboxCloseAccountCommand(
   createSdk: SandboxCloseAccountSdkFactory = defaultSandboxCloseAccountSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxCloseAccountCommandPath,
     options: sandboxCloseAccountOptionsSchema,
     handle({ options }) {

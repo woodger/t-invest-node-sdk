@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -47,7 +48,7 @@ export function parseBrandsFormat(rawOptions: CommandRawOptions): BrandsFormat {
 export function createBrandsCommand(
   createSdk: BrandsSdkFactory = defaultBrandsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: brandsCommandPath,
     options: brandsOptionsSchema,
     handle({ options }) {

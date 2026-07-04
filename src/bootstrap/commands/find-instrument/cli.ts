@@ -12,7 +12,8 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest, FindInstrumentResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -98,7 +99,7 @@ export function parseFindInstrumentFormat(rawOptions: CommandRawOptions): FindIn
 export function createFindInstrumentCommand(
   createSdk: FindInstrumentSdkFactory = defaultFindInstrumentSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: findInstrumentCommandPath,
     options: findInstrumentOptionsSchema,
     handle({ options }) {

@@ -14,7 +14,8 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -69,7 +70,7 @@ export function parseMarginAttributesFormat(rawOptions: CommandRawOptions): Marg
 export function createMarginAttributesCommand(
   createSdk: MarginAttributesSdkFactory = defaultMarginAttributesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: marginAttributesCommandPath,
     options: marginAttributesOptionsSchema,
     handle({ options }) {

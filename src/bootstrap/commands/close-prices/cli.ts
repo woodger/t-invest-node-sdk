@@ -14,7 +14,8 @@ import type {
   GetClosePricesRequest,
   GetClosePricesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -75,7 +76,7 @@ export function parseClosePricesFormat(rawOptions: CommandRawOptions): ClosePric
 export function createClosePricesCommand(
   createSdk: ClosePricesSdkFactory = defaultClosePricesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: closePricesCommandPath,
     options: closePricesOptionsSchema,
     handle({ options }) {

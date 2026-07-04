@@ -16,7 +16,8 @@ import {
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -126,7 +127,7 @@ export function parsePostOrderFormat(rawOptions: CommandRawOptions): PostOrderFo
 export function createPostOrderCommand(
   createSdk: PostOrderSdkFactory = defaultPostOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: postOrderCommandPath,
     options: postOrderOptionsSchema,
     handle({ options }) {

@@ -17,7 +17,8 @@ import {
   type PostStopOrderRequest,
   type PostStopOrderResponse
 } from '../../../generated/stoporders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -157,7 +158,7 @@ export function parsePostStopOrderFormat(rawOptions: CommandRawOptions): PostSto
 export function createPostStopOrderCommand(
   createSdk: PostStopOrderSdkFactory = defaultPostStopOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: postStopOrderCommandPath,
     options: postStopOrderOptionsSchema,
     handle({ options }) {

@@ -14,7 +14,8 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -85,7 +86,7 @@ export function parseAccruedInterestsFormat(rawOptions: CommandRawOptions): Accr
 export function createAccruedInterestsCommand(
   createSdk: AccruedInterestsSdkFactory = defaultAccruedInterestsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: accruedInterestsCommandPath,
     options: accruedInterestsOptionsSchema,
     handle({ options }) {

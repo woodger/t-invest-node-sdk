@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -47,7 +48,7 @@ export function parseCountriesFormat(rawOptions: CommandRawOptions): CountriesFo
 export function createCountriesCommand(
   createSdk: CountriesSdkFactory = defaultCountriesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: countriesCommandPath,
     options: countriesOptionsSchema,
     handle({ options }) {

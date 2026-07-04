@@ -14,7 +14,8 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -68,7 +69,7 @@ export function parseOptionsByFormat(rawOptions: CommandRawOptions): OptionsByFo
 export function createOptionsByCommand(
   createSdk: OptionsBySdkFactory = defaultOptionsBySdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: optionsByCommandPath,
     options: optionsByOptionsSchema,
     handle({ options }) {

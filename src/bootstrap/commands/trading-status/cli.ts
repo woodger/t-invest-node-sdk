@@ -14,7 +14,8 @@ import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -69,7 +70,7 @@ export function parseTradingStatusFormat(rawOptions: CommandRawOptions): Trading
 export function createTradingStatusCommand(
   createSdk: TradingStatusSdkFactory = defaultTradingStatusSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: tradingStatusCommandPath,
     options: tradingStatusOptionsSchema,
     handle({ options }) {
