@@ -14,7 +14,8 @@ import type {
   GetBondCouponsRequest,
   GetBondCouponsResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -81,7 +82,7 @@ export function parseBondCouponsFormat(rawOptions: CommandRawOptions): BondCoupo
 export function createBondCouponsCommand(
   createSdk: BondCouponsSdkFactory = defaultBondCouponsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: bondCouponsCommandPath,
     options: bondCouponsOptionsSchema,
     handle({ options }) {

@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -47,7 +48,7 @@ export function parseFavoritesFormat(rawOptions: CommandRawOptions): FavoritesFo
 export function createFavoritesCommand(
   createSdk: FavoritesSdkFactory = defaultFavoritesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: favoritesCommandPath,
     options: favoritesOptionsSchema,
     handle({ options }) {

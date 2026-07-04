@@ -15,7 +15,8 @@ import {
   type GetCandlesRequest,
   type GetCandlesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -116,7 +117,7 @@ export function parseCandlesFormat(rawOptions: CommandRawOptions): CandlesFormat
 export function createCandlesCommand(
   createSdk: CandlesSdkFactory = defaultCandlesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: candlesCommandPath,
     options: candlesOptionsSchema,
     handle({ options }) {

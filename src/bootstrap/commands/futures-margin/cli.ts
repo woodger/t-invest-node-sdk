@@ -14,7 +14,8 @@ import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -73,7 +74,7 @@ export function parseFuturesMarginFormat(rawOptions: CommandRawOptions): Futures
 export function createFuturesMarginCommand(
   createSdk: FuturesMarginSdkFactory = defaultFuturesMarginSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: futuresMarginCommandPath,
     options: futuresMarginOptionsSchema,
     handle({ options }) {

@@ -78,11 +78,10 @@ import { userInfoCommand } from './commands/user-info/cli';
 import { userTariffCommand } from './commands/user-tariff/cli';
 import { versionCommand } from './commands/version/cli';
 import { withdrawLimitsCommand } from './commands/withdraw-limits/cli';
+import { command } from './commands/command';
 import {
-  defineCommandRegistry,
   isCommandName as isCommandLineCommandName,
   resolveCommand as resolveCommandLineCommand,
-  runCommand,
   type CommandDefinition,
   type OptionsSchema
 } from 'icore';
@@ -223,7 +222,7 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   }
 
   const commandName = resolvedCommand.name;
-  const command = resolvedCommand.command;
+  const registeredCommand = resolvedCommand.command;
 
   if (!isCommandName(commandName)) {
     throw new Error(`'${commandName}' is not a program command`);
@@ -232,7 +231,7 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   return {
     name: commandName,
     path: resolvedCommand.path,
-    handler: command.handler
+    handler: registeredCommand.handler
   };
 }
 
@@ -266,7 +265,7 @@ export function resolveCommandWarnings(
   ];
 }
 
-const commandLineRegistry = defineCommandRegistry(
+const commandLineCommands = command.registry(
   [
     defineCommandLineCommand(accountsCommand),
     defineCommandLineCommand(userInfoCommand),
@@ -339,11 +338,12 @@ const commandLineRegistry = defineCommandRegistry(
     defineCommandLineCommand(versionCommand)
   ]
 );
+const commandLineRegistry = commandLineCommands.registry;
 
-export const commandNames = commandLineRegistry.commandNames;
+export const commandNames = commandLineCommands.names;
 
 function defineCommandLineCommand<const TSchema extends OptionsSchema>(
-  command: CommandDefinition<
+  definition: CommandDefinition<
     TSchema,
     undefined,
     CliCommandOutput,
@@ -351,11 +351,11 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   >
 ): CommandLineDefinition {
   return {
-    ...command,
+    ...definition,
     handler(args) {
       // Resolved commands are still executed from raw CLI args, so `icore`
       // remains the single owner of path, extra positional, and option parsing.
-      return runCommand(command, args, undefined);
+      return command.run(definition, args, undefined);
     }
   };
 }

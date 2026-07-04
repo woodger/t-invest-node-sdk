@@ -14,7 +14,8 @@ import type {
   CancelOrderRequest,
   CancelOrderResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -79,7 +80,7 @@ export function parseCancelOrderFormat(rawOptions: CommandRawOptions): CancelOrd
 export function createCancelOrderCommand(
   createSdk: CancelOrderSdkFactory = defaultCancelOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: cancelOrderCommandPath,
     options: cancelOrderOptionsSchema,
     handle({ options }) {

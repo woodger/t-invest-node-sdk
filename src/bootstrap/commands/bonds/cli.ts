@@ -14,7 +14,8 @@ import type {
   BondsResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -63,7 +64,7 @@ export function parseBondsFormat(rawOptions: CommandRawOptions): BondsFormat {
 export function createBondsCommand(
   createSdk: BondsSdkFactory = defaultBondsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: bondsCommandPath,
     options: bondsOptionsSchema,
     handle({ options }) {

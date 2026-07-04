@@ -9,10 +9,10 @@
  * Здесь не должно быть SDK wiring или generated API request logic.
  */
 
-import { defineCommand } from 'icore';
+import { command } from '../command';
 import { renderVersionInfo } from '../../version';
 
-export const versionCommand = defineCommand({
+export const versionCommand = command.define({
   path: ['version'],
   options: {},
   allowExtraPositionals: true,

@@ -9,11 +9,11 @@
  * Здесь не должно быть SDK wiring или generated API request logic.
  */
 
-import { defineCommand } from 'icore';
+import { command } from '../command';
 import { resolveCommandHelpName } from '../../help/commands';
 import { renderCliHelp, renderCommandHelp } from '../../help/renderer';
 
-export const helpCommand = defineCommand({
+export const helpCommand = command.define({
   path: ['help'],
   options: {},
   allowExtraPositionals: true,

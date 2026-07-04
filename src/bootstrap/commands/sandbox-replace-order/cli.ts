@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PostOrderResponse, ReplaceOrderRequest } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -103,7 +104,7 @@ export function parseSandboxReplaceOrderFormat(
 export function createSandboxReplaceOrderCommand(
   createSdk: SandboxReplaceOrderSdkFactory = defaultSandboxReplaceOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxReplaceOrderCommandPath,
     options: sandboxReplaceOrderOptionsSchema,
     handle({ options }) {

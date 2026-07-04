@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -76,7 +77,7 @@ export function parseSandboxPortfolioFormat(rawOptions: CommandRawOptions): Port
 export function createSandboxPortfolioCommand(
   createSdk: SandboxPortfolioSdkFactory = defaultSandboxPortfolioSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxPortfolioCommandPath,
     options: sandboxPortfolioOptionsSchema,
     handle({ options }) {

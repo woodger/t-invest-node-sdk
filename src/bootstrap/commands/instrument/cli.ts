@@ -14,7 +14,8 @@ import {
   type InstrumentRequest,
   type InstrumentResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -63,7 +64,7 @@ export function parseInstrumentFormat(rawOptions: CommandRawOptions): Instrument
 export function createInstrumentCommand(
   createSdk: InstrumentSdkFactory = defaultInstrumentSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: instrumentCommandPath,
     options: instrumentOptionsSchema,
     handle({ options }) {

@@ -14,7 +14,8 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -63,7 +64,7 @@ export function parseCurrenciesFormat(rawOptions: CommandRawOptions): Currencies
 export function createCurrenciesCommand(
   createSdk: CurrenciesSdkFactory = defaultCurrenciesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: currenciesCommandPath,
     options: currenciesOptionsSchema,
     handle({ options }) {

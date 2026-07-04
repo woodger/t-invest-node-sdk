@@ -14,7 +14,8 @@ import type {
   GetOrderBookRequest,
   GetOrderBookResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -83,7 +84,7 @@ export function parseOrderBookFormat(rawOptions: CommandRawOptions): OrderBookFo
 export function createOrderBookCommand(
   createSdk: OrderBookSdkFactory = defaultOrderBookSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: orderBookCommandPath,
     options: orderBookOptionsSchema,
     handle({ options }) {

@@ -15,7 +15,8 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -87,7 +88,7 @@ export function parsePortfolioFormat(rawOptions: CommandRawOptions): PortfolioFo
 export function createPortfolioCommand(
   createSdk: PortfolioSdkFactory = defaultPortfolioSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: portfolioCommandPath,
     options: portfolioOptionsSchema,
     handle({ options }) {

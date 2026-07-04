@@ -10,7 +10,8 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -47,7 +48,7 @@ export function parseAccountsFormat(rawOptions: CommandRawOptions): AccountsForm
 export function createAccountsCommand(
   createSdk: AccountsSdkFactory = defaultAccountsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: accountsCommandPath,
     options: accountsOptionsSchema,
     handle({ options }) {

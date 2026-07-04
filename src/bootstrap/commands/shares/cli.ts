@@ -14,7 +14,8 @@ import {
   type InstrumentsRequest,
   type SharesResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -63,7 +64,7 @@ export function parseSharesFormat(rawOptions: CommandRawOptions): SharesFormat {
 export function createSharesCommand(
   createSdk: SharesSdkFactory = defaultSharesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sharesCommandPath,
     options: sharesOptionsSchema,
     handle({ options }) {

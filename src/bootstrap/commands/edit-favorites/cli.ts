@@ -15,7 +15,8 @@ import {
   type EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -95,7 +96,7 @@ export function parseEditFavoritesFormat(rawOptions: CommandRawOptions): EditFav
 export function createEditFavoritesCommand(
   createSdk: EditFavoritesSdkFactory = defaultEditFavoritesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: editFavoritesCommandPath,
     options: editFavoritesOptionsSchema,
     handle({ options }) {

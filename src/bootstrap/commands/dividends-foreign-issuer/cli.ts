@@ -14,7 +14,8 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -144,7 +145,7 @@ export function parseDividendsForeignIssuerFormat(
 export function createDividendsForeignIssuerCommand(
   createSdk: DividendsForeignIssuerSdkFactory = defaultDividendsForeignIssuerSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: dividendsForeignIssuerCommandPath,
     options: dividendsForeignIssuerOptionsSchema,
     handle({ options }) {

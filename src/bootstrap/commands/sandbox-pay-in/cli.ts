@@ -14,7 +14,8 @@ import type {
   SandboxPayInRequest,
   SandboxPayInResponse
 } from '../../../generated/sandbox';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -93,7 +94,7 @@ export function parseSandboxPayInFormat(rawOptions: CommandRawOptions): SandboxP
 export function createSandboxPayInCommand(
   createSdk: SandboxPayInSdkFactory = defaultSandboxPayInSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxPayInCommandPath,
     options: sandboxPayInOptionsSchema,
     handle({ options }) {

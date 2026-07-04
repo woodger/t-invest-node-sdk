@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -47,7 +48,7 @@ export function parseUserTariffFormat(rawOptions: CommandRawOptions): UserTariff
 export function createUserTariffCommand(
   createSdk: UserTariffSdkFactory = defaultUserTariffSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: userTariffCommandPath,
     options: userTariffOptionsSchema,
     handle({ options }) {

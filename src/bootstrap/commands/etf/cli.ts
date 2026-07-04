@@ -14,7 +14,8 @@ import type {
   EtfResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -63,7 +64,7 @@ export function parseEtfFormat(rawOptions: CommandRawOptions): EtfFormat {
 export function createEtfCommand(
   createSdk: EtfSdkFactory = defaultEtfSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: etfCommandPath,
     options: etfOptionsSchema,
     handle({ options }) {

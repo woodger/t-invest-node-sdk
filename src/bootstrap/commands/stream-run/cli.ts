@@ -26,7 +26,8 @@ import type {
   TradesStreamRequest,
   TradesStreamResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions, type InferProvidedOptions } from 'icore';
+import type { InferOptions, InferProvidedOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import { withSdkOptions } from '../../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
@@ -120,7 +121,7 @@ export function createStreamRunCommand(
   const readConfig = dependencies.readConfig ?? defaultStreamRunConfigReader;
   const now = dependencies.now ?? (() => new Date());
 
-  return defineCommand({
+  return command.define({
     path: streamRunCommandPath,
     options: streamRunOptionsSchema,
     async handle({ options, provided }) {

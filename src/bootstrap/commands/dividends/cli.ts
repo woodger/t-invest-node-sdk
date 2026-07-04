@@ -14,7 +14,8 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -81,7 +82,7 @@ export function parseDividendsFormat(rawOptions: CommandRawOptions): DividendsFo
 export function createDividendsCommand(
   createSdk: DividendsSdkFactory = defaultDividendsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: dividendsCommandPath,
     options: dividendsOptionsSchema,
     handle({ options }) {

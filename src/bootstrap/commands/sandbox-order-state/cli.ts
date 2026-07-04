@@ -11,7 +11,8 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetOrderStateRequest, OrderState } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import { parseCommandOptions, withSdkOptions } from '../../command-options';
@@ -68,7 +69,7 @@ export function parseSandboxOrderStateFormat(rawOptions: CommandRawOptions): Ord
 export function createSandboxOrderStateCommand(
   createSdk: SandboxOrderStateSdkFactory = defaultSandboxOrderStateSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxOrderStateCommandPath,
     options: sandboxOrderStateOptionsSchema,
     handle({ options }) {

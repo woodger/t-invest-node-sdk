@@ -14,7 +14,8 @@ import type {
   GetLastTradesRequest,
   GetLastTradesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -77,7 +78,7 @@ export function parseLastTradesFormat(rawOptions: CommandRawOptions): LastTrades
 export function createLastTradesCommand(
   createSdk: LastTradesSdkFactory = defaultLastTradesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: lastTradesCommandPath,
     options: lastTradesOptionsSchema,
     handle({ options }) {

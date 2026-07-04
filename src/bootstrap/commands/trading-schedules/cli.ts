@@ -14,7 +14,8 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
 import {
@@ -80,7 +81,7 @@ export function parseTradingSchedulesFormat(rawOptions: CommandRawOptions): Trad
 export function createTradingSchedulesCommand(
   createSdk: TradingSchedulesSdkFactory = defaultTradingSchedulesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: tradingSchedulesCommandPath,
     options: tradingSchedulesOptionsSchema,
     handle({ options }) {
