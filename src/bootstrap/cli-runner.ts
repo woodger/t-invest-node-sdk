@@ -11,12 +11,9 @@ import {
   createTerminalApp,
   parseArgv,
   parseOptions,
-  type CommandDefinition,
-  type Commands,
   type Output,
   type OptionsSchema,
-  type RawOptionValue,
-  type TerminalCommandOutput
+  type RawOptionValue
 } from 'icore';
 import {
   commandLineCommands,
@@ -46,15 +43,6 @@ const bootstrapOptionsSchema = {
 } as const satisfies OptionsSchema;
 
 const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
-type BootstrapTerminalCommand = CommandDefinition<
-  OptionsSchema,
-  undefined,
-  TerminalCommandOutput,
-  readonly [string, ...string[]],
-  unknown,
-  unknown
->;
-type BootstrapTerminalCommands = Commands<readonly BootstrapTerminalCommand[]>;
 
 export function parseCliInput(argv: readonly string[]) {
   const parsedArgv = parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
@@ -159,7 +147,7 @@ export async function runCli(
     }
 
     const app = createTerminalApp({
-      commands: commandLineCommands as unknown as BootstrapTerminalCommands,
+      commands: commandLineCommands,
       output: io
     });
 
