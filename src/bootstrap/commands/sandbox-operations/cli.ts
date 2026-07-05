@@ -14,10 +14,10 @@ import type { OperationsRequest, OperationsResponse } from '../../../generated/o
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
-import { parseCommandOptions, withSdkOptions } from '../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
-import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../instrument-id-options';
+import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
 import {
   createOperationsRequest,
   parseOperationsState

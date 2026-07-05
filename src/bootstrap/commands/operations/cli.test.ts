@@ -10,7 +10,7 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOperationsCommand,
   parseOperationsFormat,

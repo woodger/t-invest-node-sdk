@@ -14,8 +14,8 @@ import type { PostOrderResponse, ReplaceOrderRequest } from '../../../generated/
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
-import { parseCommandOptions, withSdkOptions } from '../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createReplaceOrderRequest } from '../replace-order/cli';
 import {
@@ -26,7 +26,7 @@ import {
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 
 type SandboxReplaceOrderSdk = {
   sandbox: {

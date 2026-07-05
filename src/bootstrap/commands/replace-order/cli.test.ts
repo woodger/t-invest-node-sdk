@@ -10,7 +10,7 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createReplaceOrderCommand,
   createReplaceOrderRequest,

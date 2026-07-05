@@ -10,7 +10,7 @@ import {
   type GetOrdersRequest,
   type GetOrdersResponse
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOrdersCommand,
   createSandboxOrdersRequest,

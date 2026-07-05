@@ -10,7 +10,7 @@ import {
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createStopOrdersCommand,
   parseStopOrdersFormat,

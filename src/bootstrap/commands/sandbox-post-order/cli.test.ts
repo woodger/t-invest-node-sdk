@@ -9,7 +9,7 @@ import {
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPostOrderCommand,
   createSandboxPostOrderRequest,

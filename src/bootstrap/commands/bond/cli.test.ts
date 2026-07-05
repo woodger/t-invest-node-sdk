@@ -7,7 +7,7 @@ import {
   type BondResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBondCommand,
   parseBondFormat,

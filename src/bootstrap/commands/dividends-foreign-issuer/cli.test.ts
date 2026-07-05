@@ -6,7 +6,7 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createDividendsForeignIssuerCommand,
   parseDividendsForeignIssuerFormat,
