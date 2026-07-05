@@ -28,7 +28,7 @@
     "tinkoff-invest-node-sdk": "dist/bootstrap/bin/cli.js"
   },
   "scripts": {
-    "prepare": "tsc",
+    "build": "tsc",
     "test": "fwa --prune",
     "lint": "eslint src eslint.config.mjs",
     "proto": "node dist/bootstrap/bin/compile-proto.js",
