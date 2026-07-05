@@ -2,24 +2,30 @@
  * Модуль CLI runner владеет глобальными help/version shortcuts и
  * stdout/stderr wiring.
  *
- * API-команды запускаются через `icore` command definitions; этот файл не
- * собирает промежуточный argv contract и не выполняет command-specific parsing.
+ * API-команды запускаются через `icore` terminal app; этот файл не собирает
+ * промежуточный argv contract и не выполняет command-specific parsing.
  */
 
 import {
   createOutput,
+  createTerminalApp,
   parseArgv,
   parseOptions,
-  type Output as CliIO,
+  type CommandDefinition,
+  type Commands,
+  type Output,
   type OptionsSchema,
-  type RawOptionValue
+  type RawOptionValue,
+  type TerminalCommandOutput
 } from 'icore';
-import { resolveCommand, resolveCommandWarnings } from './command-registry';
+import {
+  commandLineCommands,
+  resolveCommand,
+  resolveCommandWarnings
+} from './command-registry';
 import { isHelpRequested, renderHelp } from './help/help';
 import { renderCliHelp } from './help/renderer';
 import { isVersionRequested, renderVersionInfo } from './version';
-
-type CliCommandOutput = string | AsyncIterable<string> | undefined;
 
 const bootstrapOptionsSchema = {
   help: {
@@ -40,6 +46,15 @@ const bootstrapOptionsSchema = {
 } as const satisfies OptionsSchema;
 
 const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
+type BootstrapTerminalCommand = CommandDefinition<
+  OptionsSchema,
+  undefined,
+  TerminalCommandOutput,
+  readonly [string, ...string[]],
+  unknown,
+  unknown
+>;
+type BootstrapTerminalCommands = Commands<readonly BootstrapTerminalCommand[]>;
 
 export function parseCliInput(argv: readonly string[]) {
   const parsedArgv = parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
@@ -58,7 +73,7 @@ function validateBootstrapOptions(options: Record<string, RawOptionValue>): void
     }
   }
 
-  // Command-specific options are intentionally left to `icore.runCommand`.
+  // Command-specific options are intentionally left to the `icore` terminal app.
   // This check validates only global boolean flags handled by this runner.
   parseOptions(bootstrapOptionsSchema, bootstrapOptions);
 }
@@ -89,7 +104,7 @@ function renderCommandError(error: unknown): string {
 
 export async function runCli(
   argv: readonly string[] = [],
-  io: CliIO = createOutput()
+  io: Output = createOutput()
 ): Promise<number> {
   const normalizedArgv = normalizeCliAliases(argv);
   let parsedArgv: ReturnType<typeof parseCliInput>;
@@ -123,8 +138,8 @@ export async function runCli(
     return 0;
   }
 
-  // Keep the raw normalized args for `icore.runCommand`; the registry only
-  // resolves metadata from positionals and does not recreate a synthetic argv.
+  // Keep raw normalized args for the terminal app; command lookup here only
+  // preserves the SDK-specific unknown-command message and warning policy.
   const action = parsedArgv.positionals;
   let command;
 
@@ -143,44 +158,16 @@ export async function runCli(
       await io.error(warning);
     }
 
-    await writeCommandOutput(await command.handler(normalizedArgv), io);
+    const app = createTerminalApp({
+      commands: commandLineCommands as unknown as BootstrapTerminalCommands,
+      output: io
+    });
 
-    return 0;
+    return app.run(normalizedArgv, undefined);
   }
   catch (error) {
     await io.error(renderCommandError(error));
   }
 
   return 1;
-}
-
-async function writeCommandOutput(
-  output: CliCommandOutput,
-  io: CliIO
-): Promise<void> {
-  if (output === undefined) {
-    return;
-  }
-
-  if (isAsyncIterable(output)) {
-    for await (const chunk of output) {
-      // Await each chunk so long-running commands respect stdout backpressure
-      // instead of buffering provider output faster than the consumer reads it.
-      await io.write(chunk);
-    }
-
-    return;
-  }
-
-  // Single-response commands share the same writer contract; this keeps help,
-  // version and API command output consistent with stream output.
-  await io.write(output);
-}
-
-function isAsyncIterable(value: unknown): value is AsyncIterable<string> {
-  return (
-    typeof value === 'object'
-    && value !== null
-    && Symbol.asyncIterator in value
-  );
 }

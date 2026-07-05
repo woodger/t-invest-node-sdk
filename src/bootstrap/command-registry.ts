@@ -265,7 +265,7 @@ export function resolveCommandWarnings(
   ];
 }
 
-const commandLineCommands = command.registry(
+export const commandLineCommands = command.registry(
   [
     defineCommandLineCommand(accountsCommand),
     defineCommandLineCommand(userInfoCommand),

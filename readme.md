@@ -92,8 +92,9 @@ interface TinkoffInvestNodeSDKConfig {
 
 ## CLI
 
-В проекте есть bootstrap CLI layer с command registry. Локально после сборки
-utility- и API-команды можно запускать через `yarn cli`:
+В проекте есть bootstrap CLI layer на базе `icore` terminal app и command
+registry. Локально после сборки utility- и API-команды можно запускать через
+`yarn cli`:
 
 ```sh
 yarn cli --help
