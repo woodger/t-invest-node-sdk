@@ -74,11 +74,11 @@ describe('trading-schedules reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].date, '');
-      assert.equal(report[0].startTime, '');
-      assert.equal(report[0].endTime, '');
-      assert.equal(report[0].eveningStartTime, '');
-      assert.equal(report[0].eveningEndTime, '');
+      assert.equal(report.at(0)?.date, '');
+      assert.equal(report.at(0)?.startTime, '');
+      assert.equal(report.at(0)?.endTime, '');
+      assert.equal(report.at(0)?.eveningStartTime, '');
+      assert.equal(report.at(0)?.eveningEndTime, '');
     });
   });
 

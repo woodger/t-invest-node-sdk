@@ -91,9 +91,9 @@ describe('operations reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].payment, null);
-      assert.equal(report[0].price, null);
-      assert.equal(report[0].date, '');
+      assert.equal(report.at(0)?.payment, null);
+      assert.equal(report.at(0)?.price, null);
+      assert.equal(report.at(0)?.date, '');
     });
   });
 

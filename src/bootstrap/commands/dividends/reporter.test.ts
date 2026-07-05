@@ -71,10 +71,10 @@ describe('dividends reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].dividendNet, null);
-      assert.equal(report[0].paymentDate, '');
-      assert.equal(report[0].yieldValue, '');
-      assert.equal(report[0].createdAt, '');
+      assert.equal(report.at(0)?.dividendNet, null);
+      assert.equal(report.at(0)?.paymentDate, '');
+      assert.equal(report.at(0)?.yieldValue, '');
+      assert.equal(report.at(0)?.createdAt, '');
     });
   });
 

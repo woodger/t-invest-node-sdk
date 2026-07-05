@@ -156,15 +156,15 @@ describe('operations-by-cursor reporter', () => {
         ]
       }));
 
-      assert.equal(report.items[0].date, '');
-      assert.equal(report.items[0].payment, null);
-      assert.equal(report.items[0].price, null);
-      assert.equal(report.items[0].commission, null);
-      assert.equal(report.items[0].yield, null);
-      assert.equal(report.items[0].yieldRelative, '');
-      assert.equal(report.items[0].accruedInt, null);
-      assert.equal(report.items[0].cancelDateTime, '');
-      assert.equal(report.items[0].tradesCount, 0);
+      assert.equal(report.items.at(0)?.date, '');
+      assert.equal(report.items.at(0)?.payment, null);
+      assert.equal(report.items.at(0)?.price, null);
+      assert.equal(report.items.at(0)?.commission, null);
+      assert.equal(report.items.at(0)?.yield, null);
+      assert.equal(report.items.at(0)?.yieldRelative, '');
+      assert.equal(report.items.at(0)?.accruedInt, null);
+      assert.equal(report.items.at(0)?.cancelDateTime, '');
+      assert.equal(report.items.at(0)?.tradesCount, 0);
     });
   });
 
