@@ -8,7 +8,7 @@
  * Здесь не должно быть generated implementation changes или CLI-only exports.
  */
 
-export { Timestamp } from './generated/google/protobuf/timestamp';
+export { Timestamp } from '../generated/google/protobuf/timestamp';
 
 export {
   protobufPackage,
@@ -96,7 +96,7 @@ export {
   GeneratedCodeInfo_Annotation_Semantic,
   generatedCodeInfo_Annotation_SemanticFromJSON,
   generatedCodeInfo_Annotation_SemanticToJSON
-} from './generated/google/protobuf/descriptor';
+} from '../generated/google/protobuf/descriptor';
 
 export {
   InstrumentType,
@@ -110,7 +110,7 @@ export {
   Ping,
   DeepPartial,
   MessageFns
-} from './generated/common';
+} from '../generated/common';
 
 export {
   CouponType,
@@ -222,8 +222,8 @@ export {
   GetBrandRequest,
   GetBrandsResponse,
   InstrumentsServiceDefinition
-} from './generated/instruments';
-export type { InstrumentsServiceImplementation } from './generated/instruments';
+} from '../generated/instruments';
+export type { InstrumentsServiceImplementation } from '../generated/instruments';
 
 export {
   SubscriptionAction,
@@ -290,11 +290,11 @@ export {
   InstrumentClosePriceResponse,
   MarketDataServiceDefinition,
   MarketDataStreamServiceDefinition
-} from './generated/marketdata';
+} from '../generated/marketdata';
 export type {
   MarketDataServiceImplementation,
   MarketDataStreamServiceImplementation
-} from './generated/marketdata';
+} from '../generated/marketdata';
 
 export {
   OperationState,
@@ -358,11 +358,11 @@ export {
   PositionsMoney,
   OperationsServiceDefinition,
   OperationsStreamServiceDefinition
-} from './generated/operations';
+} from '../generated/operations';
 export type {
   OperationsServiceImplementation,
   OperationsStreamServiceImplementation
-} from './generated/operations';
+} from '../generated/operations';
 
 export {
   OrderDirection,
@@ -391,11 +391,11 @@ export {
   ReplaceOrderRequest,
   OrdersServiceDefinition,
   OrdersStreamServiceDefinition
-} from './generated/orders';
+} from '../generated/orders';
 export type {
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation
-} from './generated/orders';
+} from '../generated/orders';
 
 export {
   OpenSandboxAccountRequest,
@@ -405,8 +405,8 @@ export {
   SandboxPayInRequest,
   SandboxPayInResponse,
   SandboxServiceDefinition
-} from './generated/sandbox';
-export type { SandboxServiceImplementation } from './generated/sandbox';
+} from '../generated/sandbox';
+export type { SandboxServiceImplementation } from '../generated/sandbox';
 
 export {
   StopOrderDirection,
@@ -426,8 +426,8 @@ export {
   CancelStopOrderResponse,
   StopOrder,
   StopOrdersServiceDefinition
-} from './generated/stoporders';
-export type { StopOrdersServiceImplementation } from './generated/stoporders';
+} from '../generated/stoporders';
+export type { StopOrdersServiceImplementation } from '../generated/stoporders';
 
 export {
   AccountType,
@@ -451,5 +451,5 @@ export {
   GetInfoRequest,
   GetInfoResponse,
   UsersServiceDefinition
-} from './generated/users';
-export type { UsersServiceImplementation } from './generated/users';
+} from '../generated/users';
+export type { UsersServiceImplementation } from '../generated/users';

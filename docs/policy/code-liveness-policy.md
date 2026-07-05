@@ -30,7 +30,7 @@ Production graph начинается от runtime entrypoints и рабочих
 - proto generation entrypoint в `src/bootstrap/bin/compile-proto.ts`, если он связан через `package.json` script;
 - throttling runtime configuration;
 - `contracts/**/*.proto`;
-- `src/generated-exports.ts` и generated modules, если они экспортируются пакетом;
+- `src/bootstrap/generated-exports.ts` и generated modules, если они экспортируются пакетом;
 - dynamic runtime bindings, если они подтверждены кодом или конфигурацией.
 
 Код, достижимый из production graph, нельзя удалять как dead code.

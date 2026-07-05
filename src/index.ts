@@ -18,4 +18,4 @@ export type {
 } from './application/dto/tinkoff-invest-services';
 export { defaultConfig } from './config';
 export type { TinkoffInvestNodeSDKConfig, UnaryLimits } from './config.types';
-export * from './generated-exports';
+export * from './bootstrap/generated-exports';
