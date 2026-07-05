@@ -14,8 +14,8 @@ import type { GetOrderStateRequest, OrderState } from '../../../generated/orders
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
+import { parseCommandOptions, withSdkOptions } from '../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createOrderStateRequest } from '../order-state/cli';
 import { formatOrderState, orderStateFormats, type OrderStateFormat } from '../order-state/reporter';

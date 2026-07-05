@@ -14,8 +14,8 @@ import type { GetCountriesRequest, GetCountriesResponse } from '../../../generat
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
+import { parseCommandOptions, withSdkOptions } from '../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { countriesFormats, formatCountries, type CountriesFormat } from './reporter';
 

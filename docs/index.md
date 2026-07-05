@@ -187,7 +187,7 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 
 Новые команды должны:
 
-- регистрироваться через `src/bootstrap/command-registry.ts`;
+- регистрироваться через `src/bootstrap/commands/registry.ts`;
 - размещать handler в `src/bootstrap/commands`;
 - использовать `src/bootstrap/args` для primitive CLI validation и общих SDK options;
 - разделять raw CLI parsing и typed request mapping: `parse*` helper-ы

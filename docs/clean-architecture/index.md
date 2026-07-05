@@ -54,8 +54,8 @@ src/bootstrap
     cli.ts
     compile-proto.ts
   cli-runner.ts
-  command-registry.ts
   commands/
+    registry.ts
   help/
   tinkoff-invest-node-sdk.ts
 ```

@@ -8,7 +8,7 @@ import type {
   GetLastPricesResponse,
   LastPrice
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createLastPricesCommand,
   parseLastPricesFormat,

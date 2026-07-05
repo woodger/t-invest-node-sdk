@@ -8,7 +8,7 @@ import {
   type GetBondCouponsRequest,
   type GetBondCouponsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createBondCouponsCommand,
   parseBondCouponsFormat,

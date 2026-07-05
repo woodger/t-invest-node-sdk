@@ -18,12 +18,12 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { commandNames } from '../command-registry';
+import { commandNames } from '../commands/registry';
 import { commandHelp, isCommandHelpName } from './commands';
 
 const unknownHelpNames = [

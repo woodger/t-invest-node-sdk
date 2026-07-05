@@ -14,8 +14,8 @@ import type { GetInfoResponse } from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
+import { parseCommandOptions, withSdkOptions } from '../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatUserInfo, userInfoFormats, type UserInfoFormat } from './reporter';
 

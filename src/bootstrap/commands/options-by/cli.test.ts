@@ -6,7 +6,7 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createOptionsByCommand,
   parseOptionsByFormat,

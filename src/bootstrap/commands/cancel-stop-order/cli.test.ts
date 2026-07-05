@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../command';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { CancelStopOrderRequest } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createCancelStopOrderCommand,
   createCancelStopOrderRequest,

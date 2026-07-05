@@ -9,7 +9,7 @@ import {
   type Account,
   type GetAccountsRequest
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createSandboxAccountsCommand,
   createSandboxAccountsRequest,
