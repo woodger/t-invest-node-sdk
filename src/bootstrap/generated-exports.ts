@@ -107,10 +107,9 @@ export {
   securityTradingStatusToJSON,
   MoneyValue,
   Quotation,
-  Ping,
-  DeepPartial,
-  MessageFns
+  Ping
 } from '../generated/common';
+export type { DeepPartial, MessageFns } from '../generated/common';
 
 export {
   CouponType,
