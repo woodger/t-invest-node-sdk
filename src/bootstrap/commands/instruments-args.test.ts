@@ -4,7 +4,7 @@ import {
   InstrumentIdType,
   InstrumentStatus
 } from '../../generated/instruments';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from './command-options';
 import {
   instrumentLookupArgNames,
   instrumentStatusArgNames,

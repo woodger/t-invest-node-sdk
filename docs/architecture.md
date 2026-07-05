@@ -84,7 +84,7 @@ bootstrap-механикой.
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
 - `bootstrap/help` - декларативный help registry и renderer;
-- `bootstrap/command-registry.ts` - связывание command name с handler;
+- `bootstrap/commands/registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
 CLI слой сейчас поддерживает `help`, `version` и API-команды в canonical форме

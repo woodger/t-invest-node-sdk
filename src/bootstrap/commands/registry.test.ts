@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { commandNames, isCommandName, resolveCommand } from './command-registry';
+import { commandNames, isCommandName, resolveCommand } from './registry';
 
 const expectedCommandNames = [
   'help',

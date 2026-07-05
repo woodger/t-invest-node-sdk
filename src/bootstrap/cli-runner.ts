@@ -19,7 +19,7 @@ import {
   commandLineCommands,
   resolveCommand,
   resolveCommandWarnings
-} from './command-registry';
+} from './commands/registry';
 import { isHelpRequested, renderHelp } from './help/help';
 import { renderCliHelp } from './help/renderer';
 import { isVersionRequested, renderVersionInfo } from './version';

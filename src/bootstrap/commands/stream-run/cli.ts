@@ -29,7 +29,7 @@ import type {
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import { withSdkOptions } from '../../command-options';
+import { withSdkOptions } from '../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createMarketDataStreamRequests,

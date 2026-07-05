@@ -142,8 +142,8 @@ src/bootstrap
   args/
   bin/
     cli.ts
-  command-registry.ts
   commands/
+    registry.ts
     instruments-args.ts
     side-effect-args.ts
     <command-adapter>/
@@ -202,7 +202,7 @@ request-level validation вроде date range или mutually exclusive modes.
 
 Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами
 adapter-модулей. Они не задают публичный CLI path: публичный контракт команды
-фиксируется в `bootstrap/command-registry.ts` и `bootstrap/help/commands.ts`.
+фиксируется в `bootstrap/commands/registry.ts` и `bootstrap/help/commands.ts`.
 
 ## Что Уже Хорошо
 
@@ -261,8 +261,8 @@ src/bootstrap
   args/
   bin/
     cli.ts
-  command-registry.ts
   commands/
+    registry.ts
     instruments-args.ts
     side-effect-args.ts
     <command-adapter>/
@@ -310,7 +310,7 @@ Use-case стоит выделять, если появляется хотя б�
 - держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
 - использовать `infrastructure/renderers` только для общей механики формата;
 - не класть JSON/CSV/table formatting в stdout sink;
-- регистрировать команду в `bootstrap/command-registry.ts` только в canonical
+- регистрировать команду в `bootstrap/commands/registry.ts` только в canonical
   форме `<service> <method>`;
 - не добавлять short aliases для API-команд;
 - добавлять help metadata в `bootstrap/help/commands.ts`;

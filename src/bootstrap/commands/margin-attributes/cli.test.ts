@@ -7,7 +7,7 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createMarginAttributesCommand,
   parseMarginAttributesFormat,

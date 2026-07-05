@@ -8,7 +8,7 @@ import {
   StopOrderType,
   type PostStopOrderRequest
 } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createPostStopOrderCommand,
   createPostStopOrderRequest,

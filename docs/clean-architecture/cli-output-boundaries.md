@@ -20,8 +20,8 @@ presentation policy конкретных CLI-команд.
 ```text
 src/bootstrap
   cli.ts
-  command-registry.ts
   commands/
+    registry.ts
     accounts/
       cli.ts
       reporter.ts

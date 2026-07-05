@@ -4,7 +4,7 @@ import { command as commandFacade } from '../command';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createFavoritesCommand,
   parseFavoritesFormat

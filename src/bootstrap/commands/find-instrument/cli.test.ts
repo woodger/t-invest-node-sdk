@@ -8,7 +8,7 @@ import type {
   FindInstrumentResponse,
   InstrumentShort
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createFindInstrumentCommand,
   parseFindInstrumentFormat,

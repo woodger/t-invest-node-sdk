@@ -15,8 +15,8 @@ import type { AssetsRequest, AssetsResponse } from '../../../generated/instrumen
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
+import { parseCommandOptions, withSdkOptions } from '../command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { assetsFormats, formatAssets, type AssetsFormat } from './reporter';
 

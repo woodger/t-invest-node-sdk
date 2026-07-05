@@ -7,7 +7,7 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createShareCommand,
   parseShareFormat,

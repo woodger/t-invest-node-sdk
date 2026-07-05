@@ -8,7 +8,7 @@ import {
   type EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../command-options';
 import {
   createEditFavoritesCommand,
   createEditFavoritesRequest,
