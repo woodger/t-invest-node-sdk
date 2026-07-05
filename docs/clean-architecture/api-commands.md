@@ -140,12 +140,14 @@ reference-документами и отдельно фиксировать лю
 ```text
 src/bootstrap
   args/
+    command-options.ts
+    instrument-id-options.ts
+    instruments-args.ts
+    side-effect-args.ts
   bin/
     cli.ts
   commands/
     registry.ts
-    instruments-args.ts
-    side-effect-args.ts
     <command-adapter>/
       cli.ts
       reporter.ts
@@ -259,12 +261,14 @@ string -> stdout
 ```text
 src/bootstrap
   args/
+    command-options.ts
+    instrument-id-options.ts
+    instruments-args.ts
+    side-effect-args.ts
   bin/
     cli.ts
   commands/
     registry.ts
-    instruments-args.ts
-    side-effect-args.ts
     <command-adapter>/
       cli.ts
       reporter.ts

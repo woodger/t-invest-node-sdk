@@ -20,13 +20,13 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatOperationsByCursor,

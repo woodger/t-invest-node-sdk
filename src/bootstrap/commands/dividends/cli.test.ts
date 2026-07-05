@@ -7,7 +7,7 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createDividendsCommand,
   parseDividendsFormat,

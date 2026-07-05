@@ -7,7 +7,7 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCurrenciesCommand,
   parseCurrenciesFormat,

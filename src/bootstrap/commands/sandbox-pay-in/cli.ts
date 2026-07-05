@@ -17,14 +17,14 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../command-options';
-import { parseCommandOptions, withSdkOptions } from '../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   formatSandboxPayIn,
   sandboxPayInFormats,

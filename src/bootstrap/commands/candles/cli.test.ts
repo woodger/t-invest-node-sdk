@@ -7,7 +7,7 @@ import {
   type GetCandlesRequest,
   type HistoricCandle
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCandlesCommand,
   parseCandleInterval,

@@ -14,8 +14,8 @@ import type { GetAccountsRequest, GetAccountsResponse } from '../../../generated
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../command-options';
-import { parseCommandOptions, withSdkOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { accountsFormats, formatAccounts, type AccountsFormat } from '../accounts/reporter';
 

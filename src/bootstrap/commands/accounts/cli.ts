@@ -13,8 +13,8 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type { InferOptions } from 'icore';
 import { command } from '../command';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../command-options';
-import { parseCommandOptions, withSdkOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import type { GetAccountsResponse } from '../../../generated/users';
 import { accountsFormats, formatAccounts, type AccountsFormat } from './reporter';

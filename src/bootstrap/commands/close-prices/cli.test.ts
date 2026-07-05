@@ -8,7 +8,7 @@ import type {
   GetClosePricesResponse,
   InstrumentClosePriceResponse
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createClosePricesCommand,
   parseClosePricesFormat,
