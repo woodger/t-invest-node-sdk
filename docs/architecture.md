@@ -129,7 +129,7 @@ exports exception. Public service interfaces экспортируются из a
 - `src/index.ts` - основной package entrypoint;
 - `src/config.ts` - публичная конфигурация unary limits;
 - `src/config.types.ts` - типы публичной конфигурации;
-- `src/generated-exports.ts` - aggregation layer для публичных generated exports.
+- `src/bootstrap/generated-exports.ts` - aggregation layer для публичных generated exports.
 
 Новый код должен импортировать реализацию из слоя-владельца. Root-level
 compatibility wrappers не создаются.
@@ -137,8 +137,8 @@ compatibility wrappers не создаются.
 ## Generated Code
 
 `src/generated/**` воспроизводится из `contracts/**/*.proto` и не редактируется
-вручную. `src/generated/**` и `src/generated-exports.ts` являются top-level
-исключением из компактной структуры `src`, потому что package entrypoint
+вручную. `src/generated/**` и `src/bootstrap/generated-exports.ts` являются
+исключениями из обычной слоевой структуры, потому что package entrypoint
 реэкспортирует generated DTO/enums public API и server-side
 `*ServiceDefinition` / `*ServiceImplementation` contracts. Generated
 `*ServiceClient` contracts остаются внутренними transport contracts и не

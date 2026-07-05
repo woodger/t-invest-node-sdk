@@ -22,7 +22,7 @@
 - proto generation entrypoint: `src/bootstrap/bin/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
 - proto wire contracts: `contracts/**/*.proto`;
-- generated exports: `src/generated-exports.ts` и `src/generated/**`;
+- generated exports: `src/bootstrap/generated-exports.ts` и `src/generated/**`;
 - test runner contract: `package.json` `test` script and `fwa` package behavior;
 - package scripts: `package.json`.
 
