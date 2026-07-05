@@ -45,7 +45,11 @@ const bootstrapOptionsSchema = {
 const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
 
 export function parseCliInput(argv: readonly string[]) {
-  const parsedArgv = parseArgv(normalizeCliAliases(argv), bootstrapOptionsSchema);
+  return parseNormalizedCliInput(normalizeCliAliases(argv));
+}
+
+function parseNormalizedCliInput(argv: readonly string[]) {
+  const parsedArgv = parseArgv(argv, bootstrapOptionsSchema);
 
   validateBootstrapOptions(parsedArgv.options);
 
@@ -98,7 +102,7 @@ export async function runCli(
   let parsedArgv: ReturnType<typeof parseCliInput>;
 
   try {
-    parsedArgv = parseCliInput(normalizedArgv);
+    parsedArgv = parseNormalizedCliInput(normalizedArgv);
   }
   catch (error) {
     await io.error(renderCommandError(error));
