@@ -77,10 +77,10 @@ Reports отвечают на вопрос:
 ## CLI Input
 
 Raw `process.argv` остается на executable-границе `src/bootstrap/bin/cli.ts`; дальше
-`bootstrap/cli-runner.ts` обрабатывает argv через `icore` command registry:
+`bootstrap/cli-runner.ts` обрабатывает argv через `icore` terminal app и command registry:
 
 ```text
-process.argv -> src/bootstrap/bin/cli.ts -> bootstrap/cli-runner.ts -> icore command registry -> typed command options -> command handler
+process.argv -> src/bootstrap/bin/cli.ts -> bootstrap/cli-runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
 ```
 
 Command-specific primitive options описываются декларативными `icore` schemas в
@@ -100,6 +100,7 @@ raw options. Mapping typed options в generated request DTO должен жит�
 
 ```text
 process.argv
+  -> icore terminal app
   -> icore parser/validator
   -> typed command options
   -> generated request DTO
