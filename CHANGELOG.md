@@ -12,6 +12,13 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Changed
+
+- Restored `yarn build` as the explicit TypeScript compile command and removed
+  the package `prepare` script.
+- Documented `yarn build` as the strict TypeScript compile gate backed by
+  `tsconfig.json`.
+
 ## [0.2.3] - 2026-07-03
 
 ### Added

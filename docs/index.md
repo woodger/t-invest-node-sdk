@@ -229,5 +229,7 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 Скрипт использует `dist/bootstrap/bin/compile-proto.js`, поэтому после изменений в `src/bootstrap/bin/compile-proto.ts` сначала нужно пересобрать проект:
 
 ```bash
-yarn prepare
+yarn build
 ```
+
+`yarn build` является compile gate проекта и выполняет `tsc` с настройками из `tsconfig.json`. Текущая конфигурация рассчитана на Node.js 20, ES2023 и строгие TypeScript-проверки.
