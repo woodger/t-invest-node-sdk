@@ -91,7 +91,7 @@ describe('order-book reporter', () => {
       assert.equal(report.lastPriceTime, '');
       assert.equal(report.closePriceTime, '');
       assert.equal(report.orderBookTime, '');
-      assert.equal(report.levels[0].price, '');
+      assert.equal(report.levels.at(0)?.price, '');
     });
   });
 

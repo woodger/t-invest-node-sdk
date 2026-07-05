@@ -96,9 +96,9 @@ export function parseInstrumentLookupIdType(rawOptions: CommandRawOptions): Inst
 
 export function createInstrumentLookupRequestFromOptions(
   options: {
-    id?: string;
-    'id-type'?: InstrumentIdTypeName;
-    'class-code'?: string;
+    id?: string | undefined;
+    'id-type'?: InstrumentIdTypeName | undefined;
+    'class-code'?: string | undefined;
   }
 ): InstrumentRequest {
   const idType = parseOptions(

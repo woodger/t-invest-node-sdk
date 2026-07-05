@@ -18,9 +18,12 @@
     "sourceMap": false,
 
     "strict": true,
+    "exactOptionalPropertyTypes": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 

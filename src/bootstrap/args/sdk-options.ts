@@ -12,10 +12,10 @@
 import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
 
 type SdkCommandOptions = {
-  token?: string;
-  endpoint?: string;
-  'app-name'?: string;
-  insecure?: boolean;
+  token?: string | undefined;
+  endpoint?: string | undefined;
+  'app-name'?: string | undefined;
+  insecure?: boolean | undefined;
 };
 
 function stringFromEnv(

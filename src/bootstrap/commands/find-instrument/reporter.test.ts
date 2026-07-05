@@ -61,8 +61,8 @@ describe('find-instrument reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].first1minCandleDate, '');
-      assert.equal(report[0].first1dayCandleDate, '');
+      assert.equal(report.at(0)?.first1minCandleDate, '');
+      assert.equal(report.at(0)?.first1dayCandleDate, '');
     });
   });
 

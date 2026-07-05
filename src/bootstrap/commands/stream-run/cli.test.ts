@@ -113,7 +113,13 @@ describe('stream run command', () => {
         accounts: ['account-id']
       });
       assert.equal(closeCalls, 1);
-      assert.deepEqual(JSON.parse(lines[0]), {
+      const [line] = lines;
+
+      if (line === undefined) {
+        throw new Error('Expected stream output line');
+      }
+
+      assert.deepEqual(JSON.parse(line), {
         stream: 'operations.portfolioStream',
         sequence: 1,
         receivedAt: '2026-06-29T12:00:00.000Z',

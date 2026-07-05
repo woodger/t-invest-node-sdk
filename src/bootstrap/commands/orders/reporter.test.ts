@@ -138,15 +138,15 @@ describe('orders reporter', () => {
         ]
       }));
 
-      assert.equal(report[0].initialOrderPrice, null);
-      assert.equal(report[0].executedOrderPrice, null);
-      assert.equal(report[0].totalOrderAmount, null);
-      assert.equal(report[0].averagePositionPrice, null);
-      assert.equal(report[0].initialCommission, null);
-      assert.equal(report[0].executedCommission, null);
-      assert.equal(report[0].serviceCommission, null);
-      assert.equal(report[0].orderDate, '');
-      assert.equal(report[0].stages[0].price, null);
+      assert.equal(report.at(0)?.initialOrderPrice, null);
+      assert.equal(report.at(0)?.executedOrderPrice, null);
+      assert.equal(report.at(0)?.totalOrderAmount, null);
+      assert.equal(report.at(0)?.averagePositionPrice, null);
+      assert.equal(report.at(0)?.initialCommission, null);
+      assert.equal(report.at(0)?.executedCommission, null);
+      assert.equal(report.at(0)?.serviceCommission, null);
+      assert.equal(report.at(0)?.orderDate, '');
+      assert.equal(report.at(0)?.stages.at(0)?.price, null);
     });
   });
 
@@ -170,7 +170,7 @@ describe('orders reporter', () => {
         currency: 'rub',
         amount: '100.5'
       });
-      assert.equal(parsed[0].stages[0].tradeId, 'trade-id');
+      assert.equal(parsed[0].stages.at(0)?.tradeId, 'trade-id');
     });
   });
 });

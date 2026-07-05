@@ -56,11 +56,11 @@ describe('bond-coupons reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].couponDate, '');
-      assert.equal(report[0].fixDate, '');
-      assert.equal(report[0].payOneBond, null);
-      assert.equal(report[0].couponStartDate, '');
-      assert.equal(report[0].couponEndDate, '');
+      assert.equal(report.at(0)?.couponDate, '');
+      assert.equal(report.at(0)?.fixDate, '');
+      assert.equal(report.at(0)?.payOneBond, null);
+      assert.equal(report.at(0)?.couponStartDate, '');
+      assert.equal(report.at(0)?.couponEndDate, '');
     });
   });
 
