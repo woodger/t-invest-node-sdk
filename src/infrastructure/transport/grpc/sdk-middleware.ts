@@ -34,5 +34,7 @@ export function createSdkMiddleware(trackLimits: boolean, throttle: Throttle) {
     for await (const response of call.next(call.request, options)) {
       yield response;
     }
+
+    return undefined;
   };
 }

@@ -257,6 +257,8 @@ describe('bootstrap cli runner', () => {
                 finishWrite = resolve;
               });
             }
+
+            return undefined;
           }
         }
       })).then((code) => {
