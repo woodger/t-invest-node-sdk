@@ -77,7 +77,7 @@ describe('stream run command', () => {
                   portfolio: {
                     accountId: 'account-id'
                   }
-                } as unknown as PortfolioStreamResponse);
+                } as PortfolioStreamResponse);
               },
               positionsStream: createUnusedStream('positionsStream')
             },
@@ -157,12 +157,12 @@ describe('stream run command', () => {
                     ping: {
                       time: new Date('2026-06-29T12:00:00.000Z')
                     }
-                  } as unknown as TradesStreamResponse,
+                  } as TradesStreamResponse,
                   {
                     orderTrades: {
                       orderId: 'order-id'
                     }
-                  } as unknown as TradesStreamResponse
+                  } as TradesStreamResponse
                 );
               }
             },
@@ -232,12 +232,12 @@ describe('stream run command', () => {
                     ping: {
                       time: new Date('2026-06-29T12:00:00.000Z')
                     }
-                  } as unknown as TradesStreamResponse,
+                  } as TradesStreamResponse,
                   {
                     orderTrades: {
                       orderId: 'order-id'
                     }
-                  } as unknown as TradesStreamResponse
+                  } as TradesStreamResponse
                 );
               }
             },
@@ -352,7 +352,7 @@ describe('stream run command', () => {
                   trade: {
                     instrumentUid: 'trade-id'
                   }
-                } as unknown as MarketDataResponse);
+                } as MarketDataResponse);
               },
               marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
             },

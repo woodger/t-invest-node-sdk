@@ -22,7 +22,7 @@ describe('stream run reporter', () => {
           portfolio: {
             accountId: 'account-id'
           }
-        } as unknown as StreamRunResponse,
+        } as StreamRunResponse,
         baseOptions
       );
 
@@ -45,7 +45,7 @@ describe('stream run reporter', () => {
           ping: {
             time: new Date('2026-06-29T12:00:00.000Z')
           }
-        } as unknown as StreamRunResponse,
+        } as StreamRunResponse,
         baseOptions
       );
 
@@ -58,7 +58,7 @@ describe('stream run reporter', () => {
           orderTrades: {
             orderId: 'order-id'
           }
-        } as unknown as StreamRunResponse,
+        } as StreamRunResponse,
         {
           ...baseOptions,
           stream: 'orders.tradesStream',
