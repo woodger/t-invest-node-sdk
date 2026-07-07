@@ -1,6 +1,6 @@
 {
   "name": "tinkoff-invest-node-sdk",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
   "keywords": [
@@ -8,7 +8,7 @@
     "invest",
     "sdk",
     "grpc",
-    "typescript"
+    "protobuf"
   ],
   "author": {
     "name": "Stanislav Potemkin",
@@ -17,21 +17,18 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git"
+    "url": "git+https://github.com/woodger/tinkoff-invest-node-sdk.git"
   },
   "engines": {
     "node": ">=20.19.0"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "tinkoff-invest-node-sdk": "dist/bootstrap/bin/cli.js"
-  },
   "scripts": {
     "build": "tsc",
     "test": "fwa --prune",
     "lint": "eslint src eslint.config.mjs",
-    "proto": "node dist/bootstrap/bin/compile-proto.js",
+    "proto": "node dist/bootstrap/bin/proto.js",
     "cli": "node dist/bootstrap/bin/cli.js"
   },
   "dependencies": {
