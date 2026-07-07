@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `orders cancel-order`.
+ * Модуль CLI-команды `order cancel-order`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type CancelOrderSdk = {
 
 type CancelOrderSdkFactory = (options: TinkoffInvestOptions) => CancelOrderSdk;
 
-const cancelOrderCommandPath = ['orders', 'cancel-order'] as const;
+const cancelOrderCommandPath = ['order', 'cancel-order'] as const;
 const defaultCancelOrderSdkFactory: CancelOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const cancelOrderRequestOptionsSchema = {

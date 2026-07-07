@@ -132,7 +132,7 @@ describe('option command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'option-by',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -174,7 +174,7 @@ describe('option command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'option-by',
             '--token=token',
             '--endpoint=localhost:50051',

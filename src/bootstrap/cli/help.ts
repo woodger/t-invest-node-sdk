@@ -49,13 +49,13 @@ const tableFormatOption = '--format=json|table    Output format (default: table)
 const csvFormatOption = '--format=json|csv      Output format (default: json)';
 const jsonlFormatOption = '--format=jsonl         Output format (default: jsonl)';
 
-const legacyCommandHelp = {
-  'users get-accounts': {
+export const commandHelp = {
+  'account get-accounts': {
     description: 'Print user accounts',
     sdkCall: 'sdk.users.getAccounts',
     grpcMethod: 'UsersService/GetAccounts',
     usage: [
-      'tinkoff-invest-node-sdk users get-accounts [options]'
+      'tinkoff-invest-node-sdk account get-accounts [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -63,15 +63,15 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk users get-accounts --format=json'
+      'tinkoff-invest-node-sdk account get-accounts --format=json'
     ]
   },
-  'users get-info': {
+  'account get-info': {
     description: 'Print user info',
     sdkCall: 'sdk.users.getInfo',
     grpcMethod: 'UsersService/GetInfo',
     usage: [
-      'tinkoff-invest-node-sdk users get-info [options]'
+      'tinkoff-invest-node-sdk account get-info [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -79,19 +79,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk users get-info',
-      'tinkoff-invest-node-sdk users get-info --format=json'
+      'tinkoff-invest-node-sdk account get-info',
+      'tinkoff-invest-node-sdk account get-info --format=json'
     ]
   },
-  'users get-margin-attributes': {
+  'account get-margin-attributes': {
     description: 'Print account margin attributes',
     sdkCall: 'sdk.users.getMarginAttributes',
     grpcMethod: 'UsersService/GetMarginAttributes',
     usage: [
-      'tinkoff-invest-node-sdk users get-margin-attributes --account-id=ID [options]'
+      'tinkoff-invest-node-sdk account get-margin-attributes --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -99,16 +99,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000',
-      'tinkoff-invest-node-sdk users get-margin-attributes --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk account get-margin-attributes --account-id=2000000000',
+      'tinkoff-invest-node-sdk account get-margin-attributes --account-id=2000000000 --format=json'
     ]
   },
-  'users get-user-tariff': {
+  'account get-user-tariff': {
     description: 'Print user API limits',
     sdkCall: 'sdk.users.getUserTariff',
     grpcMethod: 'UsersService/GetUserTariff',
     usage: [
-      'tinkoff-invest-node-sdk users get-user-tariff [options]'
+      'tinkoff-invest-node-sdk account get-user-tariff [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -116,16 +116,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk users get-user-tariff',
-      'tinkoff-invest-node-sdk users get-user-tariff --format=json'
+      'tinkoff-invest-node-sdk account get-user-tariff',
+      'tinkoff-invest-node-sdk account get-user-tariff --format=json'
     ]
   },
-  'marketdata get-candles': {
+  'market get-candles': {
     description: 'Print historical candles',
     sdkCall: 'sdk.marketdata.getCandles',
     grpcMethod: 'MarketDataService/GetCandles',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-candles --instrument-id=ID --from=ISO --to=ISO --interval=INTERVAL [options]'
+      'tinkoff-invest-node-sdk market get-candles --instrument-id=ID --from=ISO --to=ISO --interval=INTERVAL [options]'
     ],
     required: [
       '--instrument-id=ID     FIGI or instrument UID',
@@ -139,18 +139,18 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv'
+      'tinkoff-invest-node-sdk market get-candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv'
     ],
     notes: [
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'marketdata get-close-prices': {
+  'market get-close-prices': {
     description: 'Print close prices',
     sdkCall: 'sdk.marketdata.getClosePrices',
     grpcMethod: 'MarketDataService/GetClosePrices',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=ID[,ID] [options]'
+      'tinkoff-invest-node-sdk market get-close-prices --instrument-id=ID[,ID] [options]'
     ],
     required: [
       '--instrument-id=ID[,ID] FIGI or instrument UID list'
@@ -161,16 +161,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0',
-      'tinkoff-invest-node-sdk marketdata get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
+      'tinkoff-invest-node-sdk market get-close-prices --instrument-id=BBG00QPYJ5H0',
+      'tinkoff-invest-node-sdk market get-close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
     ]
   },
-  'instruments get-accrued-interests': {
+  'instrument get-accrued-interests': {
     description: 'Print bond accrued interests',
     sdkCall: 'sdk.instruments.getAccruedInterests',
     grpcMethod: 'InstrumentsService/GetAccruedInterests',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument get-accrued-interests --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--instrument-id=ID    Bond instrument identifier',
@@ -184,20 +184,20 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instrument get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
     ],
     notes: [
       "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'instruments get-asset-by': {
+  'instrument get-asset-by': {
     description: 'Print asset details',
     sdkCall: 'sdk.instruments.getAssetBy',
     grpcMethod: 'InstrumentsService/GetAssetBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-asset-by --id=UID [options]'
+      'tinkoff-invest-node-sdk instrument get-asset-by --id=UID [options]'
     ],
     required: [
       '--id=UID              Asset UID'
@@ -208,19 +208,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-asset-by --id=asset-uid',
-      'tinkoff-invest-node-sdk instruments get-asset-by --id=asset-uid --format=json'
+      'tinkoff-invest-node-sdk instrument get-asset-by --id=asset-uid',
+      'tinkoff-invest-node-sdk instrument get-asset-by --id=asset-uid --format=json'
     ],
     notes: [
       'Table output is a compact asset overview; use --format=json for brand, security and instrument details.'
     ]
   },
-  'instruments get-assets': {
+  'instrument get-assets': {
     description: 'Print assets',
     sdkCall: 'sdk.instruments.getAssets',
     grpcMethod: 'InstrumentsService/GetAssets',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-assets [options]'
+      'tinkoff-invest-node-sdk instrument get-assets [options]'
     ],
     optional: [
       '--instrument-type=TYPE unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate (default: unspecified)',
@@ -229,19 +229,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-assets',
-      'tinkoff-invest-node-sdk instruments get-assets --instrument-type=share --format=json'
+      'tinkoff-invest-node-sdk instrument get-assets',
+      'tinkoff-invest-node-sdk instrument get-assets --instrument-type=share --format=json'
     ],
     notes: [
       'The gRPC method does not include futures and options assets in this list.'
     ]
   },
-  'instruments get-bond-coupons': {
+  'instrument get-bond-coupons': {
     description: 'Print bond coupons',
     sdkCall: 'sdk.instruments.getBondCoupons',
     grpcMethod: 'InstrumentsService/GetBondCoupons',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument get-bond-coupons --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--instrument-id=ID    Bond instrument identifier',
@@ -255,20 +255,20 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instrument get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
     ],
     notes: [
       "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'instruments bond-by': {
+  'instrument bond-by': {
     description: 'Print bond details',
     sdkCall: 'sdk.instruments.bondBy',
     grpcMethod: 'InstrumentsService/BondBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments bond-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument bond-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -281,19 +281,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments bond-by --id=BBG00B9XRY4J --id-type=figi',
-      'tinkoff-invest-node-sdk instruments bond-by --id=SU26238RMFS4 --id-type=ticker --class-code=TQOB --format=json'
+      'tinkoff-invest-node-sdk instrument bond-by --id=BBG00B9XRY4J --id-type=figi',
+      'tinkoff-invest-node-sdk instrument bond-by --id=SU26238RMFS4 --id-type=ticker --class-code=TQOB --format=json'
     ],
     notes: [
       'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments bonds': {
+  'instrument bonds': {
     description: 'Print bonds',
     sdkCall: 'sdk.instruments.bonds',
     grpcMethod: 'InstrumentsService/Bonds',
     usage: [
-      'tinkoff-invest-node-sdk instruments bonds [options]'
+      'tinkoff-invest-node-sdk instrument bonds [options]'
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
@@ -302,19 +302,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments bonds',
-      'tinkoff-invest-node-sdk instruments bonds --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument bonds',
+      'tinkoff-invest-node-sdk instrument bonds --instrument-status=all --format=json'
     ],
     notes: [
       'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments get-brand-by': {
+  'instrument get-brand-by': {
     description: 'Print brand details',
     sdkCall: 'sdk.instruments.getBrandBy',
     grpcMethod: 'InstrumentsService/GetBrandBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-brand-by --id=ID [options]'
+      'tinkoff-invest-node-sdk instrument get-brand-by --id=ID [options]'
     ],
     required: [
       '--id=ID               Brand UID'
@@ -325,16 +325,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-brand-by --id=brand-uid',
-      'tinkoff-invest-node-sdk instruments get-brand-by --id=brand-uid --format=json'
+      'tinkoff-invest-node-sdk instrument get-brand-by --id=brand-uid',
+      'tinkoff-invest-node-sdk instrument get-brand-by --id=brand-uid --format=json'
     ]
   },
-  'instruments get-brands': {
+  'instrument get-brands': {
     description: 'Print brands dictionary',
     sdkCall: 'sdk.instruments.getBrands',
     grpcMethod: 'InstrumentsService/GetBrands',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-brands [options]'
+      'tinkoff-invest-node-sdk instrument get-brands [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -342,19 +342,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-brands',
-      'tinkoff-invest-node-sdk instruments get-brands --format=json'
+      'tinkoff-invest-node-sdk instrument get-brands',
+      'tinkoff-invest-node-sdk instrument get-brands --format=json'
     ],
     notes: [
       'Table output keeps long description/info fields out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments get-countries': {
+  'instrument get-countries': {
     description: 'Print countries dictionary',
     sdkCall: 'sdk.instruments.getCountries',
     grpcMethod: 'InstrumentsService/GetCountries',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-countries [options]'
+      'tinkoff-invest-node-sdk instrument get-countries [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -362,16 +362,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-countries',
-      'tinkoff-invest-node-sdk instruments get-countries --format=json'
+      'tinkoff-invest-node-sdk instrument get-countries',
+      'tinkoff-invest-node-sdk instrument get-countries --format=json'
     ]
   },
-  'instruments currencies': {
+  'instrument currencies': {
     description: 'Print currencies',
     sdkCall: 'sdk.instruments.currencies',
     grpcMethod: 'InstrumentsService/Currencies',
     usage: [
-      'tinkoff-invest-node-sdk instruments currencies [options]'
+      'tinkoff-invest-node-sdk instrument currencies [options]'
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
@@ -380,19 +380,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments currencies',
-      'tinkoff-invest-node-sdk instruments currencies --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument currencies',
+      'tinkoff-invest-node-sdk instrument currencies --instrument-status=all --format=json'
     ],
     notes: [
       'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments currency-by': {
+  'instrument currency-by': {
     description: 'Print currency details',
     sdkCall: 'sdk.instruments.currencyBy',
     grpcMethod: 'InstrumentsService/CurrencyBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments currency-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument currency-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -405,19 +405,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments currency-by --id=BBG0013HGFT4 --id-type=figi',
-      'tinkoff-invest-node-sdk instruments currency-by --id=USD000UTSTOM --id-type=ticker --class-code=CETS --format=json'
+      'tinkoff-invest-node-sdk instrument currency-by --id=BBG0013HGFT4 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument currency-by --id=USD000UTSTOM --id-type=ticker --class-code=CETS --format=json'
     ],
     notes: [
       'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments etf-by': {
+  'instrument etf-by': {
     description: 'Print ETF details',
     sdkCall: 'sdk.instruments.etfBy',
     grpcMethod: 'InstrumentsService/EtfBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments etf-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument etf-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -430,19 +430,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments etf-by --id=BBG333333333 --id-type=figi',
-      'tinkoff-invest-node-sdk instruments etf-by --id=TMOS --id-type=ticker --class-code=TQTF --format=json'
+      'tinkoff-invest-node-sdk instrument etf-by --id=BBG333333333 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument etf-by --id=TMOS --id-type=ticker --class-code=TQTF --format=json'
     ],
     notes: [
       'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments etfs': {
+  'instrument etfs': {
     description: 'Print ETFs',
     sdkCall: 'sdk.instruments.etfs',
     grpcMethod: 'InstrumentsService/Etfs',
     usage: [
-      'tinkoff-invest-node-sdk instruments etfs [options]'
+      'tinkoff-invest-node-sdk instrument etfs [options]'
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
@@ -451,19 +451,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments etfs',
-      'tinkoff-invest-node-sdk instruments etfs --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument etfs',
+      'tinkoff-invest-node-sdk instrument etfs --instrument-status=all --format=json'
     ],
     notes: [
       'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments get-dividends': {
+  'instrument get-dividends': {
     description: 'Print instrument dividends',
     sdkCall: 'sdk.instruments.getDividends',
     grpcMethod: 'InstrumentsService/GetDividends',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument get-dividends --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--instrument-id=ID    Share instrument identifier',
@@ -477,20 +477,20 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instrument get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
     ],
     notes: [
       "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'instruments get-favorites': {
+  'instrument get-favorites': {
     description: 'Print favorite instruments',
     sdkCall: 'sdk.instruments.getFavorites',
     grpcMethod: 'InstrumentsService/GetFavorites',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-favorites [options]'
+      'tinkoff-invest-node-sdk instrument get-favorites [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -498,16 +498,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-favorites',
-      'tinkoff-invest-node-sdk instruments get-favorites --format=json'
+      'tinkoff-invest-node-sdk instrument get-favorites',
+      'tinkoff-invest-node-sdk instrument get-favorites --format=json'
     ]
   },
-  'instruments edit-favorites': {
+  'instrument edit-favorites': {
     description: 'Add or remove favorite instruments',
     sdkCall: 'sdk.instruments.editFavorites',
     grpcMethod: 'InstrumentsService/EditFavorites',
     usage: [
-      'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=ID[,ID] --action=add|del --confirm [options]'
+      'tinkoff-invest-node-sdk instrument edit-favorites --instrument-id=ID[,ID] --action=add|del --confirm [options]'
     ],
     required: [
       '--instrument-id=ID[,ID] Comma-separated instrument identifiers',
@@ -521,42 +521,42 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=BBG00QPYJ5H0 --action=add --confirm',
-      'tinkoff-invest-node-sdk instruments edit-favorites --instrument-id=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
+      'tinkoff-invest-node-sdk instrument edit-favorites --instrument-id=BBG00QPYJ5H0 --action=add --confirm',
+      'tinkoff-invest-node-sdk instrument edit-favorites --instrument-id=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.',
       'This command changes account favorites and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'instruments find-instrument': {
+  'instrument find-instrument': {
     description: 'Search instruments',
     sdkCall: 'sdk.instruments.findInstrument',
     grpcMethod: 'InstrumentsService/FindInstrument',
     usage: [
-      'tinkoff-invest-node-sdk instruments find-instrument --query=TEXT [options]'
+      'tinkoff-invest-node-sdk instrument find-instrument --query=TEXT [options]'
     ],
     required: [
       '--query=TEXT          Search query'
     ],
     optional: [
       '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate',
-      '--api-trade-available Only instruments available for API trading',
+      '--api-trade-available Only instrument available for API trading',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG',
-      'tinkoff-invest-node-sdk instruments find-instrument --query=TCSG --instrument-kind=share --api-trade-available --format=json'
+      'tinkoff-invest-node-sdk instrument find-instrument --query=TCSG',
+      'tinkoff-invest-node-sdk instrument find-instrument --query=TCSG --instrument-kind=share --api-trade-available --format=json'
     ]
   },
-  'instruments future-by': {
+  'instrument future-by': {
     description: 'Print futures contract details',
     sdkCall: 'sdk.instruments.futureBy',
     grpcMethod: 'InstrumentsService/FutureBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments future-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument future-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -569,19 +569,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments future-by --id=FUTFIGI --id-type=figi',
-      'tinkoff-invest-node-sdk instruments future-by --id=SiM6 --id-type=ticker --class-code=SPBFUT --format=json'
+      'tinkoff-invest-node-sdk instrument future-by --id=FUTFIGI --id-type=figi',
+      'tinkoff-invest-node-sdk instrument future-by --id=SiM6 --id-type=ticker --class-code=SPBFUT --format=json'
     ],
     notes: [
       'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments futures': {
+  'instrument futures': {
     description: 'Print futures contracts',
     sdkCall: 'sdk.instruments.futures',
     grpcMethod: 'InstrumentsService/Futures',
     usage: [
-      'tinkoff-invest-node-sdk instruments futures [options]'
+      'tinkoff-invest-node-sdk instrument futures [options]'
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
@@ -590,19 +590,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments futures',
-      'tinkoff-invest-node-sdk instruments futures --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument futures',
+      'tinkoff-invest-node-sdk instrument futures --instrument-status=all --format=json'
     ],
     notes: [
       'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments get-futures-margin': {
+  'instrument get-futures-margin': {
     description: 'Print futures margin details',
     sdkCall: 'sdk.instruments.getFuturesMargin',
     grpcMethod: 'InstrumentsService/GetFuturesMargin',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=ID [options]'
+      'tinkoff-invest-node-sdk instrument get-futures-margin --instrument-id=ID [options]'
     ],
     required: [
       '--instrument-id=ID    Futures instrument identifier'
@@ -614,19 +614,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=FUTFIGI',
-      'tinkoff-invest-node-sdk instruments get-futures-margin --instrument-id=FUTFIGI --format=json'
+      'tinkoff-invest-node-sdk instrument get-futures-margin --instrument-id=FUTFIGI',
+      'tinkoff-invest-node-sdk instrument get-futures-margin --instrument-id=FUTFIGI --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.'
     ]
   },
-  'instruments get-instrument-by': {
+  'instrument get-instrument-by': {
     description: 'Print instrument details',
     sdkCall: 'sdk.instruments.getInstrumentBy',
     grpcMethod: 'InstrumentsService/GetInstrumentBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments get-instrument-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument get-instrument-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -639,16 +639,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments get-instrument-by --id=BBG00QPYJ5H0 --id-type=figi',
-      'tinkoff-invest-node-sdk instruments get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
+      'tinkoff-invest-node-sdk instrument get-instrument-by --id=BBG00QPYJ5H0 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
     ]
   },
-  'instruments option-by': {
+  'instrument option-by': {
     description: 'Print option contract details',
     sdkCall: 'sdk.instruments.optionBy',
     grpcMethod: 'InstrumentsService/OptionBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments option-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument option-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -661,19 +661,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments option-by --id=OPTIONUID --id-type=uid',
-      'tinkoff-invest-node-sdk instruments option-by --id=OPTIONTICKER --id-type=ticker --class-code=SPBOPT --format=json'
+      'tinkoff-invest-node-sdk instrument option-by --id=OPTIONUID --id-type=uid',
+      'tinkoff-invest-node-sdk instrument option-by --id=OPTIONTICKER --id-type=ticker --class-code=SPBOPT --format=json'
     ],
     notes: [
       'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments options-by': {
+  'instrument options-by': {
     description: 'Print option contracts by underlying asset',
     sdkCall: 'sdk.instruments.optionsBy',
     grpcMethod: 'InstrumentsService/OptionsBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=UID [options]'
+      'tinkoff-invest-node-sdk instrument options-by --basic-asset-uid=UID [options]'
     ],
     required: [
       '--basic-asset-uid=UID Underlying asset UID'
@@ -685,20 +685,20 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=asset-uid',
-      'tinkoff-invest-node-sdk instruments options-by --basic-asset-uid=asset-uid --basic-asset-position-uid=position-uid --format=json'
+      'tinkoff-invest-node-sdk instrument options-by --basic-asset-uid=asset-uid',
+      'tinkoff-invest-node-sdk instrument options-by --basic-asset-uid=asset-uid --basic-asset-position-uid=position-uid --format=json'
     ],
     notes: [
       '`sdk.instruments.options` is deprecated in the generated contract, so the CLI exposes `options-by` instead.',
       'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments share-by': {
+  'instrument share-by': {
     description: 'Print share details',
     sdkCall: 'sdk.instruments.shareBy',
     grpcMethod: 'InstrumentsService/ShareBy',
     usage: [
-      'tinkoff-invest-node-sdk instruments share-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument share-by --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -711,19 +711,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments share-by --id=BBG004730N88 --id-type=figi',
-      'tinkoff-invest-node-sdk instruments share-by --id=SBER --id-type=ticker --class-code=TQBR --format=json'
+      'tinkoff-invest-node-sdk instrument share-by --id=BBG004730N88 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument share-by --id=SBER --id-type=ticker --class-code=TQBR --format=json'
     ],
     notes: [
       'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments shares': {
+  'instrument shares': {
     description: 'Print shares',
     sdkCall: 'sdk.instruments.shares',
     grpcMethod: 'InstrumentsService/Shares',
     usage: [
-      'tinkoff-invest-node-sdk instruments shares [options]'
+      'tinkoff-invest-node-sdk instrument shares [options]'
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
@@ -732,19 +732,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments shares',
-      'tinkoff-invest-node-sdk instruments shares --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument shares',
+      'tinkoff-invest-node-sdk instrument shares --instrument-status=all --format=json'
     ],
     notes: [
       'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instruments trading-schedules': {
+  'instrument trading-schedules': {
     description: 'Print trading schedules',
     sdkCall: 'sdk.instruments.tradingSchedules',
     grpcMethod: 'InstrumentsService/TradingSchedules',
     usage: [
-      'tinkoff-invest-node-sdk instruments trading-schedules --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument trading-schedules --from=ISO --to=ISO [options]'
     ],
     required: [
       '--from=ISO             Start timestamp, inclusive',
@@ -757,19 +757,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instruments trading-schedules --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instruments trading-schedules --exchange=MOEX --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instrument trading-schedules --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument trading-schedules --exchange=MOEX --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
     ],
     notes: [
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'marketdata get-last-prices': {
+  'market get-last-prices': {
     description: 'Print latest market prices',
     sdkCall: 'sdk.marketdata.getLastPrices',
     grpcMethod: 'MarketDataService/GetLastPrices',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-last-prices --instrument-id=ID[,ID] [options]'
+      'tinkoff-invest-node-sdk market get-last-prices --instrument-id=ID[,ID] [options]'
     ],
     required: [
       '--instrument-id=ID[,ID] FIGI or instrument UID list'
@@ -780,15 +780,15 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-last-prices --instrument-id=BBG00QPYJ5H0 --format=json'
+      'tinkoff-invest-node-sdk market get-last-prices --instrument-id=BBG00QPYJ5H0 --format=json'
     ]
   },
-  'marketdata get-last-trades': {
+  'market get-last-trades': {
     description: 'Print recent trades',
     sdkCall: 'sdk.marketdata.getLastTrades',
     grpcMethod: 'MarketDataService/GetLastTrades',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk market get-last-trades --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--instrument-id=ID     FIGI or instrument UID',
@@ -801,19 +801,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z',
-      'tinkoff-invest-node-sdk marketdata get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z --format=json'
+      'tinkoff-invest-node-sdk market get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z',
+      'tinkoff-invest-node-sdk market get-last-trades --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T10:00:00Z --to=2026-06-19T11:00:00Z --format=json'
     ],
     notes: [
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'marketdata get-order-book': {
+  'market get-order-book': {
     description: 'Print instrument order book',
     sdkCall: 'sdk.marketdata.getOrderBook',
     grpcMethod: 'MarketDataService/GetOrderBook',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=ID --depth=DEPTH [options]'
+      'tinkoff-invest-node-sdk market get-order-book --instrument-id=ID --depth=DEPTH [options]'
     ],
     required: [
       '--instrument-id=ID     FIGI or instrument UID',
@@ -825,16 +825,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=BBG00QPYJ5H0 --depth=10',
-      'tinkoff-invest-node-sdk marketdata get-order-book --instrument-id=instrument-uid --depth=20 --format=json'
+      'tinkoff-invest-node-sdk market get-order-book --instrument-id=BBG00QPYJ5H0 --depth=10',
+      'tinkoff-invest-node-sdk market get-order-book --instrument-id=instrument-uid --depth=20 --format=json'
     ]
   },
-  'marketdata get-trading-status': {
+  'market get-trading-status': {
     description: 'Print instrument trading status',
     sdkCall: 'sdk.marketdata.getTradingStatus',
     grpcMethod: 'MarketDataService/GetTradingStatus',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-trading-status --instrument-id=ID [options]'
+      'tinkoff-invest-node-sdk market get-trading-status --instrument-id=ID [options]'
     ],
     required: [
       '--instrument-id=ID     FIGI or instrument UID'
@@ -845,16 +845,16 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-trading-status --instrument-id=BBG00QPYJ5H0',
-      'tinkoff-invest-node-sdk marketdata get-trading-status --instrument-id=instrument-uid --format=json'
+      'tinkoff-invest-node-sdk market get-trading-status --instrument-id=BBG00QPYJ5H0',
+      'tinkoff-invest-node-sdk market get-trading-status --instrument-id=instrument-uid --format=json'
     ]
   },
-  'marketdata get-trading-statuses': {
+  'market get-trading-statuses': {
     description: 'Print instrument trading statuses',
     sdkCall: 'sdk.marketdata.getTradingStatuses',
     grpcMethod: 'MarketDataService/GetTradingStatuses',
     usage: [
-      'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=ID[,ID] [options]'
+      'tinkoff-invest-node-sdk market get-trading-statuses --instrument-id=ID[,ID] [options]'
     ],
     required: [
       '--instrument-id=ID[,ID] FIGI or instrument UID list'
@@ -865,19 +865,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=BBG00QPYJ5H0,instrument-uid',
-      'tinkoff-invest-node-sdk marketdata get-trading-statuses --instrument-id=BBG00QPYJ5H0 --format=json'
+      'tinkoff-invest-node-sdk market get-trading-statuses --instrument-id=BBG00QPYJ5H0,instrument-uid',
+      'tinkoff-invest-node-sdk market get-trading-statuses --instrument-id=BBG00QPYJ5H0 --format=json'
     ]
   },
-  'orders get-orders': {
+  'order get-orders': {
     description: 'Print active account orders',
     sdkCall: 'sdk.orders.getOrders',
     grpcMethod: 'OrdersService/GetOrders',
     usage: [
-      'tinkoff-invest-node-sdk orders get-orders --account-id=ID [options]'
+      'tinkoff-invest-node-sdk order get-order --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -885,18 +885,18 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk orders get-orders --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk order get-order --account-id=2000000000 --format=json'
     ]
   },
-  'orders get-order-state': {
+  'order get-order-state': {
     description: 'Print order state',
     sdkCall: 'sdk.orders.getOrderState',
     grpcMethod: 'OrdersService/GetOrderState',
     usage: [
-      'tinkoff-invest-node-sdk orders get-order-state --account-id=ID --order-id=ID [options]'
+      'tinkoff-invest-node-sdk order get-order-state --account-id=ID --order-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--order-id=ID         Exchange order identifier'
     ],
     optional: [
@@ -905,19 +905,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345',
-      'tinkoff-invest-node-sdk orders get-order-state --account-id=2000000000 --order-id=12345 --format=json'
+      'tinkoff-invest-node-sdk order get-order-state --account-id=2000000000 --order-id=12345',
+      'tinkoff-invest-node-sdk order get-order-state --account-id=2000000000 --order-id=12345 --format=json'
     ]
   },
-  'orders post-order': {
+  'order post-order': {
     description: 'Post an order',
     sdkCall: 'sdk.orders.postOrder',
     grpcMethod: 'OrdersService/PostOrder',
     usage: [
-      'tinkoff-invest-node-sdk orders post-order --account-id=ID --instrument-id=ID --quantity=N --direction=buy|sell --order-type=TYPE --order-id=KEY --confirm [options]'
+      'tinkoff-invest-node-sdk order post-order --account-id=ID --instrument-id=ID --quantity=N --direction=buy|sell --order-type=TYPE --order-id=KEY --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--instrument-id=ID    FIGI or instrument UID',
       '--quantity=N          Positive integer lots count',
       '--direction=DIR       buy|sell',
@@ -932,23 +932,23 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
-      'tinkoff-invest-node-sdk orders post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
+      'tinkoff-invest-node-sdk order post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
+      'tinkoff-invest-node-sdk order post-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
     ],
     notes: [
       'This command places an order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
-  'orders cancel-order': {
+  'order cancel-order': {
     description: 'Cancel an order',
     sdkCall: 'sdk.orders.cancelOrder',
     grpcMethod: 'OrdersService/CancelOrder',
     usage: [
-      'tinkoff-invest-node-sdk orders cancel-order --account-id=ID --order-id=ID --confirm [options]'
+      'tinkoff-invest-node-sdk order cancel-order --account-id=ID --order-id=ID --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--order-id=ID         Exchange order identifier',
       '--confirm             Required by default CLI side-effect policy'
     ],
@@ -958,22 +958,22 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm',
-      'tinkoff-invest-node-sdk orders cancel-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
+      'tinkoff-invest-node-sdk order cancel-order --account-id=2000000000 --order-id=12345 --confirm',
+      'tinkoff-invest-node-sdk order cancel-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
     ],
     notes: [
       'This command cancels an order and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'orders replace-order': {
+  'order replace-order': {
     description: 'Replace an order',
     sdkCall: 'sdk.orders.replaceOrder',
     grpcMethod: 'OrdersService/ReplaceOrder',
     usage: [
-      'tinkoff-invest-node-sdk orders replace-order --account-id=ID --order-id=ID --idempotency-key=KEY --quantity=N --price=DECIMAL --price-type=TYPE --confirm [options]'
+      'tinkoff-invest-node-sdk order replace-order --account-id=ID --order-id=ID --idempotency-key=KEY --quantity=N --price=DECIMAL --price-type=TYPE --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--order-id=ID         Exchange order identifier',
       '--idempotency-key=KEY New idempotency key, max provider length is 36 chars',
       '--quantity=N          Positive integer lots count',
@@ -987,23 +987,23 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
-      'tinkoff-invest-node-sdk orders replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
+      'tinkoff-invest-node-sdk order replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
+      'tinkoff-invest-node-sdk order replace-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
     ],
     notes: [
       'This command changes an existing order and refuses to run without --confirm by default CLI policy.',
       'The CLI does not generate idempotency keys automatically.'
     ]
   },
-  'operations get-operations': {
+  'operation get-operations': {
     description: 'Print account operations',
     sdkCall: 'sdk.operations.getOperations',
     grpcMethod: 'OperationsService/GetOperations',
     usage: [
-      'tinkoff-invest-node-sdk operations get-operations --account-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk operation get-operation --account-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--from=ISO             Start timestamp, inclusive',
       '--to=ISO               End timestamp, inclusive'
     ],
@@ -1016,23 +1016,23 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk operations get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
+      'tinkoff-invest-node-sdk operation get-operation --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk operation get-operation --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operations get-operations-by-cursor': {
+  'operation get-operations-by-cursor': {
     description: 'Print one cursor page of account operations',
     sdkCall: 'sdk.operations.getOperationsByCursor',
     grpcMethod: 'OperationsService/GetOperationsByCursor',
     usage: [
-      'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation get-operations-by-cursor --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       '--instrument-id=ID    Optional FIGI or instrument UID filter',
@@ -1050,21 +1050,21 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=2000000000 --limit=100',
-      'tinkoff-invest-node-sdk operations get-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
+      'tinkoff-invest-node-sdk operation get-operations-by-cursor --account-id=2000000000 --limit=100',
+      'tinkoff-invest-node-sdk operation get-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
     ],
     notes: [
       'The command returns one page; pass nextCursor as --cursor to request the next page.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operations get-broker-report': {
+  'operation get-broker-report': {
     description: 'Generate or print a broker report page',
     sdkCall: 'sdk.operations.getBrokerReport',
     grpcMethod: 'OperationsService/GetBrokerReport',
     usage: [
-      'tinkoff-invest-node-sdk operations get-broker-report --account-id=ID --from=ISO --to=ISO [options]',
-      'tinkoff-invest-node-sdk operations get-broker-report --task-id=ID [options]'
+      'tinkoff-invest-node-sdk operation get-broker-report --account-id=ID --from=ISO --to=ISO [options]',
+      'tinkoff-invest-node-sdk operation get-broker-report --task-id=ID [options]'
     ],
     required: [
       'Generate mode: --account-id=ID --from=ISO --to=ISO',
@@ -1077,21 +1077,21 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-broker-report --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk operations get-broker-report --task-id=TASK --page=1 --format=json'
+      'tinkoff-invest-node-sdk operation get-broker-report --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk operation get-broker-report --task-id=TASK --page=1 --format=json'
     ],
     notes: [
       'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operations get-dividends-foreign-issuer': {
+  'operation get-dividends-foreign-issuer': {
     description: 'Generate or print a foreign issuer dividends report page',
     sdkCall: 'sdk.operations.getDividendsForeignIssuer',
     grpcMethod: 'OperationsService/GetDividendsForeignIssuer',
     usage: [
-      'tinkoff-invest-node-sdk operations get-dividends-foreign-issuer --account-id=ID --from=ISO --to=ISO [options]',
-      'tinkoff-invest-node-sdk operations get-dividends-foreign-issuer --task-id=ID [options]'
+      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --account-id=ID --from=ISO --to=ISO [options]',
+      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --task-id=ID [options]'
     ],
     required: [
       'Generate mode: --account-id=ID --from=ISO --to=ISO',
@@ -1104,23 +1104,23 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-dividends-foreign-issuer --account-id=2000000000 --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk operations get-dividends-foreign-issuer --task-id=TASK --page=1 --format=json'
+      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --account-id=2000000000 --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --task-id=TASK --page=1 --format=json'
     ],
     notes: [
       'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operations get-portfolio': {
+  'operation get-portfolio': {
     description: 'Print account portfolio',
     sdkCall: 'sdk.operations.getPortfolio',
     grpcMethod: 'OperationsService/GetPortfolio',
     usage: [
-      'tinkoff-invest-node-sdk operations get-portfolio --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation get-portfolio --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1129,18 +1129,18 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-portfolio --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk operation get-portfolio --account-id=2000000000 --format=json'
     ]
   },
-  'operations get-positions': {
+  'operation get-positions': {
     description: 'Print account positions',
     sdkCall: 'sdk.operations.getPositions',
     grpcMethod: 'OperationsService/GetPositions',
     usage: [
-      'tinkoff-invest-node-sdk operations get-positions --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation get-positions --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1148,18 +1148,18 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-positions --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk operation get-positions --account-id=2000000000 --format=json'
     ]
   },
-  'operations get-withdraw-limits': {
+  'operation get-withdraw-limits': {
     description: 'Print account withdraw limits',
     sdkCall: 'sdk.operations.getWithdrawLimits',
     grpcMethod: 'OperationsService/GetWithdrawLimits',
     usage: [
-      'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation get-withdraw-limits --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1167,19 +1167,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=2000000000',
-      'tinkoff-invest-node-sdk operations get-withdraw-limits --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk operation get-withdraw-limits --account-id=2000000000',
+      'tinkoff-invest-node-sdk operation get-withdraw-limits --account-id=2000000000 --format=json'
     ]
   },
-  'stoporders get-stop-orders': {
+  'stop-order get-stop-orders': {
     description: 'Print active stop orders',
     sdkCall: 'sdk.stoporders.getStopOrders',
     grpcMethod: 'StopOrdersService/GetStopOrders',
     usage: [
-      'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=ID [options]'
+      'tinkoff-invest-node-sdk stop-order get-stop-order --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts'
+      '--account-id=ID       Account identifier from account get-accounts'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1187,19 +1187,19 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000',
-      'tinkoff-invest-node-sdk stoporders get-stop-orders --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk stop-order get-stop-order --account-id=2000000000',
+      'tinkoff-invest-node-sdk stop-order get-stop-order --account-id=2000000000 --format=json'
     ]
   },
-  'stoporders post-stop-order': {
+  'stop-order post-stop-order': {
     description: 'Post a stop order',
     sdkCall: 'sdk.stoporders.postStopOrder',
     grpcMethod: 'StopOrdersService/PostStopOrder',
     usage: [
-      'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=ID --instrument-id=ID --quantity=N --stop-price=DECIMAL --direction=buy|sell --expiration-type=TYPE --stop-order-type=TYPE --confirm [options]'
+      'tinkoff-invest-node-sdk stop-order post-stop-order --account-id=ID --instrument-id=ID --quantity=N --stop-price=DECIMAL --direction=buy|sell --expiration-type=TYPE --stop-order-type=TYPE --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--instrument-id=ID    FIGI or instrument UID',
       '--quantity=N          Positive integer lots count',
       '--stop-price=DECIMAL  Stop price, up to 9 fractional digits',
@@ -1216,23 +1216,23 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --stop-price=95.5 --direction=sell --expiration-type=good-till-cancel --stop-order-type=stop-loss --confirm',
-      'tinkoff-invest-node-sdk stoporders post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
+      'tinkoff-invest-node-sdk stop-order post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --stop-price=95.5 --direction=sell --expiration-type=good-till-cancel --stop-order-type=stop-loss --confirm',
+      'tinkoff-invest-node-sdk stop-order post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
     ],
     notes: [
       'This command places a stop order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
-  'stoporders cancel-stop-order': {
+  'stop-order cancel-stop-order': {
     description: 'Cancel a stop order',
     sdkCall: 'sdk.stoporders.cancelStopOrder',
     grpcMethod: 'StopOrdersService/CancelStopOrder',
     usage: [
-      'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=ID --stop-order-id=ID --confirm [options]'
+      'tinkoff-invest-node-sdk stop-order cancel-stop-order --account-id=ID --stop-order-id=ID --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Account identifier from users get-accounts',
+      '--account-id=ID       Account identifier from account get-accounts',
       '--stop-order-id=ID    Stop order identifier',
       '--confirm             Required by default CLI side-effect policy'
     ],
@@ -1242,8 +1242,8 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm',
-      'tinkoff-invest-node-sdk stoporders cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
+      'tinkoff-invest-node-sdk stop-order cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm',
+      'tinkoff-invest-node-sdk stop-order cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
     ],
     notes: [
       'This command cancels a stop order and refuses to run without --confirm by default CLI policy.'
@@ -1404,7 +1404,7 @@ const legacyCommandHelp = {
     sdkCall: 'sdk.sandbox.getSandboxOrders',
     grpcMethod: 'SandboxService/GetSandboxOrders',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox get-sandbox-order --account-id=ID [options]'
     ],
     required: [
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
@@ -1415,8 +1415,8 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=2000000000',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-orders --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk sandbox get-sandbox-order --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-order --account-id=2000000000 --format=json'
     ]
   },
   'sandbox get-sandbox-order-state': {
@@ -1465,7 +1465,7 @@ const legacyCommandHelp = {
     sdkCall: 'sdk.sandbox.getSandboxOperations',
     grpcMethod: 'SandboxService/GetSandboxOperations',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operation --account-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
@@ -1481,8 +1481,8 @@ const legacyCommandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operation --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk sandbox get-sandbox-operation --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.',
@@ -1618,13 +1618,13 @@ const legacyCommandHelp = {
       'Dynamic bidirectional request sources are not implemented.'
     ]
   },
-  'compile-proto': {
+  'dev compile-proto': {
     description: 'Generate TypeScript contracts from local proto files',
     usage: [
-      'tinkoff-invest-node-sdk compile-proto'
+      'tinkoff-invest-node-sdk dev compile-proto'
     ],
     examples: [
-      'tinkoff-invest-node-sdk compile-proto'
+      'tinkoff-invest-node-sdk dev compile-proto'
     ],
     notes: [
       'Runs system protoc from PATH and the local ts-proto plugin from node_modules.',
@@ -1635,12 +1635,12 @@ const legacyCommandHelp = {
     description: 'Show top-level or command-specific help',
     usage: [
       'tinkoff-invest-node-sdk help',
-      'tinkoff-invest-node-sdk help <service> <method>',
-      'tinkoff-invest-node-sdk <service> <method> --help'
+      'tinkoff-invest-node-sdk help <domain> [<command>]',
+      'tinkoff-invest-node-sdk <domain> <command> --help'
     ],
     examples: [
       'tinkoff-invest-node-sdk help',
-      'tinkoff-invest-node-sdk help operations get-portfolio',
+      'tinkoff-invest-node-sdk help operation get-portfolio',
       'tinkoff-invest-node-sdk help version'
     ],
     notes: [
@@ -1658,16 +1658,6 @@ const legacyCommandHelp = {
     ]
   }
 } as const satisfies Record<string, CommandHelp>;
-
-const legacyToCanonicalCommandNames = Object.keys(legacyCommandHelp)
-  .map((name) => ({
-    legacy: name,
-    canonical: canonicalizeCommandName(name)
-  }))
-  .filter(({ legacy, canonical }) => legacy !== canonical)
-  .sort((left, right) => right.legacy.length - left.legacy.length);
-
-export const commandHelp = createCanonicalCommandHelp(legacyCommandHelp);
 
 export type CommandHelpName = keyof typeof commandHelp;
 
@@ -1739,76 +1729,6 @@ function renderCommandContract(command: CommandHelp): string[] {
   ];
 }
 
-function createCanonicalCommandHelp(
-  commands: Record<string, CommandHelp>
-): Record<string, CommandHelp> {
-  const entries = Object.entries(commands).map(([name, help]) => [
-    canonicalizeCommandName(name),
-    normalizeCommandHelp(name, help)
-  ]);
-
-  return Object.fromEntries(entries);
-}
-
-function normalizeCommandHelp(commandName: string, help: CommandHelp): CommandHelp {
-  if (commandName === 'help') {
-    return {
-      ...help,
-      usage: [
-        `${packageJson.name} help`,
-        `${packageJson.name} help <domain> [<command>]`,
-        `${packageJson.name} <domain> <command> --help`
-      ],
-      examples: [
-        `${packageJson.name} help`,
-        `${packageJson.name} help operation get-portfolio`,
-        `${packageJson.name} help version`
-      ]
-    };
-  }
-
-  const normalizedHelp: CommandHelp = {
-    ...help,
-    usage: rewriteHelpRows(help.usage),
-    examples: rewriteHelpRows(help.examples)
-  };
-  const required = rewriteOptionalHelpRows(help.required);
-  const optional = rewriteOptionalHelpRows(help.optional);
-  const notes = rewriteOptionalHelpRows(help.notes);
-
-  if (required !== undefined) {
-    normalizedHelp.required = required;
-  }
-
-  if (optional !== undefined) {
-    normalizedHelp.optional = optional;
-  }
-
-  if (notes !== undefined) {
-    normalizedHelp.notes = notes;
-  }
-
-  return normalizedHelp;
-}
-
-function rewriteHelpRows(rows: readonly string[]): string[] {
-  return rows.map(rewriteHelpRow);
-}
-
-function rewriteOptionalHelpRows(rows: readonly string[] | undefined): string[] | undefined {
-  return rows === undefined ? undefined : rewriteHelpRows(rows);
-}
-
-function rewriteHelpRow(row: string): string {
-  let result = row;
-
-  for (const { legacy, canonical } of legacyToCanonicalCommandNames) {
-    result = result.replaceAll(legacy, canonical);
-  }
-
-  return result;
-}
-
 function normalizeHelpCommandName(positionals: readonly unknown[]): string | undefined {
   if (positionals.length === 0) {
     return undefined;
@@ -1876,7 +1796,7 @@ export function renderDomainHelp(domainName: CliDomainName): string {
 }
 
 export function renderCommandHelp(commandName: CommandHelpName): string {
-  const command = commandHelp[commandName];
+  const command = commandHelp[commandName] as CommandHelp | undefined;
 
   if (command === undefined) {
     throw new Error(`Unknown command help: ${commandName}`);

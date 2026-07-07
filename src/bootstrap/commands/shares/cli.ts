@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments shares`.
+ * Модуль CLI-команды `instrument shares`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type SharesSdk = {
 
 type SharesSdkFactory = (options: TinkoffInvestOptions) => SharesSdk;
 
-const sharesCommandPath = ['instruments', 'shares'] as const;
+const sharesCommandPath = ['instrument', 'shares'] as const;
 const defaultSharesSdkFactory: SharesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sharesFormatOptionsSchema = {

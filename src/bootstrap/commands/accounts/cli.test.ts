@@ -72,7 +72,7 @@ describe('accounts command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'users',
+          'account',
           'get-accounts',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -107,7 +107,7 @@ describe('accounts command', () => {
         () => commandFacade.run(
           command,
           [
-            'users',
+            'account',
             'get-accounts',
             '--token=token',
             '--endpoint=localhost:50051'

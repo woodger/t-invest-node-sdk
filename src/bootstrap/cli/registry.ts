@@ -103,6 +103,10 @@ export type ResolvedCommand = {
 
 type RegisteredCommand = Omit<ResolvedCommand, 'name' | 'path'>;
 
+/**
+ * TODO: restore a literal command-name union after alias expansion preserves
+ * tuple literal paths through `icore` registry construction.
+ */
 export type CommandName = string;
 
 export function isCommandName(value: unknown): value is CommandName {
@@ -153,12 +157,12 @@ type CommandLineDefinition = CommandDefinition<
 
 const deprecatedFigiOptionCommandNames = new Set<string>(
   [
-    'instruments get-accrued-interests',
-    'instruments get-bond-coupons',
-    'instruments get-dividends',
-    'instruments edit-favorites',
-    'instruments get-futures-margin',
-    'operations get-operations',
+    'instrument get-accrued-interests',
+    'instrument get-bond-coupons',
+    'instrument get-dividends',
+    'instrument edit-favorites',
+    'instrument get-futures-margin',
+    'operation get-operations',
     'sandbox get-sandbox-operations'
   ].flatMap(commandNameAliases)
 );

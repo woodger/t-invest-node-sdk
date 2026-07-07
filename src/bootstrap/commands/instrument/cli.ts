@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-instrument-by`.
+ * Модуль CLI-команды `instrument get-instrument-by`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type InstrumentSdk = {
 
 type InstrumentSdkFactory = (options: TinkoffInvestOptions) => InstrumentSdk;
 
-const instrumentCommandPath = ['instruments', 'get-instrument-by'] as const;
+const instrumentCommandPath = ['instrument', 'get-instrument-by'] as const;
 const defaultInstrumentSdkFactory: InstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const instrumentFormatOptionsSchema = {

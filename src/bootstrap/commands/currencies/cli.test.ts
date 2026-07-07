@@ -104,7 +104,7 @@ describe('currencies command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'currencies',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -142,7 +142,7 @@ describe('currencies command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'currencies',
             '--token=token',
             '--endpoint=localhost:50051'

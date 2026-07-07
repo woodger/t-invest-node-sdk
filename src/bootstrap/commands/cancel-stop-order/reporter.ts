@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `stoporders cancel-stop-order`.
+ * Модуль CLI-репортинга команды `stop-order cancel-stop-order`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `stoporders post-stop-order`.
+ * Модуль CLI-команды `stop-order post-stop-order`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -48,7 +48,7 @@ type PostStopOrderSdk = {
 
 type PostStopOrderSdkFactory = (options: TinkoffInvestOptions) => PostStopOrderSdk;
 
-const postStopOrderCommandPath = ['stoporders', 'post-stop-order'] as const;
+const postStopOrderCommandPath = ['stop-order', 'post-stop-order'] as const;
 const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const stopOrderDirections = {

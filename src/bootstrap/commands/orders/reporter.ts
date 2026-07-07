@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `orders get-orders`.
+ * Модуль CLI-репортинга команды `order get-orders`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

@@ -148,7 +148,7 @@ describe('operations command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'operations',
+          'operation',
           'get-operations',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -188,7 +188,7 @@ describe('operations command', () => {
         () => commandFacade.run(
           command,
           [
-            'operations',
+            'operation',
             'get-operations',
             '--token=token',
             '--endpoint=localhost:50051',

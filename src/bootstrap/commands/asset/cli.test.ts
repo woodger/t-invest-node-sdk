@@ -71,7 +71,7 @@ describe('asset command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-asset-by',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -109,7 +109,7 @@ describe('asset command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-asset-by',
             '--token=token',
             '--endpoint=localhost:50051',

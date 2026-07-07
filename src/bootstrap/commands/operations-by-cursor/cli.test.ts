@@ -230,7 +230,7 @@ describe('operations-by-cursor command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'operations',
+          'operation',
           'get-operations-by-cursor',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -268,7 +268,7 @@ describe('operations-by-cursor command', () => {
         () => commandFacade.run(
           command,
           [
-            'operations',
+            'operation',
             'get-operations-by-cursor',
             '--token=token',
             '--endpoint=localhost:50051',

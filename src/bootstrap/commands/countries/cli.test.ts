@@ -68,7 +68,7 @@ describe('countries command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-countries',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -104,7 +104,7 @@ describe('countries command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-countries',
             '--token=token',
             '--endpoint=localhost:50051'

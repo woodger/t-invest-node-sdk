@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `users get-margin-attributes`.
+ * Модуль CLI-команды `account get-margin-attributes`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -35,7 +35,7 @@ type MarginAttributesSdk = {
 
 type MarginAttributesSdkFactory = (options: TinkoffInvestOptions) => MarginAttributesSdk;
 
-const marginAttributesCommandPath = ['users', 'get-margin-attributes'] as const;
+const marginAttributesCommandPath = ['account', 'get-margin-attributes'] as const;
 const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const marginAttributesRequestOptionsSchema = {

@@ -130,7 +130,7 @@ describe('order-book command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'marketdata',
+          'market',
           'get-order-book',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -171,7 +171,7 @@ describe('order-book command', () => {
         () => commandFacade.run(
           command,
           [
-            'marketdata',
+            'market',
             'get-order-book',
             '--token=token',
             '--endpoint=localhost:50051',

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-brands`.
+ * Модуль CLI-команды `instrument get-brands`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type BrandsSdk = {
 
 type BrandsSdkFactory = (options: TinkoffInvestOptions) => BrandsSdk;
 
-const brandsCommandPath = ['instruments', 'get-brands'] as const;
+const brandsCommandPath = ['instrument', 'get-brands'] as const;
 const defaultBrandsSdkFactory: BrandsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const brandsOptionsSchema = withSdkOptions({

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `orders post-order`.
+ * Модуль CLI-команды `order post-order`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -38,7 +38,7 @@ type PostOrderSdk = {
 
 type PostOrderSdkFactory = (options: TinkoffInvestOptions) => PostOrderSdk;
 
-const postOrderCommandPath = ['orders', 'post-order'] as const;
+const postOrderCommandPath = ['order', 'post-order'] as const;
 const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const postOrderDirections = {

@@ -114,7 +114,7 @@ describe('accrued-interests command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-accrued-interests',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -157,7 +157,7 @@ describe('accrued-interests command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-accrued-interests',
             '--token=token',
             '--endpoint=localhost:50051',

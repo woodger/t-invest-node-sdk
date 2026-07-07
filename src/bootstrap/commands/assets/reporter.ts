@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments get-assets`.
+ * Модуль CLI-репортинга команды `instrument get-assets`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

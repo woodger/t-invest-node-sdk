@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-dividends`.
+ * Модуль CLI-команды `instrument get-dividends`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type DividendsSdk = {
 
 type DividendsSdkFactory = (options: TinkoffInvestOptions) => DividendsSdk;
 
-const dividendsCommandPath = ['instruments', 'get-dividends'] as const;
+const dividendsCommandPath = ['instrument', 'get-dividends'] as const;
 const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const dividendsRequestOptionsSchema = {

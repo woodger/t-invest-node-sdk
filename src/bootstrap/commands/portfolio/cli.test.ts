@@ -122,7 +122,7 @@ describe('portfolio command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'operations',
+          'operation',
           'get-portfolio',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -160,7 +160,7 @@ describe('portfolio command', () => {
         () => commandFacade.run(
           command,
           [
-            'operations',
+            'operation',
             'get-portfolio',
             '--token=token',
             '--endpoint=localhost:50051',

@@ -69,7 +69,7 @@ describe('edit-favorites command', () => {
       await assert.rejects(
         () => commandFacade.run(
           command,
-          ['instruments', 'edit-favorites', '--instrument-id=figi-1', '--action=add'],
+          ['instrument', 'edit-favorites', '--instrument-id=figi-1', '--action=add'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -101,7 +101,7 @@ describe('edit-favorites command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'edit-favorites',
           '--token=token',
           '--endpoint=localhost:50051',

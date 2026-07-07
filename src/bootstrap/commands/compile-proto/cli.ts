@@ -1,5 +1,5 @@
 /**
- * Модуль utility CLI-команды `compile-proto`.
+ * Модуль utility CLI-команды `dev compile-proto`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -12,7 +12,7 @@ import { command } from '../../cli/contract';
 import { compileProtoContracts } from '../../proto/compile-proto';
 
 export const compileProtoCommand = command.define({
-  path: ['compile-proto'],
+  path: ['dev', 'compile-proto'],
   options: {},
   handle() {
     compileProtoContracts();

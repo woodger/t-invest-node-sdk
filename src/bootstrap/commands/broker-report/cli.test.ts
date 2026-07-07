@@ -153,7 +153,7 @@ describe('broker-report command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'operations',
+          'operation',
           'get-broker-report',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -198,7 +198,7 @@ describe('broker-report command', () => {
         () => commandFacade.run(
           command,
           [
-            'operations',
+            'operation',
             'get-broker-report',
             '--token=token',
             '--endpoint=localhost:50051',

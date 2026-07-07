@@ -75,7 +75,7 @@ describe('brands command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-brands',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -111,7 +111,7 @@ describe('brands command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-brands',
             '--token=token',
             '--endpoint=localhost:50051'

@@ -101,7 +101,7 @@ describe('etfs command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'etfs',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -139,7 +139,7 @@ describe('etfs command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'etfs',
             '--token=token',
             '--endpoint=localhost:50051'

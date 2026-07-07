@@ -107,7 +107,7 @@ describe('stop-orders command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'stoporders',
+          'stop-order',
           'get-stop-orders',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -145,7 +145,7 @@ describe('stop-orders command', () => {
         () => commandFacade.run(
           command,
           [
-            'stoporders',
+            'stop-order',
             'get-stop-orders',
             '--token=token',
             '--endpoint=localhost:50051',

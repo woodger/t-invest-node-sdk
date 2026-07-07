@@ -113,7 +113,7 @@ describe('last-trades command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'marketdata',
+          'market',
           'get-last-trades',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -153,7 +153,7 @@ describe('last-trades command', () => {
         () => commandFacade.run(
           command,
           [
-            'marketdata',
+            'market',
             'get-last-trades',
             '--token=token',
             '--endpoint=localhost:50051',
