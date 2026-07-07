@@ -28,7 +28,6 @@
     "build": "tsc",
     "test": "fwa --prune",
     "lint": "eslint src eslint.config.mjs",
-    "proto": "node dist/bootstrap/bin/proto.js",
     "cli": "node dist/bootstrap/bin/cli.js"
   },
   "dependencies": {

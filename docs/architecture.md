@@ -76,8 +76,8 @@ bootstrap-механикой.
 - `bootstrap/bin/cli.ts` - executable CLI entrypoint, который публикуется как
   `dist/bootstrap/bin/cli.js`;
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
-- `bootstrap/bin/compile-proto.ts` - package script entrypoint для proto generation
-  через системный `protoc` и локальный `ts-proto` plugin;
+- `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
+  `protoc` и локальный `ts-proto` plugin;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
 - `bootstrap/cli-runner.ts` - CLI runner layer;
 - `bootstrap/commands` - handlers CLI-команд;
@@ -87,8 +87,8 @@ bootstrap-механикой.
 - `bootstrap/commands/registry.ts` - связывание command name с handler;
 - `bootstrap/version.ts` - presentation-контракт версии.
 
-CLI слой сейчас поддерживает `help`, `version` и API-команды в canonical форме
-`<service> <method>`: `users get-accounts`, `users get-info`,
+CLI слой сейчас поддерживает utility-команды `help`, `version`, `compile-proto`
+и API-команды в canonical форме `<service> <method>`: `users get-accounts`, `users get-info`,
 `users get-margin-attributes`, `users get-user-tariff`,
 `marketdata get-candles`, `marketdata get-close-prices`,
 `instruments find-instrument`, `instruments get-accrued-interests`,

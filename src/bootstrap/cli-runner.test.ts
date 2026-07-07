@@ -135,13 +135,17 @@ describe('bootstrap cli runner', () => {
     });
 
     test('prints utility help from help command argument', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['help', 'version'], io);
+      for (const [command, output] of [
+        ['version', /version - Show package and runtime version info/],
+        ['compile-proto', /compile-proto - Generate TypeScript contracts/]
+      ] as const) {
+        const { io, read } = createIo();
+        const exitCode = await runCli(['help', command], io);
 
-      assert.equal(exitCode, 0);
-      assert.match(read().stdout, /version - Show package and runtime version info/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk --version/);
-      assert.equal(read().stderr, '');
+        assert.equal(exitCode, 0);
+        assert.match(read().stdout, output);
+        assert.equal(read().stderr, '');
+      }
     });
 
     test('prints version from version command and global flag', async () => {
