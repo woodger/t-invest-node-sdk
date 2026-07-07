@@ -87,90 +87,39 @@ interface TinkoffInvestNodeSDKConfig {
 ```bash
 yarn cli --help
 yarn cli version
-yarn cli help <service> <method>
-yarn cli <service> <method> [options]
+yarn cli help <domain> <command>
+yarn cli <domain> <command> [options]
 
-yarn cli help users get-accounts
-yarn cli users get-accounts --format=json
+yarn cli account --help
+yarn cli help account get-accounts
+yarn cli account get-accounts --format=json
 ```
 
-Актуальный список команд выводит `yarn cli help`. Подробности отдельной
-команды можно посмотреть через `yarn cli help <service> <method>` или
-`yarn cli <service> <method> --help`.
+Top-level help показывает публичные domains. Список команд внутри domain
+можно посмотреть через `yarn cli <domain> --help`. Подробности отдельной
+команды можно посмотреть через `yarn cli help <domain> <command>` или
+`yarn cli <domain> <command> --help`.
 
 Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
 negative overrides use `--no-raw`; assigned values like `--raw=true` or
 `--raw=false` are not part of the public CLI contract.
 
-Сейчас CLI содержит первые API-команды:
+Сейчас CLI сгруппирован по публичным domains:
 
-- `users get-accounts` - список счетов пользователя;
-- `users get-info` - информация о пользователе;
-- `users get-margin-attributes` - маржинальные показатели счета;
-- `users get-user-tariff` - текущие API-лимиты пользователя;
-- `marketdata get-candles` - исторические свечи;
-- `marketdata get-close-prices` - цены закрытия торговой сессии;
-- `instruments find-instrument` - поиск инструментов;
-- `instruments get-accrued-interests` - накопленный купонный доход по облигации;
-- `instruments get-asset-by` - информация об активе по идентификатору;
-- `instruments get-assets` - список активов;
-- `instruments get-bond-coupons` - купоны по облигации;
-- `instruments bond-by` - информация об облигации по идентификатору;
-- `instruments bonds` - список облигаций;
-- `instruments get-brand-by` - информация о бренде по идентификатору;
-- `instruments get-brands` - справочник брендов;
-- `instruments get-countries` - справочник стран;
-- `instruments currencies` - список валют;
-- `instruments currency-by` - информация о валюте по идентификатору;
-- `instruments etf-by` - информация об ETF по идентификатору;
-- `instruments etfs` - список ETF;
-- `instruments get-dividends` - дивиденды по инструменту;
-- `instruments get-favorites` - избранные инструменты пользователя;
-- `instruments edit-favorites` - добавление или удаление избранных инструментов;
-- `instruments future-by` - информация о фьючерсе по идентификатору;
-- `instruments futures` - список фьючерсов;
-- `instruments get-futures-margin` - гарантийное обеспечение по фьючерсу;
-- `instruments get-instrument-by` - основная информация об инструменте по идентификатору;
-- `instruments option-by` - информация об опционе по идентификатору;
-- `instruments options-by` - список опционов по базовому активу;
-- `instruments share-by` - информация об акции по идентификатору;
-- `instruments shares` - список акций;
-- `instruments trading-schedules` - расписания торговых площадок;
-- `marketdata get-last-prices` - последние рыночные цены инструментов;
-- `marketdata get-last-trades` - обезличенные сделки по инструменту;
-- `marketdata get-order-book` - стакан инструмента;
-- `marketdata get-trading-status` - торговый статус инструмента;
-- `marketdata get-trading-statuses` - торговые статусы инструментов;
-- `orders get-orders` - активные торговые поручения по счету;
-- `orders get-order-state` - статус торгового поручения;
-- `orders post-order` - выставление торгового поручения;
-- `orders cancel-order` - отмена торгового поручения;
-- `orders replace-order` - изменение торгового поручения;
-- `operations get-broker-report` - брокерский отчет: запуск формирования или страница по `taskId`;
-- `operations get-dividends-foreign-issuer` - отчет по дивидендам иностранных эмитентов: запуск формирования или страница по `taskId`;
-- `operations get-operations` - операции по счету за период;
-- `operations get-operations-by-cursor` - страница операций по cursor-контракту;
-- `operations get-portfolio` - текущий портфель по счету;
-- `operations get-positions` - позиции по счету;
-- `operations get-withdraw-limits` - доступный остаток для вывода;
-- `stoporders get-stop-orders` - активные стоп-заявки по счету;
-- `stoporders post-stop-order` - выставление стоп-заявки;
-- `stoporders cancel-stop-order` - отмена стоп-заявки;
-- `sandbox open-sandbox-account` - открытие sandbox-счета;
-- `sandbox get-sandbox-accounts` - список sandbox-счетов;
-- `sandbox close-sandbox-account` - закрытие sandbox-счета;
-- `sandbox post-sandbox-order` - выставление sandbox-поручения;
-- `sandbox replace-sandbox-order` - изменение sandbox-поручения;
-- `sandbox get-sandbox-orders` - активные sandbox-поручения;
-- `sandbox cancel-sandbox-order` - отмена sandbox-поручения;
-- `sandbox get-sandbox-order-state` - статус sandbox-поручения;
-- `sandbox get-sandbox-positions` - sandbox-позиции по счету;
-- `sandbox get-sandbox-operations` - sandbox-операции по счету за период;
-- `sandbox get-sandbox-operations-by-cursor` - страница sandbox-операций по cursor-контракту;
-- `sandbox get-sandbox-portfolio` - текущий sandbox-портфель по счету;
-- `sandbox sandbox-pay-in` - пополнение sandbox-счета;
-- `sandbox get-sandbox-withdraw-limits` - sandbox-остаток для вывода;
-- `stream run` - запуск stream по JSON config.
+- `account` - счета, пользовательская информация, тарифы и лимиты;
+- `instrument` - инструменты, справочники и избранное;
+- `market` - исторические и текущие рыночные данные;
+- `order` - поручения на реальном счете;
+- `stop-order` - стоп-заявки на реальном счете;
+- `operation` - операции, портфель, позиции и отчеты;
+- `sandbox` - sandbox-счета, поручения, операции и портфель;
+- `stream` - запуск stream по JSON config;
+- `dev` - developer tools, включая `dev compile-proto`.
+
+Legacy paths вида `users get-accounts`, `marketdata get-candles`,
+`orders post-order`, `stoporders get-stop-orders`, `operations get-portfolio`
+и `compile-proto` остаются совместимыми aliases. Help при этом показывает
+canonical domain path.
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md). Команды с side effects
@@ -183,7 +132,7 @@ stream request sources остаются отложенным контракто�
 [Stream CLI Configuration Reference](./cli-stream-configuration.md).
 
 Deprecated `sdk.instruments.options` не вводится как публичная CLI-команда;
-для опционов используется `instruments options-by`.
+для опционов используется `instrument options-by`.
 
 Новые команды должны:
 
@@ -220,7 +169,7 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 TypeScript-код из `contracts/**/*.proto` генерируется через:
 
 ```bash
-yarn cli compile-proto
+yarn cli dev compile-proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.

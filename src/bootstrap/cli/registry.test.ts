@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { commandNames, isCommandName, resolveCommand } from './registry';
 
-const expectedCommandNames = [
+const legacyCommandNames = [
   'compile-proto',
   'help',
   'instruments bond-by',
@@ -75,6 +75,69 @@ const expectedCommandNames = [
   'version'
 ] as const;
 
+const canonicalCommandNames = [
+  'account get-accounts',
+  'account get-info',
+  'account get-margin-attributes',
+  'account get-user-tariff',
+  'dev compile-proto',
+  'instrument bond-by',
+  'instrument bonds',
+  'instrument currencies',
+  'instrument currency-by',
+  'instrument edit-favorites',
+  'instrument etf-by',
+  'instrument etfs',
+  'instrument find-instrument',
+  'instrument future-by',
+  'instrument futures',
+  'instrument get-accrued-interests',
+  'instrument get-asset-by',
+  'instrument get-assets',
+  'instrument get-bond-coupons',
+  'instrument get-brand-by',
+  'instrument get-brands',
+  'instrument get-countries',
+  'instrument get-dividends',
+  'instrument get-favorites',
+  'instrument get-futures-margin',
+  'instrument get-instrument-by',
+  'instrument option-by',
+  'instrument options-by',
+  'instrument share-by',
+  'instrument shares',
+  'instrument trading-schedules',
+  'market get-candles',
+  'market get-close-prices',
+  'market get-last-prices',
+  'market get-last-trades',
+  'market get-order-book',
+  'market get-trading-status',
+  'market get-trading-statuses',
+  'operation get-broker-report',
+  'operation get-dividends-foreign-issuer',
+  'operation get-operations',
+  'operation get-operations-by-cursor',
+  'operation get-portfolio',
+  'operation get-positions',
+  'operation get-withdraw-limits',
+  'order cancel-order',
+  'order get-order-state',
+  'order get-orders',
+  'order post-order',
+  'order replace-order',
+  'stop-order cancel-stop-order',
+  'stop-order get-stop-orders',
+  'stop-order post-stop-order'
+] as const;
+
+const expectedCommandNames = [
+  ...new Set([
+    ...legacyCommandNames,
+    ...canonicalCommandNames
+  ])
+] as const;
+
 const unknownCommandNames = [
   'instruments options',
   'marketdata stream',
@@ -131,6 +194,17 @@ describe('resolveCommand', () => {
   });
 
   test('passes named options to command-line definitions', async () => {
+    const command = resolveCommand(['account', 'get-accounts']);
+
+    await assert.rejects(
+      async () => {
+        await command.handler(['account', 'get-accounts', '--format=xml']);
+      },
+      /Expected '--format' as one of: json, table/
+    );
+  });
+
+  test('keeps legacy command paths executable', async () => {
     const command = resolveCommand(['users', 'get-accounts']);
 
     await assert.rejects(
