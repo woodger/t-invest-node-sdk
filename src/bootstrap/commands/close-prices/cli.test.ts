@@ -126,7 +126,7 @@ describe('close-prices command', () => {
         command,
         [
           'market',
-          'get-close-prices',
+          'close-prices',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0,instrument-uid',
@@ -165,7 +165,7 @@ describe('close-prices command', () => {
           command,
           [
             'market',
-            'get-close-prices',
+            'close-prices',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0'

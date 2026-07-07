@@ -109,7 +109,7 @@ describe('orders command', () => {
         command,
         [
           'order',
-          'get-orders',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -145,7 +145,7 @@ describe('orders command', () => {
           command,
           [
             'order',
-            'get-orders',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id'

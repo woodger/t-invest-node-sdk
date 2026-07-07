@@ -75,11 +75,30 @@ const legacyCommandNames = [
   'version'
 ] as const;
 
-const canonicalCommandNames = [
+const technicalCompatibilityCommandNames = [
   'account get-accounts',
   'account get-info',
   'account get-margin-attributes',
   'account get-user-tariff',
+  'market get-candles',
+  'market get-close-prices',
+  'market get-last-prices',
+  'market get-last-trades',
+  'market get-order-book',
+  'market get-trading-status',
+  'market get-trading-statuses',
+  'order cancel-order',
+  'order get-order-state',
+  'order get-orders',
+  'order post-order',
+  'order replace-order'
+] as const;
+
+const preferredCommandNames = [
+  'account info',
+  'account list',
+  'account margin',
+  'account tariff',
   'dev compile-proto',
   'instrument bond-by',
   'instrument bonds',
@@ -107,13 +126,13 @@ const canonicalCommandNames = [
   'instrument share-by',
   'instrument shares',
   'instrument trading-schedules',
-  'market get-candles',
-  'market get-close-prices',
-  'market get-last-prices',
-  'market get-last-trades',
-  'market get-order-book',
-  'market get-trading-status',
-  'market get-trading-statuses',
+  'market candles',
+  'market close-prices',
+  'market last-prices',
+  'market order-book',
+  'market status',
+  'market statuses',
+  'market trades',
   'operation get-broker-report',
   'operation get-dividends-foreign-issuer',
   'operation get-operations',
@@ -121,11 +140,11 @@ const canonicalCommandNames = [
   'operation get-portfolio',
   'operation get-positions',
   'operation get-withdraw-limits',
-  'order cancel-order',
-  'order get-order-state',
-  'order get-orders',
-  'order post-order',
-  'order replace-order',
+  'order cancel',
+  'order list',
+  'order place',
+  'order replace',
+  'order show',
   'stop-order cancel-stop-order',
   'stop-order get-stop-orders',
   'stop-order post-stop-order'
@@ -134,7 +153,8 @@ const canonicalCommandNames = [
 const expectedCommandNames = [
   ...new Set([
     ...legacyCommandNames,
-    ...canonicalCommandNames
+    ...technicalCompatibilityCommandNames,
+    ...preferredCommandNames
   ])
 ] as const;
 
@@ -171,6 +191,23 @@ describe('resolveCommand', () => {
     }
   });
 
+  test('resolves friendly command paths', () => {
+    for (const commandName of [
+      'account list',
+      'account info',
+      'market candles',
+      'market last-prices',
+      'order list',
+      'order place'
+    ]) {
+      const path = commandPath(commandName);
+      const command = resolveCommand(path);
+
+      assert.equal(command.name, commandName);
+      assert.deepEqual(command.path, path);
+    }
+  });
+
   test('returns executable command handler', async () => {
     const command = resolveCommand(['version']);
     const output = await command.handler(['version']);
@@ -194,25 +231,102 @@ describe('resolveCommand', () => {
   });
 
   test('passes named options to command-line definitions', async () => {
-    const command = resolveCommand(['account', 'get-accounts']);
+    const command = resolveCommand(['account', 'list']);
 
     await assert.rejects(
       async () => {
-        await command.handler(['account', 'get-accounts', '--format=xml']);
+        await command.handler(['account', 'list', '--format=xml']);
       },
       /Expected '--format' as one of: json, table/
     );
   });
 
-  test('keeps legacy command paths executable', async () => {
-    const command = resolveCommand(['users', 'get-accounts']);
-
-    await assert.rejects(
-      async () => {
-        await command.handler(['users', 'get-accounts', '--format=xml']);
+  test('keeps technical command paths executable', async () => {
+    for (const { path, args, expectedError } of [
+      {
+        path: ['account', 'get-accounts'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
       },
-      /Expected '--format' as one of: json, table/
-    );
+      {
+        path: ['market', 'get-candles'],
+        args: [
+          '--instrument-id=instrument-id',
+          '--from=2026-06-19T00:00:00Z',
+          '--to=2026-06-19T01:00:00Z',
+          '--interval=1min',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, csv/
+      },
+      {
+        path: ['order', 'post-order'],
+        args: [
+          '--account-id=account-id',
+          '--instrument-id=instrument-id',
+          '--quantity=1',
+          '--direction=buy',
+          '--order-type=market',
+          '--order-id=order-id',
+          '--confirm',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      }
+    ]) {
+      const command = resolveCommand(path);
+
+      await assert.rejects(
+        async () => {
+          await command.handler([...path, ...args]);
+        },
+        expectedError
+      );
+    }
+  });
+
+  test('keeps legacy command paths executable', async () => {
+    for (const { path, args, expectedError } of [
+      {
+        path: ['users', 'get-accounts'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['marketdata', 'get-candles'],
+        args: [
+          '--instrument-id=instrument-id',
+          '--from=2026-06-19T00:00:00Z',
+          '--to=2026-06-19T01:00:00Z',
+          '--interval=1min',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, csv/
+      },
+      {
+        path: ['orders', 'post-order'],
+        args: [
+          '--account-id=account-id',
+          '--instrument-id=instrument-id',
+          '--quantity=1',
+          '--direction=buy',
+          '--order-type=market',
+          '--order-id=order-id',
+          '--confirm',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      }
+    ]) {
+      const command = resolveCommand(path);
+
+      await assert.rejects(
+        async () => {
+          await command.handler([...path, ...args]);
+        },
+        expectedError
+      );
+    }
   });
 
   test('throws for unknown command', () => {

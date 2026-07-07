@@ -73,7 +73,7 @@ describe('accounts command', () => {
         command,
         [
           'account',
-          'get-accounts',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -108,7 +108,7 @@ describe('accounts command', () => {
           command,
           [
             'account',
-            'get-accounts',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

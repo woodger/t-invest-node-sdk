@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `market get-last-prices`.
+ * Модуль CLI-команды `market last-prices`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -35,7 +35,7 @@ type LastPricesSdk = {
 
 type LastPricesSdkFactory = (options: TinkoffInvestOptions) => LastPricesSdk;
 
-const lastPricesCommandPath = ['market', 'get-last-prices'] as const;
+const lastPricesCommandPath = ['market', 'last-prices'] as const;
 const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const lastPricesInstrumentIdsOptionsSchema = {

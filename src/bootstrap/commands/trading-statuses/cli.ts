@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `market get-trading-statuses`.
+ * Модуль CLI-команды `market statuses`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type TradingStatusesSdk = {
 
 type TradingStatusesSdkFactory = (options: TinkoffInvestOptions) => TradingStatusesSdk;
 
-const tradingStatusesCommandPath = ['market', 'get-trading-statuses'] as const;
+const tradingStatusesCommandPath = ['market', 'statuses'] as const;
 const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const tradingStatusesInstrumentIdsOptionsSchema = {

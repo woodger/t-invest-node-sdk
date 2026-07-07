@@ -21,26 +21,30 @@ const unknownHelpNames = [
 ] as const;
 
 describe('commandHelp', () => {
-  test('contains help entries for canonical public bootstrap commands', () => {
+  test('contains help entries for preferred public bootstrap commands', () => {
     for (const commandName of Object.keys(commandHelp)) {
       assert.equal(commandNames.includes(commandName), true);
     }
 
-    assert.equal('account get-accounts' in commandHelp, true);
-    assert.equal('market get-candles' in commandHelp, true);
+    assert.equal('account list' in commandHelp, true);
+    assert.equal('market candles' in commandHelp, true);
     assert.equal('instrument bonds' in commandHelp, true);
-    assert.equal('order post-order' in commandHelp, true);
+    assert.equal('order place' in commandHelp, true);
     assert.equal('stop-order get-stop-orders' in commandHelp, true);
     assert.equal('operation get-portfolio' in commandHelp, true);
     assert.equal('dev compile-proto' in commandHelp, true);
+    assert.equal('account get-accounts' in commandHelp, false);
+    assert.equal('market get-candles' in commandHelp, false);
+    assert.equal('order post-order' in commandHelp, false);
     assert.equal('users get-accounts' in commandHelp, false);
     assert.equal('marketdata get-candles' in commandHelp, false);
+    assert.equal('orders post-order' in commandHelp, false);
     assert.equal('compile-proto' in commandHelp, false);
   });
 });
 
 describe('isCommandHelpName', () => {
-  test('accepts canonical help command names only', () => {
+  test('accepts preferred help command names only', () => {
     for (const commandName of Object.keys(commandHelp)) {
       assert.equal(isCommandHelpName(commandName), true);
     }
@@ -62,15 +66,38 @@ describe('isHelpRequested', () => {
 describe('renderHelp', () => {
   test('returns command-specific help for known command name', () => {
     assert.equal(
+      renderHelp(['market', 'candles']),
+      renderCommandHelp('market candles')
+    );
+  });
+
+  test('returns friendly command-specific help for technical command name', () => {
+    assert.equal(
+      renderHelp(['account', 'get-accounts']),
+      renderCommandHelp('account list')
+    );
+    assert.equal(
       renderHelp(['market', 'get-candles']),
-      renderCommandHelp('market get-candles')
+      renderCommandHelp('market candles')
+    );
+    assert.equal(
+      renderHelp(['order', 'post-order']),
+      renderCommandHelp('order place')
     );
   });
 
   test('returns command-specific help for legacy command name', () => {
     assert.equal(
+      renderHelp(['users', 'get-accounts']),
+      renderCommandHelp('account list')
+    );
+    assert.equal(
       renderHelp(['marketdata', 'get-candles']),
-      renderCommandHelp('market get-candles')
+      renderCommandHelp('market candles')
+    );
+    assert.equal(
+      renderHelp(['orders', 'post-order']),
+      renderCommandHelp('order place')
     );
   });
 
@@ -113,6 +140,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /users get-accounts/);
     assert.doesNotMatch(help, /account get-accounts/);
+    assert.doesNotMatch(help, /account list/);
     assert.doesNotMatch(help, /Examples:/);
   });
 });
@@ -141,15 +169,16 @@ describe('renderDomainHelp', () => {
 
 describe('renderCommandHelp', () => {
   test('renders command-specific help page', () => {
-    const help = renderCommandHelp('market get-candles');
+    const help = renderCommandHelp('market candles');
 
-    assert.match(help, /market get-candles - Print historical candles/);
+    assert.match(help, /market candles - Print historical candles/);
     assert.match(help, /SDK call:\n {2}sdk\.marketdata\.getCandles/);
     assert.match(help, /gRPC method:\n {2}MarketDataService\/GetCandles/);
     assert.match(help, /Required options:/);
     assert.match(help, /--instrument-id=ID/);
     assert.match(help, /Environment:/);
-    assert.match(help, /tinkoff-invest-node-sdk market get-candles --instrument-id=ID/);
+    assert.match(help, /tinkoff-invest-node-sdk market candles --instrument-id=ID/);
+    assert.doesNotMatch(help, /tinkoff-invest-node-sdk market get-candles/);
     assert.doesNotMatch(help, /tinkoff-invest-node-sdk marketdata get-candles/);
     assert.doesNotMatch(help, /Commands:/);
   });

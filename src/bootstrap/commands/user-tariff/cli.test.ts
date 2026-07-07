@@ -74,7 +74,7 @@ describe('user-tariff command', () => {
         command,
         [
           'account',
-          'get-user-tariff',
+          'tariff',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -110,7 +110,7 @@ describe('user-tariff command', () => {
           command,
           [
             'account',
-            'get-user-tariff',
+            'tariff',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `account get-accounts`.
+ * Модуль CLI-команды `account list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type AccountsSdk = {
 
 type AccountsSdkFactory = (options: TinkoffInvestOptions) => AccountsSdk;
 
-const accountsCommandPath = ['account', 'get-accounts'] as const;
+const accountsCommandPath = ['account', 'list'] as const;
 const defaultAccountsSdkFactory: AccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const accountsOptionsSchema = withSdkOptions({

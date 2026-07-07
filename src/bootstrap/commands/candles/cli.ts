@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `market get-candles`.
+ * Модуль CLI-команды `market candles`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type CandlesSdk = {
 
 type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
 
-const candlesCommandPath = ['market', 'get-candles'] as const;
+const candlesCommandPath = ['market', 'candles'] as const;
 const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const candleIntervals = {

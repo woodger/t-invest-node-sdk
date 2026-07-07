@@ -44,7 +44,7 @@ describe('cancel-order command', () => {
       await assert.rejects(
         () => commandFacade.run(
           command,
-          ['order', 'cancel-order', '--account-id=account-id', '--order-id=order-id'],
+          ['order', 'cancel', '--account-id=account-id', '--order-id=order-id'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -79,7 +79,7 @@ describe('cancel-order command', () => {
         command,
         [
           'order',
-          'cancel-order',
+          'cancel',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

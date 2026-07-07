@@ -98,7 +98,7 @@ describe('post-order command', () => {
           command,
           [
             'order',
-            'post-order',
+            'place',
             '--account-id=account-id',
             '--instrument-id=instrument-id',
             '--quantity=10',
@@ -138,7 +138,7 @@ describe('post-order command', () => {
         command,
         [
           'order',
-          'post-order',
+          'place',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
