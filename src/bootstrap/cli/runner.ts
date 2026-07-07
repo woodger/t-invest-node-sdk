@@ -19,9 +19,9 @@ import {
   commandLineCommands,
   resolveCommand,
   resolveCommandWarnings
-} from './commands/registry';
-import { isHelpRequested, renderHelp } from './help/help';
-import { renderCliHelp } from './help/renderer';
+} from './registry';
+import { renderCommandError } from './error';
+import { isHelpRequested, renderCliHelp, renderHelp } from './help';
 import { isVersionRequested, renderVersionInfo } from './version';
 
 const bootstrapOptionsSchema = {
@@ -84,14 +84,6 @@ function normalizeCliAliases(argv: readonly string[]): string[] {
 
     return arg;
   });
-}
-
-function renderCommandError(error: unknown): string {
-  if (error instanceof Error) {
-    return `${error.message}\n`;
-  }
-
-  return `${String(error)}\n`;
 }
 
 export async function runCli(

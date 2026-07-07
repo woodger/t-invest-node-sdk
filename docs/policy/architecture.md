@@ -179,7 +179,7 @@ Bootstrap
 - `domain`;
 - `application`;
 - `infrastructure`;
-- executable entrypoints в `bootstrap/bin`, bootstrap mechanics вроде `bootstrap/cli-runner.ts` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
+- executable entrypoints в `bootstrap/bin`, bootstrap CLI mechanics в `bootstrap/cli/**` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
 - `internal`;
 - `generated`;
 - `docs`;
@@ -243,12 +243,13 @@ Bootstrap
 Плохой сигнал:
 
 ```text
-help/
+feature/
   index.ts
-  help.ts
+  feature.ts
 ```
 
-Если `help/index.ts` и `help/help.ts` оба представляют сущность `help`, нужно
+Если `feature/index.ts` и `feature/feature.ts` оба представляют сущность
+`feature`, нужно
 оставить один вариант:
 
 - удалить `index.ts` и импортировать конкретные файлы;

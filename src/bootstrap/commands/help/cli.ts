@@ -9,9 +9,8 @@
  * Здесь не должно быть SDK wiring или generated API request logic.
  */
 
-import { command } from '../command';
-import { resolveCommandHelpName } from '../../help/commands';
-import { renderCliHelp, renderCommandHelp } from '../../help/renderer';
+import { command } from '../../cli/contract';
+import { resolveCommandHelpName, renderCliHelp, renderCommandHelp } from '../../cli/help';
 
 export const helpCommand = command.define({
   path: ['help'],

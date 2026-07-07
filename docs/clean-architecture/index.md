@@ -52,10 +52,13 @@ src/bootstrap
   args/
   bin/
     cli.ts
-  cli-runner.ts
-  commands/
+  cli/
+    contract.ts
+    help.ts
     registry.ts
-  help/
+    runner.ts
+    version.ts
+  commands/
   proto/
     compile-proto.ts
   tinkoff-invest-node-sdk.ts

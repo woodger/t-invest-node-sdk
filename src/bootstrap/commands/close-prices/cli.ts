@@ -15,7 +15,7 @@ import type {
   GetClosePricesResponse
 } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
-import { command } from '../command';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {

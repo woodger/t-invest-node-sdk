@@ -27,7 +27,7 @@ import type {
   TradesStreamResponse
 } from '../../../generated/orders';
 import type { InferOptions, InferProvidedOptions } from 'icore';
-import { command } from '../command';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import { withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
