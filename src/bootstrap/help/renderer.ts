@@ -40,6 +40,7 @@ export function renderCliHelp(): string {
     '',
     'Usage:',
     '  tinkoff-invest-node-sdk <service> <method> [options]',
+    '  tinkoff-invest-node-sdk compile-proto',
     '  tinkoff-invest-node-sdk help [<service> <method>|version]',
     '  tinkoff-invest-node-sdk --help',
     '  tinkoff-invest-node-sdk --version',

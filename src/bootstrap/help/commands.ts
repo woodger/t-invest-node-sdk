@@ -1606,6 +1606,19 @@ export const commandHelp = {
       'Dynamic bidirectional request sources are not implemented.'
     ]
   },
+  'compile-proto': {
+    description: 'Generate TypeScript contracts from local proto files',
+    usage: [
+      'tinkoff-invest-node-sdk compile-proto'
+    ],
+    examples: [
+      'tinkoff-invest-node-sdk compile-proto'
+    ],
+    notes: [
+      'Runs system protoc from PATH and the local ts-proto plugin from node_modules.',
+      'Run yarn build before this command when bootstrap TypeScript sources changed.'
+    ]
+  },
   help: {
     description: 'Show top-level or command-specific help',
     usage: [
@@ -1643,7 +1656,11 @@ export function isCommandHelpName(value: unknown): value is CommandHelpName {
 export function resolveCommandHelpName(positionals: readonly unknown[]): CommandHelpName | undefined {
   const [serviceOrCommand, method] = positionals;
 
-  if (serviceOrCommand === 'help' || serviceOrCommand === 'version') {
+  if (
+    serviceOrCommand === 'compile-proto' ||
+    serviceOrCommand === 'help' ||
+    serviceOrCommand === 'version'
+  ) {
     return serviceOrCommand;
   }
 

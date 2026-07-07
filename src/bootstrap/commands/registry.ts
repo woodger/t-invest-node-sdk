@@ -23,6 +23,7 @@ import { candlesCommand } from './candles/cli';
 import { cancelOrderCommand } from './cancel-order/cli';
 import { cancelStopOrderCommand } from './cancel-stop-order/cli';
 import { closePricesCommand } from './close-prices/cli';
+import { compileProtoCommand } from './compile-proto/cli';
 import { countriesCommand } from './countries/cli';
 import { currenciesCommand } from './currencies/cli';
 import { currencyCommand } from './currency/cli';
@@ -189,6 +190,7 @@ export type CommandName =
   | OperationsCommandName
   | InstrumentsCommandLineName
   | StreamCommandName
+  | 'compile-proto'
   | 'help'
   | 'version';
 
@@ -199,7 +201,11 @@ export function isCommandName(value: unknown): value is CommandName {
 function commandNameFromPositionals(positionals: readonly unknown[]): string {
   const [serviceOrCommand, method] = positionals;
 
-  if (serviceOrCommand === 'help' || serviceOrCommand === 'version') {
+  if (
+    serviceOrCommand === 'compile-proto' ||
+    serviceOrCommand === 'help' ||
+    serviceOrCommand === 'version'
+  ) {
     return serviceOrCommand;
   }
 
@@ -334,6 +340,7 @@ export const commandLineCommands = command.registry(
     defineCommandLineCommand(dividendsCommand),
     defineCommandLineCommand(tradingSchedulesCommand),
     defineCommandLineCommand(streamRunCommand),
+    defineCommandLineCommand(compileProtoCommand),
     defineCommandLineCommand(helpCommand),
     defineCommandLineCommand(versionCommand)
   ]

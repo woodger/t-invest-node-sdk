@@ -16,6 +16,8 @@ micro-release separately.
 
 - Restored `yarn build` as the explicit TypeScript compile command and removed
   the package `prepare` script.
+- Moved proto generation from a package script to the `yarn cli compile-proto`
+  utility command.
 - Documented `yarn build` as the strict TypeScript compile gate backed by
   `tsconfig.json`.
 

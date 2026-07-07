@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import { commandNames, isCommandName, resolveCommand } from './registry';
 
 const expectedCommandNames = [
+  'compile-proto',
   'help',
   'instruments bond-by',
   'instruments bonds',
