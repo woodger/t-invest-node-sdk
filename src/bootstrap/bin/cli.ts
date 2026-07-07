@@ -8,12 +8,12 @@
  */
 
 import { runCli } from '../cli-runner';
+import { warningInterceptor } from '../../infrastructure/interceptor';
 
-void runCli(process.argv.slice(2))
-  .then((exitCode) => {
-    process.exitCode = exitCode;
-  })
-  .catch((error: unknown) => {
-    console.error(error);
-    process.exitCode = 1;
-  });
+warningInterceptor({
+  rules: [
+    { messageIncludes: 'client.query() when the client is already executing' }
+  ]
+});
+
+runCli(process.argv.slice(2));
