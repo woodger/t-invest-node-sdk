@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments futures`.
+ * Модуль CLI-команды `instrument futures`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type FuturesSdk = {
 
 type FuturesSdkFactory = (options: TinkoffInvestOptions) => FuturesSdk;
 
-const futuresCommandPath = ['instruments', 'futures'] as const;
+const futuresCommandPath = ['instrument', 'futures'] as const;
 const defaultFuturesSdkFactory: FuturesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const futuresFormatOptionsSchema = {

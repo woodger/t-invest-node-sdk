@@ -94,7 +94,7 @@ describe('futures-margin command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-futures-margin',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -136,7 +136,7 @@ describe('futures-margin command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-futures-margin',
             '--token=token',
             '--endpoint=localhost:50051',

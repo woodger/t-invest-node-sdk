@@ -132,7 +132,7 @@ describe('find-instrument command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'find-instrument',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -175,7 +175,7 @@ describe('find-instrument command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'find-instrument',
             '--token=token',
             '--endpoint=localhost:50051',

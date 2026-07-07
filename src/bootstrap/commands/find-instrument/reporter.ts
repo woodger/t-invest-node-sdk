@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments find-instrument`.
+ * Модуль CLI-репортинга команды `instrument find-instrument`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

@@ -132,7 +132,7 @@ describe('etf command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'etf-by',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -174,7 +174,7 @@ describe('etf command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'etf-by',
             '--token=token',
             '--endpoint=localhost:50051',

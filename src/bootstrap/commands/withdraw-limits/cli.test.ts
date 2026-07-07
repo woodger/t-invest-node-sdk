@@ -88,7 +88,7 @@ describe('withdraw-limits command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'operations',
+          'operation',
           'get-withdraw-limits',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -126,7 +126,7 @@ describe('withdraw-limits command', () => {
         () => commandFacade.run(
           command,
           [
-            'operations',
+            'operation',
             'get-withdraw-limits',
             '--token=token',
             '--endpoint=localhost:50051',

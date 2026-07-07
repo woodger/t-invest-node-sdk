@@ -3,7 +3,7 @@
  *
  * Здесь допустимы:
  * - описание публичных CLI domains;
- * - преобразование legacy service paths в новые domain paths;
+ * - преобразование между публичными domain paths и legacy service paths;
  * - helpers для domain-level help и registry aliases.
  *
  * Здесь не должно быть исполнения команд, SDK wiring или command-specific parsing.
@@ -53,6 +53,15 @@ const publicDomainByLegacyHead = {
   stream: 'stream'
 } as const satisfies Record<string, CliDomainName>;
 
+const legacyHeadByPublicDomain: Partial<Record<CliDomainName, string>> = {
+  account: 'users',
+  instrument: 'instruments',
+  market: 'marketdata',
+  order: 'orders',
+  'stop-order': 'stoporders',
+  operation: 'operations'
+} as const;
+
 export const cliDomainNames = Object.keys(cliDomains) as CliDomainName[];
 
 export function isCliDomainName(value: unknown): value is CliDomainName {
@@ -95,14 +104,18 @@ export function canonicalizeCommandName(name: string): string {
 
 export function commandPathAliases(path: CliCommandPath): CliCommandPath[] {
   const canonicalPath = canonicalizeCommandPath(path);
+  const legacyPath = legacyCommandPath(canonicalPath);
 
-  if (commandPathToName(canonicalPath) === commandPathToName(path)) {
-    return [path];
+  if (
+    legacyPath === undefined ||
+    commandPathToName(canonicalPath) === commandPathToName(legacyPath)
+  ) {
+    return [canonicalPath];
   }
 
   return [
     canonicalPath,
-    path
+    legacyPath
   ];
 }
 
@@ -118,4 +131,20 @@ export function commandActionName(commandName: string): string {
 
 function isLegacyPathHead(value: string): value is keyof typeof publicDomainByLegacyHead {
   return value in publicDomainByLegacyHead;
+}
+
+function legacyCommandPath(path: CliCommandPath): CliCommandPath | undefined {
+  const [head, ...tail] = path;
+
+  if (head === 'dev' && tail[0] === 'compile-proto') {
+    return ['compile-proto', ...tail.slice(1)];
+  }
+
+  if (!isCliDomainName(head)) {
+    return undefined;
+  }
+
+  const legacyHead = legacyHeadByPublicDomain[head];
+
+  return legacyHead === undefined ? undefined : [legacyHead, ...tail];
 }

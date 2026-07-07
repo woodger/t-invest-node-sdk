@@ -108,7 +108,7 @@ describe('order-state command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'orders',
+          'order',
           'get-order-state',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -148,7 +148,7 @@ describe('order-state command', () => {
         () => commandFacade.run(
           command,
           [
-            'orders',
+            'order',
             'get-order-state',
             '--token=token',
             '--endpoint=localhost:50051',

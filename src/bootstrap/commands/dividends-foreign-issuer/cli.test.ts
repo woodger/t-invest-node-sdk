@@ -155,7 +155,7 @@ describe('dividends-foreign-issuer command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'operations',
+          'operation',
           'get-dividends-foreign-issuer',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -200,7 +200,7 @@ describe('dividends-foreign-issuer command', () => {
         () => commandFacade.run(
           command,
           [
-            'operations',
+            'operation',
             'get-dividends-foreign-issuer',
             '--token=token',
             '--endpoint=localhost:50051',

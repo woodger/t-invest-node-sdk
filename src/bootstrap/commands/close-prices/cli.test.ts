@@ -125,7 +125,7 @@ describe('close-prices command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'marketdata',
+          'market',
           'get-close-prices',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -164,7 +164,7 @@ describe('close-prices command', () => {
         () => commandFacade.run(
           command,
           [
-            'marketdata',
+            'market',
             'get-close-prices',
             '--token=token',
             '--endpoint=localhost:50051',

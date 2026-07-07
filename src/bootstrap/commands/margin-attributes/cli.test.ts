@@ -98,7 +98,7 @@ describe('margin-attributes command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'users',
+          'account',
           'get-margin-attributes',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -139,7 +139,7 @@ describe('margin-attributes command', () => {
         () => commandFacade.run(
           command,
           [
-            'users',
+            'account',
             'get-margin-attributes',
             '--token=token',
             '--endpoint=localhost:50051',

@@ -79,7 +79,7 @@ describe('brand command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-brand-by',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -118,7 +118,7 @@ describe('brand command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-brand-by',
             '--token=token',
             '--endpoint=localhost:50051',

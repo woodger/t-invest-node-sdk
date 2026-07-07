@@ -132,7 +132,7 @@ describe('share command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'share-by',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -174,7 +174,7 @@ describe('share command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'share-by',
             '--token=token',
             '--endpoint=localhost:50051',

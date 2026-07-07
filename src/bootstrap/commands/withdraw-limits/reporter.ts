@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `operations get-withdraw-limits`.
+ * Модуль CLI-репортинга команды `operation get-withdraw-limits`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

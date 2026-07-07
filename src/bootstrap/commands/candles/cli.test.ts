@@ -115,7 +115,7 @@ describe('candles command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'marketdata',
+          'market',
           'get-candles',
           '--token=token',
           '--endpoint=localhost:50051',

@@ -84,7 +84,7 @@ describe('trading-status command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'marketdata',
+          'market',
           'get-trading-status',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -123,7 +123,7 @@ describe('trading-status command', () => {
         () => commandFacade.run(
           command,
           [
-            'marketdata',
+            'market',
             'get-trading-status',
             '--token=token',
             '--endpoint=localhost:50051',

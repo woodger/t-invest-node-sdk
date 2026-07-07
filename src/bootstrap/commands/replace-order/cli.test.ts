@@ -88,7 +88,7 @@ describe('replace-order command', () => {
         () => commandFacade.run(
           command,
           [
-            'orders',
+            'order',
             'replace-order',
             '--account-id=account-id',
             '--order-id=order-id',
@@ -128,7 +128,7 @@ describe('replace-order command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'orders',
+          'order',
           'replace-order',
           '--token=token',
           '--endpoint=localhost:50051',

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-operations-by-cursor`.
+ * Модуль CLI-команды `operation get-operations-by-cursor`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -45,7 +45,7 @@ type OperationsByCursorSdk = {
 
 type OperationsByCursorSdkFactory = (options: TinkoffInvestOptions) => OperationsByCursorSdk;
 
-const operationsByCursorCommandPath = ['operations', 'get-operations-by-cursor'] as const;
+const operationsByCursorCommandPath = ['operation', 'get-operations-by-cursor'] as const;
 const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const operationStates = {

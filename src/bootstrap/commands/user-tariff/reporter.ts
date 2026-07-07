@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `users get-user-tariff`.
+ * Модуль CLI-репортинга команды `account get-user-tariff`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments bond-by`.
+ * Модуль CLI-команды `instrument bond-by`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type BondSdk = {
 
 type BondSdkFactory = (options: TinkoffInvestOptions) => BondSdk;
 
-const bondCommandPath = ['instruments', 'bond-by'] as const;
+const bondCommandPath = ['instrument', 'bond-by'] as const;
 const defaultBondSdkFactory: BondSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const bondFormatOptionsSchema = {

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-withdraw-limits`.
+ * Модуль CLI-команды `operation get-withdraw-limits`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -35,7 +35,7 @@ type WithdrawLimitsSdk = {
 
 type WithdrawLimitsSdkFactory = (options: TinkoffInvestOptions) => WithdrawLimitsSdk;
 
-const withdrawLimitsCommandPath = ['operations', 'get-withdraw-limits'] as const;
+const withdrawLimitsCommandPath = ['operation', 'get-withdraw-limits'] as const;
 const defaultWithdrawLimitsSdkFactory: WithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const withdrawLimitsRequestOptionsSchema = {

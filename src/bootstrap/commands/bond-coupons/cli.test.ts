@@ -113,7 +113,7 @@ describe('bond-coupons command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-bond-coupons',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -156,7 +156,7 @@ describe('bond-coupons command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-bond-coupons',
             '--token=token',
             '--endpoint=localhost:50051',

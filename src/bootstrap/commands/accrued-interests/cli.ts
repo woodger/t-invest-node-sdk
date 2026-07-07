@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-accrued-interests`.
+ * Модуль CLI-команды `instrument get-accrued-interests`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -43,7 +43,7 @@ type AccruedInterestsSdk = {
 
 type AccruedInterestsSdkFactory = (options: TinkoffInvestOptions) => AccruedInterestsSdk;
 
-const accruedInterestsCommandPath = ['instruments', 'get-accrued-interests'] as const;
+const accruedInterestsCommandPath = ['instrument', 'get-accrued-interests'] as const;
 const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const accruedInterestsRequestOptionsSchema = {

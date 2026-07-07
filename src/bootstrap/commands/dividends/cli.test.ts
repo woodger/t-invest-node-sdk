@@ -120,7 +120,7 @@ describe('dividends command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'get-dividends',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -166,7 +166,7 @@ describe('dividends command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'get-dividends',
             '--token=token',
             '--endpoint=localhost:50051',

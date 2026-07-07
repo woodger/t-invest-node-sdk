@@ -127,7 +127,7 @@ describe('trading-schedules command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'trading-schedules',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -170,7 +170,7 @@ describe('trading-schedules command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'trading-schedules',
             '--token=token',
             '--endpoint=localhost:50051',

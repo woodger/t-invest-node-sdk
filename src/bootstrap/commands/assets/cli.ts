@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-assets`.
+ * Модуль CLI-команды `instrument get-assets`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -29,7 +29,7 @@ type AssetsSdk = {
 
 type AssetsSdkFactory = (options: TinkoffInvestOptions) => AssetsSdk;
 
-const assetsCommandPath = ['instruments', 'get-assets'] as const;
+const assetsCommandPath = ['instrument', 'get-assets'] as const;
 const defaultAssetsSdkFactory: AssetsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const assetInstrumentTypes = {

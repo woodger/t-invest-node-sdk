@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `marketdata get-close-prices`.
+ * Модуль CLI-команды `market get-close-prices`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -35,7 +35,7 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TinkoffInvestOptions) => ClosePricesSdk;
 
-const closePricesCommandPath = ['marketdata', 'get-close-prices'] as const;
+const closePricesCommandPath = ['market', 'get-close-prices'] as const;
 const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const closePricesInstrumentIdsOptionsSchema = {

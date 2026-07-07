@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-broker-report`.
+ * Модуль CLI-команды `operation get-broker-report`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -41,7 +41,7 @@ type BrokerReportSdk = {
 
 type BrokerReportSdkFactory = (options: TinkoffInvestOptions) => BrokerReportSdk;
 
-const brokerReportCommandPath = ['operations', 'get-broker-report'] as const;
+const brokerReportCommandPath = ['operation', 'get-broker-report'] as const;
 const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const brokerReportRequestOptionsSchema = {

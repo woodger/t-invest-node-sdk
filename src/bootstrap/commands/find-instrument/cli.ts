@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments find-instrument`.
+ * Модуль CLI-команды `instrument find-instrument`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -33,7 +33,7 @@ type FindInstrumentSdk = {
 
 type FindInstrumentSdkFactory = (options: TinkoffInvestOptions) => FindInstrumentSdk;
 
-const findInstrumentCommandPath = ['instruments', 'find-instrument'] as const;
+const findInstrumentCommandPath = ['instrument', 'find-instrument'] as const;
 const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const instrumentKinds = {

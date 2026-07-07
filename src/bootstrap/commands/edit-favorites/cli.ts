@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments edit-favorites`.
+ * Модуль CLI-команды `instrument edit-favorites`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -48,7 +48,7 @@ type EditFavoritesSdk = {
 
 type EditFavoritesSdkFactory = (options: TinkoffInvestOptions) => EditFavoritesSdk;
 
-const editFavoritesCommandPath = ['instruments', 'edit-favorites'] as const;
+const editFavoritesCommandPath = ['instrument', 'edit-favorites'] as const;
 const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const editFavoriteActions = {

@@ -101,7 +101,7 @@ describe('futures command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'futures',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -139,7 +139,7 @@ describe('futures command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'futures',
             '--token=token',
             '--endpoint=localhost:50051'

@@ -73,7 +73,7 @@ describe('user-tariff command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'users',
+          'account',
           'get-user-tariff',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -109,7 +109,7 @@ describe('user-tariff command', () => {
         () => commandFacade.run(
           command,
           [
-            'users',
+            'account',
             'get-user-tariff',
             '--token=token',
             '--endpoint=localhost:50051'

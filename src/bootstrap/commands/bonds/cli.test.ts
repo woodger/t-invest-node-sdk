@@ -101,7 +101,7 @@ describe('bonds command', () => {
       const output = await commandFacade.run(
         command,
         [
-          'instruments',
+          'instrument',
           'bonds',
           '--token=token',
           '--endpoint=localhost:50051',
@@ -139,7 +139,7 @@ describe('bonds command', () => {
         () => commandFacade.run(
           command,
           [
-            'instruments',
+            'instrument',
             'bonds',
             '--token=token',
             '--endpoint=localhost:50051'

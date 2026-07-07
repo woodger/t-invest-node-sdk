@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-countries`.
+ * Модуль CLI-команды `instrument get-countries`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type CountriesSdk = {
 
 type CountriesSdkFactory = (options: TinkoffInvestOptions) => CountriesSdk;
 
-const countriesCommandPath = ['instruments', 'get-countries'] as const;
+const countriesCommandPath = ['instrument', 'get-countries'] as const;
 const defaultCountriesSdkFactory: CountriesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const countriesOptionsSchema = withSdkOptions({

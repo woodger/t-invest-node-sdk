@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `users get-user-tariff`.
+ * Модуль CLI-команды `account get-user-tariff`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type UserTariffSdk = {
 
 type UserTariffSdkFactory = (options: TinkoffInvestOptions) => UserTariffSdk;
 
-const userTariffCommandPath = ['users', 'get-user-tariff'] as const;
+const userTariffCommandPath = ['account', 'get-user-tariff'] as const;
 const defaultUserTariffSdkFactory: UserTariffSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const userTariffOptionsSchema = withSdkOptions({
