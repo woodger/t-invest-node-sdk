@@ -3,7 +3,7 @@
  *
  * Здесь допустимы:
  * - описание публичных CLI domains;
- * - преобразование между публичными domain paths и legacy service paths;
+ * - преобразование между friendly, technical и legacy command paths;
  * - helpers для domain-level help и registry aliases.
  *
  * Здесь не должно быть исполнения команд, SDK wiring или command-specific parsing.
@@ -62,6 +62,56 @@ const legacyHeadByPublicDomain: Partial<Record<CliDomainName, string>> = {
   operation: 'operations'
 } as const;
 
+const friendlyActionByTechnicalAction: Partial<Record<CliDomainName, Record<string, string>>> = {
+  account: {
+    'get-accounts': 'list',
+    'get-info': 'info',
+    'get-margin-attributes': 'margin',
+    'get-user-tariff': 'tariff'
+  },
+  market: {
+    'get-candles': 'candles',
+    'get-close-prices': 'close-prices',
+    'get-last-prices': 'last-prices',
+    'get-last-trades': 'trades',
+    'get-order-book': 'order-book',
+    'get-trading-status': 'status',
+    'get-trading-statuses': 'statuses'
+  },
+  order: {
+    'get-orders': 'list',
+    'get-order-state': 'show',
+    'post-order': 'place',
+    'cancel-order': 'cancel',
+    'replace-order': 'replace'
+  }
+} as const;
+
+const technicalActionByFriendlyAction: Partial<Record<CliDomainName, Record<string, string>>> = {
+  account: {
+    list: 'get-accounts',
+    info: 'get-info',
+    margin: 'get-margin-attributes',
+    tariff: 'get-user-tariff'
+  },
+  market: {
+    candles: 'get-candles',
+    'close-prices': 'get-close-prices',
+    'last-prices': 'get-last-prices',
+    trades: 'get-last-trades',
+    'order-book': 'get-order-book',
+    status: 'get-trading-status',
+    statuses: 'get-trading-statuses'
+  },
+  order: {
+    list: 'get-orders',
+    show: 'get-order-state',
+    place: 'post-order',
+    cancel: 'cancel-order',
+    replace: 'replace-order'
+  }
+} as const;
+
 export const cliDomainNames = Object.keys(cliDomains) as CliDomainName[];
 
 export function isCliDomainName(value: unknown): value is CliDomainName {
@@ -83,19 +133,7 @@ export function commandNameToPath(name: string): CliCommandPath {
 }
 
 export function canonicalizeCommandPath(path: CliCommandPath): CliCommandPath {
-  const [head, ...tail] = path;
-
-  if (head === 'compile-proto') {
-    return ['dev', 'compile-proto'];
-  }
-
-  const domain = isLegacyPathHead(head) ? publicDomainByLegacyHead[head] : undefined;
-
-  if (domain === undefined) {
-    return path;
-  }
-
-  return [domain, ...tail];
+  return friendlyCommandPath(publicDomainPath(path));
 }
 
 export function canonicalizeCommandName(name: string): string {
@@ -104,19 +142,14 @@ export function canonicalizeCommandName(name: string): string {
 
 export function commandPathAliases(path: CliCommandPath): CliCommandPath[] {
   const canonicalPath = canonicalizeCommandPath(path);
-  const legacyPath = legacyCommandPath(canonicalPath);
+  const technicalPath = technicalCommandPath(canonicalPath);
+  const legacyPath = legacyCommandPath(technicalPath ?? canonicalPath);
 
-  if (
-    legacyPath === undefined ||
-    commandPathToName(canonicalPath) === commandPathToName(legacyPath)
-  ) {
-    return [canonicalPath];
-  }
-
-  return [
+  return uniqueCommandPaths([
     canonicalPath,
+    technicalPath,
     legacyPath
-  ];
+  ]);
 }
 
 export function commandDomainName(commandName: string): CliDomainName | undefined {
@@ -133,6 +166,46 @@ function isLegacyPathHead(value: string): value is keyof typeof publicDomainByLe
   return value in publicDomainByLegacyHead;
 }
 
+function publicDomainPath(path: CliCommandPath): CliCommandPath {
+  const [head, ...tail] = path;
+
+  if (head === 'compile-proto') {
+    return ['dev', 'compile-proto'];
+  }
+
+  const domain = isLegacyPathHead(head) ? publicDomainByLegacyHead[head] : undefined;
+
+  if (domain === undefined) {
+    return path;
+  }
+
+  return [domain, ...tail];
+}
+
+function friendlyCommandPath(path: CliCommandPath): CliCommandPath {
+  const [domain, action, ...tail] = path;
+
+  if (action === undefined || !isCliDomainName(domain)) {
+    return path;
+  }
+
+  const friendlyAction = friendlyActionByTechnicalAction[domain]?.[action];
+
+  return friendlyAction === undefined ? path : [domain, friendlyAction, ...tail];
+}
+
+function technicalCommandPath(path: CliCommandPath): CliCommandPath | undefined {
+  const [domain, action, ...tail] = path;
+
+  if (action === undefined || !isCliDomainName(domain)) {
+    return undefined;
+  }
+
+  const technicalAction = technicalActionByFriendlyAction[domain]?.[action];
+
+  return technicalAction === undefined ? undefined : [domain, technicalAction, ...tail];
+}
+
 function legacyCommandPath(path: CliCommandPath): CliCommandPath | undefined {
   const [head, ...tail] = path;
 
@@ -147,4 +220,26 @@ function legacyCommandPath(path: CliCommandPath): CliCommandPath | undefined {
   const legacyHead = legacyHeadByPublicDomain[head];
 
   return legacyHead === undefined ? undefined : [legacyHead, ...tail];
+}
+
+function uniqueCommandPaths(paths: readonly (CliCommandPath | undefined)[]): CliCommandPath[] {
+  const names = new Set<string>();
+  const result: CliCommandPath[] = [];
+
+  for (const path of paths) {
+    if (path === undefined) {
+      continue;
+    }
+
+    const name = commandPathToName(path);
+
+    if (names.has(name)) {
+      continue;
+    }
+
+    names.add(name);
+    result.push(path);
+  }
+
+  return result;
 }

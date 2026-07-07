@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `market get-order-book`.
+ * Модуль CLI-команды `market order-book`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -31,7 +31,7 @@ type OrderBookSdk = {
 
 type OrderBookSdkFactory = (options: TinkoffInvestOptions) => OrderBookSdk;
 
-const orderBookCommandPath = ['market', 'get-order-book'] as const;
+const orderBookCommandPath = ['market', 'order-book'] as const;
 const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const orderBookDepthOptionsSchema = {

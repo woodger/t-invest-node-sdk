@@ -85,7 +85,7 @@ describe('trading-status command', () => {
         command,
         [
           'market',
-          'get-trading-status',
+          'status',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',
@@ -124,7 +124,7 @@ describe('trading-status command', () => {
           command,
           [
             'market',
-            'get-trading-status',
+            'status',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0'

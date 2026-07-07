@@ -122,7 +122,7 @@ describe('last-prices command', () => {
         command,
         [
           'market',
-          'get-last-prices',
+          'last-prices',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0,instrument-uid',
@@ -159,7 +159,7 @@ describe('last-prices command', () => {
           command,
           [
             'market',
-            'get-last-prices',
+            'last-prices',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0'

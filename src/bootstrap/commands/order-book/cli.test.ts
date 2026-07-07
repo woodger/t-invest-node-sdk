@@ -131,7 +131,7 @@ describe('order-book command', () => {
         command,
         [
           'market',
-          'get-order-book',
+          'order-book',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',
@@ -172,7 +172,7 @@ describe('order-book command', () => {
           command,
           [
             'market',
-            'get-order-book',
+            'order-book',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0',

@@ -114,7 +114,7 @@ describe('last-trades command', () => {
         command,
         [
           'market',
-          'get-last-trades',
+          'trades',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',
@@ -154,7 +154,7 @@ describe('last-trades command', () => {
           command,
           [
             'market',
-            'get-last-trades',
+            'trades',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0',

@@ -126,7 +126,7 @@ describe('bootstrap cli runner', () => {
       assert.equal(read().stderr, '');
     });
 
-    test('prints canonical command help from a legacy command help flag', async () => {
+    test('prints preferred command help from a legacy command help flag', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['operations', 'get-portfolio', '--help'], io);
 
@@ -143,8 +143,9 @@ describe('bootstrap cli runner', () => {
 
       assert.equal(exitCode, 0);
       assert.match(read().stdout, /account - Accounts, user info, tariff and limits/);
-      assert.match(read().stdout, /get-accounts\s+Print user accounts/);
+      assert.match(read().stdout, /list\s+Print user accounts/);
       assert.doesNotMatch(read().stdout, /users get-accounts/);
+      assert.doesNotMatch(read().stdout, /get-accounts\s+Print user accounts/);
       assert.equal(read().stderr, '');
     });
 
@@ -153,8 +154,10 @@ describe('bootstrap cli runner', () => {
       const exitCode = await runCli(['help', 'market', 'get-candles'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /market get-candles - Print historical candles/);
+      assert.match(read().stdout, /market candles - Print historical candles/);
       assert.match(read().stdout, /gRPC method:\n {2}MarketDataService\/GetCandles/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk market candles --instrument-id=ID/);
+      assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk market get-candles --instrument-id=ID/);
       assert.equal(read().stderr, '');
     });
 
@@ -196,6 +199,15 @@ describe('bootstrap cli runner', () => {
     test('keeps legacy command paths executable through the runner', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['users', 'get-accounts', '--format=xml'], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.match(read().stderr, /Expected '--format' as one of: json, table/);
+    });
+
+    test('keeps friendly command paths executable through the runner', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['account', 'list', '--format=xml'], io);
 
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `order get-orders`.
+ * Модуль CLI-команды `order list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type OrdersSdk = {
 
 type OrdersSdkFactory = (options: TinkoffInvestOptions) => OrdersSdk;
 
-const ordersCommandPath = ['order', 'get-orders'] as const;
+const ordersCommandPath = ['order', 'list'] as const;
 const defaultOrdersSdkFactory: OrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const ordersRequestOptionsSchema = {

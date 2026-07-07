@@ -109,7 +109,7 @@ describe('order-state command', () => {
         command,
         [
           'order',
-          'get-order-state',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -149,7 +149,7 @@ describe('order-state command', () => {
           command,
           [
             'order',
-            'get-order-state',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id',

@@ -89,7 +89,7 @@ describe('replace-order command', () => {
           command,
           [
             'order',
-            'replace-order',
+            'replace',
             '--account-id=account-id',
             '--order-id=order-id',
             '--idempotency-key=new-idempotency-key',
@@ -129,7 +129,7 @@ describe('replace-order command', () => {
         command,
         [
           'order',
-          'replace-order',
+          'replace',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

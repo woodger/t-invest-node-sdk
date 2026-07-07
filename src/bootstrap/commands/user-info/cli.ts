@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `account get-info`.
+ * Модуль CLI-команды `account info`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type UserInfoSdk = {
 
 type UserInfoSdkFactory = (options: TinkoffInvestOptions) => UserInfoSdk;
 
-const userInfoCommandPath = ['account', 'get-info'] as const;
+const userInfoCommandPath = ['account', 'info'] as const;
 const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const userInfoOptionsSchema = withSdkOptions({

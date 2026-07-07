@@ -116,7 +116,7 @@ describe('candles command', () => {
         command,
         [
           'market',
-          'get-candles',
+          'candles',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',

@@ -65,7 +65,7 @@ describe('user-info command', () => {
         command,
         [
           'account',
-          'get-info',
+          'info',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -101,7 +101,7 @@ describe('user-info command', () => {
           command,
           [
             'account',
-            'get-info',
+            'info',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

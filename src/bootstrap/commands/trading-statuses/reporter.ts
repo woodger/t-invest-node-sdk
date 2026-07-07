@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `market get-trading-statuses`.
+ * Модуль CLI-репортинга команды `market statuses`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

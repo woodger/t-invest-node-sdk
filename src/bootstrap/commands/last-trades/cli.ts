@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `market get-last-trades`.
+ * Модуль CLI-команды `market trades`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -35,7 +35,7 @@ type LastTradesSdk = {
 
 type LastTradesSdkFactory = (options: TinkoffInvestOptions) => LastTradesSdk;
 
-const lastTradesCommandPath = ['market', 'get-last-trades'] as const;
+const lastTradesCommandPath = ['market', 'trades'] as const;
 const defaultLastTradesSdkFactory: LastTradesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const lastTradesRequestOptionsSchema = {

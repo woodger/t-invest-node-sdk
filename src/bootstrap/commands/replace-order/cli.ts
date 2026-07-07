@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `order replace-order`.
+ * Модуль CLI-команды `order replace`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -41,7 +41,7 @@ type ReplaceOrderSdk = {
 
 type ReplaceOrderSdkFactory = (options: TinkoffInvestOptions) => ReplaceOrderSdk;
 
-const replaceOrderCommandPath = ['order', 'replace-order'] as const;
+const replaceOrderCommandPath = ['order', 'replace'] as const;
 const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const replaceOrderPriceTypes = {
