@@ -7,6 +7,21 @@
 
 В SDK появились API-команды:
 
+Публичная canonical форма CLI сейчас строится как `<domain> <command>`:
+
+- `users` -> `account`;
+- `instruments` -> `instrument`;
+- `marketdata` -> `market`;
+- `orders` -> `order`;
+- `stoporders` -> `stop-order`;
+- `operations` -> `operation`;
+- `sandbox` -> `sandbox`;
+- `stream` -> `stream`;
+- `compile-proto` -> `dev compile-proto`.
+
+Старые service paths остаются совместимыми aliases. Список ниже фиксирует
+связь legacy service path с SDK method:
+
 - `users get-accounts` -> `sdk.users.getAccounts`;
 - `users get-info` -> `sdk.users.getInfo`;
 - `users get-margin-attributes` -> `sdk.users.getMarginAttributes`;
@@ -77,9 +92,9 @@
 
 Этот список не считается конечным. Новые API-команды добавляются
 инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
-команды. Публичный CLI path зеркалит SDK/gRPC contract в форме
-`<service> <method>`, где `method` - kebab-case имя SDK method. Общий command
-framework заранее не вводится.
+команды. Публичный CLI path использует форму `<domain> <command>`, где
+`command` пока сохраняет kebab-case имя SDK method. Массовое переименование
+actions в `list`, `show`, `place` и похожие глаголы не входит в текущий этап.
 
 ## To Introduce
 
@@ -90,7 +105,7 @@ framework заранее не вводится.
 умолчанию требуют явный `--confirm` через
 `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency
 keys автоматически:
-`orders post-order` принимает `--order-id`, а `orders replace-order` принимает
+`order post-order` принимает `--order-id`, а `order replace-order` принимает
 `--idempotency-key`.
 
 `sandbox sandbox-pay-in` принимает `--currency=rub|usd`. Неизвестные currency
@@ -117,7 +132,7 @@ request contract для bidirectional market data stream:
 Deprecated generated methods не вводятся как публичные CLI-команды:
 
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
-  используется `instruments options-by` / `sdk.instruments.optionsBy`.
+  используется `instrument options-by` / `sdk.instruments.optionsBy`.
 
 Перед расширением stream command нужно сверять поведение с этими
 reference-документами и отдельно фиксировать любые изменения контракта.
@@ -314,8 +329,8 @@ Use-case стоит выделять, если появляется хотя б�
 - держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
 - использовать `infrastructure/renderers` только для общей механики формата;
 - не класть JSON/CSV/table formatting в stdout sink;
-- регистрировать команду в `bootstrap/cli/registry.ts` только в canonical
-  форме `<service> <method>`;
+- регистрировать команду в `bootstrap/cli/registry.ts` в canonical форме
+  `<domain> <command>`;
 - не добавлять short aliases для API-команд;
 - добавлять help metadata в `bootstrap/cli/help.ts`;
 - добавлять тесты рядом с конкретными файлами команды;

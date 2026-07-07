@@ -86,6 +86,11 @@ import {
   type CommandDefinition,
   type OptionsSchema
 } from 'icore';
+import {
+  commandPathAliases,
+  commandNameToPath,
+  commandPathToName
+} from './domains';
 
 type CliCommandOutput = string | AsyncIterable<string> | undefined;
 type CliCommand = (args: readonly string[]) => CliCommandOutput | Promise<CliCommandOutput>;
@@ -98,118 +103,16 @@ export type ResolvedCommand = {
 
 type RegisteredCommand = Omit<ResolvedCommand, 'name' | 'path'>;
 
-type UsersCommandName =
-  | 'users get-accounts'
-  | 'users get-info'
-  | 'users get-margin-attributes'
-  | 'users get-user-tariff';
-
-type OrdersCommandName =
-  | 'orders get-orders'
-  | 'orders get-order-state'
-  | 'orders post-order'
-  | 'orders cancel-order'
-  | 'orders replace-order';
-
-type StopOrdersCommandName =
-  | 'stoporders get-stop-orders'
-  | 'stoporders post-stop-order'
-  | 'stoporders cancel-stop-order';
-
-type SandboxCommandName =
-  | 'sandbox open-sandbox-account'
-  | 'sandbox get-sandbox-accounts'
-  | 'sandbox close-sandbox-account'
-  | 'sandbox post-sandbox-order'
-  | 'sandbox replace-sandbox-order'
-  | 'sandbox get-sandbox-orders'
-  | 'sandbox cancel-sandbox-order'
-  | 'sandbox get-sandbox-order-state'
-  | 'sandbox get-sandbox-positions'
-  | 'sandbox get-sandbox-operations'
-  | 'sandbox get-sandbox-operations-by-cursor'
-  | 'sandbox get-sandbox-portfolio'
-  | 'sandbox sandbox-pay-in'
-  | 'sandbox get-sandbox-withdraw-limits';
-
-type MarketDataCommandName =
-  | 'marketdata get-candles'
-  | 'marketdata get-close-prices'
-  | 'marketdata get-last-prices'
-  | 'marketdata get-last-trades'
-  | 'marketdata get-order-book'
-  | 'marketdata get-trading-status'
-  | 'marketdata get-trading-statuses';
-
-type OperationsCommandName =
-  | 'operations get-operations'
-  | 'operations get-operations-by-cursor'
-  | 'operations get-broker-report'
-  | 'operations get-dividends-foreign-issuer'
-  | 'operations get-portfolio'
-  | 'operations get-positions'
-  | 'operations get-withdraw-limits';
-
-type InstrumentsCommandLineName =
-  | 'instruments get-accrued-interests'
-  | 'instruments get-assets'
-  | 'instruments get-asset-by'
-  | 'instruments get-brand-by'
-  | 'instruments get-bond-coupons'
-  | 'instruments bond-by'
-  | 'instruments bonds'
-  | 'instruments currency-by'
-  | 'instruments get-dividends'
-  | 'instruments edit-favorites'
-  | 'instruments etf-by'
-  | 'instruments etfs'
-  | 'instruments future-by'
-  | 'instruments futures'
-  | 'instruments get-favorites'
-  | 'instruments find-instrument'
-  | 'instruments get-brands'
-  | 'instruments get-countries'
-  | 'instruments get-futures-margin'
-  | 'instruments get-instrument-by'
-  | 'instruments currencies'
-  | 'instruments option-by'
-  | 'instruments options-by'
-  | 'instruments share-by'
-  | 'instruments shares'
-  | 'instruments trading-schedules';
-
-type StreamCommandName =
-  | 'stream run';
-
-export type CommandName =
-  | UsersCommandName
-  | OrdersCommandName
-  | StopOrdersCommandName
-  | SandboxCommandName
-  | MarketDataCommandName
-  | OperationsCommandName
-  | InstrumentsCommandLineName
-  | StreamCommandName
-  | 'compile-proto'
-  | 'help'
-  | 'version';
+export type CommandName = string;
 
 export function isCommandName(value: unknown): value is CommandName {
   return isCommandLineCommandName(commandLineRegistry, value);
 }
 
 function commandNameFromPositionals(positionals: readonly unknown[]): string {
-  const [serviceOrCommand, method] = positionals;
-
-  if (
-    serviceOrCommand === 'compile-proto' ||
-    serviceOrCommand === 'help' ||
-    serviceOrCommand === 'version'
-  ) {
-    return serviceOrCommand;
-  }
-
-  return `${String(serviceOrCommand)} ${String(method)}`;
+  return positionals.length === 0
+    ? '<empty>'
+    : positionals.map((value) => String(value)).join(' ');
 }
 
 export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand {
@@ -248,15 +151,17 @@ type CommandLineDefinition = CommandDefinition<
   readonly [string, ...string[]]
 > & RegisteredCommand;
 
-const deprecatedFigiOptionCommandNames = new Set<CommandName>([
-  'instruments get-accrued-interests',
-  'instruments get-bond-coupons',
-  'instruments get-dividends',
-  'instruments edit-favorites',
-  'instruments get-futures-margin',
-  'operations get-operations',
-  'sandbox get-sandbox-operations'
-]);
+const deprecatedFigiOptionCommandNames = new Set<string>(
+  [
+    'instruments get-accrued-interests',
+    'instruments get-bond-coupons',
+    'instruments get-dividends',
+    'instruments edit-favorites',
+    'instruments get-futures-margin',
+    'operations get-operations',
+    'sandbox get-sandbox-operations'
+  ].flatMap(commandNameAliases)
+);
 
 export function resolveCommandWarnings(
   commandName: CommandName,
@@ -273,74 +178,74 @@ export function resolveCommandWarnings(
 
 export const commandLineCommands = command.registry(
   [
-    defineCommandLineCommand(accountsCommand),
-    defineCommandLineCommand(userInfoCommand),
-    defineCommandLineCommand(marginAttributesCommand),
-    defineCommandLineCommand(userTariffCommand),
-    defineCommandLineCommand(candlesCommand),
-    defineCommandLineCommand(ordersCommand),
-    defineCommandLineCommand(orderStateCommand),
-    defineCommandLineCommand(postOrderCommand),
-    defineCommandLineCommand(cancelOrderCommand),
-    defineCommandLineCommand(replaceOrderCommand),
-    defineCommandLineCommand(stopOrdersCommand),
-    defineCommandLineCommand(postStopOrderCommand),
-    defineCommandLineCommand(cancelStopOrderCommand),
-    defineCommandLineCommand(sandboxOpenAccountCommand),
-    defineCommandLineCommand(sandboxAccountsCommand),
-    defineCommandLineCommand(sandboxCloseAccountCommand),
-    defineCommandLineCommand(sandboxPostOrderCommand),
-    defineCommandLineCommand(sandboxReplaceOrderCommand),
-    defineCommandLineCommand(sandboxOrdersCommand),
-    defineCommandLineCommand(sandboxCancelOrderCommand),
-    defineCommandLineCommand(sandboxOrderStateCommand),
-    defineCommandLineCommand(sandboxPositionsCommand),
-    defineCommandLineCommand(sandboxOperationsCommand),
-    defineCommandLineCommand(sandboxOperationsByCursorCommand),
-    defineCommandLineCommand(sandboxPortfolioCommand),
-    defineCommandLineCommand(sandboxPayInCommand),
-    defineCommandLineCommand(sandboxWithdrawLimitsCommand),
-    defineCommandLineCommand(closePricesCommand),
-    defineCommandLineCommand(lastPricesCommand),
-    defineCommandLineCommand(lastTradesCommand),
-    defineCommandLineCommand(orderBookCommand),
-    defineCommandLineCommand(tradingStatusCommand),
-    defineCommandLineCommand(tradingStatusesCommand),
-    defineCommandLineCommand(operationsCommand),
-    defineCommandLineCommand(operationsByCursorCommand),
-    defineCommandLineCommand(brokerReportCommand),
-    defineCommandLineCommand(dividendsForeignIssuerCommand),
-    defineCommandLineCommand(portfolioCommand),
-    defineCommandLineCommand(positionsCommand),
-    defineCommandLineCommand(withdrawLimitsCommand),
-    defineCommandLineCommand(brandsCommand),
-    defineCommandLineCommand(countriesCommand),
-    defineCommandLineCommand(currenciesCommand),
-    defineCommandLineCommand(bondsCommand),
-    defineCommandLineCommand(etfsCommand),
-    defineCommandLineCommand(futuresCommand),
-    defineCommandLineCommand(sharesCommand),
-    defineCommandLineCommand(bondCommand),
-    defineCommandLineCommand(etfCommand),
-    defineCommandLineCommand(futureCommand),
-    defineCommandLineCommand(shareCommand),
-    defineCommandLineCommand(assetCommand),
-    defineCommandLineCommand(brandCommand),
-    defineCommandLineCommand(currencyCommand),
-    defineCommandLineCommand(instrumentCommand),
-    defineCommandLineCommand(optionCommand),
-    defineCommandLineCommand(assetsCommand),
-    defineCommandLineCommand(favoritesCommand),
-    defineCommandLineCommand(editFavoritesCommand),
-    defineCommandLineCommand(findInstrumentCommand),
-    defineCommandLineCommand(futuresMarginCommand),
-    defineCommandLineCommand(optionsByCommand),
-    defineCommandLineCommand(accruedInterestsCommand),
-    defineCommandLineCommand(bondCouponsCommand),
-    defineCommandLineCommand(dividendsCommand),
-    defineCommandLineCommand(tradingSchedulesCommand),
-    defineCommandLineCommand(streamRunCommand),
-    defineCommandLineCommand(compileProtoCommand),
+    ...defineCommandLineCommandAliases(accountsCommand),
+    ...defineCommandLineCommandAliases(userInfoCommand),
+    ...defineCommandLineCommandAliases(marginAttributesCommand),
+    ...defineCommandLineCommandAliases(userTariffCommand),
+    ...defineCommandLineCommandAliases(candlesCommand),
+    ...defineCommandLineCommandAliases(ordersCommand),
+    ...defineCommandLineCommandAliases(orderStateCommand),
+    ...defineCommandLineCommandAliases(postOrderCommand),
+    ...defineCommandLineCommandAliases(cancelOrderCommand),
+    ...defineCommandLineCommandAliases(replaceOrderCommand),
+    ...defineCommandLineCommandAliases(stopOrdersCommand),
+    ...defineCommandLineCommandAliases(postStopOrderCommand),
+    ...defineCommandLineCommandAliases(cancelStopOrderCommand),
+    ...defineCommandLineCommandAliases(sandboxOpenAccountCommand),
+    ...defineCommandLineCommandAliases(sandboxAccountsCommand),
+    ...defineCommandLineCommandAliases(sandboxCloseAccountCommand),
+    ...defineCommandLineCommandAliases(sandboxPostOrderCommand),
+    ...defineCommandLineCommandAliases(sandboxReplaceOrderCommand),
+    ...defineCommandLineCommandAliases(sandboxOrdersCommand),
+    ...defineCommandLineCommandAliases(sandboxCancelOrderCommand),
+    ...defineCommandLineCommandAliases(sandboxOrderStateCommand),
+    ...defineCommandLineCommandAliases(sandboxPositionsCommand),
+    ...defineCommandLineCommandAliases(sandboxOperationsCommand),
+    ...defineCommandLineCommandAliases(sandboxOperationsByCursorCommand),
+    ...defineCommandLineCommandAliases(sandboxPortfolioCommand),
+    ...defineCommandLineCommandAliases(sandboxPayInCommand),
+    ...defineCommandLineCommandAliases(sandboxWithdrawLimitsCommand),
+    ...defineCommandLineCommandAliases(closePricesCommand),
+    ...defineCommandLineCommandAliases(lastPricesCommand),
+    ...defineCommandLineCommandAliases(lastTradesCommand),
+    ...defineCommandLineCommandAliases(orderBookCommand),
+    ...defineCommandLineCommandAliases(tradingStatusCommand),
+    ...defineCommandLineCommandAliases(tradingStatusesCommand),
+    ...defineCommandLineCommandAliases(operationsCommand),
+    ...defineCommandLineCommandAliases(operationsByCursorCommand),
+    ...defineCommandLineCommandAliases(brokerReportCommand),
+    ...defineCommandLineCommandAliases(dividendsForeignIssuerCommand),
+    ...defineCommandLineCommandAliases(portfolioCommand),
+    ...defineCommandLineCommandAliases(positionsCommand),
+    ...defineCommandLineCommandAliases(withdrawLimitsCommand),
+    ...defineCommandLineCommandAliases(brandsCommand),
+    ...defineCommandLineCommandAliases(countriesCommand),
+    ...defineCommandLineCommandAliases(currenciesCommand),
+    ...defineCommandLineCommandAliases(bondsCommand),
+    ...defineCommandLineCommandAliases(etfsCommand),
+    ...defineCommandLineCommandAliases(futuresCommand),
+    ...defineCommandLineCommandAliases(sharesCommand),
+    ...defineCommandLineCommandAliases(bondCommand),
+    ...defineCommandLineCommandAliases(etfCommand),
+    ...defineCommandLineCommandAliases(futureCommand),
+    ...defineCommandLineCommandAliases(shareCommand),
+    ...defineCommandLineCommandAliases(assetCommand),
+    ...defineCommandLineCommandAliases(brandCommand),
+    ...defineCommandLineCommandAliases(currencyCommand),
+    ...defineCommandLineCommandAliases(instrumentCommand),
+    ...defineCommandLineCommandAliases(optionCommand),
+    ...defineCommandLineCommandAliases(assetsCommand),
+    ...defineCommandLineCommandAliases(favoritesCommand),
+    ...defineCommandLineCommandAliases(editFavoritesCommand),
+    ...defineCommandLineCommandAliases(findInstrumentCommand),
+    ...defineCommandLineCommandAliases(futuresMarginCommand),
+    ...defineCommandLineCommandAliases(optionsByCommand),
+    ...defineCommandLineCommandAliases(accruedInterestsCommand),
+    ...defineCommandLineCommandAliases(bondCouponsCommand),
+    ...defineCommandLineCommandAliases(dividendsCommand),
+    ...defineCommandLineCommandAliases(tradingSchedulesCommand),
+    ...defineCommandLineCommandAliases(streamRunCommand),
+    ...defineCommandLineCommandAliases(compileProtoCommand),
     defineCommandLineCommand(helpCommand),
     defineCommandLineCommand(versionCommand)
   ]
@@ -348,6 +253,24 @@ export const commandLineCommands = command.registry(
 const commandLineRegistry = commandLineCommands.registry;
 
 export const commandNames = commandLineCommands.names;
+
+function commandNameAliases(commandName: string): string[] {
+  return commandPathAliases(commandNameToPath(commandName)).map(commandPathToName);
+}
+
+function defineCommandLineCommandAliases<const TSchema extends OptionsSchema>(
+  definition: CommandDefinition<
+    TSchema,
+    undefined,
+    CliCommandOutput,
+    readonly [string, ...string[]]
+  >
+): CommandLineDefinition[] {
+  return commandPathAliases(definition.path).map((path) => defineCommandLineCommand({
+    ...definition,
+    path
+  }));
+}
 
 function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   definition: CommandDefinition<

@@ -11,6 +11,15 @@
  */
 
 import packageJson from '../../../package.json';
+import {
+  canonicalizeCommandName,
+  cliDomainNames,
+  cliDomains,
+  commandActionName,
+  commandDomainName,
+  isCliDomainName,
+  type CliDomainName
+} from './domains';
 
 export interface CommandHelp {
   description: string;
@@ -40,7 +49,7 @@ const tableFormatOption = '--format=json|table    Output format (default: table)
 const csvFormatOption = '--format=json|csv      Output format (default: json)';
 const jsonlFormatOption = '--format=jsonl         Output format (default: jsonl)';
 
-export const commandHelp = {
+const legacyCommandHelp = {
   'users get-accounts': {
     description: 'Print user accounts',
     sdkCall: 'sdk.users.getAccounts',
@@ -1650,6 +1659,16 @@ export const commandHelp = {
   }
 } as const satisfies Record<string, CommandHelp>;
 
+const legacyToCanonicalCommandNames = Object.keys(legacyCommandHelp)
+  .map((name) => ({
+    legacy: name,
+    canonical: canonicalizeCommandName(name)
+  }))
+  .filter(({ legacy, canonical }) => legacy !== canonical)
+  .sort((left, right) => right.legacy.length - left.legacy.length);
+
+export const commandHelp = createCanonicalCommandHelp(legacyCommandHelp);
+
 export type CommandHelpName = keyof typeof commandHelp;
 
 export function isCommandHelpName(value: unknown): value is CommandHelpName {
@@ -1657,19 +1676,23 @@ export function isCommandHelpName(value: unknown): value is CommandHelpName {
 }
 
 export function resolveCommandHelpName(positionals: readonly unknown[]): CommandHelpName | undefined {
-  const [serviceOrCommand, method] = positionals;
+  const commandName = normalizeHelpCommandName(positionals);
 
-  if (
-    serviceOrCommand === 'compile-proto' ||
-    serviceOrCommand === 'help' ||
-    serviceOrCommand === 'version'
-  ) {
-    return serviceOrCommand;
+  if (commandName === undefined) {
+    return undefined;
   }
 
-  const commandName = `${String(serviceOrCommand)} ${String(method)}`;
-
   return isCommandHelpName(commandName) ? commandName : undefined;
+}
+
+export function resolveDomainHelpName(positionals: readonly unknown[]): CliDomainName | undefined {
+  if (positionals.length !== 1) {
+    return undefined;
+  }
+
+  const [domain] = positionals;
+
+  return isCliDomainName(domain) ? domain : undefined;
 }
 
 type HelpOptions = {
@@ -1682,6 +1705,12 @@ export function isHelpRequested(options: HelpOptions): boolean {
 }
 
 export function renderHelp(positionals: readonly unknown[]): string {
+  const domainName = resolveDomainHelpName(positionals);
+
+  if (domainName !== undefined) {
+    return renderDomainHelp(domainName);
+  }
+
   const commandName = resolveCommandHelpName(positionals);
 
   if (commandName === undefined) {
@@ -1710,37 +1739,148 @@ function renderCommandContract(command: CommandHelp): string[] {
   ];
 }
 
+function createCanonicalCommandHelp(
+  commands: Record<string, CommandHelp>
+): Record<string, CommandHelp> {
+  const entries = Object.entries(commands).map(([name, help]) => [
+    canonicalizeCommandName(name),
+    normalizeCommandHelp(name, help)
+  ]);
+
+  return Object.fromEntries(entries);
+}
+
+function normalizeCommandHelp(commandName: string, help: CommandHelp): CommandHelp {
+  if (commandName === 'help') {
+    return {
+      ...help,
+      usage: [
+        `${packageJson.name} help`,
+        `${packageJson.name} help <domain> [<command>]`,
+        `${packageJson.name} <domain> <command> --help`
+      ],
+      examples: [
+        `${packageJson.name} help`,
+        `${packageJson.name} help operation get-portfolio`,
+        `${packageJson.name} help version`
+      ]
+    };
+  }
+
+  const normalizedHelp: CommandHelp = {
+    ...help,
+    usage: rewriteHelpRows(help.usage),
+    examples: rewriteHelpRows(help.examples)
+  };
+  const required = rewriteOptionalHelpRows(help.required);
+  const optional = rewriteOptionalHelpRows(help.optional);
+  const notes = rewriteOptionalHelpRows(help.notes);
+
+  if (required !== undefined) {
+    normalizedHelp.required = required;
+  }
+
+  if (optional !== undefined) {
+    normalizedHelp.optional = optional;
+  }
+
+  if (notes !== undefined) {
+    normalizedHelp.notes = notes;
+  }
+
+  return normalizedHelp;
+}
+
+function rewriteHelpRows(rows: readonly string[]): string[] {
+  return rows.map(rewriteHelpRow);
+}
+
+function rewriteOptionalHelpRows(rows: readonly string[] | undefined): string[] | undefined {
+  return rows === undefined ? undefined : rewriteHelpRows(rows);
+}
+
+function rewriteHelpRow(row: string): string {
+  let result = row;
+
+  for (const { legacy, canonical } of legacyToCanonicalCommandNames) {
+    result = result.replaceAll(legacy, canonical);
+  }
+
+  return result;
+}
+
+function normalizeHelpCommandName(positionals: readonly unknown[]): string | undefined {
+  if (positionals.length === 0) {
+    return undefined;
+  }
+
+  return canonicalizeCommandName(positionals.map((value) => String(value)).join(' '));
+}
+
 export function renderCliHelp(): string {
-  const commandNameWidth = Math.max(...Object.keys(commandHelp).map((name) => name.length));
+  const domainNameWidth = Math.max(...cliDomainNames.map((name) => name.length));
 
   return [
     `${packageJson.name} ${packageJson.version}`,
     packageJson.description,
     '',
     'Usage:',
-    '  tinkoff-invest-node-sdk <service> <method> [options]',
-    '  tinkoff-invest-node-sdk compile-proto',
-    '  tinkoff-invest-node-sdk help [<service> <method>|version]',
-    '  tinkoff-invest-node-sdk --help',
-    '  tinkoff-invest-node-sdk --version',
+    `  ${packageJson.name} <domain> <command> [options]`,
+    `  ${packageJson.name} <domain> --help`,
+    `  ${packageJson.name} <domain> <command> --help`,
+    `  ${packageJson.name} --help`,
+    `  ${packageJson.name} --version`,
+    '',
+    'Domains:',
+    ...cliDomainNames.map(
+      (domainName) => `  ${domainName.padEnd(domainNameWidth)} ${cliDomains[domainName].description}`
+    ),
     '',
     'Global options:',
-    '  --help, -h       Show this help and exit',
+    '  --help, -h       Show help and exit',
     '  --version, -v    Show package and runtime version info',
     '',
+    'Domain details:',
+    `  ${packageJson.name} <domain> --help`,
+    ''
+  ].join('\n');
+}
+
+export function renderDomainHelp(domainName: CliDomainName): string {
+  const commands = Object.entries(commandHelp)
+    .filter(([name]) => commandDomainName(name) === domainName)
+    .map(([name, command]) => ({
+      name,
+      action: commandActionName(name),
+      command
+    }));
+  const commandNameWidth = Math.max(...commands.map(({ action }) => action.length));
+
+  return [
+    `${packageJson.name} ${packageJson.version}`,
+    `${domainName} - ${cliDomains[domainName].description}`,
+    '',
+    'Usage:',
+    `  ${packageJson.name} ${domainName} <command> [options]`,
+    `  ${packageJson.name} ${domainName} <command> --help`,
+    '',
     'Commands:',
-    ...Object.entries(commandHelp).map(
-      ([name, command]) => `  ${name.padEnd(commandNameWidth)} ${command.description}`
+    ...commands.map(
+      ({ action, command }) => `  ${action.padEnd(commandNameWidth)} ${command.description}`
     ),
     '',
     'Command details:',
-    '  tinkoff-invest-node-sdk <service> <method> --help',
+    `  ${packageJson.name} ${domainName} <command> --help`,
     ''
   ].join('\n');
 }
 
 export function renderCommandHelp(commandName: CommandHelpName): string {
-  const command: CommandHelp = commandHelp[commandName];
+  const command = commandHelp[commandName];
+
+  if (command === undefined) {
+    throw new Error(`Unknown command help: ${commandName}`);
+  }
 
   return [
     `${packageJson.name} ${packageJson.version}`,

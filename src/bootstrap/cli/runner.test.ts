@@ -108,28 +108,52 @@ describe('bootstrap cli runner', () => {
         const exitCode = await runCli([command], io);
 
         assert.equal(exitCode, 0);
-        assert.match(read().stdout, /Commands:/);
+        assert.match(read().stdout, /Domains:/);
+        assert.match(read().stdout, /account\s+Accounts, user info, tariff and limits/);
+        assert.doesNotMatch(read().stdout, /users get-accounts/);
         assert.equal(read().stderr, '');
       }
     });
 
     test('prints command-specific help from a command help flag', async () => {
       const { io, read } = createIo();
+      const exitCode = await runCli(['operation', 'get-portfolio', '--help'], io);
+
+      assert.equal(exitCode, 0);
+      assert.match(read().stdout, /operation get-portfolio - Print account portfolio/);
+      assert.match(read().stdout, /SDK call:\n {2}sdk\.operations\.getPortfolio/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk operation get-portfolio --account-id=ID/);
+      assert.equal(read().stderr, '');
+    });
+
+    test('prints canonical command help from a legacy command help flag', async () => {
+      const { io, read } = createIo();
       const exitCode = await runCli(['operations', 'get-portfolio', '--help'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /operations get-portfolio - Print account portfolio/);
-      assert.match(read().stdout, /SDK call:\n {2}sdk\.operations\.getPortfolio/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk operations get-portfolio --account-id=ID/);
+      assert.match(read().stdout, /operation get-portfolio - Print account portfolio/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk operation get-portfolio --account-id=ID/);
+      assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk operations get-portfolio --account-id=ID/);
+      assert.equal(read().stderr, '');
+    });
+
+    test('prints domain-level help from domain help flag', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['account', '--help'], io);
+
+      assert.equal(exitCode, 0);
+      assert.match(read().stdout, /account - Accounts, user info, tariff and limits/);
+      assert.match(read().stdout, /get-accounts\s+Print user accounts/);
+      assert.doesNotMatch(read().stdout, /users get-accounts/);
       assert.equal(read().stderr, '');
     });
 
     test('prints command-specific help from help command argument', async () => {
       const { io, read } = createIo();
-      const exitCode = await runCli(['help', 'marketdata', 'get-candles'], io);
+      const exitCode = await runCli(['help', 'market', 'get-candles'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /marketdata get-candles - Print historical candles/);
+      assert.match(read().stdout, /market get-candles - Print historical candles/);
       assert.match(read().stdout, /gRPC method:\n {2}MarketDataService\/GetCandles/);
       assert.equal(read().stderr, '');
     });
@@ -137,7 +161,7 @@ describe('bootstrap cli runner', () => {
     test('prints utility help from help command argument', async () => {
       for (const [command, output] of [
         ['version', /version - Show package and runtime version info/],
-        ['compile-proto', /compile-proto - Generate TypeScript contracts/]
+        ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
       ] as const) {
         const { io, read } = createIo();
         const exitCode = await runCli(['help', command], io);
@@ -167,6 +191,15 @@ describe('bootstrap cli runner', () => {
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Expected '--help' as boolean flag/);
+    });
+
+    test('keeps legacy command paths executable through the runner', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['users', 'get-accounts', '--format=xml'], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.match(read().stderr, /Expected '--format' as one of: json, table/);
     });
 
     test('waits for async stdout writes', async () => {
@@ -218,7 +251,7 @@ describe('bootstrap cli runner', () => {
     test('prints deprecated figi option warnings to stderr', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli([
-        'instruments',
+        'instrument',
         'get-futures-margin',
         '--figi=FUTFIGI'
       ], io);
@@ -233,7 +266,7 @@ describe('bootstrap cli runner', () => {
     test('does not warn for canonical instrument-id option', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli([
-        'instruments',
+        'instrument',
         'get-futures-margin',
         '--instrument-id=FUTFIGI'
       ], io);

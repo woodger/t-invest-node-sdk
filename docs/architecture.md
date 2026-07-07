@@ -85,28 +85,14 @@ bootstrap-механикой.
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
 
-CLI слой сейчас поддерживает utility-команды `help`, `version`, `compile-proto`
-и API-команды в canonical форме `<service> <method>`: `users get-accounts`, `users get-info`,
-`users get-margin-attributes`, `users get-user-tariff`,
-`marketdata get-candles`, `marketdata get-close-prices`,
-`instruments find-instrument`, `instruments get-accrued-interests`,
-`instruments get-asset-by`, `instruments get-assets`,
-`instruments get-bond-coupons`, `instruments bond-by`, `instruments bonds`,
-`instruments get-brand-by`, `instruments get-brands`,
-`instruments get-countries`, `instruments currencies`, `instruments currency-by`,
-`instruments etf-by`, `instruments etfs`, `instruments get-dividends`, `instruments get-favorites`,
-`instruments future-by`, `instruments futures`, `instruments get-futures-margin`,
-`instruments get-instrument-by`, `instruments option-by`, `instruments options-by`,
-`instruments share-by`, `instruments shares`, `instruments trading-schedules`,
-`marketdata get-last-prices`,
-`marketdata get-last-trades`,
-`marketdata get-order-book`, `marketdata get-trading-status`,
-`marketdata get-trading-statuses`, `orders get-orders`,
-`orders get-order-state`, `operations get-broker-report`,
-`operations get-dividends-foreign-issuer`, `operations get-operations`,
-`operations get-operations-by-cursor`, `operations get-portfolio`,
-`operations get-positions`, `operations get-withdraw-limits`,
-`stoporders get-stop-orders`.
+CLI слой сейчас поддерживает utility-команды `help`, `version` и API-команды
+в canonical форме `<domain> <command>`. Публичные domains: `account`,
+`instrument`, `market`, `order`, `stop-order`, `operation`, `sandbox`,
+`stream`, `dev`. Proto generation доступен как `dev compile-proto`.
+Legacy paths вида `users get-accounts`, `marketdata get-candles`,
+`instruments bonds`, `orders post-order`, `stoporders get-stop-orders`,
+`operations get-portfolio` и `compile-proto` остаются совместимыми aliases.
+
 API-команды остаются тонкими bootstrap handlers:
 `icore` terminal app валидирует raw CLI args и передает handler-у typed command options.
 Command `cli.ts` создает generated request DTO из typed options, создает SDK

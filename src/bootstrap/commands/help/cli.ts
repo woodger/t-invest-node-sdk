@@ -10,7 +10,7 @@
  */
 
 import { command } from '../../cli/contract';
-import { resolveCommandHelpName, renderCliHelp, renderCommandHelp } from '../../cli/help';
+import { renderHelp } from '../../cli/help';
 
 export const helpCommand = command.define({
   path: ['help'],
@@ -22,11 +22,5 @@ export const helpCommand = command.define({
 });
 
 function renderHelpOutput(positionals: readonly unknown[]): string {
-  const commandName = resolveCommandHelpName(positionals);
-
-  if (commandName === undefined) {
-    return renderCliHelp();
-  }
-
-  return renderCommandHelp(commandName);
+  return renderHelp(positionals);
 }

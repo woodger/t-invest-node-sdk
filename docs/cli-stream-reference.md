@@ -6,10 +6,10 @@
 
 ## Статус
 
-Unary CLI-команды реализованы в форме:
+CLI-команды реализованы в canonical форме:
 
 ```bash
-tinkoff-invest-node-sdk <service> <method> [options]
+tinkoff-invest-node-sdk <domain> <command> [options]
 ```
 
 Stream API требует отдельного контракта: команда не возвращает один response и
@@ -22,7 +22,7 @@ Stream API требует отдельного контракта: команд�
 tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
 ```
 
-`stream run` является осознанным исключением из формы `<service> <method>`:
+`stream run` является domain-level entrypoint для stream-сценариев:
 конкретный generated stream method выбирается внутри config-файла. Это нужно,
 чтобы не угадывать десятки specialized flags для разных stream-сценариев.
 
