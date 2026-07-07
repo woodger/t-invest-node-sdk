@@ -28,7 +28,7 @@
     "build": "tsc",
     "test": "fwa --prune",
     "lint": "eslint src eslint.config.mjs",
-    "cli": "node dist/bootstrap/bin/cli.js"
+    "cli": "node dist/bootstrap/index.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",
