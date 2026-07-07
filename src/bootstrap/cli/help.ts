@@ -1,13 +1,16 @@
 /**
- * Модуль help-реестра хранит декларативное описание CLI-команд.
+ * Модуль CLI help хранит декларативное описание команд и рендерит справку.
  *
  * Здесь допустимы:
  * - описание доступных bootstrap-команд;
  * - централизация usage и examples;
- * - экспорт presentation-only metadata для renderer-а.
+ * - распознавание help-флагов;
+ * - сборка общего и command-specific help текста.
  *
- * Здесь не должно быть исполнения команд или разбора raw CLI input.
+ * Здесь не должно быть исполнения команд, разбора raw CLI input или SDK runtime wiring.
  */
+
+import packageJson from '../../../package.json';
 
 export interface CommandHelp {
   description: string;
@@ -1667,4 +1670,88 @@ export function resolveCommandHelpName(positionals: readonly unknown[]): Command
   const commandName = `${String(serviceOrCommand)} ${String(method)}`;
 
   return isCommandHelpName(commandName) ? commandName : undefined;
+}
+
+type HelpOptions = {
+  help?: unknown;
+  h?: unknown;
+};
+
+export function isHelpRequested(options: HelpOptions): boolean {
+  return options.help === true || options.h === true;
+}
+
+export function renderHelp(positionals: readonly unknown[]): string {
+  const commandName = resolveCommandHelpName(positionals);
+
+  if (commandName === undefined) {
+    return renderCliHelp();
+  }
+
+  return renderCommandHelp(commandName);
+}
+
+function renderSection(title: string, rows: readonly string[] | undefined): string[] {
+  if (rows === undefined || rows.length === 0) {
+    return [];
+  }
+
+  return [
+    '',
+    `${title}:`,
+    ...rows.map((row) => `  ${row}`)
+  ];
+}
+
+function renderCommandContract(command: CommandHelp): string[] {
+  return [
+    ...renderSection('SDK call', command.sdkCall === undefined ? undefined : [command.sdkCall]),
+    ...renderSection('gRPC method', command.grpcMethod === undefined ? undefined : [command.grpcMethod])
+  ];
+}
+
+export function renderCliHelp(): string {
+  const commandNameWidth = Math.max(...Object.keys(commandHelp).map((name) => name.length));
+
+  return [
+    `${packageJson.name} ${packageJson.version}`,
+    packageJson.description,
+    '',
+    'Usage:',
+    '  tinkoff-invest-node-sdk <service> <method> [options]',
+    '  tinkoff-invest-node-sdk compile-proto',
+    '  tinkoff-invest-node-sdk help [<service> <method>|version]',
+    '  tinkoff-invest-node-sdk --help',
+    '  tinkoff-invest-node-sdk --version',
+    '',
+    'Global options:',
+    '  --help, -h       Show this help and exit',
+    '  --version, -v    Show package and runtime version info',
+    '',
+    'Commands:',
+    ...Object.entries(commandHelp).map(
+      ([name, command]) => `  ${name.padEnd(commandNameWidth)} ${command.description}`
+    ),
+    '',
+    'Command details:',
+    '  tinkoff-invest-node-sdk <service> <method> --help',
+    ''
+  ].join('\n');
+}
+
+export function renderCommandHelp(commandName: CommandHelpName): string {
+  const command: CommandHelp = commandHelp[commandName];
+
+  return [
+    `${packageJson.name} ${packageJson.version}`,
+    `${commandName} - ${command.description}`,
+    ...renderCommandContract(command),
+    ...renderSection('Usage', command.usage),
+    ...renderSection('Required options', command.required),
+    ...renderSection('Optional options', command.optional),
+    ...renderSection('Environment', command.environment),
+    ...renderSection('Examples', command.examples),
+    ...renderSection('Notes', command.notes),
+    ''
+  ].join('\n');
 }

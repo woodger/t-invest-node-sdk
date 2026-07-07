@@ -9,8 +9,8 @@
  * Здесь не должно быть SDK wiring или generated API request logic.
  */
 
-import { command } from '../command';
-import { renderVersionInfo } from '../../version';
+import { command } from '../../cli/contract';
+import { renderVersionInfo } from '../../cli/version';
 
 export const versionCommand = command.define({
   path: ['version'],
@@ -20,4 +20,3 @@ export const versionCommand = command.define({
     return renderVersionInfo();
   }
 });
-

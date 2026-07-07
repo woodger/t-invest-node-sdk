@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
-import { parseCliInput, runCli } from './cli-runner';
+import { parseCliInput, runCli } from './runner';
 
 function createIo() {
   let stdout = '';

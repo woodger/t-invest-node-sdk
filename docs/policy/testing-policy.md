@@ -118,18 +118,18 @@ Runner `fwa`:
 Правило соответствия:
 
 ```text
-src/bootstrap/help/renderer.ts      -> src/bootstrap/help/renderer.test.ts
-src/bootstrap/help/commands.ts      -> src/bootstrap/help/commands.test.ts
-src/bootstrap/help/help.ts          -> src/bootstrap/help/help.test.ts
-src/bootstrap/cli-runner.ts         -> src/bootstrap/cli-runner.test.ts
+src/bootstrap/cli/help.ts           -> src/bootstrap/cli/help.test.ts
+src/bootstrap/cli/registry.ts       -> src/bootstrap/cli/registry.test.ts
+src/bootstrap/cli/runner.ts         -> src/bootstrap/cli/runner.test.ts
+src/bootstrap/cli/version.ts        -> src/bootstrap/cli/version.test.ts
 ```
 
 Запрещено создавать тест, который по имени выглядит как тест директории или
 barrel-модуля:
 
 ```text
-src/bootstrap/help.test.ts          # покрывает директорию help/
-src/bootstrap/help/index.test.ts    # покрывает barrel-only index.ts
+src/bootstrap/cli.test.ts           # покрывает директорию cli/
+src/bootstrap/cli/index.test.ts     # покрывает barrel-only index.ts
 ```
 
 Исключение допустимо только если файл действительно является runtime entrypoint
@@ -146,8 +146,7 @@ Unit-тесты должны импортировать код из конкре
 Допустимо:
 
 ```ts
-import { renderCliHelp } from './renderer';
-import { isHelpRequested } from './help'; // если рядом есть файл help.ts
+import { renderCliHelp, isHelpRequested } from './help';
 ```
 
 Запрещено для unit-теста конкретного файла:

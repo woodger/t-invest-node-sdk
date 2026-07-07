@@ -9,7 +9,7 @@
  * Здесь не должно быть bootstrap-инициализации, gRPC wiring или логики SDK-команд.
  */
 
-import packageJson from '../../package.json';
+import packageJson from '../../../package.json';
 
 export const appVersion = packageJson.version;
 

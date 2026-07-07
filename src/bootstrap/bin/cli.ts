@@ -7,7 +7,7 @@
  * mechanics to the CLI runner.
  */
 
-import { runCli } from '../cli-runner';
+import { runCli } from '../cli/runner';
 import { warningInterceptor } from '../../infrastructure/interceptor';
 
 warningInterceptor({

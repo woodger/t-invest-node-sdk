@@ -1,6 +1,71 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { renderCliHelp, renderCommandHelp } from './renderer';
+import { commandNames } from './registry';
+import {
+  commandHelp,
+  isCommandHelpName,
+  isHelpRequested,
+  renderCliHelp,
+  renderCommandHelp,
+  renderHelp
+} from './help';
+
+const unknownHelpNames = [
+  'instruments options',
+  'marketdata stream',
+  'portfolio',
+  'unknown-command',
+  undefined
+] as const;
+
+describe('commandHelp', () => {
+  test('contains help entries for registered public bootstrap commands', () => {
+    assert.deepEqual(
+      Object.keys(commandHelp).sort(),
+      [...commandNames].sort()
+    );
+  });
+});
+
+describe('isCommandHelpName', () => {
+  test('accepts registered help command names only', () => {
+    for (const commandName of commandNames) {
+      assert.equal(isCommandHelpName(commandName), true);
+    }
+
+    for (const commandName of unknownHelpNames) {
+      assert.equal(isCommandHelpName(commandName), false);
+    }
+  });
+});
+
+describe('isHelpRequested', () => {
+  test('detects help flag aliases', () => {
+    assert.equal(isHelpRequested({ help: true }), true);
+    assert.equal(isHelpRequested({ h: true }), true);
+    assert.equal(isHelpRequested({ help: false }), false);
+  });
+});
+
+describe('renderHelp', () => {
+  test('returns command-specific help for known command name', () => {
+    assert.equal(
+      renderHelp(['marketdata', 'get-candles']),
+      renderCommandHelp('marketdata get-candles')
+    );
+  });
+
+  test('returns top-level help for unknown command name', () => {
+    assert.equal(
+      renderHelp(['unknown']),
+      renderCliHelp()
+    );
+  });
+
+  test('returns top-level help when command name is absent', () => {
+    assert.equal(renderHelp([]), renderCliHelp());
+  });
+});
 
 describe('renderCliHelp', () => {
   test('renders top-level help page', () => {
@@ -75,6 +140,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /sandbox sandbox-pay-in/);
     assert.match(help, /sandbox get-sandbox-withdraw-limits/);
     assert.match(help, /stream run/);
+    assert.match(help, /compile-proto/);
     assert.match(help, /version/);
     assert.match(help, /tinkoff-invest-node-sdk --help/);
     assert.doesNotMatch(help, /Examples:/);
@@ -107,5 +173,13 @@ describe('renderCommandHelp', () => {
     assert.match(help, /stream run - Run a configured stream/);
     assert.match(help, /tinkoff-invest-node-sdk stream run --config=PATH/);
     assert.match(help, /static initial requests for marketdata\.marketDataStream/);
+  });
+
+  test('renders compile-proto command page', () => {
+    const help = renderCommandHelp('compile-proto');
+
+    assert.match(help, /compile-proto - Generate TypeScript contracts/);
+    assert.match(help, /tinkoff-invest-node-sdk compile-proto/);
+    assert.match(help, /system protoc/);
   });
 });

@@ -12,7 +12,7 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import type { InferOptions } from 'icore';
-import { command } from '../command';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';

@@ -79,13 +79,11 @@ bootstrap-механикой.
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
   `protoc` и локальный `ts-proto` plugin;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
-- `bootstrap/cli-runner.ts` - CLI runner layer;
+- `bootstrap/cli` - CLI contract, registry, help, version, error formatting и
+  runner layer;
 - `bootstrap/commands` - handlers CLI-команд;
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
-- `bootstrap/help` - декларативный help registry и renderer;
-- `bootstrap/commands/registry.ts` - связывание command name с handler;
-- `bootstrap/version.ts` - presentation-контракт версии.
 
 CLI слой сейчас поддерживает utility-команды `help`, `version`, `compile-proto`
 и API-команды в canonical форме `<service> <method>`: `users get-accounts`, `users get-info`,
