@@ -133,7 +133,8 @@ describe('future command', () => {
         command,
         [
           'instrument',
-          'future-by',
+          'future',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=SiM6',
@@ -175,7 +176,8 @@ describe('future command', () => {
           command,
           [
             'instrument',
-            'future-by',
+            'future',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=FUTFIGI',

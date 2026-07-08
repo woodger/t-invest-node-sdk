@@ -167,110 +167,34 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk market close-prices --instrument-id=BBG00QPYJ5H0,instrument-uid --format=json'
     ]
   },
-  'instrument get-accrued-interests': {
-    description: 'Print bond accrued interests',
-    sdkCall: 'sdk.instruments.getAccruedInterests',
-    grpcMethod: 'InstrumentsService/GetAccruedInterests',
+  'instrument search': {
+    description: 'Search instruments',
+    sdkCall: 'sdk.instruments.findInstrument',
+    grpcMethod: 'InstrumentsService/FindInstrument',
     usage: [
-      'tinkoff-invest-node-sdk instrument get-accrued-interests --instrument-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument search --query=TEXT [options]'
     ],
     required: [
-      '--instrument-id=ID    Bond instrument identifier',
-      '--from=ISO             Start timestamp, inclusive',
-      '--to=ISO               End timestamp, inclusive'
+      '--query=TEXT          Search query'
     ],
     optional: [
-      '--figi=FIGI            Deprecated alias for --instrument-id',
+      '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate',
+      '--api-trade-available Only instrument available for API trading',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instrument get-accrued-interests --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
-    ],
-    notes: [
-      "Deprecated --figi is still accepted and prints a warning to stderr.",
-      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+      'tinkoff-invest-node-sdk instrument search --query=TCSG',
+      'tinkoff-invest-node-sdk instrument search --query=TCSG --instrument-kind=share --api-trade-available --format=json'
     ]
   },
-  'instrument get-asset-by': {
-    description: 'Print asset details',
-    sdkCall: 'sdk.instruments.getAssetBy',
-    grpcMethod: 'InstrumentsService/GetAssetBy',
+  'instrument show': {
+    description: 'Print instrument details',
+    sdkCall: 'sdk.instruments.getInstrumentBy',
+    grpcMethod: 'InstrumentsService/GetInstrumentBy',
     usage: [
-      'tinkoff-invest-node-sdk instrument get-asset-by --id=UID [options]'
-    ],
-    required: [
-      '--id=UID              Asset UID'
-    ],
-    optional: [
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-asset-by --id=asset-uid',
-      'tinkoff-invest-node-sdk instrument get-asset-by --id=asset-uid --format=json'
-    ],
-    notes: [
-      'Table output is a compact asset overview; use --format=json for brand, security and instrument details.'
-    ]
-  },
-  'instrument get-assets': {
-    description: 'Print assets',
-    sdkCall: 'sdk.instruments.getAssets',
-    grpcMethod: 'InstrumentsService/GetAssets',
-    usage: [
-      'tinkoff-invest-node-sdk instrument get-assets [options]'
-    ],
-    optional: [
-      '--instrument-type=TYPE unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate (default: unspecified)',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-assets',
-      'tinkoff-invest-node-sdk instrument get-assets --instrument-type=share --format=json'
-    ],
-    notes: [
-      'The gRPC method does not include futures and options assets in this list.'
-    ]
-  },
-  'instrument get-bond-coupons': {
-    description: 'Print bond coupons',
-    sdkCall: 'sdk.instruments.getBondCoupons',
-    grpcMethod: 'InstrumentsService/GetBondCoupons',
-    usage: [
-      'tinkoff-invest-node-sdk instrument get-bond-coupons --instrument-id=ID --from=ISO --to=ISO [options]'
-    ],
-    required: [
-      '--instrument-id=ID    Bond instrument identifier',
-      '--from=ISO             Start timestamp, inclusive',
-      '--to=ISO               End timestamp, inclusive'
-    ],
-    optional: [
-      '--figi=FIGI            Deprecated alias for --instrument-id',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instrument get-bond-coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
-    ],
-    notes: [
-      "Deprecated --figi is still accepted and prints a warning to stderr.",
-      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
-    ]
-  },
-  'instrument bond-by': {
-    description: 'Print bond details',
-    sdkCall: 'sdk.instruments.bondBy',
-    grpcMethod: 'InstrumentsService/BondBy',
-    usage: [
-      'tinkoff-invest-node-sdk instrument bond-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument show --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -283,189 +207,16 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument bond-by --id=BBG00B9XRY4J --id-type=figi',
-      'tinkoff-invest-node-sdk instrument bond-by --id=SU26238RMFS4 --id-type=ticker --class-code=TQOB --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
+      'tinkoff-invest-node-sdk instrument show --id=BBG00QPYJ5H0 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument show --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
     ]
   },
-  'instrument bonds': {
-    description: 'Print bonds',
-    sdkCall: 'sdk.instruments.bonds',
-    grpcMethod: 'InstrumentsService/Bonds',
-    usage: [
-      'tinkoff-invest-node-sdk instrument bonds [options]'
-    ],
-    optional: [
-      '--instrument-status=STATUS unspecified|base|all (default: base)',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument bonds',
-      'tinkoff-invest-node-sdk instrument bonds --instrument-status=all --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument get-brand-by': {
-    description: 'Print brand details',
-    sdkCall: 'sdk.instruments.getBrandBy',
-    grpcMethod: 'InstrumentsService/GetBrandBy',
-    usage: [
-      'tinkoff-invest-node-sdk instrument get-brand-by --id=ID [options]'
-    ],
-    required: [
-      '--id=ID               Brand UID'
-    ],
-    optional: [
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-brand-by --id=brand-uid',
-      'tinkoff-invest-node-sdk instrument get-brand-by --id=brand-uid --format=json'
-    ]
-  },
-  'instrument get-brands': {
-    description: 'Print brands dictionary',
-    sdkCall: 'sdk.instruments.getBrands',
-    grpcMethod: 'InstrumentsService/GetBrands',
-    usage: [
-      'tinkoff-invest-node-sdk instrument get-brands [options]'
-    ],
-    optional: [
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-brands',
-      'tinkoff-invest-node-sdk instrument get-brands --format=json'
-    ],
-    notes: [
-      'Table output keeps long description/info fields out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument get-countries': {
-    description: 'Print countries dictionary',
-    sdkCall: 'sdk.instruments.getCountries',
-    grpcMethod: 'InstrumentsService/GetCountries',
-    usage: [
-      'tinkoff-invest-node-sdk instrument get-countries [options]'
-    ],
-    optional: [
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-countries',
-      'tinkoff-invest-node-sdk instrument get-countries --format=json'
-    ]
-  },
-  'instrument currencies': {
-    description: 'Print currencies',
-    sdkCall: 'sdk.instruments.currencies',
-    grpcMethod: 'InstrumentsService/Currencies',
-    usage: [
-      'tinkoff-invest-node-sdk instrument currencies [options]'
-    ],
-    optional: [
-      '--instrument-status=STATUS unspecified|base|all (default: base)',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument currencies',
-      'tinkoff-invest-node-sdk instrument currencies --instrument-status=all --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument currency-by': {
-    description: 'Print currency details',
-    sdkCall: 'sdk.instruments.currencyBy',
-    grpcMethod: 'InstrumentsService/CurrencyBy',
-    usage: [
-      'tinkoff-invest-node-sdk instrument currency-by --id=ID --id-type=TYPE [options]'
-    ],
-    required: [
-      '--id=ID               FIGI, ticker, instrument UID or position UID',
-      '--id-type=TYPE        figi|ticker|uid|position-uid'
-    ],
-    optional: [
-      '--class-code=CODE     Required when --id-type=ticker',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument currency-by --id=BBG0013HGFT4 --id-type=figi',
-      'tinkoff-invest-node-sdk instrument currency-by --id=USD000UTSTOM --id-type=ticker --class-code=CETS --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument etf-by': {
-    description: 'Print ETF details',
-    sdkCall: 'sdk.instruments.etfBy',
-    grpcMethod: 'InstrumentsService/EtfBy',
-    usage: [
-      'tinkoff-invest-node-sdk instrument etf-by --id=ID --id-type=TYPE [options]'
-    ],
-    required: [
-      '--id=ID               FIGI, ticker, instrument UID or position UID',
-      '--id-type=TYPE        figi|ticker|uid|position-uid'
-    ],
-    optional: [
-      '--class-code=CODE     Required when --id-type=ticker',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument etf-by --id=BBG333333333 --id-type=figi',
-      'tinkoff-invest-node-sdk instrument etf-by --id=TMOS --id-type=ticker --class-code=TQTF --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument etfs': {
-    description: 'Print ETFs',
-    sdkCall: 'sdk.instruments.etfs',
-    grpcMethod: 'InstrumentsService/Etfs',
-    usage: [
-      'tinkoff-invest-node-sdk instrument etfs [options]'
-    ],
-    optional: [
-      '--instrument-status=STATUS unspecified|base|all (default: base)',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument etfs',
-      'tinkoff-invest-node-sdk instrument etfs --instrument-status=all --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument get-dividends': {
+  'instrument dividends': {
     description: 'Print instrument dividends',
     sdkCall: 'sdk.instruments.getDividends',
     grpcMethod: 'InstrumentsService/GetDividends',
     usage: [
-      'tinkoff-invest-node-sdk instrument get-dividends --instrument-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument dividends --instrument-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--instrument-id=ID    Share instrument identifier',
@@ -479,20 +230,45 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instrument get-dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instrument dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument dividends --instrument-id=SHARE-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
     ],
     notes: [
       "Deprecated --figi is still accepted and prints a warning to stderr.",
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'instrument get-favorites': {
+  'instrument schedules': {
+    description: 'Print trading schedules',
+    sdkCall: 'sdk.instruments.tradingSchedules',
+    grpcMethod: 'InstrumentsService/TradingSchedules',
+    usage: [
+      'tinkoff-invest-node-sdk instrument schedules --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--exchange=EXCHANGE    Optional exchange or settlement calendar code',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument schedules --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument schedules --exchange=MOEX --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
+  'instrument favorite list': {
     description: 'Print favorite instruments',
     sdkCall: 'sdk.instruments.getFavorites',
     grpcMethod: 'InstrumentsService/GetFavorites',
     usage: [
-      'tinkoff-invest-node-sdk instrument get-favorites [options]'
+      'tinkoff-invest-node-sdk instrument favorite list [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -500,16 +276,16 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument get-favorites',
-      'tinkoff-invest-node-sdk instrument get-favorites --format=json'
+      'tinkoff-invest-node-sdk instrument favorite list',
+      'tinkoff-invest-node-sdk instrument favorite list --format=json'
     ]
   },
-  'instrument edit-favorites': {
+  'instrument favorite edit': {
     description: 'Add or remove favorite instruments',
     sdkCall: 'sdk.instruments.editFavorites',
     grpcMethod: 'InstrumentsService/EditFavorites',
     usage: [
-      'tinkoff-invest-node-sdk instrument edit-favorites --instrument-id=ID[,ID] --action=add|del --confirm [options]'
+      'tinkoff-invest-node-sdk instrument favorite edit --instrument-id=ID[,ID] --action=add|del --confirm [options]'
     ],
     required: [
       '--instrument-id=ID[,ID] Comma-separated instrument identifiers',
@@ -523,42 +299,41 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument edit-favorites --instrument-id=BBG00QPYJ5H0 --action=add --confirm',
-      'tinkoff-invest-node-sdk instrument edit-favorites --instrument-id=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
+      'tinkoff-invest-node-sdk instrument favorite edit --instrument-id=BBG00QPYJ5H0 --action=add --confirm',
+      'tinkoff-invest-node-sdk instrument favorite edit --instrument-id=BBG00QPYJ5H0,BBG004730N88 --action=del --confirm --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.',
       'This command changes account favorites and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'instrument find-instrument': {
-    description: 'Search instruments',
-    sdkCall: 'sdk.instruments.findInstrument',
-    grpcMethod: 'InstrumentsService/FindInstrument',
+  'instrument share list': {
+    description: 'Print shares',
+    sdkCall: 'sdk.instruments.shares',
+    grpcMethod: 'InstrumentsService/Shares',
     usage: [
-      'tinkoff-invest-node-sdk instrument find-instrument --query=TEXT [options]'
-    ],
-    required: [
-      '--query=TEXT          Search query'
+      'tinkoff-invest-node-sdk instrument share list [options]'
     ],
     optional: [
-      '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate',
-      '--api-trade-available Only instrument available for API trading',
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument find-instrument --query=TCSG',
-      'tinkoff-invest-node-sdk instrument find-instrument --query=TCSG --instrument-kind=share --api-trade-available --format=json'
+      'tinkoff-invest-node-sdk instrument share list',
+      'tinkoff-invest-node-sdk instrument share list --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instrument future-by': {
-    description: 'Print futures contract details',
-    sdkCall: 'sdk.instruments.futureBy',
-    grpcMethod: 'InstrumentsService/FutureBy',
+  'instrument share show': {
+    description: 'Print share details',
+    sdkCall: 'sdk.instruments.shareBy',
+    grpcMethod: 'InstrumentsService/ShareBy',
     usage: [
-      'tinkoff-invest-node-sdk instrument future-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument share show --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -571,19 +346,19 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument future-by --id=FUTFIGI --id-type=figi',
-      'tinkoff-invest-node-sdk instrument future-by --id=SiM6 --id-type=ticker --class-code=SPBFUT --format=json'
+      'tinkoff-invest-node-sdk instrument share show --id=BBG004730N88 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument share show --id=SBER --id-type=ticker --class-code=TQBR --format=json'
     ],
     notes: [
-      'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
+      'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instrument futures': {
-    description: 'Print futures contracts',
-    sdkCall: 'sdk.instruments.futures',
-    grpcMethod: 'InstrumentsService/Futures',
+  'instrument bond list': {
+    description: 'Print bonds',
+    sdkCall: 'sdk.instruments.bonds',
+    grpcMethod: 'InstrumentsService/Bonds',
     usage: [
-      'tinkoff-invest-node-sdk instrument futures [options]'
+      'tinkoff-invest-node-sdk instrument bond list [options]'
     ],
     optional: [
       '--instrument-status=STATUS unspecified|base|all (default: base)',
@@ -592,19 +367,236 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument futures',
-      'tinkoff-invest-node-sdk instrument futures --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument bond list',
+      'tinkoff-invest-node-sdk instrument bond list --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument bond show': {
+    description: 'Print bond details',
+    sdkCall: 'sdk.instruments.bondBy',
+    grpcMethod: 'InstrumentsService/BondBy',
+    usage: [
+      'tinkoff-invest-node-sdk instrument bond show --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument bond show --id=BBG00B9XRY4J --id-type=figi',
+      'tinkoff-invest-node-sdk instrument bond show --id=SU26238RMFS4 --id-type=ticker --class-code=TQOB --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, issue details and placement values out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument bond coupons': {
+    description: 'Print bond coupons',
+    sdkCall: 'sdk.instruments.getBondCoupons',
+    grpcMethod: 'InstrumentsService/GetBondCoupons',
+    usage: [
+      'tinkoff-invest-node-sdk instrument bond coupons --instrument-id=ID --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--instrument-id=ID    Bond instrument identifier',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--figi=FIGI            Deprecated alias for --instrument-id',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument bond coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument bond coupons --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "Deprecated --figi is still accepted and prints a warning to stderr.",
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
+  'instrument bond accrued': {
+    description: 'Print bond accrued interests',
+    sdkCall: 'sdk.instruments.getAccruedInterests',
+    grpcMethod: 'InstrumentsService/GetAccruedInterests',
+    usage: [
+      'tinkoff-invest-node-sdk instrument bond accrued --instrument-id=ID --from=ISO --to=ISO [options]'
+    ],
+    required: [
+      '--instrument-id=ID    Bond instrument identifier',
+      '--from=ISO             Start timestamp, inclusive',
+      '--to=ISO               End timestamp, inclusive'
+    ],
+    optional: [
+      '--figi=FIGI            Deprecated alias for --instrument-id',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument bond accrued --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
+      'tinkoff-invest-node-sdk instrument bond accrued --instrument-id=BOND-FIGI --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+    ],
+    notes: [
+      "Deprecated --figi is still accepted and prints a warning to stderr.",
+      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+    ]
+  },
+  'instrument etf list': {
+    description: 'Print ETFs',
+    sdkCall: 'sdk.instruments.etfs',
+    grpcMethod: 'InstrumentsService/Etfs',
+    usage: [
+      'tinkoff-invest-node-sdk instrument etf list [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument etf list',
+      'tinkoff-invest-node-sdk instrument etf list --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument etf show': {
+    description: 'Print ETF details',
+    sdkCall: 'sdk.instruments.etfBy',
+    grpcMethod: 'InstrumentsService/EtfBy',
+    usage: [
+      'tinkoff-invest-node-sdk instrument etf show --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument etf show --id=BBG333333333 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument etf show --id=TMOS --id-type=ticker --class-code=TQTF --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates, fund metadata and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument currency list': {
+    description: 'Print currencies',
+    sdkCall: 'sdk.instruments.currencies',
+    grpcMethod: 'InstrumentsService/Currencies',
+    usage: [
+      'tinkoff-invest-node-sdk instrument currency list [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument currency list',
+      'tinkoff-invest-node-sdk instrument currency list --instrument-status=all --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument currency show': {
+    description: 'Print currency details',
+    sdkCall: 'sdk.instruments.currencyBy',
+    grpcMethod: 'InstrumentsService/CurrencyBy',
+    usage: [
+      'tinkoff-invest-node-sdk instrument currency show --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument currency show --id=BBG0013HGFT4 --id-type=figi',
+      'tinkoff-invest-node-sdk instrument currency show --id=USD000UTSTOM --id-type=ticker --class-code=CETS --format=json'
+    ],
+    notes: [
+      'Table output keeps risk rates and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument future list': {
+    description: 'Print futures contracts',
+    sdkCall: 'sdk.instruments.futures',
+    grpcMethod: 'InstrumentsService/Futures',
+    usage: [
+      'tinkoff-invest-node-sdk instrument future list [options]'
+    ],
+    optional: [
+      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument future list',
+      'tinkoff-invest-node-sdk instrument future list --instrument-status=all --format=json'
     ],
     notes: [
       'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instrument get-futures-margin': {
+  'instrument future show': {
+    description: 'Print futures contract details',
+    sdkCall: 'sdk.instruments.futureBy',
+    grpcMethod: 'InstrumentsService/FutureBy',
+    usage: [
+      'tinkoff-invest-node-sdk instrument future show --id=ID --id-type=TYPE [options]'
+    ],
+    required: [
+      '--id=ID               FIGI, ticker, instrument UID or position UID',
+      '--id-type=TYPE        figi|ticker|uid|position-uid'
+    ],
+    optional: [
+      '--class-code=CODE     Required when --id-type=ticker',
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument future show --id=FUTFIGI --id-type=figi',
+      'tinkoff-invest-node-sdk instrument future show --id=SiM6 --id-type=ticker --class-code=SPBFUT --format=json'
+    ],
+    notes: [
+      'Table output keeps margin rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument future margin': {
     description: 'Print futures margin details',
     sdkCall: 'sdk.instruments.getFuturesMargin',
     grpcMethod: 'InstrumentsService/GetFuturesMargin',
     usage: [
-      'tinkoff-invest-node-sdk instrument get-futures-margin --instrument-id=ID [options]'
+      'tinkoff-invest-node-sdk instrument future margin --instrument-id=ID [options]'
     ],
     required: [
       '--instrument-id=ID    Futures instrument identifier'
@@ -616,66 +608,19 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument get-futures-margin --instrument-id=FUTFIGI',
-      'tinkoff-invest-node-sdk instrument get-futures-margin --instrument-id=FUTFIGI --format=json'
+      'tinkoff-invest-node-sdk instrument future margin --instrument-id=FUTFIGI',
+      'tinkoff-invest-node-sdk instrument future margin --instrument-id=FUTFIGI --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.'
     ]
   },
-  'instrument get-instrument-by': {
-    description: 'Print instrument details',
-    sdkCall: 'sdk.instruments.getInstrumentBy',
-    grpcMethod: 'InstrumentsService/GetInstrumentBy',
-    usage: [
-      'tinkoff-invest-node-sdk instrument get-instrument-by --id=ID --id-type=TYPE [options]'
-    ],
-    required: [
-      '--id=ID               FIGI, ticker, instrument UID or position UID',
-      '--id-type=TYPE        figi|ticker|uid|position-uid'
-    ],
-    optional: [
-      '--class-code=CODE     Required when --id-type=ticker',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument get-instrument-by --id=BBG00QPYJ5H0 --id-type=figi',
-      'tinkoff-invest-node-sdk instrument get-instrument-by --id=TCSG --id-type=ticker --class-code=TQBR --format=json'
-    ]
-  },
-  'instrument option-by': {
-    description: 'Print option contract details',
-    sdkCall: 'sdk.instruments.optionBy',
-    grpcMethod: 'InstrumentsService/OptionBy',
-    usage: [
-      'tinkoff-invest-node-sdk instrument option-by --id=ID --id-type=TYPE [options]'
-    ],
-    required: [
-      '--id=ID               FIGI, ticker, instrument UID or position UID',
-      '--id-type=TYPE        figi|ticker|uid|position-uid'
-    ],
-    optional: [
-      '--class-code=CODE     Required when --id-type=ticker',
-      ...sdkConnectionOptions,
-      tableFormatOption
-    ],
-    environment: sdkEnvironment,
-    examples: [
-      'tinkoff-invest-node-sdk instrument option-by --id=OPTIONUID --id-type=uid',
-      'tinkoff-invest-node-sdk instrument option-by --id=OPTIONTICKER --id-type=ticker --class-code=SPBOPT --format=json'
-    ],
-    notes: [
-      'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
-    ]
-  },
-  'instrument options-by': {
+  'instrument option list': {
     description: 'Print option contracts by underlying asset',
     sdkCall: 'sdk.instruments.optionsBy',
     grpcMethod: 'InstrumentsService/OptionsBy',
     usage: [
-      'tinkoff-invest-node-sdk instrument options-by --basic-asset-uid=UID [options]'
+      'tinkoff-invest-node-sdk instrument option list --basic-asset-uid=UID [options]'
     ],
     required: [
       '--basic-asset-uid=UID Underlying asset UID'
@@ -687,20 +632,20 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument options-by --basic-asset-uid=asset-uid',
-      'tinkoff-invest-node-sdk instrument options-by --basic-asset-uid=asset-uid --basic-asset-position-uid=position-uid --format=json'
+      'tinkoff-invest-node-sdk instrument option list --basic-asset-uid=asset-uid',
+      'tinkoff-invest-node-sdk instrument option list --basic-asset-uid=asset-uid --basic-asset-position-uid=position-uid --format=json'
     ],
     notes: [
-      '`sdk.instruments.options` is deprecated in the generated contract, so the CLI exposes `options-by` instead.',
+      '`sdk.instruments.options` is deprecated in the generated contract, so the CLI exposes `option list` instead.',
       'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instrument share-by': {
-    description: 'Print share details',
-    sdkCall: 'sdk.instruments.shareBy',
-    grpcMethod: 'InstrumentsService/ShareBy',
+  'instrument option show': {
+    description: 'Print option contract details',
+    sdkCall: 'sdk.instruments.optionBy',
+    grpcMethod: 'InstrumentsService/OptionBy',
     usage: [
-      'tinkoff-invest-node-sdk instrument share-by --id=ID --id-type=TYPE [options]'
+      'tinkoff-invest-node-sdk instrument option show --id=ID --id-type=TYPE [options]'
     ],
     required: [
       '--id=ID               FIGI, ticker, instrument UID or position UID',
@@ -713,57 +658,112 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument share-by --id=BBG004730N88 --id-type=figi',
-      'tinkoff-invest-node-sdk instrument share-by --id=SBER --id-type=ticker --class-code=TQBR --format=json'
+      'tinkoff-invest-node-sdk instrument option show --id=OPTIONUID --id-type=uid',
+      'tinkoff-invest-node-sdk instrument option show --id=OPTIONTICKER --id-type=ticker --class-code=SPBOPT --format=json'
     ],
     notes: [
-      'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
+      'Table output keeps risk rates, underlying asset details and candle dates out of columns; use --format=json for the full report.'
     ]
   },
-  'instrument shares': {
-    description: 'Print shares',
-    sdkCall: 'sdk.instruments.shares',
-    grpcMethod: 'InstrumentsService/Shares',
+  'instrument asset list': {
+    description: 'Print assets',
+    sdkCall: 'sdk.instruments.getAssets',
+    grpcMethod: 'InstrumentsService/GetAssets',
     usage: [
-      'tinkoff-invest-node-sdk instrument shares [options]'
+      'tinkoff-invest-node-sdk instrument asset list [options]'
     ],
     optional: [
-      '--instrument-status=STATUS unspecified|base|all (default: base)',
+      '--instrument-type=TYPE unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate (default: unspecified)',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument shares',
-      'tinkoff-invest-node-sdk instrument shares --instrument-status=all --format=json'
+      'tinkoff-invest-node-sdk instrument asset list',
+      'tinkoff-invest-node-sdk instrument asset list --instrument-type=share --format=json'
     ],
     notes: [
-      'Table output keeps risk rates, issue details and candle dates out of columns; use --format=json for the full report.'
+      'The gRPC method does not include futures and options assets in this list.'
     ]
   },
-  'instrument trading-schedules': {
-    description: 'Print trading schedules',
-    sdkCall: 'sdk.instruments.tradingSchedules',
-    grpcMethod: 'InstrumentsService/TradingSchedules',
+  'instrument asset show': {
+    description: 'Print asset details',
+    sdkCall: 'sdk.instruments.getAssetBy',
+    grpcMethod: 'InstrumentsService/GetAssetBy',
     usage: [
-      'tinkoff-invest-node-sdk instrument trading-schedules --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk instrument asset show --id=UID [options]'
     ],
     required: [
-      '--from=ISO             Start timestamp, inclusive',
-      '--to=ISO               End timestamp, inclusive'
+      '--id=UID              Asset UID'
     ],
     optional: [
-      '--exchange=EXCHANGE    Optional exchange or settlement calendar code',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk instrument trading-schedules --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z',
-      'tinkoff-invest-node-sdk instrument trading-schedules --exchange=MOEX --from=2026-01-01T00:00:00Z --to=2026-01-31T00:00:00Z --format=json'
+      'tinkoff-invest-node-sdk instrument asset show --id=asset-uid',
+      'tinkoff-invest-node-sdk instrument asset show --id=asset-uid --format=json'
     ],
     notes: [
-      "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
+      'Table output is a compact asset overview; use --format=json for brand, security and instrument details.'
+    ]
+  },
+  'instrument brand list': {
+    description: 'Print brands dictionary',
+    sdkCall: 'sdk.instruments.getBrands',
+    grpcMethod: 'InstrumentsService/GetBrands',
+    usage: [
+      'tinkoff-invest-node-sdk instrument brand list [options]'
+    ],
+    optional: [
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument brand list',
+      'tinkoff-invest-node-sdk instrument brand list --format=json'
+    ],
+    notes: [
+      'Table output keeps long description/info fields out of columns; use --format=json for the full report.'
+    ]
+  },
+  'instrument brand show': {
+    description: 'Print brand details',
+    sdkCall: 'sdk.instruments.getBrandBy',
+    grpcMethod: 'InstrumentsService/GetBrandBy',
+    usage: [
+      'tinkoff-invest-node-sdk instrument brand show --id=ID [options]'
+    ],
+    required: [
+      '--id=ID               Brand UID'
+    ],
+    optional: [
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument brand show --id=brand-uid',
+      'tinkoff-invest-node-sdk instrument brand show --id=brand-uid --format=json'
+    ]
+  },
+  'instrument country list': {
+    description: 'Print countries dictionary',
+    sdkCall: 'sdk.instruments.getCountries',
+    grpcMethod: 'InstrumentsService/GetCountries',
+    usage: [
+      'tinkoff-invest-node-sdk instrument country list [options]'
+    ],
+    optional: [
+      ...sdkConnectionOptions,
+      tableFormatOption
+    ],
+    environment: sdkEnvironment,
+    examples: [
+      'tinkoff-invest-node-sdk instrument country list',
+      'tinkoff-invest-node-sdk instrument country list --format=json'
     ]
   },
   'market last-prices': {

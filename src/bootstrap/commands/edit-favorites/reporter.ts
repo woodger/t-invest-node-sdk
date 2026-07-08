@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instrument edit-favorites`.
+ * Модуль CLI-репортинга команды `instrument favorite edit`.
  *
  * `editFavorites` возвращает тот же список инструментов, что используется в
  * `getFavorites`, поэтому команда переиспользует favorites report.

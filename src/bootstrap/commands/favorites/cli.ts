@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument get-favorites`.
+ * Модуль CLI-команды `instrument favorite list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type FavoritesSdk = {
 
 type FavoritesSdkFactory = (options: TinkoffInvestOptions) => FavoritesSdk;
 
-const favoritesCommandPath = ['instrument', 'get-favorites'] as const;
+const favoritesCommandPath = ['instrument', 'favorite', 'list'] as const;
 const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const favoritesOptionsSchema = withSdkOptions({

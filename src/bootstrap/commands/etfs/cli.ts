@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument etfs`.
+ * Модуль CLI-команды `instrument etf list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type EtfsSdk = {
 
 type EtfsSdkFactory = (options: TinkoffInvestOptions) => EtfsSdk;
 
-const etfsCommandPath = ['instrument', 'etfs'] as const;
+const etfsCommandPath = ['instrument', 'etf', 'list'] as const;
 const defaultEtfsSdkFactory: EtfsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const etfsFormatOptionsSchema = {

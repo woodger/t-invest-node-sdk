@@ -133,7 +133,8 @@ describe('etf command', () => {
         command,
         [
           'instrument',
-          'etf-by',
+          'etf',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=TMOS',
@@ -175,7 +176,8 @@ describe('etf command', () => {
           command,
           [
             'instrument',
-            'etf-by',
+            'etf',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG333333333',

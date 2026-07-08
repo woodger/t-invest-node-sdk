@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument trading-schedules`.
+ * Модуль CLI-команды `instrument schedules`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type TradingSchedulesSdk = {
 
 type TradingSchedulesSdkFactory = (options: TinkoffInvestOptions) => TradingSchedulesSdk;
 
-const tradingSchedulesCommandPath = ['instrument', 'trading-schedules'] as const;
+const tradingSchedulesCommandPath = ['instrument', 'schedules'] as const;
 const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const tradingSchedulesRequestOptionsSchema = {

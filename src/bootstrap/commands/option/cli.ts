@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument option-by`.
+ * Модуль CLI-команды `instrument option show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type OptionSdk = {
 
 type OptionSdkFactory = (options: TinkoffInvestOptions) => OptionSdk;
 
-const optionCommandPath = ['instrument', 'option-by'] as const;
+const optionCommandPath = ['instrument', 'option', 'show'] as const;
 const defaultOptionSdkFactory: OptionSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const optionFormatOptionsSchema = {

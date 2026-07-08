@@ -102,7 +102,8 @@ describe('bonds command', () => {
         command,
         [
           'instrument',
-          'bonds',
+          'bond',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-status=all',
@@ -140,7 +141,8 @@ describe('bonds command', () => {
           command,
           [
             'instrument',
-            'bonds',
+            'bond',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

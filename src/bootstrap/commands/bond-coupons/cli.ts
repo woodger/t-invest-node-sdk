@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument get-bond-coupons`.
+ * Модуль CLI-команды `instrument bond coupons`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type BondCouponsSdk = {
 
 type BondCouponsSdkFactory = (options: TinkoffInvestOptions) => BondCouponsSdk;
 
-const bondCouponsCommandPath = ['instrument', 'get-bond-coupons'] as const;
+const bondCouponsCommandPath = ['instrument', 'bond', 'coupons'] as const;
 const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const bondCouponsRequestOptionsSchema = {

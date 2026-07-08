@@ -133,7 +133,8 @@ describe('bond command', () => {
         command,
         [
           'instrument',
-          'bond-by',
+          'bond',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=SU26238RMFS4',
@@ -175,7 +176,8 @@ describe('bond command', () => {
           command,
           [
             'instrument',
-            'bond-by',
+            'bond',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG00B9XRY4J',

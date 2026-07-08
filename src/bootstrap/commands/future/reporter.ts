@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instrument future-by`.
+ * Модуль CLI-репортинга команды `instrument future show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.

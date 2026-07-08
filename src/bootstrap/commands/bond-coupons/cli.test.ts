@@ -114,7 +114,8 @@ describe('bond-coupons command', () => {
         command,
         [
           'instrument',
-          'get-bond-coupons',
+          'bond',
+          'coupons',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BOND-FIGI',
@@ -157,7 +158,8 @@ describe('bond-coupons command', () => {
           command,
           [
             'instrument',
-            'get-bond-coupons',
+            'bond',
+            'coupons',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BOND-FIGI',

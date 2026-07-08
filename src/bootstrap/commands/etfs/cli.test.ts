@@ -102,7 +102,8 @@ describe('etfs command', () => {
         command,
         [
           'instrument',
-          'etfs',
+          'etf',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-status=all',
@@ -140,7 +141,8 @@ describe('etfs command', () => {
           command,
           [
             'instrument',
-            'etfs',
+            'etf',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

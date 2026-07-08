@@ -86,6 +86,188 @@ const cliPathAliases = [
     ]
   },
   {
+    preferred: ['instrument', 'search'],
+    aliases: [
+      ['instrument', 'find-instrument'],
+      ['instruments', 'find-instrument']
+    ]
+  },
+  {
+    preferred: ['instrument', 'show'],
+    aliases: [
+      ['instrument', 'get-instrument-by'],
+      ['instruments', 'get-instrument-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'dividends'],
+    aliases: [
+      ['instrument', 'get-dividends'],
+      ['instruments', 'get-dividends']
+    ]
+  },
+  {
+    preferred: ['instrument', 'schedules'],
+    aliases: [
+      ['instrument', 'trading-schedules'],
+      ['instruments', 'trading-schedules']
+    ]
+  },
+  {
+    preferred: ['instrument', 'favorite', 'list'],
+    aliases: [
+      ['instrument', 'get-favorites'],
+      ['instruments', 'get-favorites']
+    ]
+  },
+  {
+    preferred: ['instrument', 'favorite', 'edit'],
+    aliases: [
+      ['instrument', 'edit-favorites'],
+      ['instruments', 'edit-favorites']
+    ]
+  },
+  {
+    preferred: ['instrument', 'share', 'list'],
+    aliases: [
+      ['instrument', 'shares'],
+      ['instruments', 'shares']
+    ]
+  },
+  {
+    preferred: ['instrument', 'share', 'show'],
+    aliases: [
+      ['instrument', 'share-by'],
+      ['instruments', 'share-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'bond', 'list'],
+    aliases: [
+      ['instrument', 'bonds'],
+      ['instruments', 'bonds']
+    ]
+  },
+  {
+    preferred: ['instrument', 'bond', 'show'],
+    aliases: [
+      ['instrument', 'bond-by'],
+      ['instruments', 'bond-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'bond', 'coupons'],
+    aliases: [
+      ['instrument', 'get-bond-coupons'],
+      ['instruments', 'get-bond-coupons']
+    ]
+  },
+  {
+    preferred: ['instrument', 'bond', 'accrued'],
+    aliases: [
+      ['instrument', 'get-accrued-interests'],
+      ['instruments', 'get-accrued-interests']
+    ]
+  },
+  {
+    preferred: ['instrument', 'etf', 'list'],
+    aliases: [
+      ['instrument', 'etfs'],
+      ['instruments', 'etfs']
+    ]
+  },
+  {
+    preferred: ['instrument', 'etf', 'show'],
+    aliases: [
+      ['instrument', 'etf-by'],
+      ['instruments', 'etf-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'currency', 'list'],
+    aliases: [
+      ['instrument', 'currencies'],
+      ['instruments', 'currencies']
+    ]
+  },
+  {
+    preferred: ['instrument', 'currency', 'show'],
+    aliases: [
+      ['instrument', 'currency-by'],
+      ['instruments', 'currency-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'future', 'list'],
+    aliases: [
+      ['instrument', 'futures'],
+      ['instruments', 'futures']
+    ]
+  },
+  {
+    preferred: ['instrument', 'future', 'show'],
+    aliases: [
+      ['instrument', 'future-by'],
+      ['instruments', 'future-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'future', 'margin'],
+    aliases: [
+      ['instrument', 'get-futures-margin'],
+      ['instruments', 'get-futures-margin']
+    ]
+  },
+  {
+    preferred: ['instrument', 'option', 'list'],
+    aliases: [
+      ['instrument', 'options-by'],
+      ['instruments', 'options-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'option', 'show'],
+    aliases: [
+      ['instrument', 'option-by'],
+      ['instruments', 'option-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'asset', 'list'],
+    aliases: [
+      ['instrument', 'get-assets'],
+      ['instruments', 'get-assets']
+    ]
+  },
+  {
+    preferred: ['instrument', 'asset', 'show'],
+    aliases: [
+      ['instrument', 'get-asset-by'],
+      ['instruments', 'get-asset-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'brand', 'list'],
+    aliases: [
+      ['instrument', 'get-brands'],
+      ['instruments', 'get-brands']
+    ]
+  },
+  {
+    preferred: ['instrument', 'brand', 'show'],
+    aliases: [
+      ['instrument', 'get-brand-by'],
+      ['instruments', 'get-brand-by']
+    ]
+  },
+  {
+    preferred: ['instrument', 'country', 'list'],
+    aliases: [
+      ['instrument', 'get-countries'],
+      ['instruments', 'get-countries']
+    ]
+  },
+  {
     preferred: ['market', 'candles'],
     aliases: [
       ['market', 'get-candles'],

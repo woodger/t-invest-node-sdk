@@ -133,7 +133,7 @@ describe('find-instrument command', () => {
         command,
         [
           'instrument',
-          'find-instrument',
+          'search',
           '--token=token',
           '--endpoint=localhost:50051',
           '--query=TCSG',
@@ -176,7 +176,7 @@ describe('find-instrument command', () => {
           command,
           [
             'instrument',
-            'find-instrument',
+            'search',
             '--token=token',
             '--endpoint=localhost:50051',
             '--query=TCSG'

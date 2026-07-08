@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument get-futures-margin`.
+ * Модуль CLI-команды `instrument future margin`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type FuturesMarginSdk = {
 
 type FuturesMarginSdkFactory = (options: TinkoffInvestOptions) => FuturesMarginSdk;
 
-const futuresMarginCommandPath = ['instrument', 'get-futures-margin'] as const;
+const futuresMarginCommandPath = ['instrument', 'future', 'margin'] as const;
 const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const futuresMarginRequestOptionsSchema = {
