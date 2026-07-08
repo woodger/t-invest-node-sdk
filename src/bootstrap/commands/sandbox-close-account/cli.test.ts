@@ -42,7 +42,7 @@ describe('sandbox-close-account command', () => {
       await assert.rejects(
         () => commandFacade.run(
           command,
-          ['sandbox', 'close-sandbox-account', '--account-id=sandbox-account-id'],
+          ['sandbox', 'account', 'close', '--account-id=sandbox-account-id'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -75,7 +75,8 @@ describe('sandbox-close-account command', () => {
         command,
         [
           'sandbox',
-          'close-sandbox-account',
+          'account',
+          'close',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',

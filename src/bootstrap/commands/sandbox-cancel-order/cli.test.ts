@@ -46,7 +46,8 @@ describe('sandbox-cancel-order command', () => {
           command,
           [
             'sandbox',
-            'cancel-sandbox-order',
+            'order',
+            'cancel',
             '--account-id=sandbox-account-id',
             '--order-id=order-id'
           ],
@@ -84,7 +85,8 @@ describe('sandbox-cancel-order command', () => {
         command,
         [
           'sandbox',
-          'cancel-sandbox-order',
+          'order',
+          'cancel',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',

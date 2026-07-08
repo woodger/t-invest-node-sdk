@@ -28,6 +28,14 @@ describe('CLI domains', () => {
       assert.equal(canonicalizeCommandName('operation portfolio'), 'operation portfolio');
       assert.equal(canonicalizeCommandName('operation get-portfolio'), 'operation portfolio');
       assert.equal(canonicalizeCommandName('operations get-portfolio'), 'operation portfolio');
+      assert.equal(canonicalizeCommandName('sandbox account list'), 'sandbox account list');
+      assert.equal(canonicalizeCommandName('sandbox get-sandbox-accounts'), 'sandbox account list');
+      assert.equal(canonicalizeCommandName('sandbox order place'), 'sandbox order place');
+      assert.equal(canonicalizeCommandName('sandbox post-sandbox-order'), 'sandbox order place');
+      assert.equal(canonicalizeCommandName('sandbox portfolio'), 'sandbox portfolio');
+      assert.equal(canonicalizeCommandName('sandbox get-sandbox-portfolio'), 'sandbox portfolio');
+      assert.equal(canonicalizeCommandName('sandbox pay-in'), 'sandbox pay-in');
+      assert.equal(canonicalizeCommandName('sandbox sandbox-pay-in'), 'sandbox pay-in');
     });
 
     test('keeps non-renamed public paths and normalizes legacy service domains', () => {
@@ -46,6 +54,8 @@ describe('CLI domains', () => {
       assert.equal(canonicalizeCommandName('operations list'), 'operations list');
       assert.equal(canonicalizeCommandName('operations portfolio'), 'operations portfolio');
       assert.equal(canonicalizeCommandName('operations broker-report'), 'operations broker-report');
+      assert.equal(canonicalizeCommandName('sandbox account get-sandbox-accounts'), 'sandbox account get-sandbox-accounts');
+      assert.equal(canonicalizeCommandName('sandbox order post-sandbox-order'), 'sandbox order post-sandbox-order');
     });
   });
 
@@ -85,6 +95,22 @@ describe('CLI domains', () => {
         'operation broker-report',
         'operation get-broker-report',
         'operations get-broker-report'
+      ]);
+      assert.deepEqual(commandAliasNames(['sandbox', 'account', 'list']), [
+        'sandbox account list',
+        'sandbox get-sandbox-accounts'
+      ]);
+      assert.deepEqual(commandAliasNames(['sandbox', 'order', 'place']), [
+        'sandbox order place',
+        'sandbox post-sandbox-order'
+      ]);
+      assert.deepEqual(commandAliasNames(['sandbox', 'portfolio']), [
+        'sandbox portfolio',
+        'sandbox get-sandbox-portfolio'
+      ]);
+      assert.deepEqual(commandAliasNames(['sandbox', 'pay-in']), [
+        'sandbox pay-in',
+        'sandbox sandbox-pay-in'
       ]);
     });
 

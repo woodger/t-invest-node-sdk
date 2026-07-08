@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-positions`.
+ * Модуль CLI-команды `sandbox position list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -29,7 +29,7 @@ type SandboxPositionsSdk = {
 
 type SandboxPositionsSdkFactory = (options: TinkoffInvestOptions) => SandboxPositionsSdk;
 
-const sandboxPositionsCommandPath = ['sandbox', 'get-sandbox-positions'] as const;
+const sandboxPositionsCommandPath = ['sandbox', 'position', 'list'] as const;
 const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPositionsRequestOptionsSchema = {

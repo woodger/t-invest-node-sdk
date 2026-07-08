@@ -84,7 +84,8 @@ describe('sandbox-post-order command', () => {
           command,
           [
             'sandbox',
-            'post-sandbox-order',
+            'order',
+            'place',
             '--account-id=sandbox-account-id',
             '--instrument-id=instrument-id',
             '--quantity=10',
@@ -124,7 +125,8 @@ describe('sandbox-post-order command', () => {
         command,
         [
           'sandbox',
-          'post-sandbox-order',
+          'order',
+          'place',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',

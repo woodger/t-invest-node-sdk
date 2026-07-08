@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox replace-sandbox-order`.
+ * Модуль CLI-команды `sandbox order replace`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -37,7 +37,7 @@ type SandboxReplaceOrderSdk = {
 
 type SandboxReplaceOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxReplaceOrderSdk;
 
-const sandboxReplaceOrderCommandPath = ['sandbox', 'replace-sandbox-order'] as const;
+const sandboxReplaceOrderCommandPath = ['sandbox', 'order', 'replace'] as const;
 const defaultSandboxReplaceOrderSdkFactory: SandboxReplaceOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxReplaceOrderRequestOptionsSchema = {

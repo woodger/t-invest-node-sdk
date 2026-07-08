@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-operations-by-cursor`.
+ * Модуль CLI-команды `sandbox operation page`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -45,7 +45,7 @@ type SandboxOperationsByCursorSdkFactory = (
   options: TinkoffInvestOptions
 ) => SandboxOperationsByCursorSdk;
 
-const sandboxOperationsByCursorCommandPath = ['sandbox', 'get-sandbox-operations-by-cursor'] as const;
+const sandboxOperationsByCursorCommandPath = ['sandbox', 'operation', 'page'] as const;
 const defaultSandboxOperationsByCursorSdkFactory: SandboxOperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxOperationsByCursorRequestOptionsSchema = {

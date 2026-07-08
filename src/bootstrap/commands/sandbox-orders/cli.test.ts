@@ -102,7 +102,8 @@ describe('sandbox-orders command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-orders',
+          'order',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -138,7 +139,8 @@ describe('sandbox-orders command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-orders',
+            'order',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

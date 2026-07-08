@@ -78,7 +78,8 @@ describe('sandbox-positions command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-positions',
+          'position',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -114,7 +115,8 @@ describe('sandbox-positions command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-positions',
+            'position',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

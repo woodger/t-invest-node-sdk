@@ -32,12 +32,19 @@ describe('commandHelp', () => {
     assert.equal('order place' in commandHelp, true);
     assert.equal('stop-order list' in commandHelp, true);
     assert.equal('operation portfolio' in commandHelp, true);
+    assert.equal('sandbox account list' in commandHelp, true);
+    assert.equal('sandbox order place' in commandHelp, true);
+    assert.equal('sandbox portfolio' in commandHelp, true);
+    assert.equal('sandbox pay-in' in commandHelp, true);
     assert.equal('dev compile-proto' in commandHelp, true);
     assert.equal('account get-accounts' in commandHelp, false);
     assert.equal('market get-candles' in commandHelp, false);
     assert.equal('order post-order' in commandHelp, false);
     assert.equal('stop-order get-stop-orders' in commandHelp, false);
     assert.equal('operation get-portfolio' in commandHelp, false);
+    assert.equal('sandbox get-sandbox-accounts' in commandHelp, false);
+    assert.equal('sandbox post-sandbox-order' in commandHelp, false);
+    assert.equal('sandbox sandbox-pay-in' in commandHelp, false);
     assert.equal('users get-accounts' in commandHelp, false);
     assert.equal('marketdata get-candles' in commandHelp, false);
     assert.equal('orders post-order' in commandHelp, false);
@@ -96,6 +103,18 @@ describe('renderHelp', () => {
       renderHelp(['operation', 'get-portfolio']),
       renderCommandHelp('operation portfolio')
     );
+    assert.equal(
+      renderHelp(['sandbox', 'get-sandbox-accounts']),
+      renderCommandHelp('sandbox account list')
+    );
+    assert.equal(
+      renderHelp(['sandbox', 'post-sandbox-order']),
+      renderCommandHelp('sandbox order place')
+    );
+    assert.equal(
+      renderHelp(['sandbox', 'sandbox-pay-in']),
+      renderCommandHelp('sandbox pay-in')
+    );
   });
 
   test('returns command-specific help for legacy command name', () => {
@@ -139,6 +158,14 @@ describe('renderHelp', () => {
     );
     assert.equal(
       renderHelp(['operations', 'portfolio']),
+      renderCliHelp()
+    );
+    assert.equal(
+      renderHelp(['sandbox', 'account', 'get-sandbox-accounts']),
+      renderCliHelp()
+    );
+    assert.equal(
+      renderHelp(['sandbox', 'order', 'post-sandbox-order']),
       renderCliHelp()
     );
   });
@@ -216,6 +243,28 @@ describe('renderDomainHelp', () => {
     assert.match(operationHelp, /withdraw-limits\s+Print account withdraw limits/);
     assert.doesNotMatch(operationHelp, /get-portfolio\s+Print account portfolio/);
     assert.doesNotMatch(operationHelp, /get-broker-report\s+Generate or print a broker report page/);
+  });
+
+  test('renders friendly sandbox domain commands', () => {
+    const help = renderDomainHelp('sandbox');
+
+    assert.match(help, /account list\s+Print sandbox accounts/);
+    assert.match(help, /account open\s+Open a sandbox account/);
+    assert.match(help, /account close\s+Close a sandbox account/);
+    assert.match(help, /order list\s+Print active sandbox orders/);
+    assert.match(help, /order show\s+Print sandbox order state/);
+    assert.match(help, /order place\s+Post a sandbox order/);
+    assert.match(help, /order replace\s+Replace a sandbox order/);
+    assert.match(help, /order cancel\s+Cancel a sandbox order/);
+    assert.match(help, /position list\s+Print sandbox positions/);
+    assert.match(help, /operation list\s+Print sandbox operations/);
+    assert.match(help, /operation page\s+Print one cursor page of sandbox operations/);
+    assert.match(help, /portfolio\s+Print sandbox portfolio/);
+    assert.match(help, /withdraw-limits\s+Print sandbox withdraw limits/);
+    assert.match(help, /pay-in\s+Pay in to a sandbox account/);
+    assert.doesNotMatch(help, /get-sandbox-accounts\s+Print sandbox accounts/);
+    assert.doesNotMatch(help, /post-sandbox-order\s+Post a sandbox order/);
+    assert.doesNotMatch(help, /sandbox-pay-in\s+Pay in to a sandbox account/);
   });
 });
 

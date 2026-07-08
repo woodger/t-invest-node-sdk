@@ -81,7 +81,8 @@ describe('sandbox-replace-order command', () => {
           command,
           [
             'sandbox',
-            'replace-sandbox-order',
+            'order',
+            'replace',
             '--account-id=sandbox-account-id',
             '--order-id=order-id',
             '--idempotency-key=new-idempotency-key',
@@ -121,7 +122,8 @@ describe('sandbox-replace-order command', () => {
         command,
         [
           'sandbox',
-          'replace-sandbox-order',
+          'order',
+          'replace',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',

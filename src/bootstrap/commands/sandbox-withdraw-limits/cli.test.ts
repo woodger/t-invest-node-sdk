@@ -82,7 +82,7 @@ describe('sandbox-withdraw-limits command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-withdraw-limits',
+          'withdraw-limits',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -120,7 +120,7 @@ describe('sandbox-withdraw-limits command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-withdraw-limits',
+            'withdraw-limits',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

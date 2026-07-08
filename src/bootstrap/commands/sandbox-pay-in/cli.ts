@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox sandbox-pay-in`.
+ * Модуль CLI-команды `sandbox pay-in`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -40,7 +40,7 @@ type SandboxPayInSdk = {
 
 type SandboxPayInSdkFactory = (options: TinkoffInvestOptions) => SandboxPayInSdk;
 
-const sandboxPayInCommandPath = ['sandbox', 'sandbox-pay-in'] as const;
+const sandboxPayInCommandPath = ['sandbox', 'pay-in'] as const;
 const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPayInCurrencies = ['rub', 'usd'] as const;

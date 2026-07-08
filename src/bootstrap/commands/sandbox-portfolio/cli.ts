@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-portfolio`.
+ * Модуль CLI-команды `sandbox portfolio`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -32,7 +32,7 @@ type SandboxPortfolioSdk = {
 
 type SandboxPortfolioSdkFactory = (options: TinkoffInvestOptions) => SandboxPortfolioSdk;
 
-const sandboxPortfolioCommandPath = ['sandbox', 'get-sandbox-portfolio'] as const;
+const sandboxPortfolioCommandPath = ['sandbox', 'portfolio'] as const;
 const defaultSandboxPortfolioSdkFactory: SandboxPortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPortfolioRequestOptionsSchema = {
