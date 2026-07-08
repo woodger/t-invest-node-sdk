@@ -1,0 +1,76 @@
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
+import {
+  canonicalizeCommandName,
+  commandPathAliases,
+  commandPathToName
+} from './domains';
+
+function commandAliasNames(path: readonly [string, ...string[]]): string[] {
+  return commandPathAliases(path).map(commandPathToName);
+}
+
+describe('CLI domains', () => {
+  describe('canonicalizeCommandName', () => {
+    test('normalizes friendly, technical and legacy paths to the preferred command path', () => {
+      assert.equal(canonicalizeCommandName('account list'), 'account list');
+      assert.equal(canonicalizeCommandName('account get-accounts'), 'account list');
+      assert.equal(canonicalizeCommandName('users get-accounts'), 'account list');
+      assert.equal(canonicalizeCommandName('market candles'), 'market candles');
+      assert.equal(canonicalizeCommandName('market get-candles'), 'market candles');
+      assert.equal(canonicalizeCommandName('marketdata get-candles'), 'market candles');
+      assert.equal(canonicalizeCommandName('order place'), 'order place');
+      assert.equal(canonicalizeCommandName('order post-order'), 'order place');
+      assert.equal(canonicalizeCommandName('orders post-order'), 'order place');
+    });
+
+    test('keeps non-renamed public paths and normalizes legacy service domains', () => {
+      assert.equal(canonicalizeCommandName('instrument bonds'), 'instrument bonds');
+      assert.equal(canonicalizeCommandName('instruments bonds'), 'instrument bonds');
+      assert.equal(canonicalizeCommandName('operation get-portfolio'), 'operation get-portfolio');
+      assert.equal(canonicalizeCommandName('operations get-portfolio'), 'operation get-portfolio');
+      assert.equal(canonicalizeCommandName('dev compile-proto'), 'dev compile-proto');
+      assert.equal(canonicalizeCommandName('compile-proto'), 'dev compile-proto');
+    });
+
+    test('does not invent mixed legacy-domain friendly-action aliases', () => {
+      assert.equal(canonicalizeCommandName('users list'), 'users list');
+      assert.equal(canonicalizeCommandName('marketdata candles'), 'marketdata candles');
+      assert.equal(canonicalizeCommandName('orders place'), 'orders place');
+    });
+  });
+
+  describe('commandPathAliases', () => {
+    test('returns preferred, technical and legacy aliases for renamed commands', () => {
+      assert.deepEqual(commandAliasNames(['account', 'list']), [
+        'account list',
+        'account get-accounts',
+        'users get-accounts'
+      ]);
+      assert.deepEqual(commandAliasNames(['market', 'candles']), [
+        'market candles',
+        'market get-candles',
+        'marketdata get-candles'
+      ]);
+      assert.deepEqual(commandAliasNames(['order', 'place']), [
+        'order place',
+        'order post-order',
+        'orders post-order'
+      ]);
+    });
+
+    test('returns legacy domain aliases for commands without friendly action aliases', () => {
+      assert.deepEqual(commandAliasNames(['instrument', 'bonds']), [
+        'instrument bonds',
+        'instruments bonds'
+      ]);
+      assert.deepEqual(commandAliasNames(['operation', 'get-portfolio']), [
+        'operation get-portfolio',
+        'operations get-portfolio'
+      ]);
+      assert.deepEqual(commandAliasNames(['stream', 'run']), [
+        'stream run'
+      ]);
+    });
+  });
+});
