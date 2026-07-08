@@ -87,11 +87,21 @@ const technicalCompatibilityCommandNames = [
   'market get-order-book',
   'market get-trading-status',
   'market get-trading-statuses',
+  'operation get-broker-report',
+  'operation get-dividends-foreign-issuer',
+  'operation get-operations',
+  'operation get-operations-by-cursor',
+  'operation get-portfolio',
+  'operation get-positions',
+  'operation get-withdraw-limits',
   'order cancel-order',
   'order get-order-state',
   'order get-orders',
   'order post-order',
-  'order replace-order'
+  'order replace-order',
+  'stop-order cancel-stop-order',
+  'stop-order get-stop-orders',
+  'stop-order post-stop-order'
 ] as const;
 
 const preferredCommandNames = [
@@ -133,21 +143,21 @@ const preferredCommandNames = [
   'market status',
   'market statuses',
   'market trades',
-  'operation get-broker-report',
-  'operation get-dividends-foreign-issuer',
-  'operation get-operations',
-  'operation get-operations-by-cursor',
-  'operation get-portfolio',
-  'operation get-positions',
-  'operation get-withdraw-limits',
+  'operation broker-report',
+  'operation foreign-dividends-report',
+  'operation list',
+  'operation page',
+  'operation portfolio',
+  'operation positions',
+  'operation withdraw-limits',
   'order cancel',
   'order list',
   'order place',
   'order replace',
   'order show',
-  'stop-order cancel-stop-order',
-  'stop-order get-stop-orders',
-  'stop-order post-stop-order'
+  'stop-order cancel',
+  'stop-order list',
+  'stop-order place'
 ] as const;
 
 const expectedCommandNames = [
@@ -161,7 +171,12 @@ const expectedCommandNames = [
 const unknownCommandNames = [
   'instruments options',
   'marketdata stream',
+  'operations broker-report',
+  'operations list',
+  'operations portfolio',
   'portfolio',
+  'stoporders list',
+  'stoporders place',
   'unknown-command',
   undefined
 ] as const;
@@ -197,8 +212,18 @@ describe('resolveCommand', () => {
       'account info',
       'market candles',
       'market last-prices',
+      'operation broker-report',
+      'operation foreign-dividends-report',
+      'operation list',
+      'operation page',
+      'operation portfolio',
+      'operation positions',
+      'operation withdraw-limits',
       'order list',
-      'order place'
+      'order place',
+      'stop-order cancel',
+      'stop-order list',
+      'stop-order place'
     ]) {
       const path = commandPath(commandName);
       const command = resolveCommand(path);
@@ -272,6 +297,47 @@ describe('resolveCommand', () => {
           '--format=xml'
         ],
         expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['stop-order', 'get-stop-orders'],
+        args: [
+          '--account-id=account-id',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['stop-order', 'post-stop-order'],
+        args: [
+          '--account-id=account-id',
+          '--instrument-id=instrument-id',
+          '--quantity=1',
+          '--stop-price=95.5',
+          '--direction=sell',
+          '--expiration-type=good-till-cancel',
+          '--stop-order-type=stop-loss',
+          '--confirm',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['operation', 'get-operations'],
+        args: [
+          '--account-id=account-id',
+          '--from=2026-06-01T00:00:00Z',
+          '--to=2026-06-19T00:00:00Z',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['operation', 'get-portfolio'],
+        args: [
+          '--account-id=account-id',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
       }
     ]) {
       const command = resolveCommand(path);
@@ -313,6 +379,47 @@ describe('resolveCommand', () => {
           '--order-type=market',
           '--order-id=order-id',
           '--confirm',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['stoporders', 'get-stop-orders'],
+        args: [
+          '--account-id=account-id',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['stoporders', 'post-stop-order'],
+        args: [
+          '--account-id=account-id',
+          '--instrument-id=instrument-id',
+          '--quantity=1',
+          '--stop-price=95.5',
+          '--direction=sell',
+          '--expiration-type=good-till-cancel',
+          '--stop-order-type=stop-loss',
+          '--confirm',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['operations', 'get-operations'],
+        args: [
+          '--account-id=account-id',
+          '--from=2026-06-01T00:00:00Z',
+          '--to=2026-06-19T00:00:00Z',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['operations', 'get-portfolio'],
+        args: [
+          '--account-id=account-id',
           '--format=xml'
         ],
         expectedError: /Expected '--format' as one of: json, table/

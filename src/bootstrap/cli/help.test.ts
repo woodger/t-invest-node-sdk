@@ -30,15 +30,19 @@ describe('commandHelp', () => {
     assert.equal('market candles' in commandHelp, true);
     assert.equal('instrument bonds' in commandHelp, true);
     assert.equal('order place' in commandHelp, true);
-    assert.equal('stop-order get-stop-orders' in commandHelp, true);
-    assert.equal('operation get-portfolio' in commandHelp, true);
+    assert.equal('stop-order list' in commandHelp, true);
+    assert.equal('operation portfolio' in commandHelp, true);
     assert.equal('dev compile-proto' in commandHelp, true);
     assert.equal('account get-accounts' in commandHelp, false);
     assert.equal('market get-candles' in commandHelp, false);
     assert.equal('order post-order' in commandHelp, false);
+    assert.equal('stop-order get-stop-orders' in commandHelp, false);
+    assert.equal('operation get-portfolio' in commandHelp, false);
     assert.equal('users get-accounts' in commandHelp, false);
     assert.equal('marketdata get-candles' in commandHelp, false);
     assert.equal('orders post-order' in commandHelp, false);
+    assert.equal('stoporders get-stop-orders' in commandHelp, false);
+    assert.equal('operations get-portfolio' in commandHelp, false);
     assert.equal('compile-proto' in commandHelp, false);
   });
 });
@@ -84,6 +88,14 @@ describe('renderHelp', () => {
       renderHelp(['order', 'post-order']),
       renderCommandHelp('order place')
     );
+    assert.equal(
+      renderHelp(['stop-order', 'get-stop-orders']),
+      renderCommandHelp('stop-order list')
+    );
+    assert.equal(
+      renderHelp(['operation', 'get-portfolio']),
+      renderCommandHelp('operation portfolio')
+    );
   });
 
   test('returns command-specific help for legacy command name', () => {
@@ -99,6 +111,14 @@ describe('renderHelp', () => {
       renderHelp(['orders', 'post-order']),
       renderCommandHelp('order place')
     );
+    assert.equal(
+      renderHelp(['stoporders', 'get-stop-orders']),
+      renderCommandHelp('stop-order list')
+    );
+    assert.equal(
+      renderHelp(['operations', 'get-portfolio']),
+      renderCommandHelp('operation portfolio')
+    );
   });
 
   test('returns domain help for known domain name', () => {
@@ -111,6 +131,14 @@ describe('renderHelp', () => {
   test('returns top-level help for unknown command name', () => {
     assert.equal(
       renderHelp(['unknown']),
+      renderCliHelp()
+    );
+    assert.equal(
+      renderHelp(['stoporders', 'list']),
+      renderCliHelp()
+    );
+    assert.equal(
+      renderHelp(['operations', 'portfolio']),
       renderCliHelp()
     );
   });
@@ -165,6 +193,30 @@ describe('renderDomainHelp', () => {
       }
     }
   });
+
+  test('renders friendly stop-order and operation domain commands', () => {
+    const stopOrderHelp = renderDomainHelp('stop-order');
+    const operationHelp = renderDomainHelp('operation');
+
+    assert.match(stopOrderHelp, /list\s+Print active stop orders/);
+    assert.match(stopOrderHelp, /place\s+Post a stop order/);
+    assert.match(stopOrderHelp, /cancel\s+Cancel a stop order/);
+    assert.doesNotMatch(stopOrderHelp, /get-stop-orders\s+Print active stop orders/);
+    assert.doesNotMatch(stopOrderHelp, /post-stop-order\s+Post a stop order/);
+
+    assert.match(operationHelp, /list\s+Print account operations/);
+    assert.match(operationHelp, /page\s+Print one cursor page of account operations/);
+    assert.match(operationHelp, /broker-report\s+Generate or print a broker report page/);
+    assert.match(
+      operationHelp,
+      /foreign-dividends-report\s+Generate or print a foreign issuer dividends report page/
+    );
+    assert.match(operationHelp, /portfolio\s+Print account portfolio/);
+    assert.match(operationHelp, /positions\s+Print account positions/);
+    assert.match(operationHelp, /withdraw-limits\s+Print account withdraw limits/);
+    assert.doesNotMatch(operationHelp, /get-portfolio\s+Print account portfolio/);
+    assert.doesNotMatch(operationHelp, /get-broker-report\s+Generate or print a broker report page/);
+  });
 });
 
 describe('renderCommandHelp', () => {
@@ -204,7 +256,7 @@ describe('renderCommandHelp', () => {
       /--confirm is an SDK CLI safety guard; it is not a gRPC request field/
     );
     assert.match(
-      renderCommandHelp('operation get-broker-report'),
+      renderCommandHelp('operation broker-report'),
       /Generate mode starts a report task; page mode reads an existing report task page/
     );
     assert.match(

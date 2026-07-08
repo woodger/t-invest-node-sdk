@@ -89,7 +89,7 @@ describe('withdraw-limits command', () => {
         command,
         [
           'operation',
-          'get-withdraw-limits',
+          'withdraw-limits',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -127,7 +127,7 @@ describe('withdraw-limits command', () => {
           command,
           [
             'operation',
-            'get-withdraw-limits',
+            'withdraw-limits',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id'

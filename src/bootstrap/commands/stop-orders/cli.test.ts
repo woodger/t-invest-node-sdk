@@ -108,7 +108,7 @@ describe('stop-orders command', () => {
         command,
         [
           'stop-order',
-          'get-stop-orders',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -146,7 +146,7 @@ describe('stop-orders command', () => {
           command,
           [
             'stop-order',
-            'get-stop-orders',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id'

@@ -1002,12 +1002,12 @@ export const commandHelp = {
       'The CLI does not generate idempotency keys automatically.'
     ]
   },
-  'operation get-operations': {
+  'operation list': {
     description: 'Print account operations',
     sdkCall: 'sdk.operations.getOperations',
     grpcMethod: 'OperationsService/GetOperations',
     usage: [
-      'tinkoff-invest-node-sdk operation get-operations --account-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk operation list --account-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list',
@@ -1023,20 +1023,20 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk operation get-operations --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
+      'tinkoff-invest-node-sdk operation list --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk operation list --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operation get-operations-by-cursor': {
+  'operation page': {
     description: 'Print one cursor page of account operations',
     sdkCall: 'sdk.operations.getOperationsByCursor',
     grpcMethod: 'OperationsService/GetOperationsByCursor',
     usage: [
-      'tinkoff-invest-node-sdk operation get-operations-by-cursor --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation page --account-id=ID [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list'
@@ -1057,8 +1057,8 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-operations-by-cursor --account-id=2000000000 --limit=100',
-      'tinkoff-invest-node-sdk operation get-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
+      'tinkoff-invest-node-sdk operation page --account-id=2000000000 --limit=100',
+      'tinkoff-invest-node-sdk operation page --account-id=2000000000 --cursor=NEXT --format=json'
     ],
     notes: [
       'The command returns one page; pass nextCursor as --cursor to request the next page.',
@@ -1067,13 +1067,13 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operation get-broker-report': {
+  'operation broker-report': {
     description: 'Generate or print a broker report page',
     sdkCall: 'sdk.operations.getBrokerReport',
     grpcMethod: 'OperationsService/GetBrokerReport',
     usage: [
-      'tinkoff-invest-node-sdk operation get-broker-report --account-id=ID --from=ISO --to=ISO [options]',
-      'tinkoff-invest-node-sdk operation get-broker-report --task-id=ID [options]'
+      'tinkoff-invest-node-sdk operation broker-report --account-id=ID --from=ISO --to=ISO [options]',
+      'tinkoff-invest-node-sdk operation broker-report --task-id=ID [options]'
     ],
     required: [
       'Generate mode: --account-id=ID --from=ISO --to=ISO',
@@ -1086,8 +1086,8 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-broker-report --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk operation get-broker-report --task-id=TASK --page=1 --format=json'
+      'tinkoff-invest-node-sdk operation broker-report --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk operation broker-report --task-id=TASK --page=1 --format=json'
     ],
     notes: [
       'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
@@ -1096,13 +1096,13 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operation get-dividends-foreign-issuer': {
+  'operation foreign-dividends-report': {
     description: 'Generate or print a foreign issuer dividends report page',
     sdkCall: 'sdk.operations.getDividendsForeignIssuer',
     grpcMethod: 'OperationsService/GetDividendsForeignIssuer',
     usage: [
-      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --account-id=ID --from=ISO --to=ISO [options]',
-      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --task-id=ID [options]'
+      'tinkoff-invest-node-sdk operation foreign-dividends-report --account-id=ID --from=ISO --to=ISO [options]',
+      'tinkoff-invest-node-sdk operation foreign-dividends-report --task-id=ID [options]'
     ],
     required: [
       'Generate mode: --account-id=ID --from=ISO --to=ISO',
@@ -1115,8 +1115,8 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --account-id=2000000000 --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
-      'tinkoff-invest-node-sdk operation get-dividends-foreign-issuer --task-id=TASK --page=1 --format=json'
+      'tinkoff-invest-node-sdk operation foreign-dividends-report --account-id=2000000000 --from=2026-01-01T00:00:00Z --to=2026-12-31T00:00:00Z',
+      'tinkoff-invest-node-sdk operation foreign-dividends-report --task-id=TASK --page=1 --format=json'
     ],
     notes: [
       'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
@@ -1125,12 +1125,12 @@ export const commandHelp = {
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'operation get-portfolio': {
+  'operation portfolio': {
     description: 'Print account portfolio',
     sdkCall: 'sdk.operations.getPortfolio',
     grpcMethod: 'OperationsService/GetPortfolio',
     usage: [
-      'tinkoff-invest-node-sdk operation get-portfolio --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation portfolio --account-id=ID [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list'
@@ -1142,15 +1142,15 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-portfolio --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk operation portfolio --account-id=2000000000 --format=json'
     ]
   },
-  'operation get-positions': {
+  'operation positions': {
     description: 'Print account positions',
     sdkCall: 'sdk.operations.getPositions',
     grpcMethod: 'OperationsService/GetPositions',
     usage: [
-      'tinkoff-invest-node-sdk operation get-positions --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation positions --account-id=ID [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list'
@@ -1161,15 +1161,15 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-positions --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk operation positions --account-id=2000000000 --format=json'
     ]
   },
-  'operation get-withdraw-limits': {
+  'operation withdraw-limits': {
     description: 'Print account withdraw limits',
     sdkCall: 'sdk.operations.getWithdrawLimits',
     grpcMethod: 'OperationsService/GetWithdrawLimits',
     usage: [
-      'tinkoff-invest-node-sdk operation get-withdraw-limits --account-id=ID [options]'
+      'tinkoff-invest-node-sdk operation withdraw-limits --account-id=ID [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list'
@@ -1180,16 +1180,16 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk operation get-withdraw-limits --account-id=2000000000',
-      'tinkoff-invest-node-sdk operation get-withdraw-limits --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk operation withdraw-limits --account-id=2000000000',
+      'tinkoff-invest-node-sdk operation withdraw-limits --account-id=2000000000 --format=json'
     ]
   },
-  'stop-order get-stop-orders': {
+  'stop-order list': {
     description: 'Print active stop orders',
     sdkCall: 'sdk.stoporders.getStopOrders',
     grpcMethod: 'StopOrdersService/GetStopOrders',
     usage: [
-      'tinkoff-invest-node-sdk stop-order get-stop-orders --account-id=ID [options]'
+      'tinkoff-invest-node-sdk stop-order list --account-id=ID [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list'
@@ -1200,16 +1200,16 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk stop-order get-stop-orders --account-id=2000000000',
-      'tinkoff-invest-node-sdk stop-order get-stop-orders --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk stop-order list --account-id=2000000000',
+      'tinkoff-invest-node-sdk stop-order list --account-id=2000000000 --format=json'
     ]
   },
-  'stop-order post-stop-order': {
+  'stop-order place': {
     description: 'Post a stop order',
     sdkCall: 'sdk.stoporders.postStopOrder',
     grpcMethod: 'StopOrdersService/PostStopOrder',
     usage: [
-      'tinkoff-invest-node-sdk stop-order post-stop-order --account-id=ID --instrument-id=ID --quantity=N --stop-price=DECIMAL --direction=buy|sell --expiration-type=TYPE --stop-order-type=TYPE --confirm [options]'
+      'tinkoff-invest-node-sdk stop-order place --account-id=ID --instrument-id=ID --quantity=N --stop-price=DECIMAL --direction=buy|sell --expiration-type=TYPE --stop-order-type=TYPE --confirm [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list',
@@ -1229,20 +1229,20 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk stop-order post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --stop-price=95.5 --direction=sell --expiration-type=good-till-cancel --stop-order-type=stop-loss --confirm',
-      'tinkoff-invest-node-sdk stop-order post-stop-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
+      'tinkoff-invest-node-sdk stop-order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --stop-price=95.5 --direction=sell --expiration-type=good-till-cancel --stop-order-type=stop-loss --confirm',
+      'tinkoff-invest-node-sdk stop-order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=95 --stop-price=95.5 --direction=sell --expiration-type=good-till-date --expire-date=2026-06-20T10:00:00Z --stop-order-type=stop-limit --confirm --format=json'
     ],
     notes: [
       'This command places a stop order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
-  'stop-order cancel-stop-order': {
+  'stop-order cancel': {
     description: 'Cancel a stop order',
     sdkCall: 'sdk.stoporders.cancelStopOrder',
     grpcMethod: 'StopOrdersService/CancelStopOrder',
     usage: [
-      'tinkoff-invest-node-sdk stop-order cancel-stop-order --account-id=ID --stop-order-id=ID --confirm [options]'
+      'tinkoff-invest-node-sdk stop-order cancel --account-id=ID --stop-order-id=ID --confirm [options]'
     ],
     required: [
       '--account-id=ID       Account identifier from account list',
@@ -1255,8 +1255,8 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk stop-order cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm',
-      'tinkoff-invest-node-sdk stop-order cancel-stop-order --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
+      'tinkoff-invest-node-sdk stop-order cancel --account-id=2000000000 --stop-order-id=stop-order-id --confirm',
+      'tinkoff-invest-node-sdk stop-order cancel --account-id=2000000000 --stop-order-id=stop-order-id --confirm --format=json'
     ],
     notes: [
       'This command cancels a stop order and refuses to run without --confirm by default CLI policy.'
@@ -1658,7 +1658,7 @@ export const commandHelp = {
     ],
     examples: [
       'tinkoff-invest-node-sdk help',
-      'tinkoff-invest-node-sdk help operation get-portfolio',
+      'tinkoff-invest-node-sdk help operation portfolio',
       'tinkoff-invest-node-sdk help version'
     ],
     notes: [

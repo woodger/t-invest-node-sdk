@@ -46,7 +46,7 @@ describe('cancel-stop-order command', () => {
           command,
           [
             'stop-order',
-            'cancel-stop-order',
+            'cancel',
             '--account-id=account-id',
             '--stop-order-id=stop-order-id'
           ],
@@ -84,7 +84,7 @@ describe('cancel-stop-order command', () => {
         command,
         [
           'stop-order',
-          'cancel-stop-order',
+          'cancel',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

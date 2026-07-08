@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operation get-portfolio`.
+ * Модуль CLI-команды `operation portfolio`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -32,7 +32,7 @@ type PortfolioSdk = {
 
 type PortfolioSdkFactory = (options: TinkoffInvestOptions) => PortfolioSdk;
 
-const portfolioCommandPath = ['operation', 'get-portfolio'] as const;
+const portfolioCommandPath = ['operation', 'portfolio'] as const;
 const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const portfolioCurrencies = {

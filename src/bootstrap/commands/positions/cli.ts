@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operation get-positions`.
+ * Модуль CLI-команды `operation positions`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -28,7 +28,7 @@ type PositionsSdk = {
 
 type PositionsSdkFactory = (options: TinkoffInvestOptions) => PositionsSdk;
 
-const positionsCommandPath = ['operation', 'get-positions'] as const;
+const positionsCommandPath = ['operation', 'positions'] as const;
 const defaultPositionsSdkFactory: PositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const positionsRequestOptionsSchema = {
