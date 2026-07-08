@@ -142,6 +142,8 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk market candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv'
     ],
     notes: [
+      'Use --format=csv when candle rows are consumed by spreadsheets or batch tools.',
+      'The CLI accepts interval aliases, but provider history depth and request window limits still apply.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -937,6 +939,9 @@ export const commandHelp = {
     ],
     notes: [
       'This command places an order and refuses to run without --confirm by default CLI policy.',
+      '--confirm is an SDK CLI safety guard; it is not a gRPC request field.',
+      'Use a stable --order-id value for retries so provider idempotency can identify the same order request.',
+      'The CLI does not infer pricing rules; provider validation decides whether --price is valid for the selected order type.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
@@ -992,6 +997,8 @@ export const commandHelp = {
     ],
     notes: [
       'This command changes an existing order and refuses to run without --confirm by default CLI policy.',
+      '--idempotency-key identifies the replacement request, not the original order.',
+      'The command does not fetch the existing order first; pass the full replacement values explicitly.',
       'The CLI does not generate idempotency keys automatically.'
     ]
   },
@@ -1055,6 +1062,8 @@ export const commandHelp = {
     ],
     notes: [
       'The command returns one page; pass nextCursor as --cursor to request the next page.',
+      'Cursor pagination is explicit: the CLI does not loop through pages automatically.',
+      'Use --limit to control page size when replaying a cursor flow in scripts.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -1082,6 +1091,8 @@ export const commandHelp = {
     ],
     notes: [
       'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
+      'Generate mode starts a report task; page mode reads an existing report task page.',
+      'Use --task-id returned by generate mode for later page requests.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -1109,6 +1120,8 @@ export const commandHelp = {
     ],
     notes: [
       'The command maps the generated oneof contract to two CLI modes: generate by period or get a page by task id.',
+      'Generate mode starts a report task; page mode reads an existing report task page.',
+      'Use --task-id returned by generate mode for later page requests.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
@@ -1615,6 +1628,9 @@ export const commandHelp = {
     ],
     notes: [
       'Supports server-side streams and static initial requests for marketdata.marketDataStream.',
+      'Output is JSONL so each provider event can be processed as an independent line.',
+      'Use --max-events, --duration-ms or --idle-timeout-ms to make long-running streams finite in scripts.',
+      '--raw prints generated response objects; the default output wraps events in a stable CLI envelope.',
       'Dynamic bidirectional request sources are not implemented.'
     ]
   },
@@ -1627,8 +1643,10 @@ export const commandHelp = {
       'tinkoff-invest-node-sdk dev compile-proto'
     ],
     notes: [
+      'The command uses proto files already present in the repository; it does not download upstream proto sources.',
       'Runs system protoc from PATH and the local ts-proto plugin from node_modules.',
-      'Run yarn build before this command when bootstrap TypeScript sources changed.'
+      'Run yarn build before this command when bootstrap TypeScript sources changed.',
+      'Generated files are part of the SDK runtime contract; do not edit them manually.'
     ]
   },
   help: {
