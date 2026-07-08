@@ -83,7 +83,7 @@ describe('sandbox-pay-in command', () => {
           command,
           [
             'sandbox',
-            'sandbox-pay-in',
+            'pay-in',
             '--account-id=sandbox-account-id',
             '--amount=100'
           ],
@@ -125,7 +125,7 @@ describe('sandbox-pay-in command', () => {
         command,
         [
           'sandbox',
-          'sandbox-pay-in',
+          'pay-in',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',

@@ -165,7 +165,8 @@ describe('sandbox-operations-by-cursor command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-operations-by-cursor',
+          'operation',
+          'page',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -203,7 +204,8 @@ describe('sandbox-operations-by-cursor command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-operations-by-cursor',
+            'operation',
+            'page',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

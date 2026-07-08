@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-withdraw-limits`.
+ * Модуль CLI-команды `sandbox withdraw-limits`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -38,7 +38,7 @@ type SandboxWithdrawLimitsSdkFactory = (
   options: TinkoffInvestOptions
 ) => SandboxWithdrawLimitsSdk;
 
-const sandboxWithdrawLimitsCommandPath = ['sandbox', 'get-sandbox-withdraw-limits'] as const;
+const sandboxWithdrawLimitsCommandPath = ['sandbox', 'withdraw-limits'] as const;
 const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxWithdrawLimitsRequestOptionsSchema = {

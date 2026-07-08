@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox close-sandbox-account`.
+ * Модуль CLI-команды `sandbox account close`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -39,7 +39,7 @@ type SandboxCloseAccountSdk = {
 
 type SandboxCloseAccountSdkFactory = (options: TinkoffInvestOptions) => SandboxCloseAccountSdk;
 
-const sandboxCloseAccountCommandPath = ['sandbox', 'close-sandbox-account'] as const;
+const sandboxCloseAccountCommandPath = ['sandbox', 'account', 'close'] as const;
 const defaultSandboxCloseAccountSdkFactory: SandboxCloseAccountSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxCloseAccountRequestOptionsSchema = {

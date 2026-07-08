@@ -120,7 +120,8 @@ describe('sandbox-operations command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-operations',
+          'operation',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -160,7 +161,8 @@ describe('sandbox-operations command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-operations',
+            'operation',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id',

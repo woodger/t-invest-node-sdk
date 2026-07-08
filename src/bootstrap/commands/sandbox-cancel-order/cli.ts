@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox cancel-sandbox-order`.
+ * Модуль CLI-команды `sandbox order cancel`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -40,7 +40,7 @@ type SandboxCancelOrderSdk = {
 
 type SandboxCancelOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxCancelOrderSdk;
 
-const sandboxCancelOrderCommandPath = ['sandbox', 'cancel-sandbox-order'] as const;
+const sandboxCancelOrderCommandPath = ['sandbox', 'order', 'cancel'] as const;
 const defaultSandboxCancelOrderSdkFactory: SandboxCancelOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxCancelOrderRequestOptionsSchema = {

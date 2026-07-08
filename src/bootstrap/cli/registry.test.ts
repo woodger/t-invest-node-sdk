@@ -50,20 +50,6 @@ const legacyCommandNames = [
   'orders get-orders',
   'orders post-order',
   'orders replace-order',
-  'sandbox cancel-sandbox-order',
-  'sandbox close-sandbox-account',
-  'sandbox get-sandbox-accounts',
-  'sandbox get-sandbox-operations',
-  'sandbox get-sandbox-operations-by-cursor',
-  'sandbox get-sandbox-order-state',
-  'sandbox get-sandbox-orders',
-  'sandbox get-sandbox-portfolio',
-  'sandbox get-sandbox-positions',
-  'sandbox get-sandbox-withdraw-limits',
-  'sandbox open-sandbox-account',
-  'sandbox post-sandbox-order',
-  'sandbox replace-sandbox-order',
-  'sandbox sandbox-pay-in',
   'stoporders cancel-stop-order',
   'stoporders get-stop-orders',
   'stoporders post-stop-order',
@@ -99,6 +85,20 @@ const technicalCompatibilityCommandNames = [
   'order get-orders',
   'order post-order',
   'order replace-order',
+  'sandbox cancel-sandbox-order',
+  'sandbox close-sandbox-account',
+  'sandbox get-sandbox-accounts',
+  'sandbox get-sandbox-operations',
+  'sandbox get-sandbox-operations-by-cursor',
+  'sandbox get-sandbox-order-state',
+  'sandbox get-sandbox-orders',
+  'sandbox get-sandbox-portfolio',
+  'sandbox get-sandbox-positions',
+  'sandbox get-sandbox-withdraw-limits',
+  'sandbox open-sandbox-account',
+  'sandbox post-sandbox-order',
+  'sandbox replace-sandbox-order',
+  'sandbox sandbox-pay-in',
   'stop-order cancel-stop-order',
   'stop-order get-stop-orders',
   'stop-order post-stop-order'
@@ -155,6 +155,20 @@ const preferredCommandNames = [
   'order place',
   'order replace',
   'order show',
+  'sandbox account close',
+  'sandbox account list',
+  'sandbox account open',
+  'sandbox operation list',
+  'sandbox operation page',
+  'sandbox order cancel',
+  'sandbox order list',
+  'sandbox order place',
+  'sandbox order replace',
+  'sandbox order show',
+  'sandbox pay-in',
+  'sandbox portfolio',
+  'sandbox position list',
+  'sandbox withdraw-limits',
   'stop-order cancel',
   'stop-order list',
   'stop-order place'
@@ -175,6 +189,8 @@ const unknownCommandNames = [
   'operations list',
   'operations portfolio',
   'portfolio',
+  'sandbox account get-sandbox-accounts',
+  'sandbox order post-sandbox-order',
   'stoporders list',
   'stoporders place',
   'unknown-command',
@@ -221,6 +237,20 @@ describe('resolveCommand', () => {
       'operation withdraw-limits',
       'order list',
       'order place',
+      'sandbox account close',
+      'sandbox account list',
+      'sandbox account open',
+      'sandbox operation list',
+      'sandbox operation page',
+      'sandbox order cancel',
+      'sandbox order list',
+      'sandbox order place',
+      'sandbox order replace',
+      'sandbox order show',
+      'sandbox pay-in',
+      'sandbox portfolio',
+      'sandbox position list',
+      'sandbox withdraw-limits',
       'stop-order cancel',
       'stop-order list',
       'stop-order place'
@@ -337,6 +367,45 @@ describe('resolveCommand', () => {
           '--account-id=account-id',
           '--format=xml'
         ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['sandbox', 'get-sandbox-accounts'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['sandbox', 'open-sandbox-account'],
+        args: ['--confirm', '--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['sandbox', 'post-sandbox-order'],
+        args: [
+          '--account-id=account-id',
+          '--instrument-id=instrument-id',
+          '--quantity=1',
+          '--direction=buy',
+          '--order-type=market',
+          '--order-id=order-id',
+          '--confirm',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['sandbox', 'get-sandbox-orders'],
+        args: ['--account-id=account-id', '--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['sandbox', 'get-sandbox-portfolio'],
+        args: ['--account-id=account-id', '--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['sandbox', 'sandbox-pay-in'],
+        args: ['--account-id=account-id', '--amount=100', '--confirm', '--format=xml'],
         expectedError: /Expected '--format' as one of: json, table/
       }
     ]) {

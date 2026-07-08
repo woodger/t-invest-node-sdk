@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-orders`.
+ * Модуль CLI-команды `sandbox order list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -29,7 +29,7 @@ type SandboxOrdersSdk = {
 
 type SandboxOrdersSdkFactory = (options: TinkoffInvestOptions) => SandboxOrdersSdk;
 
-const sandboxOrdersCommandPath = ['sandbox', 'get-sandbox-orders'] as const;
+const sandboxOrdersCommandPath = ['sandbox', 'order', 'list'] as const;
 const defaultSandboxOrdersSdkFactory: SandboxOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxOrdersRequestOptionsSchema = {

@@ -163,7 +163,7 @@ const deprecatedFigiOptionCommandNames = new Set<string>(
     'instrument edit-favorites',
     'instrument get-futures-margin',
     'operation list',
-    'sandbox get-sandbox-operations'
+    'sandbox operation list'
   ].flatMap(commandNameAliases)
 );
 

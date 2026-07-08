@@ -104,7 +104,7 @@ describe('sandbox-portfolio command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-portfolio',
+          'portfolio',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -142,7 +142,7 @@ describe('sandbox-portfolio command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-portfolio',
+            'portfolio',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

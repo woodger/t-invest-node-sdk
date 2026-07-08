@@ -126,6 +126,34 @@ describe('bootstrap cli runner', () => {
       assert.equal(read().stderr, '');
     });
 
+    test('prints sandbox preferred command help from technical command help flags', async () => {
+      for (const { path, title, usage } of [
+        {
+          path: ['sandbox', 'get-sandbox-accounts'],
+          title: /sandbox account list - Print sandbox accounts/,
+          usage: /tinkoff-invest-node-sdk sandbox account list/
+        },
+        {
+          path: ['sandbox', 'post-sandbox-order'],
+          title: /sandbox order place - Post a sandbox order/,
+          usage: /tinkoff-invest-node-sdk sandbox order place --account-id=ID/
+        },
+        {
+          path: ['sandbox', 'sandbox-pay-in'],
+          title: /sandbox pay-in - Pay in to a sandbox account/,
+          usage: /tinkoff-invest-node-sdk sandbox pay-in --account-id=ID/
+        }
+      ] as const) {
+        const { io, read } = createIo();
+        const exitCode = await runCli([...path, '--help'], io);
+
+        assert.equal(exitCode, 0);
+        assert.match(read().stdout, title);
+        assert.match(read().stdout, usage);
+        assert.equal(read().stderr, '');
+      }
+    });
+
     test('prints preferred command help from a legacy command help flag', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['operations', 'get-portfolio', '--help'], io);

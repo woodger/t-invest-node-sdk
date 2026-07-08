@@ -1262,12 +1262,12 @@ export const commandHelp = {
       'This command cancels a stop order and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'sandbox get-sandbox-accounts': {
+  'sandbox account list': {
     description: 'Print sandbox accounts',
     sdkCall: 'sdk.sandbox.getSandboxAccounts',
     grpcMethod: 'SandboxService/GetSandboxAccounts',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-accounts [options]'
+      'tinkoff-invest-node-sdk sandbox account list [options]'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1275,16 +1275,16 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-accounts',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-accounts --format=json'
+      'tinkoff-invest-node-sdk sandbox account list',
+      'tinkoff-invest-node-sdk sandbox account list --format=json'
     ]
   },
-  'sandbox open-sandbox-account': {
+  'sandbox account open': {
     description: 'Open a sandbox account',
     sdkCall: 'sdk.sandbox.openSandboxAccount',
     grpcMethod: 'SandboxService/OpenSandboxAccount',
     usage: [
-      'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm [options]'
+      'tinkoff-invest-node-sdk sandbox account open --confirm [options]'
     ],
     required: [
       '--confirm             Required by default CLI side-effect policy'
@@ -1295,22 +1295,22 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm',
-      'tinkoff-invest-node-sdk sandbox open-sandbox-account --confirm --format=json'
+      'tinkoff-invest-node-sdk sandbox account open --confirm',
+      'tinkoff-invest-node-sdk sandbox account open --confirm --format=json'
     ],
     notes: [
       'This command opens a sandbox account and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'sandbox close-sandbox-account': {
+  'sandbox account close': {
     description: 'Close a sandbox account',
     sdkCall: 'sdk.sandbox.closeSandboxAccount',
     grpcMethod: 'SandboxService/CloseSandboxAccount',
     usage: [
-      'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=ID --confirm [options]'
+      'tinkoff-invest-node-sdk sandbox account close --account-id=ID --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--confirm             Required by default CLI side-effect policy'
     ],
     optional: [
@@ -1319,22 +1319,22 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm',
-      'tinkoff-invest-node-sdk sandbox close-sandbox-account --account-id=2000000000 --confirm --format=json'
+      'tinkoff-invest-node-sdk sandbox account close --account-id=2000000000 --confirm',
+      'tinkoff-invest-node-sdk sandbox account close --account-id=2000000000 --confirm --format=json'
     ],
     notes: [
       'This command closes a sandbox account and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'sandbox post-sandbox-order': {
+  'sandbox order place': {
     description: 'Post a sandbox order',
     sdkCall: 'sdk.sandbox.postSandboxOrder',
     grpcMethod: 'SandboxService/PostSandboxOrder',
     usage: [
-      'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=ID --instrument-id=ID --quantity=N --direction=buy|sell --order-type=TYPE --order-id=KEY --confirm [options]'
+      'tinkoff-invest-node-sdk sandbox order place --account-id=ID --instrument-id=ID --quantity=N --direction=buy|sell --order-type=TYPE --order-id=KEY --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--instrument-id=ID    FIGI or instrument UID',
       '--quantity=N          Positive integer lots count',
       '--direction=DIR       buy|sell',
@@ -1349,23 +1349,23 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
-      'tinkoff-invest-node-sdk sandbox post-sandbox-order --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
+      'tinkoff-invest-node-sdk sandbox order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --price=100.25 --direction=buy --order-type=limit --order-id=00000000-0000-0000-0000-000000000001 --confirm',
+      'tinkoff-invest-node-sdk sandbox order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm --format=json'
     ],
     notes: [
       'This command places a sandbox order and refuses to run without --confirm by default CLI policy.',
       'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
     ]
   },
-  'sandbox replace-sandbox-order': {
+  'sandbox order replace': {
     description: 'Replace a sandbox order',
     sdkCall: 'sdk.sandbox.replaceSandboxOrder',
     grpcMethod: 'SandboxService/ReplaceSandboxOrder',
     usage: [
-      'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=ID --order-id=ID --idempotency-key=KEY --quantity=N --price=DECIMAL --price-type=TYPE --confirm [options]'
+      'tinkoff-invest-node-sdk sandbox order replace --account-id=ID --order-id=ID --idempotency-key=KEY --quantity=N --price=DECIMAL --price-type=TYPE --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--order-id=ID         Exchange order identifier',
       '--idempotency-key=KEY New idempotency key, max provider length is 36 chars',
       '--quantity=N          Positive integer lots count',
@@ -1379,23 +1379,23 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
-      'tinkoff-invest-node-sdk sandbox replace-sandbox-order --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
+      'tinkoff-invest-node-sdk sandbox order replace --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000003 --quantity=2 --price=101.5 --price-type=currency --confirm',
+      'tinkoff-invest-node-sdk sandbox order replace --account-id=2000000000 --order-id=12345 --idempotency-key=00000000-0000-0000-0000-000000000004 --quantity=2 --price=101.5 --price-type=currency --confirm --format=json'
     ],
     notes: [
       'This command changes an existing sandbox order and refuses to run without --confirm by default CLI policy.',
       'The CLI does not generate idempotency keys automatically.'
     ]
   },
-  'sandbox cancel-sandbox-order': {
+  'sandbox order cancel': {
     description: 'Cancel a sandbox order',
     sdkCall: 'sdk.sandbox.cancelSandboxOrder',
     grpcMethod: 'SandboxService/CancelSandboxOrder',
     usage: [
-      'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=ID --order-id=ID --confirm [options]'
+      'tinkoff-invest-node-sdk sandbox order cancel --account-id=ID --order-id=ID --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--order-id=ID         Exchange order identifier',
       '--confirm             Required by default CLI side-effect policy'
     ],
@@ -1405,22 +1405,22 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm',
-      'tinkoff-invest-node-sdk sandbox cancel-sandbox-order --account-id=2000000000 --order-id=12345 --confirm --format=json'
+      'tinkoff-invest-node-sdk sandbox order cancel --account-id=2000000000 --order-id=12345 --confirm',
+      'tinkoff-invest-node-sdk sandbox order cancel --account-id=2000000000 --order-id=12345 --confirm --format=json'
     ],
     notes: [
       'This command cancels a sandbox order and refuses to run without --confirm by default CLI policy.'
     ]
   },
-  'sandbox get-sandbox-orders': {
+  'sandbox order list': {
     description: 'Print active sandbox orders',
     sdkCall: 'sdk.sandbox.getSandboxOrders',
     grpcMethod: 'SandboxService/GetSandboxOrders',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-order --account-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox order list --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+      '--account-id=ID       Sandbox account identifier from sandbox account list'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1428,19 +1428,19 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-order --account-id=2000000000',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-order --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk sandbox order list --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox order list --account-id=2000000000 --format=json'
     ]
   },
-  'sandbox get-sandbox-order-state': {
+  'sandbox order show': {
     description: 'Print sandbox order state',
     sdkCall: 'sdk.sandbox.getSandboxOrderState',
     grpcMethod: 'SandboxService/GetSandboxOrderState',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=ID --order-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox order show --account-id=ID --order-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--order-id=ID         Exchange order identifier'
     ],
     optional: [
@@ -1449,19 +1449,19 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=2000000000 --order-id=12345',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-order-state --account-id=2000000000 --order-id=12345 --format=json'
+      'tinkoff-invest-node-sdk sandbox order show --account-id=2000000000 --order-id=12345',
+      'tinkoff-invest-node-sdk sandbox order show --account-id=2000000000 --order-id=12345 --format=json'
     ]
   },
-  'sandbox get-sandbox-positions': {
+  'sandbox position list': {
     description: 'Print sandbox positions',
     sdkCall: 'sdk.sandbox.getSandboxPositions',
     grpcMethod: 'SandboxService/GetSandboxPositions',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox position list --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+      '--account-id=ID       Sandbox account identifier from sandbox account list'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1469,19 +1469,19 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=2000000000',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-positions --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk sandbox position list --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox position list --account-id=2000000000 --format=json'
     ]
   },
-  'sandbox get-sandbox-operations': {
+  'sandbox operation list': {
     description: 'Print sandbox operations',
     sdkCall: 'sdk.sandbox.getSandboxOperations',
     grpcMethod: 'SandboxService/GetSandboxOperations',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operation --account-id=ID --from=ISO --to=ISO [options]'
+      'tinkoff-invest-node-sdk sandbox operation list --account-id=ID --from=ISO --to=ISO [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--from=ISO             Start timestamp, inclusive',
       '--to=ISO               End timestamp, inclusive'
     ],
@@ -1494,23 +1494,23 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operation --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operation --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
+      'tinkoff-invest-node-sdk sandbox operation list --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z',
+      'tinkoff-invest-node-sdk sandbox operation list --account-id=2000000000 --from=2026-06-01T00:00:00Z --to=2026-06-19T00:00:00Z --instrument-id=BBG00QPYJ5H0 --state=executed --format=json'
     ],
     notes: [
       'Deprecated --figi is still accepted and prints a warning to stderr.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'sandbox get-sandbox-operations-by-cursor': {
+  'sandbox operation page': {
     description: 'Print one cursor page of sandbox operations',
     sdkCall: 'sdk.sandbox.getSandboxOperationsByCursor',
     grpcMethod: 'SandboxService/GetSandboxOperationsByCursor',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox operation page --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+      '--account-id=ID       Sandbox account identifier from sandbox account list'
     ],
     optional: [
       '--instrument-id=ID    Optional FIGI or instrument UID filter',
@@ -1528,23 +1528,23 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=2000000000 --limit=100',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-operations-by-cursor --account-id=2000000000 --cursor=NEXT --format=json'
+      'tinkoff-invest-node-sdk sandbox operation page --account-id=2000000000 --limit=100',
+      'tinkoff-invest-node-sdk sandbox operation page --account-id=2000000000 --cursor=NEXT --format=json'
     ],
     notes: [
       'The command returns one page; pass nextCursor as --cursor to request the next page.',
       "The command validates only CLI syntax and date ordering; API range limits remain provider-side."
     ]
   },
-  'sandbox get-sandbox-portfolio': {
+  'sandbox portfolio': {
     description: 'Print sandbox portfolio',
     sdkCall: 'sdk.sandbox.getSandboxPortfolio',
     grpcMethod: 'SandboxService/GetSandboxPortfolio',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox portfolio --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+      '--account-id=ID       Sandbox account identifier from sandbox account list'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1553,19 +1553,19 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-portfolio --account-id=2000000000 --currency=usd --format=json'
+      'tinkoff-invest-node-sdk sandbox portfolio --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox portfolio --account-id=2000000000 --currency=usd --format=json'
     ]
   },
-  'sandbox sandbox-pay-in': {
+  'sandbox pay-in': {
     description: 'Pay in to a sandbox account',
     sdkCall: 'sdk.sandbox.sandboxPayIn',
     grpcMethod: 'SandboxService/SandboxPayIn',
     usage: [
-      'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=ID --amount=DECIMAL --currency=rub|usd --confirm [options]'
+      'tinkoff-invest-node-sdk sandbox pay-in --account-id=ID --amount=DECIMAL --currency=rub|usd --confirm [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts',
+      '--account-id=ID       Sandbox account identifier from sandbox account list',
       '--amount=DECIMAL      Positive decimal amount, up to 9 fractional digits',
       '--confirm             Required by default CLI side-effect policy'
     ],
@@ -1576,23 +1576,23 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm',
-      'tinkoff-invest-node-sdk sandbox sandbox-pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm --format=json'
+      'tinkoff-invest-node-sdk sandbox pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm',
+      'tinkoff-invest-node-sdk sandbox pay-in --account-id=2000000000 --amount=1000 --currency=rub --confirm --format=json'
     ],
     notes: [
       'This command changes sandbox account balance and refuses to run without --confirm by default CLI policy.',
       'Unknown currency values are rejected by CLI parsing; --currency=usd is accepted by the parser but fails as unsupported.'
     ]
   },
-  'sandbox get-sandbox-withdraw-limits': {
+  'sandbox withdraw-limits': {
     description: 'Print sandbox withdraw limits',
     sdkCall: 'sdk.sandbox.getSandboxWithdrawLimits',
     grpcMethod: 'SandboxService/GetSandboxWithdrawLimits',
     usage: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=ID [options]'
+      'tinkoff-invest-node-sdk sandbox withdraw-limits --account-id=ID [options]'
     ],
     required: [
-      '--account-id=ID       Sandbox account identifier from sandbox get-sandbox-accounts'
+      '--account-id=ID       Sandbox account identifier from sandbox account list'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1600,8 +1600,8 @@ export const commandHelp = {
     ],
     environment: sdkEnvironment,
     examples: [
-      'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000',
-      'tinkoff-invest-node-sdk sandbox get-sandbox-withdraw-limits --account-id=2000000000 --format=json'
+      'tinkoff-invest-node-sdk sandbox withdraw-limits --account-id=2000000000',
+      'tinkoff-invest-node-sdk sandbox withdraw-limits --account-id=2000000000 --format=json'
     ]
   },
   'stream run': {

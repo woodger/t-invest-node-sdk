@@ -81,7 +81,8 @@ describe('sandbox-accounts command', () => {
         command,
         [
           'sandbox',
-          'get-sandbox-accounts',
+          'account',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -116,7 +117,8 @@ describe('sandbox-accounts command', () => {
           command,
           [
             'sandbox',
-            'get-sandbox-accounts',
+            'account',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

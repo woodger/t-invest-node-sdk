@@ -240,6 +240,90 @@ const cliPathAliases = [
     ]
   },
   {
+    preferred: ['sandbox', 'account', 'list'],
+    aliases: [
+      ['sandbox', 'get-sandbox-accounts']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'account', 'open'],
+    aliases: [
+      ['sandbox', 'open-sandbox-account']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'account', 'close'],
+    aliases: [
+      ['sandbox', 'close-sandbox-account']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'order', 'list'],
+    aliases: [
+      ['sandbox', 'get-sandbox-orders']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'order', 'show'],
+    aliases: [
+      ['sandbox', 'get-sandbox-order-state']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'order', 'place'],
+    aliases: [
+      ['sandbox', 'post-sandbox-order']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'order', 'replace'],
+    aliases: [
+      ['sandbox', 'replace-sandbox-order']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'order', 'cancel'],
+    aliases: [
+      ['sandbox', 'cancel-sandbox-order']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'position', 'list'],
+    aliases: [
+      ['sandbox', 'get-sandbox-positions']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'operation', 'list'],
+    aliases: [
+      ['sandbox', 'get-sandbox-operations']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'operation', 'page'],
+    aliases: [
+      ['sandbox', 'get-sandbox-operations-by-cursor']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'portfolio'],
+    aliases: [
+      ['sandbox', 'get-sandbox-portfolio']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'withdraw-limits'],
+    aliases: [
+      ['sandbox', 'get-sandbox-withdraw-limits']
+    ]
+  },
+  {
+    preferred: ['sandbox', 'pay-in'],
+    aliases: [
+      ['sandbox', 'sandbox-pay-in']
+    ]
+  },
+  {
     preferred: ['dev', 'compile-proto'],
     aliases: [
       ['compile-proto']

@@ -38,7 +38,7 @@ describe('sandbox-open-account command', () => {
       await assert.rejects(
         () => commandFacade.run(
           command,
-          ['sandbox', 'open-sandbox-account'],
+          ['sandbox', 'account', 'open'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -73,7 +73,8 @@ describe('sandbox-open-account command', () => {
         command,
         [
           'sandbox',
-          'open-sandbox-account',
+          'account',
+          'open',
           '--token=token',
           '--endpoint=localhost:50051',
           '--confirm',
