@@ -12,8 +12,18 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Added
+
+- Added package `bin` metadata for the `tinkoff-invest-node-sdk` CLI binary.
+
 ### Changed
 
+- Migrated the public CLI contract to preferred friendly domain paths for
+  account, market, order, stop-order, operation, sandbox, instrument, and
+  `dev compile-proto`.
+- Kept technical and legacy CLI paths as compatibility aliases while making
+  top-level help show domains, domain help show preferred commands, and
+  command-specific help normalize compatibility calls to preferred usage.
 - Restored `yarn build` as the explicit TypeScript compile command and removed
   the package `prepare` script.
 - Moved proto generation from a package script to the `yarn cli compile-proto`

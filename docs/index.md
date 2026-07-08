@@ -93,12 +93,29 @@ yarn cli <domain> <command> [options]
 
 yarn cli account --help
 yarn cli account list --format=json
+yarn cli account info
+yarn cli market candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv
+yarn cli market last-prices --instrument-id=BBG00QPYJ5H0
+yarn cli order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000001 --confirm
+yarn cli stop-order list --account-id=2000000000
+yarn cli operation portfolio --account-id=2000000000 --format=json
+yarn cli sandbox account list
+yarn cli sandbox order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm
 yarn cli instrument share list --help
+yarn cli instrument bond show --id=BBG00QPYJ5H0 --id-type=figi
+yarn cli dev compile-proto
 ```
 
 Top-level help показывает публичные domains. Список команд внутри domain
 можно посмотреть через `yarn cli <domain> --help`. Подробности отдельной
 команды можно посмотреть через `yarn cli <domain> <command> --help`.
+
+После установки пакета тот же CLI entrypoint доступен как package binary:
+
+```bash
+tinkoff-invest-node-sdk --help
+tinkoff-invest-node-sdk account list --format=json
+```
 
 Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
 negative overrides use `--no-raw`; assigned values like `--raw=true` or
@@ -122,6 +139,16 @@ Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
 `stop-order get-stop-orders`, `stoporders get-stop-orders`,
 `operation get-portfolio`, `operations get-portfolio` и `compile-proto`
 остаются совместимыми aliases. Help при этом показывает preferred path.
+
+Основные compatibility aliases:
+
+- `users get-accounts` -> `account list`;
+- `marketdata get-candles` -> `market candles`;
+- `orders post-order` -> `order place`;
+- `stoporders get-stop-orders` -> `stop-order list`;
+- `operations get-portfolio` -> `operation portfolio`;
+- `instruments shares` -> `instrument share list`;
+- `compile-proto` -> `dev compile-proto`.
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md). Команды с side effects

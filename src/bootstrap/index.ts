@@ -3,7 +3,7 @@
 /**
  * Executable CLI entrypoint.
  *
- * Keeps the package binary in `dist/bootstrap/bin` and delegates bootstrap
+ * Keeps the package binary in `dist/bootstrap/index.js` and delegates bootstrap
  * mechanics to the CLI runner.
  */
 
