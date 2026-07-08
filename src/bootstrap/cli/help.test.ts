@@ -198,11 +198,27 @@ describe('renderCommandHelp', () => {
     assert.match(help, /static initial requests for marketdata\.marketDataStream/);
   });
 
+  test('renders extended command notes where short descriptions are not enough', () => {
+    assert.match(
+      renderCommandHelp('order place'),
+      /--confirm is an SDK CLI safety guard; it is not a gRPC request field/
+    );
+    assert.match(
+      renderCommandHelp('operation get-broker-report'),
+      /Generate mode starts a report task; page mode reads an existing report task page/
+    );
+    assert.match(
+      renderCommandHelp('stream run'),
+      /Output is JSONL so each provider event can be processed as an independent line/
+    );
+  });
+
   test('renders compile-proto command page', () => {
     const help = renderCommandHelp('dev compile-proto');
 
     assert.match(help, /dev compile-proto - Generate TypeScript contracts/);
     assert.match(help, /tinkoff-invest-node-sdk dev compile-proto/);
     assert.match(help, /system protoc/);
+    assert.match(help, /does not download upstream proto sources/);
   });
 });
