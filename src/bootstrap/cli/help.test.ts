@@ -247,6 +247,22 @@ describe('renderDomainHelp', () => {
 
   test('renders friendly sandbox domain commands', () => {
     const help = renderDomainHelp('sandbox');
+    const expectedOrder = [
+      'account list',
+      'account open',
+      'account close',
+      'order list',
+      'order show',
+      'order place',
+      'order replace',
+      'order cancel',
+      'portfolio',
+      'position list',
+      'withdraw-limits',
+      'operation list',
+      'operation page',
+      'pay-in'
+    ];
 
     assert.match(help, /account list\s+Print sandbox accounts/);
     assert.match(help, /account open\s+Open a sandbox account/);
@@ -265,6 +281,14 @@ describe('renderDomainHelp', () => {
     assert.doesNotMatch(help, /get-sandbox-accounts\s+Print sandbox accounts/);
     assert.doesNotMatch(help, /post-sandbox-order\s+Post a sandbox order/);
     assert.doesNotMatch(help, /sandbox-pay-in\s+Pay in to a sandbox account/);
+
+    let previousIndex = help.indexOf('Commands:');
+    for (const commandName of expectedOrder) {
+      const index = help.indexOf(`\n  ${commandName}`);
+
+      assert.equal(index > previousIndex, true);
+      previousIndex = index;
+    }
   });
 });
 
