@@ -76,7 +76,8 @@ describe('brands command', () => {
         command,
         [
           'instrument',
-          'get-brands',
+          'brand',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -112,7 +113,8 @@ describe('brands command', () => {
           command,
           [
             'instrument',
-            'get-brands',
+            'brand',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

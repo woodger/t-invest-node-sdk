@@ -133,7 +133,8 @@ describe('currency command', () => {
         command,
         [
           'instrument',
-          'currency-by',
+          'currency',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=USD000UTSTOM',
@@ -175,7 +176,8 @@ describe('currency command', () => {
           command,
           [
             'instrument',
-            'currency-by',
+            'currency',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG0013HGFT4',

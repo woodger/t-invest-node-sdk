@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument future-by`.
+ * Модуль CLI-команды `instrument future show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type FutureSdk = {
 
 type FutureSdkFactory = (options: TinkoffInvestOptions) => FutureSdk;
 
-const futureCommandPath = ['instrument', 'future-by'] as const;
+const futureCommandPath = ['instrument', 'future', 'show'] as const;
 const defaultFutureSdkFactory: FutureSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const futureFormatOptionsSchema = {

@@ -28,7 +28,9 @@ describe('commandHelp', () => {
 
     assert.equal('account list' in commandHelp, true);
     assert.equal('market candles' in commandHelp, true);
-    assert.equal('instrument bonds' in commandHelp, true);
+    assert.equal('instrument bond list' in commandHelp, true);
+    assert.equal('instrument share list' in commandHelp, true);
+    assert.equal('instrument search' in commandHelp, true);
     assert.equal('order place' in commandHelp, true);
     assert.equal('stop-order list' in commandHelp, true);
     assert.equal('operation portfolio' in commandHelp, true);
@@ -38,6 +40,9 @@ describe('commandHelp', () => {
     assert.equal('sandbox pay-in' in commandHelp, true);
     assert.equal('dev compile-proto' in commandHelp, true);
     assert.equal('account get-accounts' in commandHelp, false);
+    assert.equal('instrument bonds' in commandHelp, false);
+    assert.equal('instrument find-instrument' in commandHelp, false);
+    assert.equal('instrument get-favorites' in commandHelp, false);
     assert.equal('market get-candles' in commandHelp, false);
     assert.equal('order post-order' in commandHelp, false);
     assert.equal('stop-order get-stop-orders' in commandHelp, false);
@@ -104,6 +109,38 @@ describe('renderHelp', () => {
       renderCommandHelp('operation portfolio')
     );
     assert.equal(
+      renderHelp(['instrument', 'shares']),
+      renderCommandHelp('instrument share list')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'share-by']),
+      renderCommandHelp('instrument share show')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'bonds']),
+      renderCommandHelp('instrument bond list')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'bond-by']),
+      renderCommandHelp('instrument bond show')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'get-bond-coupons']),
+      renderCommandHelp('instrument bond coupons')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'find-instrument']),
+      renderCommandHelp('instrument search')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'get-favorites']),
+      renderCommandHelp('instrument favorite list')
+    );
+    assert.equal(
+      renderHelp(['instrument', 'edit-favorites']),
+      renderCommandHelp('instrument favorite edit')
+    );
+    assert.equal(
       renderHelp(['sandbox', 'get-sandbox-accounts']),
       renderCommandHelp('sandbox account list')
     );
@@ -137,6 +174,14 @@ describe('renderHelp', () => {
     assert.equal(
       renderHelp(['operations', 'get-portfolio']),
       renderCommandHelp('operation portfolio')
+    );
+    assert.equal(
+      renderHelp(['instruments', 'shares']),
+      renderCommandHelp('instrument share list')
+    );
+    assert.equal(
+      renderHelp(['instruments', 'find-instrument']),
+      renderCommandHelp('instrument search')
     );
   });
 
@@ -218,6 +263,56 @@ describe('renderDomainHelp', () => {
         assert.equal(command.name, commandName);
         assert.match(help, new RegExp(commandName.split(' ').slice(1).join(' ')));
       }
+    }
+  });
+
+  test('renders friendly instrument domain commands in navigation order', () => {
+    const help = renderDomainHelp('instrument');
+    const expectedOrder = [
+      'search',
+      'show',
+      'dividends',
+      'schedules',
+      'favorite list',
+      'favorite edit',
+      'share list',
+      'share show',
+      'bond list',
+      'bond show',
+      'bond coupons',
+      'bond accrued',
+      'etf list',
+      'etf show',
+      'currency list',
+      'currency show',
+      'future list',
+      'future show',
+      'future margin',
+      'option list',
+      'option show',
+      'asset list',
+      'asset show',
+      'brand list',
+      'brand show',
+      'country list'
+    ];
+
+    assert.match(help, /search\s+Search instruments/);
+    assert.match(help, /show\s+Print instrument details/);
+    assert.match(help, /share list\s+Print shares/);
+    assert.match(help, /bond coupons\s+Print bond coupons/);
+    assert.match(help, /favorite edit\s+Add or remove favorite instruments/);
+    assert.match(help, /country list\s+Print countries dictionary/);
+    assert.doesNotMatch(help, /\n {2}find-instrument\s+Search instruments/);
+    assert.doesNotMatch(help, /\n {2}shares\s+Print shares/);
+    assert.doesNotMatch(help, /\n {2}get-favorites\s+Print favorite instruments/);
+
+    let previousIndex = help.indexOf('Commands:');
+    for (const commandName of expectedOrder) {
+      const index = help.indexOf(`\n  ${commandName}`);
+
+      assert.equal(index > previousIndex, true);
+      previousIndex = index;
     }
   });
 

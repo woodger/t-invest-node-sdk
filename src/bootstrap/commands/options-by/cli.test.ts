@@ -90,7 +90,8 @@ describe('options-by command', () => {
         command,
         [
           'instrument',
-          'options-by',
+          'option',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--basic-asset-uid=asset-uid',
@@ -130,7 +131,8 @@ describe('options-by command', () => {
           command,
           [
             'instrument',
-            'options-by',
+            'option',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--basic-asset-uid=asset-uid'

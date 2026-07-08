@@ -120,7 +120,7 @@ describe('instrument command', () => {
         command,
         [
           'instrument',
-          'get-instrument-by',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=TCSG',
@@ -162,7 +162,7 @@ describe('instrument command', () => {
           command,
           [
             'instrument',
-            'get-instrument-by',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG00QPYJ5H0',

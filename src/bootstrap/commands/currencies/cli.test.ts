@@ -105,7 +105,8 @@ describe('currencies command', () => {
         command,
         [
           'instrument',
-          'currencies',
+          'currency',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-status=all',
@@ -143,7 +144,8 @@ describe('currencies command', () => {
           command,
           [
             'instrument',
-            'currencies',
+            'currency',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

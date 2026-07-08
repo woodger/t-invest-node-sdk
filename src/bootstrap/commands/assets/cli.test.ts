@@ -98,7 +98,8 @@ describe('assets command', () => {
         command,
         [
           'instrument',
-          'get-assets',
+          'asset',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-type=share',
@@ -136,7 +137,8 @@ describe('assets command', () => {
           command,
           [
             'instrument',
-            'get-assets',
+            'asset',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

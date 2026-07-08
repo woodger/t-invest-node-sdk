@@ -115,7 +115,8 @@ describe('accrued-interests command', () => {
         command,
         [
           'instrument',
-          'get-accrued-interests',
+          'bond',
+          'accrued',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BOND-FIGI',
@@ -158,7 +159,8 @@ describe('accrued-interests command', () => {
           command,
           [
             'instrument',
-            'get-accrued-interests',
+            'bond',
+            'accrued',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BOND-FIGI',

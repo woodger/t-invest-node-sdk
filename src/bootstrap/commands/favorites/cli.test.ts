@@ -74,7 +74,8 @@ describe('favorites command', () => {
         command,
         [
           'instrument',
-          'get-favorites',
+          'favorite',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -110,7 +111,8 @@ describe('favorites command', () => {
           command,
           [
             'instrument',
-            'get-favorites',
+            'favorite',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

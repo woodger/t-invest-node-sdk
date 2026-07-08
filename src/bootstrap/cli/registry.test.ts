@@ -66,6 +66,32 @@ const technicalCompatibilityCommandNames = [
   'account get-info',
   'account get-margin-attributes',
   'account get-user-tariff',
+  'instrument bond-by',
+  'instrument bonds',
+  'instrument currencies',
+  'instrument currency-by',
+  'instrument edit-favorites',
+  'instrument etf-by',
+  'instrument etfs',
+  'instrument find-instrument',
+  'instrument future-by',
+  'instrument futures',
+  'instrument get-accrued-interests',
+  'instrument get-asset-by',
+  'instrument get-assets',
+  'instrument get-bond-coupons',
+  'instrument get-brand-by',
+  'instrument get-brands',
+  'instrument get-countries',
+  'instrument get-dividends',
+  'instrument get-favorites',
+  'instrument get-futures-margin',
+  'instrument get-instrument-by',
+  'instrument option-by',
+  'instrument options-by',
+  'instrument share-by',
+  'instrument shares',
+  'instrument trading-schedules',
   'market get-candles',
   'market get-close-prices',
   'market get-last-prices',
@@ -110,32 +136,32 @@ const preferredCommandNames = [
   'account margin',
   'account tariff',
   'dev compile-proto',
-  'instrument bond-by',
-  'instrument bonds',
-  'instrument currencies',
-  'instrument currency-by',
-  'instrument edit-favorites',
-  'instrument etf-by',
-  'instrument etfs',
-  'instrument find-instrument',
-  'instrument future-by',
-  'instrument futures',
-  'instrument get-accrued-interests',
-  'instrument get-asset-by',
-  'instrument get-assets',
-  'instrument get-bond-coupons',
-  'instrument get-brand-by',
-  'instrument get-brands',
-  'instrument get-countries',
-  'instrument get-dividends',
-  'instrument get-favorites',
-  'instrument get-futures-margin',
-  'instrument get-instrument-by',
-  'instrument option-by',
-  'instrument options-by',
-  'instrument share-by',
-  'instrument shares',
-  'instrument trading-schedules',
+  'instrument asset list',
+  'instrument asset show',
+  'instrument bond accrued',
+  'instrument bond coupons',
+  'instrument bond list',
+  'instrument bond show',
+  'instrument brand list',
+  'instrument brand show',
+  'instrument country list',
+  'instrument currency list',
+  'instrument currency show',
+  'instrument dividends',
+  'instrument etf list',
+  'instrument etf show',
+  'instrument favorite edit',
+  'instrument favorite list',
+  'instrument future list',
+  'instrument future margin',
+  'instrument future show',
+  'instrument option list',
+  'instrument option show',
+  'instrument schedules',
+  'instrument search',
+  'instrument share list',
+  'instrument share show',
+  'instrument show',
   'market candles',
   'market close-prices',
   'market last-prices',
@@ -184,6 +210,9 @@ const expectedCommandNames = [
 
 const unknownCommandNames = [
   'instruments options',
+  'instruments bond list',
+  'instruments favorite list',
+  'instruments share list',
   'marketdata stream',
   'operations broker-report',
   'operations list',
@@ -226,6 +255,26 @@ describe('resolveCommand', () => {
     for (const commandName of [
       'account list',
       'account info',
+      'instrument asset list',
+      'instrument bond accrued',
+      'instrument bond coupons',
+      'instrument bond list',
+      'instrument bond show',
+      'instrument brand list',
+      'instrument country list',
+      'instrument currency list',
+      'instrument dividends',
+      'instrument etf list',
+      'instrument favorite edit',
+      'instrument favorite list',
+      'instrument future list',
+      'instrument future margin',
+      'instrument option list',
+      'instrument schedules',
+      'instrument search',
+      'instrument share list',
+      'instrument share show',
+      'instrument show',
       'market candles',
       'market last-prices',
       'operation broker-report',
@@ -301,6 +350,66 @@ describe('resolveCommand', () => {
       {
         path: ['account', 'get-accounts'],
         args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'shares'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'share-by'],
+        args: ['--id=instrument-id', '--id-type=uid', '--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'bonds'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'bond-by'],
+        args: ['--id=instrument-id', '--id-type=uid', '--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'get-bond-coupons'],
+        args: [
+          '--instrument-id=instrument-id',
+          '--from=2026-01-01T00:00:00Z',
+          '--to=2026-01-31T00:00:00Z',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'get-accrued-interests'],
+        args: [
+          '--instrument-id=instrument-id',
+          '--from=2026-01-01T00:00:00Z',
+          '--to=2026-01-31T00:00:00Z',
+          '--format=xml'
+        ],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'find-instrument'],
+        args: ['--query=query', '--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'get-favorites'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instrument', 'edit-favorites'],
+        args: [
+          '--instrument-id=instrument-id',
+          '--action=add',
+          '--confirm',
+          '--format=xml'
+        ],
         expectedError: /Expected '--format' as one of: json, table/
       },
       {
@@ -424,6 +533,16 @@ describe('resolveCommand', () => {
     for (const { path, args, expectedError } of [
       {
         path: ['users', 'get-accounts'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instruments', 'shares'],
+        args: ['--format=xml'],
+        expectedError: /Expected '--format' as one of: json, table/
+      },
+      {
+        path: ['instruments', 'get-favorites'],
         args: ['--format=xml'],
         expectedError: /Expected '--format' as one of: json, table/
       },

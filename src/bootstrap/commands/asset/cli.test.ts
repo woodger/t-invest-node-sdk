@@ -72,7 +72,8 @@ describe('asset command', () => {
         command,
         [
           'instrument',
-          'get-asset-by',
+          'asset',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=asset-uid',
@@ -110,7 +111,8 @@ describe('asset command', () => {
           command,
           [
             'instrument',
-            'get-asset-by',
+            'asset',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=asset-uid'

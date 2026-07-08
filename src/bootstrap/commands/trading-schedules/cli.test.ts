@@ -128,7 +128,7 @@ describe('trading-schedules command', () => {
         command,
         [
           'instrument',
-          'trading-schedules',
+          'schedules',
           '--token=token',
           '--endpoint=localhost:50051',
           '--exchange=MOEX',
@@ -171,7 +171,7 @@ describe('trading-schedules command', () => {
           command,
           [
             'instrument',
-            'trading-schedules',
+            'schedules',
             '--token=token',
             '--endpoint=localhost:50051',
             '--from=2026-01-01T00:00:00Z',

@@ -133,7 +133,8 @@ describe('share command', () => {
         command,
         [
           'instrument',
-          'share-by',
+          'share',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=SBER',
@@ -175,7 +176,8 @@ describe('share command', () => {
           command,
           [
             'instrument',
-            'share-by',
+            'share',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG004730N88',

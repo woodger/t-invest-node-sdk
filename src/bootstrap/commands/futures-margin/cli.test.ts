@@ -95,7 +95,8 @@ describe('futures-margin command', () => {
         command,
         [
           'instrument',
-          'get-futures-margin',
+          'future',
+          'margin',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=FUTFIGI',
@@ -137,7 +138,8 @@ describe('futures-margin command', () => {
           command,
           [
             'instrument',
-            'get-futures-margin',
+            'future',
+            'margin',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=FUTFIGI'

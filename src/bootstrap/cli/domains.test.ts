@@ -28,6 +28,19 @@ describe('CLI domains', () => {
       assert.equal(canonicalizeCommandName('operation portfolio'), 'operation portfolio');
       assert.equal(canonicalizeCommandName('operation get-portfolio'), 'operation portfolio');
       assert.equal(canonicalizeCommandName('operations get-portfolio'), 'operation portfolio');
+      assert.equal(canonicalizeCommandName('instrument share list'), 'instrument share list');
+      assert.equal(canonicalizeCommandName('instrument shares'), 'instrument share list');
+      assert.equal(canonicalizeCommandName('instruments shares'), 'instrument share list');
+      assert.equal(canonicalizeCommandName('instrument share show'), 'instrument share show');
+      assert.equal(canonicalizeCommandName('instrument share-by'), 'instrument share show');
+      assert.equal(canonicalizeCommandName('instrument bond list'), 'instrument bond list');
+      assert.equal(canonicalizeCommandName('instrument bonds'), 'instrument bond list');
+      assert.equal(canonicalizeCommandName('instrument bond coupons'), 'instrument bond coupons');
+      assert.equal(canonicalizeCommandName('instrument get-bond-coupons'), 'instrument bond coupons');
+      assert.equal(canonicalizeCommandName('instrument search'), 'instrument search');
+      assert.equal(canonicalizeCommandName('instrument find-instrument'), 'instrument search');
+      assert.equal(canonicalizeCommandName('instrument favorite list'), 'instrument favorite list');
+      assert.equal(canonicalizeCommandName('instrument get-favorites'), 'instrument favorite list');
       assert.equal(canonicalizeCommandName('sandbox account list'), 'sandbox account list');
       assert.equal(canonicalizeCommandName('sandbox get-sandbox-accounts'), 'sandbox account list');
       assert.equal(canonicalizeCommandName('sandbox order place'), 'sandbox order place');
@@ -39,8 +52,6 @@ describe('CLI domains', () => {
     });
 
     test('keeps non-renamed public paths and normalizes legacy service domains', () => {
-      assert.equal(canonicalizeCommandName('instrument bonds'), 'instrument bonds');
-      assert.equal(canonicalizeCommandName('instruments bonds'), 'instrument bonds');
       assert.equal(canonicalizeCommandName('dev compile-proto'), 'dev compile-proto');
       assert.equal(canonicalizeCommandName('compile-proto'), 'dev compile-proto');
     });
@@ -54,6 +65,9 @@ describe('CLI domains', () => {
       assert.equal(canonicalizeCommandName('operations list'), 'operations list');
       assert.equal(canonicalizeCommandName('operations portfolio'), 'operations portfolio');
       assert.equal(canonicalizeCommandName('operations broker-report'), 'operations broker-report');
+      assert.equal(canonicalizeCommandName('instruments share list'), 'instruments share list');
+      assert.equal(canonicalizeCommandName('instruments bond list'), 'instruments bond list');
+      assert.equal(canonicalizeCommandName('instruments favorite list'), 'instruments favorite list');
       assert.equal(canonicalizeCommandName('sandbox account get-sandbox-accounts'), 'sandbox account get-sandbox-accounts');
       assert.equal(canonicalizeCommandName('sandbox order post-sandbox-order'), 'sandbox order post-sandbox-order');
     });
@@ -96,6 +110,21 @@ describe('CLI domains', () => {
         'operation get-broker-report',
         'operations get-broker-report'
       ]);
+      assert.deepEqual(commandAliasNames(['instrument', 'share', 'list']), [
+        'instrument share list',
+        'instrument shares',
+        'instruments shares'
+      ]);
+      assert.deepEqual(commandAliasNames(['instrument', 'bond', 'coupons']), [
+        'instrument bond coupons',
+        'instrument get-bond-coupons',
+        'instruments get-bond-coupons'
+      ]);
+      assert.deepEqual(commandAliasNames(['instrument', 'favorite', 'edit']), [
+        'instrument favorite edit',
+        'instrument edit-favorites',
+        'instruments edit-favorites'
+      ]);
       assert.deepEqual(commandAliasNames(['sandbox', 'account', 'list']), [
         'sandbox account list',
         'sandbox get-sandbox-accounts'
@@ -115,10 +144,6 @@ describe('CLI domains', () => {
     });
 
     test('returns legacy domain aliases for commands without friendly action aliases', () => {
-      assert.deepEqual(commandAliasNames(['instrument', 'bonds']), [
-        'instrument bonds',
-        'instruments bonds'
-      ]);
       assert.deepEqual(commandAliasNames(['stream', 'run']), [
         'stream run'
       ]);

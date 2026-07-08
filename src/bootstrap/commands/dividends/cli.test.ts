@@ -121,7 +121,7 @@ describe('dividends command', () => {
         command,
         [
           'instrument',
-          'get-dividends',
+          'dividends',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=SHARE-FIGI',
@@ -167,7 +167,7 @@ describe('dividends command', () => {
           command,
           [
             'instrument',
-            'get-dividends',
+            'dividends',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=SHARE-FIGI',

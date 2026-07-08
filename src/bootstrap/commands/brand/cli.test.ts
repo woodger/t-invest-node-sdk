@@ -80,7 +80,8 @@ describe('brand command', () => {
         command,
         [
           'instrument',
-          'get-brand-by',
+          'brand',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=brand-uid',
@@ -119,7 +120,8 @@ describe('brand command', () => {
           command,
           [
             'instrument',
-            'get-brand-by',
+            'brand',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=brand-uid'

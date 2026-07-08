@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instrument currencies`.
+ * Модуль CLI-команды `instrument currency list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -36,7 +36,7 @@ type CurrenciesSdk = {
 
 type CurrenciesSdkFactory = (options: TinkoffInvestOptions) => CurrenciesSdk;
 
-const currenciesCommandPath = ['instrument', 'currencies'] as const;
+const currenciesCommandPath = ['instrument', 'currency', 'list'] as const;
 const defaultCurrenciesSdkFactory: CurrenciesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const currenciesFormatOptionsSchema = {

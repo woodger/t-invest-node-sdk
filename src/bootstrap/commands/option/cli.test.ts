@@ -133,7 +133,8 @@ describe('option command', () => {
         command,
         [
           'instrument',
-          'option-by',
+          'option',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=OPTIONTICKER',
@@ -175,7 +176,8 @@ describe('option command', () => {
           command,
           [
             'instrument',
-            'option-by',
+            'option',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=OPTIONUID',
