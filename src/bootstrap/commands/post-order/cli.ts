@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `orders post-order`.
+ * Модуль CLI-команды `order place`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -16,16 +16,17 @@ import {
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parseOptionalPositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import { formatPostOrder, postOrderFormats, type PostOrderFormat } from './reporter';
 
 type PostOrderSdk = {
@@ -37,7 +38,7 @@ type PostOrderSdk = {
 
 type PostOrderSdkFactory = (options: TinkoffInvestOptions) => PostOrderSdk;
 
-const postOrderCommandPath = ['orders', 'post-order'] as const;
+const postOrderCommandPath = ['order', 'place'] as const;
 const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const postOrderDirections = {
@@ -126,7 +127,7 @@ export function parsePostOrderFormat(rawOptions: CommandRawOptions): PostOrderFo
 export function createPostOrderCommand(
   createSdk: PostOrderSdkFactory = defaultPostOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: postOrderCommandPath,
     options: postOrderOptionsSchema,
     handle({ options }) {

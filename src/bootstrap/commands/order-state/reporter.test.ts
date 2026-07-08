@@ -128,7 +128,7 @@ describe('order-state reporter', () => {
         currency: 'rub',
         amount: '100.5'
       });
-      assert.equal(parsed.stages[0].tradeId, 'trade-id');
+      assert.equal(parsed.stages.at(0)?.tradeId, 'trade-id');
     });
   });
 });

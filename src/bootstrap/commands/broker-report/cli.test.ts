@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBrokerReportCommand,
   parseBrokerReportFormat,
@@ -150,11 +150,11 @@ describe('broker-report command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'operations',
-          'get-broker-report',
+          'operation',
+          'broker-report',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=2000000000',
@@ -195,11 +195,11 @@ describe('broker-report command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'operations',
-            'get-broker-report',
+            'operation',
+            'broker-report',
             '--token=token',
             '--endpoint=localhost:50051',
             '--task-id=task-id'

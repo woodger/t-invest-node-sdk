@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-bond-coupons`.
+ * Модуль CLI-команды `instrument bond coupons`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,19 +14,20 @@ import type {
   GetBondCouponsRequest,
   GetBondCouponsResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
-} from '../instrument-id-options';
+} from '../../args/instrument-id-options';
 import { bondCouponsFormats, formatBondCoupons, type BondCouponsFormat } from './reporter';
 
 type BondCouponsSdk = {
@@ -38,7 +39,7 @@ type BondCouponsSdk = {
 
 type BondCouponsSdkFactory = (options: TinkoffInvestOptions) => BondCouponsSdk;
 
-const bondCouponsCommandPath = ['instruments', 'get-bond-coupons'] as const;
+const bondCouponsCommandPath = ['instrument', 'bond', 'coupons'] as const;
 const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const bondCouponsRequestOptionsSchema = {
@@ -81,7 +82,7 @@ export function parseBondCouponsFormat(rawOptions: CommandRawOptions): BondCoupo
 export function createBondCouponsCommand(
   createSdk: BondCouponsSdkFactory = defaultBondCouponsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: bondCouponsCommandPath,
     options: bondCouponsOptionsSchema,
     handle({ options }) {

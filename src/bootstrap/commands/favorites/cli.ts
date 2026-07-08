@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-favorites`.
+ * Модуль CLI-команды `instrument favorite list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { favoritesFormats, formatFavorites, type FavoritesFormat } from './reporter';
 
@@ -27,7 +28,7 @@ type FavoritesSdk = {
 
 type FavoritesSdkFactory = (options: TinkoffInvestOptions) => FavoritesSdk;
 
-const favoritesCommandPath = ['instruments', 'get-favorites'] as const;
+const favoritesCommandPath = ['instrument', 'favorite', 'list'] as const;
 const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const favoritesOptionsSchema = withSdkOptions({
@@ -47,7 +48,7 @@ export function parseFavoritesFormat(rawOptions: CommandRawOptions): FavoritesFo
 export function createFavoritesCommand(
   createSdk: FavoritesSdkFactory = defaultFavoritesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: favoritesCommandPath,
     options: favoritesOptionsSchema,
     handle({ options }) {

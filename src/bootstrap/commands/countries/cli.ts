@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-countries`.
+ * Модуль CLI-команды `instrument country list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { countriesFormats, formatCountries, type CountriesFormat } from './reporter';
 
@@ -27,7 +28,7 @@ type CountriesSdk = {
 
 type CountriesSdkFactory = (options: TinkoffInvestOptions) => CountriesSdk;
 
-const countriesCommandPath = ['instruments', 'get-countries'] as const;
+const countriesCommandPath = ['instrument', 'country', 'list'] as const;
 const defaultCountriesSdkFactory: CountriesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const countriesOptionsSchema = withSdkOptions({
@@ -47,7 +48,7 @@ export function parseCountriesFormat(rawOptions: CommandRawOptions): CountriesFo
 export function createCountriesCommand(
   createSdk: CountriesSdkFactory = defaultCountriesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: countriesCommandPath,
     options: countriesOptionsSchema,
     handle({ options }) {

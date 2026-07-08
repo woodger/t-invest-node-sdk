@@ -42,8 +42,8 @@ describe('last-prices reporter', () => {
         })
       ]);
 
-      assert.equal(report[0].price, '');
-      assert.equal(report[0].time, '');
+      assert.equal(report.at(0)?.price, '');
+      assert.equal(report.at(0)?.time, '');
     });
   });
 

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `marketdata get-last-prices`.
+ * Модуль CLI-команды `market last-prices`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,14 +14,15 @@ import type {
   GetLastPricesRequest,
   GetLastPricesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatLastPrices, lastPricesFormats, type LastPricesFormat } from './reporter';
 
@@ -34,7 +35,7 @@ type LastPricesSdk = {
 
 type LastPricesSdkFactory = (options: TinkoffInvestOptions) => LastPricesSdk;
 
-const lastPricesCommandPath = ['marketdata', 'get-last-prices'] as const;
+const lastPricesCommandPath = ['market', 'last-prices'] as const;
 const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const lastPricesInstrumentIdsOptionsSchema = {
@@ -75,7 +76,7 @@ export function parseLastPricesFormat(rawOptions: CommandRawOptions): LastPrices
 export function createLastPricesCommand(
   createSdk: LastPricesSdkFactory = defaultLastPricesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: lastPricesCommandPath,
     options: lastPricesOptionsSchema,
     handle({ options }) {

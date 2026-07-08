@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType, type MoneyValue } from '../../../generated/common';
 import {
@@ -10,7 +10,7 @@ import {
   type GetOperationsByCursorResponse,
   type OperationItem
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOperationsByCursorCommand,
   createSandboxOperationsByCursorRequest,
@@ -161,11 +161,12 @@ describe('sandbox-operations-by-cursor command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'sandbox',
-          'get-sandbox-operations-by-cursor',
+          'operation',
+          'page',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -199,11 +200,12 @@ describe('sandbox-operations-by-cursor command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'sandbox',
-            'get-sandbox-operations-by-cursor',
+            'operation',
+            'page',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

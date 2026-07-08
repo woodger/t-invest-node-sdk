@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   AccessLevel,
@@ -8,7 +8,7 @@ import {
   AccountType,
   type Account
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createAccountsCommand,
   parseAccountsFormat
@@ -69,11 +69,11 @@ describe('accounts command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'users',
-          'get-accounts',
+          'account',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -104,11 +104,11 @@ describe('accounts command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'users',
-            'get-accounts',
+            'account',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

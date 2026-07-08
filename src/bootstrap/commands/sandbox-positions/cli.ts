@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-positions`.
+ * Модуль CLI-команды `sandbox position list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createPositionsRequest } from '../positions/cli';
 import { formatPositions, positionsFormats, type PositionsFormat } from '../positions/reporter';
@@ -28,7 +29,7 @@ type SandboxPositionsSdk = {
 
 type SandboxPositionsSdkFactory = (options: TinkoffInvestOptions) => SandboxPositionsSdk;
 
-const sandboxPositionsCommandPath = ['sandbox', 'get-sandbox-positions'] as const;
+const sandboxPositionsCommandPath = ['sandbox', 'position', 'list'] as const;
 const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPositionsRequestOptionsSchema = {
@@ -61,7 +62,7 @@ export function parseSandboxPositionsFormat(rawOptions: CommandRawOptions): Posi
 export function createSandboxPositionsCommand(
   createSdk: SandboxPositionsSdkFactory = defaultSandboxPositionsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxPositionsCommandPath,
     options: sandboxPositionsOptionsSchema,
     handle({ options }) {

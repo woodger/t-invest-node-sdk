@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   SubscriptionAction,
@@ -77,7 +77,7 @@ describe('stream run command', () => {
                   portfolio: {
                     accountId: 'account-id'
                   }
-                } as unknown as PortfolioStreamResponse);
+                } as PortfolioStreamResponse);
               },
               positionsStream: createUnusedStream('positionsStream')
             },
@@ -91,7 +91,7 @@ describe('stream run command', () => {
         }
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'stream',
@@ -113,7 +113,13 @@ describe('stream run command', () => {
         accounts: ['account-id']
       });
       assert.equal(closeCalls, 1);
-      assert.deepEqual(JSON.parse(lines[0]), {
+      const [line] = lines;
+
+      if (line === undefined) {
+        throw new Error('Expected stream output line');
+      }
+
+      assert.deepEqual(JSON.parse(line), {
         stream: 'operations.portfolioStream',
         sequence: 1,
         receivedAt: '2026-06-29T12:00:00.000Z',
@@ -151,12 +157,12 @@ describe('stream run command', () => {
                     ping: {
                       time: new Date('2026-06-29T12:00:00.000Z')
                     }
-                  } as unknown as TradesStreamResponse,
+                  } as TradesStreamResponse,
                   {
                     orderTrades: {
                       orderId: 'order-id'
                     }
-                  } as unknown as TradesStreamResponse
+                  } as TradesStreamResponse
                 );
               }
             },
@@ -165,7 +171,7 @@ describe('stream run command', () => {
         }
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'stream',
@@ -197,6 +203,96 @@ describe('stream run command', () => {
       );
     });
 
+    test('applies negated boolean runtime overrides from CLI options', async () => {
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime: {
+            maxEvents: 1,
+            includePings: true,
+            raw: true
+          }
+        }),
+        now: () => new Date('2026-06-29T12:00:00.000Z'),
+        createSdk() {
+          return {
+            marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
+              marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+            },
+            operationsStream: {
+              portfolioStream: createUnusedStream('portfolioStream'),
+              positionsStream: createUnusedStream('positionsStream')
+            },
+            ordersStream: {
+              tradesStream() {
+                return responses(
+                  {
+                    ping: {
+                      time: new Date('2026-06-29T12:00:00.000Z')
+                    }
+                  } as TradesStreamResponse,
+                  {
+                    orderTrades: {
+                      orderId: 'order-id'
+                    }
+                  } as TradesStreamResponse
+                );
+              }
+            },
+            close() {}
+          };
+        }
+      });
+
+      const output = await commandFacade.run(
+        command,
+        [
+          'stream',
+          'run',
+          '--config=stream.json',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--no-include-pings',
+          '--no-raw'
+        ],
+        undefined
+      );
+
+      assert.deepEqual(JSON.parse((await collectOutput(output)).trim()), {
+        stream: 'orders.tradesStream',
+        sequence: 1,
+        receivedAt: '2026-06-29T12:00:00.000Z',
+        type: 'orderTrades',
+        payload: {
+          orderId: 'order-id'
+        }
+      });
+    });
+
+    test('rejects assigned values for boolean runtime options', async () => {
+      const command = createStreamRunCommand({
+        readConfig() {
+          throw new Error('Config should not be read');
+        }
+      });
+
+      await assert.rejects(
+        () => commandFacade.run(
+          command,
+          [
+            'stream',
+            'run',
+            '--config=stream.json',
+            '--raw=false'
+          ],
+          undefined
+        ),
+        /Expected '--raw' as boolean flag/
+      );
+    });
+
     test('rejects invalid config before sdk creation', async () => {
       let createSdkCalls = 0;
       const command = createStreamRunCommand({
@@ -212,7 +308,7 @@ describe('stream run command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'stream',
@@ -256,7 +352,7 @@ describe('stream run command', () => {
                   trade: {
                     instrumentUid: 'trade-id'
                   }
-                } as unknown as MarketDataResponse);
+                } as MarketDataResponse);
               },
               marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
             },
@@ -272,7 +368,7 @@ describe('stream run command', () => {
         }
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'stream',

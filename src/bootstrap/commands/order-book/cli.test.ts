@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Quotation } from '../../../generated/common';
 import type {
@@ -8,7 +8,7 @@ import type {
   GetOrderBookResponse,
   Order
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOrderBookCommand,
   parseOrderBookDepth,
@@ -127,11 +127,11 @@ describe('order-book command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'marketdata',
-          'get-order-book',
+          'market',
+          'order-book',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',
@@ -168,11 +168,11 @@ describe('order-book command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'marketdata',
-            'get-order-book',
+            'market',
+            'order-book',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0',

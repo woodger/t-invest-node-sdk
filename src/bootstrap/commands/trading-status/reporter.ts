@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `marketdata get-trading-status`.
+ * Модуль CLI-репортинга команды `market status`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -8,8 +8,7 @@
 import type { TradingStatusReport } from '../../../application/reports';
 import { securityTradingStatusToJSON } from '../../../generated/common';
 import type { GetTradingStatusResponse } from '../../../generated/marketdata';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const tradingStatusFormats = ['json', 'table'] as const;
 

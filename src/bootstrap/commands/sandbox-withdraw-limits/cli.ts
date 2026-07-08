@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-withdraw-limits`.
+ * Модуль CLI-команды `sandbox withdraw-limits`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,10 +14,11 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createWithdrawLimitsRequest } from '../withdraw-limits/cli';
 import {
@@ -37,7 +38,7 @@ type SandboxWithdrawLimitsSdkFactory = (
   options: TinkoffInvestOptions
 ) => SandboxWithdrawLimitsSdk;
 
-const sandboxWithdrawLimitsCommandPath = ['sandbox', 'get-sandbox-withdraw-limits'] as const;
+const sandboxWithdrawLimitsCommandPath = ['sandbox', 'withdraw-limits'] as const;
 const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxWithdrawLimitsRequestOptionsSchema = {
@@ -75,7 +76,7 @@ export function parseSandboxWithdrawLimitsFormat(
 export function createSandboxWithdrawLimitsCommand(
   createSdk: SandboxWithdrawLimitsSdkFactory = defaultSandboxWithdrawLimitsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxWithdrawLimitsCommandPath,
     options: sandboxWithdrawLimitsOptionsSchema,
     handle({ options }) {

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `orders cancel-order`.
+ * Модуль CLI-команды `order cancel`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,15 +14,16 @@ import type {
   CancelOrderRequest,
   CancelOrderResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   cancelOrderFormats,
   formatCancelOrder,
@@ -38,7 +39,7 @@ type CancelOrderSdk = {
 
 type CancelOrderSdkFactory = (options: TinkoffInvestOptions) => CancelOrderSdk;
 
-const cancelOrderCommandPath = ['orders', 'cancel-order'] as const;
+const cancelOrderCommandPath = ['order', 'cancel'] as const;
 const defaultCancelOrderSdkFactory: CancelOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const cancelOrderRequestOptionsSchema = {
@@ -79,7 +80,7 @@ export function parseCancelOrderFormat(rawOptions: CommandRawOptions): CancelOrd
 export function createCancelOrderCommand(
   createSdk: CancelOrderSdkFactory = defaultCancelOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: cancelOrderCommandPath,
     options: cancelOrderOptionsSchema,
     handle({ options }) {

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments get-instrument-by`.
+ * Модуль CLI-репортинга команды `instrument show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -21,8 +21,7 @@ import { realExchangeToJSON } from '../../../generated/instruments';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const instrumentFormats = ['json', 'table'] as const;
 

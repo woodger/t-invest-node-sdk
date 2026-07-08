@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `orders get-orders`.
+ * Модуль CLI-команды `order list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrders, ordersFormats, type OrdersFormat } from './reporter';
 
@@ -27,7 +28,7 @@ type OrdersSdk = {
 
 type OrdersSdkFactory = (options: TinkoffInvestOptions) => OrdersSdk;
 
-const ordersCommandPath = ['orders', 'get-orders'] as const;
+const ordersCommandPath = ['order', 'list'] as const;
 const defaultOrdersSdkFactory: OrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const ordersRequestOptionsSchema = {
@@ -62,7 +63,7 @@ export function parseOrdersFormat(rawOptions: CommandRawOptions): OrdersFormat {
 export function createOrdersCommand(
   createSdk: OrdersSdkFactory = defaultOrdersSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: ordersCommandPath,
     options: ordersOptionsSchema,
     handle({ options }) {

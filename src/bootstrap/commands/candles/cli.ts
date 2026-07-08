@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `marketdata get-candles`.
+ * Модуль CLI-команды `market candles`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -15,14 +15,15 @@ import {
   type GetCandlesRequest,
   type GetCandlesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { candlesFormats, formatCandles, type CandlesFormat } from './reporter';
 
@@ -35,7 +36,7 @@ type CandlesSdk = {
 
 type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
 
-const candlesCommandPath = ['marketdata', 'get-candles'] as const;
+const candlesCommandPath = ['market', 'candles'] as const;
 const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const candleIntervals = {
@@ -116,7 +117,7 @@ export function parseCandlesFormat(rawOptions: CommandRawOptions): CandlesFormat
 export function createCandlesCommand(
   createSdk: CandlesSdkFactory = defaultCandlesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: candlesCommandPath,
     options: candlesOptionsSchema,
     handle({ options }) {

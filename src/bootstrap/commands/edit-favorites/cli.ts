@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments edit-favorites`.
+ * Модуль CLI-команды `instrument favorite edit`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -15,23 +15,24 @@ import {
   type EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
-} from '../instrument-id-options';
+} from '../../args/instrument-id-options';
 import {
   editFavoritesFormats,
   formatEditFavorites,
@@ -47,7 +48,7 @@ type EditFavoritesSdk = {
 
 type EditFavoritesSdkFactory = (options: TinkoffInvestOptions) => EditFavoritesSdk;
 
-const editFavoritesCommandPath = ['instruments', 'edit-favorites'] as const;
+const editFavoritesCommandPath = ['instrument', 'favorite', 'edit'] as const;
 const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const editFavoriteActions = {
@@ -95,7 +96,7 @@ export function parseEditFavoritesFormat(rawOptions: CommandRawOptions): EditFav
 export function createEditFavoritesCommand(
   createSdk: EditFavoritesSdkFactory = defaultEditFavoritesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: editFavoritesCommandPath,
     options: editFavoritesOptionsSchema,
     handle({ options }) {

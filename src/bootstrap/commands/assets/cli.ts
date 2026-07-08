@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-assets`.
+ * Модуль CLI-команды `instrument asset list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -12,10 +12,11 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { assetsFormats, formatAssets, type AssetsFormat } from './reporter';
 
@@ -28,7 +29,7 @@ type AssetsSdk = {
 
 type AssetsSdkFactory = (options: TinkoffInvestOptions) => AssetsSdk;
 
-const assetsCommandPath = ['instruments', 'get-assets'] as const;
+const assetsCommandPath = ['instrument', 'asset', 'list'] as const;
 const defaultAssetsSdkFactory: AssetsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const assetInstrumentTypes = {
@@ -86,7 +87,7 @@ export function parseAssetsFormat(rawOptions: CommandRawOptions): AssetsFormat {
 export function createAssetsCommand(
   createSdk: AssetsSdkFactory = defaultAssetsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: assetsCommandPath,
     options: assetsOptionsSchema,
     handle({ options }) {

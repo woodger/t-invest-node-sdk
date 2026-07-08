@@ -82,11 +82,11 @@ describe('stop-orders reporter', () => {
         ]
       }));
 
-      assert.equal(report[0].createDate, '');
-      assert.equal(report[0].activationDateTime, '');
-      assert.equal(report[0].expirationTime, '');
-      assert.equal(report[0].price, null);
-      assert.equal(report[0].stopPrice, null);
+      assert.equal(report.at(0)?.createDate, '');
+      assert.equal(report.at(0)?.activationDateTime, '');
+      assert.equal(report.at(0)?.expirationTime, '');
+      assert.equal(report.at(0)?.price, null);
+      assert.equal(report.at(0)?.stopPrice, null);
     });
   });
 

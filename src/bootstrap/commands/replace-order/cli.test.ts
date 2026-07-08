@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   OrderDirection,
@@ -10,7 +10,7 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createReplaceOrderCommand,
   createReplaceOrderRequest,
@@ -85,11 +85,11 @@ describe('replace-order command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'orders',
-            'replace-order',
+            'order',
+            'replace',
             '--account-id=account-id',
             '--order-id=order-id',
             '--idempotency-key=new-idempotency-key',
@@ -125,11 +125,11 @@ describe('replace-order command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'orders',
-          'replace-order',
+          'order',
+          'replace',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

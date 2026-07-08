@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   InstrumentIdType,
   type EtfResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createEtfCommand,
   parseEtfFormat,
@@ -129,11 +129,12 @@ describe('etf command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'instruments',
-          'etf-by',
+          'instrument',
+          'etf',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=TMOS',
@@ -171,11 +172,12 @@ describe('etf command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'instruments',
-            'etf-by',
+            'instrument',
+            'etf',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG333333333',

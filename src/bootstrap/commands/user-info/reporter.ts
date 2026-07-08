@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `users get-info`.
+ * Модуль CLI-репортинга команды `account info`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -7,8 +7,7 @@
 
 import type { UserInfoReport } from '../../../application/reports';
 import type { GetInfoResponse } from '../../../generated/users';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const userInfoFormats = ['json', 'table'] as const;
 

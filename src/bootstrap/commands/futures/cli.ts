@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments futures`.
+ * Модуль CLI-команды `instrument future list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   FuturesResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
   parseInstrumentStatus
-} from '../instruments-args';
+} from '../../args/instruments-args';
 import { formatFutures, futuresFormats, type FuturesFormat } from './reporter';
 
 type FuturesSdk = {
@@ -35,7 +36,7 @@ type FuturesSdk = {
 
 type FuturesSdkFactory = (options: TinkoffInvestOptions) => FuturesSdk;
 
-const futuresCommandPath = ['instruments', 'futures'] as const;
+const futuresCommandPath = ['instrument', 'future', 'list'] as const;
 const defaultFuturesSdkFactory: FuturesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const futuresFormatOptionsSchema = {
@@ -63,7 +64,7 @@ export function parseFuturesFormat(rawOptions: CommandRawOptions): FuturesFormat
 export function createFuturesCommand(
   createSdk: FuturesSdkFactory = defaultFuturesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: futuresCommandPath,
     options: futuresOptionsSchema,
     handle({ options }) {

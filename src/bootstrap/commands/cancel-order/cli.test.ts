@@ -1,9 +1,9 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { CancelOrderRequest } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCancelOrderCommand,
   createCancelOrderRequest,
@@ -42,9 +42,9 @@ describe('cancel-order command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
-          ['orders', 'cancel-order', '--account-id=account-id', '--order-id=order-id'],
+          ['order', 'cancel', '--account-id=account-id', '--order-id=order-id'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -75,11 +75,11 @@ describe('cancel-order command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'orders',
-          'cancel-order',
+          'order',
+          'cancel',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

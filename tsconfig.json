@@ -1,17 +1,42 @@
 {
   "compilerOptions": {
+    "target": "ES2023",
     "lib": [
-      "ES2023", "DOM"
+      "ES2023"
     ],
-    "target": "es2023",
-    "module": "Node16",
+    "module": "Node20",
     "moduleResolution": "node16",
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
+
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "types": [
+      "node"
+    ],
+
     "declaration": true,
-    "rootDir": "src",
-    "outDir": "dist"
-  }
+    "noEmitOnError": true,
+    "sourceMap": false,
+
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": false
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

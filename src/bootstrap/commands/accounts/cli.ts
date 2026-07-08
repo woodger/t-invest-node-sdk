@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `users get-accounts`.
+ * Модуль CLI-команды `account list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -10,10 +10,11 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import type { GetAccountsResponse } from '../../../generated/users';
 import { accountsFormats, formatAccounts, type AccountsFormat } from './reporter';
@@ -27,7 +28,7 @@ type AccountsSdk = {
 
 type AccountsSdkFactory = (options: TinkoffInvestOptions) => AccountsSdk;
 
-const accountsCommandPath = ['users', 'get-accounts'] as const;
+const accountsCommandPath = ['account', 'list'] as const;
 const defaultAccountsSdkFactory: AccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const accountsOptionsSchema = withSdkOptions({
@@ -47,7 +48,7 @@ export function parseAccountsFormat(rawOptions: CommandRawOptions): AccountsForm
 export function createAccountsCommand(
   createSdk: AccountsSdkFactory = defaultAccountsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: accountsCommandPath,
     options: accountsOptionsSchema,
     handle({ options }) {

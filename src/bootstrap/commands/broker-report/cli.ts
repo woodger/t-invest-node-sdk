@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-broker-report`.
+ * Модуль CLI-команды `operation broker-report`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   brokerReportFormats,
@@ -40,7 +41,7 @@ type BrokerReportSdk = {
 
 type BrokerReportSdkFactory = (options: TinkoffInvestOptions) => BrokerReportSdk;
 
-const brokerReportCommandPath = ['operations', 'get-broker-report'] as const;
+const brokerReportCommandPath = ['operation', 'broker-report'] as const;
 const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const brokerReportRequestOptionsSchema = {
@@ -136,7 +137,7 @@ export function parseBrokerReportFormat(rawOptions: CommandRawOptions): BrokerRe
 export function createBrokerReportCommand(
   createSdk: BrokerReportSdkFactory = defaultBrokerReportSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: brokerReportCommandPath,
     options: brokerReportOptionsSchema,
     handle({ options }) {

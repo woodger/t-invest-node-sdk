@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox close-sandbox-account`.
+ * Модуль CLI-команды `sandbox account close`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,15 +14,16 @@ import type {
   CloseSandboxAccountRequest,
   CloseSandboxAccountResponse
 } from '../../../generated/sandbox';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   closeSandboxAccountFormats,
   formatCloseSandboxAccount,
@@ -38,7 +39,7 @@ type SandboxCloseAccountSdk = {
 
 type SandboxCloseAccountSdkFactory = (options: TinkoffInvestOptions) => SandboxCloseAccountSdk;
 
-const sandboxCloseAccountCommandPath = ['sandbox', 'close-sandbox-account'] as const;
+const sandboxCloseAccountCommandPath = ['sandbox', 'account', 'close'] as const;
 const defaultSandboxCloseAccountSdkFactory: SandboxCloseAccountSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxCloseAccountRequestOptionsSchema = {
@@ -77,7 +78,7 @@ export function parseSandboxCloseAccountFormat(
 export function createSandboxCloseAccountCommand(
   createSdk: SandboxCloseAccountSdkFactory = defaultSandboxCloseAccountSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxCloseAccountCommandPath,
     options: sandboxCloseAccountOptionsSchema,
     handle({ options }) {

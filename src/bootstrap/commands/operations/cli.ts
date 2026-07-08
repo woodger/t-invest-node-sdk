@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-operations`.
+ * Модуль CLI-команды `operation list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -15,19 +15,20 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveOptionalInstrumentIdOption
-} from '../instrument-id-options';
+} from '../../args/instrument-id-options';
 import { formatOperations, operationsFormats, type OperationsFormat } from './reporter';
 
 type OperationsSdk = {
@@ -39,7 +40,7 @@ type OperationsSdk = {
 
 type OperationsSdkFactory = (options: TinkoffInvestOptions) => OperationsSdk;
 
-const operationsCommandPath = ['operations', 'get-operations'] as const;
+const operationsCommandPath = ['operation', 'list'] as const;
 const defaultOperationsSdkFactory: OperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const operationStates = {
@@ -117,7 +118,7 @@ export function parseOperationsFormat(rawOptions: CommandRawOptions): Operations
 export function createOperationsCommand(
   createSdk: OperationsSdkFactory = defaultOperationsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: operationsCommandPath,
     options: operationsOptionsSchema,
     handle({ options }) {

@@ -1,6 +1,6 @@
 # Политика скриптов и сборки
 
-> Type: Policy. Этот документ задает ограничения на изменение scripts, build и test pipeline.
+> Type: Policy. Этот документ задает ограничения на изменение scripts, compile и test pipeline.
 
 Скрипты сборки, тестирования и запуска считаются частью runtime pipeline.
 

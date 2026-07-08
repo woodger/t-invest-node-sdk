@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `users get-info`.
+ * Модуль CLI-команды `account info`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatUserInfo, userInfoFormats, type UserInfoFormat } from './reporter';
 
@@ -27,7 +28,7 @@ type UserInfoSdk = {
 
 type UserInfoSdkFactory = (options: TinkoffInvestOptions) => UserInfoSdk;
 
-const userInfoCommandPath = ['users', 'get-info'] as const;
+const userInfoCommandPath = ['account', 'info'] as const;
 const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const userInfoOptionsSchema = withSdkOptions({
@@ -47,7 +48,7 @@ export function parseUserInfoFormat(rawOptions: CommandRawOptions): UserInfoForm
 export function createUserInfoCommand(
   createSdk: UserInfoSdkFactory = defaultUserInfoSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: userInfoCommandPath,
     options: userInfoOptionsSchema,
     handle({ options }) {

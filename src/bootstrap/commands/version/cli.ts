@@ -9,10 +9,10 @@
  * Здесь не должно быть SDK wiring или generated API request logic.
  */
 
-import { defineCommand } from 'icore';
-import { renderVersionInfo } from '../../version';
+import { command } from '../../cli/contract';
+import { renderVersionInfo } from '../../cli/version';
 
-export const versionCommand = defineCommand({
+export const versionCommand = command.define({
   path: ['version'],
   options: {},
   allowExtraPositionals: true,
@@ -20,4 +20,3 @@ export const versionCommand = defineCommand({
     return renderVersionInfo();
   }
 });
-

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-operations`.
+ * Модуль CLI-команды `sandbox operation list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,12 +11,13 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { OperationsRequest, OperationsResponse } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
-import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../instrument-id-options';
+import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
 import {
   createOperationsRequest,
   parseOperationsState
@@ -32,7 +33,7 @@ type SandboxOperationsSdk = {
 
 type SandboxOperationsSdkFactory = (options: TinkoffInvestOptions) => SandboxOperationsSdk;
 
-const sandboxOperationsCommandPath = ['sandbox', 'get-sandbox-operations'] as const;
+const sandboxOperationsCommandPath = ['sandbox', 'operation', 'list'] as const;
 const defaultSandboxOperationsSdkFactory: SandboxOperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxOperationsRequestOptionsSchema = {
@@ -86,7 +87,7 @@ export function parseSandboxOperationsFormat(rawOptions: CommandRawOptions): Ope
 export function createSandboxOperationsCommand(
   createSdk: SandboxOperationsSdkFactory = defaultSandboxOperationsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxOperationsCommandPath,
     options: sandboxOperationsOptionsSchema,
     handle({ options }) {

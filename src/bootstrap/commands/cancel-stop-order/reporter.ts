@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `stoporders cancel-stop-order`.
+ * Модуль CLI-репортинга команды `stop-order cancel`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -8,8 +8,7 @@
 import type { CancelStopOrderReport } from '../../../application/reports';
 import type { CancelStopOrderResponse } from '../../../generated/stoporders';
 import { formatReportDate } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const cancelStopOrderFormats = ['json', 'table'] as const;
 

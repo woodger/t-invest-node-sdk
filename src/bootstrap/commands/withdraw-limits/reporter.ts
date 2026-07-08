@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `operations get-withdraw-limits`.
+ * Модуль CLI-репортинга команды `operation withdraw-limits`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -12,8 +12,7 @@ import type { WithdrawLimitsResponse } from '../../../generated/operations';
 import {
   toReportMoney
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const withdrawLimitsFormats = ['json', 'table'] as const;
 

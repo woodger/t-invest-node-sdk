@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox replace-sandbox-order`.
+ * Модуль CLI-команды `sandbox order replace`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PostOrderResponse, ReplaceOrderRequest } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createReplaceOrderRequest } from '../replace-order/cli';
 import {
@@ -25,7 +26,7 @@ import {
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 
 type SandboxReplaceOrderSdk = {
   sandbox: {
@@ -36,7 +37,7 @@ type SandboxReplaceOrderSdk = {
 
 type SandboxReplaceOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxReplaceOrderSdk;
 
-const sandboxReplaceOrderCommandPath = ['sandbox', 'replace-sandbox-order'] as const;
+const sandboxReplaceOrderCommandPath = ['sandbox', 'order', 'replace'] as const;
 const defaultSandboxReplaceOrderSdkFactory: SandboxReplaceOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxReplaceOrderRequestOptionsSchema = {
@@ -103,7 +104,7 @@ export function parseSandboxReplaceOrderFormat(
 export function createSandboxReplaceOrderCommand(
   createSdk: SandboxReplaceOrderSdkFactory = defaultSandboxReplaceOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxReplaceOrderCommandPath,
     options: sandboxReplaceOrderOptionsSchema,
     handle({ options }) {

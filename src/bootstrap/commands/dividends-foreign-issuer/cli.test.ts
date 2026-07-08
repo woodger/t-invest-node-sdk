@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createDividendsForeignIssuerCommand,
   parseDividendsForeignIssuerFormat,
@@ -152,11 +152,11 @@ describe('dividends-foreign-issuer command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'operations',
-          'get-dividends-foreign-issuer',
+          'operation',
+          'foreign-dividends-report',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=2000000000',
@@ -197,11 +197,11 @@ describe('dividends-foreign-issuer command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'operations',
-            'get-dividends-foreign-issuer',
+            'operation',
+            'foreign-dividends-report',
             '--token=token',
             '--endpoint=localhost:50051',
             '--task-id=task-id'

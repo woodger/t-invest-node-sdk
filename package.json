@@ -1,7 +1,15 @@
 {
   "name": "tinkoff-invest-node-sdk",
+  "version": "0.2.5",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
+  "keywords": [
+    "tinkoff",
+    "invest",
+    "sdk",
+    "grpc",
+    "protobuf"
+  ],
   "author": {
     "name": "Stanislav Potemkin",
     "email": "woodger@ya.ru"
@@ -9,36 +17,32 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:woodger/tinkoff-invest-node-sdk.git"
+    "url": "git+https://github.com/woodger/tinkoff-invest-node-sdk.git"
   },
   "engines": {
     "node": ">=20.19.0"
   },
-  "packageManager": "yarn@1.22.22",
-  "version": "0.2.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "tinkoff-invest-node-sdk": "dist/bootstrap/bin/cli.js"
+    "tinkoff-invest-node-sdk": "dist/bootstrap/index.js"
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "tsc",
     "test": "fwa --prune",
     "lint": "eslint src eslint.config.mjs",
-    "proto": "node dist/bootstrap/bin/compile-proto.js",
-    "cli": "node dist/bootstrap/bin/cli.js"
+    "cli": "node dist/bootstrap/index.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",
-    "icore": "^1.0.7",
+    "icore": "^1.0.17",
     "nice-grpc": "^2.1.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@types/node": "^25.6.0",
     "eslint": "^9.39.4",
-    "fwa": "^2.0.2",
+    "fwa": "^2.0.5",
     "globals": "^17.5.0",
     "pwd-fs": "^3.4.0",
     "ts-proto": "^2.11.6",

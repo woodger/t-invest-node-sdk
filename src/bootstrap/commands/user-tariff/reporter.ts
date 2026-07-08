@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `users get-user-tariff`.
+ * Модуль CLI-репортинга команды `account tariff`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -7,8 +7,7 @@
 
 import type { UserTariffReport } from '../../../application/reports';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const userTariffFormats = ['json', 'table'] as const;
 

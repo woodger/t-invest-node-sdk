@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-orders`.
+ * Модуль CLI-команды `sandbox order list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createOrdersRequest } from '../orders/cli';
 import { formatOrders, ordersFormats, type OrdersFormat } from '../orders/reporter';
@@ -28,7 +29,7 @@ type SandboxOrdersSdk = {
 
 type SandboxOrdersSdkFactory = (options: TinkoffInvestOptions) => SandboxOrdersSdk;
 
-const sandboxOrdersCommandPath = ['sandbox', 'get-sandbox-orders'] as const;
+const sandboxOrdersCommandPath = ['sandbox', 'order', 'list'] as const;
 const defaultSandboxOrdersSdkFactory: SandboxOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxOrdersRequestOptionsSchema = {
@@ -61,7 +62,7 @@ export function parseSandboxOrdersFormat(rawOptions: CommandRawOptions): OrdersF
 export function createSandboxOrdersCommand(
   createSdk: SandboxOrdersSdkFactory = defaultSandboxOrdersSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxOrdersCommandPath,
     options: sandboxOrdersOptionsSchema,
     handle({ options }) {

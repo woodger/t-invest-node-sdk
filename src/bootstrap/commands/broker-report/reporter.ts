@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `operations get-broker-report`.
+ * Модуль CLI-репортинга команды `operation broker-report`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -21,8 +21,7 @@ import {
   formatReportQuotation,
   toReportMoney
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const brokerReportFormats = ['json', 'table'] as const;
 

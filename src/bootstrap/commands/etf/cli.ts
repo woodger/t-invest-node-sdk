@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments etf-by`.
+ * Модуль CLI-команды `instrument etf show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   EtfResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-} from '../instruments-args';
+} from '../../args/instruments-args';
 import { etfFormats, formatEtf, type EtfFormat } from './reporter';
 
 type EtfSdk = {
@@ -35,7 +36,7 @@ type EtfSdk = {
 
 type EtfSdkFactory = (options: TinkoffInvestOptions) => EtfSdk;
 
-const etfCommandPath = ['instruments', 'etf-by'] as const;
+const etfCommandPath = ['instrument', 'etf', 'show'] as const;
 const defaultEtfSdkFactory: EtfSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const etfFormatOptionsSchema = {
@@ -63,7 +64,7 @@ export function parseEtfFormat(rawOptions: CommandRawOptions): EtfFormat {
 export function createEtfCommand(
   createSdk: EtfSdkFactory = defaultEtfSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: etfCommandPath,
     options: etfOptionsSchema,
     handle({ options }) {

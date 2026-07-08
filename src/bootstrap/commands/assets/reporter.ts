@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments get-assets`.
+ * Модуль CLI-репортинга команды `instrument asset list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -7,7 +7,7 @@
 
 import type { AssetsReport } from '../../../application/reports';
 import type { Asset } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   assetFormats,
   createAssetReportSummary,

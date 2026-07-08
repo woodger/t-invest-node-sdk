@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `marketdata get-order-book`.
+ * Модуль CLI-команды `market order-book`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,10 +14,11 @@ import type {
   GetOrderBookRequest,
   GetOrderBookResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatOrderBook, orderBookFormats, type OrderBookFormat } from './reporter';
 
@@ -30,7 +31,7 @@ type OrderBookSdk = {
 
 type OrderBookSdkFactory = (options: TinkoffInvestOptions) => OrderBookSdk;
 
-const orderBookCommandPath = ['marketdata', 'get-order-book'] as const;
+const orderBookCommandPath = ['market', 'order-book'] as const;
 const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const orderBookDepthOptionsSchema = {
@@ -83,7 +84,7 @@ export function parseOrderBookFormat(rawOptions: CommandRawOptions): OrderBookFo
 export function createOrderBookCommand(
   createSdk: OrderBookSdkFactory = defaultOrderBookSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: orderBookCommandPath,
     options: orderBookOptionsSchema,
     handle({ options }) {

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   StopOrderDirection,
@@ -8,7 +8,7 @@ import {
   StopOrderType,
   type PostStopOrderRequest
 } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createPostStopOrderCommand,
   createPostStopOrderRequest,
@@ -99,11 +99,11 @@ describe('post-stop-order command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'stoporders',
-            'post-stop-order',
+            'stop-order',
+            'place',
             '--account-id=account-id',
             '--instrument-id=instrument-id',
             '--quantity=10',
@@ -142,11 +142,11 @@ describe('post-stop-order command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'stoporders',
-          'post-stop-order',
+          'stop-order',
+          'place',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

@@ -1,9 +1,9 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { SandboxPayInRequest } from '../../../generated/sandbox';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPayInCommand,
   createSandboxPayInRequest,
@@ -79,11 +79,11 @@ describe('sandbox-pay-in command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'sandbox',
-            'sandbox-pay-in',
+            'pay-in',
             '--account-id=sandbox-account-id',
             '--amount=100'
           ],
@@ -121,11 +121,11 @@ describe('sandbox-pay-in command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'sandbox',
-          'sandbox-pay-in',
+          'pay-in',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',

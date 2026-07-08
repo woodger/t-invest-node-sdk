@@ -73,44 +73,34 @@ bootstrap-механикой.
 
 Текущие зоны:
 
-- `bootstrap/bin/cli.ts` - executable CLI entrypoint, который публикуется как
-  `dist/bootstrap/bin/cli.js`;
+- `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
+  package binary `dist/bootstrap/index.js`;
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
-- `bootstrap/bin/compile-proto.ts` - package script entrypoint для proto generation
-  через системный `protoc` и локальный `ts-proto` plugin;
+- `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
+  `protoc` и локальный `ts-proto` plugin;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
-- `bootstrap/cli-runner.ts` - CLI runner layer;
+- `bootstrap/cli` - CLI contract, registry, help, version, error formatting и
+  runner layer;
 - `bootstrap/commands` - handlers CLI-команд;
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
-- `bootstrap/help` - декларативный help registry и renderer;
-- `bootstrap/command-registry.ts` - связывание command name с handler;
-- `bootstrap/version.ts` - presentation-контракт версии.
 
-CLI слой сейчас поддерживает `help`, `version` и API-команды в canonical форме
-`<service> <method>`: `users get-accounts`, `users get-info`,
-`users get-margin-attributes`, `users get-user-tariff`,
-`marketdata get-candles`, `marketdata get-close-prices`,
-`instruments find-instrument`, `instruments get-accrued-interests`,
-`instruments get-asset-by`, `instruments get-assets`,
-`instruments get-bond-coupons`, `instruments bond-by`, `instruments bonds`,
-`instruments get-brand-by`, `instruments get-brands`,
-`instruments get-countries`, `instruments currencies`, `instruments currency-by`,
-`instruments etf-by`, `instruments etfs`, `instruments get-dividends`, `instruments get-favorites`,
-`instruments future-by`, `instruments futures`, `instruments get-futures-margin`,
-`instruments get-instrument-by`, `instruments option-by`, `instruments options-by`,
-`instruments share-by`, `instruments shares`, `instruments trading-schedules`,
-`marketdata get-last-prices`,
-`marketdata get-last-trades`,
-`marketdata get-order-book`, `marketdata get-trading-status`,
-`marketdata get-trading-statuses`, `orders get-orders`,
-`orders get-order-state`, `operations get-broker-report`,
-`operations get-dividends-foreign-issuer`, `operations get-operations`,
-`operations get-operations-by-cursor`, `operations get-portfolio`,
-`operations get-positions`, `operations get-withdraw-limits`,
-`stoporders get-stop-orders`.
+CLI слой сейчас поддерживает utility-команды `help`, `version` и API-команды
+в preferred friendly форме `<domain> <resource/action>`. Публичные domains:
+`account`, `instrument`, `market`, `order`, `stop-order`, `operation`,
+`sandbox`, `stream`, `dev`. Proto generation доступен как
+`dev compile-proto`.
+
+Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
+`market get-candles`, `marketdata get-candles`, `instrument shares`,
+`instruments shares`, `order post-order`, `orders post-order`,
+`stop-order get-stop-orders`, `stoporders get-stop-orders`,
+`operation get-portfolio`, `operations get-portfolio`,
+`sandbox get-sandbox-accounts` и `compile-proto` остаются совместимыми aliases,
+но help продвигает только preferred paths.
+
 API-команды остаются тонкими bootstrap handlers:
-`icore` валидирует raw CLI args и передает handler-у typed command options.
+`icore` terminal app валидирует raw CLI args и передает handler-у typed command options.
 Command `cli.ts` создает generated request DTO из typed options, создает SDK
 facade и передает provider response в reporter-модуль. Reporter-ы преобразуют generated DTO в
 `application/reports` contracts, выбирают command-specific представление и
@@ -129,7 +119,7 @@ exports exception. Public service interfaces экспортируются из a
 - `src/index.ts` - основной package entrypoint;
 - `src/config.ts` - публичная конфигурация unary limits;
 - `src/config.types.ts` - типы публичной конфигурации;
-- `src/generated-exports.ts` - aggregation layer для публичных generated exports.
+- `src/bootstrap/generated-exports.ts` - aggregation layer для публичных generated exports.
 
 Новый код должен импортировать реализацию из слоя-владельца. Root-level
 compatibility wrappers не создаются.
@@ -137,8 +127,8 @@ compatibility wrappers не создаются.
 ## Generated Code
 
 `src/generated/**` воспроизводится из `contracts/**/*.proto` и не редактируется
-вручную. `src/generated/**` и `src/generated-exports.ts` являются top-level
-исключением из компактной структуры `src`, потому что package entrypoint
+вручную. `src/generated/**` и `src/bootstrap/generated-exports.ts` являются
+исключениями из обычной слоевой структуры, потому что package entrypoint
 реэкспортирует generated DTO/enums public API и server-side
 `*ServiceDefinition` / `*ServiceImplementation` contracts. Generated
 `*ServiceClient` contracts остаются внутренними transport contracts и не

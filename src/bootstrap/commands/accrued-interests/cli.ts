@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-accrued-interests`.
+ * Модуль CLI-команды `instrument bond accrued`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,19 +14,20 @@ import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
-} from '../instrument-id-options';
+} from '../../args/instrument-id-options';
 import {
   accruedInterestsFormats,
   formatAccruedInterests,
@@ -42,7 +43,7 @@ type AccruedInterestsSdk = {
 
 type AccruedInterestsSdkFactory = (options: TinkoffInvestOptions) => AccruedInterestsSdk;
 
-const accruedInterestsCommandPath = ['instruments', 'get-accrued-interests'] as const;
+const accruedInterestsCommandPath = ['instrument', 'bond', 'accrued'] as const;
 const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const accruedInterestsRequestOptionsSchema = {
@@ -85,7 +86,7 @@ export function parseAccruedInterestsFormat(rawOptions: CommandRawOptions): Accr
 export function createAccruedInterestsCommand(
   createSdk: AccruedInterestsSdkFactory = defaultAccruedInterestsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: accruedInterestsCommandPath,
     options: accruedInterestsOptionsSchema,
     handle({ options }) {

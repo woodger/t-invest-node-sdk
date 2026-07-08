@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-portfolio`.
+ * Модуль CLI-команды `operation portfolio`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -15,10 +15,11 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPortfolio, portfolioFormats, type PortfolioFormat } from './reporter';
 
@@ -31,7 +32,7 @@ type PortfolioSdk = {
 
 type PortfolioSdkFactory = (options: TinkoffInvestOptions) => PortfolioSdk;
 
-const portfolioCommandPath = ['operations', 'get-portfolio'] as const;
+const portfolioCommandPath = ['operation', 'portfolio'] as const;
 const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const portfolioCurrencies = {
@@ -87,7 +88,7 @@ export function parsePortfolioFormat(rawOptions: CommandRawOptions): PortfolioFo
 export function createPortfolioCommand(
   createSdk: PortfolioSdkFactory = defaultPortfolioSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: portfolioCommandPath,
     options: portfolioOptionsSchema,
     handle({ options }) {

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments currencies`.
+ * Модуль CLI-команды `instrument currency list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import {
   type CurrenciesResponse,
   type InstrumentsRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema,
   parseInstrumentStatus
-} from '../instruments-args';
+} from '../../args/instruments-args';
 import { currenciesFormats, formatCurrencies, type CurrenciesFormat } from './reporter';
 
 type CurrenciesSdk = {
@@ -35,7 +36,7 @@ type CurrenciesSdk = {
 
 type CurrenciesSdkFactory = (options: TinkoffInvestOptions) => CurrenciesSdk;
 
-const currenciesCommandPath = ['instruments', 'currencies'] as const;
+const currenciesCommandPath = ['instrument', 'currency', 'list'] as const;
 const defaultCurrenciesSdkFactory: CurrenciesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const currenciesFormatOptionsSchema = {
@@ -63,7 +64,7 @@ export function parseCurrenciesFormat(rawOptions: CommandRawOptions): Currencies
 export function createCurrenciesCommand(
   createSdk: CurrenciesSdkFactory = defaultCurrenciesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: currenciesCommandPath,
     options: currenciesOptionsSchema,
     handle({ options }) {

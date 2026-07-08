@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox cancel-sandbox-order`.
+ * Модуль CLI-команды `sandbox order cancel`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,10 +14,11 @@ import type {
   CancelOrderRequest,
   CancelOrderResponse
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createCancelOrderRequest } from '../cancel-order/cli';
 import {
@@ -28,7 +29,7 @@ import {
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 
 type SandboxCancelOrderSdk = {
   sandbox: {
@@ -39,7 +40,7 @@ type SandboxCancelOrderSdk = {
 
 type SandboxCancelOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxCancelOrderSdk;
 
-const sandboxCancelOrderCommandPath = ['sandbox', 'cancel-sandbox-order'] as const;
+const sandboxCancelOrderCommandPath = ['sandbox', 'order', 'cancel'] as const;
 const defaultSandboxCancelOrderSdkFactory: SandboxCancelOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxCancelOrderRequestOptionsSchema = {
@@ -80,7 +81,7 @@ export function parseSandboxCancelOrderFormat(rawOptions: CommandRawOptions): Ca
 export function createSandboxCancelOrderCommand(
   createSdk: SandboxCancelOrderSdkFactory = defaultSandboxCancelOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxCancelOrderCommandPath,
     options: sandboxCancelOrderOptionsSchema,
     handle({ options }) {

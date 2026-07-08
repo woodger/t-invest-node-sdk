@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `sandbox sandbox-pay-in`.
+ * Модуль CLI-репортинга команды `sandbox pay-in`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и presentation formatting.
  * Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -11,8 +11,7 @@ import {
   formatReportMoneyText,
   toReportMoney
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const sandboxPayInFormats = ['json', 'table'] as const;
 

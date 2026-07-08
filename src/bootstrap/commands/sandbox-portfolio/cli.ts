@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-portfolio`.
+ * Модуль CLI-команды `sandbox portfolio`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createPortfolioRequest,
@@ -31,7 +32,7 @@ type SandboxPortfolioSdk = {
 
 type SandboxPortfolioSdkFactory = (options: TinkoffInvestOptions) => SandboxPortfolioSdk;
 
-const sandboxPortfolioCommandPath = ['sandbox', 'get-sandbox-portfolio'] as const;
+const sandboxPortfolioCommandPath = ['sandbox', 'portfolio'] as const;
 const defaultSandboxPortfolioSdkFactory: SandboxPortfolioSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPortfolioRequestOptionsSchema = {
@@ -76,7 +77,7 @@ export function parseSandboxPortfolioFormat(rawOptions: CommandRawOptions): Port
 export function createSandboxPortfolioCommand(
   createSdk: SandboxPortfolioSdkFactory = defaultSandboxPortfolioSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxPortfolioCommandPath,
     options: sandboxPortfolioOptionsSchema,
     handle({ options }) {

@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   TradingDay,
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createTradingSchedulesCommand,
   parseTradingSchedulesFormat,
@@ -124,11 +124,11 @@ describe('trading-schedules command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'instruments',
-          'trading-schedules',
+          'instrument',
+          'schedules',
           '--token=token',
           '--endpoint=localhost:50051',
           '--exchange=MOEX',
@@ -167,11 +167,11 @@ describe('trading-schedules command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'instruments',
-            'trading-schedules',
+            'instrument',
+            'schedules',
             '--token=token',
             '--endpoint=localhost:50051',
             '--from=2026-01-01T00:00:00Z',

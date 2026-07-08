@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `stoporders post-stop-order`.
+ * Модуль CLI-команды `stop-order place`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -17,21 +17,22 @@ import {
   type PostStopOrderRequest,
   type PostStopOrderResponse
 } from '../../../generated/stoporders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parseOptionalPositiveQuotationOption,
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   formatPostStopOrder,
   postStopOrderFormats,
@@ -47,7 +48,7 @@ type PostStopOrderSdk = {
 
 type PostStopOrderSdkFactory = (options: TinkoffInvestOptions) => PostStopOrderSdk;
 
-const postStopOrderCommandPath = ['stoporders', 'post-stop-order'] as const;
+const postStopOrderCommandPath = ['stop-order', 'place'] as const;
 const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const stopOrderDirections = {
@@ -157,7 +158,7 @@ export function parsePostStopOrderFormat(rawOptions: CommandRawOptions): PostSto
 export function createPostStopOrderCommand(
   createSdk: PostStopOrderSdkFactory = defaultPostStopOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: postStopOrderCommandPath,
     options: postStopOrderOptionsSchema,
     handle({ options }) {

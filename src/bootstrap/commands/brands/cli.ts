@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-brands`.
+ * Модуль CLI-команды `instrument brand list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { brandsFormats, formatBrands, type BrandsFormat } from './reporter';
 
@@ -27,7 +28,7 @@ type BrandsSdk = {
 
 type BrandsSdkFactory = (options: TinkoffInvestOptions) => BrandsSdk;
 
-const brandsCommandPath = ['instruments', 'get-brands'] as const;
+const brandsCommandPath = ['instrument', 'brand', 'list'] as const;
 const defaultBrandsSdkFactory: BrandsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const brandsOptionsSchema = withSdkOptions({
@@ -47,7 +48,7 @@ export function parseBrandsFormat(rawOptions: CommandRawOptions): BrandsFormat {
 export function createBrandsCommand(
   createSdk: BrandsSdkFactory = defaultBrandsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: brandsCommandPath,
     options: brandsOptionsSchema,
     handle({ options }) {

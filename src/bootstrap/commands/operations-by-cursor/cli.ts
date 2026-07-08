@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-operations-by-cursor`.
+ * Модуль CLI-команды `operation page`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -17,15 +17,16 @@ import {
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatOperationsByCursor,
@@ -44,7 +45,7 @@ type OperationsByCursorSdk = {
 
 type OperationsByCursorSdkFactory = (options: TinkoffInvestOptions) => OperationsByCursorSdk;
 
-const operationsByCursorCommandPath = ['operations', 'get-operations-by-cursor'] as const;
+const operationsByCursorCommandPath = ['operation', 'page'] as const;
 const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const operationStates = {
@@ -206,7 +207,7 @@ export function parseOperationsByCursorFormat(rawOptions: CommandRawOptions): Op
 export function createOperationsByCursorCommand(
   createSdk: OperationsByCursorSdkFactory = defaultOperationsByCursorSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: operationsByCursorCommandPath,
     options: operationsByCursorOptionsSchema,
     handle({ options }) {

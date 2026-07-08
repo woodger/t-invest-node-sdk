@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   AccruedInterest,
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createAccruedInterestsCommand,
   parseAccruedInterestsFormat,
@@ -111,11 +111,12 @@ describe('accrued-interests command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'instruments',
-          'get-accrued-interests',
+          'instrument',
+          'bond',
+          'accrued',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BOND-FIGI',
@@ -154,11 +155,12 @@ describe('accrued-interests command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'instruments',
-            'get-accrued-interests',
+            'instrument',
+            'bond',
+            'accrued',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BOND-FIGI',

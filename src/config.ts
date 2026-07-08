@@ -1,5 +1,5 @@
 /**
- * Модуль package config задает default runtime policies SDK.
+ * Модуль package config задает default runtime policies пакета SDK.
  *
  * Здесь допустимы:
  * - значения CLI safety policy;
@@ -14,55 +14,33 @@ import type { TinkoffInvestNodeSDKConfig } from './config.types';
 export * from './config.types';
 
 export const defaultConfig: TinkoffInvestNodeSDKConfig = {
-  // Ключи сопоставляются с gRPC path и могут быть как сервисными, так и метод-специфичными.
+  // Ключи соответствуют generated gRPC service names или method paths.
   unaryLimits: {
-    /**
-     * Сервис инструментов
-     * Справочная информация о ценных бумагах.
-     */
+    /** Справочные данные инструментов. */
     InstrumentsService: 200,
 
-    /**
-     * Сервис котировок предназначен для получения различной биржевой информации,
-     * в том числе исторической
-     */
+    /** Рыночные данные: цены, свечи и стакан. */
     MarketDataService: 300,
 
-    /**
-     * Сервис операций
-     * Предназначен для получения информации о портфеле по конкретному счету.
-     */
+    /** Операции, портфель, позиции, отчеты и лимиты. */
     OperationsService: 200,
 
-    /**
-     * Сервис ордеров
-     * Сервис для работы с торговыми поручениями.
-     */
+    /** Торговые поручения и их состояние. */
     OrdersService: 100,
 
-    /**
-     * Песочница — это тестовый контур.
-     */
+    /** Тестовый торговый контур. */
     SandboxService: 200,
 
-    /**
-     * Сервис стоп-ордеров
-     */
+    /** Стоп-ордера. */
     StopOrdersService: 50,
 
-    /**
-     * Сервис счетов
-     * Предназначен для получения информации о пользователе и его счетах в Т-Инвестициях.
-     */
+    /** Счета, тарифы и пользовательская информация. */
     UsersService: 100
   },
 
   /**
-   * Локальная policy для package CLI.
-   *
-   * Требует явный `--confirm` перед CLI-командами с side effects. Значение
-   * управляет поведением bootstrap-команд SDK и не является частью Tinkoff
-   * Invest API contract.
+   * Требует явный `--confirm` для CLI-команд с side effects.
+   * Это package policy, а не provider API contract.
    */
   requireSideEffectConfirmation: true
 };

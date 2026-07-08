@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments options-by`.
+ * Модуль CLI-репортинга команды `instrument option list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -7,7 +7,7 @@
 
 import type { OptionsByReport } from '../../../application/reports';
 import type { Option } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   createOptionReportInstrument,
   optionFormats,

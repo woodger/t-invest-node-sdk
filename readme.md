@@ -32,16 +32,17 @@ yarn add tinkoff-invest-node-sdk
 
 ## Генерация proto
 
-Генерация TypeScript-кода из `contracts/**/*.proto` запускается через Yarn-скрипт:
+Генерация TypeScript-кода из `contracts/**/*.proto` запускается через CLI:
 
 ```sh
-yarn proto
+yarn cli dev compile-proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
 TypeScript plugin берется из dev-зависимости `ts-proto`.
 
-Скрипт использует собранный файл `dist/bootstrap/bin/compile-proto.js`, поэтому перед первым запуском после изменений в `src/bootstrap/bin/compile-proto.ts` нужно выполнить:
+CLI использует собранные файлы из `dist`, поэтому перед первым запуском после
+изменений в bootstrap TypeScript-коде нужно выполнить:
 
 ```sh
 yarn build
@@ -92,22 +93,58 @@ interface TinkoffInvestNodeSDKConfig {
 
 ## CLI
 
-В проекте есть bootstrap CLI layer с command registry. Локально после сборки
-utility- и API-команды можно запускать через `yarn cli`:
+В проекте есть bootstrap CLI layer на базе `icore` terminal app и command
+registry. Локально после сборки utility- и API-команды можно запускать через
+`yarn cli`:
 
 ```sh
 yarn cli --help
 yarn cli version
-yarn cli help <service> <method>
-yarn cli <service> <method> [options]
+yarn cli <domain> --help
+yarn cli <domain> <command> --help
+yarn cli <domain> <command> [options]
 
-yarn cli help users get-accounts
-yarn cli users get-accounts --format=json
+yarn cli account list --format=json
+yarn cli account info
+yarn cli market candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv
+yarn cli market last-prices --instrument-id=BBG00QPYJ5H0
+yarn cli order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000001 --confirm
+yarn cli stop-order list --account-id=2000000000
+yarn cli operation portfolio --account-id=2000000000 --format=json
+yarn cli sandbox account list
+yarn cli sandbox order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm
+yarn cli instrument share list --help
+yarn cli instrument bond show --id=BBG00QPYJ5H0 --id-type=figi
+yarn cli dev compile-proto
 ```
 
-Актуальный список команд выводит `yarn cli help`. Подробности отдельной
-команды можно посмотреть через `yarn cli help <service> <method>` или
-`yarn cli <service> <method> --help`.
+Актуальный список доменов выводит `yarn cli --help`. Список команд домена
+можно посмотреть через `yarn cli <domain> --help`. Подробности отдельной
+команды выводятся через `yarn cli <domain> <command> --help`.
+
+After package installation the same CLI entrypoint is exposed as the package
+binary:
+
+```sh
+tinkoff-invest-node-sdk --help
+tinkoff-invest-node-sdk account list --format=json
+```
+
+CLI examples use preferred friendly paths. Technical and legacy paths continue
+to work as compatibility aliases, but they are not promoted in help output.
+Examples of compatibility aliases:
+
+- `users get-accounts` -> `account list`;
+- `marketdata get-candles` -> `market candles`;
+- `orders post-order` -> `order place`;
+- `stoporders get-stop-orders` -> `stop-order list`;
+- `operations get-portfolio` -> `operation portfolio`;
+- `instruments shares` -> `instrument share list`;
+- `compile-proto` -> `dev compile-proto`.
+
+Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
+negative overrides use `--no-raw`; assigned values like `--raw=true` or
+`--raw=false` are not part of the public CLI contract.
 
 API-команды используют `--token` / `TINKOFF_TOKEN` и
 `--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным

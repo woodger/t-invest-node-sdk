@@ -1,10 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPositionsCommand,
   createSandboxPositionsRequest,
@@ -74,11 +74,12 @@ describe('sandbox-positions command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'sandbox',
-          'get-sandbox-positions',
+          'position',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -110,11 +111,12 @@ describe('sandbox-positions command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'sandbox',
-            'get-sandbox-positions',
+            'position',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

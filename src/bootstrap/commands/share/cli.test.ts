@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   InstrumentIdType,
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createShareCommand,
   parseShareFormat,
@@ -129,11 +129,12 @@ describe('share command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'instruments',
-          'share-by',
+          'instrument',
+          'share',
+          'show',
           '--token=token',
           '--endpoint=localhost:50051',
           '--id=SBER',
@@ -171,11 +172,12 @@ describe('share command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'instruments',
-            'share-by',
+            'instrument',
+            'share',
+            'show',
             '--token=token',
             '--endpoint=localhost:50051',
             '--id=BBG004730N88',

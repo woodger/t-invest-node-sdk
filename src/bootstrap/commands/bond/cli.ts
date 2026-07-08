@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments bond-by`.
+ * Модуль CLI-команды `instrument bond show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   BondResponse,
   InstrumentRequest
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-} from '../instruments-args';
+} from '../../args/instruments-args';
 import { bondFormats, formatBond, type BondFormat } from './reporter';
 
 type BondSdk = {
@@ -35,7 +36,7 @@ type BondSdk = {
 
 type BondSdkFactory = (options: TinkoffInvestOptions) => BondSdk;
 
-const bondCommandPath = ['instruments', 'bond-by'] as const;
+const bondCommandPath = ['instrument', 'bond', 'show'] as const;
 const defaultBondSdkFactory: BondSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const bondFormatOptionsSchema = {
@@ -63,7 +64,7 @@ export function parseBondFormat(rawOptions: CommandRawOptions): BondFormat {
 export function createBondCommand(
   createSdk: BondSdkFactory = defaultBondSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: bondCommandPath,
     options: bondOptionsSchema,
     handle({ options }) {

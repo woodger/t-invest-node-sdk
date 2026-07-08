@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import {
@@ -8,7 +8,7 @@ import {
   type EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createEditFavoritesCommand,
   createEditFavoritesRequest,
@@ -67,9 +67,9 @@ describe('edit-favorites command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
-          ['instruments', 'edit-favorites', '--instrument-id=figi-1', '--action=add'],
+          ['instrument', 'favorite', 'edit', '--instrument-id=figi-1', '--action=add'],
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
@@ -98,11 +98,12 @@ describe('edit-favorites command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'instruments',
-          'edit-favorites',
+          'instrument',
+          'favorite',
+          'edit',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments option-by`.
+ * Модуль CLI-команды `instrument option show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   InstrumentRequest,
   OptionResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-} from '../instruments-args';
+} from '../../args/instruments-args';
 import { formatOption, optionFormats, type OptionFormat } from './reporter';
 
 type OptionSdk = {
@@ -35,7 +36,7 @@ type OptionSdk = {
 
 type OptionSdkFactory = (options: TinkoffInvestOptions) => OptionSdk;
 
-const optionCommandPath = ['instruments', 'option-by'] as const;
+const optionCommandPath = ['instrument', 'option', 'show'] as const;
 const defaultOptionSdkFactory: OptionSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const optionFormatOptionsSchema = {
@@ -63,7 +64,7 @@ export function parseOptionFormat(rawOptions: CommandRawOptions): OptionFormat {
 export function createOptionCommand(
   createSdk: OptionSdkFactory = defaultOptionSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: optionCommandPath,
     options: optionOptionsSchema,
     handle({ options }) {

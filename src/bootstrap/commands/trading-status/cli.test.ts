@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { SecurityTradingStatus } from '../../../generated/common';
 import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createTradingStatusCommand,
   parseTradingStatusFormat,
@@ -81,11 +81,11 @@ describe('trading-status command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'marketdata',
-          'get-trading-status',
+          'market',
+          'status',
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',
@@ -120,11 +120,11 @@ describe('trading-status command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'marketdata',
-            'get-trading-status',
+            'market',
+            'status',
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0'

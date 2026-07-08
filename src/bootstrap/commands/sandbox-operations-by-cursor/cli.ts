@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-operations-by-cursor`.
+ * Модуль CLI-команды `sandbox operation page`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,10 +14,11 @@ import type {
   GetOperationsByCursorRequest,
   GetOperationsByCursorResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createOperationsByCursorRequest,
@@ -44,7 +45,7 @@ type SandboxOperationsByCursorSdkFactory = (
   options: TinkoffInvestOptions
 ) => SandboxOperationsByCursorSdk;
 
-const sandboxOperationsByCursorCommandPath = ['sandbox', 'get-sandbox-operations-by-cursor'] as const;
+const sandboxOperationsByCursorCommandPath = ['sandbox', 'operation', 'page'] as const;
 const defaultSandboxOperationsByCursorSdkFactory: SandboxOperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxOperationsByCursorRequestOptionsSchema = {
@@ -141,7 +142,7 @@ export function parseSandboxOperationsByCursorFormat(
 export function createSandboxOperationsByCursorCommand(
   createSdk: SandboxOperationsByCursorSdkFactory = defaultSandboxOperationsByCursorSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxOperationsByCursorCommandPath,
     options: sandboxOperationsByCursorOptionsSchema,
     handle({ options }) {

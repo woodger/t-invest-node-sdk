@@ -76,11 +76,11 @@ Reports отвечают на вопрос:
 
 ## CLI Input
 
-Raw `process.argv` остается на executable-границе `src/bootstrap/bin/cli.ts`; дальше
-`bootstrap/cli-runner.ts` обрабатывает argv через `icore` command registry:
+Raw `process.argv` остается на executable-границе `src/bootstrap/index.ts`; дальше
+`bootstrap/cli/runner.ts` обрабатывает argv через `icore` terminal app и command registry:
 
 ```text
-process.argv -> src/bootstrap/bin/cli.ts -> bootstrap/cli-runner.ts -> icore command registry -> typed command options -> command handler
+process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
 ```
 
 Command-specific primitive options описываются декларативными `icore` schemas в
@@ -100,6 +100,7 @@ raw options. Mapping typed options в generated request DTO должен жит�
 
 ```text
 process.argv
+  -> icore terminal app
   -> icore parser/validator
   -> typed command options
   -> generated request DTO
@@ -117,7 +118,7 @@ process.argv
 | generated API response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | application report -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
 | output values -> JSON/CSV/table | `infrastructure/renderers/*` | без изменений, пока renderer-ы остаются механическими |
-| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli-runner.ts` | без изменений |
+| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli/runner.ts` | без изменений |
 
 ## Типичные Ошибки
 

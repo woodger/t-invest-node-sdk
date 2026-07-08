@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-accounts`.
+ * Модуль CLI-команды `sandbox account list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetAccountsRequest, GetAccountsResponse } from '../../../generated/users';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { accountsFormats, formatAccounts, type AccountsFormat } from '../accounts/reporter';
 
@@ -27,7 +28,7 @@ type SandboxAccountsSdk = {
 
 type SandboxAccountsSdkFactory = (options: TinkoffInvestOptions) => SandboxAccountsSdk;
 
-const sandboxAccountsCommandPath = ['sandbox', 'get-sandbox-accounts'] as const;
+const sandboxAccountsCommandPath = ['sandbox', 'account', 'list'] as const;
 const defaultSandboxAccountsSdkFactory: SandboxAccountsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxAccountsOptionsSchema = withSdkOptions({
@@ -47,7 +48,7 @@ export function parseSandboxAccountsFormat(rawOptions: CommandRawOptions): Accou
 export function createSandboxAccountsCommand(
   createSdk: SandboxAccountsSdkFactory = defaultSandboxAccountsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxAccountsCommandPath,
     options: sandboxAccountsOptionsSchema,
     handle({ options }) {

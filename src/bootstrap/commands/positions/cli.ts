@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-positions`.
+ * Модуль CLI-команды `operation positions`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { formatPositions, positionsFormats, type PositionsFormat } from './reporter';
 
@@ -27,7 +28,7 @@ type PositionsSdk = {
 
 type PositionsSdkFactory = (options: TinkoffInvestOptions) => PositionsSdk;
 
-const positionsCommandPath = ['operations', 'get-positions'] as const;
+const positionsCommandPath = ['operation', 'positions'] as const;
 const defaultPositionsSdkFactory: PositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const positionsRequestOptionsSchema = {
@@ -62,7 +63,7 @@ export function parsePositionsFormat(rawOptions: CommandRawOptions): PositionsFo
 export function createPositionsCommand(
   createSdk: PositionsSdkFactory = defaultPositionsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: positionsCommandPath,
     options: positionsOptionsSchema,
     handle({ options }) {

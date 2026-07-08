@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments find-instrument`.
+ * Модуль CLI-команды `instrument search`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -12,10 +12,11 @@
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest, FindInstrumentResponse } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   findInstrumentFormats,
@@ -32,7 +33,7 @@ type FindInstrumentSdk = {
 
 type FindInstrumentSdkFactory = (options: TinkoffInvestOptions) => FindInstrumentSdk;
 
-const findInstrumentCommandPath = ['instruments', 'find-instrument'] as const;
+const findInstrumentCommandPath = ['instrument', 'search'] as const;
 const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const instrumentKinds = {
@@ -98,7 +99,7 @@ export function parseFindInstrumentFormat(rawOptions: CommandRawOptions): FindIn
 export function createFindInstrumentCommand(
   createSdk: FindInstrumentSdkFactory = defaultFindInstrumentSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: findInstrumentCommandPath,
     options: findInstrumentOptionsSchema,
     handle({ options }) {

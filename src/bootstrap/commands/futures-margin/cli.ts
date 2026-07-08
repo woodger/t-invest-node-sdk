@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments get-futures-margin`.
+ * Модуль CLI-команды `instrument future margin`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,15 +14,16 @@ import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
-} from '../instrument-id-options';
+} from '../../args/instrument-id-options';
 import {
   formatFuturesMargin,
   futuresMarginFormats,
@@ -38,7 +39,7 @@ type FuturesMarginSdk = {
 
 type FuturesMarginSdkFactory = (options: TinkoffInvestOptions) => FuturesMarginSdk;
 
-const futuresMarginCommandPath = ['instruments', 'get-futures-margin'] as const;
+const futuresMarginCommandPath = ['instrument', 'future', 'margin'] as const;
 const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const futuresMarginRequestOptionsSchema = {
@@ -73,7 +74,7 @@ export function parseFuturesMarginFormat(rawOptions: CommandRawOptions): Futures
 export function createFuturesMarginCommand(
   createSdk: FuturesMarginSdkFactory = defaultFuturesMarginSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: futuresMarginCommandPath,
     options: futuresMarginOptionsSchema,
     handle({ options }) {

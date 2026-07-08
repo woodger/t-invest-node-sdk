@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `marketdata get-trading-statuses`.
+ * Модуль CLI-команды `market statuses`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,14 +14,15 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatTradingStatuses,
@@ -38,7 +39,7 @@ type TradingStatusesSdk = {
 
 type TradingStatusesSdkFactory = (options: TinkoffInvestOptions) => TradingStatusesSdk;
 
-const tradingStatusesCommandPath = ['marketdata', 'get-trading-statuses'] as const;
+const tradingStatusesCommandPath = ['market', 'statuses'] as const;
 const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const tradingStatusesInstrumentIdsOptionsSchema = {
@@ -79,7 +80,7 @@ export function parseTradingStatusesFormat(rawOptions: CommandRawOptions): Tradi
 export function createTradingStatusesCommand(
   createSdk: TradingStatusesSdkFactory = defaultTradingStatusesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: tradingStatusesCommandPath,
     options: tradingStatusesOptionsSchema,
     handle({ options }) {

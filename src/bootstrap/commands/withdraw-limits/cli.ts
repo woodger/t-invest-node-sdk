@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-withdraw-limits`.
+ * Модуль CLI-команды `operation withdraw-limits`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,10 +14,11 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatWithdrawLimits,
@@ -34,7 +35,7 @@ type WithdrawLimitsSdk = {
 
 type WithdrawLimitsSdkFactory = (options: TinkoffInvestOptions) => WithdrawLimitsSdk;
 
-const withdrawLimitsCommandPath = ['operations', 'get-withdraw-limits'] as const;
+const withdrawLimitsCommandPath = ['operation', 'withdraw-limits'] as const;
 const defaultWithdrawLimitsSdkFactory: WithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const withdrawLimitsRequestOptionsSchema = {
@@ -69,7 +70,7 @@ export function parseWithdrawLimitsFormat(rawOptions: CommandRawOptions): Withdr
 export function createWithdrawLimitsCommand(
   createSdk: WithdrawLimitsSdkFactory = defaultWithdrawLimitsSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: withdrawLimitsCommandPath,
     options: withdrawLimitsOptionsSchema,
     handle({ options }) {

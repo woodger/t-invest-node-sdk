@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operations get-dividends-foreign-issuer`.
+ * Модуль CLI-команды `operation foreign-dividends-report`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   dividendsForeignIssuerFormats,
@@ -44,7 +45,7 @@ type DividendsForeignIssuerSdkFactory = (
   options: TinkoffInvestOptions
 ) => DividendsForeignIssuerSdk;
 
-const dividendsForeignIssuerCommandPath = ['operations', 'get-dividends-foreign-issuer'] as const;
+const dividendsForeignIssuerCommandPath = ['operation', 'foreign-dividends-report'] as const;
 const defaultDividendsForeignIssuerSdkFactory: DividendsForeignIssuerSdkFactory = (
   options
 ) => new TinkoffInvestNodeSDK(options);
@@ -144,7 +145,7 @@ export function parseDividendsForeignIssuerFormat(
 export function createDividendsForeignIssuerCommand(
   createSdk: DividendsForeignIssuerSdkFactory = defaultDividendsForeignIssuerSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: dividendsForeignIssuerCommandPath,
     options: dividendsForeignIssuerOptionsSchema,
     handle({ options }) {

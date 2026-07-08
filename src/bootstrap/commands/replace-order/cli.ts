@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `orders replace-order`.
+ * Модуль CLI-команды `order replace`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -15,16 +15,17 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   formatReplaceOrder,
   replaceOrderFormats,
@@ -40,7 +41,7 @@ type ReplaceOrderSdk = {
 
 type ReplaceOrderSdkFactory = (options: TinkoffInvestOptions) => ReplaceOrderSdk;
 
-const replaceOrderCommandPath = ['orders', 'replace-order'] as const;
+const replaceOrderCommandPath = ['order', 'replace'] as const;
 const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const replaceOrderPriceTypes = {
@@ -114,7 +115,7 @@ export function parseReplaceOrderFormat(rawOptions: CommandRawOptions): ReplaceO
 export function createReplaceOrderCommand(
   createSdk: ReplaceOrderSdkFactory = defaultReplaceOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: replaceOrderCommandPath,
     options: replaceOrderOptionsSchema,
     handle({ options }) {

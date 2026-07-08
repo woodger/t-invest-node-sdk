@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxWithdrawLimitsCommand,
   createSandboxWithdrawLimitsRequest,
@@ -78,11 +78,11 @@ describe('sandbox-withdraw-limits command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
           'sandbox',
-          'get-sandbox-withdraw-limits',
+          'withdraw-limits',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
@@ -116,11 +116,11 @@ describe('sandbox-withdraw-limits command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
             'sandbox',
-            'get-sandbox-withdraw-limits',
+            'withdraw-limits',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=sandbox-account-id'

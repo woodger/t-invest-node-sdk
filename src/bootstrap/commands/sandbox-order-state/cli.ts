@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox get-sandbox-order-state`.
+ * Модуль CLI-команды `sandbox order show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetOrderStateRequest, OrderState } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createOrderStateRequest } from '../order-state/cli';
 import { formatOrderState, orderStateFormats, type OrderStateFormat } from '../order-state/reporter';
@@ -28,7 +29,7 @@ type SandboxOrderStateSdk = {
 
 type SandboxOrderStateSdkFactory = (options: TinkoffInvestOptions) => SandboxOrderStateSdk;
 
-const sandboxOrderStateCommandPath = ['sandbox', 'get-sandbox-order-state'] as const;
+const sandboxOrderStateCommandPath = ['sandbox', 'order', 'show'] as const;
 const defaultSandboxOrderStateSdkFactory: SandboxOrderStateSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxOrderStateRequestOptionsSchema = {
@@ -68,7 +69,7 @@ export function parseSandboxOrderStateFormat(rawOptions: CommandRawOptions): Ord
 export function createSandboxOrderStateCommand(
   createSdk: SandboxOrderStateSdkFactory = defaultSandboxOrderStateSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxOrderStateCommandPath,
     options: sandboxOrderStateOptionsSchema,
     handle({ options }) {

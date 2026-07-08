@@ -9,11 +9,10 @@
  * Здесь не должно быть SDK wiring или generated API request logic.
  */
 
-import { defineCommand } from 'icore';
-import { resolveCommandHelpName } from '../../help/commands';
-import { renderCliHelp, renderCommandHelp } from '../../help/renderer';
+import { command } from '../../cli/contract';
+import { renderHelp } from '../../cli/help';
 
-export const helpCommand = defineCommand({
+export const helpCommand = command.define({
   path: ['help'],
   options: {},
   allowExtraPositionals: true,
@@ -23,11 +22,5 @@ export const helpCommand = defineCommand({
 });
 
 function renderHelpOutput(positionals: readonly unknown[]): string {
-  const commandName = resolveCommandHelpName(positionals);
-
-  if (commandName === undefined) {
-    return renderCliHelp();
-  }
-
-  return renderCommandHelp(commandName);
+  return renderHelp(positionals);
 }

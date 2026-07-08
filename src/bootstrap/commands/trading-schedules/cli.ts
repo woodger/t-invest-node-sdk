@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments trading-schedules`.
+ * Модуль CLI-команды `instrument schedules`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,14 +14,15 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatTradingSchedules,
@@ -38,7 +39,7 @@ type TradingSchedulesSdk = {
 
 type TradingSchedulesSdkFactory = (options: TinkoffInvestOptions) => TradingSchedulesSdk;
 
-const tradingSchedulesCommandPath = ['instruments', 'trading-schedules'] as const;
+const tradingSchedulesCommandPath = ['instrument', 'schedules'] as const;
 const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const tradingSchedulesRequestOptionsSchema = {
@@ -80,7 +81,7 @@ export function parseTradingSchedulesFormat(rawOptions: CommandRawOptions): Trad
 export function createTradingSchedulesCommand(
   createSdk: TradingSchedulesSdkFactory = defaultTradingSchedulesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: tradingSchedulesCommandPath,
     options: tradingSchedulesOptionsSchema,
     handle({ options }) {

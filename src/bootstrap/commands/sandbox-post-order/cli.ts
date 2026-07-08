@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox post-sandbox-order`.
+ * Модуль CLI-команды `sandbox order place`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -11,10 +11,11 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { PostOrderRequest, PostOrderResponse } from '../../../generated/orders';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { createPostOrderRequest } from '../post-order/cli';
 import {
@@ -25,7 +26,7 @@ import {
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 
 type SandboxPostOrderSdk = {
   sandbox: {
@@ -36,7 +37,7 @@ type SandboxPostOrderSdk = {
 
 type SandboxPostOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxPostOrderSdk;
 
-const sandboxPostOrderCommandPath = ['sandbox', 'post-sandbox-order'] as const;
+const sandboxPostOrderCommandPath = ['sandbox', 'order', 'place'] as const;
 const defaultSandboxPostOrderSdkFactory: SandboxPostOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPostOrderRequestOptionsSchema = {
@@ -106,7 +107,7 @@ export function parseSandboxPostOrderFormat(rawOptions: CommandRawOptions): Post
 export function createSandboxPostOrderCommand(
   createSdk: SandboxPostOrderSdkFactory = defaultSandboxPostOrderSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxPostOrderCommandPath,
     options: sandboxPostOrderOptionsSchema,
     handle({ options }) {

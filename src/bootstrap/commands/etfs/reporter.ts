@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments etfs`.
+ * Модуль CLI-репортинга команды `instrument etf list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -7,7 +7,7 @@
 
 import type { EtfsReport } from '../../../application/reports';
 import type { Etf } from '../../../generated/instruments';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
+import { renderJson } from 'icore';
 import {
   createEtfReportInstrument,
   etfFormats,

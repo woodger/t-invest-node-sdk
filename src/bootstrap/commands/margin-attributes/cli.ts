@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `users get-margin-attributes`.
+ * Модуль CLI-команды `account margin`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,10 +14,11 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   formatMarginAttributes,
@@ -34,7 +35,7 @@ type MarginAttributesSdk = {
 
 type MarginAttributesSdkFactory = (options: TinkoffInvestOptions) => MarginAttributesSdk;
 
-const marginAttributesCommandPath = ['users', 'get-margin-attributes'] as const;
+const marginAttributesCommandPath = ['account', 'margin'] as const;
 const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const marginAttributesRequestOptionsSchema = {
@@ -69,7 +70,7 @@ export function parseMarginAttributesFormat(rawOptions: CommandRawOptions): Marg
 export function createMarginAttributesCommand(
   createSdk: MarginAttributesSdkFactory = defaultMarginAttributesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: marginAttributesCommandPath,
     options: marginAttributesOptionsSchema,
     handle({ options }) {

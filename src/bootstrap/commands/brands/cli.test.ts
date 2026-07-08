@@ -1,9 +1,9 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { Brand, GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBrandsCommand,
   parseBrandsFormat
@@ -72,11 +72,12 @@ describe('brands command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'instruments',
-          'get-brands',
+          'instrument',
+          'brand',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -108,11 +109,12 @@ describe('brands command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'instruments',
-            'get-brands',
+            'instrument',
+            'brand',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

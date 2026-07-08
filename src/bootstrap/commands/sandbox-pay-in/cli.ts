@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `sandbox sandbox-pay-in`.
+ * Модуль CLI-команды `sandbox pay-in`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import type {
   SandboxPayInRequest,
   SandboxPayInResponse
 } from '../../../generated/sandbox';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
-} from '../side-effect-args';
+} from '../../args/side-effect-args';
 import {
   formatSandboxPayIn,
   sandboxPayInFormats,
@@ -39,7 +40,7 @@ type SandboxPayInSdk = {
 
 type SandboxPayInSdkFactory = (options: TinkoffInvestOptions) => SandboxPayInSdk;
 
-const sandboxPayInCommandPath = ['sandbox', 'sandbox-pay-in'] as const;
+const sandboxPayInCommandPath = ['sandbox', 'pay-in'] as const;
 const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const sandboxPayInCurrencies = ['rub', 'usd'] as const;
@@ -93,7 +94,7 @@ export function parseSandboxPayInFormat(rawOptions: CommandRawOptions): SandboxP
 export function createSandboxPayInCommand(
   createSdk: SandboxPayInSdkFactory = defaultSandboxPayInSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: sandboxPayInCommandPath,
     options: sandboxPayInOptionsSchema,
     handle({ options }) {

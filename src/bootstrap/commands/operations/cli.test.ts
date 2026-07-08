@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import {
@@ -10,7 +10,7 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOperationsCommand,
   parseOperationsFormat,
@@ -145,11 +145,11 @@ describe('operations command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'operations',
-          'get-operations',
+          'operation',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -185,11 +185,11 @@ describe('operations command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'operations',
-            'get-operations',
+            'operation',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id',

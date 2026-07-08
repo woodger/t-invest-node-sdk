@@ -1,9 +1,9 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { CancelStopOrderRequest } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCancelStopOrderCommand,
   createCancelStopOrderRequest,
@@ -42,11 +42,11 @@ describe('cancel-stop-order command', () => {
       });
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'stoporders',
-            'cancel-stop-order',
+            'stop-order',
+            'cancel',
             '--account-id=account-id',
             '--stop-order-id=stop-order-id'
           ],
@@ -80,11 +80,11 @@ describe('cancel-stop-order command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'stoporders',
-          'cancel-stop-order',
+          'stop-order',
+          'cancel',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',

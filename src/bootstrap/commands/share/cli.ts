@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `instruments share-by`.
+ * Модуль CLI-команды `instrument share show`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,16 +14,17 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../command-options';
-import { parseCommandOptions, withSdkOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
+import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema,
   parseInstrumentLookupIdType,
-} from '../instruments-args';
+} from '../../args/instruments-args';
 import { formatShare, shareFormats, type ShareFormat } from './reporter';
 
 type ShareSdk = {
@@ -35,7 +36,7 @@ type ShareSdk = {
 
 type ShareSdkFactory = (options: TinkoffInvestOptions) => ShareSdk;
 
-const shareCommandPath = ['instruments', 'share-by'] as const;
+const shareCommandPath = ['instrument', 'share', 'show'] as const;
 const defaultShareSdkFactory: ShareSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const shareFormatOptionsSchema = {
@@ -63,7 +64,7 @@ export function parseShareFormat(rawOptions: CommandRawOptions): ShareFormat {
 export function createShareCommand(
   createSdk: ShareSdkFactory = defaultShareSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: shareCommandPath,
     options: shareOptionsSchema,
     handle({ options }) {

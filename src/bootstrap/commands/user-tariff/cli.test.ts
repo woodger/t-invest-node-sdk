@@ -1,9 +1,9 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { runCommand } from 'icore';
+import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import type { CommandRawOptions } from '../../command-options';
+import type { CommandRawOptions } from '../../args/command-options';
 import {
   createUserTariffCommand,
   parseUserTariffFormat
@@ -70,11 +70,11 @@ describe('user-tariff command', () => {
         };
       });
 
-      const output = await runCommand(
+      const output = await commandFacade.run(
         command,
         [
-          'users',
-          'get-user-tariff',
+          'account',
+          'tariff',
           '--token=token',
           '--endpoint=localhost:50051',
           '--format=json'
@@ -106,11 +106,11 @@ describe('user-tariff command', () => {
       }));
 
       await assert.rejects(
-        () => runCommand(
+        () => commandFacade.run(
           command,
           [
-            'users',
-            'get-user-tariff',
+            'account',
+            'tariff',
             '--token=token',
             '--endpoint=localhost:50051'
           ],

@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `marketdata get-close-prices`.
+ * Модуль CLI-команды `market close-prices`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -14,14 +14,15 @@ import type {
   GetClosePricesRequest,
   GetClosePricesResponse
 } from '../../../generated/marketdata';
-import { defineCommand, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
+import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../command-options';
+import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
   parseCommandOptions,
   withSdkOptions
-} from '../../command-options';
+} from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import { closePricesFormats, formatClosePrices, type ClosePricesFormat } from './reporter';
 
@@ -34,7 +35,7 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TinkoffInvestOptions) => ClosePricesSdk;
 
-const closePricesCommandPath = ['marketdata', 'get-close-prices'] as const;
+const closePricesCommandPath = ['market', 'close-prices'] as const;
 const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const closePricesInstrumentIdsOptionsSchema = {
@@ -75,7 +76,7 @@ export function parseClosePricesFormat(rawOptions: CommandRawOptions): ClosePric
 export function createClosePricesCommand(
   createSdk: ClosePricesSdkFactory = defaultClosePricesSdkFactory
 ) {
-  return defineCommand({
+  return command.define({
     path: closePricesCommandPath,
     options: closePricesOptionsSchema,
     handle({ options }) {

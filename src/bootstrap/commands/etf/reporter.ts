@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-репортинга команды `instruments etf-by`.
+ * Модуль CLI-репортинга команды `instrument etf show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
  * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
@@ -19,8 +19,7 @@ import {
   formatReportDate,
   formatReportDecimal
 } from '../../../infrastructure/report-values';
-import { renderJson } from '../../../infrastructure/renderers/json-renderer';
-import { renderTextTable } from '../../../infrastructure/renderers/table-renderer';
+import { renderJson, renderTextTable } from 'icore';
 
 export const etfFormats = ['json', 'table'] as const;
 
