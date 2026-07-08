@@ -85,7 +85,7 @@ describe('positions command', () => {
         command,
         [
           'operation',
-          'get-positions',
+          'positions',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -121,7 +121,7 @@ describe('positions command', () => {
           command,
           [
             'operation',
-            'get-positions',
+            'positions',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id'

@@ -22,13 +22,17 @@ describe('CLI domains', () => {
       assert.equal(canonicalizeCommandName('order place'), 'order place');
       assert.equal(canonicalizeCommandName('order post-order'), 'order place');
       assert.equal(canonicalizeCommandName('orders post-order'), 'order place');
+      assert.equal(canonicalizeCommandName('stop-order list'), 'stop-order list');
+      assert.equal(canonicalizeCommandName('stop-order get-stop-orders'), 'stop-order list');
+      assert.equal(canonicalizeCommandName('stoporders get-stop-orders'), 'stop-order list');
+      assert.equal(canonicalizeCommandName('operation portfolio'), 'operation portfolio');
+      assert.equal(canonicalizeCommandName('operation get-portfolio'), 'operation portfolio');
+      assert.equal(canonicalizeCommandName('operations get-portfolio'), 'operation portfolio');
     });
 
     test('keeps non-renamed public paths and normalizes legacy service domains', () => {
       assert.equal(canonicalizeCommandName('instrument bonds'), 'instrument bonds');
       assert.equal(canonicalizeCommandName('instruments bonds'), 'instrument bonds');
-      assert.equal(canonicalizeCommandName('operation get-portfolio'), 'operation get-portfolio');
-      assert.equal(canonicalizeCommandName('operations get-portfolio'), 'operation get-portfolio');
       assert.equal(canonicalizeCommandName('dev compile-proto'), 'dev compile-proto');
       assert.equal(canonicalizeCommandName('compile-proto'), 'dev compile-proto');
     });
@@ -37,6 +41,11 @@ describe('CLI domains', () => {
       assert.equal(canonicalizeCommandName('users list'), 'users list');
       assert.equal(canonicalizeCommandName('marketdata candles'), 'marketdata candles');
       assert.equal(canonicalizeCommandName('orders place'), 'orders place');
+      assert.equal(canonicalizeCommandName('stoporders list'), 'stoporders list');
+      assert.equal(canonicalizeCommandName('stoporders place'), 'stoporders place');
+      assert.equal(canonicalizeCommandName('operations list'), 'operations list');
+      assert.equal(canonicalizeCommandName('operations portfolio'), 'operations portfolio');
+      assert.equal(canonicalizeCommandName('operations broker-report'), 'operations broker-report');
     });
   });
 
@@ -57,16 +66,32 @@ describe('CLI domains', () => {
         'order post-order',
         'orders post-order'
       ]);
+      assert.deepEqual(commandAliasNames(['stop-order', 'list']), [
+        'stop-order list',
+        'stop-order get-stop-orders',
+        'stoporders get-stop-orders'
+      ]);
+      assert.deepEqual(commandAliasNames(['stop-order', 'place']), [
+        'stop-order place',
+        'stop-order post-stop-order',
+        'stoporders post-stop-order'
+      ]);
+      assert.deepEqual(commandAliasNames(['operation', 'portfolio']), [
+        'operation portfolio',
+        'operation get-portfolio',
+        'operations get-portfolio'
+      ]);
+      assert.deepEqual(commandAliasNames(['operation', 'broker-report']), [
+        'operation broker-report',
+        'operation get-broker-report',
+        'operations get-broker-report'
+      ]);
     });
 
     test('returns legacy domain aliases for commands without friendly action aliases', () => {
       assert.deepEqual(commandAliasNames(['instrument', 'bonds']), [
         'instrument bonds',
         'instruments bonds'
-      ]);
-      assert.deepEqual(commandAliasNames(['operation', 'get-portfolio']), [
-        'operation get-portfolio',
-        'operations get-portfolio'
       ]);
       assert.deepEqual(commandAliasNames(['stream', 'run']), [
         'stream run'

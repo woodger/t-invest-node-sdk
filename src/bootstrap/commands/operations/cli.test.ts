@@ -149,7 +149,7 @@ describe('operations command', () => {
         command,
         [
           'operation',
-          'get-operations',
+          'list',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -189,7 +189,7 @@ describe('operations command', () => {
           command,
           [
             'operation',
-            'get-operations',
+            'list',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id',

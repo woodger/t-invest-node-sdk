@@ -170,6 +170,76 @@ const cliPathAliases = [
     ]
   },
   {
+    preferred: ['stop-order', 'list'],
+    aliases: [
+      ['stop-order', 'get-stop-orders'],
+      ['stoporders', 'get-stop-orders']
+    ]
+  },
+  {
+    preferred: ['stop-order', 'place'],
+    aliases: [
+      ['stop-order', 'post-stop-order'],
+      ['stoporders', 'post-stop-order']
+    ]
+  },
+  {
+    preferred: ['stop-order', 'cancel'],
+    aliases: [
+      ['stop-order', 'cancel-stop-order'],
+      ['stoporders', 'cancel-stop-order']
+    ]
+  },
+  {
+    preferred: ['operation', 'list'],
+    aliases: [
+      ['operation', 'get-operations'],
+      ['operations', 'get-operations']
+    ]
+  },
+  {
+    preferred: ['operation', 'page'],
+    aliases: [
+      ['operation', 'get-operations-by-cursor'],
+      ['operations', 'get-operations-by-cursor']
+    ]
+  },
+  {
+    preferred: ['operation', 'broker-report'],
+    aliases: [
+      ['operation', 'get-broker-report'],
+      ['operations', 'get-broker-report']
+    ]
+  },
+  {
+    preferred: ['operation', 'foreign-dividends-report'],
+    aliases: [
+      ['operation', 'get-dividends-foreign-issuer'],
+      ['operations', 'get-dividends-foreign-issuer']
+    ]
+  },
+  {
+    preferred: ['operation', 'portfolio'],
+    aliases: [
+      ['operation', 'get-portfolio'],
+      ['operations', 'get-portfolio']
+    ]
+  },
+  {
+    preferred: ['operation', 'positions'],
+    aliases: [
+      ['operation', 'get-positions'],
+      ['operations', 'get-positions']
+    ]
+  },
+  {
+    preferred: ['operation', 'withdraw-limits'],
+    aliases: [
+      ['operation', 'get-withdraw-limits'],
+      ['operations', 'get-withdraw-limits']
+    ]
+  },
+  {
     preferred: ['dev', 'compile-proto'],
     aliases: [
       ['compile-proto']

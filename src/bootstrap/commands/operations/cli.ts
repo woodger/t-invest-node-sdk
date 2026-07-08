@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operation get-operations`.
+ * Модуль CLI-команды `operation list`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -40,7 +40,7 @@ type OperationsSdk = {
 
 type OperationsSdkFactory = (options: TinkoffInvestOptions) => OperationsSdk;
 
-const operationsCommandPath = ['operation', 'get-operations'] as const;
+const operationsCommandPath = ['operation', 'list'] as const;
 const defaultOperationsSdkFactory: OperationsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
 
 const operationStates = {

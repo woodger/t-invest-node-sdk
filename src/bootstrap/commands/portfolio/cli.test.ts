@@ -123,7 +123,7 @@ describe('portfolio command', () => {
         command,
         [
           'operation',
-          'get-portfolio',
+          'portfolio',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -161,7 +161,7 @@ describe('portfolio command', () => {
           command,
           [
             'operation',
-            'get-portfolio',
+            'portfolio',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id'

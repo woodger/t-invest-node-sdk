@@ -1,5 +1,5 @@
 /**
- * Модуль CLI-команды `operation get-dividends-foreign-issuer`.
+ * Модуль CLI-команды `operation foreign-dividends-report`.
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
@@ -45,7 +45,7 @@ type DividendsForeignIssuerSdkFactory = (
   options: TinkoffInvestOptions
 ) => DividendsForeignIssuerSdk;
 
-const dividendsForeignIssuerCommandPath = ['operation', 'get-dividends-foreign-issuer'] as const;
+const dividendsForeignIssuerCommandPath = ['operation', 'foreign-dividends-report'] as const;
 const defaultDividendsForeignIssuerSdkFactory: DividendsForeignIssuerSdkFactory = (
   options
 ) => new TinkoffInvestNodeSDK(options);

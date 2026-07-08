@@ -154,7 +154,7 @@ describe('broker-report command', () => {
         command,
         [
           'operation',
-          'get-broker-report',
+          'broker-report',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=2000000000',
@@ -199,7 +199,7 @@ describe('broker-report command', () => {
           command,
           [
             'operation',
-            'get-broker-report',
+            'broker-report',
             '--token=token',
             '--endpoint=localhost:50051',
             '--task-id=task-id'

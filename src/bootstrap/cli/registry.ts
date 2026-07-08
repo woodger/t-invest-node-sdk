@@ -162,7 +162,7 @@ const deprecatedFigiOptionCommandNames = new Set<string>(
     'instrument get-dividends',
     'instrument edit-favorites',
     'instrument get-futures-margin',
-    'operation get-operations',
+    'operation list',
     'sandbox get-sandbox-operations'
   ].flatMap(commandNameAliases)
 );

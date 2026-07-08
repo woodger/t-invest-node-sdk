@@ -231,7 +231,7 @@ describe('operations-by-cursor command', () => {
         command,
         [
           'operation',
-          'get-operations-by-cursor',
+          'page',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=account-id',
@@ -269,7 +269,7 @@ describe('operations-by-cursor command', () => {
           command,
           [
             'operation',
-            'get-operations-by-cursor',
+            'page',
             '--token=token',
             '--endpoint=localhost:50051',
             '--account-id=account-id'

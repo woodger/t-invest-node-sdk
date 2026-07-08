@@ -117,12 +117,12 @@ describe('bootstrap cli runner', () => {
 
     test('prints command-specific help from a command help flag', async () => {
       const { io, read } = createIo();
-      const exitCode = await runCli(['operation', 'get-portfolio', '--help'], io);
+      const exitCode = await runCli(['operation', 'portfolio', '--help'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /operation get-portfolio - Print account portfolio/);
+      assert.match(read().stdout, /operation portfolio - Print account portfolio/);
       assert.match(read().stdout, /SDK call:\n {2}sdk\.operations\.getPortfolio/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk operation get-portfolio --account-id=ID/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk operation portfolio --account-id=ID/);
       assert.equal(read().stderr, '');
     });
 
@@ -131,8 +131,9 @@ describe('bootstrap cli runner', () => {
       const exitCode = await runCli(['operations', 'get-portfolio', '--help'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /operation get-portfolio - Print account portfolio/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk operation get-portfolio --account-id=ID/);
+      assert.match(read().stdout, /operation portfolio - Print account portfolio/);
+      assert.match(read().stdout, /tinkoff-invest-node-sdk operation portfolio --account-id=ID/);
+      assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk operation get-portfolio --account-id=ID/);
       assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk operations get-portfolio --account-id=ID/);
       assert.equal(read().stderr, '');
     });

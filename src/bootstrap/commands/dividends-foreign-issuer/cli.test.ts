@@ -156,7 +156,7 @@ describe('dividends-foreign-issuer command', () => {
         command,
         [
           'operation',
-          'get-dividends-foreign-issuer',
+          'foreign-dividends-report',
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=2000000000',
@@ -201,7 +201,7 @@ describe('dividends-foreign-issuer command', () => {
           command,
           [
             'operation',
-            'get-dividends-foreign-issuer',
+            'foreign-dividends-report',
             '--token=token',
             '--endpoint=localhost:50051',
             '--task-id=task-id'
