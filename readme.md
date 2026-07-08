@@ -35,7 +35,7 @@ yarn add tinkoff-invest-node-sdk
 Генерация TypeScript-кода из `contracts/**/*.proto` запускается через CLI:
 
 ```sh
-yarn cli compile-proto
+yarn cli dev compile-proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
@@ -100,16 +100,21 @@ registry. Локально после сборки utility- и API-команд�
 ```sh
 yarn cli --help
 yarn cli version
-yarn cli help <service> <method>
-yarn cli <service> <method> [options]
+yarn cli <domain> --help
+yarn cli <domain> <command> --help
+yarn cli <domain> <command> [options]
 
-yarn cli help users get-accounts
-yarn cli users get-accounts --format=json
+yarn cli account list --format=json
+yarn cli instrument share list --help
+yarn cli dev compile-proto
 ```
 
-Актуальный список команд выводит `yarn cli help`. Подробности отдельной
-команды можно посмотреть через `yarn cli help <service> <method>` или
-`yarn cli <service> <method> --help`.
+Актуальный список доменов выводит `yarn cli --help`. Список команд домена
+можно посмотреть через `yarn cli <domain> --help`. Подробности отдельной
+команды выводятся через `yarn cli <domain> <command> --help`.
+
+CLI examples use preferred friendly paths. Technical and legacy paths continue
+to work as compatibility aliases, but they are not promoted in help output.
 
 Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
 negative overrides use `--no-raw`; assigned values like `--raw=true` or

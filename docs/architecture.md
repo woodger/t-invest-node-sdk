@@ -86,12 +86,18 @@ bootstrap-механикой.
   report contracts;
 
 CLI слой сейчас поддерживает utility-команды `help`, `version` и API-команды
-в canonical форме `<domain> <command>`. Публичные domains: `account`,
-`instrument`, `market`, `order`, `stop-order`, `operation`, `sandbox`,
-`stream`, `dev`. Proto generation доступен как `dev compile-proto`.
-Legacy paths вида `users get-accounts`, `marketdata get-candles`,
-`instruments bonds`, `orders post-order`, `stoporders get-stop-orders`,
-`operations get-portfolio` и `compile-proto` остаются совместимыми aliases.
+в preferred friendly форме `<domain> <resource/action>`. Публичные domains:
+`account`, `instrument`, `market`, `order`, `stop-order`, `operation`,
+`sandbox`, `stream`, `dev`. Proto generation доступен как
+`dev compile-proto`.
+
+Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
+`market get-candles`, `marketdata get-candles`, `instrument shares`,
+`instruments shares`, `order post-order`, `orders post-order`,
+`stop-order get-stop-orders`, `stoporders get-stop-orders`,
+`operation get-portfolio`, `operations get-portfolio`,
+`sandbox get-sandbox-accounts` и `compile-proto` остаются совместимыми aliases,
+но help продвигает только preferred paths.
 
 API-команды остаются тонкими bootstrap handlers:
 `icore` terminal app валидирует raw CLI args и передает handler-у typed command options.

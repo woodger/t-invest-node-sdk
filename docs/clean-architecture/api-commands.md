@@ -5,96 +5,163 @@
 
 ## Контекст
 
-В SDK появились API-команды:
+В SDK появились API-команды. Публичная форма CLI строится как preferred
+friendly path: `<domain> <resource/action>`.
 
-Публичная canonical форма CLI сейчас строится как `<domain> <command>`:
+Публичные domains:
 
-- `users` -> `account`;
-- `instruments` -> `instrument`;
-- `marketdata` -> `market`;
-- `orders` -> `order`;
-- `stoporders` -> `stop-order`;
-- `operations` -> `operation`;
-- `sandbox` -> `sandbox`;
-- `stream` -> `stream`;
-- `compile-proto` -> `dev compile-proto`.
+- `account`;
+- `instrument`;
+- `market`;
+- `order`;
+- `stop-order`;
+- `operation`;
+- `sandbox`;
+- `stream`;
+- `dev`.
 
-Старые service paths остаются совместимыми aliases. Список ниже фиксирует
-связь legacy service path с SDK method:
+Technical и legacy paths остаются совместимыми aliases, но help и документация
+продвигают только preferred paths. Список ниже фиксирует текущий CLI contract:
 
-- `users get-accounts` -> `sdk.users.getAccounts`;
-- `users get-info` -> `sdk.users.getInfo`;
-- `users get-margin-attributes` -> `sdk.users.getMarginAttributes`;
-- `users get-user-tariff` -> `sdk.users.getUserTariff`;
-- `marketdata get-candles` -> `sdk.marketdata.getCandles`;
-- `marketdata get-close-prices` -> `sdk.marketdata.getClosePrices`;
-- `instruments find-instrument` -> `sdk.instruments.findInstrument`;
-- `instruments get-accrued-interests` -> `sdk.instruments.getAccruedInterests`;
-- `instruments get-asset-by` -> `sdk.instruments.getAssetBy`;
-- `instruments get-assets` -> `sdk.instruments.getAssets`;
-- `instruments get-bond-coupons` -> `sdk.instruments.getBondCoupons`;
-- `instruments bond-by` -> `sdk.instruments.bondBy`;
-- `instruments bonds` -> `sdk.instruments.bonds`;
-- `instruments get-brand-by` -> `sdk.instruments.getBrandBy`;
-- `instruments get-brands` -> `sdk.instruments.getBrands`;
-- `instruments get-countries` -> `sdk.instruments.getCountries`;
-- `instruments currencies` -> `sdk.instruments.currencies`;
-- `instruments currency-by` -> `sdk.instruments.currencyBy`;
-- `instruments etf-by` -> `sdk.instruments.etfBy`;
-- `instruments etfs` -> `sdk.instruments.etfs`;
-- `instruments get-dividends` -> `sdk.instruments.getDividends`;
-- `instruments get-favorites` -> `sdk.instruments.getFavorites`;
-- `instruments edit-favorites` -> `sdk.instruments.editFavorites`;
-- `instruments future-by` -> `sdk.instruments.futureBy`;
-- `instruments futures` -> `sdk.instruments.futures`;
-- `instruments get-futures-margin` -> `sdk.instruments.getFuturesMargin`;
-- `instruments get-instrument-by` -> `sdk.instruments.getInstrumentBy`;
-- `instruments option-by` -> `sdk.instruments.optionBy`;
-- `instruments options-by` -> `sdk.instruments.optionsBy`;
-- `instruments share-by` -> `sdk.instruments.shareBy`;
-- `instruments shares` -> `sdk.instruments.shares`;
-- `instruments trading-schedules` -> `sdk.instruments.tradingSchedules`;
-- `marketdata get-last-prices` -> `sdk.marketdata.getLastPrices`;
-- `marketdata get-last-trades` -> `sdk.marketdata.getLastTrades`;
-- `marketdata get-order-book` -> `sdk.marketdata.getOrderBook`;
-- `marketdata get-trading-status` -> `sdk.marketdata.getTradingStatus`;
-- `marketdata get-trading-statuses` -> `sdk.marketdata.getTradingStatuses`;
-- `orders get-orders` -> `sdk.orders.getOrders`;
-- `orders get-order-state` -> `sdk.orders.getOrderState`;
-- `orders post-order` -> `sdk.orders.postOrder`;
-- `orders cancel-order` -> `sdk.orders.cancelOrder`;
-- `orders replace-order` -> `sdk.orders.replaceOrder`;
-- `operations get-broker-report` -> `sdk.operations.getBrokerReport`;
-- `operations get-dividends-foreign-issuer` -> `sdk.operations.getDividendsForeignIssuer`;
-- `operations get-operations` -> `sdk.operations.getOperations`;
-- `operations get-operations-by-cursor` -> `sdk.operations.getOperationsByCursor`;
-- `operations get-portfolio` -> `sdk.operations.getPortfolio`;
-- `operations get-positions` -> `sdk.operations.getPositions`;
-- `operations get-withdraw-limits` -> `sdk.operations.getWithdrawLimits`;
-- `stoporders get-stop-orders` -> `sdk.stoporders.getStopOrders`;
-- `stoporders post-stop-order` -> `sdk.stoporders.postStopOrder`;
-- `stoporders cancel-stop-order` -> `sdk.stoporders.cancelStopOrder`;
-- `sandbox open-sandbox-account` -> `sdk.sandbox.openSandboxAccount`;
-- `sandbox get-sandbox-accounts` -> `sdk.sandbox.getSandboxAccounts`;
-- `sandbox close-sandbox-account` -> `sdk.sandbox.closeSandboxAccount`;
-- `sandbox post-sandbox-order` -> `sdk.sandbox.postSandboxOrder`;
-- `sandbox replace-sandbox-order` -> `sdk.sandbox.replaceSandboxOrder`;
-- `sandbox get-sandbox-orders` -> `sdk.sandbox.getSandboxOrders`;
-- `sandbox cancel-sandbox-order` -> `sdk.sandbox.cancelSandboxOrder`;
-- `sandbox get-sandbox-order-state` -> `sdk.sandbox.getSandboxOrderState`;
-- `sandbox get-sandbox-positions` -> `sdk.sandbox.getSandboxPositions`;
-- `sandbox get-sandbox-operations` -> `sdk.sandbox.getSandboxOperations`;
-- `sandbox get-sandbox-operations-by-cursor` -> `sdk.sandbox.getSandboxOperationsByCursor`;
-- `sandbox get-sandbox-portfolio` -> `sdk.sandbox.getSandboxPortfolio`;
-- `sandbox sandbox-pay-in` -> `sdk.sandbox.sandboxPayIn`;
-- `sandbox get-sandbox-withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`;
-- `stream run` -> stream selected by JSON config.
+- `account list` -> `sdk.users.getAccounts`
+  (`account get-accounts`, `users get-accounts`);
+- `account info` -> `sdk.users.getInfo`
+  (`account get-info`, `users get-info`);
+- `account margin` -> `sdk.users.getMarginAttributes`
+  (`account get-margin-attributes`, `users get-margin-attributes`);
+- `account tariff` -> `sdk.users.getUserTariff`
+  (`account get-user-tariff`, `users get-user-tariff`);
+- `market candles` -> `sdk.marketdata.getCandles`
+  (`market get-candles`, `marketdata get-candles`);
+- `market close-prices` -> `sdk.marketdata.getClosePrices`
+  (`market get-close-prices`, `marketdata get-close-prices`);
+- `market last-prices` -> `sdk.marketdata.getLastPrices`
+  (`market get-last-prices`, `marketdata get-last-prices`);
+- `market trades` -> `sdk.marketdata.getLastTrades`
+  (`market get-last-trades`, `marketdata get-last-trades`);
+- `market order-book` -> `sdk.marketdata.getOrderBook`
+  (`market get-order-book`, `marketdata get-order-book`);
+- `market status` -> `sdk.marketdata.getTradingStatus`
+  (`market get-trading-status`, `marketdata get-trading-status`);
+- `market statuses` -> `sdk.marketdata.getTradingStatuses`
+  (`market get-trading-statuses`, `marketdata get-trading-statuses`);
+- `instrument search` -> `sdk.instruments.findInstrument`
+  (`instrument find-instrument`, `instruments find-instrument`);
+- `instrument show` -> `sdk.instruments.getInstrumentBy`
+  (`instrument get-instrument-by`, `instruments get-instrument-by`);
+- `instrument dividends` -> `sdk.instruments.getDividends`
+  (`instrument get-dividends`, `instruments get-dividends`);
+- `instrument schedules` -> `sdk.instruments.tradingSchedules`
+  (`instrument trading-schedules`, `instruments trading-schedules`);
+- `instrument favorite list` -> `sdk.instruments.getFavorites`
+  (`instrument get-favorites`, `instruments get-favorites`);
+- `instrument favorite edit` -> `sdk.instruments.editFavorites`
+  (`instrument edit-favorites`, `instruments edit-favorites`);
+- `instrument share list` -> `sdk.instruments.shares`
+  (`instrument shares`, `instruments shares`);
+- `instrument share show` -> `sdk.instruments.shareBy`
+  (`instrument share-by`, `instruments share-by`);
+- `instrument bond list` -> `sdk.instruments.bonds`
+  (`instrument bonds`, `instruments bonds`);
+- `instrument bond show` -> `sdk.instruments.bondBy`
+  (`instrument bond-by`, `instruments bond-by`);
+- `instrument bond coupons` -> `sdk.instruments.getBondCoupons`
+  (`instrument get-bond-coupons`, `instruments get-bond-coupons`);
+- `instrument bond accrued` -> `sdk.instruments.getAccruedInterests`
+  (`instrument get-accrued-interests`, `instruments get-accrued-interests`);
+- `instrument etf list` -> `sdk.instruments.etfs`
+  (`instrument etfs`, `instruments etfs`);
+- `instrument etf show` -> `sdk.instruments.etfBy`
+  (`instrument etf-by`, `instruments etf-by`);
+- `instrument currency list` -> `sdk.instruments.currencies`
+  (`instrument currencies`, `instruments currencies`);
+- `instrument currency show` -> `sdk.instruments.currencyBy`
+  (`instrument currency-by`, `instruments currency-by`);
+- `instrument future list` -> `sdk.instruments.futures`
+  (`instrument futures`, `instruments futures`);
+- `instrument future show` -> `sdk.instruments.futureBy`
+  (`instrument future-by`, `instruments future-by`);
+- `instrument future margin` -> `sdk.instruments.getFuturesMargin`
+  (`instrument get-futures-margin`, `instruments get-futures-margin`);
+- `instrument option list` -> `sdk.instruments.optionsBy`
+  (`instrument options-by`, `instruments options-by`);
+- `instrument option show` -> `sdk.instruments.optionBy`
+  (`instrument option-by`, `instruments option-by`);
+- `instrument asset list` -> `sdk.instruments.getAssets`
+  (`instrument get-assets`, `instruments get-assets`);
+- `instrument asset show` -> `sdk.instruments.getAssetBy`
+  (`instrument get-asset-by`, `instruments get-asset-by`);
+- `instrument brand list` -> `sdk.instruments.getBrands`
+  (`instrument get-brands`, `instruments get-brands`);
+- `instrument brand show` -> `sdk.instruments.getBrandBy`
+  (`instrument get-brand-by`, `instruments get-brand-by`);
+- `instrument country list` -> `sdk.instruments.getCountries`
+  (`instrument get-countries`, `instruments get-countries`);
+- `order list` -> `sdk.orders.getOrders`
+  (`order get-orders`, `orders get-orders`);
+- `order show` -> `sdk.orders.getOrderState`
+  (`order get-order-state`, `orders get-order-state`);
+- `order place` -> `sdk.orders.postOrder`
+  (`order post-order`, `orders post-order`);
+- `order cancel` -> `sdk.orders.cancelOrder`
+  (`order cancel-order`, `orders cancel-order`);
+- `order replace` -> `sdk.orders.replaceOrder`
+  (`order replace-order`, `orders replace-order`);
+- `operation list` -> `sdk.operations.getOperations`
+  (`operation get-operations`, `operations get-operations`);
+- `operation page` -> `sdk.operations.getOperationsByCursor`
+  (`operation get-operations-by-cursor`, `operations get-operations-by-cursor`);
+- `operation broker-report` -> `sdk.operations.getBrokerReport`
+  (`operation get-broker-report`, `operations get-broker-report`);
+- `operation foreign-dividends-report` -> `sdk.operations.getDividendsForeignIssuer`
+  (`operation get-dividends-foreign-issuer`, `operations get-dividends-foreign-issuer`);
+- `operation portfolio` -> `sdk.operations.getPortfolio`
+  (`operation get-portfolio`, `operations get-portfolio`);
+- `operation positions` -> `sdk.operations.getPositions`
+  (`operation get-positions`, `operations get-positions`);
+- `operation withdraw-limits` -> `sdk.operations.getWithdrawLimits`
+  (`operation get-withdraw-limits`, `operations get-withdraw-limits`);
+- `stop-order list` -> `sdk.stoporders.getStopOrders`
+  (`stop-order get-stop-orders`, `stoporders get-stop-orders`);
+- `stop-order place` -> `sdk.stoporders.postStopOrder`
+  (`stop-order post-stop-order`, `stoporders post-stop-order`);
+- `stop-order cancel` -> `sdk.stoporders.cancelStopOrder`
+  (`stop-order cancel-stop-order`, `stoporders cancel-stop-order`);
+- `sandbox account list` -> `sdk.sandbox.getSandboxAccounts`
+  (`sandbox get-sandbox-accounts`);
+- `sandbox account open` -> `sdk.sandbox.openSandboxAccount`
+  (`sandbox open-sandbox-account`);
+- `sandbox account close` -> `sdk.sandbox.closeSandboxAccount`
+  (`sandbox close-sandbox-account`);
+- `sandbox order list` -> `sdk.sandbox.getSandboxOrders`
+  (`sandbox get-sandbox-orders`);
+- `sandbox order show` -> `sdk.sandbox.getSandboxOrderState`
+  (`sandbox get-sandbox-order-state`);
+- `sandbox order place` -> `sdk.sandbox.postSandboxOrder`
+  (`sandbox post-sandbox-order`);
+- `sandbox order replace` -> `sdk.sandbox.replaceSandboxOrder`
+  (`sandbox replace-sandbox-order`);
+- `sandbox order cancel` -> `sdk.sandbox.cancelSandboxOrder`
+  (`sandbox cancel-sandbox-order`);
+- `sandbox position list` -> `sdk.sandbox.getSandboxPositions`
+  (`sandbox get-sandbox-positions`);
+- `sandbox operation list` -> `sdk.sandbox.getSandboxOperations`
+  (`sandbox get-sandbox-operations`);
+- `sandbox operation page` -> `sdk.sandbox.getSandboxOperationsByCursor`
+  (`sandbox get-sandbox-operations-by-cursor`);
+- `sandbox portfolio` -> `sdk.sandbox.getSandboxPortfolio`
+  (`sandbox get-sandbox-portfolio`);
+- `sandbox withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits`
+  (`sandbox get-sandbox-withdraw-limits`);
+- `sandbox pay-in` -> `sdk.sandbox.sandboxPayIn`
+  (`sandbox sandbox-pay-in`);
+- `stream run` -> stream selected by JSON config;
+- `dev compile-proto` -> TypeScript contract generation (`compile-proto`).
 
-Этот список не считается конечным. Новые API-команды добавляются
-инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт
-команды. Публичный CLI path использует форму `<domain> <command>`, где
-`command` пока сохраняет kebab-case имя SDK method. Массовое переименование
-actions в `list`, `show`, `place` и похожие глаголы не входит в текущий этап.
+Новые API-команды добавляются инкрементально, когда выбран конкретный SDK
+method и понятен CLI-контракт команды. Preferred path должен быть добавлен в
+command definition и help, а technical/legacy aliases - только через единый
+alias layer.
 
 ## To Introduce
 
@@ -105,10 +172,10 @@ actions в `list`, `show`, `place` и похожие глаголы не вхо�
 умолчанию требуют явный `--confirm` через
 `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency
 keys автоматически:
-`order post-order` принимает `--order-id`, а `order replace-order` принимает
+`order place` принимает `--order-id`, а `order replace` принимает
 `--idempotency-key`.
 
-`sandbox sandbox-pay-in` принимает `--currency=rub|usd`. Неизвестные currency
+`sandbox pay-in` принимает `--currency=rub|usd`. Неизвестные currency
 значения отклоняются CLI parser-ом, а `--currency=usd` завершается ошибкой как
 явно неподдержанный provider-кейс.
 
@@ -132,7 +199,7 @@ request contract для bidirectional market data stream:
 Deprecated generated methods не вводятся как публичные CLI-команды:
 
 - `sdk.instruments.options` - deprecated в generated contract; вместо него
-  используется `instrument options-by` / `sdk.instruments.optionsBy`.
+  используется `instrument option list` / `sdk.instruments.optionsBy`.
 
 Перед расширением stream command нужно сверять поведение с этими
 reference-документами и отдельно фиксировать любые изменения контракта.

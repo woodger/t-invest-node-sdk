@@ -87,18 +87,18 @@ interface TinkoffInvestNodeSDKConfig {
 ```bash
 yarn cli --help
 yarn cli version
-yarn cli help <domain> <command>
+yarn cli <domain> --help
+yarn cli <domain> <command> --help
 yarn cli <domain> <command> [options]
 
 yarn cli account --help
-yarn cli help account get-accounts
-yarn cli account get-accounts --format=json
+yarn cli account list --format=json
+yarn cli instrument share list --help
 ```
 
 Top-level help показывает публичные domains. Список команд внутри domain
 можно посмотреть через `yarn cli <domain> --help`. Подробности отдельной
-команды можно посмотреть через `yarn cli help <domain> <command>` или
-`yarn cli <domain> <command> --help`.
+команды можно посмотреть через `yarn cli <domain> <command> --help`.
 
 Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
 negative overrides use `--no-raw`; assigned values like `--raw=true` or
@@ -116,10 +116,12 @@ negative overrides use `--no-raw`; assigned values like `--raw=true` or
 - `stream` - запуск stream по JSON config;
 - `dev` - developer tools, включая `dev compile-proto`.
 
-Legacy paths вида `users get-accounts`, `marketdata get-candles`,
-`orders post-order`, `stoporders get-stop-orders`, `operations get-portfolio`
-и `compile-proto` остаются совместимыми aliases. Help при этом показывает
-canonical domain path.
+Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
+`market get-candles`, `marketdata get-candles`, `instrument shares`,
+`instruments shares`, `order post-order`, `orders post-order`,
+`stop-order get-stop-orders`, `stoporders get-stop-orders`,
+`operation get-portfolio`, `operations get-portfolio` и `compile-proto`
+остаются совместимыми aliases. Help при этом показывает preferred path.
 
 Отложенные группы команд (`To introduce`) описаны в
 [API Commands](./clean-architecture/api-commands.md). Команды с side effects
@@ -132,7 +134,7 @@ stream request sources остаются отложенным контракто�
 [Stream CLI Configuration Reference](./cli-stream-configuration.md).
 
 Deprecated `sdk.instruments.options` не вводится как публичная CLI-команда;
-для опционов используется `instrument options-by`.
+для опционов используется `instrument option list`.
 
 Новые команды должны:
 
