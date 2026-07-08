@@ -3,7 +3,7 @@
  *
  * Здесь допустимы:
  * - описание публичных CLI domains;
- * - преобразование между friendly, technical и legacy command paths;
+ * - описание preferred command paths и compatibility aliases;
  * - helpers для domain-level help и registry aliases.
  *
  * Здесь не должно быть исполнения команд, SDK wiring или command-specific parsing.
@@ -42,75 +42,144 @@ export const cliDomains = {
 export type CliDomainName = keyof typeof cliDomains;
 export type CliCommandPath = readonly [string, ...string[]];
 
+type CliPathAliasDefinition = {
+  preferred: CliCommandPath;
+  aliases: readonly CliCommandPath[];
+};
+
 const publicDomainByLegacyHead = {
   users: 'account',
   instruments: 'instrument',
   marketdata: 'market',
   orders: 'order',
   stoporders: 'stop-order',
-  operations: 'operation',
-  sandbox: 'sandbox',
-  stream: 'stream'
+  operations: 'operation'
 } as const satisfies Record<string, CliDomainName>;
 
-const legacyHeadByPublicDomain: Partial<Record<CliDomainName, string>> = {
-  account: 'users',
-  instrument: 'instruments',
-  market: 'marketdata',
-  order: 'orders',
-  'stop-order': 'stoporders',
-  operation: 'operations'
-} as const;
-
-const friendlyActionByTechnicalAction: Partial<Record<CliDomainName, Record<string, string>>> = {
-  account: {
-    'get-accounts': 'list',
-    'get-info': 'info',
-    'get-margin-attributes': 'margin',
-    'get-user-tariff': 'tariff'
+const cliPathAliases = [
+  {
+    preferred: ['account', 'list'],
+    aliases: [
+      ['account', 'get-accounts'],
+      ['users', 'get-accounts']
+    ]
   },
-  market: {
-    'get-candles': 'candles',
-    'get-close-prices': 'close-prices',
-    'get-last-prices': 'last-prices',
-    'get-last-trades': 'trades',
-    'get-order-book': 'order-book',
-    'get-trading-status': 'status',
-    'get-trading-statuses': 'statuses'
+  {
+    preferred: ['account', 'info'],
+    aliases: [
+      ['account', 'get-info'],
+      ['users', 'get-info']
+    ]
   },
-  order: {
-    'get-orders': 'list',
-    'get-order-state': 'show',
-    'post-order': 'place',
-    'cancel-order': 'cancel',
-    'replace-order': 'replace'
+  {
+    preferred: ['account', 'margin'],
+    aliases: [
+      ['account', 'get-margin-attributes'],
+      ['users', 'get-margin-attributes']
+    ]
+  },
+  {
+    preferred: ['account', 'tariff'],
+    aliases: [
+      ['account', 'get-user-tariff'],
+      ['users', 'get-user-tariff']
+    ]
+  },
+  {
+    preferred: ['market', 'candles'],
+    aliases: [
+      ['market', 'get-candles'],
+      ['marketdata', 'get-candles']
+    ]
+  },
+  {
+    preferred: ['market', 'close-prices'],
+    aliases: [
+      ['market', 'get-close-prices'],
+      ['marketdata', 'get-close-prices']
+    ]
+  },
+  {
+    preferred: ['market', 'last-prices'],
+    aliases: [
+      ['market', 'get-last-prices'],
+      ['marketdata', 'get-last-prices']
+    ]
+  },
+  {
+    preferred: ['market', 'trades'],
+    aliases: [
+      ['market', 'get-last-trades'],
+      ['marketdata', 'get-last-trades']
+    ]
+  },
+  {
+    preferred: ['market', 'order-book'],
+    aliases: [
+      ['market', 'get-order-book'],
+      ['marketdata', 'get-order-book']
+    ]
+  },
+  {
+    preferred: ['market', 'status'],
+    aliases: [
+      ['market', 'get-trading-status'],
+      ['marketdata', 'get-trading-status']
+    ]
+  },
+  {
+    preferred: ['market', 'statuses'],
+    aliases: [
+      ['market', 'get-trading-statuses'],
+      ['marketdata', 'get-trading-statuses']
+    ]
+  },
+  {
+    preferred: ['order', 'list'],
+    aliases: [
+      ['order', 'get-orders'],
+      ['orders', 'get-orders']
+    ]
+  },
+  {
+    preferred: ['order', 'show'],
+    aliases: [
+      ['order', 'get-order-state'],
+      ['orders', 'get-order-state']
+    ]
+  },
+  {
+    preferred: ['order', 'place'],
+    aliases: [
+      ['order', 'post-order'],
+      ['orders', 'post-order']
+    ]
+  },
+  {
+    preferred: ['order', 'cancel'],
+    aliases: [
+      ['order', 'cancel-order'],
+      ['orders', 'cancel-order']
+    ]
+  },
+  {
+    preferred: ['order', 'replace'],
+    aliases: [
+      ['order', 'replace-order'],
+      ['orders', 'replace-order']
+    ]
+  },
+  {
+    preferred: ['dev', 'compile-proto'],
+    aliases: [
+      ['compile-proto']
+    ]
   }
-} as const;
+] as const satisfies readonly CliPathAliasDefinition[];
 
-const technicalActionByFriendlyAction: Partial<Record<CliDomainName, Record<string, string>>> = {
-  account: {
-    list: 'get-accounts',
-    info: 'get-info',
-    margin: 'get-margin-attributes',
-    tariff: 'get-user-tariff'
-  },
-  market: {
-    candles: 'get-candles',
-    'close-prices': 'get-close-prices',
-    'last-prices': 'get-last-prices',
-    trades: 'get-last-trades',
-    'order-book': 'get-order-book',
-    status: 'get-trading-status',
-    statuses: 'get-trading-statuses'
-  },
-  order: {
-    list: 'get-orders',
-    show: 'get-order-state',
-    place: 'post-order',
-    cancel: 'cancel-order',
-    replace: 'replace-order'
-  }
-} as const;
+const preferredPathByAliasName = createPreferredPathByAliasName(cliPathAliases);
+const aliasPathsByPreferredName = createAliasPathsByPreferredName(cliPathAliases);
+const explicitAliasDomains = createExplicitAliasDomains(cliPathAliases);
 
 export const cliDomainNames = Object.keys(cliDomains) as CliDomainName[];
 
@@ -133,7 +202,21 @@ export function commandNameToPath(name: string): CliCommandPath {
 }
 
 export function canonicalizeCommandPath(path: CliCommandPath): CliCommandPath {
-  return friendlyCommandPath(publicDomainPath(path));
+  const preferredPath = preferredPathByAliasName.get(commandPathToName(path));
+
+  if (preferredPath !== undefined) {
+    return preferredPath;
+  }
+
+  const publicPath = publicDomainPath(path);
+
+  if (commandPathToName(publicPath) === commandPathToName(path)) {
+    return publicPath;
+  }
+
+  const [domain] = publicPath;
+
+  return isCliDomainName(domain) && explicitAliasDomains.has(domain) ? path : publicPath;
 }
 
 export function canonicalizeCommandName(name: string): string {
@@ -142,14 +225,13 @@ export function canonicalizeCommandName(name: string): string {
 
 export function commandPathAliases(path: CliCommandPath): CliCommandPath[] {
   const canonicalPath = canonicalizeCommandPath(path);
-  const technicalPath = technicalCommandPath(canonicalPath);
-  const legacyPath = legacyCommandPath(technicalPath ?? canonicalPath);
+  const aliasPaths = aliasPathsByPreferredName.get(commandPathToName(canonicalPath));
 
-  return uniqueCommandPaths([
-    canonicalPath,
-    technicalPath,
-    legacyPath
-  ]);
+  if (aliasPaths !== undefined) {
+    return uniqueCommandPaths([canonicalPath, ...aliasPaths]);
+  }
+
+  return uniqueCommandPaths([canonicalPath, legacyCommandPath(canonicalPath)]);
 }
 
 export function commandDomainName(commandName: string): CliDomainName | undefined {
@@ -166,12 +248,52 @@ function isLegacyPathHead(value: string): value is keyof typeof publicDomainByLe
   return value in publicDomainByLegacyHead;
 }
 
+function createPreferredPathByAliasName(
+  pathAliases: readonly CliPathAliasDefinition[]
+): Map<string, CliCommandPath> {
+  const result = new Map<string, CliCommandPath>();
+
+  for (const { preferred, aliases } of pathAliases) {
+    result.set(commandPathToName(preferred), preferred);
+
+    for (const alias of aliases) {
+      result.set(commandPathToName(alias), preferred);
+    }
+  }
+
+  return result;
+}
+
+function createAliasPathsByPreferredName(
+  pathAliases: readonly CliPathAliasDefinition[]
+): Map<string, readonly CliCommandPath[]> {
+  const result = new Map<string, readonly CliCommandPath[]>();
+
+  for (const { preferred, aliases } of pathAliases) {
+    result.set(commandPathToName(preferred), aliases);
+  }
+
+  return result;
+}
+
+function createExplicitAliasDomains(
+  pathAliases: readonly CliPathAliasDefinition[]
+): ReadonlySet<CliDomainName> {
+  const result = new Set<CliDomainName>();
+
+  for (const { preferred } of pathAliases) {
+    const [domain] = preferred;
+
+    if (isCliDomainName(domain)) {
+      result.add(domain);
+    }
+  }
+
+  return result;
+}
+
 function publicDomainPath(path: CliCommandPath): CliCommandPath {
   const [head, ...tail] = path;
-
-  if (head === 'compile-proto') {
-    return ['dev', 'compile-proto'];
-  }
 
   const domain = isLegacyPathHead(head) ? publicDomainByLegacyHead[head] : undefined;
 
@@ -182,44 +304,26 @@ function publicDomainPath(path: CliCommandPath): CliCommandPath {
   return [domain, ...tail];
 }
 
-function friendlyCommandPath(path: CliCommandPath): CliCommandPath {
-  const [domain, action, ...tail] = path;
-
-  if (action === undefined || !isCliDomainName(domain)) {
-    return path;
-  }
-
-  const friendlyAction = friendlyActionByTechnicalAction[domain]?.[action];
-
-  return friendlyAction === undefined ? path : [domain, friendlyAction, ...tail];
-}
-
-function technicalCommandPath(path: CliCommandPath): CliCommandPath | undefined {
-  const [domain, action, ...tail] = path;
-
-  if (action === undefined || !isCliDomainName(domain)) {
-    return undefined;
-  }
-
-  const technicalAction = technicalActionByFriendlyAction[domain]?.[action];
-
-  return technicalAction === undefined ? undefined : [domain, technicalAction, ...tail];
-}
-
 function legacyCommandPath(path: CliCommandPath): CliCommandPath | undefined {
   const [head, ...tail] = path;
-
-  if (head === 'dev' && tail[0] === 'compile-proto') {
-    return ['compile-proto', ...tail.slice(1)];
-  }
 
   if (!isCliDomainName(head)) {
     return undefined;
   }
 
-  const legacyHead = legacyHeadByPublicDomain[head];
+  const legacyHead = legacyHeadForDomain(head);
 
   return legacyHead === undefined ? undefined : [legacyHead, ...tail];
+}
+
+function legacyHeadForDomain(domain: CliDomainName): string | undefined {
+  for (const [legacyHead, publicDomain] of Object.entries(publicDomainByLegacyHead)) {
+    if (publicDomain === domain) {
+      return legacyHead;
+    }
+  }
+
+  return undefined;
 }
 
 function uniqueCommandPaths(paths: readonly (CliCommandPath | undefined)[]): CliCommandPath[] {
