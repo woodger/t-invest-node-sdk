@@ -73,8 +73,8 @@ bootstrap-механикой.
 
 Текущие зоны:
 
-- `bootstrap/bin/cli.ts` - executable CLI entrypoint, который публикуется как
-  `dist/bootstrap/bin/cli.js`;
+- `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
+  package binary `dist/bootstrap/index.js`;
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
   `protoc` и локальный `ts-proto` plugin;
