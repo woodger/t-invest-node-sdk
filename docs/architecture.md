@@ -131,6 +131,7 @@ compatibility wrappers не создаются.
 Raw proto-файлы хранятся без flattening в upstream layout
 `contracts/t_tech/invest/grpc/**`. `src/generated/t_tech/invest/grpc/**`
 зеркально воспроизводится из этого layout и не редактируется вручную.
+Upstream source commit/release фиксируется в `contracts/upstream.json`.
 `src/generated/**` и `src/bootstrap/generated-exports.ts` являются исключениями
 из обычной слоевой структуры, потому что package entrypoint реэкспортирует
 generated DTO/enums public API и server-side

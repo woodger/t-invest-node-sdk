@@ -22,6 +22,7 @@
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
 - proto wire contracts: `contracts/t_tech/invest/grpc/**/*.proto`;
+- proto upstream metadata: `contracts/upstream.json`;
 - generated exports: `src/bootstrap/generated-exports.ts` и `src/generated/**`;
 - test runner contract: `package.json` `test` script and `fwa` package behavior;
 - package scripts: `package.json`.
@@ -37,6 +38,7 @@ Markdown должен объяснять, где находится актуал
 
 - какой script запускать;
 - какой generated code обновляется;
+- где зафиксирован upstream source commit/release;
 - почему upstream directory layout сохраняется без flattening;
 - какие файлы являются source contracts;
 - какие файлы нельзя редактировать вручную.

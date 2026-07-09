@@ -205,6 +205,7 @@ Proto compiler берется из окружения. Для генерации
 TypeScript plugin берется из dev-зависимости `ts-proto`.
 Raw proto-файлы хранятся без flattening в `contracts/t_tech/invest/grpc/**`.
 Generated TypeScript mirror пишется в `src/generated/t_tech/invest/grpc/**`.
+Источник raw proto зафиксирован в `../contracts/upstream.json`.
 
 CLI использует собранные файлы из `dist`, поэтому после изменений в bootstrap
 TypeScript-коде сначала нужно пересобрать проект:
