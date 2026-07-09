@@ -9,13 +9,13 @@ import type {
   OperationsByCursorReport,
   OperationsByCursorReportItem
 } from '../../../application/reports';
-import { instrumentTypeToJSON } from '../../../generated/common';
+import { instrumentTypeToJSON } from '../../../generated/t_tech/invest/grpc/common';
 import {
   operationStateToJSON,
   operationTypeToJSON,
   type GetOperationsByCursorResponse,
   type OperationItem
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import {
   formatReportDate,
   formatReportMoneyText,

@@ -1,10 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Quotation } from '../../../generated/common';
+import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   DividendsForeignIssuerReport as GeneratedDividendsForeignIssuerReport,
   GetDividendsForeignIssuerResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import {
   createDividendsForeignIssuerReport,
   formatDividendsForeignIssuerReport
@@ -34,7 +34,7 @@ function item(
     dividendAmount: quotation(12, 750000000),
     currency: 'usd',
     ...overrides
-  };
+  } as GeneratedDividendsForeignIssuerReport;
 }
 
 function response(
@@ -44,7 +44,7 @@ function response(
     generateDivForeignIssuerReportResponse: undefined,
     divForeignIssuerReport: undefined,
     ...overrides
-  };
+  } as GetDividendsForeignIssuerResponse;
 }
 
 describe('dividends-foreign-issuer reporter', () => {

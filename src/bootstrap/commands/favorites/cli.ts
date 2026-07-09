@@ -10,7 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
+import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/t_tech/invest/grpc/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

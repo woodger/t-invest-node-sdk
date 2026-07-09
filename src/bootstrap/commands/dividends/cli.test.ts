@@ -1,12 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   Dividend,
   GetDividendsRequest,
   GetDividendsResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createDividendsCommand,
@@ -42,14 +44,14 @@ function dividend(overrides: Partial<Dividend> = {}): Dividend {
     },
     createdAt: new Date('2026-01-03T00:00:00Z'),
     ...overrides
-  };
+  } as Dividend;
 }
 
 function response(overrides: Partial<GetDividendsResponse> = {}): GetDividendsResponse {
   return {
     dividends: [dividend()],
     ...overrides
-  };
+  } as GetDividendsResponse;
 }
 
 describe('dividends command', () => {
@@ -63,6 +65,7 @@ describe('dividends command', () => {
 
       assert.deepEqual(request, {
         figi: 'SHARE-FIGI',
+        instrumentId: 'SHARE-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });
@@ -139,6 +142,7 @@ describe('dividends command', () => {
       assert.equal(getDividendsCalls, 1);
       assert.deepEqual(receivedRequest, {
         figi: 'SHARE-FIGI',
+        instrumentId: 'SHARE-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });

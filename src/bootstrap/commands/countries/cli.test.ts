@@ -1,8 +1,12 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { GetCountriesRequest, GetCountriesResponse } from '../../../generated/instruments';
+import type { GetCountriesRequest,
+  GetCountriesResponse
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCountriesCommand,
@@ -24,7 +28,7 @@ function response(overrides: Partial<GetCountriesResponse> = {}): GetCountriesRe
       }
     ],
     ...overrides
-  };
+  } as GetCountriesResponse;
 }
 
 describe('countries command', () => {

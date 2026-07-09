@@ -1,10 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Quotation } from '../../../generated/common';
+import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import {
   TradeDirection,
   type Trade
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import { createLastTradesReport, formatLastTradesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -23,7 +23,7 @@ function trade(overrides: Partial<Trade> = {}): Trade {
     time: new Date('2026-06-19T10:00:00.000Z'),
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as Trade;
 }
 
 describe('last-trades reporter', () => {

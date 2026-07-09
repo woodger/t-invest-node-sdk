@@ -6,7 +6,7 @@
  */
 
 import type { CountriesReport, CountriesReportCountry } from '../../../application/reports';
-import type { CountryResponse } from '../../../generated/instruments';
+import type { CountryResponse } from '../../../generated/t_tech/invest/grpc/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
 export const countriesFormats = ['json', 'table'] as const;

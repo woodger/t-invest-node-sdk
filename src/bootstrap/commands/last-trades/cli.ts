@@ -10,10 +10,11 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type {
+import {
   GetLastTradesRequest,
-  GetLastTradesResponse
-} from '../../../generated/marketdata';
+  TradeSourceType,
+  type GetLastTradesResponse
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -123,6 +124,7 @@ export function createLastTradesRequest(
     figi: '',
     instrumentId: options['instrument-id'],
     from,
-    to
+    to,
+    tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED
   };
 }

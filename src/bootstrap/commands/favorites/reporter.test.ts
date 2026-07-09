@@ -1,7 +1,10 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { InstrumentType } from '../../../generated/common';
-import type { FavoriteInstrument } from '../../../generated/instruments';
+import {
+  describe,
+  test } from 'node:test';
+import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
+import type { FavoriteInstrument
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import { createFavoritesReport, formatFavoritesReport } from './reporter';
 
 function favoriteInstrument(overrides: Partial<FavoriteInstrument> = {}): FavoriteInstrument {
@@ -15,7 +18,7 @@ function favoriteInstrument(overrides: Partial<FavoriteInstrument> = {}): Favori
     apiTradeAvailableFlag: true,
     instrumentKind: InstrumentType.INSTRUMENT_TYPE_SHARE,
     ...overrides
-  };
+  } as FavoriteInstrument;
 }
 
 describe('favorites reporter', () => {

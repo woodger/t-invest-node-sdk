@@ -1,8 +1,11 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { CancelOrderRequest } from '../../../generated/orders';
+import type { CancelOrderRequest
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCancelOrderCommand,
@@ -65,7 +68,8 @@ describe('cancel-order command', () => {
               receivedRequest = request;
 
               return {
-                time: new Date('2026-06-19T10:00:00.000Z')
+                time: new Date('2026-06-19T10:00:00.000Z'),
+                responseMetadata: undefined
               };
             }
           },

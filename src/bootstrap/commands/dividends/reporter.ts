@@ -6,7 +6,7 @@
  */
 
 import type { DividendsReport, DividendsReportItem } from '../../../application/reports';
-import type { Dividend } from '../../../generated/instruments';
+import type { Dividend } from '../../../generated/t_tech/invest/grpc/instruments';
 import {
   formatReportDate,
   formatReportMoneyText,

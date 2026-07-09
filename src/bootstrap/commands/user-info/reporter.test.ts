@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { GetInfoResponse } from '../../../generated/users';
+import type { GetInfoResponse } from '../../../generated/t_tech/invest/grpc/users';
 import { createUserInfoReport, formatUserInfoReport } from './reporter';
 
 function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
@@ -10,7 +10,7 @@ function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
     qualifiedForWorkWith: ['shares', 'bonds'],
     tariff: 'premium',
     ...overrides
-  };
+  } as GetInfoResponse;
 }
 
 describe('user-info reporter', () => {

@@ -10,12 +10,14 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OrderDirection,
   OrderType,
+  TimeInForceType,
   type PostOrderRequest,
   type PostOrderResponse
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -169,6 +171,9 @@ export function createPostOrderRequest(options: PostOrderRequestOptions): PostOr
     accountId: options['account-id'],
     orderType: postOrderTypes[options['order-type']],
     orderId: options['order-id'],
-    instrumentId: options['instrument-id']
+    instrumentId: options['instrument-id'],
+    timeInForce: TimeInForceType.TIME_IN_FORCE_UNSPECIFIED,
+    priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
+    confirmMarginTrade: false
   };
 }

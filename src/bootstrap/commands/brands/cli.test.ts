@@ -1,8 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { Brand, GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
+import type { Brand,
+  GetBrandsRequest,
+  GetBrandsResponse
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBrandsCommand,
@@ -24,14 +29,14 @@ function brand(overrides: Partial<Brand> = {}): Brand {
     countryOfRisk: 'RU',
     countryOfRiskName: 'Russia',
     ...overrides
-  };
+  } as Brand;
 }
 
 function response(overrides: Partial<GetBrandsResponse> = {}): GetBrandsResponse {
   return {
     brands: [brand()],
     ...overrides
-  };
+  } as GetBrandsResponse;
 }
 
 describe('brands command', () => {
@@ -90,7 +95,7 @@ describe('brands command', () => {
         endpoint: 'localhost:50051'
       });
       assert.equal(getBrandsCalls, 1);
-      assert.deepEqual(receivedRequest, {});
+      assert.deepEqual(receivedRequest, { paging: undefined });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].uid, 'brand-uid');
     });

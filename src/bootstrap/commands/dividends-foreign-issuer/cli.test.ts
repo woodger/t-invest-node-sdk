@@ -5,7 +5,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createDividendsForeignIssuerCommand,
@@ -24,7 +24,7 @@ function response(
     generateDivForeignIssuerReportResponse: undefined,
     divForeignIssuerReport: undefined,
     ...overrides
-  };
+  } as GetDividendsForeignIssuerResponse;
 }
 
 describe('dividends-foreign-issuer command', () => {

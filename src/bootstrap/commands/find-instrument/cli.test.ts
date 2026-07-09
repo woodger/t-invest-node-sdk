@@ -1,13 +1,15 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentType } from '../../../generated/common';
+import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   FindInstrumentRequest,
   FindInstrumentResponse,
   InstrumentShort
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createFindInstrumentCommand,
@@ -39,14 +41,14 @@ function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
     weekendFlag: false,
     blockedTcaFlag: false,
     ...overrides
-  };
+  } as InstrumentShort;
 }
 
 function response(overrides: Partial<FindInstrumentResponse> = {}): FindInstrumentResponse {
   return {
     instruments: [instrument()],
     ...overrides
-  };
+  } as FindInstrumentResponse;
 }
 
 describe('find-instrument command', () => {

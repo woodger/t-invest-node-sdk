@@ -10,10 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import {
-  type InstrumentRequest,
-  type ShareResponse
-} from '../../../generated/instruments';
+import { type InstrumentRequest, type ShareResponse } from '../../../generated/t_tech/invest/grpc/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

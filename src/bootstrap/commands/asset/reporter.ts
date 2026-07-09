@@ -11,15 +11,15 @@ import {
   type AssetReportInstrument,
   type AssetReportSummary
 } from '../../../application/reports';
-import { instrumentTypeToJSON } from '../../../generated/common';
+import { instrumentTypeToJSON } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   Asset,
   AssetFull,
   AssetInstrument,
   AssetResponse,
   Brand
-} from '../../../generated/instruments';
-import { assetTypeToJSON } from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
+import { assetTypeToJSON } from '../../../generated/t_tech/invest/grpc/instruments';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';

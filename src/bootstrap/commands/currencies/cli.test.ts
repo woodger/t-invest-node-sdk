@@ -1,12 +1,11 @@
+import { InstrumentStatus } from '../../../generated/t_tech/invest/grpc/common';
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import {
-  InstrumentStatus,
-  type CurrenciesResponse,
-  type InstrumentsRequest
-} from '../../../generated/instruments';
+import { type CurrenciesResponse, type InstrumentsRequest } from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCurrenciesCommand,
@@ -23,7 +22,7 @@ function response(overrides: Partial<CurrenciesResponse> = {}): CurrenciesRespon
   return {
     instruments: [],
     ...overrides
-  };
+  } as CurrenciesResponse;
 }
 
 describe('currencies command', () => {

@@ -1,11 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { SecurityTradingStatus, type MoneyValue, type Quotation } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
 import {
   RealExchange,
-  RiskLevel,
-  type Bond
-} from '../../../generated/instruments';
+  SecurityTradingStatus,
+  type MoneyValue,
+  type Quotation
+} from '../../../generated/t_tech/invest/grpc/common';
+import { RiskLevel, type Bond } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createBondsReport, formatBondsReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -69,7 +72,7 @@ function bond(overrides: Partial<Bond> = {}): Bond {
     first1dayCandleDate: new Date('2026-06-20T00:00:00.000Z'),
     riskLevel: RiskLevel.RISK_LEVEL_LOW,
     ...overrides
-  };
+  } as Bond;
 }
 
 describe('bonds reporter', () => {

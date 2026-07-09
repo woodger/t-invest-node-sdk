@@ -2,12 +2,15 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import {
+  ExchangeOrderType,
   StopOrderDirection,
   StopOrderExpirationType,
   StopOrderType,
+  TakeProfitType,
   type PostStopOrderRequest
-} from '../../../generated/stoporders';
+} from '../../../generated/t_tech/invest/grpc/stoporders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createPostStopOrderCommand,
@@ -50,7 +53,13 @@ describe('post-stop-order command', () => {
         expirationType: StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE,
         stopOrderType: StopOrderType.STOP_ORDER_TYPE_STOP_LIMIT,
         expireDate: new Date('2026-06-20T10:00:00.000Z'),
-        instrumentId: 'instrument-id'
+        instrumentId: 'instrument-id',
+        exchangeOrderType: ExchangeOrderType.EXCHANGE_ORDER_TYPE_UNSPECIFIED,
+        takeProfitType: TakeProfitType.TAKE_PROFIT_TYPE_UNSPECIFIED,
+        trailingData: undefined,
+        priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
+        orderId: '',
+        confirmMarginTrade: false
       });
     });
 
@@ -132,7 +141,9 @@ describe('post-stop-order command', () => {
               receivedRequest = request;
 
               return {
-                stopOrderId: 'stop-order-id'
+                stopOrderId: 'stop-order-id',
+                orderRequestId: '',
+                responseMetadata: undefined
               };
             }
           },

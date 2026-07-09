@@ -13,7 +13,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   OpenSandboxAccountRequest,
   OpenSandboxAccountResponse
-} from '../../../generated/sandbox';
+} from '../../../generated/t_tech/invest/grpc/sandbox';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

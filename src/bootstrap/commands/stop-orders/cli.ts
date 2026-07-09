@@ -10,10 +10,11 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type {
+import {
   GetStopOrdersRequest,
-  GetStopOrdersResponse
-} from '../../../generated/stoporders';
+  StopOrderStatusOption,
+  type GetStopOrdersResponse
+} from '../../../generated/t_tech/invest/grpc/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -101,6 +102,9 @@ export function createStopOrdersRequest(
   options: StopOrdersRequestOptions
 ): GetStopOrdersRequest {
   return {
-    accountId: options['account-id']
+    accountId: options['account-id'],
+    status: StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED,
+    from: undefined,
+    to: undefined
   };
 }

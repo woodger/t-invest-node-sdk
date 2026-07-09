@@ -1,8 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentIdType, type InstrumentRequest, type InstrumentResponse } from '../../../generated/instruments';
+import { InstrumentIdType,
+  type InstrumentRequest,
+  type InstrumentResponse
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createInstrumentCommand,
@@ -19,7 +24,7 @@ function instrumentResponse(overrides: Partial<InstrumentResponse> = {}): Instru
   return {
     instrument: undefined,
     ...overrides
-  };
+  } as InstrumentResponse;
 }
 
 describe('instrument command', () => {

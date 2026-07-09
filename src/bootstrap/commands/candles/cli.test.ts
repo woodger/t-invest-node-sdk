@@ -6,7 +6,7 @@ import {
   CandleInterval,
   type GetCandlesRequest,
   type HistoricCandle
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCandlesCommand,
@@ -29,7 +29,7 @@ function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {
     time: new Date('2026-06-19T00:00:00.000Z'),
     isComplete: true,
     ...overrides
-  };
+  } as HistoricCandle;
 }
 
 describe('candles command', () => {

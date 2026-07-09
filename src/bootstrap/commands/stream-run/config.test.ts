@@ -1,9 +1,11 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
+  OrderBookType,
   SubscriptionAction,
-  SubscriptionInterval
-} from '../../../generated/marketdata';
+  SubscriptionInterval,
+  TradeSourceType
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import {
   createAccountStreamRequest,
   createMarketDataStreamRequests,
@@ -30,7 +32,8 @@ describe('stream run config', () => {
 
       assert.equal(config.stream, 'operations.portfolioStream');
       assert.deepEqual(createAccountStreamRequest(config), {
-        accounts: ['account-id']
+        accounts: ['account-id'],
+        pingSettings: undefined
       });
       assert.equal(config.runtime.maxEvents, 2);
       assert.equal(config.runtime.includePings, true);
@@ -69,7 +72,9 @@ describe('stream run config', () => {
                 figi: '',
                 instrumentId: 'trade-id'
               }
-            ]
+            ],
+            tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+            withOpenInterest: false
           }
         },
         {
@@ -143,7 +148,8 @@ describe('stream run config', () => {
         {
           figi: '',
           depth: 10,
-          instrumentId: 'order-book-id'
+          instrumentId: 'order-book-id',
+          orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
         }
       ]);
       assert.deepEqual(request.subscribeTradesRequest?.instruments, [
@@ -152,6 +158,11 @@ describe('stream run config', () => {
           instrumentId: 'trade-id'
         }
       ]);
+      assert.equal(
+        request.subscribeTradesRequest?.tradeSource,
+        TradeSourceType.TRADE_SOURCE_UNSPECIFIED
+      );
+      assert.equal(request.subscribeTradesRequest?.withOpenInterest, false);
       assert.equal(request.subscribeInfoRequest, undefined);
       assert.equal(request.subscribeLastPriceRequest, undefined);
     });

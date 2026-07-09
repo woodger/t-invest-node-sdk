@@ -11,7 +11,7 @@ import {
   accountStatusToJSON,
   accountTypeToJSON,
   type Account
-} from '../../../generated/users';
+} from '../../../generated/t_tech/invest/grpc/users';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';

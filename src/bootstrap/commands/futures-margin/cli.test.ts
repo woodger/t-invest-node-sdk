@@ -1,11 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createFuturesMarginCommand,
@@ -38,7 +40,7 @@ function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFutures
       nano: 500_000_000
     },
     ...overrides
-  };
+  } as GetFuturesMarginResponse;
 }
 
 describe('futures-margin command', () => {
@@ -49,7 +51,8 @@ describe('futures-margin command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: 'FUTFIGI'
+        figi: 'FUTFIGI',
+        instrumentId: 'FUTFIGI'
       });
     });
   });
@@ -111,7 +114,8 @@ describe('futures-margin command', () => {
       });
       assert.equal(getFuturesMarginCalls, 1);
       assert.deepEqual(receivedRequest, {
-        figi: 'FUTFIGI'
+        figi: 'FUTFIGI',
+        instrumentId: 'FUTFIGI'
       });
       assert.equal(closeCalls, 1);
       assert.deepEqual(JSON.parse(output).initialMarginOnBuy, {

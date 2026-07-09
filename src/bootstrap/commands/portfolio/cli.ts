@@ -14,7 +14,7 @@ import {
   PortfolioRequest_CurrencyRequest as PortfolioCurrency,
   type PortfolioRequest,
   type PortfolioResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

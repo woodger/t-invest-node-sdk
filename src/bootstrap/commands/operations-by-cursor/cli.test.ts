@@ -2,14 +2,14 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentType, type MoneyValue } from '../../../generated/common';
+import { InstrumentType, type MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OperationState,
   OperationType,
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse,
   type OperationItem
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOperationsByCursorCommand,
@@ -62,7 +62,7 @@ function operationItem(overrides: Partial<OperationItem> = {}): OperationItem {
     tradesInfo: undefined,
     assetUid: 'asset-uid',
     ...overrides
-  };
+  } as OperationItem;
 }
 
 function operationsByCursorResponse(
@@ -73,7 +73,7 @@ function operationsByCursorResponse(
     nextCursor: 'next-cursor',
     items: [operationItem()],
     ...overrides
-  };
+  } as GetOperationsByCursorResponse;
 }
 
 describe('operations-by-cursor command', () => {

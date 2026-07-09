@@ -1,12 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   InstrumentIdType,
   type EtfResponse,
   type InstrumentRequest
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createEtfCommand,
@@ -23,7 +25,7 @@ function etfResponse(overrides: Partial<EtfResponse> = {}): EtfResponse {
   return {
     instrument: undefined,
     ...overrides
-  };
+  } as EtfResponse;
 }
 
 describe('etf command', () => {

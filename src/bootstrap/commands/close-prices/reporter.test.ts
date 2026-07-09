@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Quotation } from '../../../generated/common';
-import type { InstrumentClosePriceResponse } from '../../../generated/marketdata';
+import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
+import type { InstrumentClosePriceResponse } from '../../../generated/t_tech/invest/grpc/marketdata';
 import { createClosePricesReport, formatClosePricesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -20,7 +20,7 @@ function closePrice(
     price: quotation(123, 450000000),
     time: new Date('2026-06-19T00:00:00.000Z'),
     ...overrides
-  };
+  } as InstrumentClosePriceResponse;
 }
 
 describe('close-prices reporter', () => {

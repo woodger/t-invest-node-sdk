@@ -2,11 +2,11 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue } from '../../../generated/common';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxWithdrawLimitsCommand,
@@ -34,7 +34,7 @@ function withdrawLimitsResponse(
     blocked: [money(10, 0)],
     blockedGuarantee: [money(1, 500000000)],
     ...overrides
-  };
+  } as WithdrawLimitsResponse;
 }
 
 describe('sandbox-withdraw-limits command', () => {

@@ -1,14 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
 import {
-  InstrumentType,
-  SecurityTradingStatus
-} from '../../../generated/common';
+  describe,
+  test } from 'node:test';
 import {
   RealExchange,
-  type Instrument,
-  type InstrumentResponse
-} from '../../../generated/instruments';
+  InstrumentType,
+  SecurityTradingStatus
+} from '../../../generated/t_tech/invest/grpc/common';
+import { type Instrument, type InstrumentResponse } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createInstrumentReport, formatInstrumentReport } from './reporter';
 
 function instrument(overrides: Partial<Instrument> = {}): Instrument {
@@ -48,14 +47,14 @@ function instrument(overrides: Partial<Instrument> = {}): Instrument {
     first1minCandleDate: new Date('2026-06-19T10:00:00.000Z'),
     first1dayCandleDate: new Date('2026-06-20T00:00:00.000Z'),
     ...overrides
-  };
+  } as Instrument;
 }
 
 function response(overrides: Partial<InstrumentResponse> = {}): InstrumentResponse {
   return {
     instrument: instrument(),
     ...overrides
-  };
+  } as InstrumentResponse;
 }
 
 describe('instrument reporter', () => {

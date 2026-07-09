@@ -9,12 +9,12 @@
  * Здесь не должно быть stream lifecycle management или SDK request creation.
  */
 
-import type { MarketDataResponse } from '../../../generated/marketdata';
+import type { MarketDataResponse } from '../../../generated/t_tech/invest/grpc/marketdata';
 import type {
   PortfolioStreamResponse,
   PositionsStreamResponse
-} from '../../../generated/operations';
-import type { TradesStreamResponse } from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/operations';
+import type { TradesStreamResponse } from '../../../generated/t_tech/invest/grpc/orders';
 
 export const streamRunFormats = ['jsonl'] as const;
 

@@ -10,14 +10,15 @@ import type {
   InstrumentReportInstrument
 } from '../../../application/reports';
 import {
+  realExchangeToJSON,
   instrumentTypeToJSON,
   securityTradingStatusToJSON
-} from '../../../generated/common';
+} from '../../../generated/t_tech/invest/grpc/common';
 import type {
   Instrument,
   InstrumentResponse
-} from '../../../generated/instruments';
-import { realExchangeToJSON } from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
+
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';

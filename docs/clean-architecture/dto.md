@@ -6,7 +6,7 @@
 
 В текущем проекте есть несколько разных типов contracts, и их нельзя смешивать:
 
-- proto-generated DTO из `src/generated/**`;
+- proto-generated DTO из `src/generated/t_tech/invest/grpc/**`;
 - application DTO из `src/application/dto/**`;
 - application report contracts из `src/application/reports/**`;
 - CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options
@@ -14,7 +14,8 @@
 
 ## Generated DTO
 
-`src/generated/**` воспроизводится из `contracts/**/*.proto`.
+Raw upstream proto-файлы хранятся в `contracts/t_tech/invest/grpc/**`.
+`src/generated/t_tech/invest/grpc/**` зеркально воспроизводится из этого layout.
 
 Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя
 использовать как место для project-specific правил.
@@ -32,8 +33,11 @@
 - делать generated DTO основой новых application reports;
 - добавлять handwritten mapping или helpers в generated файлы;
 - завязывать CLI output format на нестабильный generated JSON shape.
-- экспортировать generated service definitions, clients или implementation
-  contracts как root public API.
+- экспортировать generated service clients как root public API.
+
+Исключение: server-side generated `*ServiceDefinition` и
+`*ServiceImplementation` являются частью root public API, потому что пакет
+поддерживает nice-grpc server adapters у потребителей.
 
 ## Application DTO
 
