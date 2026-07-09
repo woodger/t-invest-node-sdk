@@ -10,7 +10,7 @@ import type {
   PortfolioReportPosition,
   PortfolioReportSummary
 } from '../../../application/reports';
-import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
+import type { PortfolioPosition, PortfolioResponse } from '../../../generated/t_tech/invest/grpc/operations';
 import {
   formatReportDecimal,
   formatReportMoneyText,

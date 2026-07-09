@@ -7,7 +7,7 @@ import {
   AccountStatus,
   AccountType,
   type Account
-} from '../../../generated/users';
+} from '../../../generated/t_tech/invest/grpc/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createAccountsCommand,
@@ -28,7 +28,7 @@ function account(overrides: Partial<Account> = {}): Account {
     closedDate: undefined,
     accessLevel: AccessLevel.ACCOUNT_ACCESS_LEVEL_FULL_ACCESS,
     ...overrides
-  };
+  } as Account;
 }
 
 describe('accounts command', () => {

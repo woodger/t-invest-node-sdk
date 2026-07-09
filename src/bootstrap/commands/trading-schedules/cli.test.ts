@@ -1,12 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   TradingDay,
   TradingSchedulesRequest,
   TradingSchedulesResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createTradingSchedulesCommand,
@@ -36,7 +38,7 @@ function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
     closingAuctionStartTime: undefined,
     openingAuctionEndTime: undefined,
     ...overrides
-  };
+  } as TradingDay;
 }
 
 function response(overrides: Partial<TradingSchedulesResponse> = {}): TradingSchedulesResponse {
@@ -48,7 +50,7 @@ function response(overrides: Partial<TradingSchedulesResponse> = {}): TradingSch
       }
     ],
     ...overrides
-  };
+  } as TradingSchedulesResponse;
 }
 
 describe('trading-schedules command', () => {

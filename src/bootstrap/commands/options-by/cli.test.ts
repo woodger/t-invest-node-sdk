@@ -1,11 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   FilterOptionsRequest,
   OptionsResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOptionsByCommand,
@@ -21,7 +23,7 @@ function response(overrides: Partial<OptionsResponse> = {}): OptionsResponse {
   return {
     instruments: [],
     ...overrides
-  };
+  } as OptionsResponse;
 }
 
 describe('options-by command', () => {

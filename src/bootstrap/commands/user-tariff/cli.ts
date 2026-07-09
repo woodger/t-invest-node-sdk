@@ -10,7 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { GetUserTariffResponse } from '../../../generated/users';
+import type { GetUserTariffResponse } from '../../../generated/t_tech/invest/grpc/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

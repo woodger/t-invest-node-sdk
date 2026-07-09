@@ -9,23 +9,24 @@
  * Здесь не должно быть JSONL event formatting rules или transport adapter logic.
  */
 
-import { readFile } from 'node:fs/promises';
+import {
+  readFile } from 'node:fs/promises';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   MarketDataRequest,
   MarketDataResponse,
   MarketDataServerSideStreamRequest
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type {
   PortfolioStreamRequest,
   PortfolioStreamResponse,
   PositionsStreamRequest,
   PositionsStreamResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import type {
   TradesStreamRequest,
   TradesStreamResponse
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -34,6 +35,9 @@ import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createMarketDataStreamRequests,
   createMarketDataServerSideStreamRequest,
+  createPortfolioStreamRequest,
+  createPositionsStreamRequest,
+  createTradesStreamRequest,
   parseStreamRunConfig,
   type StreamRunConfig,
   type StreamRunRuntime,
@@ -204,13 +208,13 @@ function createStreamResponses(
       );
 
     case 'operations.portfolioStream':
-      return sdk.operationsStream.portfolioStream(createAccountRequest(config));
+      return sdk.operationsStream.portfolioStream(createPortfolioStreamRequest(config));
 
     case 'operations.positionsStream':
-      return sdk.operationsStream.positionsStream(createAccountRequest(config));
+      return sdk.operationsStream.positionsStream(createPositionsStreamRequest(config));
 
     case 'orders.tradesStream':
-      return sdk.ordersStream.tradesStream(createAccountRequest(config));
+      return sdk.ordersStream.tradesStream(createTradesStreamRequest(config));
   }
 }
 
@@ -275,12 +279,6 @@ async function* formatStreamRunResponses(
   finally {
     await iterator.return?.();
   }
-}
-
-function createAccountRequest(config: StreamRunConfig): PortfolioStreamRequest {
-  return {
-    accounts: config.accounts ?? []
-  };
 }
 
 function resolveNextTimeoutMs(

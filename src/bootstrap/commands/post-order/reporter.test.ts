@@ -1,12 +1,15 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import type { MoneyValue, Quotation } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
+import type { MoneyValue,
+  Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
   type PostOrderResponse
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import { createOrderMutationReport, formatOrderMutationReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -44,7 +47,7 @@ function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrde
     initialOrderPricePt: quotation(100, 500_000_000),
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as PostOrderResponse;
 }
 
 describe('post-order reporter', () => {

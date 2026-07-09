@@ -5,7 +5,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   BrokerReportRequest,
   BrokerReportResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBrokerReportCommand,
@@ -22,7 +22,7 @@ function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportRe
     generateBrokerReportResponse: undefined,
     getBrokerReportResponse: undefined,
     ...overrides
-  };
+  } as BrokerReportResponse;
 }
 
 describe('broker-report command', () => {

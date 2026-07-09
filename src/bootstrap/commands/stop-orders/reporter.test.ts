@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue } from '../../../generated/common';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   StopOrderDirection,
   StopOrderType,
   type GetStopOrdersResponse,
   type StopOrder
-} from '../../../generated/stoporders';
+} from '../../../generated/t_tech/invest/grpc/stoporders';
 import { createStopOrdersReport, formatStopOrdersReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -32,14 +32,14 @@ function stopOrder(overrides: Partial<StopOrder> = {}): StopOrder {
     stopPrice: money(95, 500000000),
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as StopOrder;
 }
 
 function response(overrides: Partial<GetStopOrdersResponse> = {}): GetStopOrdersResponse {
   return {
     stopOrders: [stopOrder()],
     ...overrides
-  };
+  } as GetStopOrdersResponse;
 }
 
 describe('stop-orders reporter', () => {

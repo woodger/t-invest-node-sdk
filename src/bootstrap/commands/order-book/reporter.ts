@@ -12,7 +12,7 @@ import type {
 import type {
   GetOrderBookResponse,
   Order
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import {
   formatReportDate,
   formatReportQuotation

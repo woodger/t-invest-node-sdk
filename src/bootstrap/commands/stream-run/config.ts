@@ -11,15 +11,17 @@
 
 import {
   type MarketDataRequest,
+  OrderBookType,
   SubscriptionAction,
   SubscriptionInterval,
+  TradeSourceType,
   type MarketDataServerSideStreamRequest
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type {
   PortfolioStreamRequest,
   PositionsStreamRequest
-} from '../../../generated/operations';
-import type { TradesStreamRequest } from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/operations';
+import type { TradesStreamRequest } from '../../../generated/t_tech/invest/grpc/orders';
 
 export const streamRunStreamNames = [
   'marketdata.marketDataStream',
@@ -208,22 +210,25 @@ export function createMarketDataServerSideStreamRequest(
         waitingClose: resolveCandlesWaitingClose(candles)
       }
       : undefined,
-    subscribeOrderBookRequest: orderBooks.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: orderBooks.map((item) => ({
-          figi: '',
-          depth: item.depth,
-          instrumentId: item.instrumentId
-        }))
-      }
-      : undefined,
-    subscribeTradesRequest: trades.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: trades.map(createInstrumentRequest)
-      }
-      : undefined,
+        subscribeOrderBookRequest: orderBooks.length > 0
+          ? {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: orderBooks.map((item) => ({
+              figi: '',
+              depth: item.depth,
+              instrumentId: item.instrumentId,
+              orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
+            }))
+          }
+          : undefined,
+        subscribeTradesRequest: trades.length > 0
+          ? {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: trades.map(createInstrumentRequest),
+            tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+            withOpenInterest: false
+          }
+          : undefined,
     subscribeInfoRequest: info.length > 0
       ? {
         subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
@@ -235,19 +240,55 @@ export function createMarketDataServerSideStreamRequest(
         subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
         instruments: lastPrices.map(createInstrumentRequest)
       }
-      : undefined
+      : undefined,
+    pingSettings: undefined
   };
 }
 
 export function createAccountStreamRequest(
   config: StreamRunConfig
 ): PortfolioStreamRequest | PositionsStreamRequest | TradesStreamRequest {
-  if (
-    config.stream !== 'operations.portfolioStream'
-    && config.stream !== 'operations.positionsStream'
-    && config.stream !== 'orders.tradesStream'
-  ) {
-    throw new Error(`Expected account stream config, got '${config.stream}'`);
+  switch (config.stream) {
+    case 'operations.portfolioStream':
+      return createPortfolioStreamRequest(config);
+
+    case 'operations.positionsStream':
+      return createPositionsStreamRequest(config);
+
+    case 'orders.tradesStream':
+      return createTradesStreamRequest(config);
+
+    default:
+      throw new Error(`Expected account stream config, got '${config.stream}'`);
+  }
+}
+
+export function createPortfolioStreamRequest(config: StreamRunConfig): PortfolioStreamRequest {
+  if (config.stream !== 'operations.portfolioStream') {
+    throw new Error(`Expected portfolio stream config, got '${config.stream}'`);
+  }
+
+  return {
+    accounts: config.accounts ?? [],
+    pingSettings: undefined
+  };
+}
+
+export function createPositionsStreamRequest(config: StreamRunConfig): PositionsStreamRequest {
+  if (config.stream !== 'operations.positionsStream') {
+    throw new Error(`Expected positions stream config, got '${config.stream}'`);
+  }
+
+  return {
+    accounts: config.accounts ?? [],
+    withInitialPositions: false,
+    pingSettings: undefined
+  };
+}
+
+export function createTradesStreamRequest(config: StreamRunConfig): TradesStreamRequest {
+  if (config.stream !== 'orders.tradesStream') {
+    throw new Error(`Expected trades stream config, got '${config.stream}'`);
   }
 
   return {
@@ -353,7 +394,8 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
             .map((item) => ({
               figi: '',
               depth: item.depth,
-              instrumentId: item.instrumentId
+              instrumentId: item.instrumentId,
+              orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
             }))
         }
       };
@@ -366,7 +408,9 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
           subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
           instruments: parseArray(request['instruments'], 'requests[].instruments')
             .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map(createInstrumentRequest)
+            .map(createInstrumentRequest),
+          tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+          withOpenInterest: false
         }
       };
 

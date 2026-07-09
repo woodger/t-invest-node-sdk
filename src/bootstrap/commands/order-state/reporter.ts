@@ -6,7 +6,7 @@
  */
 
 import type { OrderStateReport } from '../../../application/reports';
-import type { OrderState } from '../../../generated/orders';
+import type { OrderState } from '../../../generated/t_tech/invest/grpc/orders';
 import { formatReportMoneyText } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 import {

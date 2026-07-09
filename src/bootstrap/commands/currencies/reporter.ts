@@ -6,7 +6,7 @@
  */
 
 import type { CurrenciesReport } from '../../../application/reports';
-import type { Currency } from '../../../generated/instruments';
+import type { Currency } from '../../../generated/t_tech/invest/grpc/instruments';
 import { renderJson } from 'icore';
 import {
   createCurrencyReportInstrument,

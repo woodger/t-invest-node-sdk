@@ -3,11 +3,11 @@ import { describe, test } from 'node:test';
 import type {
   MoneyValue,
   Quotation
-} from '../../../generated/common';
+} from '../../../generated/t_tech/invest/grpc/common';
 import type {
   BrokerReport,
   BrokerReportResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import { createBrokerReportReport, formatBrokerReportReport } from './reporter';
 
 function money(currency: string, units: number, nano: number): MoneyValue {
@@ -48,7 +48,7 @@ function item(overrides: Partial<BrokerReport> = {}): BrokerReport {
     separateAgreementDate: '2026-06-01',
     deliveryType: 'delivery',
     ...overrides
-  };
+  } as BrokerReport;
 }
 
 function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportResponse {
@@ -56,7 +56,7 @@ function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportRe
     generateBrokerReportResponse: undefined,
     getBrokerReportResponse: undefined,
     ...overrides
-  };
+  } as BrokerReportResponse;
 }
 
 describe('broker-report reporter', () => {
@@ -80,7 +80,8 @@ describe('broker-report reporter', () => {
           brokerReport: [item()],
           itemsCount: 1,
           pagesCount: 3,
-          page: 2
+          page: 2,
+          taskId: ''
         }
       }));
 
@@ -166,7 +167,8 @@ describe('broker-report reporter', () => {
           brokerReport: [item()],
           itemsCount: 1,
           pagesCount: 3,
-          page: 2
+          page: 2,
+          taskId: ''
         }
       }));
 
@@ -186,7 +188,8 @@ describe('broker-report reporter', () => {
           brokerReport: [item()],
           itemsCount: 1,
           pagesCount: 3,
-          page: 2
+          page: 2,
+          taskId: ''
         }
       }));
 

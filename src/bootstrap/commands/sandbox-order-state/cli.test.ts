@@ -1,15 +1,17 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue } from '../../../generated/common';
+import { PriceType, type MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
   type GetOrderStateRequest,
   type OrderState
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOrderStateCommand,
@@ -52,7 +54,7 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
     orderDate: new Date('2026-06-19T10:00:00.000Z'),
     stages: [],
     ...overrides
-  };
+  } as OrderState;
 }
 
 describe('sandbox-order-state command', () => {
@@ -65,7 +67,8 @@ describe('sandbox-order-state command', () => {
 
       assert.deepEqual(request, {
         accountId: 'sandbox-account-id',
-        orderId: 'sandbox-order-id'
+        orderId: 'sandbox-order-id',
+        priceType: PriceType.PRICE_TYPE_UNSPECIFIED
       });
     });
   });
@@ -119,7 +122,8 @@ describe('sandbox-order-state command', () => {
       });
       assert.deepEqual(receivedRequest, {
         accountId: 'sandbox-account-id',
-        orderId: 'sandbox-order-id'
+        orderId: 'sandbox-order-id',
+        priceType: PriceType.PRICE_TYPE_UNSPECIFIED
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).orderId, 'sandbox-order-id');

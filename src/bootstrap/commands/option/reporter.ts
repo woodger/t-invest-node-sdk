@@ -9,18 +9,17 @@ import type {
   OptionReport,
   OptionReportInstrument
 } from '../../../application/reports';
-import { securityTradingStatusToJSON } from '../../../generated/common';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   Option,
   OptionResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import {
   optionDirectionToJSON,
   optionPaymentTypeToJSON,
   optionSettlementTypeToJSON,
-  optionStyleToJSON,
-  realExchangeToJSON
-} from '../../../generated/instruments';
+  optionStyleToJSON
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import {
   formatReportDate,
   formatReportDecimal,

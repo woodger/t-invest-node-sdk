@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { SandboxPayInRequest } from '../../../generated/sandbox';
+import type { SandboxPayInRequest } from '../../../generated/t_tech/invest/grpc/sandbox';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPayInCommand,

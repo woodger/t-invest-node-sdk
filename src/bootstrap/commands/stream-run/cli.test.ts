@@ -1,17 +1,21 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   SubscriptionAction,
+  TradeSourceType,
   type MarketDataRequest,
   type MarketDataResponse
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type {
   PortfolioStreamRequest,
   PortfolioStreamResponse
-} from '../../../generated/operations';
-import type { TradesStreamResponse } from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/operations';
+import type { TradesStreamResponse
+} from '../../../generated/t_tech/invest/grpc/orders';
 import { createStreamRunCommand } from './cli';
 
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {
@@ -110,7 +114,8 @@ describe('stream run command', () => {
         endpoint: 'localhost:50051'
       });
       assert.deepEqual(receivedRequest, {
-        accounts: ['account-id']
+        accounts: ['account-id'],
+        pingSettings: undefined
       });
       assert.equal(closeCalls, 1);
       const [line] = lines;
@@ -395,7 +400,9 @@ describe('stream run command', () => {
                 figi: '',
                 instrumentId: 'trade-id'
               }
-            ]
+            ],
+            tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+            withOpenInterest: false
           }
         }
       ]);

@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue } from '../../../generated/common';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OperationState,
   OperationType,
   type Operation,
   type OperationTrade
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import { createOperationsReport, formatOperationsReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -24,7 +24,7 @@ function trade(overrides: Partial<OperationTrade> = {}): OperationTrade {
     quantity: 10,
     price: money(10, 500000000),
     ...overrides
-  };
+  } as OperationTrade;
 }
 
 function operation(overrides: Partial<Operation> = {}): Operation {
@@ -47,7 +47,7 @@ function operation(overrides: Partial<Operation> = {}): Operation {
     positionUid: 'position-uid',
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as Operation;
 }
 
 describe('operations reporter', () => {

@@ -21,8 +21,8 @@ src/infrastructure
 src/application
   -> чистые DTO и application services
 
-src/generated
-  -> generated proto contracts
+src/generated/t_tech/invest/grpc
+  -> generated proto contracts in upstream layout
 ```
 
 `src/domain` сейчас не выделен: в SDK нет самостоятельной доменной модели,
@@ -113,8 +113,10 @@ primitive CLI-контракты и нормализует общие `TinkoffIn
 ## Public Entrypoints
 
 Корневые файлы держат только package entrypoint, runtime config и generated
-exports exception. Public service interfaces экспортируются из application DTO,
-а generated service definitions/clients остаются внутри bootstrap/infrastructure:
+exports exception. Public service interfaces экспортируются из application DTO.
+Generated server-side service definitions/implementation types входят в root
+public surface для nice-grpc server adapters; generated service clients остаются
+внутри bootstrap/infrastructure:
 
 - `src/index.ts` - основной package entrypoint;
 - `src/config.ts` - публичная конфигурация unary limits;
@@ -126,10 +128,12 @@ compatibility wrappers не создаются.
 
 ## Generated Code
 
-`src/generated/**` воспроизводится из `contracts/**/*.proto` и не редактируется
-вручную. `src/generated/**` и `src/bootstrap/generated-exports.ts` являются
-исключениями из обычной слоевой структуры, потому что package entrypoint
-реэкспортирует generated DTO/enums public API и server-side
+Raw proto-файлы хранятся без flattening в upstream layout
+`contracts/t_tech/invest/grpc/**`. `src/generated/t_tech/invest/grpc/**`
+зеркально воспроизводится из этого layout и не редактируется вручную.
+`src/generated/**` и `src/bootstrap/generated-exports.ts` являются исключениями
+из обычной слоевой структуры, потому что package entrypoint реэкспортирует
+generated DTO/enums public API и server-side
 `*ServiceDefinition` / `*ServiceImplementation` contracts. Generated
 `*ServiceClient` contracts остаются внутренними transport contracts и не
 являются root public exports.

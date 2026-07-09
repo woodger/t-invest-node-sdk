@@ -5,7 +5,7 @@
 Текущий публичный API модуля состоит из:
 - класса `TinkoffInvestNodeSDK` для unary-запросов;
 - выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
-  `contracts/**/*.proto`.
+  upstream proto contracts в `contracts/t_tech/invest/grpc/**/*.proto`.
 
 ## Установка
 
@@ -32,7 +32,7 @@ yarn add tinkoff-invest-node-sdk
 
 ## Генерация proto
 
-Генерация TypeScript-кода из `contracts/**/*.proto` запускается через CLI:
+Генерация TypeScript-кода из upstream proto layout запускается через CLI:
 
 ```sh
 yarn cli dev compile-proto
@@ -40,6 +40,8 @@ yarn cli dev compile-proto
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
 TypeScript plugin берется из dev-зависимости `ts-proto`.
+Raw proto-файлы хранятся в upstream layout `contracts/t_tech/invest/grpc/**`.
+Generated TypeScript mirror пишется в `src/generated/t_tech/invest/grpc/**`.
 
 CLI использует собранные файлы из `dist`, поэтому перед первым запуском после
 изменений в bootstrap TypeScript-коде нужно выполнить:

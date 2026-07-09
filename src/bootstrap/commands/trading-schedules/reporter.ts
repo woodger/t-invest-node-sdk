@@ -9,7 +9,7 @@ import type {
   TradingSchedulesReport,
   TradingSchedulesReportDay
 } from '../../../application/reports';
-import type { TradingDay, TradingSchedule } from '../../../generated/instruments';
+import type { TradingDay, TradingSchedule } from '../../../generated/t_tech/invest/grpc/instruments';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';

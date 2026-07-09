@@ -1,10 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { SecurityTradingStatus } from '../../../generated/common';
+import { SecurityTradingStatus } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   GetTradingStatusResponse,
   GetTradingStatusesResponse
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import { createTradingStatusesReport, formatTradingStatusesReport } from './reporter';
 
 function tradingStatus(
@@ -18,7 +18,7 @@ function tradingStatus(
     apiTradeAvailableFlag: true,
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as GetTradingStatusResponse;
 }
 
 function response(
@@ -37,7 +37,7 @@ function response(
       })
     ],
     ...overrides
-  };
+  } as GetTradingStatusesResponse;
 }
 
 describe('trading-statuses reporter', () => {

@@ -17,7 +17,7 @@ import {
   orderDirectionToJSON,
   orderExecutionReportStatusToJSON,
   orderTypeToJSON
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import {
   formatReportDate,
   formatReportMoneyText,

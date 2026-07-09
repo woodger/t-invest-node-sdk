@@ -10,10 +10,11 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   GetOrderStateRequest,
   OrderState
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -106,6 +107,7 @@ export function createOrderStateRequest(
 ): GetOrderStateRequest {
   return {
     accountId: options['account-id'],
-    orderId: options['order-id']
+    orderId: options['order-id'],
+    priceType: PriceType.PRICE_TYPE_UNSPECIFIED
   };
 }

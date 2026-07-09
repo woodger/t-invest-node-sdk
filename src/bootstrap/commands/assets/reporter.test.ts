@@ -1,10 +1,12 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { InstrumentType } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
+import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
 import {
   AssetType,
   type Asset
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import { createAssetsReport, formatAssetsReport } from './reporter';
 
 function asset(overrides: Partial<Asset> = {}): Asset {
@@ -30,7 +32,7 @@ function asset(overrides: Partial<Asset> = {}): Asset {
       }
     ],
     ...overrides
-  };
+  } as Asset;
 }
 
 describe('assets reporter', () => {

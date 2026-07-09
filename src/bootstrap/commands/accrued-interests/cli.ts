@@ -13,7 +13,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -127,8 +127,11 @@ export function createAccruedInterestsRequest(
     throw new Error("Expected '--from' to be earlier than or equal to '--to'");
   }
 
+  const instrumentId = resolveInstrumentIdOption(options);
+
   return {
-    figi: resolveInstrumentIdOption(options),
+    figi: instrumentId,
+    instrumentId,
     from,
     to
   };

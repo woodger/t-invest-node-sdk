@@ -1,15 +1,17 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue } from '../../../generated/common';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
   type GetOrdersRequest,
   type GetOrdersResponse
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOrdersCommand,
@@ -56,7 +58,7 @@ function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersRe
       }
     ],
     ...overrides
-  };
+  } as GetOrdersResponse;
 }
 
 describe('sandbox-orders command', () => {

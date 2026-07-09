@@ -5,7 +5,7 @@ import {
   AccountStatus,
   AccountType,
   type Account
-} from '../../../generated/users';
+} from '../../../generated/t_tech/invest/grpc/users';
 import { createAccountsReport, formatAccountsReport } from './reporter';
 
 function account(overrides: Partial<Account> = {}): Account {
@@ -18,7 +18,7 @@ function account(overrides: Partial<Account> = {}): Account {
     closedDate: undefined,
     accessLevel: AccessLevel.ACCOUNT_ACCESS_LEVEL_FULL_ACCESS,
     ...overrides
-  };
+  } as Account;
 }
 
 describe('accounts reporter', () => {

@@ -6,7 +6,8 @@ describe('cancel-order reporter', () => {
   describe('createCancelOrderReport', () => {
     test('maps generated cancel order response to stable report values', () => {
       const report = createCancelOrderReport({
-        time: new Date('2026-06-19T10:00:00.000Z')
+        time: new Date('2026-06-19T10:00:00.000Z'),
+        responseMetadata: undefined
       });
 
       assert.deepEqual(report, {

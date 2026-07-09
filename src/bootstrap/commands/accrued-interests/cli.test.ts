@@ -1,12 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type {
   AccruedInterest,
   GetAccruedInterestsRequest,
   GetAccruedInterestsResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createAccruedInterestsCommand,
@@ -34,7 +36,7 @@ function accruedInterest(overrides: Partial<AccruedInterest> = {}): AccruedInter
       nano: 0
     },
     ...overrides
-  };
+  } as AccruedInterest;
 }
 
 function response(
@@ -43,7 +45,7 @@ function response(
   return {
     accruedInterests: [accruedInterest()],
     ...overrides
-  };
+  } as GetAccruedInterestsResponse;
 }
 
 describe('accrued-interests command', () => {
@@ -57,6 +59,7 @@ describe('accrued-interests command', () => {
 
       assert.deepEqual(request, {
         figi: 'BOND-FIGI',
+        instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });
@@ -134,6 +137,7 @@ describe('accrued-interests command', () => {
       assert.equal(getAccruedInterestsCalls, 1);
       assert.deepEqual(receivedRequest, {
         figi: 'BOND-FIGI',
+        instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });

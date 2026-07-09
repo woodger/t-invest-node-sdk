@@ -13,7 +13,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
-} from '../../../generated/users';
+} from '../../../generated/t_tech/invest/grpc/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

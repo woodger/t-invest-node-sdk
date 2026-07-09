@@ -102,14 +102,23 @@ export {
   InstrumentType,
   instrumentTypeFromJSON,
   instrumentTypeToJSON,
+  InstrumentStatus,
+  instrumentStatusFromJSON,
+  instrumentStatusToJSON,
   SecurityTradingStatus,
   securityTradingStatusFromJSON,
   securityTradingStatusToJSON,
+  PriceType,
+  priceTypeFromJSON,
+  priceTypeToJSON,
+  RealExchange,
+  realExchangeFromJSON,
+  realExchangeToJSON,
   MoneyValue,
   Quotation,
   Ping
-} from '../generated/common';
-export type { DeepPartial, MessageFns } from '../generated/common';
+} from '../generated/t_tech/invest/grpc/common';
+export type { DeepPartial, MessageFns } from '../generated/t_tech/invest/grpc/common';
 
 export {
   CouponType,
@@ -130,9 +139,6 @@ export {
   InstrumentIdType,
   instrumentIdTypeFromJSON,
   instrumentIdTypeToJSON,
-  InstrumentStatus,
-  instrumentStatusFromJSON,
-  instrumentStatusToJSON,
   ShareType,
   shareTypeFromJSON,
   shareTypeToJSON,
@@ -145,9 +151,6 @@ export {
   EditFavoritesActionType,
   editFavoritesActionTypeFromJSON,
   editFavoritesActionTypeToJSON,
-  RealExchange,
-  realExchangeFromJSON,
-  realExchangeToJSON,
   RiskLevel,
   riskLevelFromJSON,
   riskLevelToJSON,
@@ -162,13 +165,20 @@ export {
   BondsResponse,
   GetBondCouponsRequest,
   GetBondCouponsResponse,
+  GetBondEventsRequest,
+  GetBondEventsResponse,
   Coupon,
   CurrencyResponse,
   CurrenciesResponse,
+  DfaResponse,
+  DfasRequest,
+  DfasResponse,
   EtfResponse,
   EtfsResponse,
   FutureResponse,
   FuturesResponse,
+  IndicativesRequest,
+  IndicativesResponse,
   OptionResponse,
   OptionsResponse,
   Option,
@@ -208,6 +218,12 @@ export {
   GetFavoritesRequest,
   GetFavoritesResponse,
   FavoriteInstrument,
+  CreateFavoriteGroupRequest,
+  CreateFavoriteGroupResponse,
+  DeleteFavoriteGroupRequest,
+  DeleteFavoriteGroupResponse,
+  GetFavoriteGroupsRequest,
+  GetFavoriteGroupsResponse,
   EditFavoritesRequest,
   EditFavoritesRequestInstrument,
   EditFavoritesResponse,
@@ -220,9 +236,25 @@ export {
   GetBrandsRequest,
   GetBrandRequest,
   GetBrandsResponse,
+  GetAssetFundamentalsRequest,
+  GetAssetFundamentalsResponse,
+  GetAssetReportsRequest,
+  GetAssetReportsResponse,
+  GetConsensusForecastsRequest,
+  GetConsensusForecastsResponse,
+  GetForecastRequest,
+  GetForecastResponse,
+  RiskRatesRequest,
+  RiskRatesResponse,
+  GetInsiderDealsRequest,
+  GetInsiderDealsResponse,
+  StructuredNoteResponse,
+  StructuredNotesResponse,
+  NewsRequest,
+  NewsResponse,
   InstrumentsServiceDefinition
-} from '../generated/instruments';
-export type { InstrumentsServiceImplementation } from '../generated/instruments';
+} from '../generated/t_tech/invest/grpc/instruments';
+export type { InstrumentsServiceImplementation } from '../generated/t_tech/invest/grpc/instruments';
 
 export {
   SubscriptionAction,
@@ -287,13 +319,17 @@ export {
   InstrumentClosePriceRequest,
   GetClosePricesResponse,
   InstrumentClosePriceResponse,
+  GetTechAnalysisRequest,
+  GetTechAnalysisResponse,
+  GetMarketValuesRequest,
+  GetMarketValuesResponse,
   MarketDataServiceDefinition,
   MarketDataStreamServiceDefinition
-} from '../generated/marketdata';
+} from '../generated/t_tech/invest/grpc/marketdata';
 export type {
   MarketDataServiceImplementation,
   MarketDataStreamServiceImplementation
-} from '../generated/marketdata';
+} from '../generated/t_tech/invest/grpc/marketdata';
 
 export {
   OperationState,
@@ -355,13 +391,15 @@ export {
   PositionsSubscriptionStatus,
   PositionData,
   PositionsMoney,
+  OperationsStreamRequest,
+  OperationsStreamResponse,
   OperationsServiceDefinition,
   OperationsStreamServiceDefinition
-} from '../generated/operations';
+} from '../generated/t_tech/invest/grpc/operations';
 export type {
   OperationsServiceImplementation,
   OperationsStreamServiceImplementation
-} from '../generated/operations';
+} from '../generated/t_tech/invest/grpc/operations';
 
 export {
   OrderDirection,
@@ -372,29 +410,35 @@ export {
   OrderExecutionReportStatus,
   orderExecutionReportStatusFromJSON,
   orderExecutionReportStatusToJSON,
-  priceTypeFromJSON,
-  priceTypeToJSON,
   TradesStreamRequest,
   TradesStreamResponse,
   OrderTrades,
   OrderTrade,
   PostOrderRequest,
   PostOrderResponse,
+  PostOrderAsyncRequest,
+  PostOrderAsyncResponse,
   CancelOrderRequest,
   CancelOrderResponse,
   GetOrderStateRequest,
   GetOrdersRequest,
   GetOrdersResponse,
+  GetMaxLotsRequest,
+  GetMaxLotsResponse,
+  GetOrderPriceRequest,
+  GetOrderPriceResponse,
   OrderState,
   OrderStage,
   ReplaceOrderRequest,
+  OrderStateStreamRequest,
+  OrderStateStreamResponse,
   OrdersServiceDefinition,
   OrdersStreamServiceDefinition
-} from '../generated/orders';
+} from '../generated/t_tech/invest/grpc/orders';
 export type {
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation
-} from '../generated/orders';
+} from '../generated/t_tech/invest/grpc/orders';
 
 export {
   OpenSandboxAccountRequest,
@@ -404,8 +448,8 @@ export {
   SandboxPayInRequest,
   SandboxPayInResponse,
   SandboxServiceDefinition
-} from '../generated/sandbox';
-export type { SandboxServiceImplementation } from '../generated/sandbox';
+} from '../generated/t_tech/invest/grpc/sandbox';
+export type { SandboxServiceImplementation } from '../generated/t_tech/invest/grpc/sandbox';
 
 export {
   StopOrderDirection,
@@ -425,8 +469,8 @@ export {
   CancelStopOrderResponse,
   StopOrder,
   StopOrdersServiceDefinition
-} from '../generated/stoporders';
-export type { StopOrdersServiceImplementation } from '../generated/stoporders';
+} from '../generated/t_tech/invest/grpc/stoporders';
+export type { StopOrdersServiceImplementation } from '../generated/t_tech/invest/grpc/stoporders';
 
 export {
   AccountType,
@@ -447,8 +491,16 @@ export {
   GetUserTariffResponse,
   UnaryLimit,
   StreamLimit,
+  GetBankAccountsRequest,
+  GetBankAccountsResponse,
+  CurrencyTransferRequest,
+  CurrencyTransferResponse,
+  PayInRequest,
+  PayInResponse,
+  GetAccountValuesRequest,
+  GetAccountValuesResponse,
   GetInfoRequest,
   GetInfoResponse,
   UsersServiceDefinition
-} from '../generated/users';
-export type { UsersServiceImplementation } from '../generated/users';
+} from '../generated/t_tech/invest/grpc/users';
+export type { UsersServiceImplementation } from '../generated/t_tech/invest/grpc/users';

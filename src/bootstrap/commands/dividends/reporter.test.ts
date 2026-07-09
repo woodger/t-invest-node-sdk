@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Dividend } from '../../../generated/instruments';
+import type { Dividend } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createDividendsReport, formatDividendsReport } from './reporter';
 
 function dividend(overrides: Partial<Dividend> = {}): Dividend {
@@ -27,7 +27,7 @@ function dividend(overrides: Partial<Dividend> = {}): Dividend {
     },
     createdAt: new Date('2026-01-03T00:00:00Z'),
     ...overrides
-  };
+  } as Dividend;
 }
 
 describe('dividends reporter', () => {

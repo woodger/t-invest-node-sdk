@@ -1,13 +1,15 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentType } from '../../../generated/common';
+import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
 import {
   EditFavoritesActionType,
   type EditFavoritesRequest,
   type EditFavoritesResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createEditFavoritesCommand,
@@ -27,6 +29,8 @@ function editFavoritesResponse(): EditFavoritesResponse {
         ticker: 'TCSG',
         classCode: 'TQBR',
         isin: 'RU000A107UL4',
+        name: 'TCS Group',
+        uid: 'instrument-uid',
         instrumentType: 'share',
         otcFlag: false,
         apiTradeAvailableFlag: true,
@@ -44,8 +48,8 @@ describe('edit-favorites command', () => {
         action: 'add'
       }), {
         instruments: [
-          { figi: 'figi-1' },
-          { figi: 'figi-2' }
+          { figi: 'figi-1', instrumentId: 'figi-1' },
+          { figi: 'figi-2', instrumentId: 'figi-2' }
         ],
         actionType: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD
       });
@@ -121,7 +125,8 @@ describe('edit-favorites command', () => {
       assert.deepEqual(receivedRequest, {
         instruments: [
           {
-            figi: 'BBG00QPYJ5H0'
+            figi: 'BBG00QPYJ5H0',
+            instrumentId: 'BBG00QPYJ5H0'
           }
         ],
         actionType: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD

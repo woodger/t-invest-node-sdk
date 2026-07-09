@@ -1,9 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentType } from '../../../generated/common';
-import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
+import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
+import type { AssetsRequest,
+  AssetsResponse
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createAssetsCommand,
@@ -20,7 +24,7 @@ function response(overrides: Partial<AssetsResponse> = {}): AssetsResponse {
   return {
     assets: [],
     ...overrides
-  };
+  } as AssetsResponse;
 }
 
 describe('assets command', () => {

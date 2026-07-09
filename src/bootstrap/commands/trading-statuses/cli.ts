@@ -13,7 +13,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

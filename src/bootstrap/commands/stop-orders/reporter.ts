@@ -11,7 +11,7 @@ import {
   stopOrderTypeToJSON,
   type GetStopOrdersResponse,
   type StopOrder
-} from '../../../generated/stoporders';
+} from '../../../generated/t_tech/invest/grpc/stoporders';
 import {
   formatReportDate,
   formatReportMoneyText,

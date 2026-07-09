@@ -2,12 +2,12 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { Quotation } from '../../../generated/common';
+import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   GetOrderBookRequest,
   GetOrderBookResponse,
   Order
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOrderBookCommand,
@@ -32,7 +32,7 @@ function order(overrides: Partial<Order> = {}): Order {
     price: quotation(100, 250000000),
     quantity: 10,
     ...overrides
-  };
+  } as Order;
 }
 
 function orderBookResponse(
@@ -52,7 +52,7 @@ function orderBookResponse(
     orderbookTs: new Date('2026-06-19T10:01:00.000Z'),
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as GetOrderBookResponse;
 }
 
 describe('order-book command', () => {

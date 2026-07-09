@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue } from '../../../generated/common';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   PositionsFutures,
   PositionsOptions,
   PositionsResponse,
   PositionsSecurities
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import { createPositionsReport, formatPositionsReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -27,7 +27,7 @@ function security(overrides: Partial<PositionsSecurities> = {}): PositionsSecuri
     exchangeBlocked: false,
     instrumentType: 'share',
     ...overrides
-  };
+  } as PositionsSecurities;
 }
 
 function future(overrides: Partial<PositionsFutures> = {}): PositionsFutures {
@@ -38,7 +38,7 @@ function future(overrides: Partial<PositionsFutures> = {}): PositionsFutures {
     positionUid: 'future-position-uid',
     instrumentUid: 'future-instrument-uid',
     ...overrides
-  };
+  } as PositionsFutures;
 }
 
 function option(overrides: Partial<PositionsOptions> = {}): PositionsOptions {
@@ -48,7 +48,7 @@ function option(overrides: Partial<PositionsOptions> = {}): PositionsOptions {
     positionUid: 'option-position-uid',
     instrumentUid: 'option-instrument-uid',
     ...overrides
-  };
+  } as PositionsOptions;
 }
 
 function positions(overrides: Partial<PositionsResponse> = {}): PositionsResponse {
@@ -60,7 +60,7 @@ function positions(overrides: Partial<PositionsResponse> = {}): PositionsRespons
     futures: [future()],
     options: [option()],
     ...overrides
-  };
+  } as PositionsResponse;
 }
 
 describe('positions reporter', () => {

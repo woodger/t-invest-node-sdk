@@ -1,5 +1,7 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
@@ -7,7 +9,7 @@ import {
   type Coupon,
   type GetBondCouponsRequest,
   type GetBondCouponsResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBondCouponsCommand,
@@ -35,14 +37,14 @@ function coupon(overrides: Partial<Coupon> = {}): Coupon {
     couponEndDate: new Date('2026-02-01T00:00:00Z'),
     couponPeriod: 31,
     ...overrides
-  };
+  } as Coupon;
 }
 
 function response(overrides: Partial<GetBondCouponsResponse> = {}): GetBondCouponsResponse {
   return {
     events: [coupon()],
     ...overrides
-  };
+  } as GetBondCouponsResponse;
 }
 
 describe('bond-coupons command', () => {
@@ -56,6 +58,7 @@ describe('bond-coupons command', () => {
 
       assert.deepEqual(request, {
         figi: 'BOND-FIGI',
+        instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });
@@ -133,6 +136,7 @@ describe('bond-coupons command', () => {
       assert.equal(getBondCouponsCalls, 1);
       assert.deepEqual(receivedRequest, {
         figi: 'BOND-FIGI',
+        instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });

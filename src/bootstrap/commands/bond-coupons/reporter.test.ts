@@ -1,6 +1,10 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { CouponType, type Coupon } from '../../../generated/instruments';
+import {
+  describe,
+  test } from 'node:test';
+import { CouponType,
+  type Coupon
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import { createBondCouponsReport, formatBondCouponsReport } from './reporter';
 
 function coupon(overrides: Partial<Coupon> = {}): Coupon {
@@ -19,7 +23,7 @@ function coupon(overrides: Partial<Coupon> = {}): Coupon {
     couponEndDate: new Date('2026-02-01T00:00:00Z'),
     couponPeriod: 31,
     ...overrides
-  };
+  } as Coupon;
 }
 
 describe('bond-coupons reporter', () => {

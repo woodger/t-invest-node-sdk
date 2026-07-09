@@ -1,5 +1,7 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
@@ -8,7 +10,7 @@ import {
   OrderType,
   type PostOrderRequest,
   type PostOrderResponse
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPostOrderCommand,
@@ -40,7 +42,7 @@ function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrde
     initialOrderPricePt: undefined,
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as PostOrderResponse;
 }
 
 describe('sandbox-post-order command', () => {
