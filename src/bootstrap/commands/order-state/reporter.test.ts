@@ -1,12 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import type { MoneyValue } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
   type OrderState
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import { createSingleOrderStateReport, formatOrderStateReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -46,7 +48,7 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
       }
     ],
     ...overrides
-  };
+  } as OrderState;
 }
 
 describe('order-state reporter', () => {

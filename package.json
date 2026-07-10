@@ -1,6 +1,6 @@
 {
   "name": "tinkoff-invest-node-sdk",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
   "keywords": [
@@ -29,8 +29,9 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "tsc",
     "test": "fwa --prune",
-    "lint": "eslint src eslint.config.mjs",
+    "lint": "eslint src",
     "cli": "node dist/bootstrap/index.js"
   },
   "dependencies": {

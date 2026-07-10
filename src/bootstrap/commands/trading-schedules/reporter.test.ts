@@ -1,6 +1,10 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import type { TradingDay, TradingSchedule } from '../../../generated/instruments';
+import {
+  describe,
+  test } from 'node:test';
+import type { TradingDay,
+  TradingSchedule
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import { createTradingSchedulesReport, formatTradingSchedulesReport } from './reporter';
 
 function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
@@ -21,7 +25,7 @@ function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
     closingAuctionStartTime: new Date('2026-01-02T16:00:00Z'),
     openingAuctionEndTime: new Date('2026-01-02T06:59:00Z'),
     ...overrides
-  };
+  } as TradingDay;
 }
 
 function schedule(overrides: Partial<TradingSchedule> = {}): TradingSchedule {
@@ -29,7 +33,7 @@ function schedule(overrides: Partial<TradingSchedule> = {}): TradingSchedule {
     exchange: 'MOEX',
     days: [tradingDay()],
     ...overrides
-  };
+  } as TradingSchedule;
 }
 
 describe('trading-schedules reporter', () => {

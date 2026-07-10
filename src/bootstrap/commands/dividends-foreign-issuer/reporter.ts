@@ -14,7 +14,7 @@ import type {
   DividendsForeignIssuerReport as GeneratedDividendsForeignIssuerReport,
   GetDividendsForeignIssuerReportResponse,
   GetDividendsForeignIssuerResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import {
   formatReportDate,
   formatReportQuotation

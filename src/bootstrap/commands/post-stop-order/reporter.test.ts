@@ -6,7 +6,9 @@ describe('post-stop-order reporter', () => {
   describe('createPostStopOrderReport', () => {
     test('maps generated post stop order response to stable report values', () => {
       assert.deepEqual(createPostStopOrderReport({
-        stopOrderId: 'stop-order-id'
+        stopOrderId: 'stop-order-id',
+        orderRequestId: '',
+        responseMetadata: undefined
       }), {
         stopOrderId: 'stop-order-id'
       });

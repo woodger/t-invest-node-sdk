@@ -1,18 +1,18 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
+  RealExchange,
   SecurityTradingStatus,
   type MoneyValue,
   type Quotation
-} from '../../../generated/common';
+} from '../../../generated/t_tech/invest/grpc/common';
 import {
   OptionDirection,
   OptionPaymentType,
   OptionSettlementType,
   OptionStyle,
-  RealExchange,
   type Option
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import { createOptionsByReport, formatOptionsByReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -70,7 +70,7 @@ function option(overrides: Partial<Option> = {}): Option {
     blockedTcaFlag: false,
     apiTradeAvailableFlag: true,
     ...overrides
-  };
+  } as Option;
 }
 
 describe('options-by reporter', () => {

@@ -2,12 +2,12 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { Quotation } from '../../../generated/common';
+import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   GetClosePricesRequest,
   GetClosePricesResponse,
   InstrumentClosePriceResponse
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createClosePricesCommand,
@@ -36,7 +36,7 @@ function closePrice(
     price: quotation(100, 0),
     time: new Date('2026-06-19T00:00:00.000Z'),
     ...overrides
-  };
+  } as InstrumentClosePriceResponse;
 }
 
 function closePricesResponse(
@@ -45,7 +45,7 @@ function closePricesResponse(
   return {
     closePrices: [closePrice()],
     ...overrides
-  };
+  } as GetClosePricesResponse;
 }
 
 describe('close-prices command', () => {

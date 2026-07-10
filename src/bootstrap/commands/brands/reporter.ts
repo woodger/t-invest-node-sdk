@@ -6,7 +6,7 @@
  */
 
 import type { BrandsReport, BrandsReportBrand } from '../../../application/reports';
-import type { Brand } from '../../../generated/instruments';
+import type { Brand } from '../../../generated/t_tech/invest/grpc/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
 export const brandsFormats = ['json', 'table'] as const;

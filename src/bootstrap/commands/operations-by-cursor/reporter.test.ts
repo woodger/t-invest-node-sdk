@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { InstrumentType, type MoneyValue, type Quotation } from '../../../generated/common';
+import { InstrumentType, type MoneyValue, type Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OperationState,
   OperationType,
   type GetOperationsByCursorResponse,
   type OperationItem,
   type OperationItemTrade
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import { createOperationsByCursorReport, formatOperationsByCursorReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -34,7 +34,7 @@ function trade(overrides: Partial<OperationItemTrade> = {}): OperationItemTrade 
     yield: money(1, 0),
     yieldRelative: quotation(0, 100000000),
     ...overrides
-  };
+  } as OperationItemTrade;
 }
 
 function operationItem(overrides: Partial<OperationItem> = {}): OperationItem {
@@ -69,7 +69,7 @@ function operationItem(overrides: Partial<OperationItem> = {}): OperationItem {
     },
     assetUid: 'asset-uid',
     ...overrides
-  };
+  } as OperationItem;
 }
 
 function response(
@@ -80,7 +80,7 @@ function response(
     nextCursor: 'next-cursor',
     items: [operationItem()],
     ...overrides
-  };
+  } as GetOperationsByCursorResponse;
 }
 
 describe('operations-by-cursor reporter', () => {

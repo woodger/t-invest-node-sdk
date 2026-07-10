@@ -10,13 +10,16 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import {
+  ExchangeOrderType,
   StopOrderDirection,
   StopOrderExpirationType,
   StopOrderType,
+  TakeProfitType,
   type PostStopOrderRequest,
   type PostStopOrderResponse
-} from '../../../generated/stoporders';
+} from '../../../generated/t_tech/invest/grpc/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -206,7 +209,13 @@ export function createPostStopOrderRequest(
     expirationType,
     stopOrderType: stopOrderTypes[options['stop-order-type']],
     expireDate: createStopOrderExpireDate(expirationType, options['expire-date']),
-    instrumentId: options['instrument-id']
+    instrumentId: options['instrument-id'],
+    exchangeOrderType: ExchangeOrderType.EXCHANGE_ORDER_TYPE_UNSPECIFIED,
+    takeProfitType: TakeProfitType.TAKE_PROFIT_TYPE_UNSPECIFIED,
+    trailingData: undefined,
+    priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
+    orderId: '',
+    confirmMarginTrade: false
   };
 }
 

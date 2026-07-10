@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { GetInfoResponse } from '../../../generated/users';
+import type { GetInfoResponse } from '../../../generated/t_tech/invest/grpc/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createUserInfoCommand,
@@ -20,7 +20,7 @@ function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
     qualifiedForWorkWith: ['shares', 'bonds'],
     tariff: 'premium',
     ...overrides
-  };
+  } as GetInfoResponse;
 }
 
 describe('user-info command', () => {

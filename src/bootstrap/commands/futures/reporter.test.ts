@@ -1,10 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { SecurityTradingStatus, type Quotation } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
 import {
   RealExchange,
-  type Future
-} from '../../../generated/instruments';
+  SecurityTradingStatus,
+  type Quotation
+} from '../../../generated/t_tech/invest/grpc/common';
+import { type Future } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createFuturesReport, formatFuturesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -54,7 +57,7 @@ function future(overrides: Partial<Future> = {}): Future {
     first1minCandleDate: new Date('2026-06-19T10:00:00.000Z'),
     first1dayCandleDate: new Date('2026-06-20T00:00:00.000Z'),
     ...overrides
-  };
+  } as Future;
 }
 
 describe('futures reporter', () => {

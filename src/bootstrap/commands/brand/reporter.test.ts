@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Brand } from '../../../generated/instruments';
+import type { Brand } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createSingleBrandReport, formatBrandReport } from './reporter';
 
 function brand(overrides: Partial<Brand> = {}): Brand {
@@ -14,7 +14,7 @@ function brand(overrides: Partial<Brand> = {}): Brand {
     countryOfRisk: 'RU',
     countryOfRiskName: 'Russia',
     ...overrides
-  };
+  } as Brand;
 }
 
 describe('brand reporter', () => {

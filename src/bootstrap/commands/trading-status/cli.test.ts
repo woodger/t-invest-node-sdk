@@ -2,11 +2,11 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { SecurityTradingStatus } from '../../../generated/common';
+import { SecurityTradingStatus } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createTradingStatusCommand,
@@ -29,7 +29,7 @@ function response(
     apiTradeAvailableFlag: true,
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as GetTradingStatusResponse;
 }
 
 describe('trading-status command', () => {

@@ -1,15 +1,17 @@
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
-  PriceType,
   type PostOrderResponse,
   type ReplaceOrderRequest
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxReplaceOrderCommand,
@@ -41,7 +43,7 @@ function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostO
     initialOrderPricePt: undefined,
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as PostOrderResponse;
 }
 
 describe('sandbox-replace-order command', () => {

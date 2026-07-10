@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { CountryResponse } from '../../../generated/instruments';
+import type { CountryResponse } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createCountriesReport, formatCountriesReport } from './reporter';
 
 function country(overrides: Partial<CountryResponse> = {}): CountryResponse {
@@ -10,7 +10,7 @@ function country(overrides: Partial<CountryResponse> = {}): CountryResponse {
     name: 'Russian Federation',
     nameBrief: 'Russia',
     ...overrides
-  };
+  } as CountryResponse;
 }
 
 describe('countries reporter', () => {

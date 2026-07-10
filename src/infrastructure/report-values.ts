@@ -7,7 +7,7 @@
  */
 
 import type { ReportMoney } from '../application/reports/money.report';
-import type { MoneyValue, Quotation } from '../generated/common';
+import type { MoneyValue, Quotation } from '../generated/t_tech/invest/grpc/common';
 
 type DecimalValue = {
   units: number;

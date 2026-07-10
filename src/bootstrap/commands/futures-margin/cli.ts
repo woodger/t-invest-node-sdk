@@ -13,7 +13,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -108,7 +108,10 @@ export { formatFuturesMargin };
 export function createFuturesMarginRequest(
   options: FuturesMarginRequestOptions
 ): GetFuturesMarginRequest {
+  const instrumentId = resolveInstrumentIdOption(options);
+
   return {
-    figi: resolveInstrumentIdOption(options)
+    figi: instrumentId,
+    instrumentId
   };
 }

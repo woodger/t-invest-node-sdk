@@ -14,7 +14,7 @@ import type {
   BrokerReport,
   BrokerReportResponse,
   GetBrokerReportResponse
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import {
   formatReportDate,
   formatReportMoneyText,

@@ -74,8 +74,8 @@ contracts и не содержит самостоятельную provider-neutr
 - `application` описывает стабильные контракты и reusable application rules;
 - `infrastructure` содержит внешние технологии и adapters;
 - `bootstrap` собирает runtime entrypoints и связывает зависимости;
-- `generated` содержит proto-generated contracts и не редактируется вручную;
-- `bootstrap/generated-exports.ts` остается generated DTO/enums public export exception.
+- `generated` содержит proto-generated contracts в upstream layout и не редактируется вручную;
+- `bootstrap/generated-exports.ts` остается generated DTO/enums и server-side contracts public export exception.
 
 Если новая логика не укладывается в эту карту, нужно сначала уточнить
 архитектурное намерение и обновить документацию.

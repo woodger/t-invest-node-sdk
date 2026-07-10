@@ -14,7 +14,7 @@ import {
   EditFavoritesActionType,
   type EditFavoritesRequest,
   type EditFavoritesResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -136,8 +136,9 @@ export function createEditFavoritesRequest(
     instruments: parseCommaSeparatedStringListOption(
       resolveInstrumentIdOption(options),
       'instrument-id'
-    ).map((figi) => ({
-      figi
+    ).map((instrumentId) => ({
+      figi: instrumentId,
+      instrumentId
     })),
     actionType: editFavoriteActions[options.action]
   };

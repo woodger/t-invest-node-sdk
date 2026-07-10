@@ -9,8 +9,10 @@ import type {
   FindInstrumentReport,
   FindInstrumentReportInstrument
 } from '../../../application/reports';
-import { instrumentTypeToJSON } from '../../../generated/common';
-import type { InstrumentShort } from '../../../generated/instruments';
+import {
+  instrumentTypeToJSON } from '../../../generated/t_tech/invest/grpc/common';
+import type { InstrumentShort
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';

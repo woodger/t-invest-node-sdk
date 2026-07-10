@@ -9,12 +9,9 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import {
-  PriceType,
-  type PostOrderResponse,
-  type ReplaceOrderRequest
-} from '../../../generated/orders';
+import { type PostOrderResponse, type ReplaceOrderRequest } from '../../../generated/t_tech/invest/grpc/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -157,6 +154,7 @@ export function createReplaceOrderRequest(
     idempotencyKey: options['idempotency-key'],
     quantity: options.quantity,
     price: parsePositiveQuotationOption(options.price, 'price'),
-    priceType: replaceOrderPriceTypes[options['price-type']]
+    priceType: replaceOrderPriceTypes[options['price-type']],
+    confirmMarginTrade: false
   };
 }

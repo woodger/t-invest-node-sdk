@@ -5,7 +5,7 @@
 ## Возможности
 
 - `TinkoffInvestNodeSDK` лениво создает unary- и stream-клиенты с общим gRPC channel и metadata.
-- Пакет выборочно реэкспортирует сгенерированные типы, enum'ы и service definition из `contracts/**/*.proto`.
+- Пакет выборочно реэкспортирует сгенерированные типы, enum'ы и service definition из upstream proto contracts в `contracts/t_tech/invest/grpc/**/*.proto`.
 - SDK поддерживает локальный throttling unary-запросов через `trackLimits` и отдельную таблицу лимитов по сервисам.
 - Bootstrap CLI layer содержит command registry, `help` и `version` utility-команды.
 
@@ -195,7 +195,7 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 
 ## Генерация proto
 
-TypeScript-код из `contracts/**/*.proto` генерируется через:
+TypeScript-код из upstream proto layout генерируется через:
 
 ```bash
 yarn cli dev compile-proto
@@ -203,6 +203,9 @@ yarn cli dev compile-proto
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
 TypeScript plugin берется из dev-зависимости `ts-proto`.
+Raw proto-файлы хранятся без flattening в `contracts/t_tech/invest/grpc/**`.
+Generated TypeScript mirror пишется в `src/generated/t_tech/invest/grpc/**`.
+Источник raw proto зафиксирован в `../contracts/upstream.json`.
 
 CLI использует собранные файлы из `dist`, поэтому после изменений в bootstrap
 TypeScript-коде сначала нужно пересобрать проект:

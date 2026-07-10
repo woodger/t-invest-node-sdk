@@ -1,10 +1,14 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { SecurityTradingStatus, type MoneyValue, type Quotation } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
 import {
   RealExchange,
-  type Currency
-} from '../../../generated/instruments';
+  SecurityTradingStatus,
+  type MoneyValue,
+  type Quotation
+} from '../../../generated/t_tech/invest/grpc/common';
+import { type Currency } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createCurrenciesReport, formatCurrenciesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -52,7 +56,7 @@ function currency(overrides: Partial<Currency> = {}): Currency {
     first1minCandleDate: new Date('2026-06-19T10:00:00.000Z'),
     first1dayCandleDate: new Date('2026-06-20T00:00:00.000Z'),
     ...overrides
-  };
+  } as Currency;
 }
 
 describe('currencies reporter', () => {

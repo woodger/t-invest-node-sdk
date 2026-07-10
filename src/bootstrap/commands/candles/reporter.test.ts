@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { HistoricCandle } from '../../../generated/marketdata';
+import type { HistoricCandle } from '../../../generated/t_tech/invest/grpc/marketdata';
 import { createCandlesReport, formatCandlesReport } from './reporter';
 
 function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {
@@ -13,7 +13,7 @@ function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {
     time: new Date('2026-06-19T00:00:00.000Z'),
     isComplete: true,
     ...overrides
-  };
+  } as HistoricCandle;
 }
 
 describe('candles reporter', () => {

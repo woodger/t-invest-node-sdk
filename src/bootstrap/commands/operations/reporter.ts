@@ -10,7 +10,7 @@ import {
   operationStateToJSON,
   operationTypeToJSON,
   type Operation
-} from '../../../generated/operations';
+} from '../../../generated/t_tech/invest/grpc/operations';
 import {
   formatReportDate,
   formatReportMoneyText,

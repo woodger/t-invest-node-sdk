@@ -9,7 +9,7 @@
  * Здесь не должно быть service definitions, gRPC client creation или bootstrap wiring.
  */
 
-import type { DeepPartial } from '../../generated/common';
+import type { DeepPartial } from '../../generated/t_tech/invest/grpc/common';
 import type {
   AssetRequest,
   AssetResponse,
@@ -53,7 +53,7 @@ import type {
   SharesResponse,
   TradingSchedulesRequest,
   TradingSchedulesResponse
-} from '../../generated/instruments';
+} from '../../generated/t_tech/invest/grpc/instruments';
 import type {
   GetCandlesRequest,
   GetCandlesResponse,
@@ -72,7 +72,7 @@ import type {
   MarketDataRequest,
   MarketDataResponse,
   MarketDataServerSideStreamRequest
-} from '../../generated/marketdata';
+} from '../../generated/t_tech/invest/grpc/marketdata';
 import type {
   BrokerReportRequest,
   BrokerReportResponse,
@@ -92,7 +92,7 @@ import type {
   PositionsStreamResponse,
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
-} from '../../generated/operations';
+} from '../../generated/t_tech/invest/grpc/operations';
 import type {
   CancelOrderRequest,
   CancelOrderResponse,
@@ -105,7 +105,7 @@ import type {
   ReplaceOrderRequest,
   TradesStreamRequest,
   TradesStreamResponse
-} from '../../generated/orders';
+} from '../../generated/t_tech/invest/grpc/orders';
 import type {
   CloseSandboxAccountRequest,
   CloseSandboxAccountResponse,
@@ -113,7 +113,7 @@ import type {
   OpenSandboxAccountResponse,
   SandboxPayInRequest,
   SandboxPayInResponse
-} from '../../generated/sandbox';
+} from '../../generated/t_tech/invest/grpc/sandbox';
 import type {
   CancelStopOrderRequest,
   CancelStopOrderResponse,
@@ -121,7 +121,7 @@ import type {
   GetStopOrdersResponse,
   PostStopOrderRequest,
   PostStopOrderResponse
-} from '../../generated/stoporders';
+} from '../../generated/t_tech/invest/grpc/stoporders';
 import type {
   GetAccountsRequest,
   GetAccountsResponse,
@@ -131,7 +131,7 @@ import type {
   GetMarginAttributesResponse,
   GetUserTariffRequest,
   GetUserTariffResponse
-} from '../../generated/users';
+} from '../../generated/t_tech/invest/grpc/users';
 
 export type TinkoffInvestMetadataValue<Key extends string> = string extends Key
   ? string | Uint8Array

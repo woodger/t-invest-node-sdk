@@ -1,10 +1,13 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import { SecurityTradingStatus, type Quotation } from '../../../generated/common';
+import {
+  describe,
+  test } from 'node:test';
 import {
   RealExchange,
-  type Etf
-} from '../../../generated/instruments';
+  SecurityTradingStatus,
+  type Quotation
+} from '../../../generated/t_tech/invest/grpc/common';
+import { type Etf } from '../../../generated/t_tech/invest/grpc/instruments';
 import { createEtfsReport, formatEtfsReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -53,7 +56,7 @@ function etf(overrides: Partial<Etf> = {}): Etf {
     first1minCandleDate: new Date('2026-06-19T10:00:00.000Z'),
     first1dayCandleDate: new Date('2026-06-20T00:00:00.000Z'),
     ...overrides
-  };
+  } as Etf;
 }
 
 describe('etfs reporter', () => {

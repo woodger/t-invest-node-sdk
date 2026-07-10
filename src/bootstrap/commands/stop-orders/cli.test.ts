@@ -2,14 +2,15 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue } from '../../../generated/common';
+import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
 import {
   StopOrderDirection,
+  StopOrderStatusOption,
   StopOrderType,
   type GetStopOrdersRequest,
   type GetStopOrdersResponse,
   type StopOrder
-} from '../../../generated/stoporders';
+} from '../../../generated/t_tech/invest/grpc/stoporders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createStopOrdersCommand,
@@ -44,7 +45,7 @@ function stopOrder(overrides: Partial<StopOrder> = {}): StopOrder {
     stopPrice: money(95, 500000000),
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as StopOrder;
 }
 
 function stopOrdersResponse(
@@ -53,7 +54,7 @@ function stopOrdersResponse(
   return {
     stopOrders: [stopOrder()],
     ...overrides
-  };
+  } as GetStopOrdersResponse;
 }
 
 describe('stop-orders command', () => {
@@ -64,7 +65,10 @@ describe('stop-orders command', () => {
       });
 
       assert.deepEqual(request, {
-        accountId: 'account-id'
+        accountId: 'account-id',
+        status: StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED,
+        from: undefined,
+        to: undefined
       });
     });
   });
@@ -122,7 +126,10 @@ describe('stop-orders command', () => {
         endpoint: 'localhost:50051'
       });
       assert.deepEqual(receivedRequest, {
-        accountId: 'account-id'
+        accountId: 'account-id',
+        status: StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED,
+        from: undefined,
+        to: undefined
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].stopOrderId, 'stop-order-id');

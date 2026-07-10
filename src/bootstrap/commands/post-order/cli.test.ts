@@ -1,14 +1,18 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import {
+  describe,
+  test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
+  TimeInForceType,
   type PostOrderRequest,
   type PostOrderResponse
-} from '../../../generated/orders';
+} from '../../../generated/t_tech/invest/grpc/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createPostOrderCommand,
@@ -40,7 +44,7 @@ function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrde
     initialOrderPricePt: undefined,
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as PostOrderResponse;
 }
 
 describe('post-order command', () => {
@@ -67,7 +71,10 @@ describe('post-order command', () => {
         accountId: 'account-id',
         orderType: OrderType.ORDER_TYPE_LIMIT,
         orderId: 'idempotency-key',
-        instrumentId: 'instrument-id'
+        instrumentId: 'instrument-id',
+        timeInForce: TimeInForceType.TIME_IN_FORCE_UNSPECIFIED,
+        priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
+        confirmMarginTrade: false
       });
     });
   });

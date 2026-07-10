@@ -1,9 +1,8 @@
+import { InstrumentStatus } from '../../generated/t_tech/invest/grpc/common';
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
-  InstrumentIdType,
-  InstrumentStatus
-} from '../../generated/instruments';
+  InstrumentIdType } from '../../generated/t_tech/invest/grpc/instruments';
 import type { CommandRawOptions } from './command-options';
 import {
   instrumentLookupArgNames,

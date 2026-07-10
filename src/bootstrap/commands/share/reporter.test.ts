@@ -1,13 +1,15 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
-import type { MoneyValue, Quotation } from '../../../generated/common';
-import { SecurityTradingStatus } from '../../../generated/common';
 import {
-  RealExchange,
+  describe,
+  test } from 'node:test';
+import type { MoneyValue,
+  Quotation } from '../../../generated/t_tech/invest/grpc/common';
+import { RealExchange, SecurityTradingStatus } from '../../../generated/t_tech/invest/grpc/common';
+import {
   ShareType,
   type Share,
   type ShareResponse
-} from '../../../generated/instruments';
+} from '../../../generated/t_tech/invest/grpc/instruments';
 import { createShareReport, formatShareReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -61,14 +63,14 @@ function share(overrides: Partial<Share> = {}): Share {
     first1minCandleDate: new Date('2026-06-19T10:00:00.000Z'),
     first1dayCandleDate: new Date('2026-06-20T00:00:00.000Z'),
     ...overrides
-  };
+  } as Share;
 }
 
 function response(overrides: Partial<ShareResponse> = {}): ShareResponse {
   return {
     instrument: share(),
     ...overrides
-  };
+  } as ShareResponse;
 }
 
 describe('share reporter', () => {

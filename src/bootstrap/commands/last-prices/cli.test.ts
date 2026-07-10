@@ -2,12 +2,12 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { Quotation } from '../../../generated/common';
+import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
 import type {
   GetLastPricesRequest,
   GetLastPricesResponse,
   LastPrice
-} from '../../../generated/marketdata';
+} from '../../../generated/t_tech/invest/grpc/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createLastPricesCommand,
@@ -34,7 +34,7 @@ function lastPrice(overrides: Partial<LastPrice> = {}): LastPrice {
     time: new Date('2026-06-19T10:00:00.000Z'),
     instrumentUid: 'instrument-uid',
     ...overrides
-  };
+  } as LastPrice;
 }
 
 function lastPricesResponse(
@@ -43,7 +43,7 @@ function lastPricesResponse(
   return {
     lastPrices: [lastPrice()],
     ...overrides
-  };
+  } as GetLastPricesResponse;
 }
 
 describe('last-prices command', () => {

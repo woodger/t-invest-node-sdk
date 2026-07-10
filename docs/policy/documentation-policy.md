@@ -21,7 +21,8 @@
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
-- proto wire contracts: `contracts/**/*.proto`;
+- proto wire contracts: `contracts/t_tech/invest/grpc/**/*.proto`;
+- proto upstream metadata: `contracts/upstream.json`;
 - generated exports: `src/bootstrap/generated-exports.ts` и `src/generated/**`;
 - test runner contract: `package.json` `test` script and `fwa` package behavior;
 - package scripts: `package.json`.
@@ -30,12 +31,15 @@ Markdown должен объяснять, где находится актуал
 
 ## Generated code и proto
 
-Контракт внешнего API в первую очередь живет в `contracts/**/*.proto`.
+Контракт внешнего API в первую очередь живет в upstream layout
+`contracts/t_tech/invest/grpc/**/*.proto`.
 
 Если меняется proto workflow, documentation update должен объяснить:
 
 - какой script запускать;
 - какой generated code обновляется;
+- где зафиксирован upstream source commit/release;
+- почему upstream directory layout сохраняется без flattening;
 - какие файлы являются source contracts;
 - какие файлы нельзя редактировать вручную.
 
