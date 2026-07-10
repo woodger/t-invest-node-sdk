@@ -24,8 +24,8 @@ micro-release separately.
 - Kept technical and legacy CLI paths as compatibility aliases while making
   top-level help show domains, domain help show preferred commands, and
   command-specific help normalize compatibility calls to preferred usage.
-- Restored `yarn build` as the explicit TypeScript compile command and removed
-  the package `prepare` script.
+- Restored `yarn build` as the explicit TypeScript compile command and kept
+  `prepare` as the package-install compile lifecycle script.
 - Moved proto generation from a package script to the `yarn cli compile-proto`
   utility command.
 - Documented `yarn build` as the strict TypeScript compile gate backed by
