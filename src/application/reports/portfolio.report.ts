@@ -12,7 +12,6 @@ import type { ReportMoney } from './money.report';
 
 /** Сводка портфеля в отчете команды `operations get-portfolio`. */
 export interface PortfolioReportSummary {
-  /** Идентификатор счета. */
   accountId: string;
   /** Полная стоимость портфеля или `null`, если provider не вернул значение. */
   totalAmountPortfolio: ReportMoney | null;
@@ -36,11 +35,8 @@ export interface PortfolioReportSummary {
 
 /** Одна позиция портфеля в отчете команды `operations get-portfolio`. */
 export interface PortfolioReportPosition {
-  /** FIGI инструмента. */
   figi: string;
-  /** UID инструмента. */
   instrumentUid: string;
-  /** UID позиции инструмента. */
   positionUid: string;
   /** Тип инструмента из provider contract. */
   instrumentType: string;
@@ -52,14 +48,11 @@ export interface PortfolioReportPosition {
   currentPrice: ReportMoney | null;
   /** Ожидаемая доходность в строковом формате quotation. */
   expectedYield: string;
-  /** Признак заблокированной позиции. */
   blocked: boolean;
 }
 
 /** Отчет команды `operations get-portfolio` на application/output boundary. */
 export interface PortfolioReport {
-  /** Сводка портфеля. */
   summary: PortfolioReportSummary;
-  /** Позиции портфеля. */
   positions: PortfolioReportPosition[];
 }

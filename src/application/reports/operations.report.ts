@@ -12,9 +12,7 @@ import type { ReportMoney } from './money.report';
 
 /** Одна операция в отчете команды `operations get-operations`. */
 export interface OperationsReportOperation {
-  /** Идентификатор операции. */
   id: string;
-  /** Идентификатор родительской операции. */
   parentOperationId: string;
   /** Дата операции в ISO-формате или пустая строка. */
   date: string;
@@ -24,7 +22,6 @@ export interface OperationsReportOperation {
   operationType: string;
   /** Статус операции в формате generated enum JSON name. */
   state: string;
-  /** Валюта операции. */
   currency: string;
   /** Платеж по операции или `null`, если provider не вернул значение. */
   payment: ReportMoney | null;
@@ -32,19 +29,13 @@ export interface OperationsReportOperation {
   price: ReportMoney | null;
   /** Количество инструментов в операции. */
   quantity: number;
-  /** Остаток количества по операции. */
   quantityRest: number;
-  /** FIGI инструмента. */
   figi: string;
-  /** UID инструмента. */
   instrumentUid: string;
-  /** UID позиции инструмента. */
   positionUid: string;
-  /** UID актива. */
   assetUid: string;
   /** Тип инструмента из provider contract. */
   instrumentType: string;
-  /** Количество сделок в операции. */
   tradesCount: number;
 }
 

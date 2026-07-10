@@ -16,9 +16,7 @@ export interface OrderMutationReport {
   orderId: string;
   /** Статус исполнения в формате generated enum JSON name. */
   status: string;
-  /** Запрошенное количество лотов. */
   lotsRequested: number;
-  /** Исполненное количество лотов. */
   lotsExecuted: number;
   /** Начальная цена заявки или `null`, если provider не вернул значение. */
   initialOrderPrice: ReportMoney | null;

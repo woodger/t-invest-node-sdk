@@ -12,27 +12,17 @@ import type { ReportMoney } from './money.report';
 
 /** Один опцион в отчете команд `instruments option-by` и `instruments options-by`. */
 export interface OptionReportInstrument {
-  /** UID опциона. */
   uid: string;
-  /** UID позиции опциона. */
   positionUid: string;
-  /** Тикер опциона. */
   ticker: string;
-  /** Class code опциона. */
   classCode: string;
-  /** Название опциона. */
   name: string;
-  /** Валюта расчетов. */
   currency: string;
-  /** Валюта оценки контракта. */
   settlementCurrency: string;
-  /** Лотность опциона. */
   lot: number;
-  /** Торговая площадка. */
   exchange: string;
   /** Реальная площадка исполнения в формате generated enum JSON name. */
   realExchange: string;
-  /** Сектор экономики. */
   sector: string;
   /** Торговый статус в формате generated enum JSON name. */
   tradingStatus: string;
@@ -44,13 +34,10 @@ export interface OptionReportInstrument {
   style: string;
   /** Способ исполнения опциона в формате generated enum JSON name. */
   settlementType: string;
-  /** Тип базового актива. */
   assetType: string;
-  /** Базовый актив. */
   basicAsset: string;
   /** Размер базового актива в строковом формате quotation. */
   basicAssetSize: string;
-  /** UID позиции базового актива. */
   basicAssetPositionUid: string;
   /** Цена страйка или `null`, если provider не вернул значение. */
   strikePrice: ReportMoney | null;
@@ -72,29 +59,17 @@ export interface OptionReportInstrument {
   dlongMin: string;
   /** Минимальная ставка риска short. */
   dshortMin: string;
-  /** Минимальный шаг цены. */
   minPriceIncrement: string;
-  /** Код страны риска. */
   countryOfRisk: string;
-  /** Название страны риска. */
   countryOfRiskName: string;
-  /** Признак внебиржевого инструмента. */
   otcFlag: boolean;
-  /** Признак доступности покупки. */
   buyAvailableFlag: boolean;
-  /** Признак доступности продажи. */
   sellAvailableFlag: boolean;
-  /** Признак доступности торговли через API. */
   apiTradeAvailableFlag: boolean;
-  /** Признак доступности short-операций. */
   shortEnabledFlag: boolean;
-  /** Признак доступности для ИИС. */
   forIisFlag: boolean;
-  /** Признак инструмента для квалифицированных инвесторов. */
   forQualInvestorFlag: boolean;
-  /** Признак доступности торговли по выходным. */
   weekendFlag: boolean;
-  /** Признак блокировки ТКС. */
   blockedTcaFlag: boolean;
   /** Дата первой минутной свечи в ISO-формате или пустая строка. */
   first1minCandleDate: string;
