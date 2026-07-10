@@ -7,8 +7,8 @@ import {
   SecurityTradingStatus,
   type MoneyValue,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
-import { ShareType, type Share } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/common';
+import { ShareType, type Share } from '../../../generated/instruments';
 import { createSharesReport, formatSharesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

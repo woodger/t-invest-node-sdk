@@ -8,7 +8,7 @@
 import type {
   WithdrawLimitsReport
 } from '../../../application/reports';
-import type { WithdrawLimitsResponse } from '../../../generated/t_tech/invest/grpc/operations';
+import type { WithdrawLimitsResponse } from '../../../generated/operations';
 import {
   toReportMoney
 } from '../../../infrastructure/report-values';

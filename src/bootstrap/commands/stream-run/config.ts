@@ -16,12 +16,12 @@ import {
   SubscriptionInterval,
   TradeSourceType,
   type MarketDataServerSideStreamRequest
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import type {
   PortfolioStreamRequest,
   PositionsStreamRequest
-} from '../../../generated/t_tech/invest/grpc/operations';
-import type { TradesStreamRequest } from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/operations';
+import type { TradesStreamRequest } from '../../../generated/orders';
 
 export const streamRunStreamNames = [
   'marketdata.marketDataStream',

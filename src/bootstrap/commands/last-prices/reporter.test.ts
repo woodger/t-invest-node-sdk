@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
-import type { LastPrice } from '../../../generated/t_tech/invest/grpc/marketdata';
+import type { Quotation } from '../../../generated/common';
+import type { LastPrice } from '../../../generated/marketdata';
 import { createLastPricesReport, formatLastPricesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

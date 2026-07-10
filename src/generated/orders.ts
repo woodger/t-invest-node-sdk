@@ -2,12 +2,11 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.9
 //   protoc               v3.21.12
-// source: t_tech/invest/grpc/orders.proto
+// source: orders.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import type { CallContext, CallOptions } from "nice-grpc-common";
-import { Timestamp } from "../../../google/protobuf/timestamp";
 import {
   ErrorDetail,
   MoneyValue,
@@ -21,6 +20,7 @@ import {
   resultSubscriptionStatusFromJSON,
   resultSubscriptionStatusToJSON,
 } from "./common";
+import { Timestamp } from "./google/protobuf/timestamp";
 import { StopOrderStatusOption, stopOrderStatusOptionFromJSON, stopOrderStatusOptionToJSON } from "./stoporders";
 
 export const protobufPackage = "tinkoff.public.invest.api.contract.v1";

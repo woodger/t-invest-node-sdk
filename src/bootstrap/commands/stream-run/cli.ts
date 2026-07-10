@@ -16,17 +16,17 @@ import type {
   MarketDataRequest,
   MarketDataResponse,
   MarketDataServerSideStreamRequest
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import type {
   PortfolioStreamRequest,
   PortfolioStreamResponse,
   PositionsStreamRequest,
   PositionsStreamResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import type {
   TradesStreamRequest,
   TradesStreamResponse
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

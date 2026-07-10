@@ -14,7 +14,7 @@ import {
   GetLastTradesRequest,
   TradeSourceType,
   type GetLastTradesResponse
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

@@ -2,12 +2,12 @@ import assert from 'node:assert';
 import {
   describe,
   test } from 'node:test';
-import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
+import { InstrumentType } from '../../../generated/common';
 import {
   AssetType,
   type AssetFull,
   type AssetResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createAssetReport, formatAssetReport } from './reporter';
 
 function asset(overrides: Partial<AssetFull> = {}): AssetFull {

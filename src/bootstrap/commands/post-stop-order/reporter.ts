@@ -6,7 +6,7 @@
  */
 
 import type { PostStopOrderReport } from '../../../application/reports';
-import type { PostStopOrderResponse } from '../../../generated/t_tech/invest/grpc/stoporders';
+import type { PostStopOrderResponse } from '../../../generated/stoporders';
 import { renderJson, renderTextTable } from 'icore';
 
 export const postStopOrderFormats = ['json', 'table'] as const;

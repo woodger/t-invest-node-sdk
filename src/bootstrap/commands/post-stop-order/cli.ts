@@ -10,7 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
+import { PriceType } from '../../../generated/common';
 import {
   ExchangeOrderType,
   StopOrderDirection,
@@ -19,7 +19,7 @@ import {
   TakeProfitType,
   type PostStopOrderRequest,
   type PostStopOrderResponse
-} from '../../../generated/t_tech/invest/grpc/stoporders';
+} from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

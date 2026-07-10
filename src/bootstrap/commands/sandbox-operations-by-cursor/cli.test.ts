@@ -2,14 +2,14 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentType, type MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
+import { InstrumentType, type MoneyValue } from '../../../generated/common';
 import {
   OperationState,
   OperationType,
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse,
   type OperationItem
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOperationsByCursorCommand,

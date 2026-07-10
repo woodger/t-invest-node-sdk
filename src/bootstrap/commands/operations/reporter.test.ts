@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
+import type { MoneyValue } from '../../../generated/common';
 import {
   OperationState,
   OperationType,
   type Operation,
   type OperationTrade
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import { createOperationsReport, formatOperationsReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {

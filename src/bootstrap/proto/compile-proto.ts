@@ -2,7 +2,7 @@
  * Модуль proto compiler запускает генерацию TypeScript contracts из локальных proto-файлов.
  *
  * Здесь допустимы:
- * - поиск upstream proto-файлов в contracts directory;
+ * - поиск vendored proto-файлов в contracts directory;
  * - вызов системного `protoc` с текущими ts-proto options;
  * - проверка обязательных tool/runtime prerequisites перед генерацией;
  *
@@ -14,7 +14,6 @@ import { execFileSync } from 'node:child_process';
 import { pfs } from 'pwd-fs';
 
 const contractsDir = path.join(pfs.pwd, 'contracts');
-const upstreamContractsDir = path.join(contractsDir, 't_tech', 'invest', 'grpc');
 const generatedDir = path.join(pfs.pwd, 'src', 'generated');
 const compilerCommand = 'protoc';
 const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', 'protoc-gen-ts_proto');
@@ -22,10 +21,10 @@ const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', 'protoc-gen-ts_pro
 export function compileProtoContracts(): void {
   assertProtoCompilerReady();
 
-  const protoFiles = collectProtoFiles(upstreamContractsDir);
+  const protoFiles = collectProtoFiles(contractsDir);
 
   if (!protoFiles.length) {
-    throw new Error(`No proto files found in ${upstreamContractsDir}`);
+    throw new Error(`No proto files found in ${contractsDir}`);
   }
 
   runProtoCompiler(protoFiles);
@@ -48,10 +47,6 @@ function collectProtoFiles(dir: string): string[] {
 function assertProtoCompilerReady(): void {
   if (!pfs.test(contractsDir, { sync: true })) {
     throw new Error(`Missing contracts directory at ${contractsDir}`);
-  }
-
-  if (!pfs.test(upstreamContractsDir, { sync: true })) {
-    throw new Error(`Missing upstream contracts directory at ${upstreamContractsDir}`);
   }
 
   if (!pfs.test(pluginPath, { sync: true })) {

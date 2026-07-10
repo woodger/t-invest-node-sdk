@@ -6,7 +6,7 @@
  */
 
 import type { SandboxPayInReport } from '../../../application/reports';
-import type { SandboxPayInResponse } from '../../../generated/t_tech/invest/grpc/sandbox';
+import type { SandboxPayInResponse } from '../../../generated/sandbox';
 import {
   formatReportMoneyText,
   toReportMoney

@@ -5,12 +5,12 @@
  * InstrumentsService. Command-specific flags остаются в конкретных командах.
  */
 
-import { InstrumentStatus } from '../../generated/t_tech/invest/grpc/common';
+import { InstrumentStatus } from '../../generated/common';
 import {
   InstrumentIdType,
   type InstrumentRequest,
   type InstrumentsRequest
-} from '../../generated/t_tech/invest/grpc/instruments';
+} from '../../generated/instruments';
 import { parseOptions, type RawOptionValue } from 'icore';
 import type { CommandRawOptions } from './command-options';
 

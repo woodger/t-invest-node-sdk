@@ -3,13 +3,13 @@ import {
   describe,
   test } from 'node:test';
 import type { MoneyValue,
-  Quotation } from '../../../generated/t_tech/invest/grpc/common';
+  Quotation } from '../../../generated/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
   type PostOrderResponse
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import { createOrderMutationReport, formatOrderMutationReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {

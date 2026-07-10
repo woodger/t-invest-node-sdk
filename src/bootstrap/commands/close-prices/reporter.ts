@@ -6,7 +6,7 @@
  */
 
 import type { ClosePricesReport, ClosePricesReportPrice } from '../../../application/reports';
-import type { InstrumentClosePriceResponse } from '../../../generated/t_tech/invest/grpc/marketdata';
+import type { InstrumentClosePriceResponse } from '../../../generated/marketdata';
 import {
   formatReportDate,
   formatReportQuotation

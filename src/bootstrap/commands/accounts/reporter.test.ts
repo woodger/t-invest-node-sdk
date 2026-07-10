@@ -5,7 +5,7 @@ import {
   AccountStatus,
   AccountType,
   type Account
-} from '../../../generated/t_tech/invest/grpc/users';
+} from '../../../generated/users';
 import { createAccountsReport, formatAccountsReport } from './reporter';
 
 function account(overrides: Partial<Account> = {}): Account {

@@ -1,14 +1,19 @@
 {
   "source": {
-    "name": "T-Bank Invest API proto contracts",
-    "repository": "https://github.com/Tinkoff/invest-python",
-    "commit": "b07a28adb2ab6a0e3543d629b4b6cec58ddd6aeb",
-    "release": "1.49.2",
-    "path": "protos/t_tech/invest/grpc"
+    "name": "T-Invest API proto contracts",
+    "repository": "https://opensource.tbank.ru/invest/invest-contracts",
+    "commit": "ef3337c71b7d6dffe61dfdef814fc4e603004f8b",
+    "release": "1.49",
+    "path": "src/docs/contracts"
   },
   "local": {
-    "rawContractsPath": "contracts/t_tech/invest/grpc",
-    "generatedPath": "src/generated/t_tech/invest/grpc",
+    "rawContractsPath": "contracts",
+    "supportingContracts": [
+      "contracts/google/api/field_behavior.proto",
+      "contracts/google/protobuf/timestamp.proto",
+      "contracts/google/protobuf/descriptor.proto"
+    ],
+    "generatedPath": "src/generated",
     "generationCommand": "yarn cli dev compile-proto"
   }
 }

@@ -7,8 +7,8 @@ import {
   SecurityTradingStatus,
   type MoneyValue,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
-import { type Currency } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/common';
+import { type Currency } from '../../../generated/instruments';
 import { createCurrenciesReport, formatCurrenciesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

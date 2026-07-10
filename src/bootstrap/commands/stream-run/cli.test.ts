@@ -9,13 +9,13 @@ import {
   TradeSourceType,
   type MarketDataRequest,
   type MarketDataResponse
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import type {
   PortfolioStreamRequest,
   PortfolioStreamResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import type { TradesStreamResponse
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import { createStreamRunCommand } from './cli';
 
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {

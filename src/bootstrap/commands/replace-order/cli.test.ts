@@ -1,4 +1,4 @@
-import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
+import { PriceType } from '../../../generated/common';
 import assert from 'node:assert';
 import {
   describe,
@@ -11,7 +11,7 @@ import {
   OrderType,
   type PostOrderResponse,
   type ReplaceOrderRequest
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createReplaceOrderCommand,

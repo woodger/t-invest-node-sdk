@@ -10,7 +10,7 @@
  * Здесь не должно быть конкретных order/sandbox request mappings.
  */
 
-import type { Quotation } from '../../generated/t_tech/invest/grpc/common';
+import type { Quotation } from '../../generated/common';
 import { defaultConfig } from '../../config';
 
 export const sideEffectConfirmationOptionsSchema = {

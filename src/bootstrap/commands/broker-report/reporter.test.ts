@@ -3,11 +3,11 @@ import { describe, test } from 'node:test';
 import type {
   MoneyValue,
   Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
+} from '../../../generated/common';
 import type {
   BrokerReport,
   BrokerReportResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import { createBrokerReportReport, formatBrokerReportReport } from './reporter';
 
 function money(currency: string, units: number, nano: number): MoneyValue {

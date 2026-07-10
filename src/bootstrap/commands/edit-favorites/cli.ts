@@ -14,7 +14,7 @@ import {
   EditFavoritesActionType,
   type EditFavoritesRequest,
   type EditFavoritesResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

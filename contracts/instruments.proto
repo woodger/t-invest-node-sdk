@@ -10,8 +10,8 @@ option objc_class_prefix = "TIAPI";
 option php_namespace = "Tinkoff\\Invest\\V1";
 
 import "google/protobuf/timestamp.proto";
-import "t_tech/invest/grpc/common.proto";
-import "t_tech/invest/grpc/google/api/field_behavior.proto";
+import "common.proto";
+import "google/api/field_behavior.proto";
 
 service InstrumentsService {/*Методы сервиса предназначены для получения:<br/>1. Информации об инструментах.<br/>2.
                             Расписания торговых сессий.<br/>3. Календаря выплат купонов по облигациям.<br/>4.

@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
+import type { MoneyValue } from '../../../generated/common';
 import type {
   PositionsFutures,
   PositionsOptions,
   PositionsResponse,
   PositionsSecurities
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import { createPositionsReport, formatPositionsReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {

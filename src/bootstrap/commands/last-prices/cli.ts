@@ -13,8 +13,8 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   GetLastPricesRequest,
   GetLastPricesResponse
-} from '../../../generated/t_tech/invest/grpc/marketdata';
-import { LastPriceType } from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
+import { LastPriceType } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

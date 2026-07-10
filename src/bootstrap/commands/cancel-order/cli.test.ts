@@ -5,7 +5,7 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { CancelOrderRequest
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCancelOrderCommand,

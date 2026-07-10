@@ -15,28 +15,28 @@ import {
 } from 'nice-grpc';
 import { InstrumentsServiceDefinition,
   InstrumentsServiceClient
-} from '../generated/t_tech/invest/grpc/instruments';
+} from '../generated/instruments';
 import {
   MarketDataServiceDefinition,
   MarketDataServiceClient,
   MarketDataStreamServiceDefinition,
   MarketDataStreamServiceClient
-} from '../generated/t_tech/invest/grpc/marketdata';
+} from '../generated/marketdata';
 import {
   OperationsServiceDefinition,
   OperationsServiceClient,
   OperationsStreamServiceDefinition,
   OperationsStreamServiceClient
-} from '../generated/t_tech/invest/grpc/operations';
+} from '../generated/operations';
 import {
   OrdersServiceDefinition,
   OrdersServiceClient,
   OrdersStreamServiceDefinition,
   OrdersStreamServiceClient
-} from '../generated/t_tech/invest/grpc/orders';
-import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/t_tech/invest/grpc/sandbox';
-import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/t_tech/invest/grpc/stoporders';
-import { UsersServiceDefinition, UsersServiceClient } from '../generated/t_tech/invest/grpc/users';
+} from '../generated/orders';
+import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/sandbox';
+import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/stoporders';
+import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
 import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
 import type {
   InstrumentsService,

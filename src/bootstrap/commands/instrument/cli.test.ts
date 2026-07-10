@@ -7,7 +7,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import { InstrumentIdType,
   type InstrumentRequest,
   type InstrumentResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createInstrumentCommand,

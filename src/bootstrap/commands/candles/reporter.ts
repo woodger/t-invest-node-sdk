@@ -6,7 +6,7 @@
  */
 
 import type { CandlesReport, CandlesReportCandle } from '../../../application/reports';
-import type { HistoricCandle } from '../../../generated/t_tech/invest/grpc/marketdata';
+import type { HistoricCandle } from '../../../generated/marketdata';
 import {
   formatReportDate,
   formatReportQuotation

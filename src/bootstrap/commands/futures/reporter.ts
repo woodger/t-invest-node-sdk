@@ -6,7 +6,7 @@
  */
 
 import type { FuturesReport } from '../../../application/reports';
-import type { Future } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Future } from '../../../generated/instruments';
 import { renderJson } from 'icore';
 import {
   createFutureReportInstrument,

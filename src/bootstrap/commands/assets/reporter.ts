@@ -6,7 +6,7 @@
  */
 
 import type { AssetsReport } from '../../../application/reports';
-import type { Asset } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Asset } from '../../../generated/instruments';
 import { renderJson } from 'icore';
 import {
   assetFormats,

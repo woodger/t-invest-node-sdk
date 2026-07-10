@@ -6,7 +6,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import type { GetCountriesRequest,
   GetCountriesResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCountriesCommand,

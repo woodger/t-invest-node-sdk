@@ -2,12 +2,11 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.9
 //   protoc               v3.21.12
-// source: t_tech/invest/grpc/instruments.proto
+// source: instruments.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import type { CallContext, CallOptions } from "nice-grpc-common";
-import { Timestamp } from "../../../google/protobuf/timestamp";
 import {
   BrandData,
   InstrumentStatus,
@@ -27,6 +26,7 @@ import {
   securityTradingStatusFromJSON,
   securityTradingStatusToJSON,
 } from "./common";
+import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "tinkoff.public.invest.api.contract.v1";
 

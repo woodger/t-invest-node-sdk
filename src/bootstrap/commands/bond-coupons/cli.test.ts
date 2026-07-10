@@ -9,7 +9,7 @@ import {
   type Coupon,
   type GetBondCouponsRequest,
   type GetBondCouponsResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBondCouponsCommand,

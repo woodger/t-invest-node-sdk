@@ -9,12 +9,12 @@ import type {
   ShareReport,
   ShareReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/t_tech/invest/grpc/common';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Share,
   ShareResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
-import { shareTypeToJSON } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
+import { shareTypeToJSON } from '../../../generated/instruments';
 import {
   formatReportDate,
   formatReportDecimal,

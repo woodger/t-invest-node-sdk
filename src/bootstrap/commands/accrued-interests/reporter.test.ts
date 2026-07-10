@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { AccruedInterest } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { AccruedInterest } from '../../../generated/instruments';
 import { createAccruedInterestsReport, formatAccruedInterestsReport } from './reporter';
 
 function accruedInterest(overrides: Partial<AccruedInterest> = {}): AccruedInterest {

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { HistoricCandle } from '../../../generated/t_tech/invest/grpc/marketdata';
+import type { HistoricCandle } from '../../../generated/marketdata';
 import { createCandlesReport, formatCandlesReport } from './reporter';
 
 function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {

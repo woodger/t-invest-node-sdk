@@ -1,10 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
+import type { Quotation } from '../../../generated/common';
 import type {
   DividendsForeignIssuerReport as GeneratedDividendsForeignIssuerReport,
   GetDividendsForeignIssuerResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import {
   createDividendsForeignIssuerReport,
   formatDividendsForeignIssuerReport

@@ -2,12 +2,12 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue, Quotation } from '../../../generated/t_tech/invest/grpc/common';
+import type { MoneyValue, Quotation } from '../../../generated/common';
 import {
   PortfolioRequest_CurrencyRequest as PortfolioCurrency,
   type PortfolioRequest,
   type PortfolioResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPortfolioCommand,

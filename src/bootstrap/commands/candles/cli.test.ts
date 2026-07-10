@@ -6,7 +6,7 @@ import {
   CandleInterval,
   type GetCandlesRequest,
   type HistoricCandle
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCandlesCommand,
