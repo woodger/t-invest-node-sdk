@@ -16,7 +16,7 @@ import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
-import type { GetAccountsResponse } from '../../../generated/t_tech/invest/grpc/users';
+import type { GetAccountsResponse } from '../../../generated/users';
 import { accountsFormats, formatAccounts, type AccountsFormat } from './reporter';
 
 type AccountsSdk = {

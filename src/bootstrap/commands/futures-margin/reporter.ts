@@ -6,7 +6,7 @@
  */
 
 import type { FuturesMarginReport } from '../../../application/reports';
-import type { GetFuturesMarginResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { GetFuturesMarginResponse } from '../../../generated/instruments';
 import {
   formatReportDecimal,
   formatReportMoneyText,

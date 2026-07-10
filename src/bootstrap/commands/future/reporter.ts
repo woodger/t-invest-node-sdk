@@ -9,11 +9,11 @@ import type {
   FutureReport,
   FutureReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/t_tech/invest/grpc/common';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Future,
   FutureResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 
 import {
   formatReportDate,

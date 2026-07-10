@@ -16,7 +16,7 @@ import type {
   PositionsOptions,
   PositionsResponse,
   PositionsSecurities
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import {
   toReportMoney
 } from '../../../infrastructure/report-values';

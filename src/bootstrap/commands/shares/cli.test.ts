@@ -1,11 +1,11 @@
-import { InstrumentStatus } from '../../../generated/t_tech/invest/grpc/common';
+import { InstrumentStatus } from '../../../generated/common';
 import assert from 'node:assert';
 import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { type InstrumentsRequest, type SharesResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+import { type InstrumentsRequest, type SharesResponse } from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSharesCommand,

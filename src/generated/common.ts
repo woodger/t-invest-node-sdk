@@ -2,11 +2,11 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.9
 //   protoc               v3.21.12
-// source: t_tech/invest/grpc/common.proto
+// source: common.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "../../../google/protobuf/timestamp";
+import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "tinkoff.public.invest.api.contract.v1";
 

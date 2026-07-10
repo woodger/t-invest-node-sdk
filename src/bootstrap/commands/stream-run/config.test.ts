@@ -5,7 +5,7 @@ import {
   SubscriptionAction,
   SubscriptionInterval,
   TradeSourceType
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import {
   createAccountStreamRequest,
   createMarketDataStreamRequests,

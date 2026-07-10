@@ -9,12 +9,12 @@ import type {
   BondReport,
   BondReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/t_tech/invest/grpc/common';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Bond,
   BondResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
-import { riskLevelToJSON } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
+import { riskLevelToJSON } from '../../../generated/instruments';
 import {
   formatReportDate,
   formatReportDecimal,

@@ -117,8 +117,8 @@ export {
   MoneyValue,
   Quotation,
   Ping
-} from '../generated/t_tech/invest/grpc/common';
-export type { DeepPartial, MessageFns } from '../generated/t_tech/invest/grpc/common';
+} from '../generated/common';
+export type { DeepPartial, MessageFns } from '../generated/common';
 
 export {
   CouponType,
@@ -253,8 +253,8 @@ export {
   NewsRequest,
   NewsResponse,
   InstrumentsServiceDefinition
-} from '../generated/t_tech/invest/grpc/instruments';
-export type { InstrumentsServiceImplementation } from '../generated/t_tech/invest/grpc/instruments';
+} from '../generated/instruments';
+export type { InstrumentsServiceImplementation } from '../generated/instruments';
 
 export {
   SubscriptionAction,
@@ -325,11 +325,11 @@ export {
   GetMarketValuesResponse,
   MarketDataServiceDefinition,
   MarketDataStreamServiceDefinition
-} from '../generated/t_tech/invest/grpc/marketdata';
+} from '../generated/marketdata';
 export type {
   MarketDataServiceImplementation,
   MarketDataStreamServiceImplementation
-} from '../generated/t_tech/invest/grpc/marketdata';
+} from '../generated/marketdata';
 
 export {
   OperationState,
@@ -395,11 +395,11 @@ export {
   OperationsStreamResponse,
   OperationsServiceDefinition,
   OperationsStreamServiceDefinition
-} from '../generated/t_tech/invest/grpc/operations';
+} from '../generated/operations';
 export type {
   OperationsServiceImplementation,
   OperationsStreamServiceImplementation
-} from '../generated/t_tech/invest/grpc/operations';
+} from '../generated/operations';
 
 export {
   OrderDirection,
@@ -434,11 +434,11 @@ export {
   OrderStateStreamResponse,
   OrdersServiceDefinition,
   OrdersStreamServiceDefinition
-} from '../generated/t_tech/invest/grpc/orders';
+} from '../generated/orders';
 export type {
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation
-} from '../generated/t_tech/invest/grpc/orders';
+} from '../generated/orders';
 
 export {
   OpenSandboxAccountRequest,
@@ -448,8 +448,8 @@ export {
   SandboxPayInRequest,
   SandboxPayInResponse,
   SandboxServiceDefinition
-} from '../generated/t_tech/invest/grpc/sandbox';
-export type { SandboxServiceImplementation } from '../generated/t_tech/invest/grpc/sandbox';
+} from '../generated/sandbox';
+export type { SandboxServiceImplementation } from '../generated/sandbox';
 
 export {
   StopOrderDirection,
@@ -469,8 +469,8 @@ export {
   CancelStopOrderResponse,
   StopOrder,
   StopOrdersServiceDefinition
-} from '../generated/t_tech/invest/grpc/stoporders';
-export type { StopOrdersServiceImplementation } from '../generated/t_tech/invest/grpc/stoporders';
+} from '../generated/stoporders';
+export type { StopOrdersServiceImplementation } from '../generated/stoporders';
 
 export {
   AccountType,
@@ -502,5 +502,5 @@ export {
   GetInfoRequest,
   GetInfoResponse,
   UsersServiceDefinition
-} from '../generated/t_tech/invest/grpc/users';
-export type { UsersServiceImplementation } from '../generated/t_tech/invest/grpc/users';
+} from '../generated/users';
+export type { UsersServiceImplementation } from '../generated/users';

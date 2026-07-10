@@ -4,7 +4,7 @@ import {
   test } from 'node:test';
 import { CouponType,
   type Coupon
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createBondCouponsReport, formatBondCouponsReport } from './reporter';
 
 function coupon(overrides: Partial<Coupon> = {}): Coupon {

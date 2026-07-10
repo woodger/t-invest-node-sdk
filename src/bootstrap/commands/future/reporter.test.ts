@@ -6,8 +6,8 @@ import {
   RealExchange,
   SecurityTradingStatus,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
-import { type Future, type FutureResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/common';
+import { type Future, type FutureResponse } from '../../../generated/instruments';
 import { createFutureReport, formatFutureReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

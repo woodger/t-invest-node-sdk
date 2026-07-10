@@ -2,8 +2,8 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue } from '../../../generated/t_tech/invest/grpc/common';
-import type { PositionsRequest, PositionsResponse } from '../../../generated/t_tech/invest/grpc/operations';
+import type { MoneyValue } from '../../../generated/common';
+import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createPositionsCommand,

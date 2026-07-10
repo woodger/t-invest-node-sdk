@@ -6,8 +6,8 @@ import {
   RealExchange,
   InstrumentType,
   SecurityTradingStatus
-} from '../../../generated/t_tech/invest/grpc/common';
-import { type Instrument, type InstrumentResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/common';
+import { type Instrument, type InstrumentResponse } from '../../../generated/instruments';
 import { createInstrumentReport, formatInstrumentReport } from './reporter';
 
 function instrument(overrides: Partial<Instrument> = {}): Instrument {

@@ -13,7 +13,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   CancelStopOrderRequest,
   CancelStopOrderResponse
-} from '../../../generated/t_tech/invest/grpc/stoporders';
+} from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

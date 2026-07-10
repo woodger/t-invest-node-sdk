@@ -7,8 +7,8 @@ import {
   SecurityTradingStatus,
   type MoneyValue,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
-import { RiskLevel, type Bond } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/common';
+import { RiskLevel, type Bond } from '../../../generated/instruments';
 import { createBondsReport, formatBondsReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

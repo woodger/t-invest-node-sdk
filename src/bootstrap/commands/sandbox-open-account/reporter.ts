@@ -6,7 +6,7 @@
  */
 
 import type { OpenSandboxAccountReport } from '../../../application/reports';
-import type { OpenSandboxAccountResponse } from '../../../generated/t_tech/invest/grpc/sandbox';
+import type { OpenSandboxAccountResponse } from '../../../generated/sandbox';
 import { renderJson, renderTextTable } from 'icore';
 
 export const openSandboxAccountFormats = ['json', 'table'] as const;

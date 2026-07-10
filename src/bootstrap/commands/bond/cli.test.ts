@@ -8,7 +8,7 @@ import {
   InstrumentIdType,
   type BondResponse,
   type InstrumentRequest
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBondCommand,

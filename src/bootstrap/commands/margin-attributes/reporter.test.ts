@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue, Quotation } from '../../../generated/t_tech/invest/grpc/common';
-import type { GetMarginAttributesResponse } from '../../../generated/t_tech/invest/grpc/users';
+import type { MoneyValue, Quotation } from '../../../generated/common';
+import type { GetMarginAttributesResponse } from '../../../generated/users';
 import { createMarginAttributesReport, formatMarginAttributesReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {

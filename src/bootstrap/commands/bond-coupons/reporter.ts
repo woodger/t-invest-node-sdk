@@ -6,7 +6,7 @@
  */
 
 import type { BondCouponsReport, BondCouponsReportCoupon } from '../../../application/reports';
-import { couponTypeToJSON, type Coupon } from '../../../generated/t_tech/invest/grpc/instruments';
+import { couponTypeToJSON, type Coupon } from '../../../generated/instruments';
 import {
   formatReportDate,
   formatReportMoneyText,

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { GetFuturesMarginResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { GetFuturesMarginResponse } from '../../../generated/instruments';
 import { createFuturesMarginReport, formatFuturesMarginReport } from './reporter';
 
 function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFuturesMarginResponse {

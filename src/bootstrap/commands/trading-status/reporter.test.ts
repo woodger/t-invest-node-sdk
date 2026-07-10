@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { SecurityTradingStatus } from '../../../generated/t_tech/invest/grpc/common';
-import type { GetTradingStatusResponse } from '../../../generated/t_tech/invest/grpc/marketdata';
+import { SecurityTradingStatus } from '../../../generated/common';
+import type { GetTradingStatusResponse } from '../../../generated/marketdata';
 import { createTradingStatusReport, formatTradingStatusReport } from './reporter';
 
 function response(

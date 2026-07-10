@@ -10,11 +10,11 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
+import { PriceType } from '../../../generated/common';
 import type {
   GetOrderStateRequest,
   OrderState
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

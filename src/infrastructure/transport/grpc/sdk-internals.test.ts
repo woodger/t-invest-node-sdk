@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { Throttle } from '../../../application/services/unary-throttle.service';
-import { UsersServiceDefinition } from '../../../generated/t_tech/invest/grpc/users';
+import { UsersServiceDefinition } from '../../../generated/users';
 import {
   createSdkChannel,
   createSdkClient,

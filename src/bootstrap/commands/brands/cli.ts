@@ -10,7 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { MoneyValue, Quotation } from '../generated/t_tech/invest/grpc/common';
+import type { MoneyValue, Quotation } from '../generated/common';
 import {
   formatReportDate,
   formatReportDecimal,

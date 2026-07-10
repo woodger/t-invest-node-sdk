@@ -10,7 +10,7 @@ import {
   OrderType,
   type PostOrderRequest,
   type PostOrderResponse
-} from '../../../generated/t_tech/invest/grpc/orders';
+} from '../../../generated/orders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPostOrderCommand,

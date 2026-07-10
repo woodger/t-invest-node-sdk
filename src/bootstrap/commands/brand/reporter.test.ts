@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { Brand } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Brand } from '../../../generated/instruments';
 import { createSingleBrandReport, formatBrandReport } from './reporter';
 
 function brand(overrides: Partial<Brand> = {}): Brand {

@@ -2,11 +2,11 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { MoneyValue, Quotation } from '../../../generated/t_tech/invest/grpc/common';
+import type { MoneyValue, Quotation } from '../../../generated/common';
 import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
-} from '../../../generated/t_tech/invest/grpc/users';
+} from '../../../generated/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createMarginAttributesCommand,

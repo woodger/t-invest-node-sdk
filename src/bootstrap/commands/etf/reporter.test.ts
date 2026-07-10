@@ -6,8 +6,8 @@ import {
   RealExchange,
   SecurityTradingStatus,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
-import { type Etf, type EtfResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/common';
+import { type Etf, type EtfResponse } from '../../../generated/instruments';
 import { createEtfReport, formatEtfReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

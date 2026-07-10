@@ -156,8 +156,8 @@ Bootstrap
 
 ### `generated`
 
-Содержит код, полученный из upstream proto contracts
-`contracts/t_tech/invest/grpc/**/*.proto`.
+Содержит код, полученный из vendored upstream proto contracts
+`contracts/*.proto`.
 
 Здесь допустимы:
 

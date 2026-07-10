@@ -6,7 +6,7 @@
  */
 
 import type { MarginAttributesReport } from '../../../application/reports';
-import type { GetMarginAttributesResponse } from '../../../generated/t_tech/invest/grpc/users';
+import type { GetMarginAttributesResponse } from '../../../generated/users';
 import {
   formatReportDecimal,
   formatReportMoneyText,

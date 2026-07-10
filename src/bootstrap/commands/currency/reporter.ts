@@ -9,11 +9,11 @@ import type {
   CurrencyReport,
   CurrencyReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/t_tech/invest/grpc/common';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type {
   Currency,
   CurrencyResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 
 import {
   formatReportDate,
