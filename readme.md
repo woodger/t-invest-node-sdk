@@ -117,101 +117,39 @@ interface TinkoffInvestNodeSDKConfig {
 
 ## CLI
 
-В проекте есть bootstrap CLI layer на базе `icore` terminal app и command
-registry. Локально после сборки utility- и API-команды можно запускать через
-`yarn cli`:
+CLI запускается из собранного `dist`, поэтому после изменений в исходниках его
+нужно пересобрать. Актуальные домены, команды и опции доступны через встроенный
+`--help`:
 
 ```sh
+yarn build
 yarn cli --help
-yarn cli version
 yarn cli <domain> --help
 yarn cli <domain> <command> --help
-yarn cli <domain> <command> [options]
-
-yarn cli account list --format=json
-yarn cli account info
-yarn cli market candles --instrument-id=BBG00QPYJ5H0 --from=2026-06-19T00:00:00Z --to=2026-06-19T01:00:00Z --interval=1min --format=csv
-yarn cli market last-prices --instrument-id=BBG00QPYJ5H0
-yarn cli order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000001 --confirm
-yarn cli stop-order list --account-id=2000000000
-yarn cli operation portfolio --account-id=2000000000 --format=json
-yarn cli sandbox account list
-yarn cli sandbox order place --account-id=2000000000 --instrument-id=BBG00QPYJ5H0 --quantity=1 --direction=sell --order-type=market --order-id=00000000-0000-0000-0000-000000000002 --confirm
-yarn cli instrument share list --help
-yarn cli instrument bond show --id=BBG00QPYJ5H0 --id-type=figi
-yarn cli dev compile-proto
 ```
 
-Актуальный список доменов выводит `yarn cli --help`. Список команд домена
-можно посмотреть через `yarn cli <domain> --help`. Подробности отдельной
-команды выводятся через `yarn cli <domain> <command> --help`.
-
-After package installation the same CLI entrypoint is exposed as the package
-binary:
+Несколько типовых вызовов:
 
 ```sh
-tinkoff-invest-node-sdk --help
-tinkoff-invest-node-sdk account list --format=json
+yarn cli account list --format=json
+yarn cli market last-prices --instrument-id=BBG00QPYJ5H0
+yarn cli operation portfolio --account-id=2000000000 --format=json
 ```
 
-CLI examples use preferred friendly paths. Technical and legacy paths continue
-to work as compatibility aliases, but they are not promoted in help output.
-Examples of compatibility aliases:
+После установки SDK как зависимости CLI доступен через
+`yarn tinkoff-invest-node-sdk`. API-команды принимают параметры подключения через
+`--token` / `TINKOFF_TOKEN` и `--endpoint` / `TINKOFF_ENDPOINT`.
 
-- `users get-accounts` -> `account list`;
-- `marketdata get-candles` -> `market candles`;
-- `orders post-order` -> `order place`;
-- `stoporders get-stop-orders` -> `stop-order list`;
-- `operations get-portfolio` -> `operation portfolio`;
-- `instruments shares` -> `instrument share list`;
-- `compile-proto` -> `dev compile-proto`.
+Команды с побочными эффектами по умолчанию требуют `--confirm`. Логические опции
+передаются как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и
+`--raw=false`.
 
-Boolean CLI options use flag syntax: `--confirm`, `--raw`. For supported
-negative overrides use `--no-raw`; assigned values like `--raw=true` or
-`--raw=false` are not part of the public CLI contract.
-
-API-команды используют `--token` / `TINKOFF_TOKEN` и
-`--endpoint` / `TINKOFF_ENDPOINT`. Runtime SDK API остается основным публичным
-интерфейсом пакета.
-
-### Migration note: CLI JSON money values
-
-CLI JSON reports возвращают денежные значения структурно, без склейки суммы и
-валюты в одну строку.
-
-Раньше:
-
-```json
-{
-  "totalAmountPortfolio": "1000 rub"
-}
-```
-
-Теперь:
-
-```json
-{
-  "totalAmountPortfolio": {
-    "amount": "1000",
-    "currency": "rub"
-  }
-}
-```
-
-Если provider не вернул денежное значение, поле будет `null`. Table/text вывод
-не изменился и по-прежнему показывает деньги в виде `amount currency`.
-
-Отложенные группы CLI-команд (`To introduce`) описаны в
-[docs/clean-architecture/api-commands.md](docs/clean-architecture/api-commands.md):
-`stream run --config=PATH` уже доступен для server-side streams и статических
-initial requests `marketdata.marketDataStream`. Динамические bidirectional
-request sources остаются отложенным контрактом. Команды с side effects уже
-доступны и по умолчанию требуют явный флаг `--confirm` через
-`defaultConfig.requireSideEffectConfirmation`.
-
-Контракт stream CLI описан в
-[docs/cli-stream-reference.md](docs/cli-stream-reference.md) и
-[docs/cli-stream-configuration.md](docs/cli-stream-configuration.md).
+Полный список команд и совместимых псевдонимов описан в
+[API Commands](docs/clean-architecture/api-commands.md). Для потоковых команд
+есть отдельные [справочник CLI](docs/cli-stream-reference.md) и
+[справочник по конфигурации](docs/cli-stream-configuration.md). Изменения
+форматов вывода и инструкции по миграции фиксируются в
+[CHANGELOG](CHANGELOG.md).
 
 ## Доступные сервисы
 
