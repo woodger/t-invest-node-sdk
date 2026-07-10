@@ -414,7 +414,7 @@ export interface InstrumentsService {
     request: DeepPartial<InstrumentRequest>,
     options?: TinkoffInvestCallOptions
   ): Promise<OptionResponse>;
-  /** @deprecated Tinkoff generated contract marks this method as deprecated. */
+  /** @deprecated Generated-контракт Tinkoff помечает этот метод устаревшим. */
   options(
     request: DeepPartial<InstrumentsRequest>,
     options?: TinkoffInvestCallOptions

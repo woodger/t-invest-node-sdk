@@ -14,9 +14,7 @@ export interface CountriesReportCountry {
   alfaTwo: string;
   /** Трехбуквенный код страны. */
   alfaThree: string;
-  /** Полное название страны. */
   name: string;
-  /** Краткое название страны. */
   nameBrief: string;
 }
 

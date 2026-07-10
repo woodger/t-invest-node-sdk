@@ -78,7 +78,6 @@ type ServiceClient = InstrumentsServiceClient
 
 export class TinkoffInvestNodeSDK {
   private options: TinkoffInvestOptions;
-  // Кэширует лениво созданные клиенты сервисов на время жизни SDK-инстанса.
   private storage: Map<ServiceDefinition, ServiceClient> = new Map();
   private channel: Channel;
   private metadata: Metadata;
@@ -144,7 +143,6 @@ export class TinkoffInvestNodeSDK {
     this.channel.close();
   }
 
-  // Каждый сервис создается один раз и затем переиспользуется.
   private useServiceAsClient<T extends ServiceClient>(service: ServiceDefinition) {
     let client = this.storage.get(service);
 

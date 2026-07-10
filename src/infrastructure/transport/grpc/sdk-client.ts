@@ -17,7 +17,6 @@ import type { Throttle } from '../../../application/services/unary-throttle.serv
 import { createClientFactory } from 'nice-grpc';
 import { createSdkMiddleware } from './sdk-middleware';
 
-// Собирает gRPC-клиент сервиса с общими middleware и metadata SDK.
 export function createSdkClient<T>(
   service: unknown,
   channel: Channel,

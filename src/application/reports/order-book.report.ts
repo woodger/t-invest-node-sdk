@@ -10,7 +10,6 @@
 
 /** Один уровень стакана в отчете команды `marketdata get-order-book`. */
 export interface OrderBookReportLevel {
-  /** Сторона стакана. */
   side: 'bid' | 'ask';
   /** Цена уровня в денежном строковом формате отчета. */
   price: string;
@@ -20,11 +19,8 @@ export interface OrderBookReportLevel {
 
 /** Отчет команды `marketdata get-order-book` на application/output boundary. */
 export interface OrderBookReport {
-  /** FIGI инструмента. */
   figi: string;
-  /** UID инструмента. */
   instrumentUid: string;
-  /** Глубина стакана. */
   depth: number;
   /** Последняя цена в денежном строковом формате отчета. */
   lastPrice: string;
@@ -40,6 +36,5 @@ export interface OrderBookReport {
   closePriceTime: string;
   /** Время стакана в ISO-формате или пустая строка. */
   orderBookTime: string;
-  /** Уровни bid/ask стакана. */
   levels: OrderBookReportLevel[];
 }

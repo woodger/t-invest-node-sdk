@@ -20,11 +20,9 @@ export interface DividendsReportItem {
   declaredDate: string;
   /** Последняя дата покупки в ISO-формате или пустая строка. */
   lastBuyDate: string;
-  /** Тип дивиденда. */
   dividendType: string;
   /** Дата фиксации реестра в ISO-формате или пустая строка. */
   recordDate: string;
-  /** Регулярность выплаты. */
   regularity: string;
   /** Цена закрытия или `null`, если provider не вернул значение. */
   closePrice: ReportMoney | null;

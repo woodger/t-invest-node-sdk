@@ -10,9 +10,7 @@
 
 /** Один счет в отчете команды `users get-accounts`. */
 export interface AccountsReportAccount {
-  /** Идентификатор счета. */
   id: string;
-  /** Пользовательское или системное название счета. */
   name: string;
   /** Тип счета в формате generated enum JSON name. */
   type: string;

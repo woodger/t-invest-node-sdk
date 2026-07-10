@@ -11,41 +11,28 @@
 import type { ReportMoney } from './money.report';
 
 export interface BrokerReportTaskReport {
-  /** Тип отчета для ответа запуска формирования. */
   type: 'generate';
-  /** Идентификатор задачи формирования брокерского отчета. */
   taskId: string;
 }
 
 export interface BrokerReportPageInfo {
-  /** Номер текущей страницы отчета. */
   page: number;
-  /** Общее количество страниц отчета. */
   pagesCount: number;
-  /** Количество записей в отчете. */
   itemsCount: number;
 }
 
 export interface BrokerReportItemReport {
-  /** Идентификатор сделки. */
   tradeId: string;
-  /** Идентификатор заявки. */
   orderId: string;
-  /** FIGI инструмента. */
   figi: string;
   /** Признак исполнения сделки. */
   executeSign: string;
   /** Дата и время сделки в ISO-формате или пустая строка. */
   tradeDatetime: string;
-  /** Торговая площадка. */
   exchange: string;
-  /** Class code инструмента. */
   classCode: string;
-  /** Направление сделки. */
   direction: string;
-  /** Название инструмента. */
   name: string;
-  /** Тикер инструмента. */
   ticker: string;
   /** Цена сделки или `null`, если provider не вернул значение. */
   price: ReportMoney | null;
@@ -73,22 +60,15 @@ export interface BrokerReportItemReport {
   secValueDate: string;
   /** Статус брокера по сделке. */
   brokerStatus: string;
-  /** Тип отдельного соглашения. */
   separateAgreementType: string;
-  /** Номер отдельного соглашения. */
   separateAgreementNumber: string;
-  /** Дата отдельного соглашения. */
   separateAgreementDate: string;
-  /** Тип расчета по сделке. */
   deliveryType: string;
 }
 
 export interface BrokerReportPageReport {
-  /** Тип отчета для страницы брокерского отчета. */
   type: 'page';
-  /** Метаданные страницы. */
   page: BrokerReportPageInfo;
-  /** Записи страницы брокерского отчета. */
   items: BrokerReportItemReport[];
 }
 

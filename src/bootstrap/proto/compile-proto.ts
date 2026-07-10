@@ -71,7 +71,6 @@ function assertProtoCompilerReady(): void {
 
 function runProtoCompiler(protoFiles: readonly string[]): void {
   try {
-    // Вызов compiler повторяет параметры legacy shell-скрипта без изменения поведения.
     execFileSync(compilerCommand, [
       `--plugin=protoc-gen-ts_proto=${pluginPath}`,
       `--proto_path=${contractsDir}`,

@@ -104,8 +104,9 @@ export type ResolvedCommand = {
 type RegisteredCommand = Omit<ResolvedCommand, 'name' | 'path'>;
 
 /**
- * TODO: restore a literal command-name union after alias expansion preserves
- * tuple literal paths through `icore` registry construction.
+ * TODO: вернуть literal union имен команд.
+ * Сейчас expansion aliases теряет tuple literal paths; вернуться после их
+ * сохранения при построении registry `icore`.
  */
 export type CommandName = string;
 
@@ -287,8 +288,8 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   return {
     ...definition,
     handler(args) {
-      // Resolved commands are still executed from raw CLI args, so `icore`
-      // remains the single owner of path, extra positional, and option parsing.
+      // Даже после resolution команда получает raw CLI args: разбор пути,
+      // лишних positionals и опций целиком остается ответственностью `icore`.
       return command.run(definition, args, undefined);
     }
   };

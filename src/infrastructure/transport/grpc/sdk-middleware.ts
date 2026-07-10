@@ -15,7 +15,6 @@ import type {
 } from 'nice-grpc';
 import type { Throttle } from '../../../application/services/unary-throttle.service';
 
-// Middleware применяет локальный throttling только к unary-вызовам.
 export function createSdkMiddleware(trackLimits: boolean, throttle: Throttle) {
   return async function*<Request, Response>(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
