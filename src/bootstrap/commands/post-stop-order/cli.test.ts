@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { PriceType } from '../../../generated/t_tech/invest/grpc/common';
+import { PriceType } from '../../../generated/common';
 import {
   ExchangeOrderType,
   StopOrderDirection,
@@ -10,7 +10,7 @@ import {
   StopOrderType,
   TakeProfitType,
   type PostStopOrderRequest
-} from '../../../generated/t_tech/invest/grpc/stoporders';
+} from '../../../generated/stoporders';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createPostStopOrderCommand,

@@ -5,14 +5,14 @@ import {
   SecurityTradingStatus,
   type MoneyValue,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
+} from '../../../generated/common';
 import {
   OptionDirection,
   OptionPaymentType,
   OptionSettlementType,
   OptionStyle,
   type Option
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createOptionsByReport, formatOptionsByReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

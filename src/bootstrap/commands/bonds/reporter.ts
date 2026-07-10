@@ -6,7 +6,7 @@
  */
 
 import type { BondsReport } from '../../../application/reports';
-import type { Bond } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Bond } from '../../../generated/instruments';
 import { renderJson } from 'icore';
 import {
   bondFormats,

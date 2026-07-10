@@ -5,7 +5,7 @@ import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-inve
 import type {
   BrokerReportRequest,
   BrokerReportResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBrokerReportCommand,

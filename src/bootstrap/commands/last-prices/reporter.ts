@@ -6,7 +6,7 @@
  */
 
 import type { LastPricesReport, LastPricesReportPrice } from '../../../application/reports';
-import type { LastPrice } from '../../../generated/t_tech/invest/grpc/marketdata';
+import type { LastPrice } from '../../../generated/marketdata';
 import {
   formatReportDate,
   formatReportQuotation

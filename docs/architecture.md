@@ -21,8 +21,8 @@ src/infrastructure
 src/application
   -> чистые DTO и application services
 
-src/generated/t_tech/invest/grpc
-  -> generated proto contracts in upstream layout
+src/generated
+  -> generated proto contracts in flat source layout
 ```
 
 `src/domain` сейчас не выделен: в SDK нет самостоятельной доменной модели,
@@ -128,13 +128,32 @@ compatibility wrappers не создаются.
 
 ## Generated Code
 
-Raw proto-файлы хранятся без flattening в upstream layout
-`contracts/t_tech/invest/grpc/**`. `src/generated/t_tech/invest/grpc/**`
-зеркально воспроизводится из этого layout и не редактируется вручную.
-Upstream source commit/release фиксируется в `contracts/upstream.json`.
+Официальный upstream T-Invest API — активный репозиторий
+`https://opensource.tbank.ru/invest/invest-contracts`. Его tag, commit и
+исходный каталог фиксируются в `contracts/upstream.json`.
+
+T-Invest proto-файлы копируются без изменения плоской структуры и import-путей
+в `contracts/*.proto`. Supporting Google contracts перечислены отдельно в
+`local.supportingContracts` и не считаются частью T-Invest upstream snapshot.
+
+`src/generated/*.ts` зеркально воспроизводится из плоского layout контрактов и
+не редактируется вручную.
 `src/generated/**` и `src/bootstrap/generated-exports.ts` являются исключениями
 из обычной слоевой структуры, потому что package entrypoint реэкспортирует
 generated DTO/enums public API и server-side
 `*ServiceDefinition` / `*ServiceImplementation` contracts. Generated
 `*ServiceClient` contracts остаются внутренними transport contracts и не
 являются root public exports.
+
+### Обновление proto snapshot
+
+При обновлении контрактов нужно:
+
+1. получить `*.proto` из `source.path` на точном `source.commit` или
+   `source.release`;
+2. заменить T-Invest файлы в `local.rawContractsPath`;
+3. обновить source commit/release в `contracts/upstream.json`;
+4. выполнить `local.generationCommand`, затем `yarn build`, `yarn lint` и
+   `yarn test`.
+
+Proto generation использует только vendored snapshot и не выполняет network IO.

@@ -8,7 +8,7 @@ import {
   AccountType,
   type Account,
   type GetAccountsRequest
-} from '../../../generated/t_tech/invest/grpc/users';
+} from '../../../generated/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxAccountsCommand,

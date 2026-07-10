@@ -10,9 +10,9 @@ import type {
   FavoritesReportInstrument
 } from '../../../application/reports';
 import {
-  instrumentTypeToJSON } from '../../../generated/t_tech/invest/grpc/common';
+  instrumentTypeToJSON } from '../../../generated/common';
 import type { FavoriteInstrument
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
 export const favoritesFormats = ['json', 'table'] as const;

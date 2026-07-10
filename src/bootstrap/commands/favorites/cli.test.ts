@@ -4,10 +4,10 @@ import {
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
+import { InstrumentType } from '../../../generated/common';
 import type { GetFavoritesRequest,
   GetFavoritesResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createFavoritesCommand,

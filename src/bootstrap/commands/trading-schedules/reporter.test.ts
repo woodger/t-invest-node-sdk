@@ -4,7 +4,7 @@ import {
   test } from 'node:test';
 import type { TradingDay,
   TradingSchedule
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createTradingSchedulesReport, formatTradingSchedulesReport } from './reporter';
 
 function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {

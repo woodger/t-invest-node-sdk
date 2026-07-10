@@ -16,7 +16,7 @@ import {
   operationTypeFromJSON,
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse
-} from '../../../generated/t_tech/invest/grpc/operations';
+} from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

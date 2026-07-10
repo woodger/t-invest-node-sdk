@@ -2,13 +2,13 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
-import type { Quotation } from '../../../generated/t_tech/invest/grpc/common';
+import type { Quotation } from '../../../generated/common';
 import {
   TradeDirection,
   type GetLastTradesRequest,
   type GetLastTradesResponse,
   type Trade
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createLastTradesCommand,

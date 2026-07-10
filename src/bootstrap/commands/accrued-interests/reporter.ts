@@ -9,7 +9,7 @@ import type {
   AccruedInterestsReport,
   AccruedInterestsReportItem
 } from '../../../application/reports';
-import type { AccruedInterest } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { AccruedInterest } from '../../../generated/instruments';
 import {
   formatReportDate,
   formatReportQuotation

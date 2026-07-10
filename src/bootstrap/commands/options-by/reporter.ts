@@ -6,7 +6,7 @@
  */
 
 import type { OptionsByReport } from '../../../application/reports';
-import type { Option } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Option } from '../../../generated/instruments';
 import { renderJson } from 'icore';
 import {
   createOptionReportInstrument,

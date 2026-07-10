@@ -5,7 +5,7 @@
  * `getFavorites`, поэтому команда переиспользует favorites report.
  */
 
-import type { EditFavoritesResponse } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { EditFavoritesResponse } from '../../../generated/instruments';
 import {
   createFavoritesReport,
   favoritesFormats,

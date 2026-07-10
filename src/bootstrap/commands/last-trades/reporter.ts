@@ -9,7 +9,7 @@ import type { LastTradesReport, LastTradesReportTrade } from '../../../applicati
 import {
   tradeDirectionToJSON,
   type Trade
-} from '../../../generated/t_tech/invest/grpc/marketdata';
+} from '../../../generated/marketdata';
 import {
   formatReportDate,
   formatReportQuotation

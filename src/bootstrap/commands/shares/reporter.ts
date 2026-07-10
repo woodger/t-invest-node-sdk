@@ -6,7 +6,7 @@
  */
 
 import type { SharesReport } from '../../../application/reports';
-import type { Share } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Share } from '../../../generated/instruments';
 import { renderJson } from 'icore';
 import {
   createShareReportInstrument,

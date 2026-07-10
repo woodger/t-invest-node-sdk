@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.9
 //   protoc               v3.21.12
-// source: t_tech/invest/grpc/sandbox.proto
+// source: sandbox.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";

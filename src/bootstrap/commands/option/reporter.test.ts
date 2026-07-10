@@ -5,7 +5,7 @@ import {
   SecurityTradingStatus,
   type MoneyValue,
   type Quotation
-} from '../../../generated/t_tech/invest/grpc/common';
+} from '../../../generated/common';
 import {
   OptionDirection,
   OptionPaymentType,
@@ -13,7 +13,7 @@ import {
   OptionStyle,
   type Option,
   type OptionResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createOptionReport, formatOptionReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

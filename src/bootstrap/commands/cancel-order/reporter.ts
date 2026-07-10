@@ -6,7 +6,7 @@
  */
 
 import type { CancelOrderReport } from '../../../application/reports';
-import type { CancelOrderResponse } from '../../../generated/t_tech/invest/grpc/orders';
+import type { CancelOrderResponse } from '../../../generated/orders';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 

@@ -7,7 +7,7 @@ import {
   AccountStatus,
   AccountType,
   type Account
-} from '../../../generated/t_tech/invest/grpc/users';
+} from '../../../generated/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createAccountsCommand,

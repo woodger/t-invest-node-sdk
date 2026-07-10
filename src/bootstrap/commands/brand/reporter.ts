@@ -6,7 +6,7 @@
  */
 
 import type { BrandReport } from '../../../application/reports';
-import type { Brand } from '../../../generated/t_tech/invest/grpc/instruments';
+import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 import {
   brandsFormats,

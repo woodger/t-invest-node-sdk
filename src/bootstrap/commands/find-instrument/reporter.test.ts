@@ -2,9 +2,9 @@ import assert from 'node:assert';
 import {
   describe,
   test } from 'node:test';
-import { InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
+import { InstrumentType } from '../../../generated/common';
 import type { InstrumentShort
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createFindInstrumentReport, formatFindInstrumentReport } from './reporter';
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {

@@ -6,7 +6,7 @@
 
 В текущем проекте есть несколько разных типов contracts, и их нельзя смешивать:
 
-- proto-generated DTO из `src/generated/t_tech/invest/grpc/**`;
+- proto-generated DTO из `src/generated/*.ts`;
 - application DTO из `src/application/dto/**`;
 - application report contracts из `src/application/reports/**`;
 - CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options
@@ -14,8 +14,9 @@
 
 ## Generated DTO
 
-Raw upstream proto-файлы хранятся в `contracts/t_tech/invest/grpc/**`.
-`src/generated/t_tech/invest/grpc/**` зеркально воспроизводится из этого layout.
+Vendored T-Invest proto-файлы хранятся в плоской структуре
+`contracts/*.proto`. `src/generated/*.ts` зеркально воспроизводится из этого
+layout. Официальный upstream snapshot фиксируется в `contracts/upstream.json`.
 
 Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя
 использовать как место для project-specific правил.

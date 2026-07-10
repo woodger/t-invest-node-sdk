@@ -11,10 +11,10 @@
 
 import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
 import {
-  InstrumentType } from '../../../generated/t_tech/invest/grpc/common';
+  InstrumentType } from '../../../generated/common';
 import type { FindInstrumentRequest,
   FindInstrumentResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';

@@ -6,7 +6,7 @@
  */
 
 import type { TradingStatusesReport } from '../../../application/reports';
-import type { GetTradingStatusesResponse } from '../../../generated/t_tech/invest/grpc/marketdata';
+import type { GetTradingStatusesResponse } from '../../../generated/marketdata';
 import { renderJson, renderTextTable } from 'icore';
 import {
   createTradingStatusReport,

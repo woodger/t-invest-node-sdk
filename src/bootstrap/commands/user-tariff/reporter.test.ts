@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { GetUserTariffResponse } from '../../../generated/t_tech/invest/grpc/users';
+import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffReport, formatUserTariffReport } from './reporter';
 
 function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariffResponse {

@@ -5,7 +5,7 @@
  * команда переиспользует общий order mutation report.
  */
 
-import type { PostOrderResponse } from '../../../generated/t_tech/invest/grpc/orders';
+import type { PostOrderResponse } from '../../../generated/orders';
 import {
   createOrderMutationReport,
   formatOrderMutationReport,

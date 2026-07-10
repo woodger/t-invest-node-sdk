@@ -3,13 +3,13 @@ import {
   describe,
   test } from 'node:test';
 import type { MoneyValue,
-  Quotation } from '../../../generated/t_tech/invest/grpc/common';
-import { RealExchange, SecurityTradingStatus } from '../../../generated/t_tech/invest/grpc/common';
+  Quotation } from '../../../generated/common';
+import { RealExchange, SecurityTradingStatus } from '../../../generated/common';
 import {
   ShareType,
   type Share,
   type ShareResponse
-} from '../../../generated/t_tech/invest/grpc/instruments';
+} from '../../../generated/instruments';
 import { createShareReport, formatShareReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
