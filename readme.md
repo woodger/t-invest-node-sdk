@@ -51,6 +51,27 @@ CLI использует собранные файлы из `dist`, поэтом
 yarn build
 ```
 
+## Для разработчиков
+
+Перед push release tag проверьте, что версия в `package.json` соответствует
+ожидаемому tag:
+
+```sh
+VERSION="$(node -p "require('./package.json').version")"
+BRANCH="$(git branch --show-current)"
+
+yarn build
+yarn lint
+yarn test
+git status --short
+
+git push origin "$BRANCH"
+git tag -a "$VERSION" -m "$VERSION"
+git push origin "$VERSION"
+```
+
+Annotated tag требует настроенные `git user.name` и `git user.email`.
+
 ## Быстрый старт
 
 ```ts

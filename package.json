@@ -29,8 +29,9 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "tsc",
     "test": "fwa --prune",
-    "lint": "eslint src eslint.config.mjs",
+    "lint": "eslint src",
     "cli": "node dist/bootstrap/index.js"
   },
   "dependencies": {
