@@ -12,7 +12,6 @@
 export interface UserTariffUnaryLimitReport {
   /** Лимит запросов в минуту. */
   limitPerMinute: number;
-  /** Методы, на которые распространяется лимит. */
   methods: string[];
 }
 
@@ -20,7 +19,6 @@ export interface UserTariffUnaryLimitReport {
 export interface UserTariffStreamLimitReport {
   /** Лимит одновременных stream-соединений. */
   limit: number;
-  /** Stream-методы, на которые распространяется лимит. */
   streams: string[];
   /** Количество открытых stream-соединений. */
   open: number;
@@ -28,8 +26,6 @@ export interface UserTariffStreamLimitReport {
 
 /** Отчет команды `users get-user-tariff` на application/output boundary. */
 export interface UserTariffReport {
-  /** Лимиты unary-запросов. */
   unaryLimits: UserTariffUnaryLimitReport[];
-  /** Лимиты stream-соединений. */
   streamLimits: UserTariffStreamLimitReport[];
 }

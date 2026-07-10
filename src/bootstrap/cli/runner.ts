@@ -65,14 +65,14 @@ function validateBootstrapOptions(options: Record<string, RawOptionValue>): void
     }
   }
 
-  // Command-specific options are intentionally left to the `icore` terminal app.
-  // This check validates only global boolean flags handled by this runner.
+  // Опции конкретной команды намеренно остаются у terminal app `icore`:
+  // эта проверка охватывает только глобальные логические флаги runner-а.
   parseOptions(bootstrapOptionsSchema, bootstrapOptions);
 }
 
 function normalizeCliAliases(argv: readonly string[]): string[] {
-  // `icore` parses long options only; normalize public short aliases before
-  // command resolution so every later layer sees one option shape.
+  // `icore` разбирает только длинные опции, поэтому публичные короткие aliases
+  // заранее приводятся к единой форме для всех последующих слоев.
   return argv.map((arg) => {
     if (arg === '-h') {
       return '--h';
@@ -102,8 +102,8 @@ export async function runCli(
     return 1;
   }
 
-  // Global flags are handled before command execution, so `--help` and
-  // `--version` never need SDK credentials or command-specific required flags.
+  // Глобальные флаги обрабатываются до запуска команды, чтобы `--help` и
+  // `--version` не требовали SDK credentials и обязательных опций команды.
   if (isHelpRequested(parsedArgv.options)) {
     await io.write(renderHelp(parsedArgv.positionals));
 
@@ -122,8 +122,8 @@ export async function runCli(
     return 0;
   }
 
-  // Keep raw normalized args for the terminal app; command lookup here only
-  // preserves the SDK-specific unknown-command message and warning policy.
+  // Terminal app получает нормализованные raw args; lookup здесь сохраняет
+  // только SDK-specific сообщение неизвестной команды и warning policy.
   const action = parsedArgv.positionals;
   let command;
 

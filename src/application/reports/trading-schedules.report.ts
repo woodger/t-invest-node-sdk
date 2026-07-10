@@ -10,11 +10,9 @@
 
 /** Один день торговой площадки в отчете команды `instruments trading-schedules`. */
 export interface TradingSchedulesReportDay {
-  /** Код торговой площадки. */
   exchange: string;
   /** Дата торгового дня в ISO-формате или пустая строка. */
   date: string;
-  /** Признак торгового дня. */
   isTradingDay: boolean;
   /** Время начала основной торговой сессии в ISO-формате или пустая строка. */
   startTime: string;

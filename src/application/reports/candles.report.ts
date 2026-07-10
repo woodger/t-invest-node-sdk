@@ -20,9 +20,7 @@ export interface CandlesReportCandle {
   low: string;
   /** Цена закрытия в строковом формате quotation. */
   close: string;
-  /** Объем торгов. */
   volume: number;
-  /** Признак завершенной свечи. */
   isComplete: boolean;
 }
 
