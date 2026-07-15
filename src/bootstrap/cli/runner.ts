@@ -17,10 +17,9 @@ import {
 } from 'icore';
 import {
   commandLineCommands,
-  resolveCommand,
   resolveCommandWarnings
 } from './registry';
-import { renderCommandError } from './error';
+import { terminalErrorPolicy } from './error';
 import { isHelpRequested, renderCliHelp, renderHelp } from './help';
 import { isVersionRequested, renderVersionInfo } from './version';
 
@@ -91,67 +90,75 @@ export async function runCli(
   io: Output = createOutput()
 ): Promise<number> {
   const normalizedArgv = normalizeCliAliases(argv);
+  const app = createTerminalApp({
+    commands: commandLineCommands,
+    output: io,
+    errorPolicy: terminalErrorPolicy
+  });
   let parsedArgv: ReturnType<typeof parseCliInput>;
 
   try {
     parsedArgv = parseNormalizedCliInput(normalizedArgv);
   }
   catch (error) {
-    await io.error(renderCommandError(error));
-
-    return 1;
+    return app.reportError(error, {
+      phase: 'external',
+      args: normalizedArgv
+    });
   }
+
+  const writeBootstrapOutput = async (text: string): Promise<number> => {
+    try {
+      await app.output.write(text);
+
+      return 0;
+    }
+    catch (error) {
+      return app.reportError(error, {
+        phase: 'external',
+        args: normalizedArgv
+      });
+    }
+  };
 
   // Глобальные флаги обрабатываются до запуска команды, чтобы `--help` и
   // `--version` не требовали SDK credentials и обязательных опций команды.
   if (isHelpRequested(parsedArgv.options)) {
-    await io.write(renderHelp(parsedArgv.positionals));
-
-    return 0;
+    return writeBootstrapOutput(renderHelp(parsedArgv.positionals));
   }
 
   if (isVersionRequested(parsedArgv.options)) {
-    await io.write(renderVersionInfo());
-
-    return 0;
+    return writeBootstrapOutput(renderVersionInfo());
   }
 
   if (parsedArgv.positionals.length === 0) {
-    await io.write(renderCliHelp());
-
-    return 0;
+    return writeBootstrapOutput(renderCliHelp());
   }
 
-  // Terminal app получает нормализованные raw args; lookup здесь сохраняет
-  // только SDK-specific сообщение неизвестной команды и warning policy.
-  const action = parsedArgv.positionals;
-  let command;
+  let prepared: Awaited<ReturnType<typeof app.prepare>>;
 
   try {
-    command = resolveCommand(action);
-  }
-  catch {
-    await io.error(`Unknown command: ${action.join(' ')}\n\n`);
-    await io.error(renderCliHelp());
-
-    return 1;
-  }
-
-  try {
-    for (const warning of resolveCommandWarnings(command.name, normalizedArgv)) {
-      await io.error(warning);
-    }
-
-    const app = createTerminalApp({
-      commands: commandLineCommands,
-      output: io
-    });
-
-    return app.run(normalizedArgv, undefined);
+    prepared = await app.prepare(normalizedArgv);
   }
   catch (error) {
-    await io.error(renderCommandError(error));
+    return app.reportError(error, {
+      phase: 'prepare',
+      args: normalizedArgv
+    });
   }
 
-  return 1;
+  try {
+    for (const warning of resolveCommandWarnings(prepared.name, normalizedArgv)) {
+      await app.output.error(warning);
+    }
+  }
+  catch (error) {
+    return app.reportError(error, {
+      phase: 'write',
+      args: normalizedArgv,
+      prepared
+    });
+  }
+
+  return app.runPrepared(prepared, undefined);
 }
