@@ -16,5 +16,10 @@ export type {
   UsersService
 } from './application/dto/tinkoff-invest-services';
 export { defaultConfig } from './config';
-export type { TinkoffInvestNodeSDKConfig, UnaryLimits } from './config.types';
+export { defineUnaryLimits } from './infrastructure/transport/grpc/unary-limits';
+export type {
+  TinkoffInvestNodeSDKConfig,
+  UnaryLimits
+} from './config.types';
+export type { UnaryLimitsDefinition } from './infrastructure/transport/grpc/unary-limits';
 export * from './bootstrap/generated-exports';

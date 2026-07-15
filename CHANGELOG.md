@@ -15,6 +15,12 @@ micro-release separately.
 ### Added
 
 - Added package `bin` metadata for the `tinkoff-invest-node-sdk` CLI binary.
+- Added per-instance unary limit overrides through
+  `TinkoffInvestOptions.unaryLimits`, merged with package defaults when an SDK
+  instance is created.
+- Added `defineUnaryLimits()` and `UnaryLimitsDefinition` for readable nested
+  service and method limit declarations without changing the flat runtime
+  `UnaryLimits` contract.
 
 ### Changed
 
@@ -39,6 +45,15 @@ micro-release separately.
   upstream and restored a flat layout for vendored and generated contracts.
   Root package exports remain unchanged; direct generated-module imports now
   use the flat `generated/<contract>` paths.
+- Made proto generation resolve vendored and generated contract paths from
+  `contracts/upstream.json` instead of duplicating them in bootstrap code.
+
+### Fixed
+
+- Updated default unary throttling with current service and method-specific
+  T-Invest limits, including low-limit instrument lists and operation reports.
+- Replaced the stale archived limits reference and outdated stream grade table
+  with the active T-Bank limits policy.
 
 ## [0.2.3] - 2026-07-03
 

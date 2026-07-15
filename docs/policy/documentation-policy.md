@@ -17,7 +17,7 @@
 - application report contracts: `src/application/reports/**`;
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
-- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/config.ts` и `src/config.types.ts`;
+- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/infrastructure/transport/grpc/unary-limits.ts`, `src/config.ts` и `src/config.types.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;

@@ -4,39 +4,79 @@
  * Здесь допустимы:
  * - значения CLI safety policy;
  * - значения throttling policy по generated service names;
+ * - разрешение per-instance overrides поверх package defaults;
  * - экспорт config types как часть public config surface;
  *
  * Здесь не должно быть environment parsing или transport initialization.
  */
 
-import type { TinkoffInvestNodeSDKConfig } from './config.types';
+import type {
+  TinkoffInvestNodeSDKConfig,
+  UnaryLimits
+} from './config.types';
+import { defineUnaryLimits } from './infrastructure/transport/grpc/unary-limits';
 
 export * from './config.types';
 
 export const defaultConfig: TinkoffInvestNodeSDKConfig = {
-  // Ключи соответствуют generated gRPC service names или method paths.
-  unaryLimits: {
+  unaryLimits: defineUnaryLimits({
     /** Справочные данные инструментов. */
-    InstrumentsService: 200,
+    InstrumentsService: {
+      default: 200,
+      methods: {
+        Bonds: 15,
+        Shares: 15,
+        Options: 15,
+        Futures: 15,
+        Etfs: 15,
+        GetAssets: 15
+      }
+    },
 
     /** Рыночные данные: цены, свечи и стакан. */
-    MarketDataService: 300,
+    MarketDataService: {
+      default: 600
+    },
 
     /** Операции, портфель, позиции, отчеты и лимиты. */
-    OperationsService: 200,
+    OperationsService: {
+      default: 200,
+      methods: {
+        GetBrokerReport: 5,
+        GetDividendsForeignIssuer: 5
+      }
+    },
 
     /** Торговые поручения и их состояние. */
-    OrdersService: 100,
+    OrdersService: {
+      default: 100,
+      methods: {
+        GetOrders: 200,
+        PostOrder: 900,
+        PostOrderAsync: 600,
+        CancelOrder: 300,
+        ReplaceOrder: 300
+      }
+    },
 
     /** Тестовый торговый контур. */
-    SandboxService: 200,
+    SandboxService: {
+      default: 200
+    },
 
     /** Стоп-ордера. */
-    StopOrdersService: 50,
+    StopOrdersService: {
+      default: 50,
+      methods: {
+        GetStopOrders: 60
+      }
+    },
 
     /** Счета, тарифы и пользовательская информация. */
-    UsersService: 100
-  },
+    UsersService: {
+      default: 100
+    }
+  }),
 
   /**
    * Требует явный `--confirm` для CLI-команд с side effects.
@@ -44,3 +84,10 @@ export const defaultConfig: TinkoffInvestNodeSDKConfig = {
    */
   requireSideEffectConfirmation: true
 };
+
+export function resolveUnaryLimits(overrides?: UnaryLimits): UnaryLimits {
+  return {
+    ...defaultConfig.unaryLimits,
+    ...overrides
+  };
+}
