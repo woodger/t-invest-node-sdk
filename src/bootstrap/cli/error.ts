@@ -12,6 +12,7 @@
 
 import { isIcoreError, type TerminalErrorPolicy } from 'icore';
 import { renderCliHelp } from './help';
+import { CliUsageError } from './usage-error';
 
 export function renderCommandError(error: unknown): string {
   if (isIcoreError(error, 'UNKNOWN_COMMAND')) {
@@ -29,9 +30,12 @@ export function renderCommandError(error: unknown): string {
   return `${String(error)}\n`;
 }
 
-export function resolveCommandExitCode(): number {
-  // Существующий CLI contract использует exit code 1 для всех ошибок.
-  return 1;
+export function resolveCommandExitCode(error: unknown): number {
+  if (isIcoreError(error)) {
+    return error.category === 'usage' ? 2 : 1;
+  }
+
+  return error instanceof CliUsageError ? 2 : 1;
 }
 
 export const terminalErrorPolicy: TerminalErrorPolicy<unknown> = {

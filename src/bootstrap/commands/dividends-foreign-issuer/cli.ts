@@ -16,6 +16,7 @@ import type {
 } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
+import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
@@ -101,7 +102,7 @@ export function createDividendsForeignIssuerRequest(
     || options.to !== undefined;
 
   if (taskId !== undefined && hasGenerateArgs) {
-    throw new Error("Expected either '--task-id' or '--account-id' with '--from' and '--to'");
+    throw new CliUsageError("Expected either '--task-id' or '--account-id' with '--from' and '--to'");
   }
 
   if (taskId !== undefined) {
@@ -115,14 +116,14 @@ export function createDividendsForeignIssuerRequest(
   }
 
   if (options.page !== undefined) {
-    throw new Error("Expected '--page' only with '--task-id'");
+    throw new CliUsageError("Expected '--page' only with '--task-id'");
   }
 
   const from = parseRequiredDateTimeOption(options.from, 'from');
   const to = parseRequiredDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
   }
 
   return {

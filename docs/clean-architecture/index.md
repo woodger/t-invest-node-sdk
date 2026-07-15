@@ -58,6 +58,7 @@ src/bootstrap
     help.ts
     registry.ts
     runner.ts
+    usage-error.ts
     version.ts
   commands/
   proto/

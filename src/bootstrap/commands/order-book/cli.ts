@@ -16,6 +16,7 @@ import type {
 } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
+import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
@@ -130,7 +131,7 @@ function normalizeOrderBookDepthError(error: unknown): Error {
     error instanceof Error
     && error.message.startsWith("Expected '--depth'")
   ) {
-    return new Error("Expected '--depth' as positive integer");
+    return new CliUsageError("Expected '--depth' as positive integer");
   }
 
   return error instanceof Error ? error : new Error(String(error));

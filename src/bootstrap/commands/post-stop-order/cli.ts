@@ -22,6 +22,7 @@ import {
 } from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
+import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
@@ -225,14 +226,14 @@ function createStopOrderExpireDate(
 ): Date | undefined {
   if (expirationType === StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE) {
     if (rawExpireDate === undefined) {
-      throw new Error("Expected '--expire-date' when '--expiration-type=good-till-date'");
+      throw new CliUsageError("Expected '--expire-date' when '--expiration-type=good-till-date'");
     }
 
     return parseDateTimeOption(rawExpireDate, 'expire-date');
   }
 
   if (rawExpireDate !== undefined) {
-    throw new Error("Expected '--expire-date' only with '--expiration-type=good-till-date'");
+    throw new CliUsageError("Expected '--expire-date' only with '--expiration-type=good-till-date'");
   }
 
   return undefined;

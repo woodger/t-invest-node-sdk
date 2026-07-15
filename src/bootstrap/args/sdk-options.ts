@@ -10,6 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
+import { CliUsageError } from '../cli/usage-error';
 
 type SdkCommandOptions = {
   token?: string | undefined;
@@ -40,7 +41,7 @@ function requiredCliOrEnvValue(
   const value = cliValue ?? stringFromEnv(env, envName);
 
   if (value === undefined) {
-    throw new Error(`Expected '--${optionName}' or ${envName}`);
+    throw new CliUsageError(`Expected '--${optionName}' or ${envName}`);
   }
 
   return value;

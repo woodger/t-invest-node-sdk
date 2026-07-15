@@ -17,6 +17,7 @@ import {
 } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
+import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
@@ -156,7 +157,7 @@ export function createOperationsRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
   }
 
   return {

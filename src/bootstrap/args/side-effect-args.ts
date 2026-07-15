@@ -12,6 +12,7 @@
 
 import type { Quotation } from '../../generated/common';
 import { defaultConfig } from '../../config';
+import { CliUsageError } from '../cli/usage-error';
 
 export const sideEffectConfirmationOptionsSchema = {
   confirm: {
@@ -24,13 +25,13 @@ export function assertSideEffectConfirmed(
   requireConfirmation: boolean = defaultConfig.requireSideEffectConfirmation
 ): void {
   if (requireConfirmation && confirm !== true) {
-    throw new Error("Expected '--confirm' to execute side-effect command");
+    throw new CliUsageError("Expected '--confirm' to execute side-effect command");
   }
 }
 
 export function parsePositiveQuotationOption(value: string, name: string): Quotation {
   if (!/^(?:0|[1-9]\d*)(?:\.\d{1,9})?$/.test(value)) {
-    throw new Error(decimalErrorMessage(name));
+    throw new CliUsageError(decimalErrorMessage(name));
   }
 
   const [unitsText, fractionText = ''] = value.split('.');
@@ -38,7 +39,7 @@ export function parsePositiveQuotationOption(value: string, name: string): Quota
   const nano = Number(fractionText.padEnd(9, '0'));
 
   if (!Number.isSafeInteger(units) || units === 0 && nano === 0) {
-    throw new Error(decimalErrorMessage(name));
+    throw new CliUsageError(decimalErrorMessage(name));
   }
 
   return {
