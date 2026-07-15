@@ -36,7 +36,10 @@ interface TinkoffInvestOptions {
   appName?: string;
   useSsl?: boolean;
   trackLimits?: boolean;
+  unaryLimits?: UnaryLimits;
 }
+
+type UnaryLimits = Record<string, number>;
 ```
 
 - `token` - OAuth токен.
@@ -44,15 +47,51 @@ interface TinkoffInvestOptions {
 - `appName` - необязательное значение для заголовка `x-app-name`.
 - `useSsl` - использовать TLS, по умолчанию `true`.
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
+- `unaryLimits` - per-instance overrides лимитов в запросах за минуту. Значения
+  объединяются с `defaultConfig.unaryLimits` при создании SDK.
+
+Для читаемой группировки лимитов по сервисам и методам используйте
+`defineUnaryLimits()`. `default` задает сервисный fallback, а `methods` —
+исключения для отдельных RPC:
+
+```ts
+import {
+  defineUnaryLimits,
+  TinkoffInvestNodeSDK
+} from 'tinkoff-invest-node-sdk';
+
+const sdk = new TinkoffInvestNodeSDK({
+  token,
+  endpoint,
+  unaryLimits: defineUnaryLimits({
+    UsersService: {
+      default: 50
+    },
+    OrdersService: {
+      methods: {
+        PostOrder: 300
+      }
+    }
+  })
+});
+```
+
+Helper возвращает прежний плоский `UnaryLimits`, поэтому плоская запись также
+остается доступна для совместимости. Тип вложенного аргумента экспортируется
+как `UnaryLimitsDefinition`.
 
 ## Опции `defaultConfig`
 
 ```ts
 interface TinkoffInvestNodeSDKConfig {
+  unaryLimits: UnaryLimits;
   requireSideEffectConfirmation: boolean;
 }
 ```
 
+- `unaryLimits` - плоская runtime-таблица default unary-лимитов по generated
+  service names и полным gRPC method paths. Более специфичный method path
+  имеет приоритет над сервисным fallback.
 - `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
   side effects, по умолчанию `true`.
 

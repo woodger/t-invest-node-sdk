@@ -50,7 +50,8 @@ provider-neutral правилами или моделями.
 Текущие зоны:
 
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
-  middleware и typed clients.
+  middleware и typed clients, а также mapping unary limit definitions в полные
+  gRPC paths.
 - `infrastructure/renderers` - механический рендеринг готовых данных в JSON,
   CSV-строки и plain-text таблицы. Здесь не выбираются поля команд и не
   формируются command-specific output contracts.
@@ -139,6 +140,10 @@ compatibility wrappers не создаются.
 Официальный upstream T-Invest API — активный репозиторий
 `https://opensource.tbank.ru/invest/invest-contracts`. Его tag, commit и
 исходный каталог фиксируются в `contracts/upstream.json`.
+
+Proto compiler читает `local.rawContractsPath` и `local.generatedPath` из этого
+manifest. Пути до vendored и generated контрактов не дублируются в bootstrap
+коде.
 
 T-Invest proto-файлы копируются без изменения плоской структуры и import-путей
 в `contracts/*.proto`. Supporting Google contracts перечислены отдельно в
