@@ -225,6 +225,25 @@ describe('bootstrap cli runner', () => {
       assert.match(read().stderr, /Expected '--help' as boolean flag/);
     });
 
+    test('reports bootstrap output write failures through terminal error policy', async () => {
+      let stderr = '';
+      const exitCode = await runCli(['--version'], createOutput({
+        stdout: {
+          write() {
+            throw new Error('stdout failed');
+          }
+        },
+        stderr: {
+          write(chunk: string) {
+            stderr += chunk;
+          }
+        }
+      }));
+
+      assert.equal(exitCode, 1);
+      assert.equal(stderr, 'stdout failed\n');
+    });
+
     test('keeps legacy command paths executable through the runner', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['users', 'get-accounts', '--format=xml'], io);
@@ -241,6 +260,18 @@ describe('bootstrap cli runner', () => {
       assert.equal(exitCode, 1);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Expected '--format' as one of: json, table/);
+    });
+
+    test('rejects extra command positionals during prepare', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['account', 'list', 'unexpected'], io);
+
+      assert.equal(exitCode, 1);
+      assert.equal(read().stdout, '');
+      assert.match(
+        read().stderr,
+        /Unexpected positional argument for 'account list': unexpected/
+      );
     });
 
     test('waits for async stdout writes', async () => {
@@ -358,7 +389,7 @@ describe('bootstrap cli runner', () => {
 
       assert.equal(await exitCode, 1);
       assert.equal(commandFinished, true);
-      assert.equal(stderrWrites, 2);
+      assert.equal(stderrWrites, 1);
     });
 
     test('does not resolve legacy shortcut commands', async () => {

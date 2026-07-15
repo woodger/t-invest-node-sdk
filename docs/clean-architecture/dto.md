@@ -88,6 +88,10 @@ Raw `process.argv` остается на executable-границе `src/bootstra
 process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
 ```
 
+Runner использует двухфазный flow `prepare -> runPrepared`: это позволяет
+вывести warnings после command resolution без повторного разбора argv. Ошибки
+всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`.
+
 Command-specific primitive options описываются декларативными `icore` schemas в
 `src/bootstrap/commands/**`. Общие SDK options нормализуются в
 `src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API
