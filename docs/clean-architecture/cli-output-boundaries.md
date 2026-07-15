@@ -232,6 +232,8 @@ infrastructure/output/*          -> пишет готовую строку
 ```text
 CLI executable -> src/bootstrap/index.ts -> dist/bootstrap/index.js
 CLI runner     -> bootstrap/cli/runner.ts
+CLI error policy -> bootstrap/cli/error.ts
+CLI usage errors -> bootstrap/cli/usage-error.ts
 CLI commands   -> bootstrap/commands
 format mechanics -> infrastructure/renderers
 stdout/stderr sinks -> infrastructure/output

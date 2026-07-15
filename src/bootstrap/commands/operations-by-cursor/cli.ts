@@ -19,6 +19,7 @@ import {
 } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
+import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {
@@ -161,13 +162,13 @@ function parseOperationsByCursorLimitOption(rawValue: string | undefined): numbe
   }
 
   if (!/^\d+$/.test(rawValue)) {
-    throw new Error("Expected '--limit' as integer from 1 to 1000");
+    throw new CliUsageError("Expected '--limit' as integer from 1 to 1000");
   }
 
   const limit = Number(rawValue);
 
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1000) {
-    throw new Error("Expected '--limit' as integer from 1 to 1000");
+    throw new CliUsageError("Expected '--limit' as integer from 1 to 1000");
   }
 
   return limit;
@@ -192,7 +193,7 @@ function parseOperationsByCursorOperationTypesOption(
     const operationType = operationTypeFromJSON(value);
 
     if (operationType === OperationType.UNRECOGNIZED) {
-      throw new Error("Expected '--operation-type' as generated OperationType name");
+      throw new CliUsageError("Expected '--operation-type' as generated OperationType name");
     }
 
     return operationType;
@@ -245,7 +246,7 @@ export function createOperationsByCursorRequest(
   const to = parseOptionalDateTimeOption(options.to, 'to');
 
   if (from !== undefined && to !== undefined && from.getTime() > to.getTime()) {
-    throw new Error("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
   }
 
   return {

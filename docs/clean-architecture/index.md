@@ -54,9 +54,11 @@ src/bootstrap
     cli.ts
   cli/
     contract.ts
+    error.ts
     help.ts
     registry.ts
     runner.ts
+    usage-error.ts
     version.ts
   commands/
   proto/

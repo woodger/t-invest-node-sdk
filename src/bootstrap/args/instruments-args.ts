@@ -12,6 +12,7 @@ import {
   type InstrumentsRequest
 } from '../../generated/instruments';
 import { parseOptions, type RawOptionValue } from 'icore';
+import { CliUsageError } from '../cli/usage-error';
 import type { CommandRawOptions } from './command-options';
 
 export const instrumentLookupArgNames = new Set([
@@ -108,7 +109,7 @@ export function createInstrumentLookupRequestFromOptions(
   const classCode = options['class-code'] ?? '';
 
   if (instrumentIdTypes[idType] === InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER && classCode === '') {
-    throw new Error("Expected required argument '--class-code' when '--id-type=ticker'");
+    throw new CliUsageError("Expected required argument '--class-code' when '--id-type=ticker'");
   }
 
   const id = parseOptions(
@@ -155,7 +156,7 @@ function toRawOptionValues(
     }
 
     if (typeof value !== 'string' && typeof value !== 'boolean') {
-      throw new Error(`Expected '--${name}' as scalar option`);
+      throw new CliUsageError(`Expected '--${name}' as scalar option`);
     }
 
     options[name] = value;

@@ -79,8 +79,8 @@ bootstrap-механикой.
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
   `protoc` и локальный `ts-proto` plugin;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
-- `bootstrap/cli` - CLI contract, registry, help, version, error formatting и
-  runner layer;
+- `bootstrap/cli` - CLI contract, registry, help, version, terminal error
+  policy и runner layer;
 - `bootstrap/commands` - handlers CLI-команд;
 - `bootstrap/commands/*/reporter.ts` - presentation formatting application
   report contracts;
@@ -101,6 +101,14 @@ Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
 
 API-команды остаются тонкими bootstrap handlers:
 `icore` terminal app валидирует raw CLI args и передает handler-у typed command options.
+Runner один раз выполняет `prepare`, пишет command warnings и передает prepared
+command в `runPrepared`. Общая terminal error policy сохраняет единый stderr
+для фаз `prepare`, `execute`, `render`, `write` и внешних bootstrap-операций.
+Exit code определяется типом ошибки, а не фазой: `icore` errors категории
+`usage` и project-owned `CliUsageError` завершаются с кодом `2`; runtime,
+provider, output и `icore` definition errors — с кодом `1`. `CliUsageError`
+используется для command-specific аргументов, обязательных CLI/ENV-значений и
+уже прочитанной JSON command config; ошибки чтения файла остаются runtime.
 Command `cli.ts` создает generated request DTO из typed options, создает SDK
 facade и передает provider response в reporter-модуль. Reporter-ы преобразуют generated DTO в
 `application/reports` contracts, выбирают command-specific представление и

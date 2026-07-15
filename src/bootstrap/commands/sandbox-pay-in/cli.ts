@@ -16,6 +16,7 @@ import type {
 } from '../../../generated/sandbox';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
+import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
@@ -131,7 +132,7 @@ export function createSandboxPayInRequest(
   options: SandboxPayInRequestOptions
 ): SandboxPayInRequest {
   if (options.currency === 'usd') {
-    throw new Error("Unsupported '--currency=usd' for sandbox-pay-in");
+    throw new CliUsageError("Unsupported '--currency=usd' for sandbox-pay-in");
   }
 
   const amount = parsePositiveQuotationOption(options.amount, 'amount');

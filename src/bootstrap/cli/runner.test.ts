@@ -220,16 +220,35 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['--help=false'], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Expected '--help' as boolean flag/);
+    });
+
+    test('reports bootstrap output write failures through terminal error policy', async () => {
+      let stderr = '';
+      const exitCode = await runCli(['--version'], createOutput({
+        stdout: {
+          write() {
+            throw new Error('stdout failed');
+          }
+        },
+        stderr: {
+          write(chunk: string) {
+            stderr += chunk;
+          }
+        }
+      }));
+
+      assert.equal(exitCode, 1);
+      assert.equal(stderr, 'stdout failed\n');
     });
 
     test('keeps legacy command paths executable through the runner', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['users', 'get-accounts', '--format=xml'], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Expected '--format' as one of: json, table/);
     });
@@ -238,9 +257,21 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['account', 'list', '--format=xml'], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Expected '--format' as one of: json, table/);
+    });
+
+    test('rejects extra command positionals during prepare', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['account', 'list', 'unexpected'], io);
+
+      assert.equal(exitCode, 2);
+      assert.equal(read().stdout, '');
+      assert.match(
+        read().stderr,
+        /Unexpected positional argument for 'account list': unexpected/
+      );
     });
 
     test('waits for async stdout writes', async () => {
@@ -283,7 +314,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['unknown-command'], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Unknown command: unknown-command/);
       assert.match(read().stderr, /Usage:/);
@@ -297,7 +328,7 @@ describe('bootstrap cli runner', () => {
         '--figi=FUTFIGI'
       ], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Warning: '--figi' is deprecated/);
       assert.match(read().stderr, /use '--instrument-id' instead/);
@@ -312,7 +343,7 @@ describe('bootstrap cli runner', () => {
         '--instrument-id=FUTFIGI'
       ], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.doesNotMatch(read().stderr, /deprecated/);
       assert.match(read().stderr, /Expected '--token' or TINKOFF_TOKEN/);
@@ -356,16 +387,16 @@ describe('bootstrap cli runner', () => {
 
       finishWrite();
 
-      assert.equal(await exitCode, 1);
+      assert.equal(await exitCode, 2);
       assert.equal(commandFinished, true);
-      assert.equal(stderrWrites, 2);
+      assert.equal(stderrWrites, 1);
     });
 
     test('does not resolve legacy shortcut commands', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['portfolio'], io);
 
-      assert.equal(exitCode, 1);
+      assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Unknown command: portfolio/);
       assert.match(read().stderr, /Usage:/);
