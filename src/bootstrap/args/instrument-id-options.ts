@@ -9,6 +9,8 @@
  * Здесь не должно быть generated request mapping или command-specific option parsing.
  */
 
+import { CliUsageError } from '../cli/usage-error';
+
 export const instrumentIdWithDeprecatedFigiOptionsSchema = {
   'instrument-id': {
     type: 'string'
@@ -41,7 +43,7 @@ function resolveInstrumentId(
   const figi = options.figi;
 
   if (instrumentId !== undefined && figi !== undefined) {
-    throw new Error("Use either '--instrument-id' or deprecated '--figi', not both");
+    throw new CliUsageError("Use either '--instrument-id' or deprecated '--figi', not both");
   }
 
   if (instrumentId !== undefined) {
@@ -53,7 +55,7 @@ function resolveInstrumentId(
   }
 
   if (required) {
-    throw new Error("Expected '--instrument-id'");
+    throw new CliUsageError("Expected '--instrument-id'");
   }
 
   return undefined;

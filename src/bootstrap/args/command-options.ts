@@ -23,6 +23,7 @@ import {
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
+import { CliUsageError } from '../cli/usage-error';
 
 /**
  * Raw option maps are used by exported parser helpers and focused tests.
@@ -82,7 +83,7 @@ export function parseCommaSeparatedStringListOption(
   const values = value.split(',').map((item) => item.trim());
 
   if (values.some((item) => item === '')) {
-    throw new Error(`Expected '--${name}' as comma-separated list`);
+    throw new CliUsageError(`Expected '--${name}' as comma-separated list`);
   }
 
   return values;
@@ -92,7 +93,7 @@ export function parseDateTimeOption(value: string, name: string): Date {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error(`Expected '--${name}' as date-time`);
+    throw new CliUsageError(`Expected '--${name}' as date-time`);
   }
 
   return date;
@@ -100,7 +101,7 @@ export function parseDateTimeOption(value: string, name: string): Date {
 
 export function requireStringOption(value: string | undefined, name: string): string {
   if (value === undefined) {
-    throw new Error(`Expected required argument '--${name}'`);
+    throw new CliUsageError(`Expected required argument '--${name}'`);
   }
 
   return value;
@@ -122,13 +123,13 @@ export function parseOptionalNonNegativeIntegerOption(
   }
 
   if (!/^\d+$/.test(value)) {
-    throw new Error(`Expected '--${name}' as integer greater than or equal to 0`);
+    throw new CliUsageError(`Expected '--${name}' as integer greater than or equal to 0`);
   }
 
   const parsed = Number(value);
 
   if (!Number.isSafeInteger(parsed)) {
-    throw new Error(`Expected '--${name}' as integer greater than or equal to 0`);
+    throw new CliUsageError(`Expected '--${name}' as integer greater than or equal to 0`);
   }
 
   return parsed;
@@ -145,7 +146,7 @@ function toRawOptions(values: CommandRawOptions): Record<string, RawOptionValue>
     }
 
     if (typeof value !== 'string' && typeof value !== 'boolean') {
-      throw new Error(`Expected '--${name}' as scalar option`);
+      throw new CliUsageError(`Expected '--${name}' as scalar option`);
     }
 
     // `icore.parseOptions` owns schema-level parsing; this adapter only rejects

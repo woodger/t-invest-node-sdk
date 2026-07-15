@@ -22,6 +22,7 @@ import type {
   PositionsStreamRequest
 } from '../../../generated/operations';
 import type { TradesStreamRequest } from '../../../generated/orders';
+import { CliUsageError } from '../../cli/usage-error';
 
 export const streamRunStreamNames = [
   'marketdata.marketDataStream',
@@ -127,7 +128,7 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
     value = JSON.parse(json);
   }
   catch {
-    throw new Error('Expected stream config as JSON object');
+    throw new CliUsageError('Expected stream config as JSON object');
   }
 
   const config = requireObject(value, 'stream config');
@@ -173,7 +174,7 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
 
 export function createMarketDataStreamRequests(config: StreamRunConfig): MarketDataRequest[] {
   if (config.stream !== 'marketdata.marketDataStream') {
-    throw new Error(`Expected marketdata bidirectional stream config, got '${config.stream}'`);
+    throw new CliUsageError(`Expected marketdata bidirectional stream config, got '${config.stream}'`);
   }
 
   return config.requests ?? [];
@@ -183,13 +184,13 @@ export function createMarketDataServerSideStreamRequest(
   config: StreamRunConfig
 ): MarketDataServerSideStreamRequest {
   if (config.stream !== 'marketdata.marketDataServerSideStream') {
-    throw new Error(`Expected marketdata server-side stream config, got '${config.stream}'`);
+    throw new CliUsageError(`Expected marketdata server-side stream config, got '${config.stream}'`);
   }
 
   const subscriptions = config.subscriptions;
 
   if (!subscriptions) {
-    throw new Error("Expected 'subscriptions' for marketdata server-side stream config");
+    throw new CliUsageError("Expected 'subscriptions' for marketdata server-side stream config");
   }
 
   const candles = subscriptions.candles ?? [];
@@ -259,13 +260,13 @@ export function createAccountStreamRequest(
       return createTradesStreamRequest(config);
 
     default:
-      throw new Error(`Expected account stream config, got '${config.stream}'`);
+      throw new CliUsageError(`Expected account stream config, got '${config.stream}'`);
   }
 }
 
 export function createPortfolioStreamRequest(config: StreamRunConfig): PortfolioStreamRequest {
   if (config.stream !== 'operations.portfolioStream') {
-    throw new Error(`Expected portfolio stream config, got '${config.stream}'`);
+    throw new CliUsageError(`Expected portfolio stream config, got '${config.stream}'`);
   }
 
   return {
@@ -276,7 +277,7 @@ export function createPortfolioStreamRequest(config: StreamRunConfig): Portfolio
 
 export function createPositionsStreamRequest(config: StreamRunConfig): PositionsStreamRequest {
   if (config.stream !== 'operations.positionsStream') {
-    throw new Error(`Expected positions stream config, got '${config.stream}'`);
+    throw new CliUsageError(`Expected positions stream config, got '${config.stream}'`);
   }
 
   return {
@@ -288,7 +289,7 @@ export function createPositionsStreamRequest(config: StreamRunConfig): Positions
 
 export function createTradesStreamRequest(config: StreamRunConfig): TradesStreamRequest {
   if (config.stream !== 'orders.tradesStream') {
-    throw new Error(`Expected trades stream config, got '${config.stream}'`);
+    throw new CliUsageError(`Expected trades stream config, got '${config.stream}'`);
   }
 
   return {
@@ -298,11 +299,11 @@ export function createTradesStreamRequest(config: StreamRunConfig): TradesStream
 
 function parseStreamName(value: unknown): SupportedStreamRunStreamName {
   if (typeof value !== 'string') {
-    throw new Error("Expected 'stream' as string");
+    throw new CliUsageError("Expected 'stream' as string");
   }
 
   if (!streamRunStreamNameSet.has(value)) {
-    throw new Error(`Expected 'stream' as one of: ${streamRunStreamNames.join(', ')}`);
+    throw new CliUsageError(`Expected 'stream' as one of: ${streamRunStreamNames.join(', ')}`);
   }
 
   return value as SupportedStreamRunStreamName;
@@ -344,14 +345,14 @@ function parseRuntimeFormat(value: unknown): 'jsonl' {
     return 'jsonl';
   }
 
-  throw new Error("Expected 'runtime.format' as one of: jsonl");
+  throw new CliUsageError("Expected 'runtime.format' as one of: jsonl");
 }
 
 function parseMarketDataStreamRequests(value: unknown): MarketDataRequest[] {
   const requests = parseArray(value, 'requests').map(parseMarketDataStreamRequest);
 
   if (requests.length === 0) {
-    throw new Error("Expected 'requests' to contain at least one market data stream request");
+    throw new CliUsageError("Expected 'requests' to contain at least one market data stream request");
   }
 
   return requests;
@@ -449,11 +450,11 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
 
 function parseMarketDataStreamRequestType(value: unknown): MarketDataStreamRequestType {
   if (typeof value !== 'string') {
-    throw new Error("Expected 'requests[].type' as string");
+    throw new CliUsageError("Expected 'requests[].type' as string");
   }
 
   if (!allowedMarketDataStreamRequestTypeSet.has(value)) {
-    throw new Error(`Expected 'requests[].type' as one of: ${allowedMarketDataStreamRequestTypes.join(', ')}`);
+    throw new CliUsageError(`Expected 'requests[].type' as one of: ${allowedMarketDataStreamRequestTypes.join(', ')}`);
   }
 
   return value as MarketDataStreamRequestType;
@@ -479,7 +480,7 @@ function parseMarketDataSubscriptions(value: unknown): MarketDataSubscriptions {
   const hasSubscriptions = Object.values(result).some((items) => (items?.length ?? 0) > 0);
 
   if (!hasSubscriptions) {
-    throw new Error("Expected 'subscriptions' to contain at least one market data subscription");
+    throw new CliUsageError("Expected 'subscriptions' to contain at least one market data subscription");
   }
 
   if (result.candles !== undefined) {
@@ -541,11 +542,11 @@ function parseInstrumentSubscription(
 
 function parseCandleInterval(value: unknown, path: string): SubscriptionInterval {
   if (typeof value !== 'string') {
-    throw new Error(`Expected '${path}' as string`);
+    throw new CliUsageError(`Expected '${path}' as string`);
   }
 
   if (!(value in candleIntervalAliases)) {
-    throw new Error(`Expected '${path}' as one of: 1min, 5min`);
+    throw new CliUsageError(`Expected '${path}' as one of: 1min, 5min`);
   }
 
   return candleIntervalAliases[value as keyof typeof candleIntervalAliases];
@@ -555,7 +556,7 @@ function parseAccountIds(value: unknown, stream: string): string[] {
   const accounts = parseArray(value, 'accounts').map((item) => parseInstrumentId(item, 'accounts[]'));
 
   if (accounts.length === 0) {
-    throw new Error(`Expected 'accounts' to contain at least one account id for ${stream}`);
+    throw new CliUsageError(`Expected 'accounts' to contain at least one account id for ${stream}`);
   }
 
   return accounts;
@@ -563,7 +564,7 @@ function parseAccountIds(value: unknown, stream: string): string[] {
 
 function parseInstrumentId(value: unknown, path: string): string {
   if (typeof value !== 'string' || value.trim() === '') {
-    throw new Error(`Expected '${path}' as non-empty string`);
+    throw new CliUsageError(`Expected '${path}' as non-empty string`);
   }
 
   return value;
@@ -575,7 +576,7 @@ function parseOptionalBoolean(value: unknown, path: string): boolean | undefined
   }
 
   if (typeof value !== 'boolean') {
-    throw new Error(`Expected '${path}' as boolean`);
+    throw new CliUsageError(`Expected '${path}' as boolean`);
   }
 
   return value;
@@ -591,7 +592,7 @@ function parseOptionalPositiveInteger(value: unknown, path: string): number | un
 
 function parsePositiveInteger(value: unknown, path: string): number {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value <= 0) {
-    throw new Error(`Expected '${path}' as positive integer`);
+    throw new CliUsageError(`Expected '${path}' as positive integer`);
   }
 
   return value;
@@ -607,7 +608,7 @@ function parseOptionalArray(value: unknown, path: string): unknown[] | undefined
 
 function parseArray(value: unknown, path: string): unknown[] {
   if (!Array.isArray(value)) {
-    throw new Error(`Expected '${path}' as array`);
+    throw new CliUsageError(`Expected '${path}' as array`);
   }
 
   return value;
@@ -615,7 +616,7 @@ function parseArray(value: unknown, path: string): unknown[] {
 
 function requireObject(value: unknown, path: string): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new Error(`Expected '${path}' as object`);
+    throw new CliUsageError(`Expected '${path}' as object`);
   }
 
   return value as Record<string, unknown>;
@@ -628,14 +629,14 @@ function rejectUnknownFields(
 ): void {
   for (const field of Object.keys(value)) {
     if (!allowedFields.has(field)) {
-      throw new Error(`Unexpected '${path}.${field}'`);
+      throw new CliUsageError(`Unexpected '${path}.${field}'`);
     }
   }
 }
 
 function assertAbsent(value: unknown, message: string): void {
   if (value !== undefined) {
-    throw new Error(message);
+    throw new CliUsageError(message);
   }
 }
 
@@ -649,7 +650,7 @@ function validateCandlesWaitingClose(candles: CandleSubscriptionConfig[]): void 
   const waitingClose = candles[0]?.waitingClose ?? false;
 
   if (candles.some((item) => item.waitingClose !== waitingClose)) {
-    throw new Error("Expected 'subscriptions.candles[].waitingClose' to be the same for one request");
+    throw new CliUsageError("Expected 'subscriptions.candles[].waitingClose' to be the same for one request");
   }
 }
 

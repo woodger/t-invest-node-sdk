@@ -31,7 +31,10 @@ micro-release separately.
 - Documented `yarn build` as the strict TypeScript compile gate backed by
   `tsconfig.json`.
 - Updated the `icore` runtime dependency to `2.0.0` and migrated the CLI runner
-  to the shared terminal error policy while preserving exit code `1`.
+  to the shared terminal error policy.
+- Classified invalid CLI invocation, required CLI/ENV values, and parsed
+  command configuration as usage failures with exit code `2`; runtime,
+  output, provider, and command-definition failures keep exit code `1`.
 - Updated proto provenance to the active official T-Bank `invest-contracts`
   upstream and restored a flat layout for vendored and generated contracts.
   Root package exports remain unchanged; direct generated-module imports now
