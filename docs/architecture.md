@@ -75,11 +75,8 @@ bootstrap-механикой.
 - `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
   package binary `dist/bootstrap/index.js`;
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
-- `bootstrap/unary-limit-config.ts` - компиляция декларативной package policy
-  в flat limits и quota buckets, а также public helper для читаемых
-  per-instance overrides;
-- `bootstrap/sdk-config.ts` - совместимый flat `defaultConfig` и разрешение
-  per-instance unary limit overrides;
+- `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - compiler и
+  runtime adapter с [разделенным ownership](#конфигурация-терминология-и-ownership);
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
   `protoc` и локальный `ts-proto` plugin;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
@@ -150,19 +147,80 @@ server adapters; generated service clients остаются внутри
 bootstrap/infrastructure:
 
 - `src/index.ts` - основной package entrypoint;
-- `src/bootstrap/sdk-config.ts` - публичный flat `defaultConfig` и сборка
-  runtime throttling policy;
+- `src/bootstrap/sdk-config.ts` - владелец публичного flat `defaultConfig`;
 - `src/bootstrap/generated-exports.ts` - aggregation layer для публичных generated exports.
 
 Package policy хранится отдельно и не образует дополнительный public
 entrypoint:
 
-- `src/config.ts` - единая декларация package defaults без runtime mapping;
-- `src/config.types.ts` - compile-time контракт этой декларации и типы
-  публичной runtime-конфигурации.
+- `src/config.ts` и `src/config.types.ts` - source declaration и ее type
+  contracts; точные границы зафиксированы ниже.
 
 Новый код должен импортировать реализацию из слоя-владельца. Root-level
 compatibility wrappers не создаются.
+
+## Конфигурация: терминология и ownership
+
+Для package defaults и runtime policies используются следующие термины:
+
+- `source config` - единственная authoring-форма package policy;
+- `authoring contract` - TypeScript-типы, которые проверяют source config при
+  компиляции;
+- `compiled package baseline` - нормализованные limits и quota buckets,
+  один раз собранные из source config;
+- `public runtime config` - совместимое публичное представление
+  скомпилированных defaults;
+- `per-instance overrides` - вход от consumer-а для одного SDK instance,
+  а не второй source package policy;
+- `resolved runtime snapshot` - изолированный итог для одного SDK
+  instance, который не изменяет baseline или `defaultConfig`.
+
+Декларативный package config — это неисполняемые данные (inert data):
+значения записаны непосредственно в object literal и проверяются через
+`as const satisfies`. Вызов builder-а или mapper-а над object literal,
+например `defineConfig({...})`, является executable DSL, а не package
+source config. В source config не допускаются runtime imports, function
+calls, spreads, merge/resolver logic и параллельные декларации одной
+policy.
+
+Unary throttling config проходит следующий pipeline:
+
+```text
+packageConfig
+  -- compileUnaryLimits --> internal package baseline
+       |-- copy limits --> defaultConfig
+       `-- limits + buckets -------------------------.
+current defaultConfig.unaryLimits ------------------+--> resolveUnaryThrottleConfig
+per-instance unaryLimits ---------------------------'          |
+                                                               `--> snapshot --> Throttle
+```
+
+`defaultConfig.unaryLimits` остается изменяемым public compatibility
+facade. Resolver читает его текущие values при создании SDK instance,
+накладывает per-instance overrides и возвращает отдельный snapshot.
+
+Ownership разделен так:
+
+- `src/config.ts` владеет values и связями package policy;
+- `src/config.types.ts` владеет authoring и public runtime contracts, но не
+  default values или runtime validation;
+- `src/application/dto/tinkoff-invest-options.ts` владеет публичным
+  per-instance input, но не package defaults или merge semantics;
+- `src/bootstrap/unary-limit-config.ts` владеет compilation, package baseline
+  validation и его type contract;
+  публичный `defineUnaryLimits()` остается только адаптером читаемой
+  формы per-instance overrides и не владеет package defaults;
+- `src/bootstrap/sdk-config.ts` владеет public `defaultConfig`, merge overrides и
+  сборкой изолированного runtime snapshot;
+- `src/application/services/unary-throttle.service.ts` владеет планированием
+  по готовому snapshot и не интерпретирует source config;
+- `src/infrastructure/transport/grpc/unary-limits.ts` владеет только
+  transport-specific построением gRPC method path, а не compilation
+  package policy.
+
+Новая config semantics добавляется в authoring contract и compiler. Она не
+должна возвращать mapping/resolver logic в `src/config.ts` или создавать
+вторую декларацию той же policy.
 
 ## Generated Code
 
