@@ -50,6 +50,8 @@ micro-release separately.
 
 ### Fixed
 
+- Synchronized the public SDK service interfaces with the active generated
+  service definitions, restoring typed access to 33 RPC methods.
 - Updated default unary throttling with current service and method-specific
   T-Invest limits, including low-limit instrument lists and operation reports.
 - Replaced the stale archived limits reference and outdated stream grade table
