@@ -9,11 +9,19 @@
  * Здесь не должно быть package defaults или состояния throttling.
  */
 
-import type { UnaryLimits } from '../../../application/services/unary-throttle.service';
+import type {
+  UnaryLimitBuckets,
+  UnaryLimits
+} from '../../../application/services/unary-throttle.service';
 
 export type UnaryLimitsDefinition = Record<string, {
   default?: number;
   methods?: Record<string, number>;
+}>;
+
+export type UnaryLimitBucketsDefinition = Record<string, {
+  methods: readonly string[];
+  service: string;
 }>;
 
 const grpcServicePathPrefix = '/tinkoff.public.invest.api.contract.v1.';
@@ -38,4 +46,31 @@ export function defineUnaryLimits(
   }
 
   return limits;
+}
+
+/**
+ * Связывает method rules с общей quota group, не меняя плоский контракт
+ * `UnaryLimits` и значения самих лимитов.
+ */
+export function defineUnaryLimitBuckets(
+  definition: UnaryLimitBucketsDefinition
+): UnaryLimitBuckets {
+  const buckets: UnaryLimitBuckets = {};
+
+  for (const [bucket, group] of Object.entries(definition)) {
+    for (const method of group.methods) {
+      const path = `${grpcServicePathPrefix}${group.service}/${method}`;
+      const assignedBucket = buckets[path];
+
+      if (assignedBucket !== undefined) {
+        throw new Error(
+          `Unary limit rule ${path} is assigned to both ${assignedBucket} and ${bucket}`
+        );
+      }
+
+      buckets[path] = bucket;
+    }
+  }
+
+  return buckets;
 }
