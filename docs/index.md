@@ -78,7 +78,10 @@ const sdk = new TinkoffInvestNodeSDK({
 
 Helper возвращает прежний плоский `UnaryLimits`, поэтому плоская запись также
 остается доступна для совместимости. Тип вложенного аргумента экспортируется
-как `UnaryLimitsDefinition`.
+как `UnaryLimitsDefinition`. Package defaults могут объединять несколько
+method rules в общий quota bucket; per-instance override с другим значением
+делает отдельный метод самостоятельным правилом. Одинаковый override всех
+методов группы сохраняет общий bucket.
 
 ## Опции `defaultConfig`
 
@@ -91,7 +94,8 @@ interface TinkoffInvestNodeSDKConfig {
 
 - `unaryLimits` - плоская runtime-таблица default unary-лимитов по generated
   service names и полным gRPC method paths. Более специфичный method path
-  имеет приоритет над сервисным fallback.
+  имеет приоритет над сервисным fallback. Общие method quota groups описаны в
+  [лимитной политике](./limits-policy.md).
 - `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
   side effects, по умолчанию `true`.
 

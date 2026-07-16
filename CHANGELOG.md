@@ -55,8 +55,11 @@ micro-release separately.
   service definitions, restoring typed access to 33 RPC methods.
 - Updated default unary throttling with current service and method-specific
   T-Invest limits, including low-limit instrument lists and operation reports.
-- Isolated unary throttling schedules by resolved service or method rule so
-  low-limit RPCs no longer delay unrelated calls.
+- Isolated unary throttling schedules by quota bucket so unrelated services no
+  longer delay each other while methods with one shared quota remain
+  aggregated.
+- Matched unary service fallbacks by exact generated service name so
+  `OrdersService` no longer catches `StopOrdersService` paths.
 - Replaced the stale archived limits reference and outdated stream grade table
   with the active T-Bank limits policy.
 

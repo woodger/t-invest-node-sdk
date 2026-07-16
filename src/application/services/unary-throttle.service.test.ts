@@ -49,6 +49,19 @@ describe('Throttle', () => {
         200
       );
     });
+
+    test('does not match a service name inside a longer service name', () => {
+      const throttle = new Throttle({
+        OrdersService: 100
+      });
+
+      assert.equal(
+        throttle.resolveLimit(
+          '/tinkoff.public.invest.api.contract.v1.StopOrdersService/GetStopOrders'
+        ),
+        undefined
+      );
+    });
   });
 
   describe('#reduce', () => {
@@ -119,16 +132,43 @@ describe('Throttle', () => {
       assert.deepEqual(delays, [600]);
     });
 
-    test('keeps a method override independent from its service fallback', async () => {
+    test('shares a quota group between different method rules', async () => {
+      const brokerReportPath =
+        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport';
+      const dividendsReportPath =
+        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer';
       const throttle = new Throttle({
-        OperationsService: 200,
-        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport': 5
+        [brokerReportPath]: 5,
+        [dividendsReportPath]: 5
+      }, {
+        [brokerReportPath]: 'operations:reports',
+        [dividendsReportPath]: 'operations:reports'
       });
 
       const delays = await captureThrottleDelays(async () => {
-        await throttle.reduce(
-          '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'
-        );
+        await throttle.reduce(brokerReportPath);
+        await throttle.reduce(dividendsReportPath);
+      });
+
+      assert.deepEqual(delays, [12000]);
+    });
+
+    test('keeps a method quota group independent from its service fallback', async () => {
+      const brokerReportPath =
+        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport';
+      const dividendsReportPath =
+        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer';
+      const throttle = new Throttle({
+        OperationsService: 200,
+        [brokerReportPath]: 5,
+        [dividendsReportPath]: 5
+      }, {
+        [brokerReportPath]: 'operations:reports',
+        [dividendsReportPath]: 'operations:reports'
+      });
+
+      const delays = await captureThrottleDelays(async () => {
+        await throttle.reduce(brokerReportPath);
         await throttle.reduce(
           '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio'
         );
@@ -166,6 +206,44 @@ describe('Throttle', () => {
       });
 
       assert.deepEqual(delays, [600, 1200]);
+    });
+
+    test('reserves sequential slots for concurrent calls in one quota group', async () => {
+      const firstPath = '/test.Service/First';
+      const secondPath = '/test.Service/Second';
+      const throttle = new Throttle({
+        [firstPath]: 100,
+        [secondPath]: 100
+      }, {
+        [firstPath]: 'test:shared',
+        [secondPath]: 'test:shared'
+      });
+
+      const delays = await captureThrottleDelays(async () => {
+        await Promise.all([
+          throttle.reduce(firstPath),
+          throttle.reduce(secondPath),
+          throttle.reduce(firstPath)
+        ]);
+      });
+
+      assert.deepEqual(delays, [600, 1200]);
+    });
+
+    test('rejects different limits assigned to one quota group', () => {
+      const firstPath = '/test.Service/First';
+      const secondPath = '/test.Service/Second';
+
+      assert.throws(
+        () => new Throttle({
+          [firstPath]: 100,
+          [secondPath]: 200
+        }, {
+          [firstPath]: 'test:shared',
+          [secondPath]: 'test:shared'
+        }),
+        /quota group test:shared contains inconsistent limits/
+      );
     });
   });
 });

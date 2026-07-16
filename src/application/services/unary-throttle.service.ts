@@ -10,9 +10,10 @@
  */
 
 export type UnaryLimits = Record<string, number>;
+export type UnaryLimitBuckets = Record<string, string>;
 
 type ResolvedUnaryLimit = {
-  key: string;
+  bucket: string;
   limit: number;
 };
 
@@ -22,12 +23,20 @@ type ResolvedUnaryLimit = {
  */
 
 export class Throttle {
-  // Каждый service fallback или method override владеет своей очередью вызовов.
+  // Каждый service fallback, отдельный method override или quota group
+  // владеет своей очередью вызовов.
   private stamps: Map<string, number> = new Map();
+  private unaryLimitBuckets: UnaryLimitBuckets;
   private unaryLimits: UnaryLimits;
 
-  constructor(unaryLimits: UnaryLimits) {
+  constructor(
+    unaryLimits: UnaryLimits,
+    unaryLimitBuckets: UnaryLimitBuckets = {}
+  ) {
     this.unaryLimits = unaryLimits;
+    this.unaryLimitBuckets = unaryLimitBuckets;
+
+    this.validateUnaryLimitBuckets();
   }
 
   async reduce(path: string) {
@@ -38,14 +47,14 @@ export class Throttle {
     }
 
     const time = new Date().getTime();
-    const stamp = this.stamps.get(resolvedLimit.key) ?? 0;
+    const stamp = this.stamps.get(resolvedLimit.bucket) ?? 0;
     const delay = stamp - time;
     // Преобразуем лимит "запросов в минуту" в минимальный интервал между вызовами.
     const interval = Math.ceil(6e4 / resolvedLimit.limit);
 
     // Резервируем следующий слот до первого await, чтобы конкурентные вызовы
     // одного bucket последовательно сдвигали его окно отправки.
-    this.stamps.set(resolvedLimit.key, Math.max(stamp, time) + interval);
+    this.stamps.set(resolvedLimit.bucket, Math.max(stamp, time) + interval);
 
     if (delay < 0) {
       return;
@@ -68,9 +77,9 @@ export class Throttle {
       const limit = this.unaryLimits[key];
 
       // Для пересекающихся маршрутов выбираем самое специфичное совпадение.
-      if (limit !== undefined && path.indexOf(key) > -1 && key.length > matchLength) {
+      if (limit !== undefined && this.matchesRule(path, key) && key.length > matchLength) {
         resolvedLimit = {
-          key,
+          bucket: this.resolveBucket(key),
           limit
         };
         matchLength = key.length;
@@ -78,5 +87,62 @@ export class Throttle {
     }
 
     return resolvedLimit;
+  }
+
+  private matchesRule(path: string, key: string): boolean {
+    if (path === key) {
+      return true;
+    }
+
+    if (key.indexOf('/') > -1) {
+      return false;
+    }
+
+    const methodSeparator = path.lastIndexOf('/');
+
+    if (methodSeparator < 1) {
+      return false;
+    }
+
+    const qualifiedService = path.slice(0, methodSeparator);
+    const serviceSeparator = Math.max(
+      qualifiedService.lastIndexOf('.'),
+      qualifiedService.lastIndexOf('/')
+    );
+
+    return qualifiedService.slice(serviceSeparator + 1) === key;
+  }
+
+  private resolveBucket(key: string): string {
+    const quotaGroup = this.unaryLimitBuckets[key];
+
+    return quotaGroup === undefined
+      ? `rule:${key}`
+      : `quota:${quotaGroup}`;
+  }
+
+  private validateUnaryLimitBuckets(): void {
+    const bucketLimits = new Map<string, number>();
+
+    for (const key in this.unaryLimitBuckets) {
+      const bucket = this.unaryLimitBuckets[key];
+      const limit = this.unaryLimits[key];
+
+      if (bucket === undefined) {
+        continue;
+      }
+
+      if (limit === undefined) {
+        throw new Error(`Unary quota group ${bucket} references unknown rule ${key}`);
+      }
+
+      const bucketLimit = bucketLimits.get(bucket);
+
+      if (bucketLimit !== undefined && bucketLimit !== limit) {
+        throw new Error(`Unary quota group ${bucket} contains inconsistent limits`);
+      }
+
+      bucketLimits.set(bucket, limit);
+    }
   }
 }
