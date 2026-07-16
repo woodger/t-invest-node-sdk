@@ -180,7 +180,7 @@ Bootstrap
 - `domain`;
 - `application`;
 - `infrastructure`;
-- executable entrypoints в `bootstrap/bin`, bootstrap CLI mechanics в `bootstrap/cli/**` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
+- executable entrypoint `src/bootstrap/index.ts`, bootstrap CLI mechanics в `bootstrap/cli/**` и command-level entrypoints вроде `bootstrap/commands/*/cli.ts`;
 - `internal`;
 - `generated`;
 - `docs`;
@@ -291,10 +291,6 @@ report, command или adapter, отдельный `types.ts` считается
 - `*.port.ts` - application port;
 - `*.report.ts` - application report/output contract;
 - `reporter.ts` внутри `bootstrap/commands/<command>` - bootstrap presentation reporter;
-- `*-renderer.ts` внутри `infrastructure/renderers` - механический renderer
-  готовых значений в конкретный текстовый формат;
-- `*-writer.ts` внутри `infrastructure/output` - технический sink для записи
-  готового текста;
 - `*.policy.ts` - правило или политика;
 - `*.validator.ts` - validator;
 - `*.mapper.ts` - mapper между слоями или форматами;
@@ -305,6 +301,12 @@ report, command или adapter, отдельный `types.ts` считается
 Если ни один suffix не подходит, это сигнал, что роль файла не определена. В таком случае нужно сначала определить роль, а не придумывать новое абстрактное имя.
 
 Запрещено использовать неочевидные авторские имена, если без чтения реализации нельзя понять назначение файла.
+
+Generic JSON/CSV/table rendering и terminal output primitives не дублируются
+локальными wrappers: command reporter-ы и CLI runner используют публичный API
+внешней зависимости `icore`. Project-owned adapter допустим только когда у него
+появляется самостоятельное поведение или контракт, которого нет в generic
+primitive.
 
 ## Правило перемещения файлов
 

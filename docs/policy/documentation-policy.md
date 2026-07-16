@@ -20,7 +20,7 @@
 - throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/infrastructure/transport/grpc/unary-limits.ts`, `src/config.ts` и `src/config.types.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
-- CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
+- CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;
 - proto wire contracts: `contracts/*.proto`;
 - proto upstream metadata: `contracts/upstream.json`;
 - generated exports: `src/bootstrap/generated-exports.ts` и `src/generated/**`;

@@ -90,9 +90,9 @@ process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore termi
 
 Runner использует двухфазный flow `prepare -> runPrepared`: это позволяет
 вывести warnings после command resolution без повторного разбора argv. Ошибки
-всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`. Ошибки
-вызова от `icore` и project validators (`CliUsageError`) получают exit code
-`2`; runtime и command-definition errors получают exit code `1`.
+всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`. `icore`
+errors категории `usage` и project validators (`CliUsageError`) получают exit
+code `2`; runtime и command-definition errors получают exit code `1`.
 
 Command-specific primitive options описываются декларативными `icore` schemas в
 `src/bootstrap/commands/**`. Общие SDK options нормализуются в
@@ -112,11 +112,12 @@ raw options. Mapping typed options в generated request DTO должен жит�
 ```text
 process.argv
   -> icore terminal app
-  -> icore parser/validator
+  -> icore schema parser/validator
   -> typed command options
+  -> project API-specific validation
   -> generated request DTO
   -> generated SDK call
-  -> application report
+  -> application report или command-local stream event contract
   -> CLI output
 ```
 
@@ -126,10 +127,12 @@ process.argv
 | --- | --- | --- |
 | typed command options -> `TinkoffInvestOptions` | `bootstrap/args` | без изменений |
 | typed command options -> generated request DTO | `bootstrap/commands/*/cli.ts`, `create*Request` | application use-case, если command перестает быть тонким adapter-ом |
-| generated API response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
-| application report -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
-| output values -> JSON/CSV/table | `infrastructure/renderers/*` | без изменений, пока renderer-ы остаются механическими |
-| string -> stdout/stderr | `infrastructure/output/*`, подключается из `bootstrap/cli/runner.ts` | без изменений |
+| generated unary response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
+| stream event -> command-local event contract | `bootstrap/commands/stream-run/reporter.ts` | application report, если contract потребуется вне CLI |
+| report/event contract -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
+| output values -> JSON/CSV/table | публичные `renderJson`, `renderCsvRow`, `renderTextTable` из `icore`, вызываемые reporter-ами | command-specific поля и структура остаются в reporter-е |
+| string/stream -> stdout | `icore` `TerminalApp`/`Output.write`, собираемые в `bootstrap/cli/runner.ts` | штатный normal output wiring остается в runner-е |
+| warning/error -> stderr | `icore` `Output.error`; project CLI/error policy владеет содержанием | без изменений |
 
 ## Типичные Ошибки
 

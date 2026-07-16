@@ -14,6 +14,7 @@
 src/bootstrap
   -> src/infrastructure
   -> src/application
+  -> external icore CLI/presentation/output API
 
 src/infrastructure
   -> src/application
@@ -52,16 +53,13 @@ provider-neutral правилами или моделями.
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
   middleware и typed clients, а также mapping unary limit definitions в полные
   gRPC paths.
-- `infrastructure/renderers` - механический рендеринг готовых данных в JSON,
-  CSV-строки и plain-text таблицы. Здесь не выбираются поля команд и не
-  формируются command-specific output contracts.
+- `infrastructure/interceptor` - технические hooks для фильтрации process
+  warnings и, в диагностических сценариях, `stdout`.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
   provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные
   report values. `MoneyValue` становится структурным `ReportMoney`, а
   command-specific table/text представление строится отдельно. Здесь не
   выбираются поля команд и не формируются command-specific output contracts.
-- `infrastructure/output` - технические sinks для записи готового текста в
-  `stdout` и `stderr`.
 
 Здесь допустимы imports из `nice-grpc`, generated service definitions и
 application services. Application не должен импортировать concrete
@@ -83,8 +81,14 @@ bootstrap-механикой.
 - `bootstrap/cli` - CLI contract, registry, help, version, terminal error
   policy и runner layer;
 - `bootstrap/commands` - handlers CLI-команд;
-- `bootstrap/commands/*/reporter.ts` - presentation formatting application
-  report contracts;
+- `bootstrap/commands/*/reporter.ts` - command-specific mapping и presentation
+  formatting. Unary reporter-ы обычно строят `application/reports`, а
+  специализированный stream reporter может владеть локальным event contract.
+
+Generic option/command mechanics, JSON/CSV-row/table primitives и default
+terminal output facade предоставляет внешняя зависимость `icore`. Она не
+является отдельным слоем проекта: integration wiring остается в `bootstrap`,
+а project-specific adapters и policies остаются в файлах-владельцах.
 
 CLI слой сейчас поддерживает utility-команды `help`, `version` и API-команды
 в preferred friendly форме `<domain> <resource/action>`. Публичные domains:
@@ -100,24 +104,37 @@ Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
 `sandbox get-sandbox-accounts` и `compile-proto` остаются совместимыми aliases,
 но help продвигает только preferred paths.
 
-API-команды остаются тонкими bootstrap handlers:
-`icore` terminal app валидирует raw CLI args и передает handler-у typed command options.
+API-команды остаются тонкими bootstrap handlers. Runner нормализует короткие
+`-h`/`-v` aliases и через `icore` разбирает глобальные options; project registry
+также сохраняет совместимые command path aliases. Затем `icore` terminal app
+разрешает command path, валидирует declarative schema и передает handler-у typed
+command options. API-specific validation и mapping в generated request остаются
+в project-owned helpers.
+
 Runner один раз выполняет `prepare`, пишет command warnings и передает prepared
-command в `runPrepared`. Общая terminal error policy сохраняет единый stderr
-для фаз `prepare`, `execute`, `render`, `write` и внешних bootstrap-операций.
+command в `runPrepared`. В штатном terminal flow общая error policy сохраняет
+единый stderr для фаз `prepare`, `execute`, `render`, `write` и внешних
+bootstrap-операций.
+
 Exit code определяется типом ошибки, а не фазой: `icore` errors категории
 `usage` и project-owned `CliUsageError` завершаются с кодом `2`; runtime,
 provider, output и `icore` definition errors — с кодом `1`. `CliUsageError`
 используется для command-specific аргументов, обязательных CLI/ENV-значений и
 уже прочитанной JSON command config; ошибки чтения файла остаются runtime.
 Command `cli.ts` создает generated request DTO из typed options, создает SDK
-facade и передает provider response в reporter-модуль. Reporter-ы преобразуют generated DTO в
-`application/reports` contracts, выбирают command-specific представление и
-используют `infrastructure/renderers` для технического JSON/CSV/table
-rendering.
+facade и передает provider response в reporter-модуль. Unary reporter-ы обычно
+преобразуют generated DTO в `application/reports` contracts; stream reporter
+может формировать command-local event contract. Reporter выбирает поля, порядок
+и command-specific представление, а для общей механики формата при необходимости
+вызывает публичные `renderJson`, `renderCsvRow` и `renderTextTable` из `icore`.
+Готовую строку или stream terminal app штатно направляет через `Output.write` в
+stdout; help/version используют тот же канал, а warnings и errors проходят
+через `Output.error` в stderr. Runner принимает injected `Output` или создает
+default facade.
 
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
-primitive CLI-контракты и нормализует общие `TinkoffInvestOptions` из CLI/ENV.
+project-specific CLI-контракты поверх typed/raw option values и нормализует
+общие `TinkoffInvestOptions` из CLI/ENV.
 
 ## Public Entrypoints
 

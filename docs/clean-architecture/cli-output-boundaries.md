@@ -1,58 +1,47 @@
 # Разделение Форматирования И Вывода В CLI
 
 > Type: Design Note. Документ фиксирует принятую границу между
-> command-specific CLI formatting, механическим JSON/CSV/table rendering и
-> доставкой готового текста в `stdout`/`stderr`.
+> command-specific CLI formatting, generic JSON/CSV/table mechanics из `icore`
+> и доставкой готового результата через `icore` `Output`.
 
 ## Контекст
 
-CLI в текущем SDK устроен по примеру Inventory: отдельный top-level слой `cli`
-не вводится, а CLI-команды живут в `bootstrap`.
+CLI-команды живут в `bootstrap`, но не вся логика вокруг вывода имеет одну
+ответственность. Команда определяет смысл пользовательского представления;
+generic primitives сериализуют уже выбранные значения; terminal output
+доставляет готовую строку или stream.
 
-При этом не вся логика вокруг вывода должна оставаться в `bootstrap`. Если
-общие правила JSON, CSV или table rendering дублировать в каждой команде,
-reporter-ы начнут расти из-за технических деталей формата. Если же положить в
-`infrastructure` всю логику вывода, infrastructure начнет владеть
-presentation policy конкретных CLI-команд.
+`icore` предоставляет generic mechanics как внешняя зависимость. Он не является
+слоем проекта и не владеет application reports или output contract конкретной
+команды.
 
-Принятое разделение:
+Текущая структура:
 
 ```text
-src/bootstrap
-  cli.ts
-  commands/
-    registry.ts
-    accounts/
-      cli.ts
-      reporter.ts
-    candles/
-      cli.ts
-      reporter.ts
-    instrument/
-      cli.ts
-      reporter.ts
-    last-prices/
-      cli.ts
-      reporter.ts
-    orders/
-      cli.ts
-      reporter.ts
-    portfolio/
-      cli.ts
-      reporter.ts
-    positions/
-      cli.ts
-      reporter.ts
+src/application
+  reports/
 
 src/infrastructure
   report-values.ts
-  renderers/
-    csv-renderer.ts
-    json-renderer.ts
-    table-renderer.ts
-  output/
-    stdout-writer.ts
-    stderr-writer.ts
+
+src/bootstrap
+  index.ts
+  cli/
+    contract.ts
+    error.ts
+    runner.ts
+  commands/
+    <command>/
+      cli.ts
+      reporter.ts
+
+external dependency
+  icore
+    renderJson
+    renderCsvRow
+    renderTextTable
+    TerminalApp
+    Output
 ```
 
 ## Основная Граница
@@ -60,157 +49,171 @@ src/infrastructure
 Нужно разделять три операции:
 
 ```text
-application report -> command-specific output values
+application report/command-local event -> command-specific output values
 ```
 
 Это responsibility `bootstrap/commands/*/reporter.ts`.
 
 ```text
-output values -> JSON / CSV / table string
+output values -> JSON / CSV row / table string
 ```
 
-Это responsibility `infrastructure/renderers/*`.
+Для общей механики reporter использует публичные render primitives `icore`.
+Структура документа, headers и порядок rows остаются command-specific policy.
+Trailing newline для JSON и text table задают generic primitives; для текущего
+CSV-документа его добавляет reporter после сборки rows.
 
 ```text
-string -> stdout/stderr
+string/AsyncIterable -> TerminalApp -> Output.write -> stdout
 ```
 
-Это responsibility `infrastructure/output/*`.
+В штатном CLI flow это normal output responsibility `icore` `TerminalApp` и
+`Output`, собранных в `bootstrap/cli/runner.ts`.
+
+```text
+warnings/errors -> Output.error -> stderr
+```
+
+Текст warnings определяет project CLI layer; текст errors и exit code -
+project-owned error policy.
 
 ## Поток Команды
 
 ```text
-bootstrap/commands/accounts/cli.ts
+src/bootstrap/index.ts
+        ↓
+bootstrap/cli/runner.ts
+        ↓
+icore command resolution + typed options
+        ↓
+bootstrap/commands/<command>/cli.ts
         ↓
 SDK call
         ↓
-bootstrap/commands/accounts/reporter.ts
+bootstrap/commands/<command>/reporter.ts
         ↓
-application report
+application report или command-local event contract
         ↓
 command-specific output values
         ↓
-infrastructure/renderers/*
+icore render primitive или project-specific formatter
         ↓
-string
+string/AsyncIterable
         ↓
-infrastructure/output/*
+icore TerminalApp -> Output.write
         ↓
-stdout/stderr
+stdout
 ```
 
-`bootstrap` остается местом command orchestration и command-specific
-presentation policy. `infrastructure` содержит только технические механизмы,
-которые можно использовать повторно без знания о командах.
+Runner отдельно владеет публичными short aliases, help/version shortcuts и
+command warnings. Он направляет help/version через `app.output.write`, warnings
+через `app.output.error`, а normal command result передает в terminal app.
 
-`infrastructure/report-values.ts` находится между reporter-ами и renderer-ами:
-он адаптирует повторяющиеся scalar DTO values (`MoneyValue`, `Quotation`,
-`Date`) в reusable report values. `MoneyValue` преобразуется в структурный
-`ReportMoney`, чтобы JSON output не склеивал `amount` и `currency` в одну
-строку. Text-представление `"amount currency"` допускается только на
-presentation-этапе, например для table cell. Этот модуль не выбирает поля
-команды, не строит таблицу и не решает JSON contract конкретной команды.
+Последний аварийный fallback executable entrypoint использует `console.error`.
+Поэтому `icore` `Output` является контрактом штатного terminal flow, а не
+абсолютно единственной записью в process streams во всех аварийных сценариях.
 
 ## Что Остается В Reporter Команды
 
 `bootstrap/commands/<command>/reporter.ts` отвечает за смысл пользовательского
 вывода:
 
-- mapping generated response в `application/reports`;
+- mapping unary response в `application/reports` или stream event в
+  command-local event contract;
 - выбор полей;
-- порядок колонок;
-- имена колонок;
+- порядок и имена колонок;
 - представление enum/date/nullable values;
 - stable JSON contract конкретной команды;
-- redaction или normalization, если они зависят от команды.
+- CSV headers, порядок rows и document-level newline;
+- redaction или normalization, если они зависят от команды;
+- project-specific formats, например JSONL event shape.
 
-Reporter может импортировать `infrastructure/renderers`, но renderer не должен
-импортировать reporter.
+Reporter может импортировать `renderJson`, `renderCsvRow` и `renderTextTable` из
+`icore`, но generic primitive не должен определять поля или contract команды.
 
-## Что Лежит В Infrastructure Renderers
+## Что Предоставляют Render Primitives `icore`
 
-`infrastructure/renderers` отвечает только за механику текстового формата:
+Generic primitives отвечают только за механику текстового формата:
 
-- pretty JSON и trailing newline;
-- CSV escaping;
-- CSV row joining;
-- расчет ширины колонок;
-- выравнивание plain-text таблицы.
+- JSON serialization и trailing newline;
+- CSV escaping и joining одной строки без document-level newline;
+- расчет ширины, выравнивание и trailing newline plain-text таблицы.
 
-Renderer не должен знать:
+Они не должны получать ответственность за:
 
-- названия CLI-команды;
-- `AccountsReport` или `CandlesReport`;
+- названия CLI-команд;
+- `AccountsReport`, `CandlesReport` или другие project reports;
 - generated provider DTO;
 - SDK clients;
-- `stdout` или `stderr`;
-- какие поля нужно показывать пользователю.
+- выбор пользовательских полей;
+- command-specific redaction или normalization;
+- сборку CSV-документа конкретной команды.
 
-Если renderer начинает выбирать поля или скрывать данные, это уже
-command-specific formatting, и такому коду место в
-`bootstrap/commands/*/reporter.ts`.
+Если общей primitive недостаточно, project-specific formatter остается рядом с
+reporter-ом. Это не повод создавать forwarding wrapper, который только повторяет
+public API `icore`.
 
-## Что Лежит В Infrastructure Output
+## Что Предоставляют `TerminalApp` И `Output`
 
-`infrastructure/output` отвечает только за запись готового текста:
+`bootstrap/cli/runner.ts` создает default output через `createOutput` или
+принимает injected `Output`, после чего передает его в `createTerminalApp`.
 
-- `stdout-writer` пишет строку в `stdout`;
-- `stderr-writer` пишет строку в `stderr`.
+Output boundary отвечает за:
 
-Output writer не должен знать:
+- запись готового normal result через `Output.write` в stdout;
+- запись warnings/errors через `Output.error` в stderr;
+- ожидание asynchronous writes и backpressure;
+- единый terminal error delivery через project-owned error policy.
 
-- JSON;
-- CSV;
-- таблицы;
+Output boundary не должен знать:
+
+- JSON, CSV или таблицы;
 - application reports;
 - command names;
-- правила отображения значений.
+- правила отображения значений;
+- какие поля нужно скрыть или показать.
 
-Он получает строку и передает ее во внешний поток.
+Project `terminalErrorPolicy` определяет текст ошибки и exit code. `icore`
+terminal app применяет policy и выполняет delivery. Поэтому error ownership
+также разделено, а не целиком передано зависимости.
 
-## Почему Не `infrastructure/stdout` Для Форматирования
+## Почему Не Нужны Локальные Generic Wrappers
 
-`stdout` - это канал доставки, а не формат вывода.
+Удаленные project-owned renderers и writers больше не являются архитектурными
+точками расширения. Wrapper без собственного контракта добавит второй source of
+truth и снова позволит документации и runtime разойтись.
 
-Если положить JSON/CSV/table formatting в stdout-слой, слой будет назван по
-каналу записи, но фактически начнет отвечать за presentation policy:
+Локальный adapter оправдан, только если он добавляет самостоятельное
+project-specific поведение:
 
-```text
-нежелательно:
-infrastructure/output -> выбирает поля accounts
-infrastructure/output -> строит CSV candles
-infrastructure/output -> решает JSON contract команды
-```
+- новый stable contract;
+- reuse нескольких команд поверх generic primitives;
+- policy, которой нет в `icore`;
+- изоляцию внешней зависимости, необходимую для наблюдаемого поведения.
 
-Корректная граница:
-
-```text
-bootstrap/commands/*/reporter.ts -> выбирает пользовательское представление
-infrastructure/renderers/*       -> превращает значения в строку формата
-infrastructure/output/*          -> пишет готовую строку
-```
+Сам по себе более короткий import или предполагаемая будущая замена зависимости
+не является достаточной причиной.
 
 ## Правило Для Новых Команд
 
 При добавлении новой API-команды:
 
-- `cli.ts` парсит command-specific args, создает SDK facade, вызывает API и
-  закрывает SDK;
+- declarative option schema передается command mechanics `icore`;
+- `cli.ts` получает typed options, выполняет API-specific validation, строит
+  generated request, вызывает SDK и закрывает его;
 - `reporter.ts` строит stable report и command-specific output;
-- общий JSON/CSV/table код переиспользуется из `infrastructure/renderers`;
+- generic JSON/CSV-row/table mechanics переиспользуется из public API `icore`;
 - повторяющиеся scalar value conversions переиспользуются из
   `infrastructure/report-values.ts`;
-- запись в `stdout`/`stderr` проходит через `infrastructure/output`;
+- handler возвращает готовую строку или stream terminal app и не пишет normal
+  result напрямую в `process.stdout`;
 - generated DTO не становится стабильным CLI output contract;
 - output contract выбирается для конкретной команды, а не для будущего
   неизвестного списка команд.
 
-Общие helpers для command output допустимы только если они убирают реальное
-повторение и не переносят command-specific policy в `infrastructure`.
-
 ## Признаки Неверной Границы
 
-Код лежит слишком глубоко в `infrastructure`, если он:
+Command-specific policy утекла в generic mechanics, если код:
 
 - знает имя команды;
 - импортирует `application/reports` ради выбора пользовательских полей;
@@ -218,27 +221,27 @@ infrastructure/output/*          -> пишет готовую строку
 - скрывает или нормализует данные конкретного output contract;
 - меняется при изменении CLI JSON contract.
 
-Код лежит слишком высоко в `bootstrap`, если он:
+Technical mechanics необоснованно дублируется в reporter-е, если код:
 
 - повторяет CSV escaping;
-- повторяет pretty JSON;
+- повторяет generic pretty JSON;
 - повторяет расчет ширины таблицы;
-- пишет напрямую в `process.stdout` там, где достаточно готовой строки.
+- пишет normal result напрямую в `process.stdout`, хотя достаточно вернуть его
+  terminal app.
 
 ## Итог
 
-Текущий проект использует Inventory-style CLI placement:
-
 ```text
-CLI executable -> src/bootstrap/index.ts -> dist/bootstrap/index.js
-CLI runner     -> bootstrap/cli/runner.ts
-CLI error policy -> bootstrap/cli/error.ts
-CLI usage errors -> bootstrap/cli/usage-error.ts
-CLI commands   -> bootstrap/commands
-format mechanics -> infrastructure/renderers
-stdout/stderr sinks -> infrastructure/output
+CLI executable       -> src/bootstrap/index.ts
+CLI runner           -> src/bootstrap/cli/runner.ts
+CLI error policy     -> src/bootstrap/cli/error.ts
+CLI commands         -> src/bootstrap/commands
+stable unary reports -> src/application/reports
+scalar adapters      -> src/infrastructure/report-values.ts
+format mechanics     -> public render primitives `icore`
+normal output        -> `icore` TerminalApp -> Output.write -> stdout
+diagnostics          -> `icore` Output.error -> stderr
 ```
 
-Это держит package binary рядом с публичным package entrypoint, но оставляет
-CLI mechanics в `bootstrap` и не смешивает presentation policy с технической
-записью в системные потоки.
+Так project-owned presentation policy не смешивается с generic serialization и
+технической доставкой результата.
