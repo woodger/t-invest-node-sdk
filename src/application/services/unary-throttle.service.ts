@@ -11,14 +11,19 @@
 
 export type UnaryLimits = Record<string, number>;
 
+type ResolvedUnaryLimit = {
+  key: string;
+  limit: number;
+};
+
 /**
  * Throttle распределяет unary-запросы по времени на основе лимита запросов в минуту.
  * Например, при лимите 200 запросов в минуту минимальный интервал между ними составляет 300 мс.
  */
 
 export class Throttle {
-  // Временная отметка, раньше которой следующий unary-запрос нельзя отправлять.
-  private stamp = 0;
+  // Каждый service fallback или method override владеет своей очередью вызовов.
+  private stamps: Map<string, number> = new Map();
   private unaryLimits: UnaryLimits;
 
   constructor(unaryLimits: UnaryLimits) {
@@ -26,23 +31,25 @@ export class Throttle {
   }
 
   async reduce(path: string) {
-    const time = new Date().getTime();
-    const delay = this.stamp - time;
-    const limit = this.resolveLimit(path);
+    const resolvedLimit = this.resolveLimitRule(path);
 
-    if (limit === undefined) {
+    if (resolvedLimit === undefined) {
       throw new Error(`Unhandled unary limits for ${path}`);
     }
 
-    // Преобразуем лимит "запросов в минуту" в минимальный интервал между запросами.
-    this.stamp = time + Math.ceil(6e4 / limit);
+    const time = new Date().getTime();
+    const stamp = this.stamps.get(resolvedLimit.key) ?? 0;
+    const delay = stamp - time;
+    // Преобразуем лимит "запросов в минуту" в минимальный интервал между вызовами.
+    const interval = Math.ceil(6e4 / resolvedLimit.limit);
+
+    // Резервируем следующий слот до первого await, чтобы конкурентные вызовы
+    // одного bucket последовательно сдвигали его окно отправки.
+    this.stamps.set(resolvedLimit.key, Math.max(stamp, time) + interval);
 
     if (delay < 0) {
       return;
     }
-
-    // Если уже есть накопленная задержка, сдвигаем окно отправки дальше.
-    this.stamp += delay;
 
     await new Promise((resolve) => 
       setTimeout(resolve, delay)
@@ -50,17 +57,26 @@ export class Throttle {
   }
 
   resolveLimit(path: string) {
-    let limit;
+    return this.resolveLimitRule(path)?.limit;
+  }
+
+  private resolveLimitRule(path: string): ResolvedUnaryLimit | undefined {
+    let resolvedLimit: ResolvedUnaryLimit | undefined;
     let matchLength = -1;
 
     for (const key in this.unaryLimits) {
+      const limit = this.unaryLimits[key];
+
       // Для пересекающихся маршрутов выбираем самое специфичное совпадение.
-      if (path.indexOf(key) > -1 && key.length > matchLength) {
-        limit = this.unaryLimits[key];
+      if (limit !== undefined && path.indexOf(key) > -1 && key.length > matchLength) {
+        resolvedLimit = {
+          key,
+          limit
+        };
         matchLength = key.length;
       }
     }
 
-    return limit;
+    return resolvedLimit;
   }
 }
