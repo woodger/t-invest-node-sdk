@@ -17,7 +17,7 @@
 - application report contracts: `src/application/reports/**`;
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
-- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/infrastructure/transport/grpc/unary-limits.ts`, `src/config.ts` и `src/config.types.ts`;
+- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/infrastructure/transport/grpc/unary-limits.ts`, `src/config.ts`, `src/config.types.ts`, `src/bootstrap/unary-limit-config.ts` и `src/bootstrap/sdk-config.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;

@@ -15,11 +15,11 @@ export type {
   TinkoffInvestMetadataValue,
   UsersService
 } from './application/dto/tinkoff-invest-services';
-export { defaultConfig } from './config';
-export { defineUnaryLimits } from './infrastructure/transport/grpc/unary-limits';
+export { defaultConfig } from './bootstrap/sdk-config';
+export { defineUnaryLimits } from './bootstrap/unary-limit-config';
 export type {
   TinkoffInvestNodeSDKConfig,
-  UnaryLimits
+  UnaryLimits,
+  UnaryLimitsDefinition
 } from './config.types';
-export type { UnaryLimitsDefinition } from './infrastructure/transport/grpc/unary-limits';
 export * from './bootstrap/generated-exports';

@@ -8,13 +8,11 @@
  * Здесь не должно быть environment fallback logic или transport creation.
  */
 
-import type { UnaryLimits } from '../services/unary-throttle.service';
-
 export interface TinkoffInvestOptions {
   token: string;
   endpoint: string;
   appName?: string;
   useSsl?: boolean;
   trackLimits?: boolean;
-  unaryLimits?: UnaryLimits;
+  unaryLimits?: Record<string, number>;
 }

@@ -9,7 +9,7 @@
  * Здесь не должно быть gRPC client wiring или CLI policy.
  */
 
-export type UnaryLimits = Record<string, number>;
+type UnaryLimitRules = Record<string, number>;
 export type UnaryLimitBuckets = Record<string, string>;
 
 type ResolvedUnaryLimit = {
@@ -27,10 +27,10 @@ export class Throttle {
   // владеет своей очередью вызовов.
   private stamps: Map<string, number> = new Map();
   private unaryLimitBuckets: UnaryLimitBuckets;
-  private unaryLimits: UnaryLimits;
+  private unaryLimits: UnaryLimitRules;
 
   constructor(
-    unaryLimits: UnaryLimits,
+    unaryLimits: UnaryLimitRules,
     unaryLimitBuckets: UnaryLimitBuckets = {}
   ) {
     this.unaryLimits = unaryLimits;

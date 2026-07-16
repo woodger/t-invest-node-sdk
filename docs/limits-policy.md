@@ -4,8 +4,8 @@
 Portal: <https://developer.tbank.ru/invest/intro/intro/limits>.
 
 Актуальность значений зависит от политики брокера. При изменении официальной
-документации нужно обновить этот файл, `defaultConfig.unaryLimits` и связанные
-тесты одним изменением.
+документации нужно обновить этот файл, декларацию `packageConfig.unaryLimits`
+в `src/config.ts` и связанные тесты одним изменением.
 
 ## Что важно учитывать
 
@@ -108,6 +108,33 @@ SDK поддерживает локальный throttling unary-запросо�
 согласованный override всех методов группы сохраняет общий bucket. Это
 защитный локальный limiter, а не полная модель всех агрегированных ограничений
 provider-а или IP.
+
+## Декларативный package config
+
+Package defaults хранятся в `src/config.ts` как одна типизированная декларация.
+Сервисный fallback задается через `default`, индивидуальные RPC — через
+`methods`, а общая квота — одним элементом `groups`:
+
+```ts
+OperationsService: {
+  default: 200,
+  groups: {
+    reports: {
+      limit: 5,
+      methods: [
+        'GetBrokerReport',
+        'GetDividendsForeignIssuer'
+      ]
+    }
+  }
+}
+```
+
+`PackageConfigDefinition` из `src/config.types.ts` проверяет при компиляции
+числовые значения, имена сервисов и RPC. Bootstrap compiler один раз
+преобразует декларацию в плоские runtime limits и quota buckets и отклоняет
+неположительные или неконечные числовые значения. Публичный
+`defaultConfig.unaryLimits` остается плоским для совместимости.
 
 Пример точечного ограничения для отдельного экземпляра:
 
