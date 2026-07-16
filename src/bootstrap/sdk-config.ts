@@ -1,8 +1,13 @@
 /**
- * Bootstrap-адаптер конфигурации SDK.
+ * Модуль bootstrap config adapter собирает runtime policy для SDK instances.
  *
- * Компилирует декларативную package policy, сохраняет совместимый публичный
- * flat config и разрешает per-instance unary limit overrides.
+ * Здесь допустимы:
+ * - компиляция package defaults в совместимый public flat config;
+ * - разрешение per-instance unary limit overrides;
+ * - согласование overrides с package quota groups;
+ *
+ * Здесь не должно быть transport initialization, provider tariff refresh или
+ * throttling state.
  */
 
 import type {

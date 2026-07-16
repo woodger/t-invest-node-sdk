@@ -49,7 +49,6 @@ export class Throttle {
     const time = new Date().getTime();
     const stamp = this.stamps.get(resolvedLimit.bucket) ?? 0;
     const delay = stamp - time;
-    // Преобразуем лимит "запросов в минуту" в минимальный интервал между вызовами.
     const interval = Math.ceil(6e4 / resolvedLimit.limit);
 
     // Резервируем следующий слот до первого await, чтобы конкурентные вызовы
