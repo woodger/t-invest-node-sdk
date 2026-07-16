@@ -204,51 +204,60 @@ Deprecated generated methods не вводятся как публичные CLI
 Перед расширением stream command нужно сверять поведение с этими
 reference-документами и отдельно фиксировать любые изменения контракта.
 
-Команда делает несколько разных вещей:
+Command flow объединяет несколько разных ответственностей:
 
-1. принимает CLI args;
-2. валидирует primitive flags;
-3. создает `TinkoffInvestNodeSDK`;
-4. вызывает API method;
-5. преобразует response в stable report;
-6. форматирует report в JSON/CSV/table;
-7. возвращает строку для вывода.
+1. runner и `icore` разбирают CLI args и валидируют primitive options по schema;
+2. command handler выполняет API-specific validation и request mapping;
+3. command handler создает `TinkoffInvestNodeSDK`;
+4. command handler вызывает API method;
+5. reporter преобразует unary response в stable report или stream event в
+   command-local output contract;
+6. reporter выбирает command-specific output и использует generic render
+   primitives, когда они подходят;
+7. terminal app получает готовую строку или stream для вывода.
 
-Если все эти обязанности оставить в `bootstrap`, command layer быстро станет
-местом для любой логики вокруг CLI.
+Если свести эти обязанности обратно в один command handler, command layer быстро
+станет местом для любой логики вокруг CLI.
 
 ## Текущая Структура
 
 ```text
 src/bootstrap
+  index.ts
   args/
     command-options.ts
     instrument-id-options.ts
     instruments-args.ts
     side-effect-args.ts
-  bin/
-    cli.ts
-  commands/
+  cli/
+    contract.ts
+    error.ts
+    help.ts
     registry.ts
+    runner.ts
+  commands/
     <command-adapter>/
       cli.ts
       reporter.ts
 
 src/infrastructure
-  output/
-    stderr-writer.ts
-    stdout-writer.ts
-  renderers/
-    csv-renderer.ts
-    json-renderer.ts
-    table-renderer.ts
+  interceptor/
+  report-values.ts
+  transport/grpc/
+
+external dependency
+  icore
+    option/command mechanics
+    renderJson/renderCsvRow/renderTextTable
+    TerminalApp/Output
 ```
 
 `cli.ts` сейчас отвечает за:
 
-- whitelist CLI args;
-- разбор command-specific flags через декларативные `icore` schemas;
+- объявление command path, declarative option schema и handler-а через локальный
+  command facade над `icore`;
 - mapping typed command options в generated request DTO;
+- API-specific validation, которая не выражается primitive schema;
 - создание SDK facade;
 - вызов API;
 - закрытие SDK.
@@ -272,17 +281,23 @@ request-level validation вроде date range или mutually exclusive modes.
 
 `reporter.ts` сейчас отвечает за:
 
-- mapping generated response в application report;
+- mapping unary response в application report или stream event в command-local
+  output contract;
 - выбор command-specific output contract;
-- подготовку значений для JSON/CSV/table output.
+- выбор полей, headers, порядка и подготовку значений для JSON/CSV/table output;
+- вызов generic render primitives `icore`, когда они подходят формату.
 
-`infrastructure/renderers/*` сейчас отвечает за:
+`icore` сейчас предоставляет:
 
-- технические детали pretty JSON, plain-text table и CSV row rendering.
+- primitive option parsing, typed schema validation и command mechanics;
+- технические детали JSON, plain-text table и CSV row rendering;
+- `TerminalApp`/`Output.write` для штатной записи готовой строки или stream в
+  stdout;
+- `Output.error` для warnings/errors в stderr.
 
-`infrastructure/output/*` сейчас отвечает за:
-
-- запись готового текста в `stdout` или `stderr`.
+Project CLI layer собирает terminal app, нормализует short aliases, сохраняет
+compatible command path aliases, обслуживает help/version shortcuts и warnings,
+а project error policy определяет текст ошибки и exit code.
 
 Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами
 adapter-модулей. Они не задают публичный CLI path: публичный контракт команды
@@ -290,9 +305,11 @@ adapter-модулей. Они не задают публичный CLI path: п
 
 ## Что Уже Хорошо
 
-- CLI args validation отделена в `bootstrap/args`;
+- primitive option validation выражена `icore` schemas, а reusable
+  project-specific normalizers отделены в `bootstrap/args`;
 - raw CLI parsing отделен от typed generated request mapping;
-- stable output shape вынесен в `application/reports`;
+- stable unary output shape вынесен в `application/reports`, а stream contract
+  зафиксирован отдельно;
 - команды закрывают SDK в `finally`;
 - formatting logic вынесена из `cli.ts`;
 - JSON pretty-print, table alignment и CSV escaping не дублируются в command
@@ -310,69 +327,90 @@ parse entrypoint -> assemble dependencies -> call command -> return status/outpu
 В `bootstrap` остается command-specific presentation/adaptation logic:
 
 ```text
-generated response -> stable report
-application report -> command-specific output values
+unary response -> stable report
+stream event -> command-local output contract
+report/event contract -> command-specific output values
 ```
 
 Это осознанный компактный вариант, близкий к Inventory. Риск появляется, если
-технические `infrastructure/renderers` начнут выбирать поля, делать redaction,
-normalization или версионировать output конкретной команды.
+generic primitives начнут использоваться как место выбора полей, redaction,
+normalization или версионирования output конкретной команды. Обратный риск -
+дублировать JSON/CSV/table механику в reporter-ах или создавать локальные
+forwarding wrappers над `icore` без собственного контракта.
 
-Подробные правила разделения command-specific formatting, общих renderers и
-stdout delivery описаны в
+Подробные правила разделения command-specific formatting, generic render
+primitives и stdout delivery описаны в
 [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md).
 
 ## Важное Разделение
 
-Нужно различать две ответственности:
+Нужно различать три ответственности:
 
 ```text
-report -> string
+application report/command-local event -> command-specific output values
 ```
 
-Это CLI adapter/presentation formatting.
+Это CLI adapter/presentation policy в command reporter-е.
 
 ```text
-string -> stdout
+output values -> JSON/CSV/table string
 ```
 
-Это output sink. `stdout` не должен знать, как строить JSON, CSV или table.
+Это generic format mechanics `icore`.
+
+```text
+string/AsyncIterable -> TerminalApp -> Output.write -> stdout
+```
+
+Это normal output через `icore` facade, собранный project runner-ом.
+
+```text
+warnings/errors -> Output.error -> stderr
+```
+
+Output boundary не должен знать, как строить JSON, CSV или table.
 
 ## Принятое Разделение
 
 ```text
 src/bootstrap
+  index.ts
   args/
     command-options.ts
     instrument-id-options.ts
     instruments-args.ts
     side-effect-args.ts
-  bin/
-    cli.ts
-  commands/
+  cli/
+    contract.ts
+    error.ts
     registry.ts
+    runner.ts
+  commands/
     <command-adapter>/
       cli.ts
       reporter.ts
 
 src/infrastructure
-  renderers/
-    csv-renderer.ts
-    json-renderer.ts
-    table-renderer.ts
-  output/
-    stdout-writer.ts
-    stderr-writer.ts
+  report-values.ts
+
+external dependency
+  icore
+    renderJson/renderCsvRow/renderTextTable
+    TerminalApp/Output
 ```
 
 Граница:
 
-- `bootstrap/commands/*/cli.ts` - command entrypoint, parsing и SDK lifecycle;
-- `bootstrap/commands/*/reporter.ts` - generated response -> application report
-  и command-specific CLI output;
-- `src/infrastructure/renderers/**` - механика JSON/CSV/table rendering;
-- `src/infrastructure/output/**` - запись готовой строки в stream;
-- `application/reports/**` - stable output contracts.
+- `bootstrap/commands/*/cli.ts` - command definition, API-specific mapping и SDK
+  lifecycle;
+- `bootstrap/commands/*/reporter.ts` - provider result -> stable report или
+  command-local event contract -> command-specific CLI output;
+- public render primitives `icore` - механика JSON/CSV-row/table rendering;
+- `icore` `TerminalApp`/`Output.write`, собранные в
+  `bootstrap/cli/runner.ts`, - штатная запись готовой строки или stream в
+  stdout;
+- `icore` `Output.error` - warnings/errors в stderr;
+- `application/reports/**` - stable unary output contracts.
 
 ## Когда Нужен Use-Case
 
@@ -392,10 +430,13 @@ Use-case стоит выделять, если появляется хотя б�
 
 - не добавлять новую formatting logic в `cli.ts`;
 - держать command handler тонким;
-- описывать stable output в `application/reports`;
+- описывать stable unary output в `application/reports`, а специализированный
+  stream contract фиксировать отдельно;
 - держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
-- использовать `infrastructure/renderers` только для общей механики формата;
-- не класть JSON/CSV/table formatting в stdout sink;
+- использовать public render primitives `icore` только для общей механики
+  формата;
+- возвращать normal result terminal app и не переносить JSON/CSV/table policy в
+  output facade;
 - регистрировать команду в `bootstrap/cli/registry.ts` в canonical форме
   `<domain> <command>`;
 - не добавлять short aliases для API-команд;

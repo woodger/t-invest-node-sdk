@@ -26,9 +26,9 @@ Policy source of truth по ограничениям и направлению �
 - [Application](./application.md) - роль `application` в текущем SDK.
 - [DTO и Reports](./dto.md) - где живут boundary contracts.
 - [API Commands](./api-commands.md) - текущий CLI flow и границы command layer.
-- [Adapters](./adapters.md) - место CLI adapters, renderers и stdout sink.
+- [Adapters](./adapters.md) - место project adapters и граница с `icore`.
 - [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) -
-  границы JSON/CSV/table formatting и записи в stdout.
+  границы command-specific formatting, generic primitives и terminal output.
 - [Stream CLI Reference](../cli-stream-reference.md) - текущий контракт
   `stream run` и будущие stream-расширения.
 - [Stream CLI Configuration Reference](../cli-stream-configuration.md) -
@@ -43,15 +43,14 @@ src/application
   services/
 
 src/infrastructure
+  interceptor/
+  report-values.ts
   transport/
     grpc/
-  output/
-  renderers/
 
 src/bootstrap
+  index.ts
   args/
-  bin/
-    cli.ts
   cli/
     contract.ts
     error.ts
@@ -64,6 +63,12 @@ src/bootstrap
   proto/
     compile-proto.ts
   tinkoff-invest-node-sdk.ts
+
+external dependency
+  icore
+    option/command mechanics
+    JSON/CSV-row/table primitives
+    TerminalApp/Output
 ```
 
 `domain` пока не выделен: SDK сейчас в основном оборачивает generated gRPC
@@ -75,7 +80,8 @@ contracts и не содержит самостоятельную provider-neutr
 
 - `application` описывает стабильные контракты и reusable application rules;
 - `infrastructure` содержит внешние технологии и adapters;
-- `bootstrap` собирает runtime entrypoints и связывает зависимости;
+- `bootstrap` собирает runtime entrypoints, связывает зависимости и интегрирует
+  публичный API `icore` с project-owned CLI contracts;
 - `generated` содержит proto-generated contracts в плоском source layout и не редактируется вручную;
 - `bootstrap/generated-exports.ts` остается generated DTO/enums и server-side contracts public export exception.
 

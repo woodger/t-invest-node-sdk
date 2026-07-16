@@ -70,8 +70,9 @@ application/reports
 CLI adapter/reporter
   report -> JSON/CSV/table/string
 
-stdout sink
-  string -> process.stdout
+icore TerminalApp/Output
+  normal string/stream -> TerminalApp -> Output.write -> stdout
+  warnings/errors -> Output.error -> stderr
 ```
 
 Report contract не должен импортировать `bootstrap` или concrete

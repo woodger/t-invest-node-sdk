@@ -206,15 +206,20 @@ Deprecated `sdk.instruments.options` не вводится как публичн
 
 - регистрироваться через `src/bootstrap/cli/registry.ts`;
 - размещать handler в `src/bootstrap/commands`;
-- использовать `src/bootstrap/args` для primitive CLI validation и общих SDK options;
+- использовать declarative `icore` schemas для primitive option validation, а
+  `src/bootstrap/args` - для reusable API-specific normalizers и общих SDK options;
 - разделять raw CLI parsing и typed request mapping: `parse*` helper-ы
   работают с raw CLI options, а `create*Request` принимает typed options и
   строит generated request DTO;
-- описывать стабильный output contract в `src/application/reports`;
+- описывать стабильный unary output contract в `src/application/reports`, а
+  специализированный stream contract - в
+  [Stream CLI Reference](./cli-stream-reference.md);
 - держать command-specific formatting в `src/bootstrap/commands/*/reporter.ts`;
-- использовать `src/infrastructure/renderers` только для механического
-  JSON/CSV/table rendering;
-- использовать `src/infrastructure/output` только для записи готового текста;
+- использовать публичные `icore` render primitives только для общей механики
+  JSON/CSV/table формата;
+- возвращать готовую строку или stream terminal app; normal result проходит
+  через `Output.write` в stdout, а warnings/errors - через `Output.error` в
+  stderr; integration wiring остается в `src/bootstrap/cli/runner.ts`;
 - сверять новые JSON/CSV/table решения с
   [Разделением форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md);
 - не переносить gRPC или business-логику в CLI parser.
