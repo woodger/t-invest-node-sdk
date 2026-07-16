@@ -112,6 +112,8 @@ provider-а или IP.
 ## Декларативный package config
 
 Package defaults хранятся в `src/config.ts` как одна типизированная декларация.
+Термины source/runtime config и ownership этого pipeline зафиксированы в
+[архитектуре SDK](./architecture.md#конфигурация-терминология-и-ownership).
 Сервисный fallback задается через `default`, индивидуальные RPC — через
 `methods`, а общая квота — одним элементом `groups`:
 
