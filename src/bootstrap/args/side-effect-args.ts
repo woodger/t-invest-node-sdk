@@ -11,7 +11,7 @@
  */
 
 import type { Quotation } from '../../generated/common';
-import { defaultConfig } from '../../config';
+import { defaultConfig } from '../sdk-config';
 import { CliUsageError } from '../cli/usage-error';
 
 export const sideEffectConfirmationOptionsSchema = {

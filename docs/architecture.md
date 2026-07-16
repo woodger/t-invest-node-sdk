@@ -51,8 +51,8 @@ provider-neutral правилами или моделями.
 Текущие зоны:
 
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
-  middleware и typed clients, а также mapping unary limit definitions в полные
-  gRPC paths.
+  middleware и typed clients, а также построение полных gRPC paths для unary
+  limit rules.
 - `infrastructure/interceptor` - технические hooks для фильтрации process
   warnings и, в диагностических сценариях, `stdout`.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
@@ -75,6 +75,11 @@ bootstrap-механикой.
 - `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
   package binary `dist/bootstrap/index.js`;
 - `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
+- `bootstrap/unary-limit-config.ts` - компиляция декларативной package policy
+  в flat limits и quota buckets, а также public helper для читаемых
+  per-instance overrides;
+- `bootstrap/sdk-config.ts` - совместимый flat `defaultConfig` и разрешение
+  per-instance unary limit overrides;
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
   `protoc` и локальный `ts-proto` plugin;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
@@ -138,16 +143,23 @@ project-specific CLI-контракты поверх typed/raw option values и 
 
 ## Public Entrypoints
 
-Корневые файлы держат только package entrypoint, runtime config и generated
-exports exception. Public service interfaces экспортируются из application DTO.
-Generated server-side service definitions/implementation types входят в root
-public surface для nice-grpc server adapters; generated service clients остаются
-внутри bootstrap/infrastructure:
+Поддерживаемая public surface собирается `src/index.ts`. Public service
+interfaces экспортируются из application DTO. Generated server-side service
+definitions/implementation types входят в root public surface для nice-grpc
+server adapters; generated service clients остаются внутри
+bootstrap/infrastructure:
 
 - `src/index.ts` - основной package entrypoint;
-- `src/config.ts` - публичная конфигурация unary limits;
-- `src/config.types.ts` - типы публичной конфигурации;
+- `src/bootstrap/sdk-config.ts` - публичный flat `defaultConfig` и сборка
+  runtime throttling policy;
 - `src/bootstrap/generated-exports.ts` - aggregation layer для публичных generated exports.
+
+Package policy хранится отдельно и не образует дополнительный public
+entrypoint:
+
+- `src/config.ts` - единая декларация package defaults без runtime mapping;
+- `src/config.types.ts` - compile-time контракт этой декларации и типы
+  публичной runtime-конфигурации.
 
 Новый код должен импортировать реализацию из слоя-владельца. Root-level
 compatibility wrappers не создаются.

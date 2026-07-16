@@ -3,10 +3,9 @@ import { describe, test } from 'node:test';
 import { Throttle } from './application/services/unary-throttle.service';
 import {
   defaultConfig,
-  resolveUnaryLimitBuckets,
-  resolveUnaryLimits
-} from './config';
-import { defineUnaryLimits } from './infrastructure/transport/grpc/unary-limits';
+  resolveUnaryThrottleConfig
+} from './bootstrap/sdk-config';
+import { defineUnaryLimits } from './bootstrap/unary-limit-config';
 
 describe('defaultConfig', () => {
   test('applies current service-level unary limits', () => {
@@ -82,9 +81,9 @@ describe('defaultConfig', () => {
   });
 });
 
-describe('resolveUnaryLimits', () => {
+describe('resolveUnaryThrottleConfig', () => {
   test('merges per-instance overrides over package defaults', () => {
-    const limits = resolveUnaryLimits({
+    const { limits } = resolveUnaryThrottleConfig({
       UsersService: 25
     });
 
@@ -100,10 +99,8 @@ describe('resolveUnaryLimits', () => {
         }
       }
     });
-    const throttle = new Throttle(
-      resolveUnaryLimits(overrides),
-      resolveUnaryLimitBuckets(overrides)
-    );
+    const config = resolveUnaryThrottleConfig(overrides);
+    const throttle = new Throttle(config.limits, config.buckets);
 
     assert.equal(throttle.resolveLimit(
       '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
@@ -114,36 +111,36 @@ describe('resolveUnaryLimits', () => {
   });
 
   test('returns an isolated snapshot for each resolution', () => {
-    const first = resolveUnaryLimits();
-    const second = resolveUnaryLimits();
+    const first = resolveUnaryThrottleConfig();
+    const second = resolveUnaryThrottleConfig();
 
-    first['UsersService'] = 25;
+    first.limits['UsersService'] = 25;
 
-    assert.equal(second['UsersService'], 100);
+    assert.equal(second.limits['UsersService'], 100);
     assert.equal(defaultConfig.unaryLimits['UsersService'], 100);
   });
 });
 
-describe('resolveUnaryLimitBuckets', () => {
+describe('resolveUnaryThrottleConfig quota groups', () => {
   test('groups methods that share a package quota', () => {
-    const buckets = resolveUnaryLimitBuckets();
+    const { buckets } = resolveUnaryThrottleConfig();
     const expectedBuckets = {
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Bonds':
-        'instruments:list-methods',
+        'InstrumentsService:list-methods',
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares':
-        'instruments:list-methods',
+        'InstrumentsService:list-methods',
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Options':
-        'instruments:list-methods',
+        'InstrumentsService:list-methods',
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Futures':
-        'instruments:list-methods',
+        'InstrumentsService:list-methods',
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Etfs':
-        'instruments:list-methods',
+        'InstrumentsService:list-methods',
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetAssets':
-        'instruments:list-methods',
+        'InstrumentsService:list-methods',
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport':
-        'operations:reports',
+        'OperationsService:reports',
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer':
-        'operations:reports'
+        'OperationsService:reports'
     };
 
     assert.deepEqual(buckets, expectedBuckets);
@@ -157,7 +154,7 @@ describe('resolveUnaryLimitBuckets', () => {
         }
       }
     });
-    const buckets = resolveUnaryLimitBuckets(overrides);
+    const { buckets } = resolveUnaryThrottleConfig(overrides);
 
     assert.equal(
       buckets['/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'],
@@ -167,7 +164,7 @@ describe('resolveUnaryLimitBuckets', () => {
       buckets[
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
       ],
-      'operations:reports'
+      'OperationsService:reports'
     );
   });
 
@@ -183,10 +180,8 @@ describe('resolveUnaryLimitBuckets', () => {
         }
       }
     });
-    const throttle = new Throttle(
-      resolveUnaryLimits(overrides),
-      resolveUnaryLimitBuckets(overrides)
-    );
+    const config = resolveUnaryThrottleConfig(overrides);
+    const throttle = new Throttle(config.limits, config.buckets);
 
     const delays = await captureThrottleDelays(async () => {
       await throttle.reduce(brokerReportPath);
@@ -205,11 +200,11 @@ describe('resolveUnaryLimitBuckets', () => {
         }
       }
     });
-    const buckets = resolveUnaryLimitBuckets(overrides);
+    const { buckets } = resolveUnaryThrottleConfig(overrides);
 
     assert.equal(
       buckets['/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'],
-      'operations:reports'
+      'OperationsService:reports'
     );
   });
 
@@ -222,17 +217,17 @@ describe('resolveUnaryLimitBuckets', () => {
         }
       }
     });
-    const buckets = resolveUnaryLimitBuckets(overrides);
+    const { buckets } = resolveUnaryThrottleConfig(overrides);
 
     assert.equal(
       buckets['/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'],
-      'operations:reports'
+      'OperationsService:reports'
     );
     assert.equal(
       buckets[
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
       ],
-      'operations:reports'
+      'OperationsService:reports'
     );
   });
 
@@ -243,8 +238,7 @@ describe('resolveUnaryLimitBuckets', () => {
     try {
       defaultConfig.unaryLimits[path] = 10;
 
-      const limits = resolveUnaryLimits();
-      const buckets = resolveUnaryLimitBuckets();
+      const { limits, buckets } = resolveUnaryThrottleConfig();
 
       assert.equal(buckets[path], undefined);
       assert.doesNotThrow(() => new Throttle(limits, buckets));
@@ -266,8 +260,7 @@ describe('resolveUnaryLimitBuckets', () => {
     try {
       delete defaultConfig.unaryLimits[path];
 
-      const limits = resolveUnaryLimits();
-      const buckets = resolveUnaryLimitBuckets();
+      const { limits, buckets } = resolveUnaryThrottleConfig();
 
       assert.equal(buckets[path], undefined);
       assert.doesNotThrow(() => new Throttle(limits, buckets));
@@ -280,21 +273,20 @@ describe('resolveUnaryLimitBuckets', () => {
   });
 
   test('returns an isolated bucket snapshot for each resolution', () => {
-    const first = resolveUnaryLimitBuckets();
-    const second = resolveUnaryLimitBuckets();
+    const first = resolveUnaryThrottleConfig();
+    const second = resolveUnaryThrottleConfig();
     const path = '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport';
 
-    delete first[path];
+    delete first.buckets[path];
 
-    assert.equal(second[path], 'operations:reports');
+    assert.equal(second.buckets[path], 'OperationsService:reports');
   });
 });
 
 function createDefaultThrottle(): Throttle {
-  return new Throttle(
-    defaultConfig.unaryLimits,
-    resolveUnaryLimitBuckets()
-  );
+  const config = resolveUnaryThrottleConfig();
+
+  return new Throttle(config.limits, config.buckets);
 }
 
 async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]> {

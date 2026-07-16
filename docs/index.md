@@ -83,6 +83,10 @@ method rules в общий quota bucket; per-instance override с другим �
 делает отдельный метод самостоятельным правилом. Одинаковый override всех
 методов группы сохраняет общий bucket.
 
+В исходном package config эти defaults описаны одной типизированной вложенной
+декларацией; в публичный `defaultConfig.unaryLimits` она компилируется в
+совместимую плоскую runtime-таблицу.
+
 ## Опции `defaultConfig`
 
 ```ts

@@ -24,6 +24,9 @@ micro-release separately.
 
 ### Changed
 
+- Replaced executable package unary-limit declarations with one typed,
+  human-readable config that compiles service fallbacks, method rules, and
+  shared quota groups into the compatible flat runtime policy.
 - Migrated the public CLI contract to preferred friendly domain paths for
   account, market, order, stop-order, operation, sandbox, instrument, and
   `dev compile-proto`.
