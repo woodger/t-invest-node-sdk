@@ -50,6 +50,7 @@ micro-release separately.
 
 ### Fixed
 
+- Restored the generated `OrderType` enum in the root package exports.
 - Synchronized the public SDK service interfaces with the active generated
   service definitions, restoring typed access to 33 RPC methods.
 - Updated default unary throttling with current service and method-specific
