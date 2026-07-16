@@ -85,6 +85,7 @@ describe('package entrypoint', () => {
   test('keeps public SDK runtime exports', () => {
     assert.equal(hasPackageExport('TinkoffInvestNodeSDK'), true);
     assert.equal(hasPackageExport('CandleInterval'), true);
+    assert.equal(hasPackageExport('OrderType'), true);
     assert.equal(hasPackageExport('defaultConfig'), true);
     assert.equal(hasPackageExport('defineUnaryLimits'), true);
   });
