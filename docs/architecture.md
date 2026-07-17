@@ -41,8 +41,8 @@ provider-neutral правилами или моделями.
 - `application/dto/tinkoff-invest-services.ts` - публичные package-owned
   service interfaces SDK facade, отделенные от generated `*ServiceClient`;
 - `application/reports` - стабильные output/report contracts API-команд;
-- `application/services` - reusable application services, например unary
-  throttling.
+- `application/services` - reusable application services, например transport-neutral
+  планирование unary calls по готовым throttle rules.
 
 ## `infrastructure`
 
@@ -51,8 +51,8 @@ provider-neutral правилами или моделями.
 Текущие зоны:
 
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
-  middleware и typed clients, а также построение полных gRPC paths для unary
-  limit rules.
+  middleware и typed clients, а также построение и разрешение полных gRPC
+  paths в transport-neutral throttle rules.
 - `infrastructure/interceptor` - технические hooks для фильтрации process
   warnings и, в диагностических сценариях, `stdout`.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
@@ -186,18 +186,22 @@ policy.
 Unary throttling config проходит следующий pipeline:
 
 ```text
-packageConfig
-  -- compileUnaryLimits --> internal package baseline
-       |-- copy limits --> defaultConfig
-       `-- limits + buckets -------------------------.
-current defaultConfig.unaryLimits ------------------+--> resolveUnaryThrottleConfig
-per-instance unaryLimits ---------------------------'          |
-                                                               `--> snapshot --> Throttle
+packageConfig -- compileUnaryLimits --> internal package baseline
+                                          |-- copy limits --> defaultConfig
+                                          `-- limits + buckets ---------.
+current defaultConfig.unaryLimits -------------------------------------+--> resolveUnaryThrottleConfig
+per-instance unaryLimits ----------------------------------------------'
+                                                                          |
+                                                                          `--> runtime snapshot
+
+runtime snapshot --.
+                   +--> UnaryLimitResolver --> ThrottleRule --> Throttle
+gRPC method path --'
 ```
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
-facade. Resolver читает его текущие values при создании SDK instance,
-накладывает per-instance overrides и возвращает отдельный snapshot.
+facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
+SDK instance, накладывает per-instance overrides и возвращает отдельный snapshot.
 
 Ownership разделен так:
 
@@ -207,16 +211,18 @@ Ownership разделен так:
 - `src/application/dto/tinkoff-invest-options.ts` владеет публичным
   per-instance input, но не package defaults или merge semantics;
 - `src/bootstrap/unary-limit-config.ts` владеет compilation, package baseline
-  validation и его type contract;
+  validation, runtime snapshot invariants и их type contract;
   публичный `defineUnaryLimits()` остается только адаптером читаемой
   формы per-instance overrides и не владеет package defaults;
-- `src/bootstrap/sdk-config.ts` владеет public `defaultConfig`, merge overrides и
-  сборкой изолированного runtime snapshot;
+- `src/bootstrap/sdk-config.ts` владеет public `defaultConfig`, merge overrides,
+  quota group reconciliation и вызовом проверки итогового runtime snapshot;
 - `src/application/services/unary-throttle.service.ts` владеет планированием
-  по готовому snapshot и не интерпретирует source config;
+  по готовому `ThrottleRule` и не интерпретирует source config или gRPC paths;
 - `src/infrastructure/transport/grpc/unary-limits.ts` владеет только
-  transport-specific построением gRPC method path, а не compilation
-  package policy.
+  transport-specific построением gRPC method path;
+- `src/infrastructure/transport/grpc/unary-limit-resolver.ts` владеет
+  сопоставлением path с method/service rule и выбором runtime bucket, но не
+  compilation package policy или throttling state.
 
 Новая config semantics добавляется в authoring contract и compiler. Она не
 должна возвращать mapping/resolver logic в `src/config.ts` или создавать

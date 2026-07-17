@@ -51,7 +51,12 @@ import type {
   UsersService
 } from '../application/dto/tinkoff-invest-services';
 import { Throttle } from '../application/services/unary-throttle.service';
-import { createSdkChannel, createSdkClient, createSdkMetadata } from '../infrastructure/transport/grpc';
+import {
+  createSdkChannel,
+  createSdkClient,
+  createSdkMetadata,
+  UnaryLimitResolver
+} from '../infrastructure/transport/grpc';
 import { resolveUnaryThrottleConfig } from './sdk-config';
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
@@ -82,6 +87,7 @@ export class TinkoffInvestNodeSDK {
   private channel: Channel;
   private metadata: Metadata;
   private throttle: Throttle;
+  private unaryLimitResolver: UnaryLimitResolver;
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
@@ -92,7 +98,8 @@ export class TinkoffInvestNodeSDK {
 
     const unaryThrottleConfig = resolveUnaryThrottleConfig(options.unaryLimits);
 
-    this.throttle = new Throttle(
+    this.throttle = new Throttle();
+    this.unaryLimitResolver = new UnaryLimitResolver(
       unaryThrottleConfig.limits,
       unaryThrottleConfig.buckets
     );
@@ -157,6 +164,7 @@ export class TinkoffInvestNodeSDK {
         this.channel,
         this.metadata,
         this.options.trackLimits ?? true,
+        this.unaryLimitResolver,
         this.throttle
       );
 

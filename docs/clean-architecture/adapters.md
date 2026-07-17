@@ -50,7 +50,12 @@ external dependency
 - channel;
 - metadata;
 - middleware;
-- typed clients.
+- typed clients;
+- mapping gRPC method path в transport-neutral `ThrottleRule`.
+
+`unary-limit-resolver.ts` выбирает method rule или service fallback, разрешает
+quota bucket и передает application scheduler-у только `bucket` и
+`limitPerMinute`. Application не разбирает gRPC path.
 
 `infrastructure/interceptor` содержит технические process hooks для warnings и
 диагностического перехвата `stdout`. Это не штатный CLI output sink: normal
@@ -116,6 +121,7 @@ bootstrap/commands/*/reporter.ts -> icore presentation primitives
 bootstrap/cli/runner.ts          -> icore TerminalApp/Output
 infrastructure/report-values.ts  -> application/reports
 infrastructure/transport/grpc    -> application services/contracts
+infrastructure/unary resolver    -> application ThrottleRule
 ```
 
 Недопустимо:

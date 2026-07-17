@@ -63,15 +63,15 @@
 ```ts
 test('returns undefined for an unknown path', () => {
   // Arrange
-  const throttle = new Throttle({
+  const resolver = new UnaryLimitResolver({
     KnownService: 100
   });
 
   // Act
-  const limit = throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
+  const rule = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
 
   // Assert
-  assert.equal(limit, undefined);
+  assert.equal(rule, undefined);
 });
 ```
 
@@ -79,12 +79,12 @@ test('returns undefined for an unknown path', () => {
 
 ```ts
 test('returns undefined for an unknown path', () => {
-  const throttle = new Throttle({
+  const resolver = new UnaryLimitResolver({
     KnownService: 100
   });
 
   assert.equal(
-    throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
+    resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
     undefined
   );
 });
@@ -221,12 +221,14 @@ Regression-комментарий должен объяснять production-р�
 
 ```ts
 test('waits according to the configured limit between requests', async () => {
-  const throttle = new Throttle({
-    OrdersService: 100
-  });
+  const throttle = new Throttle();
+  const rule = {
+    bucket: 'rule:OrdersService',
+    limitPerMinute: 100
+  };
 
-  await throttle.reduce('/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState');
-  await throttle.reduce('/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState');
+  await throttle.reduce(rule);
+  await throttle.reduce(rule);
 
   // 600 ms = 60_000 ms / 100 requests per minute.
   assert.deepEqual(delays, [600]);
@@ -237,8 +239,14 @@ test('waits according to the configured limit between requests', async () => {
 
 ```ts
 test('waits according to the configured limit between requests', async () => {
-  await throttle.reduce(path);
-  await throttle.reduce(path);
+  const throttle = new Throttle();
+  const rule = {
+    bucket: 'rule:OrdersService',
+    limitPerMinute: 100
+  };
+
+  await throttle.reduce(rule);
+  await throttle.reduce(rule);
 
   // Check delay
   assert.deepEqual(delays, [600]);
@@ -300,15 +308,15 @@ const call = createUnaryCall(path);
 ```ts
 test('returns undefined for an unknown path', () => {
   // Given
-  const throttle = new Throttle({
+  const resolver = new UnaryLimitResolver({
     KnownService: 100
   });
 
   // When
-  const limit = throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
+  const rule = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
 
   // Then
-  assert.equal(limit, undefined);
+  assert.equal(rule, undefined);
 });
 ```
 
