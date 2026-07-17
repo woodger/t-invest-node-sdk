@@ -15,9 +15,18 @@ micro-release separately.
 ### Added
 
 - Added package `bin` metadata for the `tinkoff-invest-node-sdk` CLI binary.
+- Added per-instance unary limit overrides through
+  `TinkoffInvestOptions.unaryLimits`, merged with package defaults when an SDK
+  instance is created.
+- Added `defineUnaryLimits()` and `UnaryLimitsDefinition` for readable nested
+  service and method limit declarations without changing the flat runtime
+  `UnaryLimits` contract.
 
 ### Changed
 
+- Replaced executable package unary-limit declarations with one typed,
+  human-readable config that compiles service fallbacks, method rules, and
+  shared quota groups into the compatible flat runtime policy.
 - Migrated the public CLI contract to preferred friendly domain paths for
   account, market, order, stop-order, operation, sandbox, instrument, and
   `dev compile-proto`.
@@ -39,6 +48,23 @@ micro-release separately.
   upstream and restored a flat layout for vendored and generated contracts.
   Root package exports remain unchanged; direct generated-module imports now
   use the flat `generated/<contract>` paths.
+- Made proto generation resolve vendored and generated contract paths from
+  `contracts/upstream.json` instead of duplicating them in bootstrap code.
+
+### Fixed
+
+- Restored the generated `OrderType` enum in the root package exports.
+- Synchronized the public SDK service interfaces with the active generated
+  service definitions, restoring typed access to 33 RPC methods.
+- Updated default unary throttling with current service and method-specific
+  T-Invest limits, including low-limit instrument lists and operation reports.
+- Isolated unary throttling schedules by quota bucket so unrelated services no
+  longer delay each other while methods with one shared quota remain
+  aggregated.
+- Matched unary service fallbacks by exact generated service name so
+  `OrdersService` no longer catches `StopOrdersService` paths.
+- Replaced the stale archived limits reference and outdated stream grade table
+  with the active T-Bank limits policy.
 
 ## [0.2.3] - 2026-07-03
 

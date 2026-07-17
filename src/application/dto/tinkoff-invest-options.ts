@@ -14,4 +14,5 @@ export interface TinkoffInvestOptions {
   appName?: string;
   useSsl?: boolean;
   trackLimits?: boolean;
+  unaryLimits?: Record<string, number>;
 }

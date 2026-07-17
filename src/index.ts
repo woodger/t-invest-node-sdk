@@ -15,6 +15,11 @@ export type {
   TinkoffInvestMetadataValue,
   UsersService
 } from './application/dto/tinkoff-invest-services';
-export { defaultConfig } from './config';
-export type { TinkoffInvestNodeSDKConfig, UnaryLimits } from './config.types';
+export { defaultConfig } from './bootstrap/sdk-config';
+export { defineUnaryLimits } from './bootstrap/unary-limit-config';
+export type {
+  TinkoffInvestNodeSDKConfig,
+  UnaryLimits,
+  UnaryLimitsDefinition
+} from './config.types';
 export * from './bootstrap/generated-exports';

@@ -405,6 +405,7 @@ export {
   OrderDirection,
   orderDirectionFromJSON,
   orderDirectionToJSON,
+  OrderType,
   orderTypeFromJSON,
   orderTypeToJSON,
   OrderExecutionReportStatus,

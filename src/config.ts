@@ -1,46 +1,114 @@
 /**
- * Модуль package config задает default runtime policies пакета SDK.
+ * Модуль package config хранит декларативные defaults и общие runtime
+ * policies SDK.
  *
  * Здесь допустимы:
- * - значения CLI safety policy;
- * - значения throttling policy по generated service names;
- * - экспорт config types как часть public config surface;
+ * - человекочитаемые package defaults;
+ * - unary limit policy по generated service и RPC names;
+ * - CLI safety policy, общая для package entrypoints;
  *
- * Здесь не должно быть environment parsing или transport initialization.
+ * Здесь не должно быть secrets, environment parsing, deployment-specific
+ * значений или runtime-преобразований.
  */
 
-import type { TinkoffInvestNodeSDKConfig } from './config.types';
+import type { PackageConfigDefinition } from './config.types';
 
-export * from './config.types';
-
-export const defaultConfig: TinkoffInvestNodeSDKConfig = {
-  // Ключи соответствуют generated gRPC service names или method paths.
+export const packageConfig = {
   unaryLimits: {
-    /** Справочные данные инструментов. */
-    InstrumentsService: 200,
+    /**
+     * Локальный fallback 200 применяется к RPC без более специфичного rule.
+     * Шесть list RPC расходуют одну общую квоту 15 запросов в минуту, поэтому
+     * перечислены в одной group с единственным значением limit.
+     */
+    InstrumentsService: {
+      default: 200,
+      groups: {
+        'list-methods': {
+          limit: 15,
+          methods: [
+            'Bonds',
+            'Shares',
+            'Options',
+            'Futures',
+            'Etfs',
+            'GetAssets'
+          ]
+        }
+      }
+    },
 
-    /** Рыночные данные: цены, свечи и стакан. */
-    MarketDataService: 300,
+    /**
+     * Fallback 600 запросов в минуту относится только к unary RPC.
+     * Stream connections регулируются отдельной provider policy.
+     */
+    MarketDataService: {
+      default: 600
+    },
 
-    /** Операции, портфель, позиции, отчеты и лимиты. */
-    OperationsService: 200,
+    /**
+     * Локальный limiter не различает запуск и получение отчета по request
+     * payload, поэтому оба report RPC консервативно делят общую квоту 5.
+     */
+    OperationsService: {
+      default: 200,
+      groups: {
+        reports: {
+          limit: 5,
+          methods: [
+            'GetBrokerReport',
+            'GetDividendsForeignIssuer'
+          ]
+        }
+      }
+    },
 
-    /** Торговые поручения и их состояние. */
-    OrdersService: 100,
+    /**
+     * Method quotas заменяют service fallback 100 для перечисленных RPC.
+     * Лимит PostOrder 15 запросов в секунду хранится как 900 в минуту, потому
+     * что все значения UnaryLimits используют одну минутную единицу.
+     */
+    OrdersService: {
+      default: 100,
+      methods: {
+        GetOrders: 200,
+        PostOrder: 900,
+        PostOrderAsync: 600,
+        CancelOrder: 300,
+        ReplaceOrder: 300
+      }
+    },
 
-    /** Тестовый торговый контур. */
-    SandboxService: 200,
+    /**
+     * Sandbox имеет отдельную service quota 200 запросов в минуту;
+     * production service rules к нему не применяются.
+     */
+    SandboxService: {
+      default: 200
+    },
 
-    /** Стоп-ордера. */
-    StopOrdersService: 50,
+    /**
+     * GetStopOrders использует отдельную квоту 60 запросов в минуту;
+     * остальные RPC наследуют service fallback 50.
+     */
+    StopOrdersService: {
+      default: 50,
+      methods: {
+        GetStopOrders: 60
+      }
+    },
 
-    /** Счета, тарифы и пользовательская информация. */
-    UsersService: 100
+    /**
+     * Provider учитывает service quota 100 запросов в минуту суммарно по
+     * счетам пользователя.
+     */
+    UsersService: {
+      default: 100
+    }
   },
 
   /**
-   * Требует явный `--confirm` для CLI-команд с side effects.
-   * Это package policy, а не provider API contract.
+   * Явный `--confirm` защищает CLI-команды с side effects на уровне package;
+   * provider API не знает об этом safety flag.
    */
   requireSideEffectConfirmation: true
-};
+} as const satisfies PackageConfigDefinition;

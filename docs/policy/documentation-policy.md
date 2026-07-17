@@ -17,10 +17,19 @@
 - application report contracts: `src/application/reports/**`;
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
-- throttling policy implementation: `src/application/services/unary-throttle.service.ts`, `src/config.ts` и `src/config.types.ts`;
+- unary throttling source policy: `src/config.ts`;
+- authoring и public runtime type contracts: `src/config.types.ts`;
+- per-instance SDK config input:
+  `src/application/dto/tinkoff-invest-options.ts`;
+- unary config compilation и readable override shape adapter:
+  `src/bootstrap/unary-limit-config.ts`;
+- public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;
+- throttling runtime и transport-specific rule paths:
+  `src/application/services/unary-throttle.service.ts` и
+  `src/infrastructure/transport/grpc/unary-limits.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
-- CLI rendering/output mechanics: `src/infrastructure/renderers/**`, `src/infrastructure/output/**`;
+- CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;
 - proto wire contracts: `contracts/*.proto`;
 - proto upstream metadata: `contracts/upstream.json`;
 - generated exports: `src/bootstrap/generated-exports.ts` и `src/generated/**`;

@@ -51,8 +51,8 @@ import type {
   UsersService
 } from '../application/dto/tinkoff-invest-services';
 import { Throttle } from '../application/services/unary-throttle.service';
-import { defaultConfig } from '../config';
 import { createSdkChannel, createSdkClient, createSdkMetadata } from '../infrastructure/transport/grpc';
+import { resolveUnaryThrottleConfig } from './sdk-config';
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof MarketDataServiceDefinition
@@ -90,7 +90,12 @@ export class TinkoffInvestNodeSDK {
       ...options
     };
 
-    this.throttle = new Throttle(defaultConfig.unaryLimits);
+    const unaryThrottleConfig = resolveUnaryThrottleConfig(options.unaryLimits);
+
+    this.throttle = new Throttle(
+      unaryThrottleConfig.limits,
+      unaryThrottleConfig.buckets
+    );
     this.channel = createSdkChannel(this.options);
     this.metadata = createSdkMetadata(this.options);
   }
