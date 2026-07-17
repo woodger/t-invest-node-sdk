@@ -5,6 +5,7 @@
  * Здесь допустимы:
  * - построение полных gRPC paths для method rules;
  * - сборка quota buckets и проверка инвариантов декларации;
+ * - проверка инвариантов итогового runtime snapshot;
  * - public mapping читаемых per-instance overrides в flat UnaryLimits;
  *
  * Здесь не должно быть package defaults, runtime throttling state или
@@ -12,18 +13,15 @@
  */
 
 import type {
-  UnaryLimitBuckets
-} from '../application/services/unary-throttle.service';
-import type {
   UnaryLimits,
   UnaryLimitsConfig,
   UnaryLimitsDefinition
 } from '../config.types';
 import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-limits';
 
-/** Нормализованный snapshot, который принимает application Throttle. */
-export interface CompiledUnaryLimits {
-  buckets: UnaryLimitBuckets;
+/** Path-keyed runtime policy, которую принимает transport resolver. */
+export interface UnaryThrottleConfig {
+  buckets: Record<string, string>;
   limits: UnaryLimits;
 }
 
@@ -56,8 +54,8 @@ export function defineUnaryLimits(
  */
 export function compileUnaryLimits(
   definition: UnaryLimitsConfig
-): CompiledUnaryLimits {
-  const buckets: UnaryLimitBuckets = {};
+): UnaryThrottleConfig {
+  const buckets: Record<string, string> = {};
   const limits: UnaryLimits = {};
 
   for (const [service, serviceLimits] of Object.entries(definition)) {
@@ -98,10 +96,48 @@ export function compileUnaryLimits(
     }
   }
 
-  return {
+  const compiled = {
     buckets,
     limits
   };
+
+  assertUnaryThrottleConfig(compiled);
+
+  return compiled;
+}
+
+/**
+ * Проверяет limits и quota groups после применения public defaults и
+ * per-instance overrides, до создания transport resolver и scheduler.
+ */
+export function assertUnaryThrottleConfig(
+  config: UnaryThrottleConfig
+): void {
+  const bucketLimits = new Map<string, number>();
+
+  for (const [rule, limit] of Object.entries(config.limits)) {
+    assertUnaryLimit(limit, rule);
+  }
+
+  for (const [rule, bucket] of Object.entries(config.buckets)) {
+    const limit = config.limits[rule];
+
+    if (limit === undefined) {
+      throw new Error(
+        `Unary quota group ${bucket} references unknown rule ${rule}`
+      );
+    }
+
+    const bucketLimit = bucketLimits.get(bucket);
+
+    if (bucketLimit !== undefined && bucketLimit !== limit) {
+      throw new Error(
+        `Unary quota group ${bucket} contains inconsistent limits`
+      );
+    }
+
+    bucketLimits.set(bucket, limit);
+  }
 }
 
 function assertUnaryLimit(limit: number, rule: string): void {
