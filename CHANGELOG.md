@@ -50,6 +50,8 @@ micro-release separately.
   use the flat `generated/<contract>` paths.
 - Made proto generation resolve vendored and generated contract paths from
   `contracts/upstream.json` instead of duplicating them in bootstrap code.
+- Split unary throttling into transport-specific gRPC rule resolution and a
+  transport-neutral application scheduler.
 
 ### Fixed
 
@@ -63,6 +65,8 @@ micro-release separately.
   aggregated.
 - Matched unary service fallbacks by exact generated service name so
   `OrdersService` no longer catches `StopOrdersService` paths.
+- Rejected non-positive and non-finite unary limits after merging mutable
+  public defaults with per-instance overrides.
 - Replaced the stale archived limits reference and outdated stream grade table
   with the active T-Bank limits policy.
 

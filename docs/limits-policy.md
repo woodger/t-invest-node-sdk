@@ -52,9 +52,9 @@ SDK работает через `gRPC`, поэтому ниже приведен
 превышает официальные `15` запросов в секунду.
 
 `GetBrokerReport` и `GetDividendsForeignIssuer` объединяют запуск формирования
-и получение готового отчета в одном RPC. Текущий throttler выбирает лимит по
-gRPC path и не анализирует request payload, поэтому консервативно применяет
-общий лимит `5` ко всем вызовам обоих RPC.
+и получение готового отчета в одном RPC. Transport resolver не анализирует
+request payload и для всех режимов обоих RPC выбирает одно общее правило с
+лимитом `5`; application scheduler применяет его общий временной график.
 
 ## Лимиты stream-соединений
 
@@ -99,8 +99,9 @@ SDK поддерживает локальный throttling unary-запросо�
 - не обновляет локальную таблицу автоматически из `users.getUserTariff()` или
   response metadata.
 
-Для одного вызова локальный throttler применяет только самое специфичное
-совпавшее правило. Method override заменяет service fallback и не учитывается в
+Для одного вызова gRPC resolver выбирает только самое специфичное
+совпавшее правило, а application scheduler планирует вызов по готовому bucket
+и limit. Method override заменяет service fallback и не учитывается в
 его графике одновременно, поэтому service aggregate provider-а для таких
 вызовов локально не воспроизводится. Package policy дополнительно связывает
 некоторые method rules с общей quota group. Per-instance override, который
@@ -136,7 +137,9 @@ OperationsService: {
 числовые значения, имена сервисов и RPC. Bootstrap compiler один раз
 преобразует декларацию в плоские runtime limits и quota buckets и отклоняет
 неположительные или неконечные числовые значения. Публичный
-`defaultConfig.unaryLimits` остается плоским для совместимости.
+`defaultConfig.unaryLimits` остается плоским для совместимости. После merge с
+public defaults и per-instance overrides bootstrap повторно проверяет весь
+итоговый snapshot до создания transport resolver и scheduler.
 
 Пример точечного ограничения для отдельного экземпляра:
 

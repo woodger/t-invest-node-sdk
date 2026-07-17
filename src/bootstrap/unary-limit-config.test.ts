@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
+  assertUnaryThrottleConfig,
   compileUnaryLimits,
   defineUnaryLimits
 } from './unary-limit-config';
@@ -133,6 +134,39 @@ describe('compileUnaryLimits', () => {
         }
       }),
       /OperationsService:reports must be a finite positive number/
+    );
+  });
+});
+
+describe('assertUnaryThrottleConfig', () => {
+  test('rejects a quota bucket that references an unknown rule', () => {
+    assert.throws(
+      () => assertUnaryThrottleConfig({
+        buckets: {
+          '/test.Service/First': 'test:shared'
+        },
+        limits: {}
+      }),
+      /quota group test:shared references unknown rule \/test\.Service\/First/
+    );
+  });
+
+  test('rejects different limits assigned to one quota bucket', () => {
+    const firstPath = '/test.Service/First';
+    const secondPath = '/test.Service/Second';
+
+    assert.throws(
+      () => assertUnaryThrottleConfig({
+        buckets: {
+          [firstPath]: 'test:shared',
+          [secondPath]: 'test:shared'
+        },
+        limits: {
+          [firstPath]: 100,
+          [secondPath]: 200
+        }
+      }),
+      /quota group test:shared contains inconsistent limits/
     );
   });
 });

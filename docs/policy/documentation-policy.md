@@ -24,9 +24,11 @@
 - unary config compilation и readable override shape adapter:
   `src/bootstrap/unary-limit-config.ts`;
 - public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;
-- throttling runtime и transport-specific rule paths:
-  `src/application/services/unary-throttle.service.ts` и
-  `src/infrastructure/transport/grpc/unary-limits.ts`;
+- transport-neutral throttling runtime:
+  `src/application/services/unary-throttle.service.ts`;
+- transport-specific unary rule paths и resolution:
+  `src/infrastructure/transport/grpc/unary-limits.ts`,
+  `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;

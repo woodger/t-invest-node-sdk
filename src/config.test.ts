@@ -6,10 +6,13 @@ import {
   resolveUnaryThrottleConfig
 } from './bootstrap/sdk-config';
 import { defineUnaryLimits } from './bootstrap/unary-limit-config';
+import {
+  UnaryLimitResolver
+} from './infrastructure/transport/grpc/unary-limit-resolver';
 
 describe('defaultConfig', () => {
   test('applies current service-level unary limits', () => {
-    const throttle = createDefaultThrottle();
+    const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy': 200,
       '/tinkoff.public.invest.api.contract.v1.MarketDataService/GetCandles': 600,
@@ -21,12 +24,12 @@ describe('defaultConfig', () => {
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
-      assert.equal(throttle.resolveLimit(path), limit);
+      assert.equal(resolver.resolve(path)?.limitPerMinute, limit);
     }
   });
 
   test('applies lower method-specific limits before service fallbacks', () => {
-    const throttle = createDefaultThrottle();
+    const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Bonds': 15,
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares': 15,
@@ -39,12 +42,12 @@ describe('defaultConfig', () => {
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
-      assert.equal(throttle.resolveLimit(path), limit);
+      assert.equal(resolver.resolve(path)?.limitPerMinute, limit);
     }
   });
 
   test('applies higher method-specific limits before service fallbacks', () => {
-    const throttle = createDefaultThrottle();
+    const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
       '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders': 200,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': 900,
@@ -55,26 +58,30 @@ describe('defaultConfig', () => {
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
-      assert.equal(throttle.resolveLimit(path), limit);
+      assert.equal(resolver.resolve(path)?.limitPerMinute, limit);
     }
   });
 
   test('aggregates calls in current package method quota groups', async () => {
-    const throttle = createDefaultThrottle();
+    const { resolver, throttle } = createDefaultUnaryThrottle();
 
     const delays = await captureThrottleDelays(async () => {
-      await throttle.reduce(
+      await throttle.reduce(resolveRequiredRule(
+        resolver,
         '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Bonds'
-      );
-      await throttle.reduce(
+      ));
+      await throttle.reduce(resolveRequiredRule(
+        resolver,
         '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares'
-      );
-      await throttle.reduce(
+      ));
+      await throttle.reduce(resolveRequiredRule(
+        resolver,
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'
-      );
-      await throttle.reduce(
+      ));
+      await throttle.reduce(resolveRequiredRule(
+        resolver,
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
-      );
+      ));
     });
 
     assert.deepEqual(delays, [4000, 12000]);
@@ -100,14 +107,20 @@ describe('resolveUnaryThrottleConfig', () => {
       }
     });
     const config = resolveUnaryThrottleConfig(overrides);
-    const throttle = new Throttle(config.limits, config.buckets);
+    const resolver = new UnaryLimitResolver(config.limits, config.buckets);
 
-    assert.equal(throttle.resolveLimit(
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
-    ), 300);
-    assert.equal(throttle.resolveLimit(
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
-    ), 100);
+    assert.equal(
+      resolver.resolve(
+        '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
+      )?.limitPerMinute,
+      300
+    );
+    assert.equal(
+      resolver.resolve(
+        '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
+      )?.limitPerMinute,
+      100
+    );
   });
 
   test('returns an isolated snapshot for each resolution', () => {
@@ -118,6 +131,36 @@ describe('resolveUnaryThrottleConfig', () => {
 
     assert.equal(second.limits['UsersService'], 100);
     assert.equal(defaultConfig.unaryLimits['UsersService'], 100);
+  });
+
+  test('rejects invalid per-instance limits after merging overrides', () => {
+    for (const limit of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+      assert.throws(
+        () => resolveUnaryThrottleConfig({ UsersService: limit }),
+        /Unary limit UsersService must be a finite positive number/
+      );
+    }
+  });
+
+  test('rejects an invalid limit changed through public config', () => {
+    const previousLimit = defaultConfig.unaryLimits['UsersService'];
+
+    try {
+      defaultConfig.unaryLimits['UsersService'] = 0;
+
+      assert.throws(
+        () => resolveUnaryThrottleConfig(),
+        /Unary limit UsersService must be a finite positive number/
+      );
+    }
+    finally {
+      if (previousLimit === undefined) {
+        delete defaultConfig.unaryLimits['UsersService'];
+      }
+      else {
+        defaultConfig.unaryLimits['UsersService'] = previousLimit;
+      }
+    }
   });
 });
 
@@ -181,12 +224,13 @@ describe('resolveUnaryThrottleConfig quota groups', () => {
       }
     });
     const config = resolveUnaryThrottleConfig(overrides);
-    const throttle = new Throttle(config.limits, config.buckets);
+    const resolver = new UnaryLimitResolver(config.limits, config.buckets);
+    const throttle = new Throttle();
 
     const delays = await captureThrottleDelays(async () => {
-      await throttle.reduce(brokerReportPath);
-      await throttle.reduce(dividendsReportPath);
-      await throttle.reduce(brokerReportPath);
+      await throttle.reduce(resolveRequiredRule(resolver, brokerReportPath));
+      await throttle.reduce(resolveRequiredRule(resolver, dividendsReportPath));
+      await throttle.reduce(resolveRequiredRule(resolver, brokerReportPath));
     });
 
     assert.deepEqual(delays, [6000]);
@@ -239,9 +283,13 @@ describe('resolveUnaryThrottleConfig quota groups', () => {
       defaultConfig.unaryLimits[path] = 10;
 
       const { limits, buckets } = resolveUnaryThrottleConfig();
+      const rule = new UnaryLimitResolver(limits, buckets).resolve(path);
 
       assert.equal(buckets[path], undefined);
-      assert.doesNotThrow(() => new Throttle(limits, buckets));
+      assert.deepEqual(rule, {
+        bucket: `rule:${path}`,
+        limitPerMinute: 10
+      });
     }
     finally {
       if (previousLimit === undefined) {
@@ -261,9 +309,13 @@ describe('resolveUnaryThrottleConfig quota groups', () => {
       delete defaultConfig.unaryLimits[path];
 
       const { limits, buckets } = resolveUnaryThrottleConfig();
+      const rule = new UnaryLimitResolver(limits, buckets).resolve(path);
 
       assert.equal(buckets[path], undefined);
-      assert.doesNotThrow(() => new Throttle(limits, buckets));
+      assert.deepEqual(rule, {
+        bucket: 'rule:OperationsService',
+        limitPerMinute: 200
+      });
     }
     finally {
       if (previousLimit !== undefined) {
@@ -283,10 +335,33 @@ describe('resolveUnaryThrottleConfig quota groups', () => {
   });
 });
 
-function createDefaultThrottle(): Throttle {
+function createDefaultUnaryLimitResolver(): UnaryLimitResolver {
   const config = resolveUnaryThrottleConfig();
 
-  return new Throttle(config.limits, config.buckets);
+  return new UnaryLimitResolver(config.limits, config.buckets);
+}
+
+function createDefaultUnaryThrottle(): {
+  resolver: UnaryLimitResolver;
+  throttle: Throttle;
+} {
+  return {
+    resolver: createDefaultUnaryLimitResolver(),
+    throttle: new Throttle()
+  };
+}
+
+function resolveRequiredRule(
+  resolver: UnaryLimitResolver,
+  path: string
+) {
+  const rule = resolver.resolve(path);
+
+  if (rule === undefined) {
+    throw new Error(`Expected unary limit rule for ${path}`);
+  }
+
+  return rule;
 }
 
 async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]> {

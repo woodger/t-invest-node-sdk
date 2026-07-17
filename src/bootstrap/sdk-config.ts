@@ -5,6 +5,7 @@
  * - компиляция package defaults в совместимый public flat config;
  * - разрешение per-instance unary limit overrides;
  * - согласование overrides с package quota groups;
+ * - проверка инвариантов итогового instance snapshot;
  *
  * Здесь не должно быть transport initialization, provider tariff refresh или
  * throttling state.
@@ -14,9 +15,12 @@ import type {
   TinkoffInvestNodeSDKConfig,
   UnaryLimits
 } from '../config.types';
-import type { CompiledUnaryLimits } from './unary-limit-config';
+import type { UnaryThrottleConfig } from './unary-limit-config';
 import { packageConfig } from '../config';
-import { compileUnaryLimits } from './unary-limit-config';
+import {
+  assertUnaryThrottleConfig,
+  compileUnaryLimits
+} from './unary-limit-config';
 
 const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
 
@@ -29,7 +33,7 @@ export const defaultConfig: TinkoffInvestNodeSDKConfig = {
 
 export function resolveUnaryThrottleConfig(
   overrides?: UnaryLimits
-): CompiledUnaryLimits {
+): UnaryThrottleConfig {
   const buckets = {
     ...packageUnaryLimits.buckets
   };
@@ -62,8 +66,12 @@ export function resolveUnaryThrottleConfig(
     }
   }
 
-  return {
+  const resolvedConfig = {
     buckets,
     limits
   };
+
+  assertUnaryThrottleConfig(resolvedConfig);
+
+  return resolvedConfig;
 }

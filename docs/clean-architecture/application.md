@@ -35,7 +35,7 @@ src/application
 - `application/dto` - входные SDK options и application-level contracts;
 - `application/reports` - стабильные output/report contracts API-команд;
 - `application/services` - reusable application rules, например unary
-  throttling.
+  scheduling по transport-neutral `ThrottleRule`.
 
 ## Что Допустимо В `application`
 
@@ -87,6 +87,9 @@ infrastructure. Он может быть использован CLI, тесто�
 - не являются transport/infrastructure detail;
 - не требуют конкретного SDK adapter-а;
 - имеют самостоятельное поведение и тесты.
+
+`Throttle` получает только готовые `bucket` и `limitPerMinute`. Сопоставление
+gRPC method path с service/method rule остается в transport adapter-е.
 
 Если helper используется один раз и не выражает отдельное правило, его лучше
 оставить рядом с consumer-ом.

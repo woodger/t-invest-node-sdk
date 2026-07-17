@@ -7,7 +7,8 @@ import {
   createSdkChannel,
   createSdkClient,
   createSdkMetadata,
-  createSdkMiddleware
+  createSdkMiddleware,
+  UnaryLimitResolver
 } from './index';
 
 type TestRequest = Record<string, never>;
@@ -93,15 +94,21 @@ describe('infrastructure transport grpc', () => {
 
   describe('createSdkMiddleware', () => {
     test('throttles unary calls when trackLimits is enabled', async () => {
-      const throttle = new Throttle({});
+      const resolver = new UnaryLimitResolver({
+        UsersService: 100
+      });
+      const throttle = new Throttle();
       let throttleCalls = 0;
 
-      throttle.reduce = async (path: string) => {
+      throttle.reduce = async (rule) => {
         throttleCalls += 1;
-        assert.equal(path, '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts');
+        assert.deepEqual(rule, {
+          bucket: 'rule:UsersService',
+          limitPerMinute: 100
+        });
       };
 
-      const middleware = createSdkMiddleware(true, throttle);
+      const middleware = createSdkMiddleware(true, resolver, throttle);
       const iterator = middleware(
         createUnaryCall('/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'),
         {}
@@ -116,15 +123,33 @@ describe('infrastructure transport grpc', () => {
       });
     });
 
+    test('rejects a unary call without a configured limit rule', async () => {
+      const middleware = createSdkMiddleware(
+        true,
+        new UnaryLimitResolver({}),
+        new Throttle()
+      );
+      const iterator = middleware(
+        createUnaryCall('/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'),
+        {}
+      );
+
+      await assert.rejects(
+        iterator.next(),
+        /Unhandled unary limits for .*UsersService\/GetAccounts/
+      );
+    });
+
     test('does not throttle response streams', async () => {
-      const throttle = new Throttle({});
+      const resolver = new UnaryLimitResolver({});
+      const throttle = new Throttle();
       let throttleCalls = 0;
 
       throttle.reduce = async () => {
         throttleCalls += 1;
       };
 
-      const middleware = createSdkMiddleware(true, throttle);
+      const middleware = createSdkMiddleware(true, resolver, throttle);
       const iterator = middleware(
         createResponseStreamCall('/tinkoff.public.invest.api.contract.v1.OperationsStreamService/PortfolioStream', [
           { seq: 1 },
@@ -168,12 +193,14 @@ describe('infrastructure transport grpc', () => {
         token: 'token',
         endpoint: 'localhost:50051'
       });
-      const throttle = new Throttle({});
+      const resolver = new UnaryLimitResolver({ UsersService: 100 });
+      const throttle = new Throttle();
       const client = createSdkClient<{ getAccounts: unknown }>(
         UsersServiceDefinition,
         channel,
         metadata,
         true,
+        resolver,
         throttle
       );
 

@@ -187,12 +187,12 @@ public API contract.
 
 ```ts
 test('returns undefined for an unknown path', () => {
-  const throttle = new Throttle({
+  const resolver = new UnaryLimitResolver({
     KnownService: 100
   });
 
   assert.equal(
-    throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
+    resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
     undefined
   );
 });
@@ -202,7 +202,7 @@ test('returns undefined for an unknown path', () => {
 
 ```ts
 test('validates throttling', () => {
-  const throttle = new Throttle({
+  const resolver = new UnaryLimitResolver({
     InstrumentsService: 200,
     MarketDataService: 300,
     OperationsService: 200,
@@ -213,7 +213,7 @@ test('validates throttling', () => {
   });
 
   assert.equal(
-    throttle.resolveLimit('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
+    resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
     undefined
   );
 });
@@ -273,8 +273,8 @@ Nested `describe()` называет публичный member или operation:
 Примеры:
 
 ```ts
-describe('Throttle', () => {
-  describe('#resolveLimit', () => {
+describe('UnaryLimitResolver', () => {
+  describe('#resolve', () => {
     // ...
   });
 
@@ -301,8 +301,8 @@ A parent suite must not contain sibling `describe()` blocks with the same name. 
 Хорошо:
 
 ```ts
-describe('Throttle', () => {
-  describe('#resolveLimit', () => {
+describe('UnaryLimitResolver', () => {
+  describe('#resolve', () => {
     test('returns undefined for an unknown path', () => {
       // ...
     });
@@ -313,9 +313,9 @@ describe('Throttle', () => {
 Плохо:
 
 ```ts
-describe('Throttle', () => {
-  describe('#resolveLimit', () => {
-    test('Throttle resolveLimit returns undefined for an unknown path', () => {
+describe('UnaryLimitResolver', () => {
+  describe('#resolve', () => {
+    test('UnaryLimitResolver resolve returns undefined for an unknown path', () => {
       // ...
     });
   });
