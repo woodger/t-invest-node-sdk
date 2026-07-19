@@ -1,6 +1,6 @@
 {
   "name": "tinkoff-invest-node-sdk",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
   "keywords": [

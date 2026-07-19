@@ -199,6 +199,19 @@ runtime snapshot --.
 gRPC method path --'
 ```
 
+Package-owned gRPC transport policy проходит без public или per-instance
+override:
+
+```text
+packageConfig.grpc.maxReceiveMessageLength
+  --> TinkoffInvestNodeSDK bootstrap
+  --> createSdkChannel
+  --> grpc.max_receive_message_length
+```
+
+Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует
+неявный default transport dependency.
+
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
 SDK instance, накладывает per-instance overrides и возвращает отдельный snapshot.
@@ -216,6 +229,8 @@ Ownership разделен так:
   формы per-instance overrides и не владеет package defaults;
 - `src/bootstrap/sdk-config.ts` владеет public `defaultConfig`, merge overrides,
   quota group reconciliation и вызовом проверки итогового runtime snapshot;
+- `src/infrastructure/transport/grpc/sdk-channel.ts` владеет mapping готовой
+  package transport policy в channel options, но не default value;
 - `src/application/services/unary-throttle.service.ts` владеет планированием
   по готовому `ThrottleRule` и не интерпретирует source config или gRPC paths;
 - `src/infrastructure/transport/grpc/unary-limits.ts` владеет только
@@ -224,9 +239,10 @@ Ownership разделен так:
   сопоставлением path с method/service rule и выбором runtime bucket, но не
   compilation package policy или throttling state.
 
-Новая config semantics добавляется в authoring contract и compiler. Она не
-должна возвращать mapping/resolver logic в `src/config.ts` или создавать
-вторую декларацию той же policy.
+Новая структурная config semantics добавляется в authoring contract и
+соответствующий compiler. Готовые scalar values bootstrap передает напрямую
+adapter-у — без compiler-а и второй декларации. Mapping/resolver logic не
+должна возвращаться в `src/config.ts`.
 
 ## Generated Code
 

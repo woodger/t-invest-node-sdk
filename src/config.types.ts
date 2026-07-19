@@ -84,6 +84,12 @@ export type PackageUnaryLimitsConfig = {
 
 /** Source contract декларативного package config без runtime mapping. */
 export interface PackageConfigDefinition {
+  /** Package-owned transport policy общего gRPC channel. */
+  grpc: {
+    /** Максимальный размер одного входящего gRPC-сообщения в байтах. */
+    maxReceiveMessageLength: number;
+  };
+
   /** Provider limits и package quota groups. */
   unaryLimits: PackageUnaryLimitsConfig;
 

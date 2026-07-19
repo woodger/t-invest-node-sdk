@@ -4,6 +4,7 @@
  *
  * Здесь допустимы:
  * - человекочитаемые package defaults;
+ * - transport safety policy общего gRPC channel;
  * - unary limit policy по generated service и RPC names;
  * - CLI safety policy, общая для package entrypoints;
  *
@@ -14,6 +15,14 @@
 import type { PackageConfigDefinition } from './config.types';
 
 export const packageConfig = {
+  grpc: {
+    /**
+     * SDK фиксирует 4 MiB как собственную transport policy и не зависит от
+     * неявного default grpc-js, который может измениться при upgrade.
+     */
+    maxReceiveMessageLength: 4 * 1024 * 1024
+  },
+
   unaryLimits: {
     /**
      * Локальный fallback 200 применяется к RPC без более специфичного rule.

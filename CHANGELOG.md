@@ -52,6 +52,8 @@ micro-release separately.
   `contracts/upstream.json` instead of duplicating them in bootstrap code.
 - Split unary throttling into transport-specific gRPC rule resolution and a
   transport-neutral application scheduler.
+- Made the 4 MiB gRPC receive message limit an explicit package-owned transport
+  policy instead of inheriting the implicit `grpc-js` default.
 
 ### Fixed
 

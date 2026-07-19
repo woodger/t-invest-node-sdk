@@ -103,6 +103,12 @@ interface TinkoffInvestNodeSDKConfig {
 - `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
   side effects, по умолчанию `true`.
 
+## gRPC transport policy
+
+SDK явно ограничивает размер одного входящего gRPC-сообщения значением 4 MiB.
+Это package-owned transport policy из `src/config.ts`, а не неявный default
+`grpc-js`. Per-instance override намеренно отсутствует.
+
 ## Доступные сервисы
 
 Экземпляр `TinkoffInvestNodeSDK` лениво создает unary-клиенты для сервисов:

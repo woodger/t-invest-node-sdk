@@ -6,9 +6,19 @@ import {
   resolveUnaryThrottleConfig
 } from './bootstrap/sdk-config';
 import { defineUnaryLimits } from './bootstrap/unary-limit-config';
+import { packageConfig } from './config';
 import {
   UnaryLimitResolver
 } from './infrastructure/transport/grpc/unary-limit-resolver';
+
+describe('packageConfig', () => {
+  test('sets the gRPC receive message limit to four MiB', () => {
+    assert.equal(
+      packageConfig.grpc.maxReceiveMessageLength,
+      4 * 1024 * 1024
+    );
+  });
+});
 
 describe('defaultConfig', () => {
   test('applies current service-level unary limits', () => {
