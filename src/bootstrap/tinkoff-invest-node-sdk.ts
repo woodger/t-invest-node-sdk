@@ -13,6 +13,7 @@ import {
   Channel,
   Metadata
 } from 'nice-grpc';
+import { packageConfig } from '../config';
 import { InstrumentsServiceDefinition,
   InstrumentsServiceClient
 } from '../generated/instruments';
@@ -103,7 +104,10 @@ export class TinkoffInvestNodeSDK {
       unaryThrottleConfig.limits,
       unaryThrottleConfig.buckets
     );
-    this.channel = createSdkChannel(this.options);
+    this.channel = createSdkChannel(
+      this.options,
+      packageConfig.grpc.maxReceiveMessageLength
+    );
     this.metadata = createSdkMetadata(this.options);
   }
 

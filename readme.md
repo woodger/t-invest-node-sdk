@@ -165,6 +165,12 @@ interface TinkoffInvestNodeSDKConfig {
 
 Подробности по официальной лимитной политике API и её связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
 
+## gRPC transport policy
+
+SDK явно ограничивает размер одного входящего gRPC-сообщения значением 4 MiB.
+Это package-owned transport policy из `src/config.ts`, а не неявный default
+`grpc-js`. Per-instance override намеренно отсутствует.
+
 ## CLI
 
 CLI запускается из собранного `dist`, поэтому после изменений в исходниках его

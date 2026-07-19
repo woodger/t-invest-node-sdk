@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { Throttle } from '../../../application/services/unary-throttle.service';
+import { packageConfig } from '../../../config';
 import { UsersServiceDefinition } from '../../../generated/users';
 import {
   createSdkChannel,
@@ -175,7 +176,7 @@ describe('infrastructure transport grpc', () => {
         token: 'token',
         endpoint: 'localhost:50051',
         useSsl: false
-      });
+      }, packageConfig.grpc.maxReceiveMessageLength);
 
       assert.ok(channel);
       assert.equal(typeof channel.close, 'function');
@@ -188,7 +189,7 @@ describe('infrastructure transport grpc', () => {
         token: 'token',
         endpoint: 'localhost:50051',
         useSsl: false
-      });
+      }, packageConfig.grpc.maxReceiveMessageLength);
       const metadata = createSdkMetadata({
         token: 'token',
         endpoint: 'localhost:50051'
