@@ -212,6 +212,18 @@ packageConfig.grpc.maxReceiveMessageLength
 Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует
 неявный default transport dependency.
 
+Package defaults для публичных instance options разрешаются при создании SDK:
+
+```text
+packageConfig.sdk -- defaults --.
+                                +--> resolved TinkoffInvestOptions
+per-instance options -----------'
+```
+
+Per-instance `useSsl` и `trackLimits` имеют приоритет над package defaults.
+`packageConfig.sdk` остается внутренней authoring-формой и не расширяет
+публичный `defaultConfig`.
+
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
 SDK instance, накладывает per-instance overrides и возвращает отдельный snapshot.

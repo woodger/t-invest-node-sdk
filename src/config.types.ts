@@ -84,6 +84,15 @@ export type PackageUnaryLimitsConfig = {
 
 /** Source contract декларативного package config без runtime mapping. */
 export interface PackageConfigDefinition {
+  /** Package defaults публичных per-instance SDK options. */
+  sdk: {
+    /** Использовать TLS, если instance option не задан. */
+    useSsl: boolean;
+
+    /** Применять локальный unary throttling, если instance option не задан. */
+    trackLimits: boolean;
+  };
+
   /** Package-owned transport policy общего gRPC channel. */
   grpc: {
     /** Максимальный размер одного входящего gRPC-сообщения в байтах. */

@@ -12,6 +12,13 @@ import {
 } from './infrastructure/transport/grpc/unary-limit-resolver';
 
 describe('packageConfig', () => {
+  test('defines defaults for each SDK instance', () => {
+    assert.deepEqual(packageConfig.sdk, {
+      useSsl: true,
+      trackLimits: true
+    });
+  });
+
   test('sets the gRPC receive message limit to four MiB', () => {
     assert.equal(
       packageConfig.grpc.maxReceiveMessageLength,

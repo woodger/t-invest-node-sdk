@@ -15,6 +15,14 @@
 import type { PackageConfigDefinition } from './config.types';
 
 export const packageConfig = {
+  sdk: {
+    /** TLS включен для каждого SDK instance, если consumer не переопределил его. */
+    useSsl: true,
+
+    /** Локальный unary throttling включен по умолчанию для каждого SDK instance. */
+    trackLimits: true
+  },
+
   grpc: {
     /**
      * SDK фиксирует 4 MiB как собственную transport policy и не зависит от

@@ -54,6 +54,8 @@ micro-release separately.
   transport-neutral application scheduler.
 - Made the 4 MiB gRPC receive message limit an explicit package-owned transport
   policy instead of inheriting the implicit `grpc-js` default.
+- Moved the `useSsl` and `trackLimits` SDK instance defaults into the typed
+  package config without changing per-instance override behavior.
 
 ### Fixed
 

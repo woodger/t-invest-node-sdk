@@ -82,8 +82,13 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
+type ResolvedTinkoffInvestOptions = TinkoffInvestOptions & {
+  useSsl: boolean;
+  trackLimits: boolean;
+};
+
 export class TinkoffInvestNodeSDK {
-  private options: TinkoffInvestOptions;
+  private options: ResolvedTinkoffInvestOptions;
   private storage: Map<ServiceDefinition, ServiceClient> = new Map();
   private channel: Channel;
   private metadata: Metadata;
@@ -92,8 +97,7 @@ export class TinkoffInvestNodeSDK {
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
-      useSsl: true,
-      trackLimits: true,
+      ...packageConfig.sdk,
       ...options
     };
 
@@ -167,7 +171,7 @@ export class TinkoffInvestNodeSDK {
         service,
         this.channel,
         this.metadata,
-        this.options.trackLimits ?? true,
+        this.options.trackLimits,
         this.unaryLimitResolver,
         this.throttle
       );
