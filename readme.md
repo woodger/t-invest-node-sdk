@@ -110,6 +110,9 @@ type UnaryLimits = Record<string, number>;
 - `unaryLimits` - per-instance overrides лимитов в запросах за минуту. Значения
   объединяются с `defaultConfig.unaryLimits` при создании SDK.
 
+Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
+instance options имеют приоритет.
+
 Для читаемой группировки лимитов по сервисам и методам используйте
 `defineUnaryLimits()`. `default` задает сервисный fallback, а `methods` —
 исключения для отдельных RPC:
