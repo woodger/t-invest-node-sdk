@@ -12,10 +12,12 @@ micro-release separately.
 
 ## [Unreleased]
 
-## [0.3.2] - 2026-07-19
+## [0.3.2] - 2026-07-24
 
 ### Changed
 
+- Marked the package as private and documented version-pinned installation from
+  its GitHub tag; this release is not published to the npm registry.
 - Made the 4 MiB gRPC receive message limit an explicit package-owned transport
   policy instead of inheriting the implicit `grpc-js` default.
 - Moved the `useSsl` and `trackLimits` SDK instance defaults into the typed
@@ -25,6 +27,8 @@ micro-release separately.
 
 - Added the omitted SignalService root contracts and `sdk.signals` facade,
   including its package-owned unary limit policy.
+- Classified `pwd-fs` as a runtime dependency so the package CLI can start
+  after installation from GitHub.
 
 ## [0.3.1] - 2026-07-17
 
