@@ -104,6 +104,14 @@ export const packageConfig = {
     },
 
     /**
+     * Оба RPC SignalService суммарно используют service quota 100 запросов
+     * в минуту.
+     */
+    SignalService: {
+      default: 100
+    },
+
+    /**
      * GetStopOrders использует отдельную квоту 60 запросов в минуту;
      * остальные RPC наследуют service fallback 50.
      */

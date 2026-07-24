@@ -36,6 +36,7 @@ import {
   OrdersStreamServiceClient
 } from '../generated/orders';
 import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/sandbox';
+import { SignalServiceDefinition, SignalServiceClient } from '../generated/signals';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
 import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
@@ -48,6 +49,7 @@ import type {
   OrdersService,
   OrdersStreamService,
   SandboxService,
+  SignalService,
   StopOrdersService,
   UsersService
 } from '../application/dto/tinkoff-invest-services';
@@ -68,6 +70,7 @@ type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof OrdersServiceDefinition
   | typeof OrdersStreamServiceDefinition
   | typeof SandboxServiceDefinition
+  | typeof SignalServiceDefinition
   | typeof StopOrdersServiceDefinition
   | typeof UsersServiceDefinition;
 
@@ -79,6 +82,7 @@ type ServiceClient = InstrumentsServiceClient
   | OrdersServiceClient
   | OrdersStreamServiceClient
   | SandboxServiceClient
+  | SignalServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
@@ -149,6 +153,10 @@ export class TinkoffInvestNodeSDK {
 
   get sandbox() {
     return this.useServiceAsClient<SandboxServiceClient>(SandboxServiceDefinition) as SandboxService;
+  }
+
+  get signals() {
+    return this.useServiceAsClient<SignalServiceClient>(SignalServiceDefinition) as SignalService;
   }
 
   get stoporders() {

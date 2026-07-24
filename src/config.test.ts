@@ -36,6 +36,7 @@ describe('defaultConfig', () => {
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio': 200,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState': 100,
       '/tinkoff.public.invest.api.contract.v1.SandboxService/GetSandboxAccounts': 200,
+      '/tinkoff.public.invest.api.contract.v1.SignalService/GetSignals': 100,
       '/tinkoff.public.invest.api.contract.v1.StopOrdersService/PostStopOrder': 50,
       '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts': 100
     };

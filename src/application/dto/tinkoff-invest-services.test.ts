@@ -27,6 +27,10 @@ import type {
   SandboxServiceDefinition
 } from '../../generated/sandbox';
 import type {
+  SignalServiceClient,
+  SignalServiceDefinition
+} from '../../generated/signals';
+import type {
   StopOrdersServiceClient,
   StopOrdersServiceDefinition
 } from '../../generated/stoporders';
@@ -43,6 +47,7 @@ import type {
   OrdersService,
   OrdersStreamService,
   SandboxService,
+  SignalService,
   StopOrdersService,
   UsersService
 } from './tinkoff-invest-services';
@@ -112,6 +117,11 @@ const serviceMethodContracts = {
     SandboxServiceClient,
     SandboxServiceDefinition
   >,
+  SignalService: true satisfies ServiceContractMatches<
+    SignalService,
+    SignalServiceClient,
+    SignalServiceDefinition
+  >,
   StopOrdersService: true satisfies ServiceContractMatches<
     StopOrdersService,
     StopOrdersServiceClient,
@@ -126,7 +136,7 @@ const serviceMethodContracts = {
 
 describe('public service contracts', () => {
   test('match generated client signatures and definition method keys', () => {
-    assert.equal(Object.keys(serviceMethodContracts).length, 10);
+    assert.equal(Object.keys(serviceMethodContracts).length, 11);
     assert.equal(Object.values(serviceMethodContracts).every(Boolean), true);
   });
 });

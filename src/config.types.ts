@@ -16,6 +16,7 @@ import type {
   OperationsService,
   OrdersService,
   SandboxService,
+  SignalService,
   StopOrdersService,
   UsersService
 } from './application/dto/tinkoff-invest-services';
@@ -78,6 +79,7 @@ export type PackageUnaryLimitsConfig = {
   OperationsService: UnaryServiceLimitsConfig<GrpcMethodName<OperationsService>>;
   OrdersService: UnaryServiceLimitsConfig<GrpcMethodName<OrdersService>>;
   SandboxService: UnaryServiceLimitsConfig<GrpcMethodName<SandboxService>>;
+  SignalService: UnaryServiceLimitsConfig<GrpcMethodName<SignalService>>;
   StopOrdersService: UnaryServiceLimitsConfig<GrpcMethodName<StopOrdersService>>;
   UsersService: UnaryServiceLimitsConfig<GrpcMethodName<UsersService>>;
 };

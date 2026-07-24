@@ -9,6 +9,7 @@ export type {
   OrdersService,
   OrdersStreamService,
   SandboxService,
+  SignalService,
   StopOrdersService,
   TinkoffInvestCallOptions,
   TinkoffInvestMetadata,
