@@ -118,11 +118,13 @@ command в `runPrepared`. В штатном terminal flow общая error polic
 единый stderr для фаз `prepare`, `execute`, `render`, `write` и внешних
 bootstrap-операций.
 
-Exit code определяется типом ошибки, а не фазой: `icore` errors категории
-`usage` и project-owned `CliUsageError` завершаются с кодом `2`; runtime,
-provider, output и `icore` definition errors — с кодом `1`. `CliUsageError`
-используется для command-specific аргументов, обязательных CLI/ENV-значений и
-уже прочитанной JSON command config; ошибки чтения файла остаются runtime.
+Exit code определяется типом ошибки, а не фазой. Публичный `isUsageError()` из
+`icore` распознаёт framework errors категории `usage` и application validators,
+которые выбрасывают публичный `CliUsageError`; они завершаются с кодом `2`.
+Runtime, provider, output и `icore` definition errors завершаются с кодом `1`.
+`CliUsageError` используется для command-specific аргументов, обязательных
+CLI/ENV-значений и уже прочитанной JSON command config; ошибки чтения файла
+остаются runtime.
 Command `cli.ts` создает generated request DTO из typed options, создает SDK
 facade и передает provider response в reporter-модуль. Unary reporter-ы обычно
 преобразуют generated DTO в `application/reports` contracts; stream reporter

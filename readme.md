@@ -225,6 +225,11 @@ yarn cli operation portfolio --account-id=2000000000 --format=json
 - `1` — ошибка выполнения, provider-а, файловой системы, вывода или внутреннего
   определения команды.
 
+Application validators используют публичный `CliUsageError` из `icore`, а
+terminal policy классифицирует application и framework usage errors единым
+`isUsageError()`. Формат ошибок и приведённые выше exit codes при этом не
+изменяются.
+
 Полный список команд и совместимых псевдонимов описан в
 [API Commands](docs/clean-architecture/api-commands.md). Для потоковых команд
 есть отдельные [справочник CLI](docs/cli-stream-reference.md) и

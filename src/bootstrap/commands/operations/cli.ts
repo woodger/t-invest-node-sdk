@@ -15,9 +15,8 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { CliUsageError } from '../../cli/usage-error';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import {

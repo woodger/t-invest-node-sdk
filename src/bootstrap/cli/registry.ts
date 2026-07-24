@@ -84,7 +84,8 @@ import {
   isCommandName as isCommandLineCommandName,
   resolveCommand as resolveCommandLineCommand,
   type CommandDefinition,
-  type OptionsSchema
+  type OptionsSchema,
+  type TerminalCommandOutput
 } from 'icore';
 import {
   commandPathAliases,
@@ -92,8 +93,9 @@ import {
   commandPathToName
 } from './domains';
 
-type CliCommandOutput = string | AsyncIterable<string> | undefined;
-type CliCommand = (args: readonly string[]) => CliCommandOutput | Promise<CliCommandOutput>;
+type CliCommand = (
+  args: readonly string[]
+) => TerminalCommandOutput | Promise<TerminalCommandOutput>;
 
 export type ResolvedCommand = {
   name: CommandName;
@@ -152,7 +154,7 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
 type CommandLineDefinition = CommandDefinition<
   OptionsSchema,
   undefined,
-  CliCommandOutput,
+  TerminalCommandOutput,
   readonly [string, ...string[]]
 > & RegisteredCommand;
 
@@ -267,7 +269,7 @@ function defineCommandLineCommandAliases<const TSchema extends OptionsSchema>(
   definition: CommandDefinition<
     TSchema,
     undefined,
-    CliCommandOutput,
+    TerminalCommandOutput,
     readonly [string, ...string[]]
   >
 ): CommandLineDefinition[] {
@@ -281,7 +283,7 @@ function defineCommandLineCommand<const TSchema extends OptionsSchema>(
   definition: CommandDefinition<
     TSchema,
     undefined,
-    CliCommandOutput,
+    TerminalCommandOutput,
     readonly [string, ...string[]]
   >
 ): CommandLineDefinition {

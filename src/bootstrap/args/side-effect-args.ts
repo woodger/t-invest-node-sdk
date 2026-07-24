@@ -11,8 +11,8 @@
  */
 
 import type { Quotation } from '../../generated/common';
+import { CliUsageError } from 'icore';
 import { defaultConfig } from '../sdk-config';
-import { CliUsageError } from '../cli/usage-error';
 
 export const sideEffectConfirmationOptionsSchema = {
   confirm: {

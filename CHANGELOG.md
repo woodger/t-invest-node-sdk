@@ -12,6 +12,15 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `icore` to `2.0.2` and replaced the local application usage-error
+  class and manual category check with the public `CliUsageError` and
+  `isUsageError()` contracts without changing CLI rendering or exit codes.
+- Typed the command registry output with the public `TerminalCommandOutput`
+  contract; `TerminalApp.runPrepared()` remains responsible for runtime output
+  narrowing and render-phase errors.
+
 ## [0.3.2] - 2026-07-24
 
 ### Changed
