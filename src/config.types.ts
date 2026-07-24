@@ -16,6 +16,7 @@ import type {
   OperationsService,
   OrdersService,
   SandboxService,
+  SignalService,
   StopOrdersService,
   UsersService
 } from './application/dto/tinkoff-invest-services';
@@ -78,12 +79,28 @@ export type PackageUnaryLimitsConfig = {
   OperationsService: UnaryServiceLimitsConfig<GrpcMethodName<OperationsService>>;
   OrdersService: UnaryServiceLimitsConfig<GrpcMethodName<OrdersService>>;
   SandboxService: UnaryServiceLimitsConfig<GrpcMethodName<SandboxService>>;
+  SignalService: UnaryServiceLimitsConfig<GrpcMethodName<SignalService>>;
   StopOrdersService: UnaryServiceLimitsConfig<GrpcMethodName<StopOrdersService>>;
   UsersService: UnaryServiceLimitsConfig<GrpcMethodName<UsersService>>;
 };
 
 /** Source contract декларативного package config без runtime mapping. */
 export interface PackageConfigDefinition {
+  /** Package defaults публичных per-instance SDK options. */
+  sdk: {
+    /** Использовать TLS, если instance option не задан. */
+    useSsl: boolean;
+
+    /** Применять локальный unary throttling, если instance option не задан. */
+    trackLimits: boolean;
+  };
+
+  /** Package-owned transport policy общего gRPC channel. */
+  grpc: {
+    /** Максимальный размер одного входящего gRPC-сообщения в байтах. */
+    maxReceiveMessageLength: number;
+  };
+
   /** Provider limits и package quota groups. */
   unaryLimits: PackageUnaryLimitsConfig;
 

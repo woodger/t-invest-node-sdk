@@ -9,11 +9,17 @@
 - SDK поддерживает локальный throttling unary-запросов через `trackLimits` и отдельную таблицу лимитов по сервисам.
 - Bootstrap CLI layer содержит command registry, `help` и `version` utility-команды.
 
-## Установка
+## Установка из GitHub
+
+Пакет устанавливается напрямую из GitHub и не публикуется в npm. Для приватного
+репозитория у окружения должен быть настроен SSH-доступ:
 
 ```bash
-yarn add tinkoff-invest-node-sdk
+yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.2"
 ```
+
+Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
+после получения Git dependency.
 
 ## Быстрый старт
 
@@ -49,6 +55,9 @@ type UnaryLimits = Record<string, number>;
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
 - `unaryLimits` - per-instance overrides лимитов в запросах за минуту. Значения
   объединяются с `defaultConfig.unaryLimits` при создании SDK.
+
+Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
+instance options имеют приоритет.
 
 Для читаемой группировки лимитов по сервисам и методам используйте
 `defineUnaryLimits()`. `default` задает сервисный fallback, а `methods` —
@@ -103,6 +112,12 @@ interface TinkoffInvestNodeSDKConfig {
 - `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
   side effects, по умолчанию `true`.
 
+## gRPC transport policy
+
+SDK явно ограничивает размер одного входящего gRPC-сообщения значением 4 MiB.
+Это package-owned transport policy из `src/config.ts`, а не неявный default
+`grpc-js`. Per-instance override намеренно отсутствует.
+
 ## Доступные сервисы
 
 Экземпляр `TinkoffInvestNodeSDK` лениво создает unary-клиенты для сервисов:
@@ -112,6 +127,7 @@ interface TinkoffInvestNodeSDKConfig {
 - `sdk.operations`
 - `sdk.orders`
 - `sdk.sandbox`
+- `sdk.signals`
 - `sdk.stoporders`
 - `sdk.users`
 

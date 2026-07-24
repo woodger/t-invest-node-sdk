@@ -4,6 +4,7 @@
  *
  * Здесь допустимы:
  * - человекочитаемые package defaults;
+ * - transport safety policy общего gRPC channel;
  * - unary limit policy по generated service и RPC names;
  * - CLI safety policy, общая для package entrypoints;
  *
@@ -14,6 +15,22 @@
 import type { PackageConfigDefinition } from './config.types';
 
 export const packageConfig = {
+  sdk: {
+    /** TLS включен для каждого SDK instance, если consumer не переопределил его. */
+    useSsl: true,
+
+    /** Локальный unary throttling включен по умолчанию для каждого SDK instance. */
+    trackLimits: true
+  },
+
+  grpc: {
+    /**
+     * SDK фиксирует 4 MiB как собственную transport policy и не зависит от
+     * неявного default grpc-js, который может измениться при upgrade.
+     */
+    maxReceiveMessageLength: 4 * 1024 * 1024
+  },
+
   unaryLimits: {
     /**
      * Локальный fallback 200 применяется к RPC без более специфичного rule.
@@ -84,6 +101,14 @@ export const packageConfig = {
      */
     SandboxService: {
       default: 200
+    },
+
+    /**
+     * Оба RPC SignalService суммарно используют service quota 100 запросов
+     * в минуту.
+     */
+    SignalService: {
+      default: 100
     },
 
     /**

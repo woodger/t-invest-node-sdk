@@ -6,9 +6,26 @@ import {
   resolveUnaryThrottleConfig
 } from './bootstrap/sdk-config';
 import { defineUnaryLimits } from './bootstrap/unary-limit-config';
+import { packageConfig } from './config';
 import {
   UnaryLimitResolver
 } from './infrastructure/transport/grpc/unary-limit-resolver';
+
+describe('packageConfig', () => {
+  test('defines defaults for each SDK instance', () => {
+    assert.deepEqual(packageConfig.sdk, {
+      useSsl: true,
+      trackLimits: true
+    });
+  });
+
+  test('sets the gRPC receive message limit to four MiB', () => {
+    assert.equal(
+      packageConfig.grpc.maxReceiveMessageLength,
+      4 * 1024 * 1024
+    );
+  });
+});
 
 describe('defaultConfig', () => {
   test('applies current service-level unary limits', () => {
@@ -19,6 +36,7 @@ describe('defaultConfig', () => {
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio': 200,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState': 100,
       '/tinkoff.public.invest.api.contract.v1.SandboxService/GetSandboxAccounts': 200,
+      '/tinkoff.public.invest.api.contract.v1.SignalService/GetSignals': 100,
       '/tinkoff.public.invest.api.contract.v1.StopOrdersService/PostStopOrder': 50,
       '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts': 100
     };

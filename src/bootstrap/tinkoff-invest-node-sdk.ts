@@ -13,6 +13,7 @@ import {
   Channel,
   Metadata
 } from 'nice-grpc';
+import { packageConfig } from '../config';
 import { InstrumentsServiceDefinition,
   InstrumentsServiceClient
 } from '../generated/instruments';
@@ -35,6 +36,7 @@ import {
   OrdersStreamServiceClient
 } from '../generated/orders';
 import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/sandbox';
+import { SignalServiceDefinition, SignalServiceClient } from '../generated/signals';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
 import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
@@ -47,6 +49,7 @@ import type {
   OrdersService,
   OrdersStreamService,
   SandboxService,
+  SignalService,
   StopOrdersService,
   UsersService
 } from '../application/dto/tinkoff-invest-services';
@@ -67,6 +70,7 @@ type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof OrdersServiceDefinition
   | typeof OrdersStreamServiceDefinition
   | typeof SandboxServiceDefinition
+  | typeof SignalServiceDefinition
   | typeof StopOrdersServiceDefinition
   | typeof UsersServiceDefinition;
 
@@ -78,11 +82,17 @@ type ServiceClient = InstrumentsServiceClient
   | OrdersServiceClient
   | OrdersStreamServiceClient
   | SandboxServiceClient
+  | SignalServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
+type ResolvedTinkoffInvestOptions = TinkoffInvestOptions & {
+  useSsl: boolean;
+  trackLimits: boolean;
+};
+
 export class TinkoffInvestNodeSDK {
-  private options: TinkoffInvestOptions;
+  private options: ResolvedTinkoffInvestOptions;
   private storage: Map<ServiceDefinition, ServiceClient> = new Map();
   private channel: Channel;
   private metadata: Metadata;
@@ -91,8 +101,7 @@ export class TinkoffInvestNodeSDK {
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
-      useSsl: true,
-      trackLimits: true,
+      ...packageConfig.sdk,
       ...options
     };
 
@@ -103,7 +112,10 @@ export class TinkoffInvestNodeSDK {
       unaryThrottleConfig.limits,
       unaryThrottleConfig.buckets
     );
-    this.channel = createSdkChannel(this.options);
+    this.channel = createSdkChannel(
+      this.options,
+      packageConfig.grpc.maxReceiveMessageLength
+    );
     this.metadata = createSdkMetadata(this.options);
   }
 
@@ -143,6 +155,10 @@ export class TinkoffInvestNodeSDK {
     return this.useServiceAsClient<SandboxServiceClient>(SandboxServiceDefinition) as SandboxService;
   }
 
+  get signals() {
+    return this.useServiceAsClient<SignalServiceClient>(SignalServiceDefinition) as SignalService;
+  }
+
   get stoporders() {
     return this.useServiceAsClient<StopOrdersServiceClient>(StopOrdersServiceDefinition) as StopOrdersService;
   }
@@ -163,7 +179,7 @@ export class TinkoffInvestNodeSDK {
         service,
         this.channel,
         this.metadata,
-        this.options.trackLimits ?? true,
+        this.options.trackLimits,
         this.unaryLimitResolver,
         this.throttle
       );

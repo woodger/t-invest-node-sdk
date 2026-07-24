@@ -1,7 +1,9 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { createServer } from 'nice-grpc';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { Throttle } from '../application/services/unary-throttle.service';
+import { SignalServiceDefinition } from '../generated/signals';
 import {
   createSdkMiddleware,
   UnaryLimitResolver
@@ -100,7 +102,7 @@ describe('createSdkMiddleware', () => {
 });
 
 describe('TinkoffInvestNodeSDK', () => {
-  test('exposes stream clients', () => {
+  test('exposes stream and signal clients', () => {
     const sdk = new TinkoffInvestNodeSDK({
       token: 'token',
       endpoint: 'localhost:50051',
@@ -113,9 +115,65 @@ describe('TinkoffInvestNodeSDK', () => {
       assert.equal(typeof sdk.operationsStream.portfolioStream, 'function');
       assert.equal(typeof sdk.operationsStream.positionsStream, 'function');
       assert.equal(typeof sdk.ordersStream.tradesStream, 'function');
+      assert.equal(typeof sdk.signals.getStrategies, 'function');
+      assert.equal(typeof sdk.signals.getSignals, 'function');
     }
     finally {
       sdk.close();
+    }
+  });
+
+  test('calls both SignalService methods through the facade', async () => {
+    const server = createServer();
+    let getStrategiesCalls = 0;
+    let getSignalsCalls = 0;
+
+    server.add(SignalServiceDefinition, {
+      async getStrategies(request) {
+        getStrategiesCalls += 1;
+        assert.equal(request.strategyId, 'strategy-id');
+
+        return { strategies: [] };
+      },
+      async getSignals(request) {
+        getSignalsCalls += 1;
+        assert.equal(request.signalId, 'signal-id');
+
+        return {
+          signals: [],
+          paging: undefined
+        };
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const options = {
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    } as const;
+    const strategiesSdk = new TinkoffInvestNodeSDK(options);
+    const signalsSdk = new TinkoffInvestNodeSDK(options);
+
+    try {
+      const [strategies, signals] = await Promise.all([
+        strategiesSdk.signals.getStrategies({
+          strategyId: 'strategy-id'
+        }),
+        signalsSdk.signals.getSignals({
+          signalId: 'signal-id'
+        })
+      ]);
+
+      assert.deepEqual(strategies.strategies, []);
+      assert.deepEqual(signals.signals, []);
+      assert.equal(getStrategiesCalls, 1);
+      assert.equal(getSignalsCalls, 1);
+    }
+    finally {
+      strategiesSdk.close();
+      signalsSdk.close();
+      await server.shutdown();
     }
   });
 
