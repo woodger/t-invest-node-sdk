@@ -453,6 +453,26 @@ export {
 export type { SandboxServiceImplementation } from '../generated/sandbox';
 
 export {
+  StrategyType,
+  strategyTypeFromJSON,
+  strategyTypeToJSON,
+  SignalDirection,
+  signalDirectionFromJSON,
+  signalDirectionToJSON,
+  SignalState,
+  signalStateFromJSON,
+  signalStateToJSON,
+  GetStrategiesRequest,
+  GetStrategiesResponse,
+  Strategy,
+  GetSignalsRequest,
+  GetSignalsResponse,
+  Signal,
+  SignalServiceDefinition
+} from '../generated/signals';
+export type { SignalServiceImplementation } from '../generated/signals';
+
+export {
   StopOrderDirection,
   stopOrderDirectionFromJSON,
   stopOrderDirectionToJSON,

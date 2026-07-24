@@ -17,6 +17,8 @@ import type {
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation,
   SandboxServiceImplementation,
+  SignalService,
+  SignalServiceImplementation,
   StopOrdersServiceImplementation,
   UsersServiceImplementation
 } from './index';
@@ -30,11 +32,17 @@ type RootServerSideImplementationContracts = [
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation,
   SandboxServiceImplementation,
+  SignalServiceImplementation,
   StopOrdersServiceImplementation,
   UsersServiceImplementation
 ];
 
-const expectedServerSideImplementationContractCount: RootServerSideImplementationContracts['length'] = 10;
+const expectedServerSideImplementationContractCount: RootServerSideImplementationContracts['length'] = 11;
+
+const signalServiceMethodNames = [
+  'getStrategies',
+  'getSignals'
+] as const satisfies readonly (keyof SignalService)[];
 
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
@@ -45,8 +53,28 @@ const serverSideServiceDefinitionNames = [
   'OrdersServiceDefinition',
   'OrdersStreamServiceDefinition',
   'SandboxServiceDefinition',
+  'SignalServiceDefinition',
   'StopOrdersServiceDefinition',
   'UsersServiceDefinition'
+] as const;
+
+const signalRuntimeContractNames = [
+  'StrategyType',
+  'strategyTypeFromJSON',
+  'strategyTypeToJSON',
+  'SignalDirection',
+  'signalDirectionFromJSON',
+  'signalDirectionToJSON',
+  'SignalState',
+  'signalStateFromJSON',
+  'signalStateToJSON',
+  'GetStrategiesRequest',
+  'GetStrategiesResponse',
+  'Strategy',
+  'GetSignalsRequest',
+  'GetSignalsResponse',
+  'Signal',
+  'SignalServiceDefinition'
 ] as const;
 
 type GeneratedServiceDefinitionRuntimeContract = {
@@ -75,7 +103,18 @@ describe('package entrypoint', () => {
   });
 
   test('exposes generated server-side service implementation types', () => {
-    assert.equal(expectedServerSideImplementationContractCount, 10);
+    assert.equal(expectedServerSideImplementationContractCount, 11);
+  });
+
+  test('exposes SignalService contracts', () => {
+    assert.deepEqual(signalServiceMethodNames, [
+      'getStrategies',
+      'getSignals'
+    ]);
+
+    for (const exportName of signalRuntimeContractNames) {
+      assert.equal(hasPackageExport(exportName), true);
+    }
   });
 
   test('does not expose generated client runtime contracts', () => {

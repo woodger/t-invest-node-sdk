@@ -158,6 +158,12 @@ import type {
   SandboxPayInResponse
 } from '../../generated/sandbox';
 import type {
+  GetSignalsRequest,
+  GetSignalsResponse,
+  GetStrategiesRequest,
+  GetStrategiesResponse
+} from '../../generated/signals';
+import type {
   CancelStopOrderRequest,
   CancelStopOrderResponse,
   GetStopOrdersRequest,
@@ -390,6 +396,17 @@ export interface SandboxService {
     request: DeepPartial<CancelStopOrderRequest>,
     options?: TinkoffInvestCallOptions
   ): Promise<CancelStopOrderResponse>;
+}
+
+export interface SignalService {
+  getStrategies(
+    request: DeepPartial<GetStrategiesRequest>,
+    options?: TinkoffInvestCallOptions
+  ): Promise<GetStrategiesResponse>;
+  getSignals(
+    request: DeepPartial<GetSignalsRequest>,
+    options?: TinkoffInvestCallOptions
+  ): Promise<GetSignalsResponse>;
 }
 
 export interface MarketDataService {

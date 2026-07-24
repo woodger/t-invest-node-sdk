@@ -7,11 +7,17 @@
 - выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
   vendored upstream proto contracts в `contracts/*.proto`.
 
-## Установка
+## Установка из GitHub
+
+Пакет предназначен для установки напрямую из GitHub и не публикуется в npm.
+Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-yarn add tinkoff-invest-node-sdk
+yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.2"
 ```
+
+Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
+после получения Git dependency.
 
 ## Документация
 
@@ -54,26 +60,34 @@ CLI использует собранные файлы из `dist`, поэтом
 yarn build
 ```
 
-## Для разработчиков
+## GitHub release
 
-Перед push release tag проверьте, что версия в `package.json` соответствует
-ожидаемому tag:
+Пакет помечен как `private`, поэтому registry publication для него отключена.
+Перед merge release commit проверьте версию и проект:
 
 ```sh
 VERSION="$(node -p "require('./package.json').version")"
-BRANCH="$(git branch --show-current)"
 
 yarn build
 yarn lint
 yarn test
 git status --short
+```
 
-git push origin "$BRANCH"
-git tag -a "$VERSION" -m "$VERSION"
+После merge в `main` annotated tag создается на актуальном `origin/main`:
+
+```sh
+VERSION="$(node -p "require('./package.json').version")"
+
+git fetch origin
+git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Annotated tag требует настроенные `git user.name` и `git user.email`.
+Для версии `0.3.2` Git tag остается `0.3.2` по исторической схеме проекта, а
+GitHub Release может называться `v0.3.2`. Release notes берутся из одноименного
+раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
+`git user.email`.
 
 ## Быстрый старт
 
@@ -227,6 +241,7 @@ yarn cli operation portfolio --account-id=2000000000 --format=json
 - `sdk.operations`
 - `sdk.orders`
 - `sdk.sandbox`
+- `sdk.signals`
 - `sdk.stoporders`
 - `sdk.users`
 

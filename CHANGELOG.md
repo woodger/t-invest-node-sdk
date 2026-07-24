@@ -12,6 +12,34 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-07-19
+
+### Changed
+
+- Made the 4 MiB gRPC receive message limit an explicit package-owned transport
+  policy instead of inheriting the implicit `grpc-js` default.
+- Moved the `useSsl` and `trackLimits` SDK instance defaults into the typed
+  package config without changing per-instance override behavior.
+
+### Fixed
+
+- Added the omitted SignalService root contracts and `sdk.signals` facade,
+  including its package-owned unary limit policy.
+
+## [0.3.1] - 2026-07-17
+
+### Changed
+
+- Split unary throttling into transport-specific gRPC rule resolution and a
+  transport-neutral application scheduler.
+
+### Fixed
+
+- Rejected non-positive and non-finite unary limits after merging mutable
+  public defaults with per-instance overrides.
+
+## [0.3.0] - 2026-07-17
+
 ### Added
 
 - Added package `bin` metadata for the `tinkoff-invest-node-sdk` CLI binary.
@@ -50,12 +78,6 @@ micro-release separately.
   use the flat `generated/<contract>` paths.
 - Made proto generation resolve vendored and generated contract paths from
   `contracts/upstream.json` instead of duplicating them in bootstrap code.
-- Split unary throttling into transport-specific gRPC rule resolution and a
-  transport-neutral application scheduler.
-- Made the 4 MiB gRPC receive message limit an explicit package-owned transport
-  policy instead of inheriting the implicit `grpc-js` default.
-- Moved the `useSsl` and `trackLimits` SDK instance defaults into the typed
-  package config without changing per-instance override behavior.
 
 ### Fixed
 
@@ -69,8 +91,6 @@ micro-release separately.
   aggregated.
 - Matched unary service fallbacks by exact generated service name so
   `OrdersService` no longer catches `StopOrdersService` paths.
-- Rejected non-positive and non-finite unary limits after merging mutable
-  public defaults with per-instance overrides.
 - Replaced the stale archived limits reference and outdated stream grade table
   with the active T-Bank limits policy.
 

@@ -9,11 +9,17 @@
 - SDK поддерживает локальный throttling unary-запросов через `trackLimits` и отдельную таблицу лимитов по сервисам.
 - Bootstrap CLI layer содержит command registry, `help` и `version` utility-команды.
 
-## Установка
+## Установка из GitHub
+
+Пакет устанавливается напрямую из GitHub и не публикуется в npm. Для приватного
+репозитория у окружения должен быть настроен SSH-доступ:
 
 ```bash
-yarn add tinkoff-invest-node-sdk
+yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.2"
 ```
+
+Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
+после получения Git dependency.
 
 ## Быстрый старт
 
@@ -121,6 +127,7 @@ SDK явно ограничивает размер одного входящег
 - `sdk.operations`
 - `sdk.orders`
 - `sdk.sandbox`
+- `sdk.signals`
 - `sdk.stoporders`
 - `sdk.users`
 
