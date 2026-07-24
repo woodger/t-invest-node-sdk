@@ -22,7 +22,7 @@ import type {
   PositionsStreamRequest
 } from '../../../generated/operations';
 import type { TradesStreamRequest } from '../../../generated/orders';
-import { CliUsageError } from '../../cli/usage-error';
+import { CliUsageError } from 'icore';
 
 export const streamRunStreamNames = [
   'marketdata.marketDataStream',

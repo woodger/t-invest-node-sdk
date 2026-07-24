@@ -177,6 +177,11 @@ Project `terminalErrorPolicy` определяет текст ошибки и ex
 terminal app применяет policy и выполняет delivery. Поэтому error ownership
 также разделено, а не целиком передано зависимости.
 
+Command registry типизирует результаты публичным `TerminalCommandOutput` из
+`icore`. Текущие SDK commands возвращают строки, async string streams или
+`undefined`; runtime narrowing выполняет `TerminalApp.runPrepared()` через
+собственный публичный guard, поэтому локальная повторная проверка не нужна.
+
 ## Почему Не Нужны Локальные Generic Wrappers
 
 Удаленные project-owned renderers и writers больше не являются архитектурными

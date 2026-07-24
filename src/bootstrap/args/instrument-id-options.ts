@@ -9,7 +9,7 @@
  * Здесь не должно быть generated request mapping или command-specific option parsing.
  */
 
-import { CliUsageError } from '../cli/usage-error';
+import { CliUsageError } from 'icore';
 
 export const instrumentIdWithDeprecatedFigiOptionsSchema = {
   'instrument-id': {
