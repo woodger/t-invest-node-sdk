@@ -107,11 +107,13 @@ Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
 но help продвигает только preferred paths.
 
 API-команды остаются тонкими bootstrap handlers. Runner объявляет короткие
-`-h`/`-v` через native option aliases `icore`; project registry также сохраняет
-совместимые command path aliases. Затем `icore` terminal app разрешает command
-path, валидирует declarative schema и передает handler-у typed command options.
-API-specific validation и mapping в generated request остаются в project-owned
-helpers.
+`-h`/`-v` через native option aliases `icore`. Project registry прикрепляет
+technical и legacy paths к единственному canonical command definition через
+first-class command aliases `icore`: `name`/`path` остаются preferred, а
+фактически использованный путь доступен как `matchedPath`. Затем `icore`
+terminal app разрешает command path, валидирует declarative schema и передает
+handler-у typed command options. API-specific validation и mapping в generated
+request остаются в project-owned helpers.
 
 Runner один раз выполняет `prepare`, пишет command warnings и передает prepared
 command в `runPrepared`. В штатном terminal flow общая error policy сохраняет

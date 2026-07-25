@@ -523,13 +523,11 @@ type CommandPathName<TPath extends readonly string[]> =
       : `${THead} ${CommandPathName<TTail>}`
     : never;
 
-type CliPathAliasPath =
-  | typeof cliPathAliases[number]['preferred']
-  | typeof cliPathAliases[number]['aliases'][number];
+type CliPreferredPath = typeof cliPathAliases[number]['preferred'];
 
-/** All command names declared by the preferred and compatibility CLI paths. */
+/** Canonical command names declared by the preferred CLI paths. */
 export type CliCommandName =
-  | CommandPathName<CliPathAliasPath>
+  | CommandPathName<CliPreferredPath>
   | 'stream run'
   | 'help'
   | 'version';

@@ -1,6 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { commandNames, isCommandName, resolveCommand } from './registry';
+import { canonicalizeCommandName } from './domains';
+import {
+  commandLineCommands,
+  commandNames,
+  isCommandName,
+  resolveCommand
+} from './registry';
 
 const legacyCommandNames = [
   'compile-proto',
@@ -200,13 +206,22 @@ const preferredCommandNames = [
   'stop-order place'
 ] as const;
 
-const expectedCommandNames = [
+const canonicalCommandNames = [
+  ...preferredCommandNames,
+  'stream run',
+  'help',
+  'version'
+] as const;
+
+const acceptedCommandNames = [
   ...new Set([
     ...legacyCommandNames,
     ...technicalCompatibilityCommandNames,
-    ...preferredCommandNames
+    ...canonicalCommandNames
   ])
 ] as const;
+
+const canonicalCommandNameSet = new Set<string>(canonicalCommandNames);
 
 const unknownCommandNames = [
   'instruments options',
@@ -231,90 +246,43 @@ function commandPath(commandName: string): string[] {
 }
 
 describe('commandNames', () => {
-  test('contains public bootstrap command names', () => {
+  test('contains canonical command names only', () => {
     assert.deepEqual(
       [...commandNames].sort(),
-      [...expectedCommandNames].sort()
+      [...canonicalCommandNames].sort()
     );
+    assert.equal(commandLineCommands.definitions.length, canonicalCommandNames.length);
   });
 });
 
 describe('resolveCommand', () => {
-  test('resolves registered commands', () => {
-    for (const commandName of expectedCommandNames) {
+  test('resolves every accepted path to its canonical command', () => {
+    for (const commandName of acceptedCommandNames) {
       const path = commandPath(commandName);
       const command = resolveCommand(path);
+      const canonicalName = canonicalizeCommandName(commandName);
 
-      assert.equal(command.name, commandName);
-      assert.deepEqual(command.path, path);
-      assert.equal(typeof command.handler, 'function');
+      assert.equal(command.name, canonicalName);
+      assert.deepEqual(command.path, commandPath(canonicalName));
+      assert.deepEqual(command.matchedPath, path);
     }
   });
 
-  test('resolves friendly command paths', () => {
-    for (const commandName of [
-      'account list',
-      'account info',
-      'instrument asset list',
-      'instrument bond accrued',
-      'instrument bond coupons',
-      'instrument bond list',
-      'instrument bond show',
-      'instrument brand list',
-      'instrument country list',
-      'instrument currency list',
-      'instrument dividends',
-      'instrument etf list',
-      'instrument favorite edit',
-      'instrument favorite list',
-      'instrument future list',
-      'instrument future margin',
-      'instrument option list',
-      'instrument schedules',
-      'instrument search',
-      'instrument share list',
-      'instrument share show',
-      'instrument show',
-      'market candles',
-      'market last-prices',
-      'operation broker-report',
-      'operation foreign-dividends-report',
-      'operation list',
-      'operation page',
-      'operation portfolio',
-      'operation positions',
-      'operation withdraw-limits',
-      'order list',
-      'order place',
-      'sandbox account close',
-      'sandbox account list',
-      'sandbox account open',
-      'sandbox operation list',
-      'sandbox operation page',
-      'sandbox order cancel',
-      'sandbox order list',
-      'sandbox order place',
-      'sandbox order replace',
-      'sandbox order show',
-      'sandbox pay-in',
-      'sandbox portfolio',
-      'sandbox position list',
-      'sandbox withdraw-limits',
-      'stop-order cancel',
-      'stop-order list',
-      'stop-order place'
-    ]) {
-      const path = commandPath(commandName);
-      const command = resolveCommand(path);
+  test('prepares an alias with canonical identity and the matched path', async () => {
+    const prepared = await commandLineCommands.prepare([
+      'users',
+      'get-accounts',
+      '--format=json'
+    ]);
 
-      assert.equal(command.name, commandName);
-      assert.deepEqual(command.path, path);
-    }
+    assert.equal(prepared.name, 'account list');
+    assert.deepEqual(prepared.path, ['account', 'list']);
+    assert.deepEqual(prepared.matchedPath, ['users', 'get-accounts']);
+    assert.equal(prepared.options['format'], 'json');
   });
 
-  test('returns executable command handler', async () => {
-    const command = resolveCommand(['version']);
-    const output = await command.handler(['version']);
+  test('runs a command through the native registry', async () => {
+    const output = await commandLineCommands.runFromArgs(['version'], undefined);
 
     if (typeof output !== 'string') {
       throw new Error('Expected version command output as string');
@@ -323,9 +291,8 @@ describe('resolveCommand', () => {
     assert.match(output, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
   });
 
-  test('returns executable help command handler', async () => {
-    const command = resolveCommand(['help']);
-    const output = await command.handler(['help', 'version']);
+  test('runs a help command through the native registry', async () => {
+    const output = await commandLineCommands.runFromArgs(['help', 'version'], undefined);
 
     if (typeof output !== 'string') {
       throw new Error('Expected help command output as string');
@@ -335,11 +302,12 @@ describe('resolveCommand', () => {
   });
 
   test('passes named options to command-line definitions', async () => {
-    const command = resolveCommand(['account', 'list']);
-
     await assert.rejects(
       async () => {
-        await command.handler(['account', 'list', '--format=xml']);
+        await commandLineCommands.runFromArgs(
+          ['account', 'list', '--format=xml'],
+          undefined
+        );
       },
       /Expected '--format' as one of: json, table/
     );
@@ -518,11 +486,9 @@ describe('resolveCommand', () => {
         expectedError: /Expected '--format' as one of: json, table/
       }
     ]) {
-      const command = resolveCommand(path);
-
       await assert.rejects(
         async () => {
-          await command.handler([...path, ...args]);
+          await commandLineCommands.runFromArgs([...path, ...args], undefined);
         },
         expectedError
       );
@@ -613,11 +579,9 @@ describe('resolveCommand', () => {
         expectedError: /Expected '--format' as one of: json, table/
       }
     ]) {
-      const command = resolveCommand(path);
-
       await assert.rejects(
         async () => {
-          await command.handler([...path, ...args]);
+          await commandLineCommands.runFromArgs([...path, ...args], undefined);
         },
         expectedError
       );
@@ -640,9 +604,15 @@ describe('resolveCommand', () => {
 });
 
 describe('isCommandName', () => {
-  test('accepts registered command names only', () => {
-    for (const commandName of expectedCommandNames) {
+  test('accepts canonical command names only', () => {
+    for (const commandName of canonicalCommandNames) {
       assert.equal(isCommandName(commandName), true);
+    }
+
+    for (const commandName of acceptedCommandNames) {
+      if (!canonicalCommandNameSet.has(commandName)) {
+        assert.equal(isCommandName(commandName), false);
+      }
     }
 
     for (const commandName of unknownCommandNames) {

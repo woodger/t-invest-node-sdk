@@ -202,6 +202,8 @@ Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
 `stop-order get-stop-orders`, `stoporders get-stop-orders`,
 `operation get-portfolio`, `operations get-portfolio` и `compile-proto`
 остаются совместимыми aliases. Help при этом показывает preferred path.
+Registry хранит только preferred command definitions: alias-вызов сохраняет
+canonical `name`/`path`, а фактический путь доступен через `matchedPath`.
 
 Основные compatibility aliases:
 
