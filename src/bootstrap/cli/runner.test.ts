@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
 import { parseCliInput, runCli } from './runner';
+import { appVersion } from './version';
 
 function createIo() {
   let stdout = '';
@@ -206,7 +207,7 @@ describe('bootstrap cli runner', () => {
 
     test('prints utility help from help command argument', async () => {
       for (const [command, output] of [
-        ['version', /version - Show package and runtime version info/],
+        ['version', /version - Show package version/],
         ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
       ] as const) {
         const { io, read } = createIo();
@@ -224,8 +225,10 @@ describe('bootstrap cli runner', () => {
         const exitCode = await runCli([command], io);
 
         assert.equal(exitCode, 0);
-        assert.match(read().stdout, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
-        assert.match(read().stdout, /node v\d+/);
+        assert.equal(
+          read().stdout,
+          `tinkoff-invest-node-sdk ${appVersion}\n`
+        );
         assert.equal(read().stderr, '');
       }
     });

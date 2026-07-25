@@ -1666,7 +1666,7 @@ export const commandHelp = {
     ]
   },
   version: {
-    description: 'Show package and runtime version info',
+    description: 'Show package version',
     usage: [
       'tinkoff-invest-node-sdk version',
       'tinkoff-invest-node-sdk --version'
@@ -1775,7 +1775,7 @@ export function renderCliHelp(): string {
     '',
     'Global options:',
     '  --help, -h       Show help and exit',
-    '  --version, -v    Show package and runtime version info',
+    '  --version, -v    Show package version',
     '',
     'Domain details:',
     `  ${packageJson.name} <domain> --help`,

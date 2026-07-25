@@ -7,6 +7,7 @@ import {
   isCommandName,
   resolveCommand
 } from './registry';
+import { appVersion } from './version';
 
 const legacyCommandNames = [
   'compile-proto',
@@ -288,7 +289,7 @@ describe('resolveCommand', () => {
       throw new Error('Expected version command output as string');
     }
 
-    assert.match(output, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
+    assert.equal(output, `tinkoff-invest-node-sdk ${appVersion}\n`);
   });
 
   test('runs a help command through the native registry', async () => {
@@ -298,7 +299,7 @@ describe('resolveCommand', () => {
       throw new Error('Expected help command output as string');
     }
 
-    assert.match(output, /version - Show package and runtime version info/);
+    assert.match(output, /version - Show package version/);
   });
 
   test('passes named options to command-line definitions', async () => {

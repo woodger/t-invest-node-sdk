@@ -12,11 +12,10 @@ describe('version', () => {
     assert.equal(isVersionRequested({ version: false }), false);
   });
 
-  test('renders detailed version info', () => {
-    const version = renderVersionInfo();
-
-    assert.match(version, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
-    assert.match(version, /node v\d+/);
-    assert.match(version, /platform /);
+  test('renders the package version as one line', () => {
+    assert.equal(
+      renderVersionInfo(),
+      `tinkoff-invest-node-sdk ${appVersion}\n`
+    );
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Version-модуль обслуживает presentation-контракт для вывода версии пакета и runtime.
+ * Version-модуль обслуживает presentation-контракт для вывода версии пакета.
  *
  * Здесь допустимы:
  * - распознавание version-флагов;
@@ -22,10 +22,5 @@ export function isVersionRequested(options: VersionOptions): boolean {
 }
 
 export function renderVersionInfo(): string {
-  return [
-    `${packageJson.name} ${packageJson.version}`,
-    `node ${process.version}`,
-    `platform ${process.platform}/${process.arch}`,
-    ''
-  ].join('\n');
+  return `${packageJson.name} ${packageJson.version}\n`;
 }
