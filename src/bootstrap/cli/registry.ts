@@ -83,9 +83,7 @@ import { command } from './contract';
 import {
   isCommandName as isCommandLineCommandName,
   resolveCommand as resolveCommandLineCommand,
-  type CommandDefinition,
-  type OptionsSchema,
-  type TerminalCommandOutput
+  type CommandPath
 } from 'icore';
 import {
   commandPathAliases,
@@ -138,12 +136,15 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
   };
 }
 
-type CommandLineDefinition = CommandDefinition<
-  OptionsSchema,
-  undefined,
-  TerminalCommandOutput,
-  readonly [string, ...string[]]
->;
+type CliCommandDefinition = ReturnType<typeof command.define>;
+type CliCommandDefinitionPath = Pick<CliCommandDefinition, 'path'>;
+
+type WithAliases<
+  TDefinition,
+  TAliases extends readonly CommandPath[]
+> = Omit<TDefinition, 'aliases'> & {
+  aliases: TAliases;
+};
 
 const deprecatedFigiOptionCommandNames = new Set<string>(
   [
@@ -248,14 +249,11 @@ const commandLineRegistry = commandLineCommands.registry;
 
 export const commandNames = commandLineCommands.names as readonly CommandName[];
 
-function defineCommandLineCommand<const TSchema extends OptionsSchema>(
-  definition: CommandDefinition<
-    TSchema,
-    undefined,
-    TerminalCommandOutput,
-    readonly [string, ...string[]]
-  >
-): CommandLineDefinition {
+function defineCommandLineCommand<
+  const TDefinition extends CliCommandDefinitionPath
+>(
+  definition: TDefinition
+): WithAliases<TDefinition, readonly CommandPath[]> {
   const [, ...aliases] = commandPathAliases(definition.path);
 
   return {

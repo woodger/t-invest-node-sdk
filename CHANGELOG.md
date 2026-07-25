@@ -14,8 +14,9 @@ micro-release separately.
 
 ### Changed
 
-- Updated `icore` to `2.0.5` and bound the shared CLI command context, result,
-  and metadata contracts once through `createCommand.withTypes()`.
+- Updated `icore` to `2.0.5`, bound the shared CLI command context, result, and
+  metadata contracts once through `createCommand.withTypes()`, and derived the
+  compatibility alias decorator's definition type from that bound builder.
 
 ## [0.3.3] - 2026-07-25
 
