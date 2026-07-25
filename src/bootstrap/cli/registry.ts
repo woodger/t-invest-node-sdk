@@ -139,11 +139,8 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
 type CliCommandDefinition = ReturnType<typeof command.define>;
 type CliCommandDefinitionPath = Pick<CliCommandDefinition, 'path'>;
 
-type WithAliases<
-  TDefinition,
-  TAliases extends readonly CommandPath[]
-> = Omit<TDefinition, 'aliases'> & {
-  aliases: TAliases;
+type WithCompatibilityAliases<TDefinition> = Omit<TDefinition, 'aliases'> & {
+  aliases: readonly CommandPath[];
 };
 
 const deprecatedFigiOptionCommandNames = new Set<string>(
@@ -253,7 +250,7 @@ function defineCommandLineCommand<
   const TDefinition extends CliCommandDefinitionPath
 >(
   definition: TDefinition
-): WithAliases<TDefinition, readonly CommandPath[]> {
+): WithCompatibilityAliases<TDefinition> {
   const [, ...aliases] = commandPathAliases(definition.path);
 
   return {
