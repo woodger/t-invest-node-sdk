@@ -15,7 +15,7 @@
 репозитория у окружения должен быть настроен SSH-доступ:
 
 ```bash
-yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.2"
+yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.3"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript

@@ -12,11 +12,16 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-07-25
+
 ### Changed
 
-- Updated `icore` to `2.0.3` and replaced the local application usage-error
+- Updated `icore` to `2.0.4` and replaced the local application usage-error
   class and manual category check with the public `CliUsageError` and
-  `isUsageError()` contracts without changing CLI rendering or exit codes.
+  `isUsageError()` contracts. Cross-copy errors now retain the established CLI
+  rendering and exit-code policy.
+- Simplified `version`, `--version`, and `-v` output to one package-version
+  line.
 - Typed the command registry output with the public `TerminalCommandOutput`
   contract; `TerminalApp.runPrepared()` remains responsible for runtime output
   narrowing and render-phase errors.
