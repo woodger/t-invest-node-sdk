@@ -50,8 +50,18 @@ describe('candles reporter', () => {
     test('formats report as csv', () => {
       const output = formatCandlesReport(createCandlesReport([candle()]), 'csv');
 
-      assert.match(output, /^time,open,high,low,close,volume,isComplete/);
-      assert.match(output, /2026-06-19T00:00:00.000Z,10.5,11,9.25,10.75,42,true/);
+      assert.equal(
+        output,
+        'time,open,high,low,close,volume,isComplete\n'
+          + '2026-06-19T00:00:00.000Z,10.5,11,9.25,10.75,42,true\n'
+      );
+    });
+
+    test('formats an empty report as a header-only csv document', () => {
+      assert.equal(
+        formatCandlesReport([], 'csv'),
+        'time,open,high,low,close,volume,isComplete\n'
+      );
     });
   });
 });

@@ -38,6 +38,7 @@ src/bootstrap
 external dependency
   icore
     renderJson
+    renderCsv
     renderCsvRow
     renderTextTable
     TerminalApp
@@ -55,13 +56,12 @@ application report/command-local event -> command-specific output values
 Это responsibility `bootstrap/commands/*/reporter.ts`.
 
 ```text
-output values -> JSON / CSV row / table string
+output values -> JSON / CSV document or row / table string
 ```
 
 Для общей механики reporter использует публичные render primitives `icore`.
 Структура документа, headers и порядок rows остаются command-specific policy.
-Trailing newline для JSON и text table задают generic primitives; для текущего
-CSV-документа его добавляет reporter после сборки rows.
+Trailing newline для JSON, CSV document и text table задают generic primitives.
 
 ```text
 string/AsyncIterable -> TerminalApp -> Output.write -> stdout
@@ -124,19 +124,20 @@ command warnings. Он направляет help/version через `app.output.
 - порядок и имена колонок;
 - представление enum/date/nullable values;
 - stable JSON contract конкретной команды;
-- CSV headers, порядок rows и document-level newline;
+- CSV headers и порядок rows;
 - redaction или normalization, если они зависят от команды;
 - project-specific formats, например JSONL event shape.
 
-Reporter может импортировать `renderJson`, `renderCsvRow` и `renderTextTable` из
-`icore`, но generic primitive не должен определять поля или contract команды.
+Reporter может импортировать `renderJson`, `renderCsv`, `renderCsvRow` и
+`renderTextTable` из `icore`, но generic primitive не должен определять поля или
+contract команды.
 
 ## Что Предоставляют Render Primitives `icore`
 
 Generic primitives отвечают только за механику текстового формата:
 
 - JSON serialization и trailing newline;
-- CSV escaping и joining одной строки без document-level newline;
+- CSV escaping, joining строк и terminal trailing newline для документа;
 - расчет ширины, выравнивание и trailing newline plain-text таблицы.
 
 Они не должны получать ответственность за:
@@ -176,6 +177,11 @@ Output boundary не должен знать:
 Project `terminalErrorPolicy` определяет текст ошибки и exit code. `icore`
 terminal app применяет policy и выполняет delivery. Поэтому error ownership
 также разделено, а не целиком передано зависимости.
+
+Command registry типизирует результаты публичным `TerminalCommandOutput` из
+`icore`. Текущие SDK commands возвращают строки, async string streams или
+`undefined`; runtime narrowing выполняет `TerminalApp.runPrepared()` через
+собственный публичный guard, поэтому локальная повторная проверка не нужна.
 
 ## Почему Не Нужны Локальные Generic Wrappers
 

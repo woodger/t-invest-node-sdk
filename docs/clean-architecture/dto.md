@@ -90,9 +90,10 @@ process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore termi
 
 Runner использует двухфазный flow `prepare -> runPrepared`: это позволяет
 вывести warnings после command resolution без повторного разбора argv. Ошибки
-всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`. `icore`
-errors категории `usage` и project validators (`CliUsageError`) получают exit
-code `2`; runtime и command-definition errors получают exit code `1`.
+всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`.
+`isUsageError()` из `icore` распознаёт framework usage errors и публичный
+`CliUsageError`, используемый project validators; они получают exit code `2`.
+Runtime и command-definition errors получают exit code `1`.
 
 Command-specific primitive options описываются декларативными `icore` schemas в
 `src/bootstrap/commands/**`. Общие SDK options нормализуются в
@@ -130,7 +131,7 @@ process.argv
 | generated unary response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | stream event -> command-local event contract | `bootstrap/commands/stream-run/reporter.ts` | application report, если contract потребуется вне CLI |
 | report/event contract -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
-| output values -> JSON/CSV/table | публичные `renderJson`, `renderCsvRow`, `renderTextTable` из `icore`, вызываемые reporter-ами | command-specific поля и структура остаются в reporter-е |
+| output values -> JSON/CSV/table | публичные `renderJson`, `renderCsv`, `renderCsvRow`, `renderTextTable` из `icore`, вызываемые reporter-ами | command-specific поля и структура остаются в reporter-е |
 | string/stream -> stdout | `icore` `TerminalApp`/`Output.write`, собираемые в `bootstrap/cli/runner.ts` | штатный normal output wiring остается в runner-е |
 | warning/error -> stderr | `icore` `Output.error`; project CLI/error policy владеет содержанием | без изменений |
 

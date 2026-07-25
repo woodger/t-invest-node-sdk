@@ -10,7 +10,7 @@
  */
 
 import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
-import { CliUsageError } from '../cli/usage-error';
+import { CliUsageError } from 'icore';
 
 type SdkCommandOptions = {
   token?: string | undefined;

@@ -16,6 +16,7 @@
  */
 
 import {
+  CliUsageError,
   mergeOptionsSchema,
   parseOptions,
   type InferOptions,
@@ -23,7 +24,6 @@ import {
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
-import { CliUsageError } from '../cli/usage-error';
 
 /**
  * Raw option maps are used by exported parser helpers and focused tests.

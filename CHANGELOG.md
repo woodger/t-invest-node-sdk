@@ -12,6 +12,27 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-07-25
+
+### Changed
+
+- Updated `icore` to `2.0.4` and replaced the local application usage-error
+  class and manual category check with the public `CliUsageError` and
+  `isUsageError()` contracts. Cross-copy errors now retain the established CLI
+  rendering and exit-code policy.
+- Simplified `version`, `--version`, and `-v` output to one package-version
+  line.
+- Typed the command registry output with the public `TerminalCommandOutput`
+  contract; `TerminalApp.runPrepared()` remains responsible for runtime output
+  narrowing and render-phase errors.
+- Replaced expanded compatibility command definitions with first-class `icore`
+  aliases: `name` and `path` now keep canonical identity, `matchedPath` records
+  the invoked path, and registry names contain preferred commands only.
+- Declared `-h` and `-v` through native `icore` option aliases and rejected the
+  undocumented `--h` and `--v` long forms as usage errors.
+- Delegated complete candles CSV document rendering to the public
+  `renderCsv()` primitive without changing its output contract.
+
 ## [0.3.2] - 2026-07-24
 
 ### Changed

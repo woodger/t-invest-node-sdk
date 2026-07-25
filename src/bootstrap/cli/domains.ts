@@ -513,6 +513,25 @@ const cliPathAliases = [
   }
 ] as const satisfies readonly CliPathAliasDefinition[];
 
+type CommandPathName<TPath extends readonly string[]> =
+  TPath extends readonly [
+    infer THead extends string,
+    ...infer TTail extends string[]
+  ]
+    ? TTail extends []
+      ? THead
+      : `${THead} ${CommandPathName<TTail>}`
+    : never;
+
+type CliPreferredPath = typeof cliPathAliases[number]['preferred'];
+
+/** Canonical command names declared by the preferred CLI paths. */
+export type CliCommandName =
+  | CommandPathName<CliPreferredPath>
+  | 'stream run'
+  | 'help'
+  | 'version';
+
 const preferredPathByAliasName = createPreferredPathByAliasName(cliPathAliases);
 const aliasPathsByPreferredName = createAliasPathsByPreferredName(cliPathAliases);
 const explicitAliasDomains = createExplicitAliasDomains(cliPathAliases);

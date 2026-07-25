@@ -41,7 +41,7 @@ src/bootstrap
 external dependency
   icore
     option/command mechanics
-    renderJson/renderCsvRow/renderTextTable
+    renderJson/renderCsv/renderCsvRow/renderTextTable
     TerminalApp/Output
 ```
 
@@ -103,9 +103,9 @@ diagnostics:
 ```
 
 Reporter знает смысл команды и ее output contract. `icore` render primitives
-знают только общую механику формата: JSON serialization, CSV row escaping и
-plain-text table alignment. `icore` `Output` знает только delivery готового
-результата или diagnostics и backpressure.
+знают только общую механику формата: JSON serialization, CSV escaping/document
+joining и plain-text table alignment. `icore` `Output` знает только delivery
+готового результата или diagnostics и backpressure.
 
 Локальные wrappers над этими primitives не нужны, пока у проекта нет
 самостоятельного поведения или контракта поверх generic API.
@@ -146,7 +146,8 @@ external mechanics с локальными contracts.
 2. Reporter-ы вызывают публичные `icore` render primitives напрямую, без
    локальных forwarding wrappers.
 3. Bootstrap CLI собирает `TerminalApp` и `Output`, но сохраняет project-owned
-   aliases, help/version shortcuts, warnings и error policy.
+   alias inventory, help/version shortcuts, warnings и error policy; command
+   aliases передаются в canonical definitions и разрешаются самим `icore`.
 4. `application/reports`, command-specific presentation и
    `infrastructure/report-values.ts` остались project-owned contracts.
 

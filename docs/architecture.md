@@ -106,29 +106,34 @@ Technical и legacy paths вида `account get-accounts`, `users get-accounts`,
 `sandbox get-sandbox-accounts` и `compile-proto` остаются совместимыми aliases,
 но help продвигает только preferred paths.
 
-API-команды остаются тонкими bootstrap handlers. Runner нормализует короткие
-`-h`/`-v` aliases и через `icore` разбирает глобальные options; project registry
-также сохраняет совместимые command path aliases. Затем `icore` terminal app
-разрешает command path, валидирует declarative schema и передает handler-у typed
-command options. API-specific validation и mapping в generated request остаются
-в project-owned helpers.
+API-команды остаются тонкими bootstrap handlers. Runner объявляет короткие
+`-h`/`-v` через native option aliases `icore`. Project registry прикрепляет
+technical и legacy paths к единственному canonical command definition через
+first-class command aliases `icore`: `name`/`path` остаются preferred, а
+фактически использованный путь доступен как `matchedPath`. Затем `icore`
+terminal app разрешает command path, валидирует declarative schema и передает
+handler-у typed command options. API-specific validation и mapping в generated
+request остаются в project-owned helpers.
 
 Runner один раз выполняет `prepare`, пишет command warnings и передает prepared
 command в `runPrepared`. В штатном terminal flow общая error policy сохраняет
 единый stderr для фаз `prepare`, `execute`, `render`, `write` и внешних
 bootstrap-операций.
 
-Exit code определяется типом ошибки, а не фазой: `icore` errors категории
-`usage` и project-owned `CliUsageError` завершаются с кодом `2`; runtime,
-provider, output и `icore` definition errors — с кодом `1`. `CliUsageError`
-используется для command-specific аргументов, обязательных CLI/ENV-значений и
-уже прочитанной JSON command config; ошибки чтения файла остаются runtime.
+Exit code определяется типом ошибки, а не фазой. Публичный `isUsageError()` из
+`icore` распознаёт framework errors категории `usage` и application validators,
+которые выбрасывают публичный `CliUsageError`; они завершаются с кодом `2`.
+Runtime, provider, output и `icore` definition errors завершаются с кодом `1`.
+`CliUsageError` используется для command-specific аргументов, обязательных
+CLI/ENV-значений и уже прочитанной JSON command config; ошибки чтения файла
+остаются runtime.
 Command `cli.ts` создает generated request DTO из typed options, создает SDK
 facade и передает provider response в reporter-модуль. Unary reporter-ы обычно
 преобразуют generated DTO в `application/reports` contracts; stream reporter
 может формировать command-local event contract. Reporter выбирает поля, порядок
 и command-specific представление, а для общей механики формата при необходимости
-вызывает публичные `renderJson`, `renderCsvRow` и `renderTextTable` из `icore`.
+вызывает публичные `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable`
+из `icore`.
 Готовую строку или stream terminal app штатно направляет через `Output.write` в
 stdout; help/version используют тот же канал, а warnings и errors проходят
 через `Output.error` в stderr. Runner принимает injected `Output` или создает

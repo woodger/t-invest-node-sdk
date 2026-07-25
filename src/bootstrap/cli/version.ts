@@ -1,5 +1,5 @@
 /**
- * Version-модуль обслуживает presentation-контракт для вывода версии пакета и runtime.
+ * Version-модуль обслуживает presentation-контракт для вывода версии пакета.
  *
  * Здесь допустимы:
  * - распознавание version-флагов;
@@ -15,18 +15,12 @@ export const appVersion = packageJson.version;
 
 type VersionOptions = {
   version?: unknown;
-  v?: unknown;
 };
 
 export function isVersionRequested(options: VersionOptions): boolean {
-  return options.version === true || options.v === true;
+  return options.version === true;
 }
 
 export function renderVersionInfo(): string {
-  return [
-    `${packageJson.name} ${packageJson.version}`,
-    `node ${process.version}`,
-    `platform ${process.platform}/${process.arch}`,
-    ''
-  ].join('\n');
+  return `${packageJson.name} ${packageJson.version}\n`;
 }

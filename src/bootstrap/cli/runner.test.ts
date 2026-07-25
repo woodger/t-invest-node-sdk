@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
 import { parseCliInput, runCli } from './runner';
+import { appVersion } from './version';
 
 function createIo() {
   let stdout = '';
@@ -38,7 +39,7 @@ describe('bootstrap cli runner', () => {
           positionals: ['version'],
           options: {
             help: true,
-            v: true
+            version: true
           }
         }
       );
@@ -78,6 +79,20 @@ describe('bootstrap cli runner', () => {
           }
         }
       );
+    });
+
+    test('rejects undocumented long forms of short aliases', () => {
+      for (const [argument, replacement] of [
+        ['--h', /use '--help' or '-h'/],
+        ['--no-h', /use '--help' or '-h'/],
+        ['--v', /use '--version' or '-v'/],
+        ['--no-v', /use '--version' or '-v'/]
+      ] as const) {
+        assert.throws(
+          () => parseCliInput([argument]),
+          replacement
+        );
+      }
     });
 
     test('rejects assigned values for global boolean flags', () => {
@@ -192,7 +207,7 @@ describe('bootstrap cli runner', () => {
 
     test('prints utility help from help command argument', async () => {
       for (const [command, output] of [
-        ['version', /version - Show package and runtime version info/],
+        ['version', /version - Show package version/],
         ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
       ] as const) {
         const { io, read } = createIo();
@@ -205,14 +220,30 @@ describe('bootstrap cli runner', () => {
     });
 
     test('prints version from version command and global flag', async () => {
-      for (const command of ['version', '--version']) {
+      for (const command of ['version', '--version', '-v']) {
         const { io, read } = createIo();
         const exitCode = await runCli([command], io);
 
         assert.equal(exitCode, 0);
-        assert.match(read().stdout, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
-        assert.match(read().stdout, /node v\d+/);
+        assert.equal(
+          read().stdout,
+          `tinkoff-invest-node-sdk ${appVersion}\n`
+        );
         assert.equal(read().stderr, '');
+      }
+    });
+
+    test('returns a usage failure for undocumented long forms of short aliases', async () => {
+      for (const [argument, replacement] of [
+        ['--h', /use '--help' or '-h'/],
+        ['--v', /use '--version' or '-v'/]
+      ] as const) {
+        const { io, read } = createIo();
+        const exitCode = await runCli([argument], io);
+
+        assert.equal(exitCode, 2);
+        assert.equal(read().stdout, '');
+        assert.match(read().stderr, replacement);
       }
     });
 

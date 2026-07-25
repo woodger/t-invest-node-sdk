@@ -23,7 +23,10 @@ const unknownHelpNames = [
 describe('commandHelp', () => {
   test('contains help entries for preferred public bootstrap commands', () => {
     for (const commandName of Object.keys(commandHelp)) {
-      assert.equal(commandNames.includes(commandName), true);
+      assert.equal(
+        commandNames.some((registeredName) => registeredName === commandName),
+        true
+      );
     }
 
     assert.equal('account list' in commandHelp, true);
@@ -72,9 +75,8 @@ describe('isCommandHelpName', () => {
 });
 
 describe('isHelpRequested', () => {
-  test('detects help flag aliases', () => {
+  test('detects the canonical help flag', () => {
     assert.equal(isHelpRequested({ help: true }), true);
-    assert.equal(isHelpRequested({ h: true }), true);
     assert.equal(isHelpRequested({ help: false }), false);
   });
 });

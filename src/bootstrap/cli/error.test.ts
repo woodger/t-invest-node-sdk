@@ -1,8 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { IcoreError } from 'icore';
+import { CliUsageError, IcoreError } from 'icore';
 import { renderCommandError, resolveCommandExitCode } from './error';
-import { CliUsageError } from './usage-error';
 
 describe('renderCommandError', () => {
   test('renders Error message with trailing newline', () => {
@@ -60,7 +59,7 @@ describe('resolveCommandExitCode', () => {
     assert.equal(resolveCommandExitCode(error), 2);
   });
 
-  test('returns exit code two for project usage errors', () => {
+  test('returns exit code two for application usage errors', () => {
     assert.equal(resolveCommandExitCode(new CliUsageError('Invalid input')), 2);
   });
 

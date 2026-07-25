@@ -7,17 +7,15 @@ describe('version', () => {
     assert.match(appVersion, /^\d+\.\d+\.\d+/);
   });
 
-  test('detects version flag aliases', () => {
+  test('detects the canonical version flag', () => {
     assert.equal(isVersionRequested({ version: true }), true);
-    assert.equal(isVersionRequested({ v: true }), true);
     assert.equal(isVersionRequested({ version: false }), false);
   });
 
-  test('renders detailed version info', () => {
-    const version = renderVersionInfo();
-
-    assert.match(version, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
-    assert.match(version, /node v\d+/);
-    assert.match(version, /platform /);
+  test('renders the package version as one line', () => {
+    assert.equal(
+      renderVersionInfo(),
+      `tinkoff-invest-node-sdk ${appVersion}\n`
+    );
   });
 });
