@@ -7,6 +7,7 @@
  */
 
 import {
+  CliUsageError,
   createOutput,
   createTerminalApp,
   parseArgv,
@@ -25,16 +26,12 @@ import { isVersionRequested, renderVersionInfo } from './version';
 
 const bootstrapOptionsSchema = {
   help: {
-    type: 'boolean'
-  },
-  h: {
-    type: 'boolean'
+    type: 'boolean',
+    alias: 'h'
   },
   version: {
-    type: 'boolean'
-  },
-  v: {
-    type: 'boolean'
+    type: 'boolean',
+    alias: 'v'
   },
   insecure: {
     type: 'boolean'
@@ -44,15 +41,27 @@ const bootstrapOptionsSchema = {
 const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
 
 export function parseCliInput(argv: readonly string[]) {
-  return parseNormalizedCliInput(normalizeCliAliases(argv));
-}
-
-function parseNormalizedCliInput(argv: readonly string[]) {
   const parsedArgv = parseArgv(argv, bootstrapOptionsSchema);
 
+  rejectUndocumentedLongAliases(parsedArgv.options);
   validateBootstrapOptions(parsedArgv.options);
 
   return parsedArgv;
+}
+
+function rejectUndocumentedLongAliases(options: Record<string, RawOptionValue>): void {
+  const replacements: Readonly<Record<string, string>> = {
+    h: "'--help' or '-h'",
+    'no-h': "'--help' or '-h'",
+    v: "'--version' or '-v'",
+    'no-v': "'--version' or '-v'"
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    if (Object.hasOwn(options, name)) {
+      throw new CliUsageError(`Unexpected option '--${name}'; use ${replacement}`);
+    }
+  }
 }
 
 function validateBootstrapOptions(options: Record<string, RawOptionValue>): void {
@@ -69,27 +78,10 @@ function validateBootstrapOptions(options: Record<string, RawOptionValue>): void
   parseOptions(bootstrapOptionsSchema, bootstrapOptions);
 }
 
-function normalizeCliAliases(argv: readonly string[]): string[] {
-  // `icore` разбирает только длинные опции, поэтому публичные короткие aliases
-  // заранее приводятся к единой форме для всех последующих слоев.
-  return argv.map((arg) => {
-    if (arg === '-h') {
-      return '--h';
-    }
-
-    if (arg === '-v') {
-      return '--v';
-    }
-
-    return arg;
-  });
-}
-
 export async function runCli(
   argv: readonly string[] = [],
   io: Output = createOutput()
 ): Promise<number> {
-  const normalizedArgv = normalizeCliAliases(argv);
   const app = createTerminalApp({
     commands: commandLineCommands,
     output: io,
@@ -98,12 +90,12 @@ export async function runCli(
   let parsedArgv: ReturnType<typeof parseCliInput>;
 
   try {
-    parsedArgv = parseNormalizedCliInput(normalizedArgv);
+    parsedArgv = parseCliInput(argv);
   }
   catch (error) {
     return app.reportError(error, {
       phase: 'external',
-      args: normalizedArgv
+      args: argv
     });
   }
 
@@ -116,7 +108,7 @@ export async function runCli(
     catch (error) {
       return app.reportError(error, {
         phase: 'external',
-        args: normalizedArgv
+        args: argv
       });
     }
   };
@@ -138,24 +130,24 @@ export async function runCli(
   let prepared: Awaited<ReturnType<typeof app.prepare>>;
 
   try {
-    prepared = await app.prepare(normalizedArgv);
+    prepared = await app.prepare(argv);
   }
   catch (error) {
     return app.reportError(error, {
       phase: 'prepare',
-      args: normalizedArgv
+      args: argv
     });
   }
 
   try {
-    for (const warning of resolveCommandWarnings(prepared.name, normalizedArgv)) {
+    for (const warning of resolveCommandWarnings(prepared.name, argv)) {
       await app.output.error(warning);
     }
   }
   catch (error) {
     return app.reportError(error, {
       phase: 'write',
-      args: normalizedArgv,
+      args: argv,
       prepared
     });
   }

@@ -248,7 +248,7 @@ src/infrastructure
 external dependency
   icore
     option/command mechanics
-    renderJson/renderCsvRow/renderTextTable
+    renderJson/renderCsv/renderCsvRow/renderTextTable
     TerminalApp/Output
 ```
 
@@ -290,14 +290,14 @@ request-level validation вроде date range или mutually exclusive modes.
 `icore` сейчас предоставляет:
 
 - primitive option parsing, typed schema validation и command mechanics;
-- технические детали JSON, plain-text table и CSV row rendering;
+- технические детали JSON, plain-text table и CSV rendering;
 - `TerminalApp`/`Output.write` для штатной записи готовой строки или stream в
   stdout;
 - `Output.error` для warnings/errors в stderr.
 
-Project CLI layer собирает terminal app, нормализует short aliases, сохраняет
-compatible command path aliases, обслуживает help/version shortcuts и warnings,
-а project error policy определяет текст ошибки и exit code.
+Project CLI layer собирает terminal app, объявляет native short aliases,
+сохраняет compatible command path aliases, обслуживает help/version shortcuts и
+warnings, а project error policy определяет текст ошибки и exit code.
 
 Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами
 adapter-модулей. Они не задают публичный CLI path: публичный контракт команды
@@ -395,7 +395,7 @@ src/infrastructure
 
 external dependency
   icore
-    renderJson/renderCsvRow/renderTextTable
+    renderJson/renderCsv/renderCsvRow/renderTextTable
     TerminalApp/Output
 ```
 

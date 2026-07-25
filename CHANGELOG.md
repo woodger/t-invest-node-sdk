@@ -20,6 +20,10 @@ micro-release separately.
 - Typed the command registry output with the public `TerminalCommandOutput`
   contract; `TerminalApp.runPrepared()` remains responsible for runtime output
   narrowing and render-phase errors.
+- Declared `-h` and `-v` through native `icore` option aliases and rejected the
+  undocumented `--h` and `--v` long forms as usage errors.
+- Delegated complete candles CSV document rendering to the public
+  `renderCsv()` primitive without changing its output contract.
 
 ## [0.3.2] - 2026-07-24
 
