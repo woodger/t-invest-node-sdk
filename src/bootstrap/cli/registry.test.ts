@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { isPreparedCommandName } from 'icore';
 import { canonicalizeCommandName } from './domains';
 import {
   commandLineCommands,
@@ -276,7 +277,10 @@ describe('resolveCommand', () => {
       '--format=json'
     ]);
 
-    assert.equal(prepared.name, 'account list');
+    if (!isPreparedCommandName(prepared, 'account list')) {
+      assert.fail(`Expected 'account list', received '${prepared.name}'`);
+    }
+
     assert.deepEqual(prepared.path, ['account', 'list']);
     assert.deepEqual(prepared.matchedPath, ['users', 'get-accounts']);
     assert.equal(prepared.options['format'], 'json');
