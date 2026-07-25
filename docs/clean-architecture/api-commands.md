@@ -21,7 +21,10 @@ friendly path: `<domain> <resource/action>`.
 - `dev`.
 
 Technical и legacy paths остаются совместимыми aliases, но help и документация
-продвигают только preferred paths. Список ниже фиксирует текущий CLI contract:
+продвигают только preferred paths. Registry хранит один canonical definition на
+команду и передает остальные пути через first-class `icore` aliases; resolved
+`name`/`path` остаются preferred, а введенный путь сохраняется в `matchedPath`.
+Список ниже фиксирует текущий CLI contract:
 
 - `account list` -> `sdk.users.getAccounts`
   (`account get-accounts`, `users get-accounts`);
@@ -161,7 +164,7 @@ Technical и legacy paths остаются совместимыми aliases, н�
 Новые API-команды добавляются инкрементально, когда выбран конкретный SDK
 method и понятен CLI-контракт команды. Preferred path должен быть добавлен в
 command definition и help, а technical/legacy aliases - только через единый
-alias layer.
+alias layer, который передает их в native command definition `icore`.
 
 ## To Introduce
 
@@ -296,8 +299,9 @@ request-level validation вроде date range или mutually exclusive modes.
 - `Output.error` для warnings/errors в stderr.
 
 Project CLI layer собирает terminal app, объявляет native short aliases,
-сохраняет compatible command path aliases, обслуживает help/version shortcuts и
-warnings, а project error policy определяет текст ошибки и exit code.
+передает compatible command paths как first-class aliases canonical definitions,
+обслуживает help/version shortcuts и warnings, а project error policy определяет
+текст ошибки и exit code.
 
 Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами
 adapter-модулей. Они не задают публичный CLI path: публичный контракт команды
@@ -439,7 +443,9 @@ Use-case стоит выделять, если появляется хотя б�
   output facade;
 - регистрировать команду в `bootstrap/cli/registry.ts` в canonical форме
   `<domain> <command>`;
-- не добавлять short aliases для API-команд;
+- добавлять technical/legacy paths только через project alias inventory; registry
+  передаст их в `aliases` canonical definition;
+- не добавлять short option aliases для API-команд;
 - добавлять help metadata в `bootstrap/cli/help.ts`;
 - добавлять тесты рядом с конкретными файлами команды;
 - не вводить общий command framework до появления реального повторения в

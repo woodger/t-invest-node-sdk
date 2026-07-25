@@ -13,7 +13,11 @@ import {
   renderDomainHelp,
   renderHelp
 } from './help';
-import { commandNames, resolveCommand } from './registry';
+import {
+  commandLineCommands,
+  commandNames,
+  resolveCommand
+} from './registry';
 
 type CompatibilityAliasGroup = {
   preferred: string;
@@ -158,13 +162,19 @@ describe('CLI contract inventory', () => {
       uniqueSorted(Object.keys(commandHelp)),
       uniqueSorted(preferredCommandNames)
     );
+    assert.deepEqual(
+      uniqueSorted(commandNames),
+      uniqueSorted(preferredCommandNames)
+    );
+    assert.equal(commandLineCommands.definitions.length, preferredCommandNames.length);
 
     for (const commandName of preferredCommandNames) {
-      assert.equal(
-        commandNames.some((registeredName) => registeredName === String(commandName)),
-        true
-      );
-      assert.equal(resolveCommand(commandPath(commandName)).name, commandName);
+      const path = commandPath(commandName);
+      const command = resolveCommand(path);
+
+      assert.equal(command.name, commandName);
+      assert.deepEqual(command.path, path);
+      assert.deepEqual(command.matchedPath, path);
     }
   });
 
@@ -173,11 +183,14 @@ describe('CLI contract inventory', () => {
       assert.equal(canonicalizeCommandName(preferred), preferred);
 
       for (const alias of aliases) {
-        const command = resolveCommand(commandPath(alias));
+        const preferredPath = commandPath(preferred);
+        const aliasPath = commandPath(alias);
+        const command = resolveCommand(aliasPath);
 
         assert.equal(canonicalizeCommandName(alias), preferred);
-        assert.equal(command.name, alias);
-        assert.equal(typeof command.handler, 'function');
+        assert.equal(command.name, preferred);
+        assert.deepEqual(command.path, preferredPath);
+        assert.deepEqual(command.matchedPath, aliasPath);
         assert.equal(renderHelp(commandPath(alias)), renderCommandHelp(preferred));
       }
     }
