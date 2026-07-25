@@ -631,10 +631,10 @@ has-flag@^4.0.0:
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
 
-icore@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/icore/-/icore-2.0.4.tgz#851a01c944d9b158482d840164f0f18e48ed4095"
-  integrity sha512-ldmTZA970wEHQ3UuOy2c1nFkWppdB4n3qD2N6WmK1eJzPj15cpwrS8/7ZUeaGD5pxTJEH9TLzD64Zqz1TpU6lQ==
+icore@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/icore/-/icore-2.0.5.tgz#390c929cce73a87249c57682e73d5384c62e9f60"
+  integrity sha512-yFqSvSBWTPTdTrUbqtnXu0N1vD39PAeoF9W7rmGC588pTaPg3dpB8Ud/btRRz7wG7d4hdy7VpTc1woh4tPUQFQ==
 
 ignore@^5.2.0:
   version "5.3.2"
