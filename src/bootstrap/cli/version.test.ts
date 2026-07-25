@@ -7,9 +7,8 @@ describe('version', () => {
     assert.match(appVersion, /^\d+\.\d+\.\d+/);
   });
 
-  test('detects version flag aliases', () => {
+  test('detects the canonical version flag', () => {
     assert.equal(isVersionRequested({ version: true }), true);
-    assert.equal(isVersionRequested({ v: true }), true);
     assert.equal(isVersionRequested({ version: false }), false);
   });
 

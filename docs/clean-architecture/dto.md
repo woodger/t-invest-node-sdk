@@ -131,7 +131,7 @@ process.argv
 | generated unary response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | stream event -> command-local event contract | `bootstrap/commands/stream-run/reporter.ts` | application report, если contract потребуется вне CLI |
 | report/event contract -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |
-| output values -> JSON/CSV/table | публичные `renderJson`, `renderCsvRow`, `renderTextTable` из `icore`, вызываемые reporter-ами | command-specific поля и структура остаются в reporter-е |
+| output values -> JSON/CSV/table | публичные `renderJson`, `renderCsv`, `renderCsvRow`, `renderTextTable` из `icore`, вызываемые reporter-ами | command-specific поля и структура остаются в reporter-е |
 | string/stream -> stdout | `icore` `TerminalApp`/`Output.write`, собираемые в `bootstrap/cli/runner.ts` | штатный normal output wiring остается в runner-е |
 | warning/error -> stderr | `icore` `Output.error`; project CLI/error policy владеет содержанием | без изменений |
 

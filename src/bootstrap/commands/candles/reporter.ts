@@ -11,7 +11,7 @@ import {
   formatReportDate,
   formatReportQuotation
 } from '../../../infrastructure/report-values';
-import { renderCsvRow, renderJson } from 'icore';
+import { renderCsv, renderJson } from 'icore';
 
 export const candlesFormats = ['json', 'csv'] as const;
 
@@ -38,9 +38,9 @@ export function formatCandlesReport(report: CandlesReport, format: CandlesFormat
     return renderJson(report);
   }
 
-  return [
-    'time,open,high,low,close,volume,isComplete',
-    ...report.map((candle) => renderCsvRow([
+  return renderCsv([
+    ['time', 'open', 'high', 'low', 'close', 'volume', 'isComplete'],
+    ...report.map((candle) => [
       candle.time,
       candle.open,
       candle.high,
@@ -48,9 +48,8 @@ export function formatCandlesReport(report: CandlesReport, format: CandlesFormat
       candle.close,
       candle.volume,
       candle.isComplete
-    ])),
-    ''
-  ].join('\n');
+    ])
+  ]);
 }
 
 export function formatCandles(candles: HistoricCandle[], format: CandlesFormat): string {

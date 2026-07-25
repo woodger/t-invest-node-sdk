@@ -1705,11 +1705,10 @@ export function resolveDomainHelpName(positionals: readonly unknown[]): CliDomai
 
 type HelpOptions = {
   help?: unknown;
-  h?: unknown;
 };
 
 export function isHelpRequested(options: HelpOptions): boolean {
-  return options.help === true || options.h === true;
+  return options.help === true;
 }
 
 export function renderHelp(positionals: readonly unknown[]): string {

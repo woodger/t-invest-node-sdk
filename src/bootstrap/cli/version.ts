@@ -15,11 +15,10 @@ export const appVersion = packageJson.version;
 
 type VersionOptions = {
   version?: unknown;
-  v?: unknown;
 };
 
 export function isVersionRequested(options: VersionOptions): boolean {
-  return options.version === true || options.v === true;
+  return options.version === true;
 }
 
 export function renderVersionInfo(): string {

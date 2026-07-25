@@ -75,9 +75,8 @@ describe('isCommandHelpName', () => {
 });
 
 describe('isHelpRequested', () => {
-  test('detects help flag aliases', () => {
+  test('detects the canonical help flag', () => {
     assert.equal(isHelpRequested({ help: true }), true);
-    assert.equal(isHelpRequested({ h: true }), true);
     assert.equal(isHelpRequested({ help: false }), false);
   });
 });
