@@ -160,7 +160,10 @@ describe('CLI contract inventory', () => {
     );
 
     for (const commandName of preferredCommandNames) {
-      assert.equal(commandNames.includes(commandName), true);
+      assert.equal(
+        commandNames.some((registeredName) => registeredName === String(commandName)),
+        true
+      );
       assert.equal(resolveCommand(commandPath(commandName)).name, commandName);
     }
   });
@@ -182,7 +185,10 @@ describe('CLI contract inventory', () => {
 
   test('does not create mixed legacy-domain friendly aliases', () => {
     for (const commandName of mixedAliasNames) {
-      assert.equal(commandNames.includes(commandName), false);
+      assert.equal(
+        commandNames.some((registeredName) => registeredName === String(commandName)),
+        false
+      );
       assert.throws(
         () => resolveCommand(commandPath(commandName)),
         /is not a program command/

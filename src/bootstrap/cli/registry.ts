@@ -90,7 +90,8 @@ import {
 import {
   commandPathAliases,
   commandNameToPath,
-  commandPathToName
+  commandPathToName,
+  type CliCommandName
 } from './domains';
 
 type CliCommand = (
@@ -105,12 +106,7 @@ export type ResolvedCommand = {
 
 type RegisteredCommand = Omit<ResolvedCommand, 'name' | 'path'>;
 
-/**
- * TODO: вернуть literal union имен команд.
- * Сейчас expansion aliases теряет tuple literal paths; вернуться после их
- * сохранения при построении registry `icore`.
- */
-export type CommandName = string;
+export type CommandName = CliCommandName;
 
 export function isCommandName(value: unknown): value is CommandName {
   return isCommandLineCommandName(commandLineRegistry, value);
@@ -171,7 +167,7 @@ const deprecatedFigiOptionCommandNames = new Set<string>(
 );
 
 export function resolveCommandWarnings(
-  commandName: CommandName,
+  commandName: string,
   args: readonly string[]
 ): string[] {
   if (!deprecatedFigiOptionCommandNames.has(commandName) || !hasOption(args, 'figi')) {
@@ -259,7 +255,7 @@ export const commandLineCommands = command.registry(
 );
 const commandLineRegistry = commandLineCommands.registry;
 
-export const commandNames = commandLineCommands.names;
+export const commandNames = commandLineCommands.names as readonly CommandName[];
 
 function commandNameAliases(commandName: string): string[] {
   return commandPathAliases(commandNameToPath(commandName)).map(commandPathToName);

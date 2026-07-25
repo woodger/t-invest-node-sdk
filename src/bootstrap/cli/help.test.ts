@@ -23,7 +23,10 @@ const unknownHelpNames = [
 describe('commandHelp', () => {
   test('contains help entries for preferred public bootstrap commands', () => {
     for (const commandName of Object.keys(commandHelp)) {
-      assert.equal(commandNames.includes(commandName), true);
+      assert.equal(
+        commandNames.some((registeredName) => registeredName === commandName),
+        true
+      );
     }
 
     assert.equal('account list' in commandHelp, true);
