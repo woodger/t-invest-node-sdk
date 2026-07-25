@@ -13,7 +13,7 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.2"
+yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.3"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
@@ -84,8 +84,8 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.3.2` Git tag остается `0.3.2` по исторической схеме проекта, а
-GitHub Release может называться `v0.3.2`. Release notes берутся из одноименного
+Для версии `0.3.3` Git tag остается `0.3.3` по исторической схеме проекта, а
+GitHub Release может называться `v0.3.3`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
