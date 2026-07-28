@@ -22,8 +22,7 @@ import { parseCommandOptions, withSdkOptions } from '../../args/command-options'
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
-  instrumentStatusOptionsSchema,
-  parseInstrumentStatus
+  instrumentStatusOptionsSchema
 } from '../../args/instruments-args';
 import { bondsFormats, formatBonds, type BondsFormat } from './reporter';
 
@@ -53,9 +52,6 @@ const bondsOptionsSchema = withSdkOptions(
 );
 
 type BondsOptions = InferOptions<typeof bondsOptionsSchema>;
-
-export const parseBondsInstrumentStatus = parseInstrumentStatus;
-export const createBondsRequest = createInstrumentsRequestFromOptions;
 
 export function parseBondsFormat(rawOptions: CommandRawOptions): BondsFormat {
   return parseCommandOptions(rawOptions, bondsFormatOptionsSchema).format;

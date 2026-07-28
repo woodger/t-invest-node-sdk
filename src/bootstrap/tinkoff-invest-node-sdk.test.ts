@@ -5,112 +5,15 @@ import {
   ServerError,
   Status
 } from 'nice-grpc';
-import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import {
   isSdkError,
   SdkErrorCode
 } from '../application/errors/sdk-error';
-import { Throttle } from '../application/services/unary-throttle.service';
 import { SignalServiceDefinition } from '../generated/signals';
-import {
-  createSdkMiddleware,
-  UnaryLimitResolver
-} from '../infrastructure/transport/grpc';
 import { TinkoffInvestNodeSDK } from './tinkoff-invest-node-sdk';
 
-type TestRequest = Record<string, never>;
-
-async function* createUnaryResponseIterator<Response>(
-  response: Response
-): AsyncGenerator<never, Response, undefined> {
-  const emptyUnaryResponses: never[] = [];
-
-  for (const value of emptyUnaryResponses) {
-    yield value;
-  }
-
-  return response;
-}
-
-function createUnaryCall(
-  path: string
-): ClientMiddlewareCall<TestRequest, { ok: boolean }, CallOptions> {
-  return {
-    requestStream: false,
-    request: {},
-    responseStream: false,
-    method: {
-      path,
-      requestStream: false,
-      responseStream: false,
-      options: {}
-    },
-    next() {
-      return createUnaryResponseIterator({ ok: true });
-    }
-  };
-}
-
-describe('createSdkMiddleware', () => {
-  test('uses throttle from the current sdk instance', async () => {
-    const path = '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
-    const resolverA = new UnaryLimitResolver({ UsersService: 100 });
-    const resolverB = new UnaryLimitResolver({ UsersService: 50 });
-    const throttleA = new Throttle();
-    const throttleB = new Throttle();
-
-    let callsA = 0;
-    let callsB = 0;
-
-    throttleA.reduce = async (rule) => {
-      callsA += 1;
-      assert.deepEqual(rule, {
-        bucket: 'rule:UsersService',
-        limitPerMinute: 100
-      });
-    };
-
-    throttleB.reduce = async (rule) => {
-      callsB += 1;
-      assert.deepEqual(rule, {
-        bucket: 'rule:UsersService',
-        limitPerMinute: 50
-      });
-    };
-
-    const middlewareA = createSdkMiddleware(true, resolverA, throttleA);
-    const middlewareB = createSdkMiddleware(true, resolverB, throttleB);
-
-    await middlewareA(createUnaryCall(path), {}).next();
-    await middlewareB(createUnaryCall(path), {}).next();
-
-    assert.equal(callsA, 1);
-    assert.equal(callsB, 1);
-  });
-
-  test('skips throttle when trackLimits is disabled', async () => {
-    const resolver = new UnaryLimitResolver({});
-    const throttle = new Throttle();
-
-    let throttleCalls = 0;
-
-    throttle.reduce = async () => {
-      throttleCalls += 1;
-    };
-
-    const middleware = createSdkMiddleware(false, resolver, throttle);
-
-    await middleware(
-      createUnaryCall('/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'),
-      {}
-    ).next();
-
-    assert.equal(throttleCalls, 0);
-  });
-});
-
 describe('TinkoffInvestNodeSDK', () => {
-  test('exposes stream and signal clients', () => {
+  test('exposes stream clients', () => {
     const sdk = new TinkoffInvestNodeSDK({
       token: 'token',
       endpoint: 'localhost:50051',
@@ -123,8 +26,6 @@ describe('TinkoffInvestNodeSDK', () => {
       assert.equal(typeof sdk.operationsStream.portfolioStream, 'function');
       assert.equal(typeof sdk.operationsStream.positionsStream, 'function');
       assert.equal(typeof sdk.ordersStream.tradesStream, 'function');
-      assert.equal(typeof sdk.signals.getStrategies, 'function');
-      assert.equal(typeof sdk.signals.getSignals, 'function');
     }
     finally {
       sdk.close();

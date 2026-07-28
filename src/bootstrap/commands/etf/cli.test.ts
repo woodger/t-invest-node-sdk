@@ -12,9 +12,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createEtfCommand,
-  parseEtfFormat,
-  parseEtfIdType,
-  createEtfRequest
+  parseEtfFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -29,73 +27,6 @@ function etfResponse(overrides: Partial<EtfResponse> = {}): EtfResponse {
 }
 
 describe('etf command', () => {
-  describe('parseEtfIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(
-        parseEtfIdType(rawOptions({ 'id-type': 'figi' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
-      );
-      assert.equal(
-        parseEtfIdType(rawOptions({ 'id-type': 'ticker' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
-      );
-      assert.equal(
-        parseEtfIdType(rawOptions({ 'id-type': 'uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_UID
-      );
-      assert.equal(
-        parseEtfIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseEtfIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
-  describe('createEtfRequest', () => {
-    test('returns generated etfBy request', () => {
-      const request = createEtfRequest({
-        id: 'BBG333333333',
-        'id-type': 'figi'
-      });
-
-      assert.deepEqual(request, {
-        id: 'BBG333333333',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-        classCode: ''
-      });
-    });
-
-    test('requires class code for ticker id type', () => {
-      assert.throws(
-        () => createEtfRequest({
-          id: 'TMOS',
-          'id-type': 'ticker'
-        }),
-        /Expected required argument '--class-code' when '--id-type=ticker'/
-      );
-    });
-
-    test('uses class code for ticker id type', () => {
-      const request = createEtfRequest({
-        id: 'TMOS',
-        'id-type': 'ticker',
-        'class-code': 'TQTF'
-      });
-
-      assert.deepEqual(request, {
-        id: 'TMOS',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-        classCode: 'TQTF'
-      });
-    });
-  });
-
   describe('parseEtfFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseEtfFormat(rawOptions()), 'table');

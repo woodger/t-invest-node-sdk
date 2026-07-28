@@ -35,7 +35,9 @@ async function* responses<T>(...items: T[]): AsyncIterable<T> {
 }
 
 function waitUntilAborted(signal: AbortSignal): Promise<never> {
-  return new Promise<never>((_, reject) => {
+  return new Promise<never>((resolve, reject) => {
+    void resolve;
+
     const rejectWithReason = () => {
       reject(signal.reason ?? new Error('stream aborted'));
     };
@@ -93,7 +95,9 @@ async function withDeadline<T>(
   timeoutMs = 500
 ): Promise<T> {
   let timeout: ReturnType<typeof setTimeout> | undefined;
-  const deadline = new Promise<never>((_, reject) => {
+  const deadline = new Promise<never>((resolve, reject) => {
+    void resolve;
+
     timeout = setTimeout(() => {
       reject(new Error(`Expected operation to finish within ${timeoutMs} ms`));
     }, timeoutMs);
@@ -216,7 +220,9 @@ describe('stream run command', () => {
               positionsStream: createUnusedStream('positionsStream')
             },
             ordersStream: {
-              tradesStream(_request, options) {
+              tradesStream(request, options) {
+                void request;
+
                 const signal = options?.signal;
 
                 if (signal === undefined) {
@@ -271,7 +277,9 @@ describe('stream run command', () => {
               marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
             },
             operationsStream: {
-              portfolioStream(_request, options) {
+              portfolioStream(request, options) {
+                void request;
+
                 const signal = options?.signal;
 
                 if (signal === undefined) {

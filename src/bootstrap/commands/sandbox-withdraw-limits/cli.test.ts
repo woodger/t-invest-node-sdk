@@ -10,7 +10,6 @@ import type {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxWithdrawLimitsCommand,
-  createSandboxWithdrawLimitsRequest,
   parseSandboxWithdrawLimitsFormat
 } from './cli';
 
@@ -38,18 +37,6 @@ function withdrawLimitsResponse(
 }
 
 describe('sandbox-withdraw-limits command', () => {
-  describe('createSandboxWithdrawLimitsRequest', () => {
-    test('returns generated getSandboxWithdrawLimits request', () => {
-      const request = createSandboxWithdrawLimitsRequest({
-        'account-id': 'sandbox-account-id'
-      });
-
-      assert.deepEqual(request, {
-        accountId: 'sandbox-account-id'
-      });
-    });
-  });
-
   describe('parseSandboxWithdrawLimitsFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxWithdrawLimitsFormat(rawOptions()), 'table');

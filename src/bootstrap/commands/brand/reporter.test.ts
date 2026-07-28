@@ -18,23 +18,6 @@ function brand(overrides: Partial<Brand> = {}): Brand {
 }
 
 describe('brand reporter', () => {
-  describe('createSingleBrandReport', () => {
-    test('maps generated brand to stable report values', () => {
-      const report = createSingleBrandReport(brand());
-
-      assert.deepEqual(report, {
-        uid: 'brand-uid',
-        name: 'T-Bank',
-        description: 'Banking services',
-        info: 'Issuer brand',
-        company: 'T-Bank PJSC',
-        sector: 'Financials',
-        countryOfRisk: 'RU',
-        countryOfRiskName: 'Russia'
-      });
-    });
-  });
-
   describe('formatBrandReport', () => {
     test('formats report as table', () => {
       const output = formatBrandReport(createSingleBrandReport(brand()), 'table');

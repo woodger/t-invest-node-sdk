@@ -12,7 +12,6 @@ import type { CommandRawOptions } from '../../args/command-options';
 import {
   createTradingStatusesCommand,
   parseTradingStatusesFormat,
-  parseTradingStatusesInstrumentIds,
   createTradingStatusesRequest
 } from './cli';
 
@@ -51,31 +50,6 @@ function response(
 }
 
 describe('trading-statuses command', () => {
-  describe('parseTradingStatusesInstrumentIds', () => {
-    test('returns one instrument id', () => {
-      assert.deepEqual(
-        parseTradingStatusesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0' })),
-        ['BBG00QPYJ5H0']
-      );
-    });
-
-    test('returns trimmed comma-separated instrument ids', () => {
-      assert.deepEqual(
-        parseTradingStatusesInstrumentIds(rawOptions({
-          'instrument-id': 'BBG00QPYJ5H0, instrument-uid'
-        })),
-        ['BBG00QPYJ5H0', 'instrument-uid']
-      );
-    });
-
-    test('rejects empty comma-separated items', () => {
-      assert.throws(
-        () => parseTradingStatusesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
-        /Expected '--instrument-id' as comma-separated list/
-      );
-    });
-  });
-
   describe('createTradingStatusesRequest', () => {
     test('returns generated getTradingStatuses request', () => {
       const request = createTradingStatusesRequest({

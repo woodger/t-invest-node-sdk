@@ -12,9 +12,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createFutureCommand,
-  parseFutureFormat,
-  parseFutureIdType,
-  createFutureRequest
+  parseFutureFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -29,73 +27,6 @@ function futureResponse(overrides: Partial<FutureResponse> = {}): FutureResponse
 }
 
 describe('future command', () => {
-  describe('parseFutureIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(
-        parseFutureIdType(rawOptions({ 'id-type': 'figi' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
-      );
-      assert.equal(
-        parseFutureIdType(rawOptions({ 'id-type': 'ticker' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
-      );
-      assert.equal(
-        parseFutureIdType(rawOptions({ 'id-type': 'uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_UID
-      );
-      assert.equal(
-        parseFutureIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseFutureIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
-  describe('createFutureRequest', () => {
-    test('returns generated futureBy request', () => {
-      const request = createFutureRequest({
-        id: 'FUTFIGI',
-        'id-type': 'figi'
-      });
-
-      assert.deepEqual(request, {
-        id: 'FUTFIGI',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-        classCode: ''
-      });
-    });
-
-    test('requires class code for ticker id type', () => {
-      assert.throws(
-        () => createFutureRequest({
-          id: 'SiM6',
-          'id-type': 'ticker'
-        }),
-        /Expected required argument '--class-code' when '--id-type=ticker'/
-      );
-    });
-
-    test('uses class code for ticker id type', () => {
-      const request = createFutureRequest({
-        id: 'SiM6',
-        'id-type': 'ticker',
-        'class-code': 'SPBFUT'
-      });
-
-      assert.deepEqual(request, {
-        id: 'SiM6',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-        classCode: 'SPBFUT'
-      });
-    });
-  });
-
   describe('parseFutureFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseFutureFormat(rawOptions()), 'table');

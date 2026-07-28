@@ -9,9 +9,7 @@ import { type BondsResponse, type InstrumentsRequest } from '../../../generated/
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBondsCommand,
-  parseBondsFormat,
-  parseBondsInstrumentStatus,
-  createBondsRequest
+  parseBondsFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -26,42 +24,6 @@ function response(overrides: Partial<BondsResponse> = {}): BondsResponse {
 }
 
 describe('bonds command', () => {
-  describe('parseBondsInstrumentStatus', () => {
-    test('returns base by default', () => {
-      assert.equal(parseBondsInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
-    });
-
-    test('maps public instrument status names to generated enum values', () => {
-      assert.equal(
-        parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
-        InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
-      );
-      assert.equal(
-        parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-      assert.equal(
-        parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
-        InstrumentStatus.INSTRUMENT_STATUS_ALL
-      );
-    });
-
-    test('rejects unknown instrument status names', () => {
-      assert.throws(
-        () => parseBondsInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
-        /Expected '--instrument-status' as one of: unspecified, base, all/
-      );
-    });
-  });
-
-  describe('createBondsRequest', () => {
-    test('returns generated bonds request', () => {
-      assert.deepEqual(createBondsRequest({ 'instrument-status': 'all' }), {
-        instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
-      });
-    });
-  });
-
   describe('parseBondsFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseBondsFormat(rawOptions()), 'table');

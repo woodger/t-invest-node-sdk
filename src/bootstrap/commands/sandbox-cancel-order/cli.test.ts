@@ -9,7 +9,6 @@ import type { CancelOrderRequest
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxCancelOrderCommand,
-  createSandboxCancelOrderRequest,
   parseSandboxCancelOrderFormat
 } from './cli';
 
@@ -18,18 +17,6 @@ function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
 }
 
 describe('sandbox-cancel-order command', () => {
-  describe('createSandboxCancelOrderRequest', () => {
-    test('returns generated cancelSandboxOrder request', () => {
-      assert.deepEqual(createSandboxCancelOrderRequest({
-        'account-id': 'sandbox-account-id',
-        'order-id': 'order-id'
-      }), {
-        accountId: 'sandbox-account-id',
-        orderId: 'order-id'
-      });
-    });
-  });
-
   describe('parseSandboxCancelOrderFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxCancelOrderFormat(rawOptions()), 'table');

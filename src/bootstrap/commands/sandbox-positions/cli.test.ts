@@ -7,7 +7,6 @@ import type { PositionsRequest, PositionsResponse } from '../../../generated/ope
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPositionsCommand,
-  createSandboxPositionsRequest,
   parseSandboxPositionsFormat
 } from './cli';
 
@@ -36,16 +35,6 @@ function positionsResponse(overrides: Partial<PositionsResponse> = {}): Position
 }
 
 describe('sandbox-positions command', () => {
-  describe('createSandboxPositionsRequest', () => {
-    test('returns generated getSandboxPositions request', () => {
-      const request = createSandboxPositionsRequest({
-        'account-id': 'sandbox-account-id'
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-    });
-  });
-
   describe('parseSandboxPositionsFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxPositionsFormat(rawOptions()), 'table');

@@ -13,9 +13,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOperationsCommand,
-  createSandboxOperationsRequest,
-  parseSandboxOperationsFormat,
-  parseSandboxOperationsState
+  parseSandboxOperationsFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -61,33 +59,6 @@ function operationsResponse(overrides: Partial<OperationsResponse> = {}): Operat
 }
 
 describe('sandbox-operations command', () => {
-  describe('parseSandboxOperationsState', () => {
-    test('returns unspecified by default', () => {
-      assert.equal(
-        parseSandboxOperationsState(rawOptions()),
-        OperationState.OPERATION_STATE_UNSPECIFIED
-      );
-    });
-  });
-
-  describe('createSandboxOperationsRequest', () => {
-    test('returns generated getSandboxOperations request', () => {
-      const request = createSandboxOperationsRequest({
-        'account-id': 'sandbox-account-id',
-        from: '2026-06-01T00:00:00.000Z',
-        to: '2026-06-19T00:00:00.000Z',
-        state: 'executed',
-        'instrument-id': 'BBG00QPYJ5H0'
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-      assert.equal(request.from?.toISOString(), '2026-06-01T00:00:00.000Z');
-      assert.equal(request.to?.toISOString(), '2026-06-19T00:00:00.000Z');
-      assert.equal(request.state, OperationState.OPERATION_STATE_EXECUTED);
-      assert.equal(request.figi, 'BBG00QPYJ5H0');
-    });
-  });
-
   describe('parseSandboxOperationsFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxOperationsFormat(rawOptions()), 'table');

@@ -12,6 +12,16 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-07-28
+
+### Changed
+
+- Reorganized CLI, SDK configuration, and gRPC transport tests around their
+  owning production modules and observable contracts.
+- Consolidated shared instrument and comma-separated option coverage, and
+  removed repeated unit checks for passthrough command helpers. Public package
+  exports, CLI behavior, and SDK runtime semantics remain unchanged.
+
 ## [0.3.5] - 2026-07-28
 
 ### Fixed

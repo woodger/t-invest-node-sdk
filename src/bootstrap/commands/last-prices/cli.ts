@@ -62,14 +62,6 @@ const lastPricesOptionsSchema = withSdkOptions(
 type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
 type LastPricesRequestOptions = CommandRequestOptions<LastPricesOptions, 'instrument-id'>;
 
-
-export function parseLastPricesInstrumentIds(rawOptions: CommandRawOptions): string[] {
-  const options = parseCommandOptions(rawOptions, lastPricesInstrumentIdsOptionsSchema);
-
-  return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
-}
-
-
 export function parseLastPricesFormat(rawOptions: CommandRawOptions): LastPricesFormat {
   return parseCommandOptions(rawOptions, lastPricesFormatOptionsSchema).format;
 }

@@ -15,7 +15,6 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOrdersCommand,
-  createSandboxOrdersRequest,
   parseSandboxOrdersFormat
 } from './cli';
 
@@ -62,16 +61,6 @@ function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersRe
 }
 
 describe('sandbox-orders command', () => {
-  describe('createSandboxOrdersRequest', () => {
-    test('returns generated getSandboxOrders request', () => {
-      const request = createSandboxOrdersRequest({
-        'account-id': 'sandbox-account-id'
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-    });
-  });
-
   describe('parseSandboxOrdersFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxOrdersFormat(rawOptions()), 'table');

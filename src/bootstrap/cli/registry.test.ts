@@ -253,7 +253,6 @@ describe('commandNames', () => {
       [...commandNames].sort(),
       [...canonicalCommandNames].sort()
     );
-    assert.equal(commandLineCommands.definitions.length, canonicalCommandNames.length);
   });
 });
 

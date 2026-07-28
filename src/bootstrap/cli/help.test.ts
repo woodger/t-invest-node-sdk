@@ -22,12 +22,10 @@ const unknownHelpNames = [
 
 describe('commandHelp', () => {
   test('contains help entries for preferred public bootstrap commands', () => {
-    for (const commandName of Object.keys(commandHelp)) {
-      assert.equal(
-        commandNames.some((registeredName) => registeredName === commandName),
-        true
-      );
-    }
+    assert.deepEqual(
+      Object.keys(commandHelp).sort(),
+      [...commandNames].sort()
+    );
 
     assert.equal('account list' in commandHelp, true);
     assert.equal('market candles' in commandHelp, true);
