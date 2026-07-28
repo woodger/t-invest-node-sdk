@@ -12,6 +12,16 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-07-28
+
+### Fixed
+
+- Preserved the full unary throttling interval after delayed timer callbacks so
+  queued calls cannot be dispatched in a burst when the event loop resumes.
+- Made `stream run` cancel its pending transport read before iterator cleanup
+  when `durationMs` or `idleTimeoutMs` expires, preventing quiet streams from
+  hanging during timeout shutdown.
+
 ## [0.3.4] - 2026-07-28
 
 ### Added

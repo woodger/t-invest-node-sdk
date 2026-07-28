@@ -63,6 +63,11 @@ tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
    или provider error;
 9. закрыть SDK channel в `finally`.
 
+При срабатывании `durationMs` или `idleTimeoutMs` команда сначала отменяет
+pending transport read через session `AbortSignal`, затем завершает iterator и
+закрывает SDK. Runtime timeout остается штатным завершением, а provider error,
+полученная раньше timeout, не маскируется.
+
 ## Output Contract
 
 Базовый формат stream output - `jsonl`. Каждое событие печатается отдельной

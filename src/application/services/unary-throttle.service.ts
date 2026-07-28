@@ -130,7 +130,12 @@ export class Throttle {
     }
 
     request.signal?.removeEventListener('abort', request.onAbort);
-    schedule.nextAvailableAt = scheduledAt + request.interval;
+    const dispatchedAt = Math.max(
+      scheduledAt,
+      new Date().getTime()
+    );
+
+    schedule.nextAvailableAt = dispatchedAt + request.interval;
     request.resolve();
     this.start(schedule);
   }
