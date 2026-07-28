@@ -11,8 +11,6 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPortfolioCommand,
-  createSandboxPortfolioRequest,
-  parseSandboxPortfolioCurrency,
   parseSandboxPortfolioFormat
 } from './cli';
 
@@ -54,24 +52,6 @@ function portfolioResponse(overrides: Partial<PortfolioResponse> = {}): Portfoli
 }
 
 describe('sandbox-portfolio command', () => {
-  describe('parseSandboxPortfolioCurrency', () => {
-    test('returns rub by default', () => {
-      assert.equal(parseSandboxPortfolioCurrency(rawOptions()), PortfolioCurrency.RUB);
-    });
-  });
-
-  describe('createSandboxPortfolioRequest', () => {
-    test('returns generated getSandboxPortfolio request', () => {
-      const request = createSandboxPortfolioRequest({
-        'account-id': 'sandbox-account-id',
-        currency: 'usd'
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-      assert.equal(request.currency, PortfolioCurrency.USD);
-    });
-  });
-
   describe('parseSandboxPortfolioFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxPortfolioFormat(rawOptions()), 'table');

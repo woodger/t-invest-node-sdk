@@ -11,9 +11,7 @@ import { InstrumentIdType,
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createInstrumentCommand,
-  parseInstrumentFormat,
-  parseInstrumentIdType,
-  createInstrumentRequest
+  parseInstrumentFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -28,64 +26,6 @@ function instrumentResponse(overrides: Partial<InstrumentResponse> = {}): Instru
 }
 
 describe('instrument command', () => {
-  describe('parseInstrumentIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(parseInstrumentIdType(rawOptions({ 'id-type': 'figi' })), InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI);
-      assert.equal(parseInstrumentIdType(rawOptions({ 'id-type': 'ticker' })), InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER);
-      assert.equal(parseInstrumentIdType(rawOptions({ 'id-type': 'uid' })), InstrumentIdType.INSTRUMENT_ID_TYPE_UID);
-      assert.equal(
-        parseInstrumentIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseInstrumentIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
-  describe('createInstrumentRequest', () => {
-    test('returns generated getInstrumentBy request', () => {
-      const request = createInstrumentRequest({
-        id: 'BBG00QPYJ5H0',
-        'id-type': 'figi'
-      });
-
-      assert.deepEqual(request, {
-        id: 'BBG00QPYJ5H0',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-        classCode: ''
-      });
-    });
-
-    test('requires class code for ticker id type', () => {
-      assert.throws(
-        () => createInstrumentRequest({
-          id: 'TCSG',
-          'id-type': 'ticker'
-        }),
-        /Expected required argument '--class-code' when '--id-type=ticker'/
-      );
-    });
-
-    test('uses class code for ticker id type', () => {
-      const request = createInstrumentRequest({
-        id: 'TCSG',
-        'id-type': 'ticker',
-        'class-code': 'TQBR'
-      });
-
-      assert.deepEqual(request, {
-        id: 'TCSG',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-        classCode: 'TQBR'
-      });
-    });
-  });
-
   describe('parseInstrumentFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseInstrumentFormat(rawOptions()), 'table');

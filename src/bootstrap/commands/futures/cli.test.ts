@@ -9,9 +9,7 @@ import { type FuturesResponse, type InstrumentsRequest } from '../../../generate
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createFuturesCommand,
-  parseFuturesFormat,
-  parseFuturesInstrumentStatus,
-  createFuturesRequest
+  parseFuturesFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -26,42 +24,6 @@ function response(overrides: Partial<FuturesResponse> = {}): FuturesResponse {
 }
 
 describe('futures command', () => {
-  describe('parseFuturesInstrumentStatus', () => {
-    test('returns base by default', () => {
-      assert.equal(parseFuturesInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
-    });
-
-    test('maps public instrument status names to generated enum values', () => {
-      assert.equal(
-        parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
-        InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
-      );
-      assert.equal(
-        parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-      assert.equal(
-        parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
-        InstrumentStatus.INSTRUMENT_STATUS_ALL
-      );
-    });
-
-    test('rejects unknown instrument status names', () => {
-      assert.throws(
-        () => parseFuturesInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
-        /Expected '--instrument-status' as one of: unspecified, base, all/
-      );
-    });
-  });
-
-  describe('createFuturesRequest', () => {
-    test('returns generated futures request', () => {
-      assert.deepEqual(createFuturesRequest({ 'instrument-status': 'all' }), {
-        instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
-      });
-    });
-  });
-
   describe('parseFuturesFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseFuturesFormat(rawOptions()), 'table');

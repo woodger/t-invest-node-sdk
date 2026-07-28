@@ -13,7 +13,7 @@ import { SignalServiceDefinition } from '../generated/signals';
 import { TinkoffInvestNodeSDK } from './tinkoff-invest-node-sdk';
 
 describe('TinkoffInvestNodeSDK', () => {
-  test('exposes stream and signal clients', () => {
+  test('exposes stream clients', () => {
     const sdk = new TinkoffInvestNodeSDK({
       token: 'token',
       endpoint: 'localhost:50051',
@@ -26,8 +26,6 @@ describe('TinkoffInvestNodeSDK', () => {
       assert.equal(typeof sdk.operationsStream.portfolioStream, 'function');
       assert.equal(typeof sdk.operationsStream.positionsStream, 'function');
       assert.equal(typeof sdk.ordersStream.tradesStream, 'function');
-      assert.equal(typeof sdk.signals.getStrategies, 'function');
-      assert.equal(typeof sdk.signals.getSignals, 'function');
     }
     finally {
       sdk.close();

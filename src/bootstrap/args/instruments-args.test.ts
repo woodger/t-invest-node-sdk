@@ -75,6 +75,18 @@ describe('instruments args', () => {
         /Expected required argument '--class-code' when '--id-type=ticker'/
       );
     });
+
+    test('uses class code for ticker id type', () => {
+      assert.deepEqual(createInstrumentLookupRequestFromOptions({
+        id: 'SBER',
+        'id-type': 'ticker',
+        'class-code': 'TQBR'
+      }), {
+        id: 'SBER',
+        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
+        classCode: 'TQBR'
+      });
+    });
   });
 
   describe('instrumentStatusArgNames', () => {

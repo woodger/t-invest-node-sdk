@@ -13,11 +13,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOperationsByCursorCommand,
-  createSandboxOperationsByCursorRequest,
-  parseSandboxOperationsByCursorFormat,
-  parseSandboxOperationsByCursorLimit,
-  parseSandboxOperationsByCursorOperationTypes,
-  parseSandboxOperationsByCursorState
+  parseSandboxOperationsByCursorFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -77,62 +73,6 @@ function operationsByCursorResponse(
 }
 
 describe('sandbox-operations-by-cursor command', () => {
-  describe('parseSandboxOperationsByCursorState', () => {
-    test('returns unspecified by default', () => {
-      assert.equal(
-        parseSandboxOperationsByCursorState(rawOptions()),
-        OperationState.OPERATION_STATE_UNSPECIFIED
-      );
-    });
-  });
-
-  describe('parseSandboxOperationsByCursorLimit', () => {
-    test('returns zero when limit is absent to keep provider default', () => {
-      assert.equal(parseSandboxOperationsByCursorLimit(rawOptions()), 0);
-    });
-  });
-
-  describe('parseSandboxOperationsByCursorOperationTypes', () => {
-    test('maps generated OperationType names to enum values', () => {
-      assert.deepEqual(
-        parseSandboxOperationsByCursorOperationTypes(rawOptions({
-          'operation-type': 'OPERATION_TYPE_BUY'
-        })),
-        [OperationType.OPERATION_TYPE_BUY]
-      );
-    });
-  });
-
-  describe('createSandboxOperationsByCursorRequest', () => {
-    test('returns generated getSandboxOperationsByCursor request', () => {
-      const request = createSandboxOperationsByCursorRequest({
-        'account-id': 'sandbox-account-id',
-        'instrument-id': 'instrument-uid',
-        from: '2026-06-01T00:00:00.000Z',
-        to: '2026-06-19T00:00:00.000Z',
-        cursor: 'cursor',
-        limit: '100',
-        'operation-type': 'OPERATION_TYPE_BUY',
-        state: 'executed',
-        'without-commissions': true,
-        'without-trades': true,
-        'without-overnights': true
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-      assert.equal(request.instrumentId, 'instrument-uid');
-      assert.equal(request.from?.toISOString(), '2026-06-01T00:00:00.000Z');
-      assert.equal(request.to?.toISOString(), '2026-06-19T00:00:00.000Z');
-      assert.equal(request.cursor, 'cursor');
-      assert.equal(request.limit, 100);
-      assert.deepEqual(request.operationTypes, [OperationType.OPERATION_TYPE_BUY]);
-      assert.equal(request.state, OperationState.OPERATION_STATE_EXECUTED);
-      assert.equal(request.withoutCommissions, true);
-      assert.equal(request.withoutTrades, true);
-      assert.equal(request.withoutOvernights, true);
-    });
-  });
-
   describe('parseSandboxOperationsByCursorFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxOperationsByCursorFormat(rawOptions()), 'table');
