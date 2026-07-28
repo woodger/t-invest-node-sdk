@@ -15,7 +15,6 @@ import { renderVersionInfo } from '../../cli/version';
 export const versionCommand = command.define({
   path: ['version'],
   options: {},
-  allowExtraPositionals: true,
   handle() {
     return renderVersionInfo();
   }

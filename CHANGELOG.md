@@ -12,6 +12,12 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `icore` to `2.1.0` and the `fwa` test runner to `2.0.7`.
+- Made the `version` command reject extra positional arguments as a usage
+  error.
+
 ## [0.3.6] - 2026-07-28
 
 ### Changed

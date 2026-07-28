@@ -233,6 +233,18 @@ describe('bootstrap cli runner', () => {
       }
     });
 
+    test('rejects extra positionals for version command', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli(['version', 'unexpected'], io);
+
+      assert.equal(exitCode, 2);
+      assert.equal(read().stdout, '');
+      assert.match(
+        read().stderr,
+        /Unexpected positional argument for 'version': unexpected/
+      );
+    });
+
     test('returns a usage failure for undocumented long forms of short aliases', async () => {
       for (const [argument, replacement] of [
         ['--h', /use '--help' or '-h'/],

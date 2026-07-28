@@ -599,10 +599,10 @@ flatted@^3.2.9:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.4.2.tgz#f5c23c107f0f37de8dbdf24f13722b3b98d52726"
   integrity sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==
 
-fwa@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/fwa/-/fwa-2.0.5.tgz#ac3fa0e647a107b0c9510aa6dac0e58dbd1c0e4d"
-  integrity sha512-9VfNKAIF4vZ820vh+5+6RWVQqazvTCoo5ZaCRGKTxmgqivzU/K0lX1kPhMbBw8bQv6w3Iu1IUCvWOcyLS7cgiA==
+fwa@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/fwa/-/fwa-2.0.7.tgz#4d28bc8a0e2aff6bd7e4202c42cecfcda9121664"
+  integrity sha512-A/hFkDRY1P2g9AD3XDqQTFPlq8JlaH0XyodbBC8BFIkSVR5ODhw8yoyjIWNu5Y5kiW0GNVSj4Yqcm9djw0X5Jw==
 
 get-caller-file@^2.0.5:
   version "2.0.5"
@@ -631,10 +631,10 @@ has-flag@^4.0.0:
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
 
-icore@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/icore/-/icore-2.0.5.tgz#390c929cce73a87249c57682e73d5384c62e9f60"
-  integrity sha512-yFqSvSBWTPTdTrUbqtnXu0N1vD39PAeoF9W7rmGC588pTaPg3dpB8Ud/btRRz7wG7d4hdy7VpTc1woh4tPUQFQ==
+icore@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/icore/-/icore-2.1.0.tgz#401704002211abf039d25095ce31b65496af8021"
+  integrity sha512-61Rgq7mAJlDTKJEMBghAbY3ZRL9mHum47dRAthcDN1SaGTJ7M8fPidWd2B/h82yijS7L+nJQt19kzLhOA1tYdg==
 
 ignore@^5.2.0:
   version "5.3.2"
