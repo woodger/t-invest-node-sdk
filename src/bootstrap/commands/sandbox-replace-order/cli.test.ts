@@ -1,4 +1,3 @@
-import { PriceType } from '../../../generated/common';
 import assert from 'node:assert';
 import {
   describe,
@@ -15,7 +14,6 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxReplaceOrderCommand,
-  createSandboxReplaceOrderRequest,
   parseSandboxReplaceOrderFormat
 } from './cli';
 
@@ -47,23 +45,6 @@ function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostO
 }
 
 describe('sandbox-replace-order command', () => {
-  describe('createSandboxReplaceOrderRequest', () => {
-    test('returns generated replaceSandboxOrder request', () => {
-      const request = createSandboxReplaceOrderRequest({
-        'account-id': 'sandbox-account-id',
-        'order-id': 'order-id',
-        'idempotency-key': 'new-idempotency-key',
-        quantity: 5,
-        price: '101.5',
-        'price-type': 'currency'
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-      assert.equal(request.idempotencyKey, 'new-idempotency-key');
-      assert.equal(request.priceType, PriceType.PRICE_TYPE_CURRENCY);
-    });
-  });
-
   describe('parseSandboxReplaceOrderFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxReplaceOrderFormat(rawOptions()), 'table');

@@ -12,9 +12,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createShareCommand,
-  parseShareFormat,
-  parseShareIdType,
-  createShareRequest
+  parseShareFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -29,73 +27,6 @@ function shareResponse(overrides: Partial<ShareResponse> = {}): ShareResponse {
 }
 
 describe('share command', () => {
-  describe('parseShareIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(
-        parseShareIdType(rawOptions({ 'id-type': 'figi' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
-      );
-      assert.equal(
-        parseShareIdType(rawOptions({ 'id-type': 'ticker' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
-      );
-      assert.equal(
-        parseShareIdType(rawOptions({ 'id-type': 'uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_UID
-      );
-      assert.equal(
-        parseShareIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseShareIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
-  describe('createShareRequest', () => {
-    test('returns generated shareBy request', () => {
-      const request = createShareRequest({
-        id: 'BBG004730N88',
-        'id-type': 'figi'
-      });
-
-      assert.deepEqual(request, {
-        id: 'BBG004730N88',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-        classCode: ''
-      });
-    });
-
-    test('requires class code for ticker id type', () => {
-      assert.throws(
-        () => createShareRequest({
-          id: 'SBER',
-          'id-type': 'ticker'
-        }),
-        /Expected required argument '--class-code' when '--id-type=ticker'/
-      );
-    });
-
-    test('uses class code for ticker id type', () => {
-      const request = createShareRequest({
-        id: 'SBER',
-        'id-type': 'ticker',
-        'class-code': 'TQBR'
-      });
-
-      assert.deepEqual(request, {
-        id: 'SBER',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-        classCode: 'TQBR'
-      });
-    });
-  });
-
   describe('parseShareFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseShareFormat(rawOptions()), 'table');

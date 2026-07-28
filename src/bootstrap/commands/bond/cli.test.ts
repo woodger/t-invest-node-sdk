@@ -12,9 +12,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createBondCommand,
-  parseBondFormat,
-  parseBondIdType,
-  createBondRequest
+  parseBondFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -29,73 +27,6 @@ function bondResponse(overrides: Partial<BondResponse> = {}): BondResponse {
 }
 
 describe('bond command', () => {
-  describe('parseBondIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(
-        parseBondIdType(rawOptions({ 'id-type': 'figi' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
-      );
-      assert.equal(
-        parseBondIdType(rawOptions({ 'id-type': 'ticker' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
-      );
-      assert.equal(
-        parseBondIdType(rawOptions({ 'id-type': 'uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_UID
-      );
-      assert.equal(
-        parseBondIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseBondIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
-  describe('createBondRequest', () => {
-    test('returns generated bondBy request', () => {
-      const request = createBondRequest({
-        id: 'BBG00B9XRY4J',
-        'id-type': 'figi'
-      });
-
-      assert.deepEqual(request, {
-        id: 'BBG00B9XRY4J',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-        classCode: ''
-      });
-    });
-
-    test('requires class code for ticker id type', () => {
-      assert.throws(
-        () => createBondRequest({
-          id: 'SU26238RMFS4',
-          'id-type': 'ticker'
-        }),
-        /Expected required argument '--class-code' when '--id-type=ticker'/
-      );
-    });
-
-    test('uses class code for ticker id type', () => {
-      const request = createBondRequest({
-        id: 'SU26238RMFS4',
-        'id-type': 'ticker',
-        'class-code': 'TQOB'
-      });
-
-      assert.deepEqual(request, {
-        id: 'SU26238RMFS4',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-        classCode: 'TQOB'
-      });
-    });
-  });
-
   describe('parseBondFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseBondFormat(rawOptions()), 'table');

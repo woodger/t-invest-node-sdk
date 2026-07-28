@@ -15,7 +15,6 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxOrderStateCommand,
-  createSandboxOrderStateRequest,
   parseSandboxOrderStateFormat
 } from './cli';
 
@@ -58,21 +57,6 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 }
 
 describe('sandbox-order-state command', () => {
-  describe('createSandboxOrderStateRequest', () => {
-    test('returns generated getSandboxOrderState request', () => {
-      const request = createSandboxOrderStateRequest({
-        'account-id': 'sandbox-account-id',
-        'order-id': 'sandbox-order-id'
-      });
-
-      assert.deepEqual(request, {
-        accountId: 'sandbox-account-id',
-        orderId: 'sandbox-order-id',
-        priceType: PriceType.PRICE_TYPE_UNSPECIFIED
-      });
-    });
-  });
-
   describe('parseSandboxOrderStateFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxOrderStateFormat(rawOptions()), 'table');

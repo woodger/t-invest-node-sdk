@@ -9,9 +9,7 @@ import { type EtfsResponse, type InstrumentsRequest } from '../../../generated/i
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createEtfsCommand,
-  parseEtfsFormat,
-  parseEtfsInstrumentStatus,
-  createEtfsRequest
+  parseEtfsFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -26,42 +24,6 @@ function response(overrides: Partial<EtfsResponse> = {}): EtfsResponse {
 }
 
 describe('etfs command', () => {
-  describe('parseEtfsInstrumentStatus', () => {
-    test('returns base by default', () => {
-      assert.equal(parseEtfsInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
-    });
-
-    test('maps public instrument status names to generated enum values', () => {
-      assert.equal(
-        parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
-        InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
-      );
-      assert.equal(
-        parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-      assert.equal(
-        parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
-        InstrumentStatus.INSTRUMENT_STATUS_ALL
-      );
-    });
-
-    test('rejects unknown instrument status names', () => {
-      assert.throws(
-        () => parseEtfsInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
-        /Expected '--instrument-status' as one of: unspecified, base, all/
-      );
-    });
-  });
-
-  describe('createEtfsRequest', () => {
-    test('returns generated etfs request', () => {
-      assert.deepEqual(createEtfsRequest({ 'instrument-status': 'all' }), {
-        instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
-      });
-    });
-  });
-
   describe('parseEtfsFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseEtfsFormat(rawOptions()), 'table');

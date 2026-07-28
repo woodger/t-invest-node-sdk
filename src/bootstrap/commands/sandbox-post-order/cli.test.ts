@@ -14,7 +14,6 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSandboxPostOrderCommand,
-  createSandboxPostOrderRequest,
   parseSandboxPostOrderFormat
 } from './cli';
 
@@ -46,27 +45,6 @@ function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrde
 }
 
 describe('sandbox-post-order command', () => {
-  describe('createSandboxPostOrderRequest', () => {
-    test('returns generated postSandboxOrder request', () => {
-      const request = createSandboxPostOrderRequest({
-        'account-id': 'sandbox-account-id',
-        'instrument-id': 'instrument-id',
-        quantity: 10,
-        price: '100.25',
-        direction: 'buy',
-        'order-type': 'limit',
-        'order-id': 'idempotency-key'
-      });
-
-      assert.equal(request.accountId, 'sandbox-account-id');
-      assert.equal(request.instrumentId, 'instrument-id');
-      assert.deepEqual(request.price, {
-        units: 100,
-        nano: 250_000_000
-      });
-    });
-  });
-
   describe('parseSandboxPostOrderFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSandboxPostOrderFormat(rawOptions()), 'table');

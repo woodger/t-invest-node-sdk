@@ -12,7 +12,6 @@ import type { CommandRawOptions } from '../../args/command-options';
 import {
   createLastPricesCommand,
   parseLastPricesFormat,
-  parseLastPricesInstrumentIds,
   createLastPricesRequest
 } from './cli';
 
@@ -47,31 +46,6 @@ function lastPricesResponse(
 }
 
 describe('last-prices command', () => {
-  describe('parseLastPricesInstrumentIds', () => {
-    test('returns one instrument id', () => {
-      assert.deepEqual(
-        parseLastPricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0' })),
-        ['BBG00QPYJ5H0']
-      );
-    });
-
-    test('returns trimmed comma-separated instrument ids', () => {
-      assert.deepEqual(
-        parseLastPricesInstrumentIds(rawOptions({
-          'instrument-id': 'BBG00QPYJ5H0, instrument-uid'
-        })),
-        ['BBG00QPYJ5H0', 'instrument-uid']
-      );
-    });
-
-    test('rejects empty comma-separated items', () => {
-      assert.throws(
-        () => parseLastPricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
-        /Expected '--instrument-id' as comma-separated list/
-      );
-    });
-  });
-
   describe('createLastPricesRequest', () => {
     test('returns generated getLastPrices request', () => {
       const request = createLastPricesRequest({

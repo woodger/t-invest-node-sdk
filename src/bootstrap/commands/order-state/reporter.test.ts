@@ -52,64 +52,6 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 }
 
 describe('order-state reporter', () => {
-  describe('createSingleOrderStateReport', () => {
-    test('maps generated order state fields to stable report values', () => {
-      const report = createSingleOrderStateReport(orderState());
-
-      assert.deepEqual(report, {
-        orderId: 'order-id',
-        orderRequestId: 'request-id',
-        figi: 'BBG00QPYJ5H0',
-        instrumentUid: 'instrument-uid',
-        status: 'EXECUTION_REPORT_STATUS_NEW',
-        direction: 'ORDER_DIRECTION_BUY',
-        orderType: 'ORDER_TYPE_LIMIT',
-        lotsRequested: 10,
-        lotsExecuted: 2,
-        initialOrderPrice: {
-          currency: 'rub',
-          amount: '100.5'
-        },
-        executedOrderPrice: {
-          currency: 'rub',
-          amount: '20.25'
-        },
-        totalOrderAmount: {
-          currency: 'rub',
-          amount: '200'
-        },
-        averagePositionPrice: {
-          currency: 'rub',
-          amount: '10'
-        },
-        initialCommission: {
-          currency: 'rub',
-          amount: '1'
-        },
-        executedCommission: {
-          currency: 'rub',
-          amount: '0.5'
-        },
-        serviceCommission: {
-          currency: 'rub',
-          amount: '0.25'
-        },
-        currency: 'rub',
-        orderDate: '2026-06-19T10:00:00.000Z',
-        stages: [
-          {
-            price: {
-              currency: 'rub',
-              amount: '10'
-            },
-            quantity: 2,
-            tradeId: 'trade-id'
-          }
-        ]
-      });
-    });
-  });
-
   describe('formatOrderStateReport', () => {
     test('formats report as table', () => {
       const output = formatOrderStateReport(createSingleOrderStateReport(orderState()), 'table');

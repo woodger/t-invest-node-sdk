@@ -65,14 +65,6 @@ const tradingStatusesOptionsSchema = withSdkOptions(
 type TradingStatusesOptions = InferOptions<typeof tradingStatusesOptionsSchema>;
 type TradingStatusesRequestOptions = CommandRequestOptions<TradingStatusesOptions, 'instrument-id'>;
 
-
-export function parseTradingStatusesInstrumentIds(rawOptions: CommandRawOptions): string[] {
-  const options = parseCommandOptions(rawOptions, tradingStatusesInstrumentIdsOptionsSchema);
-
-  return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
-}
-
-
 export function parseTradingStatusesFormat(rawOptions: CommandRawOptions): TradingStatusesFormat {
   return parseCommandOptions(rawOptions, tradingStatusesFormatOptionsSchema).format;
 }

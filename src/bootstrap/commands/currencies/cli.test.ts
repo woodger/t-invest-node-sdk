@@ -9,9 +9,7 @@ import { type CurrenciesResponse, type InstrumentsRequest } from '../../../gener
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createCurrenciesCommand,
-  parseCurrenciesFormat,
-  parseCurrenciesInstrumentStatus,
-  createCurrenciesRequest
+  parseCurrenciesFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -26,45 +24,6 @@ function response(overrides: Partial<CurrenciesResponse> = {}): CurrenciesRespon
 }
 
 describe('currencies command', () => {
-  describe('parseCurrenciesInstrumentStatus', () => {
-    test('returns base by default', () => {
-      assert.equal(
-        parseCurrenciesInstrumentStatus(rawOptions()),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-    });
-
-    test('maps public instrument status names to generated enum values', () => {
-      assert.equal(
-        parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
-        InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
-      );
-      assert.equal(
-        parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-      assert.equal(
-        parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
-        InstrumentStatus.INSTRUMENT_STATUS_ALL
-      );
-    });
-
-    test('rejects unknown instrument status names', () => {
-      assert.throws(
-        () => parseCurrenciesInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
-        /Expected '--instrument-status' as one of: unspecified, base, all/
-      );
-    });
-  });
-
-  describe('createCurrenciesRequest', () => {
-    test('returns generated currencies request', () => {
-      assert.deepEqual(createCurrenciesRequest({ 'instrument-status': 'all' }), {
-        instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
-      });
-    });
-  });
-
   describe('parseCurrenciesFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseCurrenciesFormat(rawOptions()), 'table');

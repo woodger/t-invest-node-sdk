@@ -12,7 +12,6 @@ import type { CommandRawOptions } from '../../args/command-options';
 import {
   createClosePricesCommand,
   parseClosePricesFormat,
-  parseClosePricesInstrumentIds,
   createClosePricesRequest
 } from './cli';
 
@@ -49,31 +48,6 @@ function closePricesResponse(
 }
 
 describe('close-prices command', () => {
-  describe('parseClosePricesInstrumentIds', () => {
-    test('returns one instrument id', () => {
-      assert.deepEqual(
-        parseClosePricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0' })),
-        ['BBG00QPYJ5H0']
-      );
-    });
-
-    test('returns trimmed comma-separated instrument ids', () => {
-      assert.deepEqual(
-        parseClosePricesInstrumentIds(rawOptions({
-          'instrument-id': 'BBG00QPYJ5H0, instrument-uid'
-        })),
-        ['BBG00QPYJ5H0', 'instrument-uid']
-      );
-    });
-
-    test('rejects empty comma-separated items', () => {
-      assert.throws(
-        () => parseClosePricesInstrumentIds(rawOptions({ 'instrument-id': 'BBG00QPYJ5H0,,instrument-uid' })),
-        /Expected '--instrument-id' as comma-separated list/
-      );
-    });
-  });
-
   describe('createClosePricesRequest', () => {
     test('returns generated getClosePrices request', () => {
       const request = createClosePricesRequest({

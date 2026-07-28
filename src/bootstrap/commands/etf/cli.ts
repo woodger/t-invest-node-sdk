@@ -22,8 +22,7 @@ import { parseCommandOptions, withSdkOptions } from '../../args/command-options'
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
-  instrumentLookupOptionsSchema,
-  parseInstrumentLookupIdType,
+  instrumentLookupOptionsSchema
 } from '../../args/instruments-args';
 import { etfFormats, formatEtf, type EtfFormat } from './reporter';
 
@@ -53,9 +52,6 @@ const etfOptionsSchema = withSdkOptions(
 );
 
 type EtfOptions = InferOptions<typeof etfOptionsSchema>;
-
-export const parseEtfIdType = parseInstrumentLookupIdType;
-export const createEtfRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseEtfFormat(rawOptions: CommandRawOptions): EtfFormat {
   return parseCommandOptions(rawOptions, etfFormatOptionsSchema).format;

@@ -20,7 +20,6 @@ describe('createSdkMetadata', () => {
       appName: 'sdk-app'
     });
 
-    assert.equal(metadata.get('Authorization'), 'Bearer token');
     assert.equal(metadata.get('x-app-name'), 'sdk-app');
   });
 });

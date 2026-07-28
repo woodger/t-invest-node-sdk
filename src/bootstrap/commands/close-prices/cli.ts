@@ -61,14 +61,6 @@ const closePricesOptionsSchema = withSdkOptions(
 type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
 type ClosePricesRequestOptions = CommandRequestOptions<ClosePricesOptions, 'instrument-id'>;
 
-
-export function parseClosePricesInstrumentIds(rawOptions: CommandRawOptions): string[] {
-  const options = parseCommandOptions(rawOptions, closePricesInstrumentIdsOptionsSchema);
-
-  return parseCommaSeparatedStringListOption(options['instrument-id'], 'instrument-id');
-}
-
-
 export function parseClosePricesFormat(rawOptions: CommandRawOptions): ClosePricesFormat {
   return parseCommandOptions(rawOptions, closePricesFormatOptionsSchema).format;
 }

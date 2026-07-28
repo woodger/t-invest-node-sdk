@@ -19,8 +19,7 @@ import { parseCommandOptions, withSdkOptions } from '../../args/command-options'
 import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
-  instrumentLookupOptionsSchema,
-  parseInstrumentLookupIdType,
+  instrumentLookupOptionsSchema
 } from '../../args/instruments-args';
 import { formatInstrument, instrumentFormats, type InstrumentFormat } from './reporter';
 
@@ -50,9 +49,6 @@ const instrumentOptionsSchema = withSdkOptions(
 );
 
 type InstrumentOptions = InferOptions<typeof instrumentOptionsSchema>;
-
-export const parseInstrumentIdType = parseInstrumentLookupIdType;
-export const createInstrumentRequest = createInstrumentLookupRequestFromOptions;
 
 export function parseInstrumentFormat(rawOptions: CommandRawOptions): InstrumentFormat {
   return parseCommandOptions(rawOptions, instrumentFormatOptionsSchema).format;

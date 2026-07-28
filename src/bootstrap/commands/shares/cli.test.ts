@@ -9,9 +9,7 @@ import { type InstrumentsRequest, type SharesResponse } from '../../../generated
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createSharesCommand,
-  parseSharesFormat,
-  parseSharesInstrumentStatus,
-  createSharesRequest
+  parseSharesFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -26,42 +24,6 @@ function response(overrides: Partial<SharesResponse> = {}): SharesResponse {
 }
 
 describe('shares command', () => {
-  describe('parseSharesInstrumentStatus', () => {
-    test('returns base by default', () => {
-      assert.equal(parseSharesInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
-    });
-
-    test('maps public instrument status names to generated enum values', () => {
-      assert.equal(
-        parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
-        InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
-      );
-      assert.equal(
-        parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-      assert.equal(
-        parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
-        InstrumentStatus.INSTRUMENT_STATUS_ALL
-      );
-    });
-
-    test('rejects unknown instrument status names', () => {
-      assert.throws(
-        () => parseSharesInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
-        /Expected '--instrument-status' as one of: unspecified, base, all/
-      );
-    });
-  });
-
-  describe('createSharesRequest', () => {
-    test('returns generated shares request', () => {
-      assert.deepEqual(createSharesRequest({ 'instrument-status': 'all' }), {
-        instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
-      });
-    });
-  });
-
   describe('parseSharesFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseSharesFormat(rawOptions()), 'table');

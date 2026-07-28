@@ -12,9 +12,7 @@ import {
 import type { CommandRawOptions } from '../../args/command-options';
 import {
   createOptionCommand,
-  parseOptionFormat,
-  parseOptionIdType,
-  createOptionRequest
+  parseOptionFormat
 } from './cli';
 
 function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
@@ -29,73 +27,6 @@ function optionResponse(overrides: Partial<OptionResponse> = {}): OptionResponse
 }
 
 describe('option command', () => {
-  describe('parseOptionIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(
-        parseOptionIdType(rawOptions({ 'id-type': 'figi' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
-      );
-      assert.equal(
-        parseOptionIdType(rawOptions({ 'id-type': 'ticker' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
-      );
-      assert.equal(
-        parseOptionIdType(rawOptions({ 'id-type': 'uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_UID
-      );
-      assert.equal(
-        parseOptionIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseOptionIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
-  describe('createOptionRequest', () => {
-    test('returns generated optionBy request', () => {
-      const request = createOptionRequest({
-        id: 'OPTIONUID',
-        'id-type': 'uid'
-      });
-
-      assert.deepEqual(request, {
-        id: 'OPTIONUID',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_UID,
-        classCode: ''
-      });
-    });
-
-    test('requires class code for ticker id type', () => {
-      assert.throws(
-        () => createOptionRequest({
-          id: 'OPTIONTICKER',
-          'id-type': 'ticker'
-        }),
-        /Expected required argument '--class-code' when '--id-type=ticker'/
-      );
-    });
-
-    test('uses class code for ticker id type', () => {
-      const request = createOptionRequest({
-        id: 'OPTIONTICKER',
-        'id-type': 'ticker',
-        'class-code': 'SPBOPT'
-      });
-
-      assert.deepEqual(request, {
-        id: 'OPTIONTICKER',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-        classCode: 'SPBOPT'
-      });
-    });
-  });
-
   describe('parseOptionFormat', () => {
     test('returns table by default', () => {
       assert.equal(parseOptionFormat(rawOptions()), 'table');
