@@ -114,15 +114,17 @@ describe('createSdkMiddleware', () => {
     const resolver = new UnaryLimitResolver({
       UsersService: 100
     });
+    const expectedRule = resolver.resolve(usersPath);
     const throttle = new Throttle();
     let throttleCalls = 0;
 
+    if (expectedRule === undefined) {
+      assert.fail('Expected UsersService throttle rule');
+    }
+
     throttle.reduce = async (rule) => {
       throttleCalls += 1;
-      assert.deepEqual(rule, {
-        bucket: 'rule:UsersService',
-        limitPerMinute: 100
-      });
+      assert.deepEqual(rule, expectedRule);
     };
 
     const middleware = createSdkMiddleware(true, resolver, throttle);
@@ -131,6 +133,63 @@ describe('createSdkMiddleware', () => {
     const result = await iterator.next();
 
     assert.equal(throttleCalls, 1);
+    assert.deepEqual(result, {
+      done: true,
+      value: { ok: true }
+    });
+  });
+
+  test('uses dependencies from the current middleware instance', async () => {
+    const resolverA = new UnaryLimitResolver({ UsersService: 100 });
+    const resolverB = new UnaryLimitResolver({ UsersService: 50 });
+    const throttleA = new Throttle();
+    const throttleB = new Throttle();
+    let callsA = 0;
+    let callsB = 0;
+
+    throttleA.reduce = async (rule) => {
+      callsA += 1;
+      assert.equal(rule.limitPerMinute, 100);
+    };
+
+    throttleB.reduce = async (rule) => {
+      callsB += 1;
+      assert.equal(rule.limitPerMinute, 50);
+    };
+
+    const middlewareA = createSdkMiddleware(true, resolverA, throttleA);
+    const middlewareB = createSdkMiddleware(true, resolverB, throttleB);
+
+    const [resultA, resultB] = await Promise.all([
+      middlewareA(createUnaryCall(usersPath), {}).next(),
+      middlewareB(createUnaryCall(usersPath), {}).next()
+    ]);
+
+    assert.equal(callsA, 1);
+    assert.equal(callsB, 1);
+    assert.deepEqual(resultA, {
+      done: true,
+      value: { ok: true }
+    });
+    assert.deepEqual(resultB, resultA);
+  });
+
+  test('skips unary throttling when trackLimits is disabled', async () => {
+    const throttle = new Throttle();
+    let throttleCalls = 0;
+
+    throttle.reduce = async () => {
+      throttleCalls += 1;
+    };
+
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      throttle
+    );
+    const result = await middleware(createUnaryCall(usersPath), {}).next();
+
+    assert.equal(throttleCalls, 0);
     assert.deepEqual(result, {
       done: true,
       value: { ok: true }
