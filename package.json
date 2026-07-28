@@ -1,6 +1,6 @@
 {
   "name": "tinkoff-invest-node-sdk",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "description": "Node.js SDK for Tinkoff Invest API",
   "keywords": [
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",
-    "icore": "^2.0.4",
+    "icore": "^2.0.5",
     "nice-grpc": "^2.1.15",
     "pwd-fs": "^3.4.0"
   },

@@ -18,6 +18,8 @@ reusable правила, которые нужны SDK facade и CLI-коман�
 src/application
   dto/
     tinkoff-invest-options.ts
+  errors/
+    sdk-error.ts
   reports/
     accounts.report.ts
     candles.report.ts
@@ -33,6 +35,7 @@ src/application
 Текущие зоны:
 
 - `application/dto` - входные SDK options и application-level contracts;
+- `application/errors` - стабильные transport-neutral errors и runtime guards;
 - `application/reports` - стабильные output/report contracts API-команд;
 - `application/services` - reusable application rules, например unary
   scheduling по transport-neutral `ThrottleRule`.
@@ -79,6 +82,18 @@ Report contract не должен импортировать `bootstrap` или 
 infrastructure. Он может быть использован CLI, тестом, будущим HTTP transport
 или file writer без изменения семантики.
 
+## Errors
+
+`application/errors/sdk-error.ts` задает публичные `SdkError`,
+`SdkErrorCode`, `SdkErrorSource` и `isSdkError()`, не импортируя `nice-grpc`.
+Infrastructure преобразует известные gRPC failures в этот contract, а
+bootstrap facade создает lifecycle error после `close()`. Исходная ошибка
+сохраняется как `cause`.
+
+Error code предоставляет классификацию, но не объявляет операцию retryable:
+решение о повторе дополнительно зависит от idempotency, provider metadata и
+backoff policy Consumer-а.
+
 ## Services
 
 `application/services` подходит для небольших правил, которые:
@@ -90,6 +105,8 @@ infrastructure. Он может быть использован CLI, тесто�
 
 `Throttle` получает только готовые `bucket` и `limitPerMinute`. Сопоставление
 gRPC method path с service/method rule остается в transport adapter-е.
+`AbortSignal` отменяет ожидающую reservation; scheduler удаляет ее из bucket
+queue и не знает, какой transport должен был выполнить вызов.
 
 Если helper используется один раз и не выражает отдельное правило, его лучше
 оставить рядом с consumer-ом.

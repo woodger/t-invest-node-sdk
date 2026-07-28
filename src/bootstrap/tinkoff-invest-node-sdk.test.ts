@@ -1,7 +1,15 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { createServer } from 'nice-grpc';
+import {
+  createServer,
+  ServerError,
+  Status
+} from 'nice-grpc';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
+import {
+  isSdkError,
+  SdkErrorCode
+} from '../application/errors/sdk-error';
 import { Throttle } from '../application/services/unary-throttle.service';
 import { SignalServiceDefinition } from '../generated/signals';
 import {
@@ -177,15 +185,87 @@ describe('TinkoffInvestNodeSDK', () => {
     }
   });
 
+  test('maps provider failures to the public SDK error contract', async () => {
+    const server = createServer();
+
+    server.add(SignalServiceDefinition, {
+      async getStrategies() {
+        throw new ServerError(Status.UNAUTHENTICATED, 'invalid token');
+      },
+      async getSignals() {
+        return {
+          signals: [],
+          paging: undefined
+        };
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const sdk = new TinkoffInvestNodeSDK({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    });
+
+    try {
+      await assert.rejects(
+        sdk.signals.getStrategies({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Unauthenticated)
+          && error.source === 'grpc'
+          && error.details === 'invalid token'
+      );
+    }
+    finally {
+      sdk.close();
+      await server.shutdown();
+    }
+  });
+
   describe('#close', () => {
-    test('closes the shared channel', () => {
+    test('closes the shared channel idempotently', () => {
       const sdk = new TinkoffInvestNodeSDK({
         token: 'token',
         endpoint: 'localhost:50051',
         useSsl: false
       });
 
-      assert.doesNotThrow(() => sdk.close());
+      assert.doesNotThrow(() => {
+        sdk.close();
+        sdk.close();
+      });
+    });
+
+    test('rejects service access after close', () => {
+      const sdk = new TinkoffInvestNodeSDK({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+      });
+
+      sdk.close();
+
+      assert.throws(
+        () => sdk.users,
+        (error: unknown) => isSdkError(error, SdkErrorCode.SdkClosed)
+          && error.source === 'lifecycle'
+      );
+    });
+
+    test('rejects calls through an existing client after close', async () => {
+      const sdk = new TinkoffInvestNodeSDK({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+      });
+      const users = sdk.users;
+
+      sdk.close();
+
+      await assert.rejects(
+        users.getAccounts({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.SdkClosed)
+          && error.source === 'lifecycle'
+      );
     });
   });
 });

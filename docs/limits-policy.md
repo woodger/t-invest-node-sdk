@@ -96,9 +96,15 @@ SDK поддерживает локальный throttling unary-запросо�
   задерживают друг друга;
 - создает отдельный snapshot таблицы лимитов для каждого SDK-инстанса;
 - объединяет per-instance `unaryLimits` с `defaultConfig.unaryLimits`;
+- отменяет ожидание локальной квоты через `TinkoffInvestCallOptions.signal` и
+  удаляет неотправленную операцию из bucket queue, чтобы следующий вызов занял
+  освободившийся слот;
 - не ограничивает stream-соединения и stream subscriptions;
 - не обновляет локальную таблицу автоматически из `users.getUserTariff()` или
   response metadata.
+
+После передачи unary-вызова transport-у его слот не возвращается даже при
+последующей отмене: provider уже мог учесть запрос в своей квоте.
 
 Для одного вызова gRPC resolver выбирает только самое специфичное
 совпавшее правило, а application scheduler планирует вызов по готовому bucket
