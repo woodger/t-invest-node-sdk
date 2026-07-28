@@ -51,7 +51,8 @@ external dependency
 - metadata;
 - middleware;
 - typed clients;
-- mapping gRPC method path в transport-neutral `ThrottleRule`.
+- mapping gRPC method path в transport-neutral `ThrottleRule`;
+- mapping `nice-grpc` client failures в transport-neutral `SdkError`.
 
 `unary-limit-resolver.ts` выбирает method rule или service fallback, разрешает
 quota bucket и передает application scheduler-у только `bucket` и

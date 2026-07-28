@@ -75,6 +75,82 @@ describe('Throttle', () => {
 
     assert.deepEqual(delays, [600, 1200]);
   });
+
+  test('releases a waiting slot when its signal is aborted', async () => {
+    const throttle = new Throttle();
+    const cancellationReason = new Error('cancelled');
+
+    await withControlledThrottleTimers(async ({ delays, runNext }) => {
+      await throttle.reduce(ordersRule);
+
+      const controller = new AbortController();
+      const cancelledCall = throttle.reduce(ordersRule, controller.signal);
+      const followingCall = throttle.reduce(ordersRule);
+
+      assert.deepEqual(delays, [600]);
+
+      controller.abort(cancellationReason);
+
+      await assert.rejects(
+        cancelledCall,
+        (error: unknown) => error === cancellationReason
+      );
+
+      assert.deepEqual(delays, [600, 600]);
+
+      runNext();
+      await followingCall;
+    });
+  });
+
+  test('does not reserve a slot for an already aborted signal', async () => {
+    const throttle = new Throttle();
+    const controller = new AbortController();
+    const cancellationReason = new Error('cancelled');
+
+    controller.abort(cancellationReason);
+
+    const delays = await captureThrottleDelays(async () => {
+      await assert.rejects(
+        throttle.reduce(ordersRule, controller.signal),
+        (error: unknown) => error === cancellationReason
+      );
+      await throttle.reduce(ordersRule);
+    });
+
+    assert.deepEqual(delays, []);
+  });
+
+  test('compacts queued slots after a later call is aborted', async () => {
+    const throttle = new Throttle();
+    const cancellationReason = new Error('cancelled');
+
+    await withControlledThrottleTimers(async ({ delays, runNext }) => {
+      await throttle.reduce(ordersRule);
+
+      const waitingCall = throttle.reduce(ordersRule);
+      const controller = new AbortController();
+      const cancelledCall = throttle.reduce(ordersRule, controller.signal);
+      const followingCall = throttle.reduce(ordersRule);
+
+      controller.abort(cancellationReason);
+
+      await assert.rejects(
+        cancelledCall,
+        (error: unknown) => error === cancellationReason
+      );
+
+      assert.deepEqual(delays, [600]);
+
+      runNext();
+      await waitingCall;
+
+      assert.deepEqual(delays, [600, 1200]);
+
+      runNext();
+      await followingCall;
+    });
+  });
 });
 
 async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]> {
@@ -105,5 +181,63 @@ async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]
   finally {
     global.Date = originalDate;
     global.setTimeout = originalSetTimeout;
+  }
+}
+
+interface ControlledThrottleTimers {
+  delays: number[];
+  runNext(): void;
+}
+
+async function withControlledThrottleTimers(
+  run: (timers: ControlledThrottleTimers) => Promise<void>
+): Promise<void> {
+  const originalDate = global.Date;
+  const originalSetTimeout = global.setTimeout;
+  const originalClearTimeout = global.clearTimeout;
+  const now = 10_000;
+  const delays: number[] = [];
+  const callbacks = new Map<number, () => void>();
+  let nextTimer = 1;
+
+  class FakeDate extends Date {
+    constructor(value?: string | number | Date) {
+      super(value ?? now);
+    }
+  }
+
+  global.Date = FakeDate as DateConstructor;
+  global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
+    const timer = nextTimer;
+
+    nextTimer += 1;
+    delays.push(delay ?? 0);
+    callbacks.set(timer, callback);
+
+    return timer as never;
+  }) as unknown as typeof setTimeout;
+  global.clearTimeout = ((timer: ReturnType<typeof setTimeout>) => {
+    callbacks.delete(Number(timer));
+  }) as typeof clearTimeout;
+
+  try {
+    await run({
+      delays,
+      runNext() {
+        const entry = callbacks.entries().next().value;
+
+        assert.notEqual(entry, undefined);
+
+        const [timer, callback] = entry as [number, () => void];
+
+        callbacks.delete(timer);
+        callback();
+      }
+    });
+  }
+  finally {
+    global.Date = originalDate;
+    global.setTimeout = originalSetTimeout;
+    global.clearTimeout = originalClearTimeout;
   }
 }

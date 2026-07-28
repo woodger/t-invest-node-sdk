@@ -40,6 +40,8 @@ provider-neutral правилами или моделями.
 - `application/dto` - входные SDK options и другие application-level contracts;
 - `application/dto/tinkoff-invest-services.ts` - публичные package-owned
   service interfaces SDK facade, отделенные от generated `*ServiceClient`;
+- `application/errors` - transport-neutral `SdkError`, стабильные symbolic
+  codes и runtime narrowing;
 - `application/reports` - стабильные output/report contracts API-команд;
 - `application/services` - reusable application services, например transport-neutral
   планирование unary calls по готовым throttle rules.
@@ -52,7 +54,8 @@ provider-neutral правилами или моделями.
 
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
   middleware и typed clients, а также построение и разрешение полных gRPC
-  paths в transport-neutral throttle rules.
+  paths в transport-neutral throttle rules и mapping transport failures в
+  публичный `SdkError`.
 - `infrastructure/interceptor` - технические hooks для фильтрации process
   warnings и, в диагностических сценариях, `stdout`.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
@@ -74,7 +77,8 @@ bootstrap-механикой.
 
 - `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
   package binary `dist/bootstrap/index.js`;
-- `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK;
+- `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK,
+  владелец shared channel и lifecycle `close()`;
 - `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - compiler и
   runtime adapter с [разделенным ownership](#конфигурация-терминология-и-ownership);
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
@@ -168,6 +172,12 @@ entrypoint:
 - `src/config.ts` и `src/config.types.ts` - source declaration и ее type
   contracts; точные границы зафиксированы ниже.
 
+Публичные runtime/provider errors задаются
+`src/application/errors/sdk-error.ts`. gRPC mapping остается в
+`infrastructure/transport/grpc`, а lifecycle errors создает facade. Retry
+policy не входит в error contract: один status code не определяет безопасность
+повторения конкретной операции.
+
 Новый код должен импортировать реализацию из слоя-владельца. Root-level
 compatibility wrappers не создаются.
 
@@ -256,7 +266,8 @@ Ownership разделен так:
 - `src/infrastructure/transport/grpc/sdk-channel.ts` владеет mapping готовой
   package transport policy в channel options, но не default value;
 - `src/application/services/unary-throttle.service.ts` владеет планированием
-  по готовому `ThrottleRule` и не интерпретирует source config или gRPC paths;
+  и отменяемой bucket queue по готовому `ThrottleRule`, не интерпретируя source
+  config или gRPC paths;
 - `src/infrastructure/transport/grpc/unary-limits.ts` владеет только
   transport-specific построением gRPC method path;
 - `src/infrastructure/transport/grpc/unary-limit-resolver.ts` владеет

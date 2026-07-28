@@ -12,11 +12,27 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Added
+
+- Added the public `SdkError`, `SdkErrorCode`, `SdkErrorSource`, and
+  `isSdkError()` contracts. Unary and streaming gRPC failures now expose stable
+  SDK codes while retaining the original transport error as `cause`.
+
 ### Changed
 
 - Updated `icore` to `2.0.5`, bound the shared CLI command context, result, and
   metadata contracts once through `createCommand.withTypes()`, and derived the
   compatibility alias decorator's definition type from that bound builder.
+- Made `TinkoffInvestNodeSDK.close()` idempotent. Service access and calls
+  through previously obtained clients now fail with `SdkErrorCode.SdkClosed`
+  after shutdown, while already delegated transport calls remain
+  caller-cancellable through their own `AbortSignal`.
+
+### Fixed
+
+- Made `TinkoffInvestCallOptions.signal` cancel local unary throttle waiting.
+  A call cancelled while waiting is removed from its quota bucket so the
+  following call can use the released slot.
 
 ## [0.3.3] - 2026-07-25
 

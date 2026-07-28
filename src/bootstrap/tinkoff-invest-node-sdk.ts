@@ -53,6 +53,10 @@ import type {
   StopOrdersService,
   UsersService
 } from '../application/dto/tinkoff-invest-services';
+import {
+  SdkError,
+  SdkErrorCode
+} from '../application/errors/sdk-error';
 import { Throttle } from '../application/services/unary-throttle.service';
 import {
   createSdkChannel,
@@ -98,6 +102,8 @@ export class TinkoffInvestNodeSDK {
   private metadata: Metadata;
   private throttle: Throttle;
   private unaryLimitResolver: UnaryLimitResolver;
+  private closed = false;
+  private lifecycleController = new AbortController();
   
   constructor(options: TinkoffInvestOptions) {
     this.options = {
@@ -167,11 +173,23 @@ export class TinkoffInvestNodeSDK {
     return this.useServiceAsClient<UsersServiceClient>(UsersServiceDefinition) as UsersService;
   }
 
+  /**
+   * Идемпотентно закрывает shared channel и запрещает новые SDK-вызовы.
+   * Уже переданные transport-у операции нужно завершать их собственным AbortSignal.
+   */
   close(): void {
+    if (this.closed) {
+      return;
+    }
+
+    this.closed = true;
+    this.lifecycleController.abort(this.createClosedError());
     this.channel.close();
   }
 
   private useServiceAsClient<T extends ServiceClient>(service: ServiceDefinition) {
+    this.assertOpen();
+
     let client = this.storage.get(service);
 
     if (!client) {
@@ -181,12 +199,34 @@ export class TinkoffInvestNodeSDK {
         this.metadata,
         this.options.trackLimits,
         this.unaryLimitResolver,
-        this.throttle
+        this.throttle,
+        {
+          signal: this.lifecycleController.signal,
+          assertOpen: () => {
+            this.assertOpen();
+          }
+        }
       );
 
       this.storage.set(service, client);
     }
 
     return client as T;
+  }
+
+  private assertOpen(): void {
+    if (this.closed) {
+      throw this.createClosedError();
+    }
+  }
+
+  private createClosedError(): SdkError<SdkErrorCode.SdkClosed> {
+    return new SdkError(
+      SdkErrorCode.SdkClosed,
+      'TinkoffInvestNodeSDK is closed',
+      {
+        source: 'lifecycle'
+      }
+    );
   }
 }
