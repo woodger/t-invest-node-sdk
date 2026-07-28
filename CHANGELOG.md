@@ -12,6 +12,8 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-07-28
+
 ### Added
 
 - Added the public `SdkError`, `SdkErrorCode`, `SdkErrorSource`, and
