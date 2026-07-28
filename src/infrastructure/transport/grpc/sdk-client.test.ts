@@ -36,7 +36,9 @@ describe('createSdkClient', () => {
     let receivedAuthorization: string | undefined;
 
     server.add(payloadServiceDefinition, {
-      async getPayload(_request, context) {
+      async getPayload(request, context) {
+        void request;
+
         receivedAuthorization = context.metadata.get('Authorization');
 
         return payload;
