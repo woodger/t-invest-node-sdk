@@ -21,6 +21,7 @@
 - authoring и public runtime type contracts: `src/config.types.ts`;
 - per-instance SDK config input:
   `src/application/dto/tinkoff-invest-options.ts`;
+- public SDK error contract: `src/application/errors/sdk-error.ts`;
 - unary config compilation и readable override shape adapter:
   `src/bootstrap/unary-limit-config.ts`;
 - public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;

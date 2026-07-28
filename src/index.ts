@@ -1,5 +1,14 @@
 export { TinkoffInvestNodeSDK } from './bootstrap/tinkoff-invest-node-sdk';
 export type { TinkoffInvestOptions } from './application/dto/tinkoff-invest-options';
+export {
+  isSdkError,
+  SdkError,
+  SdkErrorCode
+} from './application/errors/sdk-error';
+export type {
+  SdkErrorOptions,
+  SdkErrorSource
+} from './application/errors/sdk-error';
 export type {
   InstrumentsService,
   MarketDataService,

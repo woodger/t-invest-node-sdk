@@ -17,6 +17,9 @@ import type {
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation,
   SandboxServiceImplementation,
+  SdkError,
+  SdkErrorOptions,
+  SdkErrorSource,
   SignalService,
   SignalServiceImplementation,
   StopOrdersServiceImplementation,
@@ -37,7 +40,14 @@ type RootServerSideImplementationContracts = [
   UsersServiceImplementation
 ];
 
+type RootSdkErrorContracts = [
+  SdkError,
+  SdkErrorOptions,
+  SdkErrorSource
+];
+
 const expectedServerSideImplementationContractCount: RootServerSideImplementationContracts['length'] = 11;
+const expectedSdkErrorContractCount: RootSdkErrorContracts['length'] = 3;
 
 const signalServiceMethodNames = [
   'getStrategies',
@@ -127,6 +137,10 @@ describe('package entrypoint', () => {
     assert.equal(hasPackageExport('OrderType'), true);
     assert.equal(hasPackageExport('defaultConfig'), true);
     assert.equal(hasPackageExport('defineUnaryLimits'), true);
+    assert.equal(hasPackageExport('SdkError'), true);
+    assert.equal(hasPackageExport('SdkErrorCode'), true);
+    assert.equal(hasPackageExport('isSdkError'), true);
+    assert.equal(expectedSdkErrorContractCount, 3);
   });
 });
 

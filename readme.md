@@ -260,6 +260,58 @@ terminal policy классифицирует application и framework usage erro
 
 Все клиенты используют общий gRPC channel и metadata. Закрыть channel можно через `sdk.close()`.
 
+### Lifecycle и отмена
+
+`sdk.close()` идемпотентен. После закрытия service getters и вызовы через ранее
+полученные clients завершаются `SdkErrorCode.SdkClosed`. Вызовы, которые еще
+ждут локальную unary-квоту, также отменяются. Уже переданные transport-у unary
+и stream операции не образуют graceful shutdown barrier: для их
+детерминированного завершения Consumer должен передать собственный
+`AbortSignal` и дождаться результата.
+
+`TinkoffInvestCallOptions.signal` действует на весь SDK-вызов. Он отменяет как
+ожидание локального throttling, так и последующий gRPC-вызов. Если операция
+отменена во время ожидания, ее reservation удаляется из quota bucket, а
+следующие вызовы занимают освободившийся слот. После выдачи локального слота и
+передачи вызова transport-у слот не возвращается, поскольку provider уже мог
+учесть запрос.
+
+### Ошибки SDK
+
+Из корня пакета экспортируются `SdkError`, `SdkErrorCode`, `SdkErrorSource` и
+`isSdkError()`. gRPC statuses преобразуются в одноименные стабильные
+`SdkErrorCode`; исходный transport error сохраняется в `cause`, а `path`,
+`details` и `source` доступны для диагностики.
+
+```ts
+import {
+  isSdkError,
+  SdkErrorCode
+} from 'tinkoff-invest-node-sdk';
+
+try {
+  await sdk.users.getAccounts({});
+}
+catch (error: unknown) {
+  if (isSdkError(error, SdkErrorCode.Unauthenticated)) {
+    // Обновить credentials или запросить повторную авторизацию.
+  }
+  else {
+    throw error;
+  }
+}
+```
+
+Локальная отмена получает `SdkErrorCode.Cancelled` с `source: 'abort'`, а
+provider-side `CANCELLED` — тот же code с `source: 'grpc'`. Не всякий unknown
+runtime failure обязан быть `SdkError`: guard нужно применять до чтения полей.
+Brand guard распознает совместимые ошибки из другой физической копии пакета в
+том же JavaScript realm; JSON, IPC и worker boundaries требуют отдельного
+application protocol.
+Код статуса сам по себе не является retry policy. В частности,
+`ResourceExhausted`, `Unavailable` или `DeadlineExceeded` нельзя автоматически
+повторять без учета idempotency операции, provider metadata и backoff.
+
 ## Примеры unary-запросов
 
 ### Получить счета

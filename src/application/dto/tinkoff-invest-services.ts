@@ -214,6 +214,7 @@ export interface TinkoffInvestMetadata {
 
 export interface TinkoffInvestCallOptions {
   metadata?: TinkoffInvestMetadata;
+  /** Отменяет ожидание локальной квоты и переданный transport-вызов. */
   signal?: AbortSignal;
   onHeader?(header: TinkoffInvestMetadata): void;
   onTrailer?(trailer: TinkoffInvestMetadata): void;

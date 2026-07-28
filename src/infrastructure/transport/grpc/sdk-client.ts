@@ -16,6 +16,7 @@ import type {
 import type { Throttle } from '../../../application/services/unary-throttle.service';
 import { createClientFactory } from 'nice-grpc';
 import { createSdkMiddleware } from './sdk-middleware';
+import type { SdkCallLifecycle } from './sdk-middleware';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export function createSdkClient<T>(
@@ -24,10 +25,16 @@ export function createSdkClient<T>(
   metadata: Metadata,
   trackLimits: boolean,
   unaryLimitResolver: UnaryLimitResolver,
-  throttle: Throttle
+  throttle: Throttle,
+  lifecycle: SdkCallLifecycle
 ) {
   return createClientFactory()
-    .use(createSdkMiddleware(trackLimits, unaryLimitResolver, throttle))
+    .use(createSdkMiddleware(
+      trackLimits,
+      unaryLimitResolver,
+      throttle,
+      lifecycle
+    ))
     .create(service as never, channel, {
       '*': {
         metadata
