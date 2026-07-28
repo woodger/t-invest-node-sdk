@@ -34,6 +34,44 @@ async function* responses<T>(...items: T[]): AsyncIterable<T> {
   }
 }
 
+function waitUntilAborted(signal: AbortSignal): Promise<never> {
+  return new Promise<never>((_, reject) => {
+    const rejectWithReason = () => {
+      reject(signal.reason ?? new Error('stream aborted'));
+    };
+
+    if (signal.aborted) {
+      rejectWithReason();
+
+      return;
+    }
+
+    signal.addEventListener('abort', rejectWithReason, { once: true });
+  });
+}
+
+async function* responsesUntilAborted<T>(
+  responses: readonly T[],
+  signal: AbortSignal
+): AsyncIterable<T> {
+  for (const response of responses) {
+    yield response;
+  }
+
+  await waitUntilAborted(signal);
+}
+
+async function* responsesThenError<T>(
+  responses: readonly T[],
+  error: unknown
+): AsyncIterable<T> {
+  for (const response of responses) {
+    yield response;
+  }
+
+  throw error;
+}
+
 async function collectRequests<T>(requests: AsyncIterable<T>): Promise<T[]> {
   const result: T[] = [];
 
@@ -48,6 +86,27 @@ function createUnusedStream(name: string) {
   return () => {
     throw new Error(`${name} should not be called`);
   };
+}
+
+async function withDeadline<T>(
+  promise: Promise<T>,
+  timeoutMs = 500
+): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      reject(new Error(`Expected operation to finish within ${timeoutMs} ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, deadline]);
+  }
+  finally {
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
+    }
+  }
 }
 
 describe('stream run command', () => {
@@ -133,6 +192,191 @@ describe('stream run command', () => {
           accountId: 'account-id'
         }
       });
+    });
+
+    test('cancels a silent stream when session duration expires', async () => {
+      let receivedSignal: AbortSignal | undefined;
+      let closeCalls = 0;
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime: {
+            durationMs: 10
+          }
+        }),
+        createSdk() {
+          return {
+            marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
+              marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+            },
+            operationsStream: {
+              portfolioStream: createUnusedStream('portfolioStream'),
+              positionsStream: createUnusedStream('positionsStream')
+            },
+            ordersStream: {
+              tradesStream(_request, options) {
+                const signal = options?.signal;
+
+                if (signal === undefined) {
+                  throw new Error('Expected stream AbortSignal');
+                }
+
+                receivedSignal = signal;
+
+                return responsesUntilAborted<TradesStreamResponse>([], signal);
+              }
+            },
+            close() {
+              closeCalls += 1;
+            }
+          };
+        }
+      });
+
+      const output = await commandFacade.run(
+        command,
+        [
+          'stream',
+          'run',
+          '--config=stream.json',
+          '--token=token',
+          '--endpoint=localhost:50051'
+        ],
+        undefined
+      );
+
+      assert.equal(await withDeadline(collectOutput(output)), '');
+      assert.equal(receivedSignal?.aborted, true);
+      assert.equal(closeCalls, 1);
+    });
+
+    test('cancels a quiet stream when idle timeout expires', async () => {
+      let receivedSignal: AbortSignal | undefined;
+      let closeCalls = 0;
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'operations.portfolioStream',
+          accounts: ['account-id'],
+          runtime: {
+            idleTimeoutMs: 10
+          }
+        }),
+        now: () => new Date('2026-06-29T12:00:00.000Z'),
+        createSdk() {
+          return {
+            marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
+              marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+            },
+            operationsStream: {
+              portfolioStream(_request, options) {
+                const signal = options?.signal;
+
+                if (signal === undefined) {
+                  throw new Error('Expected stream AbortSignal');
+                }
+
+                receivedSignal = signal;
+
+                return responsesUntilAborted(
+                  [{
+                    portfolio: {
+                      accountId: 'account-id'
+                    }
+                  } as PortfolioStreamResponse],
+                  signal
+                );
+              },
+              positionsStream: createUnusedStream('positionsStream')
+            },
+            ordersStream: {
+              tradesStream: createUnusedStream('tradesStream')
+            },
+            close() {
+              closeCalls += 1;
+            }
+          };
+        }
+      });
+
+      const output = await commandFacade.run(
+        command,
+        [
+          'stream',
+          'run',
+          '--config=stream.json',
+          '--token=token',
+          '--endpoint=localhost:50051'
+        ],
+        undefined
+      );
+      const rendered = await withDeadline(collectOutput(output));
+
+      assert.deepEqual(JSON.parse(rendered.trim()), {
+        stream: 'operations.portfolioStream',
+        sequence: 1,
+        receivedAt: '2026-06-29T12:00:00.000Z',
+        type: 'portfolio',
+        payload: {
+          accountId: 'account-id'
+        }
+      });
+      assert.equal(receivedSignal?.aborted, true);
+      assert.equal(closeCalls, 1);
+    });
+
+    test('does not mask a stream failure that precedes the timeout', async () => {
+      const providerError = new Error('provider failed');
+      let closeCalls = 0;
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime: {
+            durationMs: 100
+          }
+        }),
+        createSdk() {
+          return {
+            marketdataStream: {
+              marketDataStream: createUnusedStream('marketDataStream'),
+              marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+            },
+            operationsStream: {
+              portfolioStream: createUnusedStream('portfolioStream'),
+              positionsStream: createUnusedStream('positionsStream')
+            },
+            ordersStream: {
+              tradesStream() {
+                return responsesThenError<TradesStreamResponse>([], providerError);
+              }
+            },
+            close() {
+              closeCalls += 1;
+            }
+          };
+        }
+      });
+
+      const output = await commandFacade.run(
+        command,
+        [
+          'stream',
+          'run',
+          '--config=stream.json',
+          '--token=token',
+          '--endpoint=localhost:50051'
+        ],
+        undefined
+      );
+
+      await assert.rejects(
+        withDeadline(collectOutput(output)),
+        (error: unknown) => error === providerError
+      );
+      assert.equal(closeCalls, 1);
     });
 
     test('applies runtime overrides from CLI options', async () => {

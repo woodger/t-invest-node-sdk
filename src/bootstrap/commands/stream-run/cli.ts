@@ -11,7 +11,12 @@
 
 import {
   readFile } from 'node:fs/promises';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type {
+  TinkoffInvestCallOptions
+} from '../../../application/dto/tinkoff-invest-services';
+import type {
+  TinkoffInvestOptions
+} from '../../../application/dto/tinkoff-invest-options';
 import type {
   MarketDataRequest,
   MarketDataResponse,
@@ -52,18 +57,29 @@ import {
 type StreamRunSdk = {
   marketdataStream: {
     marketDataStream(
-      request: AsyncIterable<MarketDataRequest>
+      request: AsyncIterable<MarketDataRequest>,
+      options?: TinkoffInvestCallOptions
     ): AsyncIterable<MarketDataResponse>;
     marketDataServerSideStream(
-      request: MarketDataServerSideStreamRequest
+      request: MarketDataServerSideStreamRequest,
+      options?: TinkoffInvestCallOptions
     ): AsyncIterable<MarketDataResponse>;
   };
   operationsStream: {
-    portfolioStream(request: PortfolioStreamRequest): AsyncIterable<PortfolioStreamResponse>;
-    positionsStream(request: PositionsStreamRequest): AsyncIterable<PositionsStreamResponse>;
+    portfolioStream(
+      request: PortfolioStreamRequest,
+      options?: TinkoffInvestCallOptions
+    ): AsyncIterable<PortfolioStreamResponse>;
+    positionsStream(
+      request: PositionsStreamRequest,
+      options?: TinkoffInvestCallOptions
+    ): AsyncIterable<PositionsStreamResponse>;
   };
   ordersStream: {
-    tradesStream(request: TradesStreamRequest): AsyncIterable<TradesStreamResponse>;
+    tradesStream(
+      request: TradesStreamRequest,
+      options?: TinkoffInvestCallOptions
+    ): AsyncIterable<TradesStreamResponse>;
   };
   close(): void;
 };
@@ -180,13 +196,27 @@ function runStreamRunSession(
 ): AsyncIterable<string> {
   return (async function* streamRunSession() {
     const sdk = dependencies.createSdk(sdkOptions);
+    const controller = new AbortController();
 
     try {
-      const responses = createStreamResponses(config, sdk);
+      const responses = createStreamResponses(
+        config,
+        sdk,
+        controller.signal
+      );
 
-      yield* formatStreamRunResponses(config.stream, responses, runtime, dependencies.now);
+      yield* formatStreamRunResponses(
+        config.stream,
+        responses,
+        runtime,
+        dependencies.now,
+        () => {
+          controller.abort();
+        }
+      );
     }
     finally {
+      controller.abort();
       sdk.close();
     }
   })();
@@ -194,27 +224,43 @@ function runStreamRunSession(
 
 function createStreamResponses(
   config: StreamRunConfig,
-  sdk: StreamRunSdk
+  sdk: StreamRunSdk,
+  signal: AbortSignal
 ): AsyncIterable<StreamRunResponse> {
+  const callOptions: TinkoffInvestCallOptions = {
+    signal
+  };
+
   switch (config.stream) {
     case 'marketdata.marketDataStream':
       return sdk.marketdataStream.marketDataStream(
-        createInitialMarketDataRequestStream(createMarketDataStreamRequests(config))
+        createInitialMarketDataRequestStream(createMarketDataStreamRequests(config)),
+        callOptions
       );
 
     case 'marketdata.marketDataServerSideStream':
       return sdk.marketdataStream.marketDataServerSideStream(
-        createMarketDataServerSideStreamRequest(config)
+        createMarketDataServerSideStreamRequest(config),
+        callOptions
       );
 
     case 'operations.portfolioStream':
-      return sdk.operationsStream.portfolioStream(createPortfolioStreamRequest(config));
+      return sdk.operationsStream.portfolioStream(
+        createPortfolioStreamRequest(config),
+        callOptions
+      );
 
     case 'operations.positionsStream':
-      return sdk.operationsStream.positionsStream(createPositionsStreamRequest(config));
+      return sdk.operationsStream.positionsStream(
+        createPositionsStreamRequest(config),
+        callOptions
+      );
 
     case 'orders.tradesStream':
-      return sdk.ordersStream.tradesStream(createTradesStreamRequest(config));
+      return sdk.ordersStream.tradesStream(
+        createTradesStreamRequest(config),
+        callOptions
+      );
   }
 }
 
@@ -230,13 +276,15 @@ async function* formatStreamRunResponses(
   stream: SupportedStreamRunStreamName,
   responses: AsyncIterable<StreamRunResponse>,
   runtime: StreamRunRuntime,
-  now: StreamRunClock
+  now: StreamRunClock,
+  cancelStream: () => void
 ): AsyncIterable<string> {
   const iterator = responses[Symbol.asyncIterator]();
   const startedAt = Date.now();
   let lastResponseAt = startedAt;
   let sequence = 1;
   let emittedEvents = 0;
+  let pendingRead: Promise<IteratorResult<StreamRunResponse>> | undefined;
 
   try {
     while (true) {
@@ -246,9 +294,21 @@ async function* formatStreamRunResponses(
         break;
       }
 
-      const result = await readNextWithTimeout(iterator.next(), timeoutMs);
+      pendingRead = iterator.next();
 
-      if (result === streamReadTimedOut || result.done) {
+      const result = await readNextWithTimeout(pendingRead, timeoutMs);
+
+      if (result === streamReadTimedOut) {
+        cancelStream();
+        await settleCancelledRead(pendingRead);
+        pendingRead = undefined;
+
+        break;
+      }
+
+      pendingRead = undefined;
+
+      if (result.done) {
         break;
       }
 
@@ -277,6 +337,12 @@ async function* formatStreamRunResponses(
     }
   }
   finally {
+    cancelStream();
+
+    if (pendingRead !== undefined) {
+      await settleCancelledRead(pendingRead);
+    }
+
     await iterator.return?.();
   }
 }
@@ -321,5 +387,17 @@ async function readNextWithTimeout<T>(
     if (timeout !== undefined) {
       clearTimeout(timeout);
     }
+  }
+}
+
+async function settleCancelledRead<T>(
+  read: Promise<IteratorResult<T>>
+): Promise<void> {
+  try {
+    await read;
+  }
+  catch {
+    // Основной read outcome уже определен до cleanup; ошибка после session
+    // cancellation не должна подменять timeout или ранее полученную ошибку.
   }
 }
