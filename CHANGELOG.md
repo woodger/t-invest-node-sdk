@@ -12,6 +12,8 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-07-28
+
 ### Fixed
 
 - Preserved the full unary throttling interval after delayed timer callbacks so
