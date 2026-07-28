@@ -115,6 +115,13 @@ terminal app разрешает command path, валидирует declarative s
 handler-у typed command options. API-specific validation и mapping в generated
 request остаются в project-owned helpers.
 
+`bootstrap/cli/contract.ts` один раз закрепляет общие application-level типы
+команд через `createCommand.withTypes()`, сохраняя конкретные schema, path,
+payload и result каждого definition. Registry добавляет вычисленные
+compatibility aliases capability-based декоратором: ограничение требует только
+читаемый декоратором `path`, исходный definition проходит без расширения, а
+runtime aliases честно представлены как `readonly CommandPath[]`.
+
 Runner один раз выполняет `prepare`, пишет command warnings и передает prepared
 command в `runPrepared`. В штатном terminal flow общая error policy сохраняет
 единый stderr для фаз `prepare`, `execute`, `render`, `write` и внешних
