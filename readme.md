@@ -23,7 +23,7 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 
 Документация ведется как обычные Markdown-файлы в каталоге `docs`:
 
-- [Обзор SDK](docs/index.md)
+- [Навигация по документации](docs/index.md)
 - [Архитектура SDK](docs/architecture.md)
 - [Clean Architecture Notes](docs/clean-architecture/index.md)
 - [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
