@@ -76,6 +76,39 @@ describe('Throttle', () => {
     assert.deepEqual(delays, [600, 1200]);
   });
 
+  test('preserves the interval after a delayed timer callback', async () => {
+    const throttle = new Throttle();
+
+    await withControlledThrottleTimers(async ({
+      delays,
+      runNext,
+      setCurrentTime
+    }) => {
+      await throttle.reduce(ordersRule);
+
+      const delayedCall = throttle.reduce(ordersRule);
+      let followingCallSettled = false;
+      const followingCall = throttle.reduce(ordersRule)
+        .finally(() => {
+          followingCallSettled = true;
+        });
+
+      assert.deepEqual(delays, [600]);
+
+      setCurrentTime(12_000);
+      runNext();
+      await delayedCall;
+      await Promise.resolve();
+
+      assert.equal(followingCallSettled, false);
+      assert.deepEqual(delays, [600, 600]);
+
+      setCurrentTime(12_600);
+      runNext();
+      await followingCall;
+    });
+  });
+
   test('releases a waiting slot when its signal is aborted', async () => {
     const throttle = new Throttle();
     const cancellationReason = new Error('cancelled');
@@ -187,6 +220,7 @@ async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]
 interface ControlledThrottleTimers {
   delays: number[];
   runNext(): void;
+  setCurrentTime(value: number): void;
 }
 
 async function withControlledThrottleTimers(
@@ -195,7 +229,7 @@ async function withControlledThrottleTimers(
   const originalDate = global.Date;
   const originalSetTimeout = global.setTimeout;
   const originalClearTimeout = global.clearTimeout;
-  const now = 10_000;
+  let now = 10_000;
   const delays: number[] = [];
   const callbacks = new Map<number, () => void>();
   let nextTimer = 1;
@@ -232,6 +266,9 @@ async function withControlledThrottleTimers(
 
         callbacks.delete(timer);
         callback();
+      },
+      setCurrentTime(value) {
+        now = value;
       }
     });
   }
