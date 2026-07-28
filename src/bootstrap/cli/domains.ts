@@ -525,7 +525,7 @@ type CommandPathName<TPath extends readonly string[]> =
 
 type CliPreferredPath = typeof cliPathAliases[number]['preferred'];
 
-/** Canonical command names declared by the preferred CLI paths. */
+/** Канонические имена команд, выведенные из preferred CLI paths. */
 export type CliCommandName =
   | CommandPathName<CliPreferredPath>
   | 'stream run'
