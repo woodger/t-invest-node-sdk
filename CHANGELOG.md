@@ -12,6 +12,8 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-07-29
+
 ### Changed
 
 - Updated `icore` to `2.1.0` and the `fwa` test runner to `2.0.7`.
@@ -21,6 +23,14 @@ micro-release separately.
 - Deferred loading the CLI command registry until command execution so global
   help and version shortcuts do not initialize API commands or generated
   contracts.
+- Reorganized CLI, SDK configuration, and gRPC transport tests around their
+  owning production modules and observable contracts.
+- Consolidated shared instrument and comma-separated option coverage, and
+  removed repeated unit checks for passthrough command helpers. Public package
+  exports, CLI behavior, and SDK runtime semantics remain unchanged.
+- Clarified that `SdkError.code` contains a standard symbolic non-OK gRPC status
+  for errors with `source: 'grpc'`, while `source` distinguishes provider
+  failures from local SDK errors.
 
 ### Fixed
 
@@ -32,15 +42,9 @@ micro-release separately.
   boundaries.
 - Made global CLI shortcut paths reject unsupported options with exit code `2`.
 
-## [0.3.6] - 2026-07-28
+### Security
 
-### Changed
-
-- Reorganized CLI, SDK configuration, and gRPC transport tests around their
-  owning production modules and observable contracts.
-- Consolidated shared instrument and comma-separated option coverage, and
-  removed repeated unit checks for passthrough command helpers. Public package
-  exports, CLI behavior, and SDK runtime semantics remain unchanged.
+- Excluded local `.env` credentials from Git and package archives.
 
 ## [0.3.5] - 2026-07-28
 
