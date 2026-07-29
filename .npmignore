@@ -3,3 +3,4 @@ src/
 tsconfig.json
 eslint.config.mjs
 **/*.test.*
+.env
