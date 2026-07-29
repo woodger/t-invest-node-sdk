@@ -117,6 +117,21 @@ describe('bootstrap cli runner', () => {
       assert.equal(read().stderr, '');
     });
 
+    test('rejects unsupported options in global shortcut paths', async () => {
+      for (const argv of [
+        ['--unknown-option'],
+        ['--format=json'],
+        ['--version', '--unknown-option']
+      ] as const) {
+        const { io, read } = createIo();
+        const exitCode = await runCli(argv, io);
+
+        assert.equal(exitCode, 2);
+        assert.equal(read().stdout, '');
+        assert.match(read().stderr, /Unexpected option '--(?:unknown-option|format)'/);
+      }
+    });
+
     test('prints top-level help from help command and global flags', async () => {
       for (const command of ['--help', '-h', 'help']) {
         const { io, read } = createIo();

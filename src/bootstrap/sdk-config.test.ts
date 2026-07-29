@@ -1,8 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
 import { Throttle } from '../application/services/unary-throttle.service';
 import {
   defaultConfig,
+  resolveSdkInstanceOptions,
   resolveUnaryThrottleConfig
 } from './sdk-config';
 import { defineUnaryLimits } from './unary-limit-config';
@@ -86,6 +88,21 @@ describe('defaultConfig', () => {
     });
 
     assert.deepEqual(delays, [4000, 12000]);
+  });
+});
+
+describe('resolveSdkInstanceOptions', () => {
+  test('keeps boolean package defaults for explicitly undefined options', () => {
+    const unsafeOptions = {
+      token: 'token',
+      endpoint: 'localhost:50051',
+      useSsl: undefined,
+      trackLimits: undefined
+    } as unknown as TinkoffInvestOptions;
+    const options = resolveSdkInstanceOptions(unsafeOptions);
+
+    assert.equal(options.useSsl, true);
+    assert.equal(options.trackLimits, true);
   });
 });
 

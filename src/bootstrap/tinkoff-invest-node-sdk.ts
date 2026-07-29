@@ -64,7 +64,11 @@ import {
   createSdkMetadata,
   UnaryLimitResolver
 } from '../infrastructure/transport/grpc';
-import { resolveUnaryThrottleConfig } from './sdk-config';
+import {
+  resolveSdkInstanceOptions,
+  resolveUnaryThrottleConfig,
+  type ResolvedTinkoffInvestOptions
+} from './sdk-config';
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof MarketDataServiceDefinition
@@ -90,11 +94,6 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
-type ResolvedTinkoffInvestOptions = TinkoffInvestOptions & {
-  useSsl: boolean;
-  trackLimits: boolean;
-};
-
 export class TinkoffInvestNodeSDK {
   private options: ResolvedTinkoffInvestOptions;
   private storage: Map<ServiceDefinition, ServiceClient> = new Map();
@@ -106,12 +105,11 @@ export class TinkoffInvestNodeSDK {
   private lifecycleController = new AbortController();
   
   constructor(options: TinkoffInvestOptions) {
-    this.options = {
-      ...packageConfig.sdk,
-      ...options
-    };
+    this.options = resolveSdkInstanceOptions(options);
 
-    const unaryThrottleConfig = resolveUnaryThrottleConfig(options.unaryLimits);
+    const unaryThrottleConfig = resolveUnaryThrottleConfig(
+      this.options.unaryLimits
+    );
 
     this.throttle = new Throttle();
     this.unaryLimitResolver = new UnaryLimitResolver(

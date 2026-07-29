@@ -1,6 +1,5 @@
-node_modules/
-eslint.config.mjs
 contracts/
 src/
 tsconfig.json
+eslint.config.mjs
 **/*.test.*

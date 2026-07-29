@@ -10,11 +10,15 @@
  */
 
 import type {
+  CallOptions,
   Channel,
-  Metadata
+  ClientMiddlewareCall
 } from 'nice-grpc';
 import type { Throttle } from '../../../application/services/unary-throttle.service';
-import { createClientFactory } from 'nice-grpc';
+import {
+  createClientFactory,
+  Metadata
+} from 'nice-grpc';
 import { createSdkMiddleware } from './sdk-middleware';
 import type { SdkCallLifecycle } from './sdk-middleware';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
@@ -35,9 +39,24 @@ export function createSdkClient<T>(
       throttle,
       lifecycle
     ))
-    .create(service as never, channel, {
-      '*': {
-        metadata
-      }
-    }) as T;
+    .use(createSdkMetadataMiddleware(metadata))
+    .create(service as never, channel) as T;
+}
+
+function createSdkMetadataMiddleware(metadata: Metadata) {
+  return async function*<Request, Response>(
+    call: ClientMiddlewareCall<Request, Response>,
+    options: CallOptions
+  ) {
+    const callMetadata = new Metadata(options.metadata);
+
+    for (const [key, values] of metadata) {
+      callMetadata.set(key, values);
+    }
+
+    return yield* call.next(call.request, {
+      ...options,
+      metadata: callMetadata
+    });
+  };
 }

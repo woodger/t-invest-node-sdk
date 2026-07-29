@@ -24,6 +24,9 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "bin": {
     "tinkoff-invest-node-sdk": "dist/bootstrap/index.js"
   },

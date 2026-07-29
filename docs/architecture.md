@@ -242,9 +242,10 @@ packageConfig.sdk -- defaults --.
 per-instance options -----------'
 ```
 
-Per-instance `useSsl` и `trackLimits` имеют приоритет над package defaults.
-`packageConfig.sdk` остается внутренней authoring-формой и не расширяет
-публичный `defaultConfig`.
+Per-instance boolean values `useSsl` и `trackLimits` имеют приоритет над package
+defaults, а `undefined` не отключает package policy. Обязательные `token` и
+`endpoint` проверяются до создания transport channel. `packageConfig.sdk`
+остается внутренней authoring-формой и не расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
