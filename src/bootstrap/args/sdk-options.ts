@@ -40,7 +40,7 @@ function requiredCliOrEnvValue(
 ): string {
   const value = cliValue ?? stringFromEnv(env, envName);
 
-  if (value === undefined) {
+  if (value === undefined || value.trim() === '') {
     throw new CliUsageError(`Expected '--${optionName}' or ${envName}`);
   }
 

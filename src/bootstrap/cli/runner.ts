@@ -8,6 +8,7 @@
 
 import {
   CliUsageError,
+  createCommands,
   createOutput,
   createTerminalApp,
   parseArgv,
@@ -16,10 +17,6 @@ import {
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
-import {
-  commandLineCommands,
-  resolveCommandWarnings
-} from './registry';
 import { terminalErrorPolicy } from './error';
 import { isHelpRequested, renderCliHelp, renderHelp } from './help';
 import { isVersionRequested, renderVersionInfo } from './version';
@@ -39,6 +36,10 @@ const bootstrapOptionsSchema = {
 } as const satisfies OptionsSchema;
 
 const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
+
+// Пустой registry сохраняет единый TerminalApp error contract,
+// не загружая API-команды для глобальных shortcuts.
+const bootstrapCommands = createCommands([] as const);
 
 export function parseCliInput(argv: readonly string[]) {
   const parsedArgv = parseArgv(argv, bootstrapOptionsSchema);
@@ -82,8 +83,8 @@ export async function runCli(
   argv: readonly string[] = [],
   io: Output = createOutput()
 ): Promise<number> {
-  const app = createTerminalApp({
-    commands: commandLineCommands,
+  const bootstrapApp = createTerminalApp({
+    commands: bootstrapCommands,
     output: io,
     errorPolicy: terminalErrorPolicy
   });
@@ -91,9 +92,13 @@ export async function runCli(
 
   try {
     parsedArgv = parseCliInput(argv);
+    rejectUnsupportedShortcutOptions(
+      parsedArgv.positionals,
+      parsedArgv.options
+    );
   }
   catch (error) {
-    return app.reportError(error, {
+    return bootstrapApp.reportError(error, {
       phase: 'external',
       args: argv
     });
@@ -101,12 +106,12 @@ export async function runCli(
 
   const writeBootstrapOutput = async (text: string): Promise<number> => {
     try {
-      await app.output.write(text);
+      await bootstrapApp.output.write(text);
 
       return 0;
     }
     catch (error) {
-      return app.reportError(error, {
+      return bootstrapApp.reportError(error, {
         phase: 'external',
         args: argv
       });
@@ -127,6 +132,23 @@ export async function runCli(
     return writeBootstrapOutput(renderCliHelp());
   }
 
+  let registry: typeof import('./registry.js');
+
+  try {
+    registry = await import('./registry.js');
+  }
+  catch (error) {
+    return bootstrapApp.reportError(error, {
+      phase: 'external',
+      args: argv
+    });
+  }
+
+  const app = createTerminalApp({
+    commands: registry.commandLineCommands,
+    output: io,
+    errorPolicy: terminalErrorPolicy
+  });
   let prepared: Awaited<ReturnType<typeof app.prepare>>;
 
   try {
@@ -140,7 +162,7 @@ export async function runCli(
   }
 
   try {
-    for (const warning of resolveCommandWarnings(prepared.name, argv)) {
+    for (const warning of registry.resolveCommandWarnings(prepared.name, argv)) {
       await app.output.error(warning);
     }
   }
@@ -153,4 +175,19 @@ export async function runCli(
   }
 
   return app.runPrepared(prepared, undefined);
+}
+
+function rejectUnsupportedShortcutOptions(
+  positionals: readonly string[],
+  options: Record<string, RawOptionValue>
+): void {
+  if (positionals.length > 0 && !isVersionRequested(options)) {
+    return;
+  }
+
+  for (const name of Object.keys(options)) {
+    if (!bootstrapOptionNames.includes(name)) {
+      throw new CliUsageError(`Unexpected option '--${name}'`);
+    }
+  }
 }

@@ -12,6 +12,26 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `icore` to `2.1.0` and the `fwa` test runner to `2.0.7`.
+- Restricted package imports to the documented root entrypoint.
+- Made the `version` command reject extra positional arguments as a usage
+  error.
+- Deferred loading the CLI command registry until command execution so global
+  help and version shortcuts do not initialize API commands or generated
+  contracts.
+
+### Fixed
+
+- Preserved SDK-owned authorization and application metadata when Consumer
+  call metadata is provided.
+- Kept TLS and unary throttling defaults enabled when optional instance flags
+  are explicitly `undefined`.
+- Rejected blank SDK credentials and endpoint values at the SDK and CLI
+  boundaries.
+- Made global CLI shortcut paths reject unsupported options with exit code `2`.
+
 ## [0.3.6] - 2026-07-28
 
 ### Changed

@@ -125,7 +125,9 @@ type UnaryLimits = Record<string, number>;
   объединяются с `defaultConfig.unaryLimits` при создании SDK.
 
 Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
-instance options имеют приоритет.
+boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
+`token` и `endpoint` должны быть непустыми строками. Прямой SDK-вызов с пустым
+значением завершается `SdkErrorCode.InvalidArgument` с `source: 'sdk'`.
 
 Для читаемой группировки лимитов по сервисам и методам используйте
 `defineUnaryLimits()`. `default` задает сервисный fallback, а `methods` —
@@ -212,6 +214,8 @@ yarn cli operation portfolio --account-id=2000000000 --format=json
 После установки SDK как зависимости CLI доступен через
 `yarn tinkoff-invest-node-sdk`. API-команды принимают параметры подключения через
 `--token` / `TINKOFF_TOKEN` и `--endpoint` / `TINKOFF_ENDPOINT`.
+Пустое или состоящее только из пробелов CLI-значение не подменяется ENV fallback
+и завершается usage error с кодом `2`.
 
 Команды с побочными эффектами по умолчанию требуют `--confirm`. Логические опции
 передаются как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и
@@ -258,7 +262,10 @@ terminal policy классифицирует application и framework usage erro
 - `sdk.operationsStream`
 - `sdk.ordersStream`
 
-Все клиенты используют общий gRPC channel и metadata. Закрыть channel можно через `sdk.close()`.
+Все клиенты используют общий gRPC channel и metadata. Per-call metadata
+объединяется с instance metadata; `authorization` и `x-app-name`, заданные SDK,
+остаются package-owned, а остальные заголовки Consumer-а добавляются к запросу.
+Закрыть channel можно через `sdk.close()`.
 
 ### Lifecycle и отмена
 
@@ -282,6 +289,22 @@ terminal policy классифицирует application и framework usage erro
 `isSdkError()`. gRPC statuses преобразуются в одноименные стабильные
 `SdkErrorCode`; исходный transport error сохраняется в `cause`, а `path`,
 `details` и `source` доступны для диагностики.
+
+Для ошибки с `source: 'grpc'` поле `code` содержит символьное имя стандартного
+non-OK gRPC status. Например:
+
+```ts
+SdkErrorCode.InvalidArgument;    // 'INVALID_ARGUMENT'
+SdkErrorCode.NotFound;           // 'NOT_FOUND'
+SdkErrorCode.Unauthenticated;    // 'UNAUTHENTICATED'
+SdkErrorCode.ResourceExhausted;  // 'RESOURCE_EXHAUSTED'
+```
+
+`OK` не входит в error contract. Полный актуальный набор определяет
+экспортируемый enum `SdkErrorCode`. Значения `SdkErrorCode.SdkClosed` и
+`SdkErrorCode.UnknownUnaryLimit` являются SDK-specific, а не gRPC statuses.
+Стандартное имя `code` само по себе не определяет источник: когда это важно,
+Consumer должен проверять сочетание `code` и `source`.
 
 ```ts
 import {
