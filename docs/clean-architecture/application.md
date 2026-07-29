@@ -117,7 +117,6 @@ queue и не знает, какой transport должен был выполн�
 
 - `application/use-cases`;
 - `application/ports`;
-- `application/errors`;
 - `domain`.
 
 Их не нужно создавать заранее. Добавление такой директории допустимо только

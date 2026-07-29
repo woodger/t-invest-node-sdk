@@ -334,10 +334,16 @@ describe('bootstrap cli runner', () => {
 
     test('waits for async stdout writes', async () => {
       let finishWrite: (() => void) | undefined;
+      let notifyWriteStarted: (() => void) | undefined;
+      const writeStarted = new Promise<void>((resolve) => {
+        notifyWriteStarted = resolve;
+      });
       let commandFinished = false;
       const exitCode = runCli(['version'], createOutput({
         stdout: {
           write() {
+            notifyWriteStarted?.();
+
             return new Promise<void>((resolve) => {
               finishWrite = resolve;
             });
@@ -352,9 +358,7 @@ describe('bootstrap cli runner', () => {
         return code;
       });
 
-      await new Promise<void>((resolve) => {
-        setImmediate(resolve);
-      });
+      await writeStarted;
 
       assert.equal(commandFinished, false);
 
@@ -409,6 +413,10 @@ describe('bootstrap cli runner', () => {
 
     test('waits for async stderr writes', async () => {
       let finishWrite: (() => void) | undefined;
+      let notifyWriteStarted: (() => void) | undefined;
+      const writeStarted = new Promise<void>((resolve) => {
+        notifyWriteStarted = resolve;
+      });
       let commandFinished = false;
       let stderrWrites = 0;
       const exitCode = runCli(['unknown-command'], createOutput({
@@ -420,6 +428,8 @@ describe('bootstrap cli runner', () => {
             stderrWrites += 1;
 
             if (stderrWrites === 1) {
+              notifyWriteStarted?.();
+
               return new Promise<void>((resolve) => {
                 finishWrite = resolve;
               });
@@ -434,7 +444,7 @@ describe('bootstrap cli runner', () => {
         return code;
       });
 
-      await Promise.resolve();
+      await writeStarted;
 
       assert.equal(commandFinished, false);
       assert.equal(stderrWrites, 1);

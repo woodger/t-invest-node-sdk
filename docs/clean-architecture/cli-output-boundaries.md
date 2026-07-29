@@ -106,8 +106,9 @@ stdout
 ```
 
 Runner отдельно владеет публичными short aliases, help/version shortcuts и
-command warnings. Он направляет help/version через `app.output.write`, warnings
-через `app.output.error`, а normal command result передает в terminal app.
+command warnings. Он направляет help/version через lightweight terminal app,
+warnings через command terminal app, а normal command result передает в
+`runPrepared`. Оба экземпляра используют один `Output` и одну error policy.
 
 Последний аварийный fallback executable entrypoint использует `console.error`.
 Поэтому `icore` `Output` является контрактом штатного terminal flow, а не
@@ -157,7 +158,9 @@ public API `icore`.
 ## Что Предоставляют `TerminalApp` И `Output`
 
 `bootstrap/cli/runner.ts` создает default output через `createOutput` или
-принимает injected `Output`, после чего передает его в `createTerminalApp`.
+принимает injected `Output`. Lightweight terminal app обслуживает shortcuts и
+external errors без загрузки command definitions; command terminal app создается
+после lazy import registry. Оба получают один и тот же `Output`.
 
 Output boundary отвечает за:
 
