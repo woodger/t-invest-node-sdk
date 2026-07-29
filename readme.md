@@ -290,6 +290,22 @@ terminal policy классифицирует application и framework usage erro
 `SdkErrorCode`; исходный transport error сохраняется в `cause`, а `path`,
 `details` и `source` доступны для диагностики.
 
+Для ошибки с `source: 'grpc'` поле `code` содержит символьное имя стандартного
+non-OK gRPC status. Например:
+
+```ts
+SdkErrorCode.InvalidArgument;    // 'INVALID_ARGUMENT'
+SdkErrorCode.NotFound;           // 'NOT_FOUND'
+SdkErrorCode.Unauthenticated;    // 'UNAUTHENTICATED'
+SdkErrorCode.ResourceExhausted;  // 'RESOURCE_EXHAUSTED'
+```
+
+`OK` не входит в error contract. Полный актуальный набор определяет
+экспортируемый enum `SdkErrorCode`. Значения `SdkErrorCode.SdkClosed` и
+`SdkErrorCode.UnknownUnaryLimit` являются SDK-specific, а не gRPC statuses.
+Стандартное имя `code` само по себе не определяет источник: когда это важно,
+Consumer должен проверять сочетание `code` и `source`.
+
 ```ts
 import {
   isSdkError,
