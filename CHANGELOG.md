@@ -18,6 +18,9 @@ micro-release separately.
 - Restricted package imports to the documented root entrypoint.
 - Made the `version` command reject extra positional arguments as a usage
   error.
+- Deferred loading the CLI command registry until command execution so global
+  help and version shortcuts do not initialize API commands or generated
+  contracts.
 
 ### Fixed
 

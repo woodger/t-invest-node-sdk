@@ -81,7 +81,8 @@ command output проходит через terminal app.
 `bootstrap/cli/runner.ts` выполняет integration wiring:
 
 - создает default `Output` или принимает injected `Output`;
-- собирает `TerminalApp` с command registry и project error policy;
+- собирает lightweight `TerminalApp` для shortcuts и external errors;
+- лениво загружает command registry и собирает command `TerminalApp`;
 - направляет help, version и warnings через output facade;
 - передает prepared command в terminal app для выполнения и записи результата.
 

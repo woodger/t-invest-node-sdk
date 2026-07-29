@@ -119,6 +119,12 @@ terminal app разрешает command path, валидирует declarative s
 handler-у typed command options. API-specific validation и mapping в generated
 request остаются в project-owned helpers.
 
+Глобальные help/version shortcuts используют lightweight `TerminalApp` без
+command definitions. Полный registry загружается через dynamic import только
+перед `prepare`, поэтому shortcut path не инициализирует API commands, SDK facade
+и generated contracts. Оба экземпляра `TerminalApp` используют один injected
+`Output` и одну project error policy.
+
 `bootstrap/cli/contract.ts` один раз закрепляет общие application-level типы
 команд через `createCommand.withTypes()`, сохраняя конкретные schema, path,
 payload и result каждого definition. Registry добавляет вычисленные
