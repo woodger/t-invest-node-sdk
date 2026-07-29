@@ -4,7 +4,10 @@ import {
   createServer,
   Metadata
 } from 'nice-grpc';
-import type { ServiceDefinition } from 'nice-grpc';
+import type {
+  CallOptions,
+  ServiceDefinition
+} from 'nice-grpc';
 import type { ThrottleRule } from '../../../application/services/unary-throttle.service';
 import { Throttle } from '../../../application/services/unary-throttle.service';
 import { createSdkChannel } from './sdk-channel';
@@ -27,19 +30,26 @@ const payloadServiceDefinition = {
 } as const satisfies ServiceDefinition;
 
 interface PayloadServiceClient {
-  getPayload(request: Record<string, never>): Promise<Uint8Array>;
+  getPayload(
+    request: Record<string, never>,
+    options?: CallOptions
+  ): Promise<Uint8Array>;
 }
 
 describe('createSdkClient', () => {
-  test('wires shared metadata and throttling into typed client calls', async () => {
+  test('merges SDK-owned and per-call metadata before throttled calls', async () => {
     const server = createServer();
     let receivedAuthorization: string | undefined;
+    let receivedAppName: string | undefined;
+    let receivedRequestId: string | undefined;
 
     server.add(payloadServiceDefinition, {
       async getPayload(request, context) {
         void request;
 
         receivedAuthorization = context.metadata.get('Authorization');
+        receivedAppName = context.metadata.get('x-app-name');
+        receivedRequestId = context.metadata.get('x-request-id');
 
         return payload;
       }
@@ -63,7 +73,8 @@ describe('createSdkClient', () => {
       payloadServiceDefinition,
       channel,
       new Metadata({
-        Authorization: 'Bearer token'
+        Authorization: 'Bearer token',
+        'x-app-name': 'sdk-app'
       }),
       true,
       new UnaryLimitResolver({
@@ -77,10 +88,18 @@ describe('createSdkClient', () => {
     );
 
     try {
-      const response = await client.getPayload({});
+      const response = await client.getPayload({}, {
+        metadata: new Metadata({
+          Authorization: 'Bearer per-call-token',
+          'x-app-name': 'per-call-app',
+          'x-request-id': 'request-id'
+        })
+      });
 
       assert.deepEqual([...response], [...payload]);
       assert.equal(receivedAuthorization, 'Bearer token');
+      assert.equal(receivedAppName, 'sdk-app');
+      assert.equal(receivedRequestId, 'request-id');
       assert.equal(throttledRule?.limitPerMinute, 60);
     }
     finally {

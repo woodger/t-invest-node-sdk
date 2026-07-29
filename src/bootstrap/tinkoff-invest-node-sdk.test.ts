@@ -122,6 +122,32 @@ describe('TinkoffInvestNodeSDK', () => {
     }
   });
 
+  test('rejects blank required options before transport initialization', () => {
+    for (const [name, options] of [
+      [
+        'token',
+        {
+          token: ' ',
+          endpoint: 'localhost:50051'
+        }
+      ],
+      [
+        'endpoint',
+        {
+          token: 'token',
+          endpoint: ''
+        }
+      ]
+    ] as const) {
+      assert.throws(
+        () => new TinkoffInvestNodeSDK(options),
+        (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+          && error.source === 'sdk'
+          && error.message === `TinkoffInvestOptions.${name} must be a non-empty string`
+      );
+    }
+  });
+
   describe('#close', () => {
     test('closes the shared channel idempotently', () => {
       const sdk = new TinkoffInvestNodeSDK({

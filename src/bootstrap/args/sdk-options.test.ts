@@ -46,4 +46,34 @@ describe('resolveSdkOptionsFromCommandOptions', () => {
       /Expected '--token' or TINKOFF_TOKEN/
     );
   });
+
+  test('rejects blank command values instead of using environment fallbacks', () => {
+    for (const [options, message] of [
+      [
+        {
+          token: ' ',
+          endpoint: 'localhost:50051'
+        },
+        /Expected '--token' or TINKOFF_TOKEN/
+      ],
+      [
+        {
+          token: 'token',
+          endpoint: ''
+        },
+        /Expected '--endpoint' or TINKOFF_ENDPOINT/
+      ]
+    ] as const) {
+      assert.throws(
+        () => resolveSdkOptionsFromCommandOptions(
+          options,
+          {
+            TINKOFF_TOKEN: 'env-token',
+            TINKOFF_ENDPOINT: 'env.example:443'
+          }
+        ),
+        message
+      );
+    }
+  });
 });

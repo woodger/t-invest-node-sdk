@@ -91,6 +91,10 @@ export async function runCli(
 
   try {
     parsedArgv = parseCliInput(argv);
+    rejectUnsupportedShortcutOptions(
+      parsedArgv.positionals,
+      parsedArgv.options
+    );
   }
   catch (error) {
     return app.reportError(error, {
@@ -153,4 +157,19 @@ export async function runCli(
   }
 
   return app.runPrepared(prepared, undefined);
+}
+
+function rejectUnsupportedShortcutOptions(
+  positionals: readonly string[],
+  options: Record<string, RawOptionValue>
+): void {
+  if (positionals.length > 0 && !isVersionRequested(options)) {
+    return;
+  }
+
+  for (const name of Object.keys(options)) {
+    if (!bootstrapOptionNames.includes(name)) {
+      throw new CliUsageError(`Unexpected option '--${name}'`);
+    }
+  }
 }
