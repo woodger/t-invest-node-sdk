@@ -4,3 +4,4 @@ tsconfig.json
 eslint.config.mjs
 **/*.test.*
 .env
+yarn.lock
