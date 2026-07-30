@@ -1,7 +1,8 @@
 # Архитектура SDK
 
 > Type: Reference. Этот документ фиксирует текущую карту слоев SDK и служит
-> practical companion к [архитектурной политике](./policy/architecture.md).
+> practical companion к
+> [архитектурной политике](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/architecture.md).
 > Дополнительные design notes по развитию слоев находятся в
 > [Clean Architecture Notes](./clean-architecture/index.md).
 

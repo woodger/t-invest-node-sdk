@@ -13,7 +13,7 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.6"
+yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.7"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
@@ -24,15 +24,16 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 Документация ведется как обычные Markdown-файлы в каталоге `docs`:
 
 - [Навигация по документации](docs/index.md)
+- [Руководства для Consumer-ов](docs/guides/index.md)
 - [Архитектура SDK](docs/architecture.md)
 - [Clean Architecture Notes](docs/clean-architecture/index.md)
 - [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
 - [Stream CLI Reference](docs/cli-stream-reference.md)
 - [Stream CLI Configuration Reference](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
-- [Политики проекта](docs/policy/index.md)
-- [Политика тестирования](docs/policy/testing-policy.md)
-- [Политика комментариев в тестах](docs/policy/test-comment-style.md)
+- [Политики проекта](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/index.md)
+- [Политика тестирования](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
+- [Политика комментариев в тестах](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
 
 Отдельного docs-сайта, dev-сервера и сборки статической документации в проекте нет.
 
@@ -84,8 +85,8 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.3.6` Git tag остается `0.3.6` по исторической схеме проекта, а
-GitHub Release может называться `v0.3.6`. Release notes берутся из одноименного
+Для версии `0.3.7` Git tag остается `0.3.7` по исторической схеме проекта, а
+GitHub Release может называться `v0.3.7`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
@@ -94,12 +95,36 @@ GitHub Release может называться `v0.3.6`. Release notes беру�
 ```ts
 import { TinkoffInvestNodeSDK } from 'tinkoff-invest-node-sdk';
 
+const token = process.env.TINKOFF_TOKEN?.trim();
+const endpoint = process.env.TINKOFF_ENDPOINT?.trim();
+
+if (!token || !endpoint) {
+  throw new Error('TINKOFF_TOKEN and TINKOFF_ENDPOINT are required');
+}
+
 const sdk = new TinkoffInvestNodeSDK({
-  token: process.env.INVEST_TOKEN!,
-  endpoint: 'your-api-host:443',
-  useSsl: true,
+  token,
+  endpoint
+});
+
+async function main(): Promise<void> {
+  try {
+    const { accounts } = await sdk.users.getAccounts({});
+    console.log(accounts);
+  }
+  finally {
+    sdk.close();
+  }
+}
+
+void main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
 });
 ```
+
+Полный вариант с проверкой доступного счета и обработкой ошибки запуска:
+[Первый SDK-вызов](docs/guides/getting-started.md).
 
 ## Опции `TinkoffInvestNodeSDK`
 
@@ -335,150 +360,24 @@ application protocol.
 `ResourceExhausted`, `Unavailable` или `DeadlineExceeded` нельзя автоматически
 повторять без учета idempotency операции, provider metadata и backoff.
 
-## Примеры unary-запросов
+## Подробные примеры
 
-### Получить счета
+Законченные Consumer-сценарии вынесены из README в отдельные guides:
 
-```ts
-import { TinkoffInvestNodeSDK } from 'tinkoff-invest-node-sdk';
+- [Первый SDK-вызов](docs/guides/getting-started.md) — конфигурация, выбор счета
+  и освобождение ресурсов;
+- [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, Signals,
+  deadline и response metadata;
+- [Streams и отмена](docs/guides/streams-and-cancellation.md) — server-side и
+  bidirectional streams с application-owned `AbortSignal`;
+- [Ошибки и lifecycle](docs/guides/errors-and-lifecycle.md) — narrowing по
+  `SdkError.code` и `source`, shutdown и retry boundary;
+- [Mock-сервисы](docs/guides/testing-with-service-definitions.md) — Consumer
+  tests через root-exported service definitions без deep imports.
 
-const sdk = new TinkoffInvestNodeSDK({
-  token: process.env.INVEST_TOKEN!,
-  endpoint: 'your-api-host:443',
-});
-
-const { accounts } = await sdk.users.getAccounts({});
-
-console.log(accounts);
-```
-
-### Получить портфель
-
-```ts
-import {
-  PortfolioRequest_CurrencyRequest,
-  TinkoffInvestNodeSDK,
-} from 'tinkoff-invest-node-sdk';
-
-const sdk = new TinkoffInvestNodeSDK({
-  token: process.env.INVEST_TOKEN!,
-  endpoint: 'your-api-host:443',
-});
-
-const { accounts } = await sdk.users.getAccounts({});
-
-const portfolio = await sdk.operations.getPortfolio({
-  accountId: accounts[0]?.id ?? '',
-  currency: PortfolioRequest_CurrencyRequest.PORTFOLIO_REQUEST_CURRENCY_REQUEST_RUB,
-});
-
-console.log(portfolio);
-```
-
-### Получить свечи
-
-```ts
-import {
-  CandleInterval,
-  TinkoffInvestNodeSDK,
-} from 'tinkoff-invest-node-sdk';
-
-const sdk = new TinkoffInvestNodeSDK({
-  token: process.env.INVEST_TOKEN!,
-  endpoint: 'your-api-host:443',
-});
-
-const now = new Date();
-const from = new Date(now.getTime() - 5 * 60 * 1000);
-
-const response = await sdk.marketdata.getCandles({
-  instrumentId: 'BBG00QPYJ5H0',
-  interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
-  from,
-  to: now,
-});
-
-console.log(response.candles);
-```
-
-## Стримы
-
-`TinkoffInvestNodeSDK` создает stream-клиенты с теми же metadata и channel, что и unary-клиенты. Локальный throttling через `trackLimits` применяется только к unary-вызовам.
-
-### Server-side stream
-
-```ts
-import {
-  SubscriptionAction,
-  SubscriptionInterval,
-  TinkoffInvestNodeSDK,
-} from 'tinkoff-invest-node-sdk';
-
-const sdk = new TinkoffInvestNodeSDK({
-  token: process.env.INVEST_TOKEN!,
-  endpoint: 'your-api-host:443',
-});
-
-try {
-  for await (const event of sdk.marketdataStream.marketDataServerSideStream({
-    subscribeCandlesRequest: {
-      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-      instruments: [
-        {
-          instrumentId: 'BBG00QPYJ5H0',
-          interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
-        },
-      ],
-      waitingClose: false,
-    },
-  })) {
-    console.log(event);
-  }
-}
-finally {
-  sdk.close();
-}
-```
-
-### Bidirectional stream
-
-```ts
-import {
-  MarketDataRequest,
-  SubscriptionAction,
-  SubscriptionInterval,
-  TinkoffInvestNodeSDK,
-} from 'tinkoff-invest-node-sdk';
-
-async function* requestStream(): AsyncIterable<MarketDataRequest> {
-  yield {
-    subscribeCandlesRequest: {
-      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-      instruments: [
-        {
-          instrumentId: 'BBG00QPYJ5H0',
-          interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
-        },
-      ],
-      waitingClose: false,
-    },
-  };
-}
-
-const sdk = new TinkoffInvestNodeSDK({
-  token: process.env.INVEST_TOKEN!,
-  endpoint: 'your-api-host:443',
-});
-
-try {
-  for await (const event of sdk.marketdataStream.marketDataStream(requestStream())) {
-    console.log(event);
-  }
-}
-finally {
-  sdk.close();
-}
-```
+Guides показывают workflow, но не дублируют полный generated reference.
+Актуальные request/response DTO, enum-ы и service methods определяются
+публичными types и vendored proto contracts.
 
 ## Экспорты
 

@@ -12,6 +12,31 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-07-30
+
+### Changed
+
+- Added detailed Consumer guides for safe SDK lifecycle, unary calls, streams
+  and cancellation, error handling, and mock services through root exports.
+  README now keeps one short quick start and links to the complete workflows.
+- Added npm documentation metadata, included `docs/guides/**` in the package,
+  and excluded contributor-only `docs/policy/**`. Links from packaged
+  documentation to excluded repository files now point to GitHub.
+- Updated the development compiler from TypeScript `6.0.3` to `7.0.2`.
+  Compiler options, package runtime dependencies, and runtime behavior remain
+  unchanged.
+- Updated `pwd-fs` to `3.5.8`, aligning the runtime dependency with its
+  TypeScript 7 release while preserving its public CommonJS contract.
+- Replaced ESLint with Biome `2.5.6`. Equivalent rules retain error severity,
+  formatting and assists remain disabled, and generated contracts remain
+  outside the lint boundary. Biome has no direct equivalents for
+  `no-invalid-regexp`, `no-unexpected-multiline`, and
+  `@typescript-eslint/triple-slash-reference`.
+- Updated `icore` to `2.2.0` and `fwa` to `2.1.0`. The lightweight
+  empty-registry `TerminalApp` used by global CLI shortcuts is now explicitly
+  supported upstream, while command execution and the existing `fwa --prune`
+  workflow remain unchanged.
+
 ## [0.3.6] - 2026-07-29
 
 ### Changed

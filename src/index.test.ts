@@ -145,7 +145,7 @@ describe('package entrypoint', () => {
 });
 
 function hasPackageExport(name: string): boolean {
-  return Object.prototype.hasOwnProperty.call(packageExports, name);
+  return Object.hasOwn(packageExports, name);
 }
 
 function getPackageExport(name: string): unknown {

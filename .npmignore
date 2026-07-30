@@ -1,6 +1,8 @@
 contracts/
+docs/policy/
 src/
 tsconfig.json
-eslint.config.mjs
+biome.json
 **/*.test.*
 .env
+yarn.lock
