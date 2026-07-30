@@ -423,6 +423,7 @@ describe('stream run command', () => {
                 );
               }
             },
+            // biome-ignore lint/suspicious/noEmptyBlockStatements: The test SDK owns no resources.
             close() {}
           };
         }
@@ -498,6 +499,7 @@ describe('stream run command', () => {
                 );
               }
             },
+            // biome-ignore lint/suspicious/noEmptyBlockStatements: The test SDK owns no resources.
             close() {}
           };
         }
@@ -620,6 +622,7 @@ describe('stream run command', () => {
             ordersStream: {
               tradesStream: createUnusedStream('tradesStream')
             },
+            // biome-ignore lint/suspicious/noEmptyBlockStatements: The test SDK owns no resources.
             close() {}
           };
         }

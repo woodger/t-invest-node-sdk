@@ -14,6 +14,11 @@ micro-release separately.
 
 ### Changed
 
+- Replaced ESLint with Biome `2.5.6`. Equivalent rules retain error severity,
+  formatting and assists remain disabled, and generated contracts remain
+  outside the lint boundary. Biome has no direct equivalents for
+  `no-invalid-regexp`, `no-unexpected-multiline`, and
+  `@typescript-eslint/triple-slash-reference`.
 - Updated `icore` to `2.2.0` and `fwa` to `2.1.0`. The lightweight
   empty-registry `TerminalApp` used by global CLI shortcuts is now explicitly
   supported upstream, while command execution and the existing `fwa --prune`

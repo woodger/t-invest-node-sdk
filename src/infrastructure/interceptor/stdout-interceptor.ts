@@ -38,6 +38,7 @@ export function stdoutInterceptor(options: InstallOptions): StdoutInterceptorHan
   if (!enabled) {
     return {
       getOutput: () => '',
+      // biome-ignore lint/suspicious/noEmptyBlockStatements: No hook is installed when the interceptor is disabled.
       restore: () => {}
     };
   }
