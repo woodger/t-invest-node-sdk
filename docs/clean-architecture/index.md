@@ -7,7 +7,7 @@ Canonical source of truth по фактической карте слоев:
 [Архитектура SDK](../architecture.md).
 
 Policy source of truth по ограничениям и направлению зависимостей:
-[Архитектурная политика](../policy/architecture.md).
+[Архитектурная политика](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/architecture.md).
 
 ## Зачем Этот Раздел
 
