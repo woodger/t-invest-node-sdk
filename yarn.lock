@@ -388,10 +388,10 @@ protobufjs@^7.5.5:
     "@types/node" ">=13.7.0"
     long "^5.3.2"
 
-pwd-fs@^3.4.0:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/pwd-fs/-/pwd-fs-3.5.4.tgz#fde591a125df859b4eef5264a5a0aa3be70bb54c"
-  integrity sha512-VLvaxqHcZC4+eCOBGnCKprIT7B2XGbdH2TusJF3z4CiAiHKB6l0D43b0hgZ5NzdstPTduapa0Hg7EuX0Lwu9/g==
+pwd-fs@^3.5.8:
+  version "3.5.8"
+  resolved "https://registry.yarnpkg.com/pwd-fs/-/pwd-fs-3.5.8.tgz#4e7115178b56db6aadd9d27b2bb142529d48bec9"
+  integrity sha512-Yb7pP3LhKs272Pu1JnCEZ9Wb/6MOvnRWIVuhv1ZO2UnLQ42SRQCGWKknt2Cj42DSZRWjeGhYUa8WiDgQT5FxHQ==
 
 require-directory@^2.1.1:
   version "2.1.1"
