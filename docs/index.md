@@ -5,8 +5,10 @@
 
 ## Начать отсюда
 
-- Пользовательская установка, быстрый старт, SDK options, примеры и release
-  workflow: [README](../readme.md).
+- Пользовательская установка, быстрый старт, SDK options и release workflow:
+  [README](../readme.md).
+- Законченные SDK, stream, error-handling и Consumer testing workflows:
+  [Руководства для Consumer-ов](./guides/index.md).
 - История версий и инструкции по миграции:
   [CHANGELOG](../CHANGELOG.md).
 - Текущая карта слоев и ownership:
@@ -28,6 +30,17 @@
 Актуальные команды и опции также доступны через встроенный `--help`. Runtime
 контракт CLI принадлежит `src/bootstrap/cli/**`,
 `src/bootstrap/commands/**` и соответствующим tests.
+
+## Guides
+
+- [Первый SDK-вызов](./guides/getting-started.md).
+- [Unary-вызовы](./guides/unary-calls.md).
+- [Streams и отмена](./guides/streams-and-cancellation.md).
+- [Ошибки и lifecycle](./guides/errors-and-lifecycle.md).
+- [Mock-сервисы через public exports](./guides/testing-with-service-definitions.md).
+
+Guides содержат законченные Consumer workflows. Полные method, DTO и enum
+reference остаются в public types и proto/generated contracts.
 
 ## SDK и runtime policies
 
