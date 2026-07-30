@@ -14,6 +14,9 @@ micro-release separately.
 
 ### Changed
 
+- Added detailed Consumer guides for safe SDK lifecycle, unary calls, streams
+  and cancellation, error handling, and mock services through root exports.
+  README now keeps one short quick start and links to the complete workflows.
 - Updated the development compiler from TypeScript `6.0.3` to `7.0.2`.
   Compiler options, package runtime dependencies, and runtime behavior remain
   unchanged.
