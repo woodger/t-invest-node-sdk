@@ -14,6 +14,9 @@ micro-release separately.
 
 ### Changed
 
+- Updated the development compiler from TypeScript `6.0.3` to `7.0.2`.
+  Compiler options, package runtime dependencies, and runtime behavior remain
+  unchanged.
 - Replaced ESLint with Biome `2.5.6`. Equivalent rules retain error severity,
   formatting and assists remain disabled, and generated contracts remain
   outside the lint boundary. Biome has no direct equivalents for
