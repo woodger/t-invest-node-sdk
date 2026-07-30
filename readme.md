@@ -31,9 +31,9 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 - [Stream CLI Reference](docs/cli-stream-reference.md)
 - [Stream CLI Configuration Reference](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
-- [Политики проекта](docs/policy/index.md)
-- [Политика тестирования](docs/policy/testing-policy.md)
-- [Политика комментариев в тестах](docs/policy/test-comment-style.md)
+- [Политики проекта](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/index.md)
+- [Политика тестирования](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
+- [Политика комментариев в тестах](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
 
 Отдельного docs-сайта, dev-сервера и сборки статической документации в проекте нет.
 

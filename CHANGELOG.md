@@ -17,6 +17,9 @@ micro-release separately.
 - Added detailed Consumer guides for safe SDK lifecycle, unary calls, streams
   and cancellation, error handling, and mock services through root exports.
   README now keeps one short quick start and links to the complete workflows.
+- Added npm documentation metadata, included `docs/guides/**` in the package,
+  and excluded contributor-only `docs/policy/**`. Links from packaged
+  documentation to excluded repository files now point to GitHub.
 - Updated the development compiler from TypeScript `6.0.3` to `7.0.2`.
   Compiler options, package runtime dependencies, and runtime behavior remain
   unchanged.
