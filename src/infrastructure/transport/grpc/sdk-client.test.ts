@@ -83,6 +83,7 @@ describe('createSdkClient', () => {
       throttle,
       {
         signal: lifecycleController.signal,
+        // biome-ignore lint/suspicious/noEmptyBlockStatements: This metadata scenario does not exercise lifecycle rejection.
         assertOpen() {}
       }
     );
