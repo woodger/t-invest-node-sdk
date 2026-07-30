@@ -25,6 +25,8 @@ micro-release separately.
 - Updated the development compiler from TypeScript `6.0.3` to `7.0.2`.
   Compiler options, package runtime dependencies, and runtime behavior remain
   unchanged.
+- Updated `pwd-fs` to `3.5.8`, aligning the runtime dependency with its
+  TypeScript 7 release while preserving its public CommonJS contract.
 - Replaced ESLint with Biome `2.5.6`. Equivalent rules retain error severity,
   formatting and assists remain disabled, and generated contracts remain
   outside the lint boundary. Biome has no direct equivalents for
