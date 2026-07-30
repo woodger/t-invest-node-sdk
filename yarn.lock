@@ -599,15 +599,25 @@ flatted@^3.2.9:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.4.2.tgz#f5c23c107f0f37de8dbdf24f13722b3b98d52726"
   integrity sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==
 
-fwa@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/fwa/-/fwa-2.0.7.tgz#4d28bc8a0e2aff6bd7e4202c42cecfcda9121664"
-  integrity sha512-A/hFkDRY1P2g9AD3XDqQTFPlq8JlaH0XyodbBC8BFIkSVR5ODhw8yoyjIWNu5Y5kiW0GNVSj4Yqcm9djw0X5Jw==
+fwa@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/fwa/-/fwa-2.1.0.tgz#9888036eea894bac48175dea875a3e68ca148994"
+  integrity sha512-9LXxkfnXeLChg7sDzi28bWR1yrt2IIsyGgSJSTeVSVj9Jew/mKmH/0SG5NcNe3N9o2ZlgehoqhOujq4NPJ4fxQ==
+  dependencies:
+    get-tsconfig "4.14.0"
+    jsonc-parser "3.3.1"
 
 get-caller-file@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
   integrity sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==
+
+get-tsconfig@4.14.0:
+  version "4.14.0"
+  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.14.0.tgz#985d85c52a9903864280ccc2448d413fbf1efed8"
+  integrity sha512-yTb+8DXzDREzgvYmh6s9vHsSVCHeC0G3PI5bEXNBHtmshPnO+S5O7qgLEOn0I5QvMy6kpZN8K1NKGyilLb93wA==
+  dependencies:
+    resolve-pkg-maps "^1.0.0"
 
 glob-parent@^6.0.2:
   version "6.0.2"
@@ -631,10 +641,10 @@ has-flag@^4.0.0:
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
 
-icore@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/icore/-/icore-2.1.0.tgz#401704002211abf039d25095ce31b65496af8021"
-  integrity sha512-61Rgq7mAJlDTKJEMBghAbY3ZRL9mHum47dRAthcDN1SaGTJ7M8fPidWd2B/h82yijS7L+nJQt19kzLhOA1tYdg==
+icore@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/icore/-/icore-2.2.0.tgz#7f3e50c44e2b92f98da5434b2a7dab9b6f752055"
+  integrity sha512-w4SmzZDsFe8+iy/8HodSlvOI7WGqC4KDRgq5ZkInih/zuMNY6iLahDXIWAr23G2JI3QDYU/DaTnQiTrcEd3+6w==
 
 ignore@^5.2.0:
   version "5.3.2"
@@ -702,6 +712,11 @@ json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
+
+jsonc-parser@3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.3.1.tgz#f2a524b4f7fd11e3d791e559977ad60b98b798b4"
+  integrity sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==
 
 keyv@^4.5.4:
   version "4.5.4"
@@ -869,6 +884,11 @@ resolve-from@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-4.0.0.tgz#4abcd852ad32dd7baabfe9b40e00a36db5f392e6"
   integrity sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==
+
+resolve-pkg-maps@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz#616b3dc2c57056b5588c31cdf4b3d64db133720f"
+  integrity sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==
 
 semver@^7.7.3:
   version "7.8.5"

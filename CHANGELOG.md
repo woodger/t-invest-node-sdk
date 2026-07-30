@@ -12,6 +12,13 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `icore` to `2.2.0` and `fwa` to `2.1.0`. The lightweight
+  empty-registry `TerminalApp` used by global CLI shortcuts is now explicitly
+  supported upstream, while command execution and the existing `fwa --prune`
+  workflow remain unchanged.
+
 ## [0.3.6] - 2026-07-29
 
 ### Changed
