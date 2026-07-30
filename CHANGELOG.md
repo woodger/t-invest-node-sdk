@@ -12,6 +12,8 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-07-30
+
 ### Changed
 
 - Added detailed Consumer guides for safe SDK lifecycle, unary calls, streams

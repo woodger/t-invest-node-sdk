@@ -8,7 +8,7 @@
 Проект устанавливается из зафиксированного Git tag:
 
 ```sh
-SDK_TAG=0.3.6
+SDK_TAG=0.3.7
 yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#$SDK_TAG"
 ```
 
