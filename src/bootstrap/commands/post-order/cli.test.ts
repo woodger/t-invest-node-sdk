@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { PriceType } from '../../../generated/common';
 import {
   OrderDirection,
@@ -121,7 +121,7 @@ describe('post-order command', () => {
     });
 
     test('calls postOrder and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: PostOrderRequest | undefined;
       let closeCalls = 0;
       const command = createPostOrderCommand((options) => {

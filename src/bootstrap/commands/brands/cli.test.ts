@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Brand,
   GetBrandsRequest,
   GetBrandsResponse
@@ -55,7 +55,7 @@ describe('brands command', () => {
 
   describe('createBrandsCommand', () => {
     test('calls getBrands and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetBrandsRequest | undefined;
       let getBrandsCalls = 0;
       let closeCalls = 0;

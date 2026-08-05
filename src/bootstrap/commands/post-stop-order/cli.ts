@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { PriceType } from '../../../generated/common';
 import {
   ExchangeOrderType,
@@ -29,7 +29,7 @@ import {
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parseOptionalPositiveQuotationOption,
@@ -49,10 +49,10 @@ type PostStopOrderSdk = {
   close(): void;
 };
 
-type PostStopOrderSdkFactory = (options: TinkoffInvestOptions) => PostStopOrderSdk;
+type PostStopOrderSdkFactory = (options: TInvestOptions) => PostStopOrderSdk;
 
 const postStopOrderCommandPath = ['stop-order', 'place'] as const;
-const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const stopOrderDirections = {
   buy: StopOrderDirection.STOP_ORDER_DIRECTION_BUY,

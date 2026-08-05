@@ -14,7 +14,7 @@
 - Текущая карта слоев и ownership:
   [Архитектура SDK](./architecture.md).
 - Правила внесения изменений:
-  [Политики проекта](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/index.md).
+  [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md).
 
 ## CLI
 
@@ -45,9 +45,11 @@ reference остаются в public types и proto/generated contracts.
 ## SDK и runtime policies
 
 - Публичный package entrypoint:
-  [`src/index.ts`](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/src/index.ts).
+  [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts).
 - Лимиты provider-а, локальный throttling и quota buckets:
   [Лимитная политика](./limits-policy.md).
+- Bundled CA, per-instance trust override и границы TLS policy:
+  [TLS-доверие](./tls-policy.md).
 - Design notes по application, DTO/reports и adapters:
   [Clean Architecture Notes](./clean-architecture/index.md).
 - Граница project adapters и внешнего API `icore`:
@@ -58,7 +60,7 @@ reference остаются в public types и proto/generated contracts.
 Workflow генерации описан в разделе
 [«Генерация proto»](../readme.md#генерация-proto). Официальный upstream,
 зафиксированные tag и commit хранятся в
-[`contracts/upstream.json`](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/contracts/upstream.json).
+[`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
 Wire contracts в
 `contracts/*.proto` и generated sources в `src/generated/**` не заменяются
 ручным Markdown reference.
@@ -66,12 +68,12 @@ Wire contracts в
 ## Source of truth
 
 Подробные правила выбора источника истины и обновления документации:
-[Политика документации](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/documentation-policy.md).
+[Политика документации](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/documentation-policy.md).
 
 Кратко:
 
 - public exports определяет
-  [`src/index.ts`](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/src/index.ts);
+  [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts);
 - scripts и dependency versions определяет
   [`package.json`](../package.json);
 - CLI behavior определяют runtime source и tests;

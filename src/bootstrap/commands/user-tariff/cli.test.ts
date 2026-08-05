@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
@@ -48,7 +48,7 @@ describe('user-tariff command', () => {
 
   describe('createUserTariffCommand', () => {
     test('calls getUserTariff and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: Record<string, never> | undefined;
       let getUserTariffCalls = 0;
       let closeCalls = 0;

@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { SecurityTradingStatus } from '../../../generated/common';
 import type {
   GetTradingStatusResponse,
@@ -75,7 +75,7 @@ describe('trading-statuses command', () => {
 
   describe('createTradingStatusesCommand', () => {
     test('calls getTradingStatuses and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetTradingStatusesRequest | undefined;
       let closeCalls = 0;
       const command = createTradingStatusesCommand((options) => {

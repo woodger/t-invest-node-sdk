@@ -10,14 +10,14 @@
  */
 
 import { PriceType } from '../../../generated/common';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type PostOrderResponse, type ReplaceOrderRequest } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parsePositiveQuotationOption,
@@ -36,10 +36,10 @@ type ReplaceOrderSdk = {
   close(): void;
 };
 
-type ReplaceOrderSdkFactory = (options: TinkoffInvestOptions) => ReplaceOrderSdk;
+type ReplaceOrderSdkFactory = (options: TInvestOptions) => ReplaceOrderSdk;
 
 const replaceOrderCommandPath = ['order', 'replace'] as const;
-const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const replaceOrderPriceTypes = {
   point: PriceType.PRICE_TYPE_POINT,

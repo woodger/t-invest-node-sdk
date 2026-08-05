@@ -64,7 +64,7 @@ describe('loadProtoGenerationPaths', () => {
 });
 
 function createProjectFixture(manifest: unknown): string {
-  const projectRoot = mkdtempSync(path.join(tmpdir(), 'tinkoff-invest-node-sdk-'));
+  const projectRoot = mkdtempSync(path.join(tmpdir(), 't-invest-node-sdk-'));
   const contractsDir = path.join(projectRoot, 'contracts');
 
   mkdirSync(contractsDir);

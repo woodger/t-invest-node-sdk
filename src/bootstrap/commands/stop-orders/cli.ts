@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   GetStopOrdersRequest,
   StopOrderStatusOption,
@@ -20,7 +20,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatStopOrders, stopOrdersFormats, type StopOrdersFormat } from './reporter';
 
 type StopOrdersSdk = {
@@ -30,10 +30,10 @@ type StopOrdersSdk = {
   close(): void;
 };
 
-type StopOrdersSdkFactory = (options: TinkoffInvestOptions) => StopOrdersSdk;
+type StopOrdersSdkFactory = (options: TInvestOptions) => StopOrdersSdk;
 
 const stopOrdersCommandPath = ['stop-order', 'list'] as const;
-const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const stopOrdersRequestOptionsSchema = {
   'account-id': {

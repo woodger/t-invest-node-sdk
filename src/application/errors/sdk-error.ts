@@ -43,7 +43,7 @@ export interface SdkErrorOptions {
   cause?: unknown;
 }
 
-const sdkErrorBrand = Symbol.for('tinkoff-invest-node-sdk/SdkError');
+const sdkErrorBrand = Symbol.for('t-invest-node-sdk/SdkError');
 const sdkErrorCodes: ReadonlySet<string> = new Set(Object.values(SdkErrorCode));
 const sdkErrorSources: ReadonlySet<string> = new Set<SdkErrorSource>([
   'grpc',

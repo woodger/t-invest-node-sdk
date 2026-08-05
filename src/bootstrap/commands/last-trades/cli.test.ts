@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Quotation } from '../../../generated/common';
 import {
   TradeDirection,
@@ -90,7 +90,7 @@ describe('last-trades command', () => {
 
   describe('createLastTradesCommand', () => {
     test('calls getLastTrades and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetLastTradesRequest | undefined;
       let closeCalls = 0;
       const command = createLastTradesCommand((options) => {

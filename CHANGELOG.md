@@ -12,6 +12,38 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-05
+
+This release changes the package identity and public SDK contract without
+compatibility aliases. Consumers must update the Git dependency URL and tag,
+the import specifier and `TInvest*` symbols, replace the former environment
+variables with `T_INVEST_TOKEN` and `T_INVEST_ENDPOINT`, and regenerate their
+lockfiles.
+
+### Added
+
+- Bundled the official Russian Trusted Root CA for T-Invest TLS channels and
+  added the per-instance `tls.rootCertificates` PEM buffer override. Trust is
+  scoped to the created gRPC channel; the SDK does not mutate the system trust
+  store, use `NODE_EXTRA_CA_CERTS`, or download certificates during install or
+  runtime.
+
+### Changed
+
+- Renamed the Git and package identity from `tinkoff-invest-node-sdk` to
+  `t-invest-node-sdk` and changed the primary CLI binary and version output to
+  the new name.
+- Renamed the public facade to `TInvestNodeSDK` and all package-owned
+  `TinkoffInvest*` contracts to their `TInvest*` counterparts without legacy
+  aliases.
+- Renamed the CLI environment contract to `T_INVEST_TOKEN` and
+  `T_INVEST_ENDPOINT` without fallback to the former names.
+- Changed the cross-copy `SdkError` brand to the new package identity. Errors
+  from `0.3.x` and `0.4.x` are intentionally not recognized across versions.
+- Updated Consumer guides, CLI help, repository links, architecture documents,
+  and package metadata for the new identity. Upstream proto namespaces and
+  generated contracts remain unchanged.
+
 ## [0.3.7] - 2026-07-30
 
 ### Changed

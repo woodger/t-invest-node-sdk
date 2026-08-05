@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   EditFavoritesActionType,
   type EditFavoritesRequest,
@@ -24,7 +24,7 @@ import {
   parseCommandOptions,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
@@ -46,10 +46,10 @@ type EditFavoritesSdk = {
   close(): void;
 };
 
-type EditFavoritesSdkFactory = (options: TinkoffInvestOptions) => EditFavoritesSdk;
+type EditFavoritesSdkFactory = (options: TInvestOptions) => EditFavoritesSdk;
 
 const editFavoritesCommandPath = ['instrument', 'favorite', 'edit'] as const;
-const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const editFavoriteActions = {
   add: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD,

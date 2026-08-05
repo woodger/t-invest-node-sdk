@@ -21,9 +21,9 @@ import { createServer } from 'nice-grpc';
 import {
   SignalServiceDefinition,
   StrategyType,
-  TinkoffInvestNodeSDK,
+  TInvestNodeSDK,
   type SignalServiceImplementation
-} from 'tinkoff-invest-node-sdk';
+} from 't-invest-node-sdk';
 
 const signalService: SignalServiceImplementation = {
   async getStrategies(request) {
@@ -61,10 +61,10 @@ async function main(): Promise<void> {
   server.add(SignalServiceDefinition, signalService);
 
   const port = await server.listen('127.0.0.1:0');
-  let sdk: TinkoffInvestNodeSDK | undefined;
+  let sdk: TInvestNodeSDK | undefined;
 
   try {
-    sdk = new TinkoffInvestNodeSDK({
+    sdk = new TInvestNodeSDK({
       token: 'test-token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false,

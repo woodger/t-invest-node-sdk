@@ -1,5 +1,8 @@
-export { TinkoffInvestNodeSDK } from './bootstrap/tinkoff-invest-node-sdk';
-export type { TinkoffInvestOptions } from './application/dto/tinkoff-invest-options';
+export { TInvestNodeSDK } from './bootstrap/t-invest-node-sdk';
+export type {
+  TInvestOptions,
+  TInvestTlsOptions
+} from './application/dto/t-invest-options';
 export {
   isSdkError,
   SdkError,
@@ -20,15 +23,15 @@ export type {
   SandboxService,
   SignalService,
   StopOrdersService,
-  TinkoffInvestCallOptions,
-  TinkoffInvestMetadata,
-  TinkoffInvestMetadataValue,
+  TInvestCallOptions,
+  TInvestMetadata,
+  TInvestMetadataValue,
   UsersService
-} from './application/dto/tinkoff-invest-services';
+} from './application/dto/t-invest-services';
 export { defaultConfig } from './bootstrap/sdk-config';
 export { defineUnaryLimits } from './bootstrap/unary-limit-config';
 export type {
-  TinkoffInvestNodeSDKConfig,
+  TInvestNodeSDKConfig,
   UnaryLimits,
   UnaryLimitsDefinition
 } from './config.types';

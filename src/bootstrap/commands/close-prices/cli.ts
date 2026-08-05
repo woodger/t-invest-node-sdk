@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetClosePricesRequest,
   GetClosePricesResponse
@@ -23,7 +23,7 @@ import {
   parseCommandOptions,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { closePricesFormats, formatClosePrices, type ClosePricesFormat } from './reporter';
 
 type ClosePricesSdk = {
@@ -33,10 +33,10 @@ type ClosePricesSdk = {
   close(): void;
 };
 
-type ClosePricesSdkFactory = (options: TinkoffInvestOptions) => ClosePricesSdk;
+type ClosePricesSdkFactory = (options: TInvestOptions) => ClosePricesSdk;
 
 const closePricesCommandPath = ['market', 'close-prices'] as const;
-const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const closePricesInstrumentIdsOptionsSchema = {
   'instrument-id': {

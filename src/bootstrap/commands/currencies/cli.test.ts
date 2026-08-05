@@ -4,7 +4,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type CurrenciesResponse, type InstrumentsRequest } from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
@@ -39,7 +39,7 @@ describe('currencies command', () => {
 
   describe('createCurrenciesCommand', () => {
     test('calls currencies and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: InstrumentsRequest | undefined;
       let closeCalls = 0;
       const command = createCurrenciesCommand((options) => {

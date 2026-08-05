@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   InstrumentIdType,
   type FutureResponse,
@@ -42,7 +42,7 @@ describe('future command', () => {
 
   describe('createFutureCommand', () => {
     test('calls futureBy and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: InstrumentRequest | undefined;
       let closeCalls = 0;
       const command = createFutureCommand((options) => {

@@ -11,13 +11,13 @@
  * throttling state.
  */
 
-import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../application/dto/t-invest-options';
 import {
   SdkError,
   SdkErrorCode
 } from '../application/errors/sdk-error';
 import type {
-  TinkoffInvestNodeSDKConfig,
+  TInvestNodeSDKConfig,
   UnaryLimits
 } from '../config.types';
 import { packageConfig } from '../config';
@@ -27,8 +27,8 @@ import {
   compileUnaryLimits
 } from './unary-limit-config';
 
-export type ResolvedTinkoffInvestOptions = Omit<
-  TinkoffInvestOptions,
+export type ResolvedTInvestOptions = Omit<
+  TInvestOptions,
   'useSsl' | 'trackLimits'
 > & {
   useSsl: boolean;
@@ -37,7 +37,7 @@ export type ResolvedTinkoffInvestOptions = Omit<
 
 const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
 
-export const defaultConfig: TinkoffInvestNodeSDKConfig = {
+export const defaultConfig: TInvestNodeSDKConfig = {
   unaryLimits: {
     ...packageUnaryLimits.limits
   },
@@ -45,8 +45,8 @@ export const defaultConfig: TinkoffInvestNodeSDKConfig = {
 };
 
 export function resolveSdkInstanceOptions(
-  options: TinkoffInvestOptions
-): ResolvedTinkoffInvestOptions {
+  options: TInvestOptions
+): ResolvedTInvestOptions {
   assertNonBlankSdkOption(options.token, 'token');
   assertNonBlankSdkOption(options.endpoint, 'endpoint');
 
@@ -109,7 +109,7 @@ function assertNonBlankSdkOption(
   if (typeof value !== 'string' || value.trim() === '') {
     throw new SdkError(
       SdkErrorCode.InvalidArgument,
-      `TinkoffInvestOptions.${name} must be a non-empty string`,
+      `TInvestOptions.${name} must be a non-empty string`,
       {
         source: 'sdk'
       }

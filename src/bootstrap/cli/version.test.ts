@@ -15,7 +15,7 @@ describe('version', () => {
   test('renders the package version as one line', () => {
     assert.equal(
       renderVersionInfo(),
-      `tinkoff-invest-node-sdk ${appVersion}\n`
+      `t-invest-node-sdk ${appVersion}\n`
     );
   });
 });

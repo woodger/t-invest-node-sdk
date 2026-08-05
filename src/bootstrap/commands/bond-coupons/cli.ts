@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetBondCouponsRequest,
   GetBondCouponsResponse
@@ -23,7 +23,7 @@ import {
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
@@ -37,10 +37,10 @@ type BondCouponsSdk = {
   close(): void;
 };
 
-type BondCouponsSdkFactory = (options: TinkoffInvestOptions) => BondCouponsSdk;
+type BondCouponsSdkFactory = (options: TInvestOptions) => BondCouponsSdk;
 
 const bondCouponsCommandPath = ['instrument', 'bond', 'coupons'] as const;
-const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const bondCouponsRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema,

@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { PriceType } from '../../../generated/common';
 import {
   OrderDirection,
@@ -23,7 +23,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parseOptionalPositiveQuotationOption,
@@ -38,10 +38,10 @@ type PostOrderSdk = {
   close(): void;
 };
 
-type PostOrderSdkFactory = (options: TinkoffInvestOptions) => PostOrderSdk;
+type PostOrderSdkFactory = (options: TInvestOptions) => PostOrderSdk;
 
 const postOrderCommandPath = ['order', 'place'] as const;
-const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const postOrderDirections = {
   buy: OrderDirection.ORDER_DIRECTION_BUY,

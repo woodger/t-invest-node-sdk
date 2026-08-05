@@ -2,7 +2,7 @@
 
 > Type: Reference. Этот документ фиксирует текущую карту слоев SDK и служит
 > practical companion к
-> [архитектурной политике](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/architecture.md).
+> [архитектурной политике](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
 > Дополнительные design notes по развитию слоев находятся в
 > [Clean Architecture Notes](./clean-architecture/index.md).
 
@@ -39,7 +39,7 @@ provider-neutral правилами или моделями.
 Текущие зоны:
 
 - `application/dto` - входные SDK options и другие application-level contracts;
-- `application/dto/tinkoff-invest-services.ts` - публичные package-owned
+- `application/dto/t-invest-services.ts` - публичные package-owned
   service interfaces SDK facade, отделенные от generated `*ServiceClient`;
 - `application/errors` - transport-neutral `SdkError`, стабильные symbolic
   codes и runtime narrowing;
@@ -78,7 +78,7 @@ bootstrap-механикой.
 
 - `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
   package binary `dist/bootstrap/index.js`;
-- `bootstrap/tinkoff-invest-node-sdk.ts` - публичный runtime facade SDK,
+- `bootstrap/t-invest-node-sdk.ts` - публичный runtime facade SDK,
   владелец shared channel и lifecycle `close()`;
 - `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - compiler и
   runtime adapter с [разделенным ownership](#конфигурация-терминология-и-ownership);
@@ -159,7 +159,7 @@ default facade.
 
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
 project-specific CLI-контракты поверх typed/raw option values и нормализует
-общие `TinkoffInvestOptions` из CLI/ENV.
+общие `TInvestOptions` из CLI/ENV.
 
 ## Public Entrypoints
 
@@ -233,7 +233,7 @@ override:
 
 ```text
 packageConfig.grpc.maxReceiveMessageLength
-  --> TinkoffInvestNodeSDK bootstrap
+  --> TInvestNodeSDK bootstrap
   --> createSdkChannel
   --> grpc.max_receive_message_length
 ```
@@ -241,11 +241,24 @@ packageConfig.grpc.maxReceiveMessageLength
 Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует
 неявный default transport dependency.
 
+TLS trust material разрешается отдельно для каждого channel:
+
+```text
+certificates/russian-trusted-root-ca.pem -- default --.
+                                                   +--> createSsl(rootCertificates)
+per-instance tls.rootCertificates ------- override-'
+```
+
+Infrastructure лениво читает bundled asset только для TLS channel. Explicit
+buffer полностью заменяет package root bundle; `useSsl: false` выбирает
+insecure credentials без чтения сертификата. Ни system trust store, ни
+process-wide environment SDK не изменяет.
+
 Package defaults для публичных instance options разрешаются при создании SDK:
 
 ```text
 packageConfig.sdk -- defaults --.
-                                +--> resolved TinkoffInvestOptions
+                                +--> resolved TInvestOptions
 per-instance options -----------'
 ```
 
@@ -263,7 +276,7 @@ Ownership разделен так:
 - `src/config.ts` владеет values и связями package policy;
 - `src/config.types.ts` владеет authoring и public runtime contracts, но не
   default values или runtime validation;
-- `src/application/dto/tinkoff-invest-options.ts` владеет публичным
+- `src/application/dto/t-invest-options.ts` владеет публичным
   per-instance input, но не package defaults или merge semantics;
 - `src/bootstrap/unary-limit-config.ts` владеет compilation, package baseline
   validation, runtime snapshot invariants и их type contract;
@@ -273,6 +286,8 @@ Ownership разделен так:
   quota group reconciliation и вызовом проверки итогового runtime snapshot;
 - `src/infrastructure/transport/grpc/sdk-channel.ts` владеет mapping готовой
   package transport policy в channel options, но не default value;
+- `src/infrastructure/transport/grpc/tls-root-certificates.ts` владеет только
+  разрешением package asset и ленивым чтением bundled trust material;
 - `src/application/services/unary-throttle.service.ts` владеет планированием
   и отменяемой bucket queue по готовому `ThrottleRule`, не интерпретируя source
   config или gRPC paths;

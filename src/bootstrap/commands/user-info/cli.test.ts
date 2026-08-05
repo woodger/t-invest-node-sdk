@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
@@ -39,7 +39,7 @@ describe('user-info command', () => {
 
   describe('createUserInfoCommand', () => {
     test('calls getInfo and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: Record<string, never> | undefined;
       let getInfoCalls = 0;
       let closeCalls = 0;

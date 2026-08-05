@@ -9,14 +9,14 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetOrderStateRequest, OrderState } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createOrderStateRequest } from '../order-state/cli';
 import { formatOrderState, orderStateFormats, type OrderStateFormat } from '../order-state/reporter';
 
@@ -27,10 +27,10 @@ type SandboxOrderStateSdk = {
   close(): void;
 };
 
-type SandboxOrderStateSdkFactory = (options: TinkoffInvestOptions) => SandboxOrderStateSdk;
+type SandboxOrderStateSdkFactory = (options: TInvestOptions) => SandboxOrderStateSdk;
 
 const sandboxOrderStateCommandPath = ['sandbox', 'order', 'show'] as const;
-const defaultSandboxOrderStateSdkFactory: SandboxOrderStateSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultSandboxOrderStateSdkFactory: SandboxOrderStateSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const sandboxOrderStateRequestOptionsSchema = {
   'account-id': {

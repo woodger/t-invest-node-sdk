@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelOrderRequest
 } from '../../../generated/orders';
 import type { CommandRawOptions } from '../../args/command-options';
@@ -49,7 +49,7 @@ describe('sandbox-cancel-order command', () => {
     });
 
     test('calls cancelSandboxOrder and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: CancelOrderRequest | undefined;
       let closeCalls = 0;
       const command = createSandboxCancelOrderCommand((options) => {

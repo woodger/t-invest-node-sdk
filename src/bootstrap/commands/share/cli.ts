@@ -9,14 +9,14 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type InstrumentRequest, type ShareResponse } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
@@ -30,10 +30,10 @@ type ShareSdk = {
   close(): void;
 };
 
-type ShareSdkFactory = (options: TinkoffInvestOptions) => ShareSdk;
+type ShareSdkFactory = (options: TInvestOptions) => ShareSdk;
 
 const shareCommandPath = ['instrument', 'share', 'show'] as const;
-const defaultShareSdkFactory: ShareSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultShareSdkFactory: ShareSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const shareFormatOptionsSchema = {
   format: {

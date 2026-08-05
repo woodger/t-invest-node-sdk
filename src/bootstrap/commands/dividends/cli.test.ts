@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   Dividend,
   GetDividendsRequest,
@@ -98,7 +98,7 @@ describe('dividends command', () => {
 
   describe('createDividendsCommand', () => {
     test('calls getDividends and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetDividendsRequest | undefined;
       let getDividendsCalls = 0;
       let closeCalls = 0;

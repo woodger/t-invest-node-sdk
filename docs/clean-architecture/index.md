@@ -7,7 +7,7 @@ Canonical source of truth по фактической карте слоев:
 [Архитектура SDK](../architecture.md).
 
 Policy source of truth по ограничениям и направлению зависимостей:
-[Архитектурная политика](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/architecture.md).
+[Архитектурная политика](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
 
 ## Зачем Этот Раздел
 
@@ -61,7 +61,7 @@ src/bootstrap
   commands/
   proto/
     compile-proto.ts
-  tinkoff-invest-node-sdk.ts
+  t-invest-node-sdk.ts
 
 external dependency
   icore

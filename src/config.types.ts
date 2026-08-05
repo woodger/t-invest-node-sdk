@@ -19,7 +19,7 @@ import type {
   SignalService,
   StopOrdersService,
   UsersService
-} from './application/dto/tinkoff-invest-services';
+} from './application/dto/t-invest-services';
 
 type GrpcMethodName<Service> = Capitalize<Extract<keyof Service, string>>;
 
@@ -109,7 +109,7 @@ export interface PackageConfigDefinition {
 }
 
 /** Публичный runtime config после компиляции package defaults. */
-export interface TinkoffInvestNodeSDKConfig {
+export interface TInvestNodeSDKConfig {
   /** Flat unary rules, доступные для runtime inspection и overrides. */
   unaryLimits: UnaryLimits;
 

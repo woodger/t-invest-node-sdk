@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   AccruedInterest,
   GetAccruedInterestsRequest,
@@ -92,7 +92,7 @@ describe('accrued-interests command', () => {
 
   describe('createAccruedInterestsCommand', () => {
     test('calls getAccruedInterests and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetAccruedInterestsRequest | undefined;
       let getAccruedInterestsCalls = 0;
       let closeCalls = 0;
