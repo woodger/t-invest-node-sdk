@@ -12,6 +12,8 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-08-05
+
 ### Added
 
 - Added `tls` to `SdkErrorSource` so Consumers can distinguish certificate

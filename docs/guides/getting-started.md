@@ -8,7 +8,7 @@
 Проект устанавливается из зафиксированного Git tag:
 
 ```sh
-SDK_TAG=0.4.0
+SDK_TAG=0.4.1
 yarn add "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#$SDK_TAG"
 ```
 
