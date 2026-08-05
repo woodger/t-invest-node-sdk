@@ -12,6 +12,14 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Added
+
+- Bundled the official Russian Trusted Root CA for T-Invest TLS channels and
+  added the per-instance `tls.rootCertificates` PEM buffer override. Trust is
+  scoped to the created gRPC channel; the SDK does not mutate the system trust
+  store, use `NODE_EXTRA_CA_CERTS`, or download certificates during install or
+  runtime.
+
 ## [0.3.7] - 2026-07-30
 
 ### Changed

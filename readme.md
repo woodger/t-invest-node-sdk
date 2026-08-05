@@ -31,6 +31,7 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 - [Stream CLI Reference](docs/cli-stream-reference.md)
 - [Stream CLI Configuration Reference](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
+- [TLS-доверие](docs/tls-policy.md)
 - [Политики проекта](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/index.md)
 - [Политика тестирования](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
 - [Политика комментариев в тестах](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
@@ -134,8 +135,13 @@ interface TinkoffInvestOptions {
   endpoint: string;
   appName?: string;
   useSsl?: boolean;
+  tls?: TinkoffInvestTlsOptions;
   trackLimits?: boolean;
   unaryLimits?: UnaryLimits;
+}
+
+interface TinkoffInvestTlsOptions {
+  rootCertificates?: Buffer;
 }
 
 type UnaryLimits = Record<string, number>;
@@ -145,6 +151,8 @@ type UnaryLimits = Record<string, number>;
 - `endpoint` - gRPC endpoint в формате `host:port`.
 - `appName` - необязательное значение для заголовка `x-app-name`.
 - `useSsl` - использовать TLS, по умолчанию `true`.
+- `tls.rootCertificates` - PEM-содержимое custom root CA bundle для одного
+  channel. При отсутствии используется bundled Russian Trusted Root CA.
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
 - `unaryLimits` - per-instance overrides лимитов в запросах за минуту. Значения
   объединяются с `defaultConfig.unaryLimits` при создании SDK.
@@ -153,6 +161,12 @@ Defaults `useSsl` и `trackLimits` задаются package config; явно п�
 boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
 `token` и `endpoint` должны быть непустыми строками. Прямой SDK-вызов с пустым
 значением завершается `SdkErrorCode.InvalidArgument` с `source: 'sdk'`.
+
+Bundled CA применяется только к channel текущего SDK instance и не изменяет
+system trust store. Явный `tls.rootCertificates` заменяет bundled CA, а не
+добавляется к нему; SDK принимает содержимое сертификатов в `Buffer`, но не
+путь к файлу. При `useSsl: false` TLS options игнорируются. Полный контракт и
+provenance asset описаны в [TLS policy](docs/tls-policy.md).
 
 Для читаемой группировки лимитов по сервисам и методам используйте
 `defineUnaryLimits()`. `default` задает сервисный fallback, а `methods` —

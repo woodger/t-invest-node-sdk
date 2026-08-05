@@ -26,6 +26,11 @@ yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#$SDK_TAG"
 нужно отклонять до создания SDK, чтобы ошибка конфигурации не выглядела как
 ошибка provider-а.
 
+TLS включён по умолчанию. SDK использует bundled Russian Trusted Root CA только
+для своего gRPC channel, поэтому устанавливать сертификат в систему или
+задавать `NODE_EXTRA_CA_CERTS` не требуется. Custom CA описан в
+[TLS policy](../tls-policy.md).
+
 ## Законченный пример
 
 ```ts

@@ -17,6 +17,7 @@
 - application report contracts: `src/application/reports/**`;
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
+- bundled TLS trust material: `certificates/russian-trusted-root-ca.pem`;
 - unary throttling source policy: `src/config.ts`;
 - authoring и public runtime type contracts: `src/config.types.ts`;
 - per-instance SDK config input:

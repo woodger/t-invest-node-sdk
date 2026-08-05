@@ -48,6 +48,8 @@ reference остаются в public types и proto/generated contracts.
   [`src/index.ts`](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/src/index.ts).
 - Лимиты provider-а, локальный throttling и quota buckets:
   [Лимитная политика](./limits-policy.md).
+- Bundled CA, per-instance trust override и границы TLS policy:
+  [TLS-доверие](./tls-policy.md).
 - Design notes по application, DTO/reports и adapters:
   [Clean Architecture Notes](./clean-architecture/index.md).
 - Граница project adapters и внешнего API `icore`:
