@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   OperationState,
   OperationType,
@@ -27,7 +27,7 @@ import {
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   formatOperationsByCursor,
   operationsByCursorFormats,
@@ -43,10 +43,10 @@ type OperationsByCursorSdk = {
   close(): void;
 };
 
-type OperationsByCursorSdkFactory = (options: TinkoffInvestOptions) => OperationsByCursorSdk;
+type OperationsByCursorSdkFactory = (options: TInvestOptions) => OperationsByCursorSdk;
 
 const operationsByCursorCommandPath = ['operation', 'page'] as const;
-const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const operationStates = {
   unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,

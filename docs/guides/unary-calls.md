@@ -13,14 +13,14 @@ import {
   CandleInterval,
   PortfolioRequest_CurrencyRequest,
   SignalState,
-  TinkoffInvestNodeSDK,
-  type TinkoffInvestCallOptions,
-  type TinkoffInvestMetadata
-} from 'tinkoff-invest-node-sdk';
+  TInvestNodeSDK,
+  type TInvestCallOptions,
+  type TInvestMetadata
+} from 't-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
-  | 'TINKOFF_TOKEN'
-  | 'TINKOFF_ENDPOINT';
+  | 'T_INVEST_TOKEN'
+  | 'T_INVEST_ENDPOINT';
 
 function requireEnvironment(name: RequiredEnvironmentVariable): string {
   const value = process.env[name]?.trim();
@@ -35,7 +35,7 @@ function requireEnvironment(name: RequiredEnvironmentVariable): string {
 function logRateLimit(
   operation: string,
   phase: 'header' | 'trailer',
-  metadata: TinkoffInvestMetadata
+  metadata: TInvestMetadata
 ): void {
   const limit = metadata.get('x-ratelimit-limit');
   const remaining = metadata.get('x-ratelimit-remaining');
@@ -52,7 +52,7 @@ function logRateLimit(
   }
 }
 
-function callOptions(operation: string): TinkoffInvestCallOptions {
+function callOptions(operation: string): TInvestCallOptions {
   return {
     signal: AbortSignal.timeout(5_000),
     onHeader(metadata) {
@@ -65,9 +65,9 @@ function callOptions(operation: string): TinkoffInvestCallOptions {
 }
 
 async function main(): Promise<void> {
-  const sdk = new TinkoffInvestNodeSDK({
-    token: requireEnvironment('TINKOFF_TOKEN'),
-    endpoint: requireEnvironment('TINKOFF_ENDPOINT')
+  const sdk = new TInvestNodeSDK({
+    token: requireEnvironment('T_INVEST_TOKEN'),
+    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
   });
 
   try {
@@ -147,7 +147,7 @@ void main().catch((error: unknown) => {
 
 ## Per-call options
 
-`TinkoffInvestCallOptions` действует на один RPC:
+`TInvestCallOptions` действует на один RPC:
 
 - `signal` отменяет ожидание локальной unary-квоты и последующий transport call;
 - `onHeader` получает initial response metadata;

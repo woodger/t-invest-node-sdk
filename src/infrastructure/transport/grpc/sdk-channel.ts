@@ -13,11 +13,11 @@ import {
   ChannelCredentials,
   createChannel
 } from 'nice-grpc';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
 
 export function createSdkChannel(
-  options: TinkoffInvestOptions,
+  options: TInvestOptions,
   maxReceiveMessageLength: number
 ) {
   const credentials = options.useSsl

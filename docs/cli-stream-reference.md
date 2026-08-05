@@ -9,7 +9,7 @@
 CLI-команды реализованы в canonical форме:
 
 ```bash
-tinkoff-invest-node-sdk <domain> <command> [options]
+t-invest-node-sdk <domain> <command> [options]
 ```
 
 Stream API требует отдельного контракта: команда не возвращает один response и
@@ -19,7 +19,7 @@ Stream API требует отдельного контракта: команд�
 Текущая точка входа:
 
 ```bash
-tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
+t-invest-node-sdk stream run --config=PATH [runtime options]
 ```
 
 `stream run` является domain-level entrypoint для stream-сценариев:
@@ -53,7 +53,7 @@ tinkoff-invest-node-sdk stream run --config=PATH [runtime options]
 
 1. прочитать и провалидировать config;
 2. применить CLI runtime overrides;
-3. создать `TinkoffInvestNodeSDK`;
+3. создать `TInvestNodeSDK`;
 4. создать initial request для server-side stream или конечный initial request
    iterator для `marketdata.marketDataStream`;
 5. открыть stream;
@@ -131,7 +131,7 @@ Config задает runtime defaults. CLI flags могут переопреде�
 не subscription contract:
 
 ```bash
-tinkoff-invest-node-sdk stream run \
+t-invest-node-sdk stream run \
   --config=marketdata.json \
   --max-events=100 \
   --duration-ms=60000 \

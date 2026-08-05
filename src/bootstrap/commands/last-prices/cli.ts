@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetLastPricesRequest,
   GetLastPricesResponse
@@ -24,7 +24,7 @@ import {
   parseCommandOptions,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatLastPrices, lastPricesFormats, type LastPricesFormat } from './reporter';
 
 type LastPricesSdk = {
@@ -34,10 +34,10 @@ type LastPricesSdk = {
   close(): void;
 };
 
-type LastPricesSdkFactory = (options: TinkoffInvestOptions) => LastPricesSdk;
+type LastPricesSdkFactory = (options: TInvestOptions) => LastPricesSdk;
 
 const lastPricesCommandPath = ['market', 'last-prices'] as const;
-const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const lastPricesInstrumentIdsOptionsSchema = {
   'instrument-id': {

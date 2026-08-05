@@ -224,7 +224,7 @@ describe('renderCliHelp', () => {
   test('renders top-level help page', () => {
     const help = renderCliHelp();
 
-    assert.match(help, /^tinkoff-invest-node-sdk \d+\.\d+\.\d+/);
+    assert.match(help, /^t-invest-node-sdk \d+\.\d+\.\d+/);
     assert.match(help, /Usage:/);
     assert.match(help, /Domains:/);
     assert.match(help, /Global options:/);
@@ -237,7 +237,7 @@ describe('renderCliHelp', () => {
     assert.match(help, /sandbox\s+Sandbox accounts, orders and portfolio/);
     assert.match(help, /stream\s+Streaming API runners/);
     assert.match(help, /dev\s+Developer tools/);
-    assert.match(help, /tinkoff-invest-node-sdk --help/);
+    assert.match(help, /t-invest-node-sdk --help/);
     assert.doesNotMatch(help, /users get-accounts/);
     assert.doesNotMatch(help, /account get-accounts/);
     assert.doesNotMatch(help, /account list/);
@@ -250,7 +250,7 @@ describe('renderDomainHelp', () => {
     for (const domainName of cliDomainNames) {
       const help = renderDomainHelp(domainName);
 
-      assert.match(help, new RegExp(`^tinkoff-invest-node-sdk \\d+\\.\\d+\\.\\d+\\n${domainName} - `));
+      assert.match(help, new RegExp(`^t-invest-node-sdk \\d+\\.\\d+\\.\\d+\\n${domainName} - `));
       assert.match(help, /Commands:/);
 
       for (const commandName of Object.keys(commandHelp)) {
@@ -397,9 +397,9 @@ describe('renderCommandHelp', () => {
     assert.match(help, /Required options:/);
     assert.match(help, /--instrument-id=ID/);
     assert.match(help, /Environment:/);
-    assert.match(help, /tinkoff-invest-node-sdk market candles --instrument-id=ID/);
-    assert.doesNotMatch(help, /tinkoff-invest-node-sdk market get-candles/);
-    assert.doesNotMatch(help, /tinkoff-invest-node-sdk marketdata get-candles/);
+    assert.match(help, /t-invest-node-sdk market candles --instrument-id=ID/);
+    assert.doesNotMatch(help, /t-invest-node-sdk market get-candles/);
+    assert.doesNotMatch(help, /t-invest-node-sdk marketdata get-candles/);
     assert.doesNotMatch(help, /Commands:/);
   });
 
@@ -407,14 +407,14 @@ describe('renderCommandHelp', () => {
     const help = renderCommandHelp('help');
 
     assert.match(help, /help - Show top-level or command-specific help/);
-    assert.match(help, /tinkoff-invest-node-sdk help <domain> \[<command>\]/);
+    assert.match(help, /t-invest-node-sdk help <domain> \[<command>\]/);
   });
 
   test('renders stream run command page', () => {
     const help = renderCommandHelp('stream run');
 
     assert.match(help, /stream run - Run a configured stream/);
-    assert.match(help, /tinkoff-invest-node-sdk stream run --config=PATH/);
+    assert.match(help, /t-invest-node-sdk stream run --config=PATH/);
     assert.match(help, /static initial requests for marketdata\.marketDataStream/);
   });
 
@@ -437,7 +437,7 @@ describe('renderCommandHelp', () => {
     const help = renderCommandHelp('dev compile-proto');
 
     assert.match(help, /dev compile-proto - Generate TypeScript contracts/);
-    assert.match(help, /tinkoff-invest-node-sdk dev compile-proto/);
+    assert.match(help, /t-invest-node-sdk dev compile-proto/);
     assert.match(help, /system protoc/);
     assert.match(help, /does not download upstream proto sources/);
   });

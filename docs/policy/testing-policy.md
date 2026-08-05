@@ -73,7 +73,7 @@ Runner `fwa`:
 
 Нужно тестировать:
 
-- публичное поведение `TinkoffInvestNodeSDK`;
+- публичное поведение `TInvestNodeSDK`;
 - создание metadata, channel и typed clients;
 - middleware behavior для unary и streaming calls;
 - throttling и resolution лимитов;

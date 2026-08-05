@@ -50,7 +50,7 @@ import type {
   SignalService,
   StopOrdersService,
   UsersService
-} from './tinkoff-invest-services';
+} from './t-invest-services';
 
 type SameKeys<Left, Right> =
   [keyof Left] extends [keyof Right]

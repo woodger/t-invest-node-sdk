@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   AccessLevel,
   AccountStatus,
@@ -55,7 +55,7 @@ describe('sandbox-accounts command', () => {
 
   describe('createSandboxAccountsCommand', () => {
     test('calls getSandboxAccounts and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetAccountsRequest | undefined;
       let closeCalls = 0;
       const command = createSandboxAccountsCommand((options) => {

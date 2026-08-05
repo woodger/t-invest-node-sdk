@@ -292,7 +292,7 @@ describe('resolveCommand', () => {
       throw new Error('Expected version command output as string');
     }
 
-    assert.equal(output, `tinkoff-invest-node-sdk ${appVersion}\n`);
+    assert.equal(output, `t-invest-node-sdk ${appVersion}\n`);
   });
 
   test('runs a help command through the native registry', async () => {

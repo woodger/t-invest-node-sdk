@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   CouponType,
   type Coupon,
@@ -91,7 +91,7 @@ describe('bond-coupons command', () => {
 
   describe('createBondCouponsCommand', () => {
     test('calls getBondCoupons and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetBondCouponsRequest | undefined;
       let getBondCouponsCalls = 0;
       let closeCalls = 0;

@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType, type MoneyValue } from '../../../generated/common';
 import {
   OperationState,
@@ -81,7 +81,7 @@ describe('sandbox-operations-by-cursor command', () => {
 
   describe('createSandboxOperationsByCursorCommand', () => {
     test('calls getSandboxOperationsByCursor and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetOperationsByCursorRequest | undefined;
       let closeCalls = 0;
       const command = createSandboxOperationsByCursorCommand((options) => {

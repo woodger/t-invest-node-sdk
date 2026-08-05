@@ -4,7 +4,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
@@ -108,7 +108,7 @@ describe('replace-order command', () => {
     });
 
     test('calls replaceOrder and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: ReplaceOrderRequest | undefined;
       let closeCalls = 0;
       const command = createReplaceOrderCommand((options) => {

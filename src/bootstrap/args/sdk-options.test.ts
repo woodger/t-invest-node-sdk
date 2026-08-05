@@ -26,8 +26,8 @@ describe('resolveSdkOptionsFromCommandOptions', () => {
     const options = resolveSdkOptionsFromCommandOptions(
       {},
       {
-        TINKOFF_TOKEN: 'env-token',
-        TINKOFF_ENDPOINT: 'env.example:443'
+        T_INVEST_TOKEN: 'env-token',
+        T_INVEST_ENDPOINT: 'env.example:443'
       }
     );
 
@@ -37,13 +37,26 @@ describe('resolveSdkOptionsFromCommandOptions', () => {
     });
   });
 
+  test('does not read the former environment names', () => {
+    assert.throws(
+      () => resolveSdkOptionsFromCommandOptions(
+        {},
+        {
+          TINKOFF_TOKEN: 'env-token',
+          TINKOFF_ENDPOINT: 'env.example:443'
+        }
+      ),
+      /Expected '--token' or T_INVEST_TOKEN/
+    );
+  });
+
   test('throws when required token is missing', () => {
     assert.throws(
       () => resolveSdkOptionsFromCommandOptions(
         { endpoint: 'localhost:50051' },
         {}
       ),
-      /Expected '--token' or TINKOFF_TOKEN/
+      /Expected '--token' or T_INVEST_TOKEN/
     );
   });
 
@@ -54,22 +67,22 @@ describe('resolveSdkOptionsFromCommandOptions', () => {
           token: ' ',
           endpoint: 'localhost:50051'
         },
-        /Expected '--token' or TINKOFF_TOKEN/
+        /Expected '--token' or T_INVEST_TOKEN/
       ],
       [
         {
           token: 'token',
           endpoint: ''
         },
-        /Expected '--endpoint' or TINKOFF_ENDPOINT/
+        /Expected '--endpoint' or T_INVEST_ENDPOINT/
       ]
     ] as const) {
       assert.throws(
         () => resolveSdkOptionsFromCommandOptions(
           options,
           {
-            TINKOFF_TOKEN: 'env-token',
-            TINKOFF_ENDPOINT: 'env.example:443'
+            T_INVEST_TOKEN: 'env-token',
+            T_INVEST_ENDPOINT: 'env.example:443'
           }
         ),
         message

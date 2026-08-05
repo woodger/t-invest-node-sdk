@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetOrderBookRequest,
   GetOrderBookResponse
@@ -19,7 +19,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrderBook, orderBookFormats, type OrderBookFormat } from './reporter';
 
 type OrderBookSdk = {
@@ -29,10 +29,10 @@ type OrderBookSdk = {
   close(): void;
 };
 
-type OrderBookSdkFactory = (options: TinkoffInvestOptions) => OrderBookSdk;
+type OrderBookSdkFactory = (options: TInvestOptions) => OrderBookSdk;
 
 const orderBookCommandPath = ['market', 'order-book'] as const;
-const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const orderBookDepthOptionsSchema = {
   depth: {

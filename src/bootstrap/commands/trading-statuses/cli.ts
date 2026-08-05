@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
@@ -23,7 +23,7 @@ import {
   parseCommandOptions,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   formatTradingStatuses,
   tradingStatusesFormats,
@@ -37,10 +37,10 @@ type TradingStatusesSdk = {
   close(): void;
 };
 
-type TradingStatusesSdkFactory = (options: TinkoffInvestOptions) => TradingStatusesSdk;
+type TradingStatusesSdkFactory = (options: TInvestOptions) => TradingStatusesSdk;
 
 const tradingStatusesCommandPath = ['market', 'statuses'] as const;
-const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const tradingStatusesInstrumentIdsOptionsSchema = {
   'instrument-id': {

@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
@@ -23,7 +23,7 @@ import {
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   formatTradingSchedules,
   tradingSchedulesFormats,
@@ -37,10 +37,10 @@ type TradingSchedulesSdk = {
   close(): void;
 };
 
-type TradingSchedulesSdkFactory = (options: TinkoffInvestOptions) => TradingSchedulesSdk;
+type TradingSchedulesSdkFactory = (options: TInvestOptions) => TradingSchedulesSdk;
 
 const tradingSchedulesCommandPath = ['instrument', 'schedules'] as const;
-const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const tradingSchedulesRequestOptionsSchema = {
   exchange: {

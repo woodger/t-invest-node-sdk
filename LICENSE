@@ -29,14 +29,14 @@ This package may include files generated from or otherwise derived from
 third-party protocol buffer contract definitions. Those upstream contract
 definitions remain subject to their own notices.
 
-Tinkoff Invest API contracts
+T-Invest API contracts
 
-This package may include artifacts derived from Tinkoff Invest API protocol
+This package may include artifacts derived from T-Invest API protocol
 buffer contract definitions.
 
 This project does not claim ownership of those API contract definitions and is
 not affiliated with, endorsed by, sponsored by, or otherwise connected to
-Tinkoff, T-Bank, or their affiliates.
+T-Invest, T-Bank, or their affiliates.
 
 Google API field behavior contract
 

@@ -13,12 +13,12 @@
 import {
   isSdkError,
   SdkErrorCode,
-  TinkoffInvestNodeSDK
-} from 'tinkoff-invest-node-sdk';
+  TInvestNodeSDK
+} from 't-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
-  | 'TINKOFF_TOKEN'
-  | 'TINKOFF_ENDPOINT';
+  | 'T_INVEST_TOKEN'
+  | 'T_INVEST_ENDPOINT';
 
 function requireEnvironment(name: RequiredEnvironmentVariable): string {
   const value = process.env[name]?.trim();
@@ -31,9 +31,9 @@ function requireEnvironment(name: RequiredEnvironmentVariable): string {
 }
 
 async function main(): Promise<void> {
-  const sdk = new TinkoffInvestNodeSDK({
-    token: requireEnvironment('TINKOFF_TOKEN'),
-    endpoint: requireEnvironment('TINKOFF_ENDPOINT')
+  const sdk = new TInvestNodeSDK({
+    token: requireEnvironment('T_INVEST_TOKEN'),
+    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
   });
   const deadline = AbortSignal.timeout(5_000);
 

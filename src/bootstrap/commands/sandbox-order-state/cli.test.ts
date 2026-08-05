@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { PriceType, type MoneyValue } from '../../../generated/common';
 import {
   OrderDirection,
@@ -65,7 +65,7 @@ describe('sandbox-order-state command', () => {
 
   describe('createSandboxOrderStateCommand', () => {
     test('calls getSandboxOrderState and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: GetOrderStateRequest | undefined;
       let closeCalls = 0;
       const command = createSandboxOrderStateCommand((options) => {

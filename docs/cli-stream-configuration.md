@@ -1,7 +1,7 @@
 # Stream CLI Configuration Reference
 
 > Type: Reference. Документ описывает JSON config для команды
-> `tinkoff-invest-node-sdk stream run --config=PATH`.
+> `t-invest-node-sdk stream run --config=PATH`.
 
 ## Цель
 
@@ -275,14 +275,14 @@ The first implementation should reject:
 - market data instrument items without `instrumentId`;
 - generated enum names or aliases not supported by the config mapper.
 
-Config validation must happen before `TinkoffInvestNodeSDK` creation.
+Config validation must happen before `TInvestNodeSDK` creation.
 
 ## CLI Overrides
 
 Runtime options may be overridden by CLI flags:
 
 ```bash
-tinkoff-invest-node-sdk stream run \
+t-invest-node-sdk stream run \
   --config=portfolio-stream.json \
   --max-events=10 \
   --include-pings

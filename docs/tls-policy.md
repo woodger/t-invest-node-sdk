@@ -44,10 +44,10 @@ Custom или test endpoint может передать собственный P
 
 ```ts
 import { readFile } from 'node:fs/promises';
-import { TinkoffInvestNodeSDK } from 'tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from 't-invest-node-sdk';
 
 const rootCertificates = await readFile('./certificates/custom-root.pem');
-const sdk = new TinkoffInvestNodeSDK({
+const sdk = new TInvestNodeSDK({
   token,
   endpoint,
   tls: {

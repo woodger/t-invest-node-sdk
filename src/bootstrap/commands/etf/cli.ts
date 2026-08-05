@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   EtfResponse,
   InstrumentRequest
@@ -19,7 +19,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
@@ -33,10 +33,10 @@ type EtfSdk = {
   close(): void;
 };
 
-type EtfSdkFactory = (options: TinkoffInvestOptions) => EtfSdk;
+type EtfSdkFactory = (options: TInvestOptions) => EtfSdk;
 
 const etfCommandPath = ['instrument', 'etf', 'show'] as const;
-const defaultEtfSdkFactory: EtfSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultEtfSdkFactory: EtfSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const etfFormatOptionsSchema = {
   format: {

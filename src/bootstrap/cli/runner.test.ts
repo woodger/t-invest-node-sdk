@@ -152,7 +152,7 @@ describe('bootstrap cli runner', () => {
       assert.equal(exitCode, 0);
       assert.match(read().stdout, /operation portfolio - Print account portfolio/);
       assert.match(read().stdout, /SDK call:\n {2}sdk\.operations\.getPortfolio/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk operation portfolio --account-id=ID/);
+      assert.match(read().stdout, /t-invest-node-sdk operation portfolio --account-id=ID/);
       assert.equal(read().stderr, '');
     });
 
@@ -161,17 +161,17 @@ describe('bootstrap cli runner', () => {
         {
           path: ['sandbox', 'get-sandbox-accounts'],
           title: /sandbox account list - Print sandbox accounts/,
-          usage: /tinkoff-invest-node-sdk sandbox account list/
+          usage: /t-invest-node-sdk sandbox account list/
         },
         {
           path: ['sandbox', 'post-sandbox-order'],
           title: /sandbox order place - Post a sandbox order/,
-          usage: /tinkoff-invest-node-sdk sandbox order place --account-id=ID/
+          usage: /t-invest-node-sdk sandbox order place --account-id=ID/
         },
         {
           path: ['sandbox', 'sandbox-pay-in'],
           title: /sandbox pay-in - Pay in to a sandbox account/,
-          usage: /tinkoff-invest-node-sdk sandbox pay-in --account-id=ID/
+          usage: /t-invest-node-sdk sandbox pay-in --account-id=ID/
         }
       ] as const) {
         const { io, read } = createIo();
@@ -190,9 +190,9 @@ describe('bootstrap cli runner', () => {
 
       assert.equal(exitCode, 0);
       assert.match(read().stdout, /operation portfolio - Print account portfolio/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk operation portfolio --account-id=ID/);
-      assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk operation get-portfolio --account-id=ID/);
-      assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk operations get-portfolio --account-id=ID/);
+      assert.match(read().stdout, /t-invest-node-sdk operation portfolio --account-id=ID/);
+      assert.doesNotMatch(read().stdout, /t-invest-node-sdk operation get-portfolio --account-id=ID/);
+      assert.doesNotMatch(read().stdout, /t-invest-node-sdk operations get-portfolio --account-id=ID/);
       assert.equal(read().stderr, '');
     });
 
@@ -215,8 +215,8 @@ describe('bootstrap cli runner', () => {
       assert.equal(exitCode, 0);
       assert.match(read().stdout, /market candles - Print historical candles/);
       assert.match(read().stdout, /gRPC method:\n {2}MarketDataService\/GetCandles/);
-      assert.match(read().stdout, /tinkoff-invest-node-sdk market candles --instrument-id=ID/);
-      assert.doesNotMatch(read().stdout, /tinkoff-invest-node-sdk market get-candles --instrument-id=ID/);
+      assert.match(read().stdout, /t-invest-node-sdk market candles --instrument-id=ID/);
+      assert.doesNotMatch(read().stdout, /t-invest-node-sdk market get-candles --instrument-id=ID/);
       assert.equal(read().stderr, '');
     });
 
@@ -242,7 +242,7 @@ describe('bootstrap cli runner', () => {
         assert.equal(exitCode, 0);
         assert.equal(
           read().stdout,
-          `tinkoff-invest-node-sdk ${appVersion}\n`
+          `t-invest-node-sdk ${appVersion}\n`
         );
         assert.equal(read().stderr, '');
       }
@@ -395,7 +395,7 @@ describe('bootstrap cli runner', () => {
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Warning: '--figi' is deprecated/);
       assert.match(read().stderr, /use '--instrument-id' instead/);
-      assert.match(read().stderr, /Expected '--token' or TINKOFF_TOKEN/);
+      assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
     });
 
     test('does not warn for canonical instrument-id option', async () => {
@@ -409,7 +409,7 @@ describe('bootstrap cli runner', () => {
       assert.equal(exitCode, 2);
       assert.equal(read().stdout, '');
       assert.doesNotMatch(read().stderr, /deprecated/);
-      assert.match(read().stderr, /Expected '--token' or TINKOFF_TOKEN/);
+      assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
     });
 
     test('waits for async stderr writes', async () => {

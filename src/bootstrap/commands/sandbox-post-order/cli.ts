@@ -9,14 +9,14 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { PostOrderRequest, PostOrderResponse } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPostOrderRequest } from '../post-order/cli';
 import {
   formatPostOrder,
@@ -35,10 +35,10 @@ type SandboxPostOrderSdk = {
   close(): void;
 };
 
-type SandboxPostOrderSdkFactory = (options: TinkoffInvestOptions) => SandboxPostOrderSdk;
+type SandboxPostOrderSdkFactory = (options: TInvestOptions) => SandboxPostOrderSdk;
 
 const sandboxPostOrderCommandPath = ['sandbox', 'order', 'place'] as const;
-const defaultSandboxPostOrderSdkFactory: SandboxPostOrderSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultSandboxPostOrderSdkFactory: SandboxPostOrderSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const sandboxPostOrderRequestOptionsSchema = {
   'account-id': {

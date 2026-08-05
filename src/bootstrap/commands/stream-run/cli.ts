@@ -12,11 +12,11 @@
 import {
   readFile } from 'node:fs/promises';
 import type {
-  TinkoffInvestCallOptions
-} from '../../../application/dto/tinkoff-invest-services';
+  TInvestCallOptions
+} from '../../../application/dto/t-invest-services';
 import type {
-  TinkoffInvestOptions
-} from '../../../application/dto/tinkoff-invest-options';
+  TInvestOptions
+} from '../../../application/dto/t-invest-options';
 import type {
   MarketDataRequest,
   MarketDataResponse,
@@ -36,7 +36,7 @@ import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import { withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createMarketDataStreamRequests,
   createMarketDataServerSideStreamRequest,
@@ -58,33 +58,33 @@ type StreamRunSdk = {
   marketdataStream: {
     marketDataStream(
       request: AsyncIterable<MarketDataRequest>,
-      options?: TinkoffInvestCallOptions
+      options?: TInvestCallOptions
     ): AsyncIterable<MarketDataResponse>;
     marketDataServerSideStream(
       request: MarketDataServerSideStreamRequest,
-      options?: TinkoffInvestCallOptions
+      options?: TInvestCallOptions
     ): AsyncIterable<MarketDataResponse>;
   };
   operationsStream: {
     portfolioStream(
       request: PortfolioStreamRequest,
-      options?: TinkoffInvestCallOptions
+      options?: TInvestCallOptions
     ): AsyncIterable<PortfolioStreamResponse>;
     positionsStream(
       request: PositionsStreamRequest,
-      options?: TinkoffInvestCallOptions
+      options?: TInvestCallOptions
     ): AsyncIterable<PositionsStreamResponse>;
   };
   ordersStream: {
     tradesStream(
       request: TradesStreamRequest,
-      options?: TinkoffInvestCallOptions
+      options?: TInvestCallOptions
     ): AsyncIterable<TradesStreamResponse>;
   };
   close(): void;
 };
 
-type StreamRunSdkFactory = (options: TinkoffInvestOptions) => StreamRunSdk;
+type StreamRunSdkFactory = (options: TInvestOptions) => StreamRunSdk;
 type StreamRunConfigReader = (path: string) => Promise<string>;
 type StreamRunClock = () => Date;
 
@@ -95,7 +95,7 @@ type StreamRunDependencies = {
 };
 
 const streamRunCommandPath = ['stream', 'run'] as const;
-const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) => new TInvestNodeSDK(options);
 const defaultStreamRunConfigReader: StreamRunConfigReader = (path) => readFile(path, 'utf8');
 
 const streamRunOptionsSchema = withSdkOptions({
@@ -191,7 +191,7 @@ function resolveStreamRunRuntime(
 function runStreamRunSession(
   config: StreamRunConfig,
   runtime: StreamRunRuntime,
-  sdkOptions: TinkoffInvestOptions,
+  sdkOptions: TInvestOptions,
   dependencies: Required<StreamRunDependencies>
 ): AsyncIterable<string> {
   return (async function* streamRunSession() {
@@ -227,7 +227,7 @@ function createStreamResponses(
   sdk: StreamRunSdk,
   signal: AbortSignal
 ): AsyncIterable<StreamRunResponse> {
-  const callOptions: TinkoffInvestCallOptions = {
+  const callOptions: TInvestCallOptions = {
     signal
   };
 

@@ -53,7 +53,7 @@ describe('SdkError', () => {
 
   test('recognizes a branded error from another package copy', () => {
     const foreignError = {
-      [Symbol.for('tinkoff-invest-node-sdk/SdkError')]: true,
+      [Symbol.for('t-invest-node-sdk/SdkError')]: true,
       name: 'SdkError',
       message: 'service unavailable',
       code: SdkErrorCode.Unavailable,
@@ -66,9 +66,22 @@ describe('SdkError', () => {
     assert.equal(foreignError instanceof SdkError, true);
   });
 
+  test('does not recognize the former package brand', () => {
+    const formerPackageError = {
+      [Symbol.for('tinkoff-invest-node-sdk/SdkError')]: true,
+      name: 'SdkError',
+      message: 'service unavailable',
+      code: SdkErrorCode.Unavailable,
+      source: 'grpc'
+    };
+
+    assert.equal(isSdkError(formerPackageError), false);
+    assert.equal(formerPackageError instanceof SdkError, false);
+  });
+
   test('rejects malformed branded errors', () => {
     const malformedError = {
-      [Symbol.for('tinkoff-invest-node-sdk/SdkError')]: true,
+      [Symbol.for('t-invest-node-sdk/SdkError')]: true,
       name: 'SdkError',
       message: 'invalid',
       code: 'NOT_AN_SDK_CODE',

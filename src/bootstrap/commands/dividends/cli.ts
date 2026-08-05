@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetDividendsRequest,
   GetDividendsResponse
@@ -23,7 +23,7 @@ import {
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
@@ -37,10 +37,10 @@ type DividendsSdk = {
   close(): void;
 };
 
-type DividendsSdkFactory = (options: TinkoffInvestOptions) => DividendsSdk;
+type DividendsSdkFactory = (options: TInvestOptions) => DividendsSdk;
 
 const dividendsCommandPath = ['instrument', 'dividends'] as const;
-const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const dividendsRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema,

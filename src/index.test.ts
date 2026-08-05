@@ -131,8 +131,9 @@ describe('package entrypoint', () => {
     assert.equal(hasPackageExport('UsersServiceClient'), false);
   });
 
-  test('keeps public SDK runtime exports', () => {
-    assert.equal(hasPackageExport('TinkoffInvestNodeSDK'), true);
+  test('exposes rebranded public SDK runtime exports', () => {
+    assert.equal(hasPackageExport('TInvestNodeSDK'), true);
+    assert.equal(hasPackageExport('TinkoffInvestNodeSDK'), false);
     assert.equal(hasPackageExport('CandleInterval'), true);
     assert.equal(hasPackageExport('OrderType'), true);
     assert.equal(hasPackageExport('defaultConfig'), true);
