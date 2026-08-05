@@ -1,9 +1,9 @@
-# Node.js SDK for Tinkoff Invest API
+# Node.js SDK for T-Invest API
 
-Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Investments через `nice-grpc`.
+Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Invest через `nice-grpc`.
 
 Текущий публичный API модуля состоит из:
-- класса `TinkoffInvestNodeSDK` для unary-запросов;
+- класса `TInvestNodeSDK` для unary-запросов;
 - выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
   vendored upstream proto contracts в `contracts/*.proto`.
 
@@ -13,7 +13,7 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#0.3.7"
+yarn add "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.0"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
@@ -32,9 +32,9 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 - [Stream CLI Configuration Reference](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
 - [TLS-доверие](docs/tls-policy.md)
-- [Политики проекта](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/index.md)
-- [Политика тестирования](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
-- [Политика комментариев в тестах](https://github.com/woodger/tinkoff-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
+- [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md)
+- [Политика тестирования](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
+- [Политика комментариев в тестах](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
 
 Отдельного docs-сайта, dev-сервера и сборки статической документации в проекте нет.
 
@@ -86,24 +86,24 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.3.7` Git tag остается `0.3.7` по исторической схеме проекта, а
-GitHub Release может называться `v0.3.7`. Release notes берутся из одноименного
+Для версии `0.4.0` Git tag остается `0.4.0` по исторической схеме проекта, а
+GitHub Release может называться `v0.4.0`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
 ## Быстрый старт
 
 ```ts
-import { TinkoffInvestNodeSDK } from 'tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from 't-invest-node-sdk';
 
-const token = process.env.TINKOFF_TOKEN?.trim();
-const endpoint = process.env.TINKOFF_ENDPOINT?.trim();
+const token = process.env.T_INVEST_TOKEN?.trim();
+const endpoint = process.env.T_INVEST_ENDPOINT?.trim();
 
 if (!token || !endpoint) {
-  throw new Error('TINKOFF_TOKEN and TINKOFF_ENDPOINT are required');
+  throw new Error('T_INVEST_TOKEN and T_INVEST_ENDPOINT are required');
 }
 
-const sdk = new TinkoffInvestNodeSDK({
+const sdk = new TInvestNodeSDK({
   token,
   endpoint
 });
@@ -127,20 +127,20 @@ void main().catch((error: unknown) => {
 Полный вариант с проверкой доступного счета и обработкой ошибки запуска:
 [Первый SDK-вызов](docs/guides/getting-started.md).
 
-## Опции `TinkoffInvestNodeSDK`
+## Опции `TInvestNodeSDK`
 
 ```ts
-interface TinkoffInvestOptions {
+interface TInvestOptions {
   token: string;
   endpoint: string;
   appName?: string;
   useSsl?: boolean;
-  tls?: TinkoffInvestTlsOptions;
+  tls?: TInvestTlsOptions;
   trackLimits?: boolean;
   unaryLimits?: UnaryLimits;
 }
 
-interface TinkoffInvestTlsOptions {
+interface TInvestTlsOptions {
   rootCertificates?: Buffer;
 }
 
@@ -175,10 +175,10 @@ provenance asset описаны в [TLS policy](docs/tls-policy.md).
 ```ts
 import {
   defineUnaryLimits,
-  TinkoffInvestNodeSDK
-} from 'tinkoff-invest-node-sdk';
+  TInvestNodeSDK
+} from 't-invest-node-sdk';
 
-const sdk = new TinkoffInvestNodeSDK({
+const sdk = new TInvestNodeSDK({
   token,
   endpoint,
   unaryLimits: defineUnaryLimits({
@@ -208,7 +208,7 @@ method rules в общий quota bucket; per-instance override с другим �
 ## Опции `defaultConfig`
 
 ```ts
-interface TinkoffInvestNodeSDKConfig {
+interface TInvestNodeSDKConfig {
   unaryLimits: UnaryLimits;
   requireSideEffectConfirmation: boolean;
 }
@@ -251,8 +251,8 @@ yarn cli operation portfolio --account-id=2000000000 --format=json
 ```
 
 После установки SDK как зависимости CLI доступен через
-`yarn tinkoff-invest-node-sdk`. API-команды принимают параметры подключения через
-`--token` / `TINKOFF_TOKEN` и `--endpoint` / `TINKOFF_ENDPOINT`.
+`yarn t-invest-node-sdk`. API-команды принимают параметры подключения через
+`--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`.
 Пустое или состоящее только из пробелов CLI-значение не подменяется ENV fallback
 и завершается usage error с кодом `2`.
 
@@ -282,7 +282,7 @@ terminal policy классифицирует application и framework usage erro
 
 ## Доступные сервисы
 
-Экземпляр `TinkoffInvestNodeSDK` лениво создает unary-клиенты для сервисов:
+Экземпляр `TInvestNodeSDK` лениво создает unary-клиенты для сервисов:
 
 - `sdk.instruments`
 - `sdk.marketdata`
@@ -315,7 +315,7 @@ terminal policy классифицирует application и framework usage erro
 детерминированного завершения Consumer должен передать собственный
 `AbortSignal` и дождаться результата.
 
-`TinkoffInvestCallOptions.signal` действует на весь SDK-вызов. Он отменяет как
+`TInvestCallOptions.signal` действует на весь SDK-вызов. Он отменяет как
 ожидание локального throttling, так и последующий gRPC-вызов. Если операция
 отменена во время ожидания, ее reservation удаляется из quota bucket, а
 следующие вызовы занимают освободившийся слот. После выдачи локального слота и
@@ -349,7 +349,7 @@ Consumer должен проверять сочетание `code` и `source`.
 import {
   isSdkError,
   SdkErrorCode
-} from 'tinkoff-invest-node-sdk';
+} from 't-invest-node-sdk';
 
 try {
   await sdk.users.getAccounts({});
@@ -409,17 +409,17 @@ Generated `*ServiceClient` contracts остаются внутренними tra
 
 ```ts
 import {
-  TinkoffInvestNodeSDK,
+  TInvestNodeSDK,
   CandleInterval,
   InstrumentsService,
   MarketDataStreamService,
-} from 'tinkoff-invest-node-sdk';
+} from 't-invest-node-sdk';
 ```
 
 ## Дисклеймер
 
 Проект является независимой реализацией и не имеет никакого отношения к
-Tinkoff, T-Банку или их аффилированным лицам. Названия продуктов и компаний
+T-Invest, T-Банку или их аффилированным лицам. Названия продуктов и компаний
 используются только для обозначения совместимости с публичным API.
 
 Сведения о сторонних контрактах и generated-коде включены в [LICENSE](LICENSE).

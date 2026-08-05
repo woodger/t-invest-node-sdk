@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { PriceType } from '../../../generated/common';
 import {
   ExchangeOrderType,
@@ -129,7 +129,7 @@ describe('post-stop-order command', () => {
     });
 
     test('calls postStopOrder and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: PostStopOrderRequest | undefined;
       let closeCalls = 0;
       const command = createPostStopOrderCommand((options) => {

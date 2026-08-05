@@ -9,14 +9,14 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPositionsRequest } from '../positions/cli';
 import { formatPositions, positionsFormats, type PositionsFormat } from '../positions/reporter';
 
@@ -27,10 +27,10 @@ type SandboxPositionsSdk = {
   close(): void;
 };
 
-type SandboxPositionsSdkFactory = (options: TinkoffInvestOptions) => SandboxPositionsSdk;
+type SandboxPositionsSdkFactory = (options: TInvestOptions) => SandboxPositionsSdk;
 
 const sandboxPositionsCommandPath = ['sandbox', 'position', 'list'] as const;
-const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const sandboxPositionsRequestOptionsSchema = {
   'account-id': {

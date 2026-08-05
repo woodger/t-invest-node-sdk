@@ -2,7 +2,7 @@
  * Модуль application DTO задает публичные service contracts SDK facade.
  *
  * Здесь допустимы:
- * - package-owned interfaces для сервисов Tinkoff Invest API;
+ * - package-owned interfaces для сервисов T-Invest API;
  * - generated request/response DTO в method signatures;
  * - transport-neutral call options без экспорта generated nice-grpc clients;
  *
@@ -190,494 +190,494 @@ import type {
   PayInResponse
 } from '../../generated/users';
 
-export type TinkoffInvestMetadataValue<Key extends string> = string extends Key
+export type TInvestMetadataValue<Key extends string> = string extends Key
   ? string | Uint8Array
   : Lowercase<Key> extends `${string}-bin`
     ? Uint8Array
     : string;
 
-export interface TinkoffInvestMetadata {
+export interface TInvestMetadata {
   set<Key extends string>(
     key: Key,
-    value: TinkoffInvestMetadataValue<Key> | Array<TinkoffInvestMetadataValue<Key>>
-  ): TinkoffInvestMetadata;
+    value: TInvestMetadataValue<Key> | Array<TInvestMetadataValue<Key>>
+  ): TInvestMetadata;
   append<Key extends string>(
     key: Key,
-    value: TinkoffInvestMetadataValue<Key>
-  ): TinkoffInvestMetadata;
+    value: TInvestMetadataValue<Key>
+  ): TInvestMetadata;
   delete(key: string): void;
-  get<Key extends string>(key: Key): TinkoffInvestMetadataValue<Key> | undefined;
-  getAll<Key extends string>(key: Key): Array<TinkoffInvestMetadataValue<Key>>;
+  get<Key extends string>(key: Key): TInvestMetadataValue<Key> | undefined;
+  getAll<Key extends string>(key: Key): Array<TInvestMetadataValue<Key>>;
   has(key: string): boolean;
   [Symbol.iterator](): IterableIterator<[string, Array<string | Uint8Array>]>;
 }
 
-export interface TinkoffInvestCallOptions {
-  metadata?: TinkoffInvestMetadata;
+export interface TInvestCallOptions {
+  metadata?: TInvestMetadata;
   /** Отменяет ожидание локальной квоты и переданный transport-вызов. */
   signal?: AbortSignal;
-  onHeader?(header: TinkoffInvestMetadata): void;
-  onTrailer?(trailer: TinkoffInvestMetadata): void;
+  onHeader?(header: TInvestMetadata): void;
+  onTrailer?(trailer: TInvestMetadata): void;
 }
 
 export interface UsersService {
   getAccounts(
     request: DeepPartial<GetAccountsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetAccountsResponse>;
   getMarginAttributes(
     request: DeepPartial<GetMarginAttributesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetMarginAttributesResponse>;
   getUserTariff(
     request: DeepPartial<GetUserTariffRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetUserTariffResponse>;
   getInfo(
     request: DeepPartial<GetInfoRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetInfoResponse>;
   getBankAccounts(
     request: DeepPartial<GetBankAccountsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetBankAccountsResponse>;
   currencyTransfer(
     request: DeepPartial<CurrencyTransferRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CurrencyTransferResponse>;
   payIn(
     request: DeepPartial<PayInRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PayInResponse>;
   getAccountValues(
     request: DeepPartial<GetAccountValuesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetAccountValuesResponse>;
 }
 
 export interface OrdersService {
   postOrder(
     request: DeepPartial<PostOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostOrderResponse>;
   postOrderAsync(
     request: DeepPartial<PostOrderAsyncRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostOrderAsyncResponse>;
   cancelOrder(
     request: DeepPartial<CancelOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CancelOrderResponse>;
   getOrderState(
     request: DeepPartial<GetOrderStateRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OrderState>;
   getOrders(
     request: DeepPartial<GetOrdersRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOrdersResponse>;
   replaceOrder(
     request: DeepPartial<ReplaceOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostOrderResponse>;
   getMaxLots(
     request: DeepPartial<GetMaxLotsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetMaxLotsResponse>;
   getOrderPrice(
     request: DeepPartial<GetOrderPriceRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOrderPriceResponse>;
 }
 
 export interface OrdersStreamService {
   tradesStream(
     request: DeepPartial<TradesStreamRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<TradesStreamResponse>;
   orderStateStream(
     request: DeepPartial<OrderStateStreamRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<OrderStateStreamResponse>;
 }
 
 export interface StopOrdersService {
   postStopOrder(
     request: DeepPartial<PostStopOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostStopOrderResponse>;
   getStopOrders(
     request: DeepPartial<GetStopOrdersRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetStopOrdersResponse>;
   cancelStopOrder(
     request: DeepPartial<CancelStopOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CancelStopOrderResponse>;
 }
 
 export interface SandboxService {
   openSandboxAccount(
     request: DeepPartial<OpenSandboxAccountRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OpenSandboxAccountResponse>;
   getSandboxAccounts(
     request: DeepPartial<GetAccountsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetAccountsResponse>;
   closeSandboxAccount(
     request: DeepPartial<CloseSandboxAccountRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CloseSandboxAccountResponse>;
   postSandboxOrder(
     request: DeepPartial<PostOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostOrderResponse>;
   postSandboxOrderAsync(
     request: DeepPartial<PostOrderAsyncRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostOrderAsyncResponse>;
   replaceSandboxOrder(
     request: DeepPartial<ReplaceOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostOrderResponse>;
   getSandboxOrders(
     request: DeepPartial<GetOrdersRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOrdersResponse>;
   cancelSandboxOrder(
     request: DeepPartial<CancelOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CancelOrderResponse>;
   getSandboxOrderState(
     request: DeepPartial<GetOrderStateRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OrderState>;
   getSandboxOrderPrice(
     request: DeepPartial<GetOrderPriceRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOrderPriceResponse>;
   getSandboxPositions(
     request: DeepPartial<PositionsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PositionsResponse>;
   getSandboxOperations(
     request: DeepPartial<OperationsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OperationsResponse>;
   getSandboxOperationsByCursor(
     request: DeepPartial<GetOperationsByCursorRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOperationsByCursorResponse>;
   getSandboxPortfolio(
     request: DeepPartial<PortfolioRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PortfolioResponse>;
   sandboxPayIn(
     request: DeepPartial<SandboxPayInRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<SandboxPayInResponse>;
   getSandboxWithdrawLimits(
     request: DeepPartial<WithdrawLimitsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<WithdrawLimitsResponse>;
   getSandboxMaxLots(
     request: DeepPartial<GetMaxLotsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetMaxLotsResponse>;
   postSandboxStopOrder(
     request: DeepPartial<PostStopOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PostStopOrderResponse>;
   getSandboxStopOrders(
     request: DeepPartial<GetStopOrdersRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetStopOrdersResponse>;
   cancelSandboxStopOrder(
     request: DeepPartial<CancelStopOrderRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CancelStopOrderResponse>;
 }
 
 export interface SignalService {
   getStrategies(
     request: DeepPartial<GetStrategiesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetStrategiesResponse>;
   getSignals(
     request: DeepPartial<GetSignalsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetSignalsResponse>;
 }
 
 export interface MarketDataService {
   getCandles(
     request: DeepPartial<GetCandlesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetCandlesResponse>;
   getLastPrices(
     request: DeepPartial<GetLastPricesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetLastPricesResponse>;
   getOrderBook(
     request: DeepPartial<GetOrderBookRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOrderBookResponse>;
   getTradingStatus(
     request: DeepPartial<GetTradingStatusRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetTradingStatusResponse>;
   getTradingStatuses(
     request: DeepPartial<GetTradingStatusesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetTradingStatusesResponse>;
   getLastTrades(
     request: DeepPartial<GetLastTradesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetLastTradesResponse>;
   getClosePrices(
     request: DeepPartial<GetClosePricesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetClosePricesResponse>;
   getTechAnalysis(
     request: DeepPartial<GetTechAnalysisRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetTechAnalysisResponse>;
   getMarketValues(
     request: DeepPartial<GetMarketValuesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetMarketValuesResponse>;
 }
 
 export interface MarketDataStreamService {
   marketDataStream(
     request: AsyncIterable<DeepPartial<MarketDataRequest>>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<MarketDataResponse>;
   marketDataServerSideStream(
     request: DeepPartial<MarketDataServerSideStreamRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<MarketDataResponse>;
 }
 
 export interface OperationsService {
   getOperations(
     request: DeepPartial<OperationsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OperationsResponse>;
   getPortfolio(
     request: DeepPartial<PortfolioRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PortfolioResponse>;
   getPositions(
     request: DeepPartial<PositionsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<PositionsResponse>;
   getWithdrawLimits(
     request: DeepPartial<WithdrawLimitsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<WithdrawLimitsResponse>;
   getBrokerReport(
     request: DeepPartial<BrokerReportRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<BrokerReportResponse>;
   getDividendsForeignIssuer(
     request: DeepPartial<GetDividendsForeignIssuerRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetDividendsForeignIssuerResponse>;
   getOperationsByCursor(
     request: DeepPartial<GetOperationsByCursorRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetOperationsByCursorResponse>;
 }
 
 export interface OperationsStreamService {
   portfolioStream(
     request: DeepPartial<PortfolioStreamRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<PortfolioStreamResponse>;
   positionsStream(
     request: DeepPartial<PositionsStreamRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<PositionsStreamResponse>;
   operationsStream(
     request: DeepPartial<OperationsStreamRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): AsyncIterable<OperationsStreamResponse>;
 }
 
 export interface InstrumentsService {
   tradingSchedules(
     request: DeepPartial<TradingSchedulesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<TradingSchedulesResponse>;
   bondBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<BondResponse>;
   bonds(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<BondsResponse>;
   getBondCoupons(
     request: DeepPartial<GetBondCouponsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetBondCouponsResponse>;
   getBondEvents(
     request: DeepPartial<GetBondEventsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetBondEventsResponse>;
   currencyBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CurrencyResponse>;
   currencies(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CurrenciesResponse>;
   etfBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<EtfResponse>;
   etfs(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<EtfsResponse>;
   futureBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<FutureResponse>;
   futures(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<FuturesResponse>;
   optionBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OptionResponse>;
-  /** @deprecated Generated-контракт Tinkoff помечает этот метод устаревшим. */
+  /** @deprecated Generated-контракт T-Invest помечает этот метод устаревшим. */
   options(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OptionsResponse>;
   optionsBy(
     request: DeepPartial<FilterOptionsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<OptionsResponse>;
   shareBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<ShareResponse>;
   shares(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<SharesResponse>;
   dfaBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<DfaResponse>;
   dfas(
     request: DeepPartial<DfasRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<DfasResponse>;
   indicatives(
     request: DeepPartial<IndicativesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<IndicativesResponse>;
   getAccruedInterests(
     request: DeepPartial<GetAccruedInterestsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetAccruedInterestsResponse>;
   getFuturesMargin(
     request: DeepPartial<GetFuturesMarginRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetFuturesMarginResponse>;
   getInstrumentBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<InstrumentResponse>;
   getDividends(
     request: DeepPartial<GetDividendsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetDividendsResponse>;
   getAssetBy(
     request: DeepPartial<AssetRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<AssetResponse>;
   getAssets(
     request: DeepPartial<AssetsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<AssetsResponse>;
   getFavorites(
     request: DeepPartial<GetFavoritesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetFavoritesResponse>;
   editFavorites(
     request: DeepPartial<EditFavoritesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<EditFavoritesResponse>;
   createFavoriteGroup(
     request: DeepPartial<CreateFavoriteGroupRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<CreateFavoriteGroupResponse>;
   deleteFavoriteGroup(
     request: DeepPartial<DeleteFavoriteGroupRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<DeleteFavoriteGroupResponse>;
   getFavoriteGroups(
     request: DeepPartial<GetFavoriteGroupsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetFavoriteGroupsResponse>;
   getCountries(
     request: DeepPartial<GetCountriesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetCountriesResponse>;
   findInstrument(
     request: DeepPartial<FindInstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<FindInstrumentResponse>;
   getBrands(
     request: DeepPartial<GetBrandsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetBrandsResponse>;
   getBrandBy(
     request: DeepPartial<GetBrandRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<Brand>;
   getAssetFundamentals(
     request: DeepPartial<GetAssetFundamentalsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetAssetFundamentalsResponse>;
   getAssetReports(
     request: DeepPartial<GetAssetReportsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetAssetReportsResponse>;
   getConsensusForecasts(
     request: DeepPartial<GetConsensusForecastsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetConsensusForecastsResponse>;
   getForecastBy(
     request: DeepPartial<GetForecastRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetForecastResponse>;
   getRiskRates(
     request: DeepPartial<RiskRatesRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<RiskRatesResponse>;
   getInsiderDeals(
     request: DeepPartial<GetInsiderDealsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<GetInsiderDealsResponse>;
   structuredNoteBy(
     request: DeepPartial<InstrumentRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<StructuredNoteResponse>;
   structuredNotes(
     request: DeepPartial<InstrumentsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<StructuredNotesResponse>;
   news(
     request: DeepPartial<NewsRequest>,
-    options?: TinkoffInvestCallOptions
+    options?: TInvestCallOptions
   ): Promise<NewsResponse>;
 }

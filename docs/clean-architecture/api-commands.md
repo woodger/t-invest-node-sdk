@@ -211,7 +211,7 @@ Command flow объединяет несколько разных ответст
 
 1. runner и `icore` разбирают CLI args и валидируют primitive options по schema;
 2. command handler выполняет API-specific validation и request mapping;
-3. command handler создает `TinkoffInvestNodeSDK`;
+3. command handler создает `TInvestNodeSDK`;
 4. command handler вызывает API method;
 5. reporter преобразует unary response в stable report или stream event в
    command-local output contract;

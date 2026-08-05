@@ -9,9 +9,9 @@
  */
 
 import { Metadata } from 'nice-grpc';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 
-export function createSdkMetadata(options: TinkoffInvestOptions) {
+export function createSdkMetadata(options: TInvestOptions) {
   const init: Record<string, string> = {
     Authorization: `Bearer ${options.token}`
   };

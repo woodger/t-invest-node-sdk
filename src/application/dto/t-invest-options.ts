@@ -8,7 +8,7 @@
  * Здесь не должно быть environment fallback logic или transport creation.
  */
 
-export interface TinkoffInvestTlsOptions {
+export interface TInvestTlsOptions {
   /**
    * PEM-encoded root CA bundle for this SDK channel.
    * Overrides the bundled T-Invest root certificate when TLS is enabled.
@@ -16,12 +16,12 @@ export interface TinkoffInvestTlsOptions {
   rootCertificates?: Buffer;
 }
 
-export interface TinkoffInvestOptions {
+export interface TInvestOptions {
   token: string;
   endpoint: string;
   appName?: string;
   useSsl?: boolean;
-  tls?: TinkoffInvestTlsOptions;
+  tls?: TInvestTlsOptions;
   trackLimits?: boolean;
   unaryLimits?: Record<string, number>;
 }

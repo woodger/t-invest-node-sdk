@@ -17,7 +17,7 @@ reusable правила, которые нужны SDK facade и CLI-коман�
 ```text
 src/application
   dto/
-    tinkoff-invest-options.ts
+    t-invest-options.ts
   errors/
     sdk-error.ts
   reports/

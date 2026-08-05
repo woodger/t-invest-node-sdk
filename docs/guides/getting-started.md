@@ -8,8 +8,8 @@
 Проект устанавливается из зафиксированного Git tag:
 
 ```sh
-SDK_TAG=0.3.7
-yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#$SDK_TAG"
+SDK_TAG=0.4.0
+yarn add "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#$SDK_TAG"
 ```
 
 Для приватного репозитория среде сборки нужен настроенный SSH-доступ. Lifecycle
@@ -19,8 +19,8 @@ yarn add "git+ssh://git@github.com/woodger/tinkoff-invest-node-sdk.git#$SDK_TAG"
 
 Пример использует:
 
-- `TINKOFF_TOKEN` — OAuth token;
-- `TINKOFF_ENDPOINT` — gRPC endpoint в формате `host:port`.
+- `T_INVEST_TOKEN` — OAuth token;
+- `T_INVEST_ENDPOINT` — gRPC endpoint в формате `host:port`.
 
 Не записывайте token в исходный код, логи или committed `.env`. Пустые значения
 нужно отклонять до создания SDK, чтобы ошибка конфигурации не выглядела как
@@ -34,11 +34,11 @@ TLS включён по умолчанию. SDK использует bundled Rus
 ## Законченный пример
 
 ```ts
-import { TinkoffInvestNodeSDK } from 'tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from 't-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
-  | 'TINKOFF_TOKEN'
-  | 'TINKOFF_ENDPOINT';
+  | 'T_INVEST_TOKEN'
+  | 'T_INVEST_ENDPOINT';
 
 function requireEnvironment(name: RequiredEnvironmentVariable): string {
   const value = process.env[name]?.trim();
@@ -51,9 +51,9 @@ function requireEnvironment(name: RequiredEnvironmentVariable): string {
 }
 
 async function main(): Promise<void> {
-  const sdk = new TinkoffInvestNodeSDK({
-    token: requireEnvironment('TINKOFF_TOKEN'),
-    endpoint: requireEnvironment('TINKOFF_ENDPOINT')
+  const sdk = new TInvestNodeSDK({
+    token: requireEnvironment('T_INVEST_TOKEN'),
+    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
   });
 
   try {

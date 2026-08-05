@@ -32,11 +32,11 @@ export function createSdkMetadata() {
 
 type UnaryLimits = Record<string, number>;
 
-interface TinkoffInvestOptions {
+interface TInvestOptions {
   // ...
 }
 
-class TinkoffInvestNodeSDK {
+class TInvestNodeSDK {
   // ...
 }
 ```

@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
@@ -19,7 +19,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
@@ -37,10 +37,10 @@ type FuturesMarginSdk = {
   close(): void;
 };
 
-type FuturesMarginSdkFactory = (options: TinkoffInvestOptions) => FuturesMarginSdk;
+type FuturesMarginSdkFactory = (options: TInvestOptions) => FuturesMarginSdk;
 
 const futuresMarginCommandPath = ['instrument', 'future', 'margin'] as const;
-const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const futuresMarginRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema

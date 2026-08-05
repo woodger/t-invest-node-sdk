@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
@@ -25,7 +25,7 @@ import {
   requireStringOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   dividendsForeignIssuerFormats,
   formatDividendsForeignIssuer,
@@ -42,13 +42,13 @@ type DividendsForeignIssuerSdk = {
 };
 
 type DividendsForeignIssuerSdkFactory = (
-  options: TinkoffInvestOptions
+  options: TInvestOptions
 ) => DividendsForeignIssuerSdk;
 
 const dividendsForeignIssuerCommandPath = ['operation', 'foreign-dividends-report'] as const;
 const defaultDividendsForeignIssuerSdkFactory: DividendsForeignIssuerSdkFactory = (
   options
-) => new TinkoffInvestNodeSDK(options);
+) => new TInvestNodeSDK(options);
 
 const dividendsForeignIssuerRequestOptionsSchema = {
   'account-id': {

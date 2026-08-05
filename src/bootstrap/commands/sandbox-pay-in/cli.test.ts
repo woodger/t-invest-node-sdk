@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { SandboxPayInRequest } from '../../../generated/sandbox';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
@@ -95,7 +95,7 @@ describe('sandbox-pay-in command', () => {
     });
 
     test('calls sandboxPayIn and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: SandboxPayInRequest | undefined;
       let closeCalls = 0;
       const command = createSandboxPayInCommand((options) => {

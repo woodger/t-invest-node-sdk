@@ -98,7 +98,7 @@ SDK поддерживает локальный throttling unary-запросо�
   задерживают друг друга;
 - создает отдельный snapshot таблицы лимитов для каждого SDK-инстанса;
 - объединяет per-instance `unaryLimits` с `defaultConfig.unaryLimits`;
-- отменяет ожидание локальной квоты через `TinkoffInvestCallOptions.signal` и
+- отменяет ожидание локальной квоты через `TInvestCallOptions.signal` и
   удаляет неотправленную операцию из bucket queue, чтобы следующий вызов занял
   освободившийся слот;
 - не ограничивает stream-соединения и stream subscriptions;
@@ -153,9 +153,9 @@ public defaults и per-instance overrides bootstrap повторно прове�
 Пример точечного ограничения для отдельного экземпляра:
 
 ```ts
-import { defineUnaryLimits, TinkoffInvestNodeSDK } from 'tinkoff-invest-node-sdk';
+import { defineUnaryLimits, TInvestNodeSDK } from 't-invest-node-sdk';
 
-const sdk = new TinkoffInvestNodeSDK({
+const sdk = new TInvestNodeSDK({
   token,
   endpoint,
   unaryLimits: defineUnaryLimits({

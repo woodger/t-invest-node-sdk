@@ -42,7 +42,7 @@ layout. Официальный upstream snapshot фиксируется в `cont
 
 ## Application DTO
 
-`src/application/dto/tinkoff-invest-options.ts` описывает options SDK facade.
+`src/application/dto/t-invest-options.ts` описывает options SDK facade.
 
 Это не CLI DTO и не gRPC DTO. Один и тот же contract может использоваться из
 bootstrap, tests и публичного SDK facade.
@@ -50,14 +50,14 @@ bootstrap, tests и публичного SDK facade.
 Правило:
 
 ```text
-CLI/env parsing -> TinkoffInvestOptions -> SDK facade/infrastructure
+CLI/env parsing -> TInvestOptions -> SDK facade/infrastructure
 ```
 
 `application/dto` не должен читать env и не должен знать про CLI flags.
 
-`src/application/dto/tinkoff-invest-services.ts` описывает публичные service
+`src/application/dto/t-invest-services.ts` описывает публичные service
 interfaces SDK facade: `UsersService`, `OrdersService`,
-`MarketDataStreamService` и т.п. Эти interfaces сохраняют Tinkoff method names
+`MarketDataStreamService` и т.п. Эти interfaces сохраняют upstream method names
 и generated request/response DTO, но не раскрывают `nice-grpc`
 `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
 
@@ -126,7 +126,7 @@ process.argv
 
 | Mapping | Текущее место | Возможное целевое место |
 | --- | --- | --- |
-| typed command options -> `TinkoffInvestOptions` | `bootstrap/args` | без изменений |
+| typed command options -> `TInvestOptions` | `bootstrap/args` | без изменений |
 | typed command options -> generated request DTO | `bootstrap/commands/*/cli.ts`, `create*Request` | application use-case, если command перестает быть тонким adapter-ом |
 | generated unary response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | stream event -> command-local event contract | `bootstrap/commands/stream-run/reporter.ts` | application report, если contract потребуется вне CLI |

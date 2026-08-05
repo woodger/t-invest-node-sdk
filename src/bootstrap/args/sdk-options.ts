@@ -4,12 +4,12 @@
  * Здесь допустимы:
  * - чтение `--token`, `--endpoint`, `--app-name`, `--insecure`;
  * - fallback на ENV для credentials/endpoint;
- * - возврат `TinkoffInvestOptions` для bootstrap command handlers.
+ * - возврат `TInvestOptions` для bootstrap command handlers.
  *
- * Здесь не должно быть создания `TinkoffInvestNodeSDK` или вызовов API.
+ * Здесь не должно быть создания `TInvestNodeSDK` или вызовов API.
  */
 
-import type { TinkoffInvestOptions } from '../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../application/dto/t-invest-options';
 import { CliUsageError } from 'icore';
 
 type SdkCommandOptions = {
@@ -50,17 +50,17 @@ function requiredCliOrEnvValue(
 export function resolveSdkOptionsFromCommandOptions(
   options: SdkCommandOptions,
   env: NodeJS.ProcessEnv = process.env
-): TinkoffInvestOptions {
+): TInvestOptions {
   const token = requiredCliOrEnvValue(
     options.token,
     env,
-    'TINKOFF_TOKEN',
+    'T_INVEST_TOKEN',
     'token'
   );
   const endpoint = requiredCliOrEnvValue(
     options.endpoint,
     env,
-    'TINKOFF_ENDPOINT',
+    'T_INVEST_ENDPOINT',
     'endpoint'
   );
   const appName = options['app-name'];

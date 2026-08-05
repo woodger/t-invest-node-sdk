@@ -3,7 +3,7 @@ import {
   describe,
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { AssetRequest,
   AssetResponse
 } from '../../../generated/instruments';
@@ -52,7 +52,7 @@ describe('asset command', () => {
 
   describe('createAssetCommand', () => {
     test('calls getAssetBy and closes sdk', async () => {
-      let receivedOptions: TinkoffInvestOptions | undefined;
+      let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: AssetRequest | undefined;
       let closeCalls = 0;
       const command = createAssetCommand((options) => {

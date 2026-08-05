@@ -10,11 +10,11 @@ import {
   SdkErrorCode
 } from '../application/errors/sdk-error';
 import { SignalServiceDefinition } from '../generated/signals';
-import { TinkoffInvestNodeSDK } from './tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from './t-invest-node-sdk';
 
-describe('TinkoffInvestNodeSDK', () => {
+describe('TInvestNodeSDK', () => {
   test('exposes stream clients', () => {
-    const sdk = new TinkoffInvestNodeSDK({
+    const sdk = new TInvestNodeSDK({
       token: 'token',
       endpoint: 'localhost:50051',
       useSsl: false
@@ -61,8 +61,8 @@ describe('TinkoffInvestNodeSDK', () => {
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
     } as const;
-    const strategiesSdk = new TinkoffInvestNodeSDK(options);
-    const signalsSdk = new TinkoffInvestNodeSDK(options);
+    const strategiesSdk = new TInvestNodeSDK(options);
+    const signalsSdk = new TInvestNodeSDK(options);
 
     try {
       const [strategies, signals] = await Promise.all([
@@ -102,7 +102,7 @@ describe('TinkoffInvestNodeSDK', () => {
     });
 
     const port = await server.listen('127.0.0.1:0');
-    const sdk = new TinkoffInvestNodeSDK({
+    const sdk = new TInvestNodeSDK({
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
@@ -140,17 +140,17 @@ describe('TinkoffInvestNodeSDK', () => {
       ]
     ] as const) {
       assert.throws(
-        () => new TinkoffInvestNodeSDK(options),
+        () => new TInvestNodeSDK(options),
         (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
           && error.source === 'sdk'
-          && error.message === `TinkoffInvestOptions.${name} must be a non-empty string`
+          && error.message === `TInvestOptions.${name} must be a non-empty string`
       );
     }
   });
 
   describe('#close', () => {
     test('closes the shared channel idempotently', () => {
-      const sdk = new TinkoffInvestNodeSDK({
+      const sdk = new TInvestNodeSDK({
         token: 'token',
         endpoint: 'localhost:50051',
         useSsl: false
@@ -163,7 +163,7 @@ describe('TinkoffInvestNodeSDK', () => {
     });
 
     test('rejects service access after close', () => {
-      const sdk = new TinkoffInvestNodeSDK({
+      const sdk = new TInvestNodeSDK({
         token: 'token',
         endpoint: 'localhost:50051',
         useSsl: false
@@ -179,7 +179,7 @@ describe('TinkoffInvestNodeSDK', () => {
     });
 
     test('rejects calls through an existing client after close', async () => {
-      const sdk = new TinkoffInvestNodeSDK({
+      const sdk = new TInvestNodeSDK({
         token: 'token',
         endpoint: 'localhost:50051',
         useSsl: false

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../application/dto/t-invest-options';
 import { Throttle } from '../application/services/unary-throttle.service';
 import {
   defaultConfig,
@@ -98,7 +98,7 @@ describe('resolveSdkInstanceOptions', () => {
       endpoint: 'localhost:50051',
       useSsl: undefined,
       trackLimits: undefined
-    } as unknown as TinkoffInvestOptions;
+    } as unknown as TInvestOptions;
     const options = resolveSdkInstanceOptions(unsafeOptions);
 
     assert.equal(options.useSsl, true);

@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
@@ -19,7 +19,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createWithdrawLimitsRequest } from '../withdraw-limits/cli';
 import {
   formatWithdrawLimits,
@@ -35,11 +35,11 @@ type SandboxWithdrawLimitsSdk = {
 };
 
 type SandboxWithdrawLimitsSdkFactory = (
-  options: TinkoffInvestOptions
+  options: TInvestOptions
 ) => SandboxWithdrawLimitsSdk;
 
 const sandboxWithdrawLimitsCommandPath = ['sandbox', 'withdraw-limits'] as const;
-const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const sandboxWithdrawLimitsRequestOptionsSchema = {
   'account-id': {

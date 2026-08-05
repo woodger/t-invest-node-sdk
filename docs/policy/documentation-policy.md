@@ -13,7 +13,7 @@
 Для SDK действуют следующие источники истины:
 
 - public package entrypoint: `src/index.ts`;
-- SDK client API: `src/bootstrap/tinkoff-invest-node-sdk.ts`;
+- SDK client API: `src/bootstrap/t-invest-node-sdk.ts`;
 - application report contracts: `src/application/reports/**`;
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
@@ -21,7 +21,7 @@
 - unary throttling source policy: `src/config.ts`;
 - authoring и public runtime type contracts: `src/config.types.ts`;
 - per-instance SDK config input:
-  `src/application/dto/tinkoff-invest-options.ts`;
+  `src/application/dto/t-invest-options.ts`;
 - public SDK error contract: `src/application/errors/sdk-error.ts`;
 - unary config compilation и readable override shape adapter:
   `src/bootstrap/unary-limit-config.ts`;

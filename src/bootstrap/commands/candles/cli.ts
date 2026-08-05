@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   CandleInterval,
   type GetCandlesRequest,
@@ -24,7 +24,7 @@ import {
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { candlesFormats, formatCandles, type CandlesFormat } from './reporter';
 
 type CandlesSdk = {
@@ -34,10 +34,10 @@ type CandlesSdk = {
   close(): void;
 };
 
-type CandlesSdkFactory = (options: TinkoffInvestOptions) => CandlesSdk;
+type CandlesSdkFactory = (options: TInvestOptions) => CandlesSdk;
 
 const candlesCommandPath = ['market', 'candles'] as const;
-const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const candleIntervals = {
   '1min': CandleInterval.CANDLE_INTERVAL_1_MIN,

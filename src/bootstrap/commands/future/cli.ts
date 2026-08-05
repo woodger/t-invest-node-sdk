@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   FutureResponse,
   InstrumentRequest
@@ -19,7 +19,7 @@ import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
@@ -33,10 +33,10 @@ type FutureSdk = {
   close(): void;
 };
 
-type FutureSdkFactory = (options: TinkoffInvestOptions) => FutureSdk;
+type FutureSdkFactory = (options: TInvestOptions) => FutureSdk;
 
 const futureCommandPath = ['instrument', 'future', 'show'] as const;
-const defaultFutureSdkFactory: FutureSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultFutureSdkFactory: FutureSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const futureFormatOptionsSchema = {
   format: {

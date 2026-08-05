@@ -9,14 +9,14 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatUserInfo, userInfoFormats, type UserInfoFormat } from './reporter';
 
 type UserInfoSdk = {
@@ -26,10 +26,10 @@ type UserInfoSdk = {
   close(): void;
 };
 
-type UserInfoSdkFactory = (options: TinkoffInvestOptions) => UserInfoSdk;
+type UserInfoSdkFactory = (options: TInvestOptions) => UserInfoSdk;
 
 const userInfoCommandPath = ['account', 'info'] as const;
-const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const userInfoOptionsSchema = withSdkOptions({
   format: {

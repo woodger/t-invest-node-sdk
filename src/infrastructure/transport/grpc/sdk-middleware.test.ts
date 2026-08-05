@@ -256,7 +256,7 @@ describe('createSdkMiddleware', () => {
     const lifecycleController = new AbortController();
     const closeError = new SdkError(
       SdkErrorCode.SdkClosed,
-      'TinkoffInvestNodeSDK is closed',
+      'TInvestNodeSDK is closed',
       {
         source: 'lifecycle'
       }

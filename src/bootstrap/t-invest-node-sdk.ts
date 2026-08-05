@@ -1,5 +1,5 @@
 /**
- * Модуль bootstrap SDK facade собирает публичный `TinkoffInvestNodeSDK` runtime.
+ * Модуль bootstrap SDK facade собирает публичный `TInvestNodeSDK` runtime.
  *
  * Здесь допустимы:
  * - lazy creation generated service clients;
@@ -39,7 +39,7 @@ import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/san
 import { SignalServiceDefinition, SignalServiceClient } from '../generated/signals';
 import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/stoporders';
 import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
-import type { TinkoffInvestOptions } from '../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../application/dto/t-invest-options';
 import type {
   InstrumentsService,
   MarketDataService,
@@ -52,7 +52,7 @@ import type {
   SignalService,
   StopOrdersService,
   UsersService
-} from '../application/dto/tinkoff-invest-services';
+} from '../application/dto/t-invest-services';
 import {
   SdkError,
   SdkErrorCode
@@ -67,7 +67,7 @@ import {
 import {
   resolveSdkInstanceOptions,
   resolveUnaryThrottleConfig,
-  type ResolvedTinkoffInvestOptions
+  type ResolvedTInvestOptions
 } from './sdk-config';
 
 type ServiceDefinition = typeof InstrumentsServiceDefinition
@@ -94,8 +94,8 @@ type ServiceClient = InstrumentsServiceClient
   | StopOrdersServiceClient
   | UsersServiceClient;
 
-export class TinkoffInvestNodeSDK {
-  private options: ResolvedTinkoffInvestOptions;
+export class TInvestNodeSDK {
+  private options: ResolvedTInvestOptions;
   private storage: Map<ServiceDefinition, ServiceClient> = new Map();
   private channel: Channel;
   private metadata: Metadata;
@@ -104,7 +104,7 @@ export class TinkoffInvestNodeSDK {
   private closed = false;
   private lifecycleController = new AbortController();
   
-  constructor(options: TinkoffInvestOptions) {
+  constructor(options: TInvestOptions) {
     this.options = resolveSdkInstanceOptions(options);
 
     const unaryThrottleConfig = resolveUnaryThrottleConfig(
@@ -221,7 +221,7 @@ export class TinkoffInvestNodeSDK {
   private createClosedError(): SdkError<SdkErrorCode.SdkClosed> {
     return new SdkError(
       SdkErrorCode.SdkClosed,
-      'TinkoffInvestNodeSDK is closed',
+      'TInvestNodeSDK is closed',
       {
         source: 'lifecycle'
       }

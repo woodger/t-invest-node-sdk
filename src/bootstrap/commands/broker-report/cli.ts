@@ -9,7 +9,7 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   BrokerReportRequest,
   BrokerReportResponse
@@ -25,7 +25,7 @@ import {
   requireStringOption,
   withSdkOptions
 } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   brokerReportFormats,
   formatBrokerReport,
@@ -39,10 +39,10 @@ type BrokerReportSdk = {
   close(): void;
 };
 
-type BrokerReportSdkFactory = (options: TinkoffInvestOptions) => BrokerReportSdk;
+type BrokerReportSdkFactory = (options: TInvestOptions) => BrokerReportSdk;
 
 const brokerReportCommandPath = ['operation', 'broker-report'] as const;
-const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const brokerReportRequestOptionsSchema = {
   'account-id': {

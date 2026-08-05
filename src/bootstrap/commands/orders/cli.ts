@@ -9,14 +9,14 @@
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import type { TinkoffInvestOptions } from '../../../application/dto/tinkoff-invest-options';
+import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
 import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
-import { TinkoffInvestNodeSDK } from '../../tinkoff-invest-node-sdk';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrders, ordersFormats, type OrdersFormat } from './reporter';
 
 type OrdersSdk = {
@@ -26,10 +26,10 @@ type OrdersSdk = {
   close(): void;
 };
 
-type OrdersSdkFactory = (options: TinkoffInvestOptions) => OrdersSdk;
+type OrdersSdkFactory = (options: TInvestOptions) => OrdersSdk;
 
 const ordersCommandPath = ['order', 'list'] as const;
-const defaultOrdersSdkFactory: OrdersSdkFactory = (options) => new TinkoffInvestNodeSDK(options);
+const defaultOrdersSdkFactory: OrdersSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const ordersRequestOptionsSchema = {
   'account-id': {
