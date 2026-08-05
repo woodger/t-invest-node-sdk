@@ -254,6 +254,11 @@ buffer полностью заменяет package root bundle; `useSsl: false` 
 insecure credentials без чтения сертификата. Ни system trust store, ни
 process-wide environment SDK не изменяет.
 
+Middleware получает resolved `useSsl` вместе с call runtime. Для известных
+ошибок проверки certificate chain и hostname он сохраняет gRPC code
+`UNAVAILABLE`, но меняет публичный source на `tls`. Provider и network
+`UNAVAILABLE` остаются `grpc`; transport adapter не принимает retry-решений.
+
 Package defaults для публичных instance options разрешаются при создании SDK:
 
 ```text

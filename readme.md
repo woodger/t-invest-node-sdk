@@ -345,6 +345,12 @@ SdkErrorCode.ResourceExhausted;  // 'RESOURCE_EXHAUSTED'
 Стандартное имя `code` само по себе не определяет источник: когда это важно,
 Consumer должен проверять сочетание `code` и `source`.
 
+Однозначные ошибки проверки цепочки сертификатов и соответствия hostname
+получают `SdkErrorCode.Unavailable` с `source: 'tls'`. Обычный provider или
+network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `details` и
+`cause` сохраняются, но Consumer-у не нужно разбирать диагностический текст:
+стабильной machine-readable границей является `source`.
+
 ```ts
 import {
   isSdkError,

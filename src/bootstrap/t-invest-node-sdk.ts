@@ -199,6 +199,7 @@ export class TInvestNodeSDK {
         this.unaryLimitResolver,
         this.throttle,
         {
+          useSsl: this.options.useSsl,
           signal: this.lifecycleController.signal,
           assertOpen: () => {
             this.assertOpen();

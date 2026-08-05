@@ -88,7 +88,9 @@ infrastructure. Он может быть использован CLI, тесто�
 `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`, не импортируя `nice-grpc`.
 Infrastructure преобразует известные gRPC failures в этот contract, а
 bootstrap facade создает lifecycle error после `close()`. Исходная ошибка
-сохраняется как `cause`.
+сохраняется как `cause`. Однозначные ошибки проверки TLS certificate chain и
+hostname получают source `tls`, не меняя code `Unavailable`; обычные provider
+и network failures сохраняют source `grpc`.
 
 Error code предоставляет классификацию, но не объявляет операцию retryable:
 решение о повторе дополнительно зависит от idempotency, provider metadata и
