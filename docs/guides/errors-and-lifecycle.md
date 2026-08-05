@@ -49,6 +49,18 @@ async function main(): Promise<void> {
   }
   catch (error: unknown) {
     if (
+      isSdkError(error, SdkErrorCode.Unavailable)
+      && error.source === 'tls'
+    ) {
+      console.error(
+        'T-Invest TLS certificate verification failed. '
+        + 'Check the endpoint and the SDK CA configuration.'
+      );
+      process.exitCode = 1;
+      return;
+    }
+
+    if (
       isSdkError(error, SdkErrorCode.Cancelled)
       && error.source === 'abort'
       && deadline.aborted
@@ -98,6 +110,7 @@ void main().catch((error: unknown) => {
 | `source` | Значение |
 | --- | --- |
 | `grpc` | Ошибка получена от transport/provider boundary |
+| `tls` | Transport не прошел проверку цепочки сертификатов или hostname |
 | `abort` | Вызов отменен Consumer-ом через `AbortSignal` |
 | `lifecycle` | SDK уже закрыт |
 | `sdk` | SDK отклонил локальную конфигурацию или runtime state |
@@ -119,6 +132,12 @@ validation или `source: 'sdk'` для локально отклоненной
 - `cause` сохраняет исходную ошибку, но остается transport-specific
   диагностикой. Business logic не должна зависеть от класса ошибки
   `nice-grpc`.
+
+Для однозначных certificate trust и hostname verification failures SDK
+возвращает `SdkErrorCode.Unavailable` с `source: 'tls'`. DNS failures,
+connection refusal/reset, timeout и обычный provider `UNAVAILABLE` сохраняют
+`source: 'grpc'`. Эта граница позволяет завершить вызов сразу при ошибке TLS,
+не разбирая `details` и не применяя к ней общий availability retry.
 
 Brand guard распознает совместимый `SdkError` из другой физической копии
 пакета в том же JavaScript realm. После JSON, IPC или worker serialization

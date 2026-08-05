@@ -1,24 +1,46 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import {
+  createSecureServer,
+  type ServerHttp2Stream
+} from 'node:http2';
+import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
 import {
+  ChannelCredentials,
+  ClientError,
+  createChannel,
   createServer,
-  Metadata
+  Metadata,
+  Status
 } from 'nice-grpc';
 import type {
   CallOptions,
+  Channel,
   ServiceDefinition
 } from 'nice-grpc';
+import {
+  isSdkError,
+  SdkErrorCode
+} from '../../../application/errors/sdk-error';
 import type { ThrottleRule } from '../../../application/services/unary-throttle.service';
 import { Throttle } from '../../../application/services/unary-throttle.service';
 import { createSdkChannel } from './sdk-channel';
 import { createSdkClient } from './sdk-client';
+import { loadBundledTlsRootCertificates } from './tls-root-certificates';
 import { UnaryLimitResolver } from './unary-limit-resolver';
 
 const payload = new Uint8Array([1, 2, 3]);
+const payloadPath = '/test.PayloadService/GetPayload';
+const maxReceiveMessageLength = 4 * 1024 * 1024;
+const tlsFixturesDirectory = resolve(
+  __dirname,
+  '../../../../src/infrastructure/transport/grpc/test-fixtures'
+);
 
 const payloadServiceDefinition = {
   getPayload: {
-    path: '/test.PayloadService/GetPayload',
+    path: payloadPath,
     requestStream: false,
     responseStream: false,
     requestSerialize: () => new Uint8Array(),
@@ -82,6 +104,7 @@ describe('createSdkClient', () => {
       }),
       throttle,
       {
+        useSsl: false,
         signal: lifecycleController.signal,
         // biome-ignore lint/suspicious/noEmptyBlockStatements: This metadata scenario does not exercise lifecycle rejection.
         assertOpen() {}
@@ -108,4 +131,201 @@ describe('createSdkClient', () => {
       await server.shutdown();
     }
   });
+
+  test('maps an unknown certificate authority to the TLS source', async () => {
+    const server = createPayloadTlsServer();
+    const port = await listen(server);
+    const channel = createChannel(
+      `localhost:${port}`,
+      ChannelCredentials.createSsl(loadBundledTlsRootCertificates()),
+      {
+        'grpc.ssl_target_name_override': 'localhost'
+      }
+    );
+    const client = createPayloadClient(channel, true);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => {
+          if (
+            !isSdkError(error, SdkErrorCode.Unavailable)
+            || !(error.cause instanceof ClientError)
+          ) {
+            return false;
+          }
+
+          return error.source === 'tls'
+            && error.path === payloadPath
+            && error.details === error.cause.details;
+        }
+      );
+    }
+    finally {
+      channel.close();
+      await close(server);
+    }
+  });
+
+  test('maps a certificate hostname mismatch to the TLS source', async () => {
+    const server = createPayloadTlsServer();
+    const port = await listen(server);
+    const channel = createChannel(
+      `localhost:${port}`,
+      ChannelCredentials.createSsl(readTlsFixture('tls-root.cert.pem')),
+      {
+        'grpc.ssl_target_name_override': 'unexpected.test'
+      }
+    );
+    const client = createPayloadClient(channel, true);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+          && error.source === 'tls'
+          && error.path === payloadPath
+      );
+    }
+    finally {
+      channel.close();
+      await close(server);
+    }
+  });
+
+  test('keeps a provider UNAVAILABLE response in the gRPC source', async () => {
+    const server = createPayloadTlsServer(
+      Status.UNAVAILABLE,
+      'temporarily unavailable'
+    );
+    const port = await listen(server);
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `localhost:${port}`,
+      useSsl: true,
+      tls: {
+        rootCertificates: readTlsFixture('tls-root.cert.pem')
+      }
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(channel, true);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+          && error.source === 'grpc'
+          && error.path === payloadPath
+          && error.details === 'temporarily unavailable'
+      );
+    }
+    finally {
+      channel.close();
+      await close(server);
+    }
+  });
 });
+
+function createPayloadClient(
+  channel: Channel,
+  useSsl: boolean
+): PayloadServiceClient {
+  const signal = new AbortController().signal;
+
+  return createSdkClient<PayloadServiceClient>(
+    payloadServiceDefinition,
+    channel,
+    new Metadata(),
+    false,
+    new UnaryLimitResolver({}),
+    new Throttle(),
+    {
+      useSsl,
+      signal,
+      assertOpen() {
+        if (signal.aborted) {
+          throw signal.reason;
+        }
+      }
+    }
+  );
+}
+
+function readTlsFixture(name: string): Buffer {
+  return readFileSync(resolve(tlsFixturesDirectory, name));
+}
+
+function createPayloadTlsServer(
+  grpcStatus: Status = Status.OK,
+  grpcDetails?: string
+) {
+  const server = createSecureServer({
+    cert: readTlsFixture('tls-server.cert.pem'),
+    key: readTlsFixture('tls-server.key.pem')
+  });
+
+  server.on('stream', (stream: ServerHttp2Stream) => {
+    stream.resume();
+    stream.once('end', () => {
+      const frame = Buffer.alloc(5 + payload.byteLength);
+
+      frame.writeUInt32BE(payload.byteLength, 1);
+      frame.set(payload, 5);
+      stream.respond({
+        ':status': 200,
+        'content-type': 'application/grpc+proto'
+      }, {
+        waitForTrailers: true
+      });
+      stream.once('wantTrailers', () => {
+        stream.sendTrailers({
+          'grpc-status': String(grpcStatus),
+          ...(grpcDetails === undefined
+            ? {}
+            : { 'grpc-message': grpcDetails })
+        });
+      });
+      stream.end(grpcStatus === Status.OK ? frame : undefined);
+    });
+  });
+
+  return server;
+}
+
+async function listen(
+  server: ReturnType<typeof createPayloadTlsServer>
+): Promise<number> {
+  await new Promise<void>((resolvePromise, reject) => {
+    const rejectOnError = (error: Error) => {
+      reject(error);
+    };
+
+    server.once('error', rejectOnError);
+    server.listen(0, '127.0.0.1', () => {
+      server.off('error', rejectOnError);
+      resolvePromise();
+    });
+  });
+
+  const address = server.address();
+
+  if (address === null || typeof address === 'string') {
+    throw new Error('Expected local TLS server address');
+  }
+
+  return address.port;
+}
+
+async function close(
+  server: ReturnType<typeof createPayloadTlsServer>
+): Promise<void> {
+  await new Promise<void>((resolvePromise, reject) => {
+    server.close((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolvePromise();
+    });
+  });
+}

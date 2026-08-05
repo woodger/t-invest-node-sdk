@@ -27,7 +27,8 @@ import {
 import type { Throttle } from '../../../application/services/unary-throttle.service';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
-export interface SdkCallLifecycle {
+export interface SdkCallRuntime {
+  readonly useSsl: boolean;
   readonly signal: AbortSignal;
   assertOpen(): void;
 }
@@ -36,14 +37,14 @@ export function createSdkMiddleware(
   trackLimits: boolean,
   unaryLimitResolver: UnaryLimitResolver,
   throttle: Throttle,
-  lifecycle?: SdkCallLifecycle
+  runtime?: SdkCallRuntime
 ) {
   return async function*<Request, Response>(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
     try {
-      lifecycle?.assertOpen();
+      runtime?.assertOpen();
 
       if (!call.responseStream) {
         if (trackLimits) {
@@ -62,11 +63,11 @@ export function createSdkMiddleware(
 
           await throttle.reduce(
             rule,
-            resolveThrottleSignal(options.signal, lifecycle?.signal)
+            resolveThrottleSignal(options.signal, runtime?.signal)
           );
         }
 
-        lifecycle?.assertOpen();
+        runtime?.assertOpen();
         throwIfAborted(options.signal);
 
         const response = yield* call.next(call.request, options);
@@ -83,7 +84,12 @@ export function createSdkMiddleware(
       return undefined;
     }
     catch (error) {
-      throw mapSdkCallError(error, call.method.path, options.signal);
+      throw mapSdkCallError(
+        error,
+        call.method.path,
+        options.signal,
+        runtime?.useSsl === true
+      );
     }
   };
 }
@@ -107,6 +113,57 @@ const grpcErrorCodes: Partial<Record<Status, SdkErrorCode>> = {
   [Status.UNAUTHENTICATED]: SdkErrorCode.Unauthenticated
 };
 
+const tlsCertificateErrorCodes = [
+  'CERT_CHAIN_TOO_LONG',
+  'CERT_HAS_EXPIRED',
+  'CERT_NOT_YET_VALID',
+  'CERT_REJECTED',
+  'CERT_REVOKED',
+  'CERT_SIGNATURE_FAILURE',
+  'CERT_UNTRUSTED',
+  'CRL_HAS_EXPIRED',
+  'CRL_NOT_YET_VALID',
+  'CRL_SIGNATURE_FAILURE',
+  'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'ERR_TLS_CERT_ALTNAME_FORMAT',
+  'ERR_TLS_CERT_ALTNAME_INVALID',
+  'HOSTNAME_MISMATCH',
+  'INVALID_CA',
+  'INVALID_PURPOSE',
+  'PATH_LENGTH_EXCEEDED',
+  'SELF_SIGNED_CERT_IN_CHAIN',
+  'UNABLE_TO_GET_CRL',
+  'UNABLE_TO_GET_ISSUER_CERT',
+  'UNABLE_TO_GET_ISSUER_CERT_LOCALLY',
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE'
+];
+
+const tlsCertificateErrorMessages = [
+  'certificate has expired',
+  'certificate is not yet valid',
+  'certificate is not trusted',
+  'certificate rejected',
+  'certificate revoked',
+  'certificate verification failed',
+  'certificate verify failed',
+  'hostname does not match certificate',
+  'hostname/ip does not match certificate',
+  'self signed certificate',
+  'self-signed certificate',
+  'unable to get issuer certificate',
+  'unable to get local issuer certificate',
+  'unable to verify the first certificate',
+  'unable to verify leaf signature'
+];
+
+const standaloneTlsCertificateErrorMessages: ReadonlySet<string> = new Set([
+  ...tlsCertificateErrorMessages,
+  'self signed certificate in certificate chain',
+  'self-signed certificate in certificate chain'
+]);
+
+const grpcConnectionErrorMarker = 'no connection established. last error:';
+
 function resolveThrottleSignal(
   callSignal: AbortSignal | undefined,
   lifecycleSignal: AbortSignal | undefined
@@ -127,7 +184,8 @@ function throwIfAborted(signal: AbortSignal | undefined): void {
 function mapSdkCallError(
   error: unknown,
   path: string,
-  signal: AbortSignal | undefined
+  signal: AbortSignal | undefined,
+  useSsl: boolean
 ): unknown {
   if (isCallCancellation(error, signal)) {
     return new SdkError(
@@ -150,7 +208,7 @@ function mapSdkCallError(
       grpcErrorCodes[error.code] ?? SdkErrorCode.Unknown,
       error.message,
       {
-        source: 'grpc',
+        source: isTlsCertificateError(error, useSsl) ? 'tls' : 'grpc',
         path: error.path,
         details: error.details,
         cause: error
@@ -159,6 +217,31 @@ function mapSdkCallError(
   }
 
   return error;
+}
+
+function isTlsCertificateError(
+  error: ClientError,
+  useSsl: boolean
+): boolean {
+  if (!useSsl || error.code !== Status.UNAVAILABLE) {
+    return false;
+  }
+
+  const normalizedDetails = error.details.toLowerCase();
+
+  if (tlsCertificateErrorCodes.some((code) => error.details.includes(code))) {
+    return true;
+  }
+
+  const hasCertificateErrorMessage = tlsCertificateErrorMessages.some(
+    (message) => normalizedDetails.includes(message)
+  );
+
+  return hasCertificateErrorMessage
+    && (
+      normalizedDetails.includes(grpcConnectionErrorMarker)
+      || standaloneTlsCertificateErrorMessages.has(normalizedDetails.trim())
+    );
 }
 
 function isCallCancellation(

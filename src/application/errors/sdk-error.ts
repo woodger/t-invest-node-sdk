@@ -32,6 +32,7 @@ export enum SdkErrorCode {
 
 export type SdkErrorSource =
   | 'grpc'
+  | 'tls'
   | 'abort'
   | 'lifecycle'
   | 'sdk';
@@ -47,6 +48,7 @@ const sdkErrorBrand = Symbol.for('t-invest-node-sdk/SdkError');
 const sdkErrorCodes: ReadonlySet<string> = new Set(Object.values(SdkErrorCode));
 const sdkErrorSources: ReadonlySet<string> = new Set<SdkErrorSource>([
   'grpc',
+  'tls',
   'abort',
   'lifecycle',
   'sdk'

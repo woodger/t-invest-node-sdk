@@ -12,6 +12,19 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Added
+
+- Added `tls` to `SdkErrorSource` so Consumers can distinguish certificate
+  verification failures from other transport availability failures.
+
+### Fixed
+
+- Classified known TLS certificate chain and hostname verification failures as
+  `SdkErrorCode.Unavailable` with `source: 'tls'`, while preserving `path`,
+  `details`, and the original `nice-grpc` error in `cause`. Provider and network
+  `UNAVAILABLE` errors remain `source: 'grpc'`; retry policy remains
+  Consumer-owned.
+
 ## [0.4.0] - 2026-08-05
 
 This release changes the package identity and public SDK contract without

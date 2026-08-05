@@ -77,3 +77,20 @@ pinning-ом конкретного публичного ключа T-Bank. Вл
 2. проверить subject, issuer, validity и согласованный fingerprint;
 3. обновить asset и regression-тест одним изменением;
 4. проверить TLS-вызов, Git installation и состав package tarball.
+
+## Ошибки проверки сертификата
+
+Если TLS transport однозначно сообщает об ошибке проверки цепочки сертификатов
+или несоответствии hostname, SDK возвращает `SdkErrorCode.Unavailable` с
+`source: 'tls'`. При этом сохраняются gRPC method `path`, исходные `details` и
+transport-specific `cause`.
+
+Обычные provider и network `UNAVAILABLE`, включая DNS failures, connection
+refusal/reset и timeout, остаются `source: 'grpc'`. SDK не объявляет ни одну из
+этих ошибок retryable: решение о повторе принадлежит Consumer-у.
+
+Текущий `nice-grpc` boundary не сохраняет структурированный low-level TLS code
+в публичной ошибке. Поэтому infrastructure adapter распознает закрытый набор
+однозначных certificate diagnostics внутри SDK. Это implementation detail:
+Consumer должен проверять `code` и `source`, но не разбирать `details` или
+`cause`.
