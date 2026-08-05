@@ -241,6 +241,19 @@ packageConfig.grpc.maxReceiveMessageLength
 Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует
 неявный default transport dependency.
 
+TLS trust material разрешается отдельно для каждого channel:
+
+```text
+certificates/russian-trusted-root-ca.pem -- default --.
+                                                   +--> createSsl(rootCertificates)
+per-instance tls.rootCertificates ------- override-'
+```
+
+Infrastructure лениво читает bundled asset только для TLS channel. Explicit
+buffer полностью заменяет package root bundle; `useSsl: false` выбирает
+insecure credentials без чтения сертификата. Ни system trust store, ни
+process-wide environment SDK не изменяет.
+
 Package defaults для публичных instance options разрешаются при создании SDK:
 
 ```text
@@ -273,6 +286,8 @@ Ownership разделен так:
   quota group reconciliation и вызовом проверки итогового runtime snapshot;
 - `src/infrastructure/transport/grpc/sdk-channel.ts` владеет mapping готовой
   package transport policy в channel options, но не default value;
+- `src/infrastructure/transport/grpc/tls-root-certificates.ts` владеет только
+  разрешением package asset и ленивым чтением bundled trust material;
 - `src/application/services/unary-throttle.service.ts` владеет планированием
   и отменяемой bucket queue по готовому `ThrottleRule`, не интерпретируя source
   config или gRPC paths;
