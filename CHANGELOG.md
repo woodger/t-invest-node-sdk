@@ -14,6 +14,12 @@ micro-release separately.
 
 ## [0.4.0] - 2026-08-05
 
+This release changes the package identity and public SDK contract without
+compatibility aliases. Consumers must update the Git dependency URL and tag,
+the import specifier and `TInvest*` symbols, replace the former environment
+variables with `T_INVEST_TOKEN` and `T_INVEST_ENDPOINT`, and regenerate their
+lockfiles.
+
 ### Added
 
 - Bundled the official Russian Trusted Root CA for T-Invest TLS channels and
