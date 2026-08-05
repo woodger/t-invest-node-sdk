@@ -11,7 +11,10 @@ import {
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
 import { Throttle } from '../../../application/services/unary-throttle.service';
-import { createSdkMiddleware } from './sdk-middleware';
+import {
+  createSdkMiddleware,
+  type SdkCallRuntime
+} from './sdk-middleware';
 import { UnaryLimitResolver } from './unary-limit-resolver';
 
 type TestRequest = Record<string, never>;
@@ -105,6 +108,20 @@ function createRejectedResponseStreamCall(
     ...createResponseStreamCall(path, []),
     next() {
       return createRejectedIterator(error);
+    }
+  };
+}
+
+function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
+  const signal = new AbortController().signal;
+
+  return {
+    useSsl,
+    signal,
+    assertOpen() {
+      if (signal.aborted) {
+        throw signal.reason;
+      }
     }
   };
 }
@@ -266,6 +283,7 @@ describe('createSdkMiddleware', () => {
       resolver,
       throttle,
       {
+        useSsl: false,
         signal: lifecycleController.signal,
         assertOpen() {
           if (lifecycleController.signal.aborted) {
@@ -311,6 +329,84 @@ describe('createSdkMiddleware', () => {
     );
   });
 
+  test('maps certificate verification failures to the TLS source', async () => {
+    const path = '/test.Service/Method';
+    const transportError = new ClientError(
+      path,
+      Status.UNAVAILABLE,
+      'self-signed certificate in certificate chain'
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle(),
+      createOpenRuntime(true)
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, transportError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+        && error.source === 'tls'
+        && error.path === path
+        && error.details === transportError.details
+        && error.cause === transportError
+    );
+  });
+
+  test('keeps certificate-like errors in the gRPC source without TLS', async () => {
+    const path = '/test.Service/Method';
+    const transportError = new ClientError(
+      path,
+      Status.UNAVAILABLE,
+      'self-signed certificate in certificate chain'
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle(),
+      createOpenRuntime(false)
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, transportError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+        && error.source === 'grpc'
+    );
+  });
+
+  test('keeps network connection failures in the gRPC source', async () => {
+    const path = '/test.Service/Method';
+    const transportError = new ClientError(
+      path,
+      Status.UNAVAILABLE,
+      'No connection established. Last error: connect ECONNREFUSED'
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle(),
+      createOpenRuntime(true)
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, transportError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+        && error.source === 'grpc'
+    );
+  });
+
   test('maps response stream errors to the public SDK contract', async () => {
     const path = '/test.StreamService/Watch';
     const providerError = new ClientError(
@@ -321,7 +417,8 @@ describe('createSdkMiddleware', () => {
     const middleware = createSdkMiddleware(
       false,
       new UnaryLimitResolver({}),
-      new Throttle()
+      new Throttle(),
+      createOpenRuntime(true)
     );
     const iterator = middleware(
       createRejectedResponseStreamCall(path, providerError),

@@ -57,7 +57,7 @@ describe('SdkError', () => {
       name: 'SdkError',
       message: 'service unavailable',
       code: SdkErrorCode.Unavailable,
-      source: 'grpc',
+      source: 'tls',
       path: '/test.Service/Method',
       details: 'unavailable'
     };

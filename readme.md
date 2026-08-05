@@ -13,7 +13,7 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-yarn add "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.0"
+yarn add "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.1"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
@@ -86,8 +86,8 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.4.0` Git tag остается `0.4.0` по исторической схеме проекта, а
-GitHub Release может называться `v0.4.0`. Release notes берутся из одноименного
+Для версии `0.4.1` Git tag остается `0.4.1` по исторической схеме проекта, а
+GitHub Release может называться `v0.4.1`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
@@ -344,6 +344,12 @@ SdkErrorCode.ResourceExhausted;  // 'RESOURCE_EXHAUSTED'
 `SdkErrorCode.UnknownUnaryLimit` являются SDK-specific, а не gRPC statuses.
 Стандартное имя `code` само по себе не определяет источник: когда это важно,
 Consumer должен проверять сочетание `code` и `source`.
+
+Однозначные ошибки проверки цепочки сертификатов и соответствия hostname
+получают `SdkErrorCode.Unavailable` с `source: 'tls'`. Обычный provider или
+network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `details` и
+`cause` сохраняются, но Consumer-у не нужно разбирать диагностический текст:
+стабильной machine-readable границей является `source`.
 
 ```ts
 import {
