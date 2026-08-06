@@ -23,5 +23,10 @@ export interface TInvestOptions {
   useSsl?: boolean;
   tls?: TInvestTlsOptions;
   trackLimits?: boolean;
+  /**
+   * Shares unary quotas between active SDK instances in one host-local
+   * filesystem namespace. Each instance uses its own limiter by default.
+   */
+  hostLocalQuotaSharing?: boolean;
   unaryLimits?: Record<string, number>;
 }

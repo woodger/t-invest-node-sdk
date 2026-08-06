@@ -3,11 +3,12 @@
  *
  * Здесь допустимы:
  * - расчет задержки по лимиту запросов в минуту;
+ * - применение числа cooperative quota participants;
  * - хранение in-memory состояния throttling окна;
  * - отмена ожидающих вызовов;
  *
- * Здесь не должно быть transport path parsing, config resolution
- * или gRPC client wiring.
+ * Здесь не должно быть transport path parsing, config resolution,
+ * filesystem leases или gRPC client wiring.
  */
 
 export interface ThrottleRule {
@@ -19,7 +20,7 @@ export interface ThrottleRule {
 }
 
 interface ThrottleRequest {
-  interval: number;
+  limitPerMinute: number;
   signal: AbortSignal | undefined;
   resolve(): void;
   reject(reason: unknown): void;
@@ -32,7 +33,7 @@ interface ThrottleTimer {
 }
 
 interface ThrottleSchedule {
-  nextAvailableAt: number;
+  lastDispatchedAt: number | undefined;
   requests: ThrottleRequest[];
   timer: ThrottleTimer | undefined;
 }
@@ -45,17 +46,20 @@ interface ThrottleSchedule {
 export class Throttle {
   private schedules: Map<string, ThrottleSchedule> = new Map();
 
+  constructor(
+    private readonly getParticipantCount: () => number = singleParticipant
+  ) {}
+
   async reduce(rule: ThrottleRule, signal?: AbortSignal): Promise<void> {
     if (signal?.aborted) {
       throw abortReason(signal);
     }
 
-    const interval = Math.ceil(6e4 / rule.limitPerMinute);
     const schedule = this.getSchedule(rule.bucket);
 
     await new Promise<void>((resolve, reject) => {
       const request: ThrottleRequest = {
-        interval,
+        limitPerMinute: rule.limitPerMinute,
         signal,
         resolve,
         reject,
@@ -75,7 +79,7 @@ export class Throttle {
 
     if (schedule === undefined) {
       schedule = {
-        nextAvailableAt: 0,
+        lastDispatchedAt: undefined,
         requests: [],
         timer: undefined
       };
@@ -91,8 +95,32 @@ export class Throttle {
       return;
     }
 
+    let request: ThrottleRequest | undefined;
+    let interval: number;
+
+    while (true) {
+      request = schedule.requests[0];
+
+      if (request === undefined) {
+        return;
+      }
+
+      try {
+        interval = this.resolveInterval(request.limitPerMinute);
+
+        break;
+      }
+      catch (error) {
+        schedule.requests.shift();
+        request.signal?.removeEventListener('abort', request.onAbort);
+        request.reject(error);
+      }
+    }
+
     const time = new Date().getTime();
-    const scheduledAt = Math.max(schedule.nextAvailableAt, time);
+    const scheduledAt = schedule.lastDispatchedAt === undefined
+      ? time
+      : Math.max(schedule.lastDispatchedAt + interval, time);
     const delay = scheduledAt - time;
 
     if (delay <= 0) {
@@ -135,9 +163,22 @@ export class Throttle {
       new Date().getTime()
     );
 
-    schedule.nextAvailableAt = dispatchedAt + request.interval;
+    schedule.lastDispatchedAt = dispatchedAt;
     request.resolve();
     this.start(schedule);
+  }
+
+  private resolveInterval(limitPerMinute: number): number {
+    const participantCount = this.getParticipantCount();
+
+    if (
+      !Number.isSafeInteger(participantCount)
+      || participantCount < 1
+    ) {
+      throw new Error('Throttle participant count must be a positive integer');
+    }
+
+    return Math.ceil(6e4 * participantCount / limitPerMinute);
   }
 
   private cancel(schedule: ThrottleSchedule, request: ThrottleRequest): void {
@@ -178,6 +219,10 @@ export class Throttle {
 
     schedule.timer = undefined;
   }
+}
+
+function singleParticipant(): number {
+  return 1;
 }
 
 function abortReason(signal: AbortSignal | undefined): unknown {

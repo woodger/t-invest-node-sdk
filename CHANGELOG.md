@@ -12,6 +12,14 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Added
+
+- Added opt-in `hostLocalQuotaSharing` for cooperative unary quota sharing
+  between active SDK instances with the same endpoint and token in one host
+  temporary-filesystem namespace. Instances exchange expiring presence leases;
+  each existing local limiter receives an equal share without a coordinator,
+  centralized queue, strict fairness, or work-conserving redistribution.
+
 ## [0.4.1] - 2026-08-05
 
 ### Added

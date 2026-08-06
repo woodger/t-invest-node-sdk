@@ -3,6 +3,7 @@
  *
  * Здесь допустимы:
  * - компиляция package defaults в совместимый public flat config;
+ * - разрешение boolean defaults публичных SDK options;
  * - разрешение per-instance unary limit overrides;
  * - согласование overrides с package quota groups;
  * - проверка инвариантов итогового instance snapshot;
@@ -29,10 +30,11 @@ import {
 
 export type ResolvedTInvestOptions = Omit<
   TInvestOptions,
-  'useSsl' | 'trackLimits'
+  'useSsl' | 'trackLimits' | 'hostLocalQuotaSharing'
 > & {
   useSsl: boolean;
   trackLimits: boolean;
+  hostLocalQuotaSharing: boolean;
 };
 
 const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
@@ -53,7 +55,9 @@ export function resolveSdkInstanceOptions(
   return {
     ...options,
     useSsl: options.useSsl ?? packageConfig.sdk.useSsl,
-    trackLimits: options.trackLimits ?? packageConfig.sdk.trackLimits
+    trackLimits: options.trackLimits ?? packageConfig.sdk.trackLimits,
+    hostLocalQuotaSharing: options.hostLocalQuotaSharing
+      ?? packageConfig.sdk.hostLocalQuotaSharing
   };
 }
 

@@ -5,6 +5,7 @@
  * Здесь допустимы:
  * - человекочитаемые package defaults;
  * - transport safety policy общего gRPC channel;
+ * - timing policy host-local quota leases;
  * - unary limit policy по generated service и RPC names;
  * - CLI safety policy, общая для package entrypoints;
  *
@@ -20,7 +21,10 @@ export const packageConfig = {
     useSsl: true,
 
     /** Локальный unary throttling включен по умолчанию для каждого SDK instance. */
-    trackLimits: true
+    trackLimits: true,
+
+    /** Межпроцессное разделение unary-квот требует явного opt-in. */
+    hostLocalQuotaSharing: false
   },
 
   grpc: {
@@ -29,6 +33,20 @@ export const packageConfig = {
      * неявного default grpc-js, который может измениться при upgrade.
      */
     maxReceiveMessageLength: 4 * 1024 * 1024
+  },
+
+  hostLocalQuotaSharing: {
+    /** Versioned directory name является частью совместимого lease-протокола. */
+    directoryName: 't-invest-node-sdk-quota-leases-v1',
+
+    /** Heartbeat не удерживает Node.js process и обновляет только instance lease. */
+    heartbeatIntervalMs: 5_000,
+
+    /** Crash lease ограничивает недоиспользование квоты пятнадцатью секундами. */
+    leaseDurationMs: 15_000,
+
+    /** Короткий cache ограничивает filesystem polling без долгого stale share. */
+    participantRefreshIntervalMs: 1_000
   },
 
   unaryLimits: {

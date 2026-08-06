@@ -137,6 +137,7 @@ interface TInvestOptions {
   useSsl?: boolean;
   tls?: TInvestTlsOptions;
   trackLimits?: boolean;
+  hostLocalQuotaSharing?: boolean;
   unaryLimits?: UnaryLimits;
 }
 
@@ -154,11 +155,15 @@ type UnaryLimits = Record<string, number>;
 - `tls.rootCertificates` - PEM-содержимое custom root CA bundle для одного
   channel. При отсутствии используется bundled Russian Trusted Root CA.
 - `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
+- `hostLocalQuotaSharing` - делить настроенные unary-квоты между активными SDK
+  instances с теми же `endpoint` и `token` в одном host-local filesystem
+  namespace, по умолчанию `false`.
 - `unaryLimits` - per-instance overrides лимитов в запросах за минуту. Значения
   объединяются с `defaultConfig.unaryLimits` при создании SDK.
 
-Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
-boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
+Defaults `useSsl`, `trackLimits` и `hostLocalQuotaSharing` задаются package
+config; явно переданные boolean values имеют приоритет, а `undefined` сохраняет
+package default.
 `token` и `endpoint` должны быть непустыми строками. Прямой SDK-вызов с пустым
 значением завершается `SdkErrorCode.InvalidArgument` с `source: 'sdk'`.
 
@@ -204,6 +209,42 @@ method rules в общий quota bucket; per-instance override с другим �
 В исходном package config эти defaults описаны одной типизированной вложенной
 декларацией; в публичный `defaultConfig.unaryLimits` она компилируется в
 совместимую плоскую runtime-таблицу.
+
+### Host-local разделение квот
+
+Для независимо запущенных процессов на одной машине cooperative sharing
+включается на каждом участвующем SDK instance:
+
+```ts
+const sdk = new TInvestNodeSDK({
+  token,
+  endpoint,
+  hostLocalQuotaSharing: true
+});
+```
+
+SDK публикует presence lease в системном temporary directory. Scope строится
+из SHA-256 fingerprint нормализованного `endpoint` и `token`; исходные
+credentials в lease path или содержимое файла не записываются. При двух
+активных instances каждый локальный limiter использует половину каждого
+resolved unary limit, при трех — треть. Instance учитывается независимо от
+того, вызывает ли он сейчас конкретный service: свободная доля не
+перераспределяется.
+
+Механизм не создает общую очередь и не гарантирует строгую fairness. Состав
+участников наблюдается периодически, поэтому при запуске или закрытии процесса
+возможна кратковременная погрешность. `sdk.close()` снимает lease сразу;
+аварийно оставленный lease истекает автоматически. `trackLimits: false`
+отключает и локальный limiter, и участие в quota sharing. Каждый одновременно
+работающий с тем же endpoint и token instance должен включить opt-in: процесс
+без этой опции остается невидимым для остальных leases.
+
+Координация действует только внутри общего host temporary filesystem namespace
+одного OS user. Разные endpoints и tokens, изолированные containers, несколько
+hosts и общий IP-limit provider-а не объединяются. Все участники одного scope
+должны использовать согласованные `unaryLimits`. Подробный контракт и
+ограничения описаны в
+[лимитной политике](docs/limits-policy.md#host-local-cooperative-sharing).
 
 ## Опции `defaultConfig`
 

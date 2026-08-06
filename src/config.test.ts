@@ -6,7 +6,8 @@ describe('packageConfig', () => {
   test('defines defaults for each SDK instance', () => {
     assert.deepEqual(packageConfig.sdk, {
       useSsl: true,
-      trackLimits: true
+      trackLimits: true,
+      hostLocalQuotaSharing: false
     });
   });
 
