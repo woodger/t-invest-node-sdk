@@ -5,6 +5,7 @@
  * Здесь допустимы:
  * - type contracts для public config surface;
  * - compile-time контракт человекочитаемых package defaults;
+ * - contract timing policy host-local quota leases;
  * - переиспользование application service types;
  *
  * Здесь не должно быть default values или runtime validation.
@@ -93,12 +94,30 @@ export interface PackageConfigDefinition {
 
     /** Применять локальный unary throttling, если instance option не задан. */
     trackLimits: boolean;
+
+    /** Делить unary-квоты через host-local leases, если option не задан. */
+    hostLocalQuotaSharing: boolean;
   };
 
   /** Package-owned transport policy общего gRPC channel. */
   grpc: {
     /** Максимальный размер одного входящего gRPC-сообщения в байтах. */
     maxReceiveMessageLength: number;
+  };
+
+  /** Package policy cooperative host-local quota sharing. */
+  hostLocalQuotaSharing: {
+    /** Имя protocol directory внутри системного temporary directory. */
+    directoryName: string;
+
+    /** Период обновления собственного lease. */
+    heartbeatIntervalMs: number;
+
+    /** Срок, после которого lease аварийно завершенного instance истекает. */
+    leaseDurationMs: number;
+
+    /** Период кеширования наблюдаемого числа активных instances. */
+    participantRefreshIntervalMs: number;
   };
 
   /** Provider limits и package quota groups. */

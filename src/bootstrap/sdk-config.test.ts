@@ -97,12 +97,24 @@ describe('resolveSdkInstanceOptions', () => {
       token: 'token',
       endpoint: 'localhost:50051',
       useSsl: undefined,
-      trackLimits: undefined
+      trackLimits: undefined,
+      hostLocalQuotaSharing: undefined
     } as unknown as TInvestOptions;
     const options = resolveSdkInstanceOptions(unsafeOptions);
 
     assert.equal(options.useSsl, true);
     assert.equal(options.trackLimits, true);
+    assert.equal(options.hostLocalQuotaSharing, false);
+  });
+
+  test('keeps an explicit host-local quota sharing opt-in', () => {
+    const options = resolveSdkInstanceOptions({
+      token: 'token',
+      endpoint: 'localhost:50051',
+      hostLocalQuotaSharing: true
+    });
+
+    assert.equal(options.hostLocalQuotaSharing, true);
   });
 });
 
