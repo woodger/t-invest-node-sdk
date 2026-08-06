@@ -158,7 +158,7 @@ type UnaryLimits = Record<string, number>;
   объединяются с `defaultConfig.unaryLimits` при создании SDK.
 
 Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
-boolean values имеют приоритет, а `undefined` сохраняет package default.
+boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
 `token` и `endpoint` должны быть непустыми строками. Прямой SDK-вызов с пустым
 значением завершается `SdkErrorCode.InvalidArgument` с `source: 'sdk'`.
 
@@ -204,34 +204,6 @@ method rules в общий quota bucket; per-instance override с другим �
 В исходном package config эти defaults описаны одной типизированной вложенной
 декларацией; в публичный `defaultConfig.unaryLimits` она компилируется в
 совместимую плоскую runtime-таблицу.
-
-### Host-local разделение квот
-
-Cooperative sharing включен внутренней package policy в `src/config.ts` и не
-является публичной per-instance опцией. Каждый `TInvestNodeSDK` с включенным
-локальным throttling автоматически участвует в координации.
-
-SDK публикует presence lease в системном temporary directory. Scope строится
-из SHA-256 fingerprint нормализованного `endpoint` и `token`; исходные
-credentials в lease path или содержимое файла не записываются. При двух
-активных instances каждый локальный limiter использует половину каждого
-resolved unary limit, при трех — треть. Instance учитывается независимо от
-того, вызывает ли он сейчас конкретный service: свободная доля не
-перераспределяется.
-
-Механизм не создает общую очередь и не гарантирует строгую fairness. Состав
-участников наблюдается периодически, поэтому при запуске или закрытии процесса
-возможна кратковременная погрешность. `sdk.close()` снимает lease сразу;
-аварийно оставленный lease истекает автоматически. `trackLimits: false`
-отключает и локальный limiter, и участие в quota sharing. Process со старой
-версией SDK или отключенным throttling остается невидимым для leases.
-
-Координация действует только внутри общего host temporary filesystem namespace
-одного OS user. Разные endpoints и tokens, изолированные containers, несколько
-hosts и общий IP-limit provider-а не объединяются. Все участники одного scope
-должны использовать согласованные `unaryLimits`. Подробный контракт и
-ограничения описаны в
-[лимитной политике](docs/limits-policy.md#host-local-cooperative-sharing).
 
 ## Опции `defaultConfig`
 

@@ -98,8 +98,6 @@ SDK поддерживает локальный throttling unary-запросо�
   задерживают друг друга;
 - создает отдельный snapshot таблицы лимитов для каждого SDK-инстанса;
 - объединяет per-instance `unaryLimits` с `defaultConfig.unaryLimits`;
-- при включенной package policy делит resolved limits на число активных SDK
-  instances в том же host-local scope;
 - отменяет ожидание локальной квоты через `TInvestCallOptions.signal` и
   удаляет неотправленную операцию из bucket queue, чтобы следующий вызов занял
   освободившийся слот;
@@ -109,62 +107,6 @@ SDK поддерживает локальный throttling unary-запросо�
 
 После передачи unary-вызова transport-у его слот не возвращается даже при
 последующей отмене: provider уже мог учесть запрос в своей квоте.
-
-## Host-local cooperative sharing
-
-`packageConfig.hostLocalQuotaSharing.enabled` включает дополнение к
-существующему локальному scheduler-у для всего package. Это внутренняя package
-policy, а не поле публичного `TInvestOptions`. Она не заменяет bucket queues
-общей межпроцессной очередью. Каждый SDK instance сохраняет собственные counters
-и timers, но перед расчетом следующего интервала получает число активных
-участников и использует долю:
-
-```text
-effectiveLimit = resolvedLimit / activeInstances
-```
-
-При двух активных instances с одним resolved limit `600` каждый планирует до
-`300` запросов в минуту; при трех — до `200`. Деление применяется ко всем
-resolved buckets instance. Участник считается активным с момента создания SDK
-до `sdk.close()` или истечения lease, а не только пока в его очереди есть
-запросы. Поэтому механизм намеренно не является work-conserving: неиспользуемая
-доля простаивающего instance не передается остальным.
-
-Scope определяется автоматически по нормализованному `endpoint` и OAuth token.
-В temporary filesystem записывается только SHA-256 fingerprint scope и пустой
-lease-файл со случайным именем; исходные `endpoint` и token не сохраняются.
-Один lease соответствует одному SDK instance, включая несколько instances в
-одном Node.js process.
-
-Package policy использует:
-
-- heartbeat lease каждые `5` секунд;
-- expiry через `15` секунд без heartbeat;
-- cache наблюдаемого participant count на `1` секунду.
-
-Heartbeat timer вызван с `unref()` и сам по себе не удерживает process. При
-штатном `sdk.close()` lease удаляется сразу. После аварийного завершения stale
-lease временно уменьшает доступную долю и затем истекает. Ошибка создания или
-обновления lease завершает создание SDK или соответствующий SDK-вызов как
-`SdkErrorCode.Internal` с `source: 'sdk'`; небезопасного fallback к полной
-локальной квоте нет.
-
-Между обнаружением изменения состава участников и перестройкой уже
-запланированного timer допускается кратковременная погрешность. Механизм не
-обеспечивает централизованную FIFO, строгую fairness или синхронизацию фаз
-локальных scheduler-ов.
-
-Граница координации — общий system temporary directory namespace одного OS
-user. Containers с изолированным `/tmp`, разные hosts, endpoints и tokens
-образуют независимые scope. Несколько tokens одного provider user и общий
-IP-limit этим механизмом не объединяются. Одновременно работающие instances
-одного scope должны иметь согласованные `unaryLimits`: leases обмениваются
-только присутствием и не передают конфигурацию квот.
-
-При `trackLimits: false` локальный throttling выключен, поэтому instance не
-создает lease. Пока package policy включена, все остальные instances текущей
-версии участвуют автоматически. Process со старой версией SDK или отключенным
-throttling остается невидимым для leases.
 
 Для одного вызова gRPC resolver выбирает только самое специфичное
 совпавшее правило, а application scheduler планирует вызов по готовому bucket
