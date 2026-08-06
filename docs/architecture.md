@@ -229,14 +229,15 @@ runtime snapshot --.
                    +--> UnaryLimitResolver --> ThrottleRule --> Throttle
 gRPC method path --'
 
-host-local lease count (opt-in) -------------------------------> Throttle
+host-local lease count (package policy) -----------------------> Throttle
 ```
 
-Без opt-in `Throttle` использует одного участника и сохраняет прежнее
-per-instance поведение. При `hostLocalQuotaSharing: true` infrastructure
-публикует presence lease, а application scheduler динамически умножает
-интервал каждого следующего bucket slot на наблюдаемое число участников. Lease
-layer не знает о gRPC paths и buckets; `Throttle` не знает о filesystem.
+При выключенной package policy `Throttle` использует одного участника. Когда
+`packageConfig.hostLocalQuotaSharing.enabled` включен, infrastructure публикует
+presence lease, а application scheduler динамически умножает интервал каждого
+следующего bucket slot на наблюдаемое число участников. Lease layer не знает о
+gRPC paths и buckets; `Throttle` не знает о filesystem. Публичный
+`TInvestOptions` этой настройкой не расширяется.
 
 Package-owned gRPC transport policy проходит без public или per-instance
 override:
@@ -277,11 +278,12 @@ packageConfig.sdk -- defaults --.
 per-instance options -----------'
 ```
 
-Per-instance boolean values `useSsl`, `trackLimits` и
-`hostLocalQuotaSharing` имеют приоритет над package defaults, а `undefined` не
-изменяет package policy. Обязательные `token` и `endpoint` проверяются до
-создания transport channel. `packageConfig.sdk` остается внутренней
-authoring-формой и не расширяет публичный `defaultConfig`.
+Per-instance boolean values `useSsl` и `trackLimits` имеют приоритет над package
+defaults, а `undefined` не изменяет package policy. Обязательные `token` и
+`endpoint` проверяются до создания transport channel. Cooperative quota
+sharing принадлежит отдельному внутреннему блоку
+`packageConfig.hostLocalQuotaSharing` и не расширяет `TInvestOptions` или
+публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
