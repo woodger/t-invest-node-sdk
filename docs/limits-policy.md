@@ -98,8 +98,8 @@ SDK поддерживает локальный throttling unary-запросо�
   задерживают друг друга;
 - создает отдельный snapshot таблицы лимитов для каждого SDK-инстанса;
 - объединяет per-instance `unaryLimits` с `defaultConfig.unaryLimits`;
-- при явном `hostLocalQuotaSharing: true` делит resolved limits на число
-  активных SDK instances в том же host-local scope;
+- при включенной package policy делит resolved limits на число активных SDK
+  instances в том же host-local scope;
 - отменяет ожидание локальной квоты через `TInvestCallOptions.signal` и
   удаляет неотправленную операцию из bucket queue, чтобы следующий вызов занял
   освободившийся слот;
@@ -112,10 +112,12 @@ SDK поддерживает локальный throttling unary-запросо�
 
 ## Host-local cooperative sharing
 
-`hostLocalQuotaSharing` — opt-in дополнение к существующему локальному
-scheduler-у. Оно не заменяет bucket queues общей межпроцессной очередью.
-Каждый SDK instance сохраняет собственные counters и timers, но перед расчетом
-следующего интервала получает число активных участников и использует долю:
+`packageConfig.hostLocalQuotaSharing.enabled` включает дополнение к
+существующему локальному scheduler-у для всего package. Это внутренняя package
+policy, а не поле публичного `TInvestOptions`. Она не заменяет bucket queues
+общей межпроцессной очередью. Каждый SDK instance сохраняет собственные counters
+и timers, но перед расчетом следующего интервала получает число активных
+участников и использует долю:
 
 ```text
 effectiveLimit = resolvedLimit / activeInstances
@@ -143,8 +145,8 @@ Package policy использует:
 Heartbeat timer вызван с `unref()` и сам по себе не удерживает process. При
 штатном `sdk.close()` lease удаляется сразу. После аварийного завершения stale
 lease временно уменьшает доступную долю и затем истекает. Ошибка создания или
-обновления opt-in lease завершает создание SDK или соответствующий SDK-вызов
-как `SdkErrorCode.Internal` с `source: 'sdk'`; небезопасного fallback к полной
+обновления lease завершает создание SDK или соответствующий SDK-вызов как
+`SdkErrorCode.Internal` с `source: 'sdk'`; небезопасного fallback к полной
 локальной квоте нет.
 
 Между обнаружением изменения состава участников и перестройкой уже
@@ -160,10 +162,9 @@ IP-limit этим механизмом не объединяются. Однов
 только присутствием и не передают конфигурацию квот.
 
 При `trackLimits: false` локальный throttling выключен, поэтому instance не
-создает lease даже при `hostLocalQuotaSharing: true`. Защитное деление общей
-квоты работает только когда каждый одновременно использующий тот же token и
-endpoint SDK instance включает cooperative sharing; non-participating process
-остается невидимым для leases.
+создает lease. Пока package policy включена, все остальные instances текущей
+версии участвуют автоматически. Process со старой версией SDK или отключенным
+throttling остается невидимым для leases.
 
 Для одного вызова gRPC resolver выбирает только самое специфичное
 совпавшее правило, а application scheduler планирует вызов по готовому bucket

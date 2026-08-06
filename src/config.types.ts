@@ -94,9 +94,6 @@ export interface PackageConfigDefinition {
 
     /** Применять локальный unary throttling, если instance option не задан. */
     trackLimits: boolean;
-
-    /** Делить unary-квоты через host-local leases, если option не задан. */
-    hostLocalQuotaSharing: boolean;
   };
 
   /** Package-owned transport policy общего gRPC channel. */
@@ -107,6 +104,9 @@ export interface PackageConfigDefinition {
 
   /** Package policy cooperative host-local quota sharing. */
   hostLocalQuotaSharing: {
+    /** Включить cooperative sharing для instances с локальным throttling. */
+    enabled: boolean;
+
     /** Имя protocol directory внутри системного temporary directory. */
     directoryName: string;
 

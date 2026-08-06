@@ -6,9 +6,12 @@ describe('packageConfig', () => {
   test('defines defaults for each SDK instance', () => {
     assert.deepEqual(packageConfig.sdk, {
       useSsl: true,
-      trackLimits: true,
-      hostLocalQuotaSharing: false
+      trackLimits: true
     });
+  });
+
+  test('enables host-local cooperative quota sharing', () => {
+    assert.equal(packageConfig.hostLocalQuotaSharing.enabled, true);
   });
 
   test('sets the gRPC receive message limit to four MiB', () => {

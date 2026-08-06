@@ -14,11 +14,12 @@ micro-release separately.
 
 ### Added
 
-- Added opt-in `hostLocalQuotaSharing` for cooperative unary quota sharing
-  between active SDK instances with the same endpoint and token in one host
-  temporary-filesystem namespace. Instances exchange expiring presence leases;
-  each existing local limiter receives an equal share without a coordinator,
-  centralized queue, strict fairness, or work-conserving redistribution.
+- Added package-configured cooperative unary quota sharing between active SDK
+  instances with the same endpoint and token in one host temporary-filesystem
+  namespace. Instances exchange expiring presence leases; each existing local
+  limiter receives an equal share without a coordinator, centralized queue,
+  strict fairness, or work-conserving redistribution. The policy is internal
+  and does not extend `TInvestOptions`.
 
 ## [0.4.1] - 2026-08-05
 

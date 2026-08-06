@@ -204,11 +204,12 @@ export class TInvestNodeSDK {
   }
 
   private createQuotaLease(): HostLocalQuotaLease | undefined {
-    if (!this.options.trackLimits || !this.options.hostLocalQuotaSharing) {
+    const policy = packageConfig.hostLocalQuotaSharing;
+
+    if (!this.options.trackLimits || !policy.enabled) {
       return undefined;
     }
 
-    const policy = packageConfig.hostLocalQuotaSharing;
     const directoryName = typeof process.getuid === 'function'
       ? `${policy.directoryName}-${process.getuid()}`
       : policy.directoryName;

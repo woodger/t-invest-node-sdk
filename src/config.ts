@@ -21,10 +21,7 @@ export const packageConfig = {
     useSsl: true,
 
     /** Локальный unary throttling включен по умолчанию для каждого SDK instance. */
-    trackLimits: true,
-
-    /** Межпроцессное разделение unary-квот требует явного opt-in. */
-    hostLocalQuotaSharing: false
+    trackLimits: true
   },
 
   grpc: {
@@ -36,6 +33,9 @@ export const packageConfig = {
   },
 
   hostLocalQuotaSharing: {
+    /** Все локальные limiter-ы одного scope должны участвовать согласованно. */
+    enabled: true,
+
     /** Versioned directory name является частью совместимого lease-протокола. */
     directoryName: 't-invest-node-sdk-quota-leases-v1',
 

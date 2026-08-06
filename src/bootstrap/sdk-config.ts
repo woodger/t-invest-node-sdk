@@ -30,11 +30,10 @@ import {
 
 export type ResolvedTInvestOptions = Omit<
   TInvestOptions,
-  'useSsl' | 'trackLimits' | 'hostLocalQuotaSharing'
+  'useSsl' | 'trackLimits'
 > & {
   useSsl: boolean;
   trackLimits: boolean;
-  hostLocalQuotaSharing: boolean;
 };
 
 const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
@@ -55,9 +54,7 @@ export function resolveSdkInstanceOptions(
   return {
     ...options,
     useSsl: options.useSsl ?? packageConfig.sdk.useSsl,
-    trackLimits: options.trackLimits ?? packageConfig.sdk.trackLimits,
-    hostLocalQuotaSharing: options.hostLocalQuotaSharing
-      ?? packageConfig.sdk.hostLocalQuotaSharing
+    trackLimits: options.trackLimits ?? packageConfig.sdk.trackLimits
   };
 }
 

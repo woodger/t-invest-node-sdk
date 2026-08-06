@@ -50,11 +50,12 @@ lock или единый владелец очереди независимо о
 
 ### Реализованное ограниченное направление: cooperative leases
 
-SDK поддерживает opt-in `hostLocalQuotaSharing`. Процессы не координируют
-отдельные permits и не передают RPC queues: каждый активный SDK instance
-публикует expiring filesystem lease, а существующий локальный scheduler делит
-свой resolved limit на наблюдаемое число leases. Scope автоматически строится
-по endpoint и token без сохранения исходных credentials.
+Внутренняя package policy включает cooperative sharing без расширения
+`TInvestOptions`. Процессы не координируют отдельные permits и не передают RPC
+queues: каждый активный SDK instance с локальным throttling публикует expiring
+filesystem lease, а существующий локальный scheduler делит свой resolved limit
+на наблюдаемое число leases. Scope автоматически строится по endpoint и token
+без сохранения исходных credentials.
 
 Это намеренно более слабый контракт, чем общий rate limiter:
 
@@ -209,10 +210,10 @@ coordinator-а нужно зафиксировать:
 
 ### Текущее решение
 
-Для текущего Consumer-сценария реализованы opt-in cooperative leases с равным
-делением configured unary limits между активными SDK instances. Это защитный
-host-local механизм с допустимой кратковременной погрешностью, а не полноценный
-межпроцессный scheduler.
+Для текущего Consumer-сценария package policy включает cooperative leases с
+равным делением configured unary limits между активными SDK instances. Это
+защитный host-local механизм с допустимой кратковременной погрешностью, а не
+полноценный межпроцессный scheduler.
 
 Один долгоживущий sync-worker остается более сильным application-level
 вариантом, если Consumer-у также нужны ownership задач, дедупликация и graceful
