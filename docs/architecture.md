@@ -57,8 +57,6 @@ provider-neutral правилами или моделями.
   middleware и typed clients, а также построение и разрешение полных gRPC
   paths в transport-neutral throttle rules и mapping transport failures в
   публичный `SdkError`.
-- `infrastructure/quota` - host-local filesystem leases активных SDK instances;
-  модуль сообщает только participant count и не владеет RPC queue или permits.
 - `infrastructure/interceptor` - технические hooks для фильтрации process
   warnings и, в диагностических сценариях, `stdout`.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
@@ -81,7 +79,7 @@ bootstrap-механикой.
 - `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как
   package binary `dist/bootstrap/index.js`;
 - `bootstrap/t-invest-node-sdk.ts` - публичный runtime facade SDK,
-  владелец shared channel, optional quota lease и lifecycle `close()`;
+  владелец shared channel и lifecycle `close()`;
 - `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - compiler и
   runtime adapter с [разделенным ownership](#конфигурация-терминология-и-ownership);
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный
@@ -228,16 +226,7 @@ per-instance unaryLimits ----------------------------------------------'
 runtime snapshot --.
                    +--> UnaryLimitResolver --> ThrottleRule --> Throttle
 gRPC method path --'
-
-host-local lease count (package policy) -----------------------> Throttle
 ```
-
-При выключенной package policy `Throttle` использует одного участника. Когда
-`packageConfig.hostLocalQuotaSharing.enabled` включен, infrastructure публикует
-presence lease, а application scheduler динамически умножает интервал каждого
-следующего bucket slot на наблюдаемое число участников. Lease layer не знает о
-gRPC paths и buckets; `Throttle` не знает о filesystem. Публичный
-`TInvestOptions` этой настройкой не расширяется.
 
 Package-owned gRPC transport policy проходит без public или per-instance
 override:
@@ -279,11 +268,9 @@ per-instance options -----------'
 ```
 
 Per-instance boolean values `useSsl` и `trackLimits` имеют приоритет над package
-defaults, а `undefined` не изменяет package policy. Обязательные `token` и
-`endpoint` проверяются до создания transport channel. Cooperative quota
-sharing принадлежит отдельному внутреннему блоку
-`packageConfig.hostLocalQuotaSharing` и не расширяет `TInvestOptions` или
-публичный `defaultConfig`.
+defaults, а `undefined` не отключает package policy. Обязательные `token` и
+`endpoint` проверяются до создания transport channel. `packageConfig.sdk`
+остается внутренней authoring-формой и не расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
@@ -306,13 +293,9 @@ Ownership разделен так:
   package transport policy в channel options, но не default value;
 - `src/infrastructure/transport/grpc/tls-root-certificates.ts` владеет только
   разрешением package asset и ленивым чтением bundled trust material;
-- `src/infrastructure/quota/host-local-quota-lease.ts` владеет scope
-  fingerprint, lease heartbeat/expiry и наблюдением participant count, но не
-  делением конкретного quota rule;
 - `src/application/services/unary-throttle.service.ts` владеет планированием
-  и отменяемой bucket queue по готовому `ThrottleRule`, включая применение
-  injected participant count, но не интерпретирует source config, gRPC paths
-  или lease storage;
+  и отменяемой bucket queue по готовому `ThrottleRule`, не интерпретируя source
+  config или gRPC paths;
 - `src/infrastructure/transport/grpc/unary-limits.ts` владеет только
   transport-specific построением gRPC method path;
 - `src/infrastructure/transport/grpc/unary-limit-resolver.ts` владеет

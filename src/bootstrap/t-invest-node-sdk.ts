@@ -3,7 +3,7 @@
  *
  * Здесь допустимы:
  * - lazy creation generated service clients;
- * - владение shared gRPC channel, metadata и optional quota lease;
+ * - владение shared gRPC channel и metadata;
  * - подключение application throttling policy к transport adapters;
  *
  * Здесь не должно быть CLI command logic или generated DTO mapping.
@@ -13,8 +13,6 @@ import {
   Channel,
   Metadata
 } from 'nice-grpc';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
 import { packageConfig } from '../config';
 import { InstrumentsServiceDefinition,
   InstrumentsServiceClient
@@ -60,7 +58,6 @@ import {
   SdkErrorCode
 } from '../application/errors/sdk-error';
 import { Throttle } from '../application/services/unary-throttle.service';
-import { HostLocalQuotaLease } from '../infrastructure/quota/host-local-quota-lease';
 import {
   createSdkChannel,
   createSdkClient,
@@ -103,7 +100,6 @@ export class TInvestNodeSDK {
   private channel: Channel;
   private metadata: Metadata;
   private throttle: Throttle;
-  private quotaLease: HostLocalQuotaLease | undefined;
   private unaryLimitResolver: UnaryLimitResolver;
   private closed = false;
   private lifecycleController = new AbortController();
@@ -115,29 +111,16 @@ export class TInvestNodeSDK {
       this.options.unaryLimits
     );
 
+    this.throttle = new Throttle();
     this.unaryLimitResolver = new UnaryLimitResolver(
       unaryThrottleConfig.limits,
       unaryThrottleConfig.buckets
     );
-    this.metadata = createSdkMetadata(this.options);
     this.channel = createSdkChannel(
       this.options,
       packageConfig.grpc.maxReceiveMessageLength
     );
-
-    try {
-      this.quotaLease = this.createQuotaLease();
-      this.throttle = new Throttle(
-        this.quotaLease === undefined
-          ? undefined
-          : () => this.quotaLease?.getParticipantCount() ?? 1
-      );
-    }
-    catch (error) {
-      this.channel.close();
-
-      throw error;
-    }
+    this.metadata = createSdkMetadata(this.options);
   }
 
   get instruments() {
@@ -199,33 +182,7 @@ export class TInvestNodeSDK {
 
     this.closed = true;
     this.lifecycleController.abort(this.createClosedError());
-    this.quotaLease?.close();
     this.channel.close();
-  }
-
-  private createQuotaLease(): HostLocalQuotaLease | undefined {
-    const policy = packageConfig.hostLocalQuotaSharing;
-
-    if (!this.options.trackLimits || !policy.enabled) {
-      return undefined;
-    }
-
-    const directoryName = typeof process.getuid === 'function'
-      ? `${policy.directoryName}-${process.getuid()}`
-      : policy.directoryName;
-
-    return new HostLocalQuotaLease(
-      {
-        endpoint: this.options.endpoint,
-        token: this.options.token
-      },
-      {
-        rootDirectory: path.join(tmpdir(), directoryName),
-        heartbeatIntervalMs: policy.heartbeatIntervalMs,
-        leaseDurationMs: policy.leaseDurationMs,
-        participantRefreshIntervalMs: policy.participantRefreshIntervalMs
-      }
-    );
   }
 
   private useServiceAsClient<T extends ServiceClient>(service: ServiceDefinition) {

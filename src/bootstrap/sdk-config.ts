@@ -3,7 +3,6 @@
  *
  * Здесь допустимы:
  * - компиляция package defaults в совместимый public flat config;
- * - разрешение boolean defaults публичных SDK options;
  * - разрешение per-instance unary limit overrides;
  * - согласование overrides с package quota groups;
  * - проверка инвариантов итогового instance snapshot;

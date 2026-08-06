@@ -168,13 +168,6 @@ Authorization и instance `x-app-name` принадлежат SDK. Consumer meta
 пользователя или IP-level limits. Подробная модель описана в
 [лимитной политике](../limits-policy.md).
 
-Если Consumer запускает несколько процессов с одним endpoint и token,
-package policy автоматически включает для них равное host-local разделение
-configured limits. Публичная опция для этого не требуется. Это cooperative
-presence-leasing, а не общая очередь: простаивающий instance сохраняет свою
-долю до `sdk.close()` или expiry, а несколько hosts и изолированные container
-filesystem namespaces не координируются.
-
 Ошибку `RESOURCE_EXHAUSTED` нельзя автоматически повторять только на основании
 кода. Перед retry нужно учитывать idempotency RPC, metadata provider-а и
 backoff. Пример narrowing приведен в руководстве

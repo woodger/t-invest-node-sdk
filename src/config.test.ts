@@ -10,10 +10,6 @@ describe('packageConfig', () => {
     });
   });
 
-  test('enables host-local cooperative quota sharing', () => {
-    assert.equal(packageConfig.hostLocalQuotaSharing.enabled, true);
-  });
-
   test('sets the gRPC receive message limit to four MiB', () => {
     assert.equal(
       packageConfig.grpc.maxReceiveMessageLength,
