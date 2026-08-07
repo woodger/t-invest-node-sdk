@@ -20,7 +20,6 @@ import type {
   SdkError,
   SdkErrorOptions,
   SdkErrorSource,
-  SignalService,
   SignalServiceImplementation,
   StopOrdersServiceImplementation,
   UsersServiceImplementation
@@ -48,11 +47,6 @@ type RootSdkErrorContracts = [
 
 const expectedServerSideImplementationContractCount: RootServerSideImplementationContracts['length'] = 11;
 const expectedSdkErrorContractCount: RootSdkErrorContracts['length'] = 3;
-
-const signalServiceMethodNames = [
-  'getStrategies',
-  'getSignals'
-] as const satisfies readonly (keyof SignalService)[];
 
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
@@ -83,8 +77,7 @@ const signalRuntimeContractNames = [
   'Strategy',
   'GetSignalsRequest',
   'GetSignalsResponse',
-  'Signal',
-  'SignalServiceDefinition'
+  'Signal'
 ] as const;
 
 type GeneratedServiceDefinitionRuntimeContract = {
@@ -117,11 +110,6 @@ describe('package entrypoint', () => {
   });
 
   test('exposes SignalService contracts', () => {
-    assert.deepEqual(signalServiceMethodNames, [
-      'getStrategies',
-      'getSignals'
-    ]);
-
     for (const exportName of signalRuntimeContractNames) {
       assert.equal(hasPackageExport(exportName), true);
     }

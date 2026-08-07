@@ -338,7 +338,7 @@ generated DTO/enums public API и server-side
    `source.release`;
 2. заменить T-Invest файлы в `local.rawContractsPath`;
 3. обновить source commit/release в `contracts/upstream.json`;
-4. выполнить `local.generationCommand`, затем `yarn build`, `yarn lint` и
-   `yarn test`.
+4. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и
+   `npm test`.
 
 Proto generation использует только vendored snapshot и не выполняет network IO.

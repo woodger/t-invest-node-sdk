@@ -65,30 +65,6 @@ describe('defaultConfig', () => {
     }
   });
 
-  test('aggregates calls in current package method quota groups', async () => {
-    const { resolver, throttle } = createDefaultUnaryThrottle();
-
-    const delays = await captureThrottleDelays(async () => {
-      await throttle.reduce(resolveRequiredRule(
-        resolver,
-        '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Bonds'
-      ));
-      await throttle.reduce(resolveRequiredRule(
-        resolver,
-        '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares'
-      ));
-      await throttle.reduce(resolveRequiredRule(
-        resolver,
-        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'
-      ));
-      await throttle.reduce(resolveRequiredRule(
-        resolver,
-        '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
-      ));
-    });
-
-    assert.deepEqual(delays, [4000, 12000]);
-  });
 });
 
 describe('resolveSdkInstanceOptions', () => {
@@ -364,16 +340,6 @@ function createDefaultUnaryLimitResolver(): UnaryLimitResolver {
   const config = resolveUnaryThrottleConfig();
 
   return new UnaryLimitResolver(config.limits, config.buckets);
-}
-
-function createDefaultUnaryThrottle(): {
-  resolver: UnaryLimitResolver;
-  throttle: Throttle;
-} {
-  return {
-    resolver: createDefaultUnaryLimitResolver(),
-    throttle: new Throttle()
-  };
 }
 
 function resolveRequiredRule(

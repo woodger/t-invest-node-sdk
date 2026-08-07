@@ -2,7 +2,7 @@ contracts/
 docs/policy/
 src/
 tsconfig.json
-biome.json
+.oxlintrc.json
 **/*.test.*
 .env
-yarn.lock
+package-lock.json

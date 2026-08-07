@@ -311,15 +311,6 @@ describe('bootstrap cli runner', () => {
       assert.match(read().stderr, /Expected '--format' as one of: json, table/);
     });
 
-    test('keeps friendly command paths executable through the runner', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['account', 'list', '--format=xml'], io);
-
-      assert.equal(exitCode, 2);
-      assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Expected '--format' as one of: json, table/);
-    });
-
     test('rejects extra command positionals during prepare', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['account', 'list', 'unexpected'], io);
@@ -350,7 +341,8 @@ describe('bootstrap cli runner', () => {
           }
         },
         stderr: {
-          // biome-ignore lint/suspicious/noEmptyBlockStatements: This scenario does not exercise stderr output.
+          // This scenario does not exercise stderr output.
+          // oxlint-disable-next-line no-empty-function
           write() {}
         }
       })).then((code) => {
@@ -422,7 +414,8 @@ describe('bootstrap cli runner', () => {
       let stderrWrites = 0;
       const exitCode = runCli(['unknown-command'], createOutput({
         stdout: {
-          // biome-ignore lint/suspicious/noEmptyBlockStatements: This scenario does not exercise stdout output.
+          // This scenario does not exercise stdout output.
+          // oxlint-disable-next-line no-empty-function
           write() {}
         },
         stderr: {

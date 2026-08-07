@@ -423,7 +423,8 @@ describe('stream run command', () => {
                 );
               }
             },
-            // biome-ignore lint/suspicious/noEmptyBlockStatements: The test SDK owns no resources.
+            // The test SDK owns no resources.
+            // oxlint-disable-next-line no-empty-function
             close() {}
           };
         }
@@ -499,7 +500,8 @@ describe('stream run command', () => {
                 );
               }
             },
-            // biome-ignore lint/suspicious/noEmptyBlockStatements: The test SDK owns no resources.
+            // The test SDK owns no resources.
+            // oxlint-disable-next-line no-empty-function
             close() {}
           };
         }
@@ -622,7 +624,8 @@ describe('stream run command', () => {
             ordersStream: {
               tradesStream: createUnusedStream('tradesStream')
             },
-            // biome-ignore lint/suspicious/noEmptyBlockStatements: The test SDK owns no resources.
+            // The test SDK owns no resources.
+            // oxlint-disable-next-line no-empty-function
             close() {}
           };
         }
