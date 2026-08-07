@@ -29,7 +29,8 @@ export function warningInterceptor(options: InstallOptions) {
   } = options;
 
   if (!enabled) {
-    // biome-ignore lint/suspicious/noEmptyBlockStatements: No hook is installed when the interceptor is disabled.
+    // No hook is installed when the interceptor is disabled.
+    // oxlint-disable-next-line no-empty-function
     return () => {};
   }
 

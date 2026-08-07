@@ -15,8 +15,12 @@ micro-release separately.
 ### Changed
 
 - Updated direct dependencies to their current compatible releases, including
-  `@bufbuild/protobuf` 2.13.0, `icore` 2.2.1, `nice-grpc` 2.1.17, Biome 2.5.7,
+  `@bufbuild/protobuf` 2.13.0, `icore` 2.2.1, `nice-grpc` 2.1.17,
   `@types/node` 26.1.2, `fwa` 2.1.2, and `ts-proto` 2.12.0.
+- Replaced Biome with Oxlint `1.76.0` as the sole source linter. The explicit
+  error-level rule set preserves the accepted project policy where Oxlint has
+  an equivalent, generated contracts remain excluded, and formatting and
+  type-aware linting remain outside the lint command.
 
 ## [0.4.1] - 2026-08-05
 

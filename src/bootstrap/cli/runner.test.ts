@@ -350,7 +350,8 @@ describe('bootstrap cli runner', () => {
           }
         },
         stderr: {
-          // biome-ignore lint/suspicious/noEmptyBlockStatements: This scenario does not exercise stderr output.
+          // This scenario does not exercise stderr output.
+          // oxlint-disable-next-line no-empty-function
           write() {}
         }
       })).then((code) => {
@@ -422,7 +423,8 @@ describe('bootstrap cli runner', () => {
       let stderrWrites = 0;
       const exitCode = runCli(['unknown-command'], createOutput({
         stdout: {
-          // biome-ignore lint/suspicious/noEmptyBlockStatements: This scenario does not exercise stdout output.
+          // This scenario does not exercise stdout output.
+          // oxlint-disable-next-line no-empty-function
           write() {}
         },
         stderr: {
