@@ -36,16 +36,6 @@ const payloadServiceDefinition = {
 } as const satisfies ServiceDefinition;
 
 describe('createSdkChannel', () => {
-  test('creates TLS credentials from bundled root certificates', () => {
-    const channel = createSdkChannel({
-      token: 'token',
-      endpoint: 'localhost:443',
-      useSsl: true
-    }, twoMiB);
-
-    channel.close();
-  });
-
   test('rejects a custom TLS endpoint with the bundled trust policy', async () => {
     const server = createPayloadTlsServer();
     const port = await listen(server);
