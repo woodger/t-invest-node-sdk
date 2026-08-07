@@ -26,13 +26,13 @@
 Перед запуском тестов после изменений в `src` нужно пересобрать проект:
 
 ```bash
-yarn build
-yarn test
+npm run build
+npm test
 ```
 
-`yarn build` является обязательной compile-проверкой. Он должен проходить на текущем `tsconfig.json`: при ошибках типизации нужно исправлять source или tests, а не ослаблять TypeScript-конфигурацию без отдельного решения.
+`npm run build` является обязательной compile-проверкой. Он должен проходить на текущем `tsconfig.json`: при ошибках типизации нужно исправлять source или tests, а не ослаблять TypeScript-конфигурацию без отдельного решения.
 
-`yarn test` запускает внешний compiled runner `fwa`:
+`npm test` запускает внешний compiled runner `fwa`:
 
 ```bash
 fwa --prune
@@ -47,8 +47,8 @@ Runner `fwa`:
 - делегирует выполнение стандартному `node:test`;
 - запускает тестовые файлы в отдельных процессах.
 
-Если `yarn test` сообщает, что compiled tests старше source tests, нужно выполнить `yarn build` и повторить запуск.
-Если `yarn test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
+Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run build` и повторить запуск.
+Если `npm test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
 
 ## Обязательность тестов
 

@@ -10,7 +10,7 @@ runtime. Добавьте `nice-grpc` как прямую dev-зависимос
 не полагаясь на transitive hoisting:
 
 ```sh
-yarn add --dev nice-grpc@^2.1.15
+npm install --save-dev nice-grpc@^2.1.15
 ```
 
 ## Полный пример с `SignalService`

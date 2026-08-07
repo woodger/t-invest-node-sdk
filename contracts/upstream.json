@@ -14,6 +14,6 @@
       "contracts/google/protobuf/descriptor.proto"
     ],
     "generatedPath": "src/generated",
-    "generationCommand": "yarn cli dev compile-proto"
+    "generationCommand": "npm run cli -- dev compile-proto"
   }
 }

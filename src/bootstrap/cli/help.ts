@@ -1645,7 +1645,7 @@ export const commandHelp = {
     notes: [
       'The command uses proto files already present in the repository; it does not download upstream proto sources.',
       'Runs system protoc from PATH and the local ts-proto plugin from node_modules.',
-      'Run yarn build before this command when bootstrap TypeScript sources changed.',
+      'Run npm run build before this command when bootstrap TypeScript sources changed.',
       'Generated files are part of the SDK runtime contract; do not edit them manually.'
     ]
   },

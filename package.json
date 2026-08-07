@@ -25,6 +25,13 @@
   "engines": {
     "node": ">=20.19.0"
   },
+  "packageManager": "npm@11.16.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "onFail": "error"
+    }
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

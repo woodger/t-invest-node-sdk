@@ -21,6 +21,10 @@ micro-release separately.
   error-level rule set preserves the accepted project policy where Oxlint has
   an equivalent, generated contracts remain excluded, and formatting and
   type-aware linting remain outside the lint command.
+- Standardized development and CI package management on npm. Added the npm
+  package-manager contract, replaced `yarn.lock` with committed
+  `package-lock.json`, and updated active project commands and documentation;
+  alternative package managers are no longer supported.
 
 ## [0.4.1] - 2026-08-05
 
