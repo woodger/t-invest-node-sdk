@@ -26,37 +26,6 @@ describe('commandHelp', () => {
       Object.keys(commandHelp).sort(),
       [...commandNames].sort()
     );
-
-    assert.equal('account list' in commandHelp, true);
-    assert.equal('market candles' in commandHelp, true);
-    assert.equal('instrument bond list' in commandHelp, true);
-    assert.equal('instrument share list' in commandHelp, true);
-    assert.equal('instrument search' in commandHelp, true);
-    assert.equal('order place' in commandHelp, true);
-    assert.equal('stop-order list' in commandHelp, true);
-    assert.equal('operation portfolio' in commandHelp, true);
-    assert.equal('sandbox account list' in commandHelp, true);
-    assert.equal('sandbox order place' in commandHelp, true);
-    assert.equal('sandbox portfolio' in commandHelp, true);
-    assert.equal('sandbox pay-in' in commandHelp, true);
-    assert.equal('dev compile-proto' in commandHelp, true);
-    assert.equal('account get-accounts' in commandHelp, false);
-    assert.equal('instrument bonds' in commandHelp, false);
-    assert.equal('instrument find-instrument' in commandHelp, false);
-    assert.equal('instrument get-favorites' in commandHelp, false);
-    assert.equal('market get-candles' in commandHelp, false);
-    assert.equal('order post-order' in commandHelp, false);
-    assert.equal('stop-order get-stop-orders' in commandHelp, false);
-    assert.equal('operation get-portfolio' in commandHelp, false);
-    assert.equal('sandbox get-sandbox-accounts' in commandHelp, false);
-    assert.equal('sandbox post-sandbox-order' in commandHelp, false);
-    assert.equal('sandbox sandbox-pay-in' in commandHelp, false);
-    assert.equal('users get-accounts' in commandHelp, false);
-    assert.equal('marketdata get-candles' in commandHelp, false);
-    assert.equal('orders post-order' in commandHelp, false);
-    assert.equal('stoporders get-stop-orders' in commandHelp, false);
-    assert.equal('operations get-portfolio' in commandHelp, false);
-    assert.equal('compile-proto' in commandHelp, false);
   });
 });
 

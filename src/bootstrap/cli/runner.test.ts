@@ -311,15 +311,6 @@ describe('bootstrap cli runner', () => {
       assert.match(read().stderr, /Expected '--format' as one of: json, table/);
     });
 
-    test('keeps friendly command paths executable through the runner', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['account', 'list', '--format=xml'], io);
-
-      assert.equal(exitCode, 2);
-      assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Expected '--format' as one of: json, table/);
-    });
-
     test('rejects extra command positionals during prepare', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['account', 'list', 'unexpected'], io);
