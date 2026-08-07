@@ -12,11 +12,14 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-08-07
+
 ### Changed
 
 - Updated direct dependencies to their current compatible releases, including
   `@bufbuild/protobuf` 2.13.0, `icore` 2.2.1, `nice-grpc` 2.1.17,
-  `@types/node` 26.1.2, `fwa` 2.1.2, and `ts-proto` 2.12.0.
+  `pwd-fs` 3.5.9, `@types/node` 26.1.2, `fwa` 2.1.3, and
+  `ts-proto` 2.12.0.
 - Replaced Biome with Oxlint `1.76.0` as the sole source linter. The explicit
   error-level rule set preserves the accepted project policy where Oxlint has
   an equivalent, generated contracts remain excluded, and formatting remains
@@ -31,6 +34,9 @@ micro-release separately.
 - Reviewed and explicitly allowed the `protobufjs@7.6.5` postinstall script
   through a version-pinned `allowScripts` entry. Strict allow-scripts mode
   remains disabled.
+- Removed repeated unit scenarios while preserving the owning behavioral and
+  integration coverage. SDK runtime behavior and public contracts are
+  unchanged.
 
 ## [0.4.1] - 2026-08-05
 
