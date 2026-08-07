@@ -30,8 +30,8 @@
 
 ```json
 "clean": "rm -rf dist",
-"build": "yarn clean && tsc",
-"test": "yarn clean && fwa",
+"build": "npm run clean && tsc",
+"test": "npm run clean && fwa",
 "prebuild": "rm -rf dist",
 "pretest": "rm -rf dist"
 ```
@@ -57,7 +57,7 @@ pipeline проекта.
 
 Недопустимо:
 
-- `"test": "yarn lint && vitest"` вместо существующего `"test": "vitest"`
+- `"test": "npm run lint && vitest"` вместо существующего `"test": "vitest"`
 - `"build": "node scripts/build.js"` вместо существующего `"build": "tsc"` без прямого требования задачи
 - добавлять очистку временных директорий "на всякий случай"
 - добавлять автоматическую очистку `dist` перед `build` или `test`

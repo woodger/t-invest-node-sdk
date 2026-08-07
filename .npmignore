@@ -5,4 +5,4 @@ tsconfig.json
 .oxlintrc.json
 **/*.test.*
 .env
-yarn.lock
+package-lock.json

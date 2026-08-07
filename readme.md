@@ -13,11 +13,15 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-yarn add "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.1"
+npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.1"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
 после получения Git dependency.
+
+Для development и CI проект поддерживает только npm. После checkout зависимости
+устанавливаются через `npm ci`; Yarn и другие альтернативные менеджеры пакетов
+не поддерживаются.
 
 ## Документация
 
@@ -43,7 +47,7 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 Генерация TypeScript-кода из vendored proto snapshot запускается через CLI:
 
 ```sh
-yarn cli dev compile-proto
+npm run cli -- dev compile-proto
 ```
 
 Proto compiler берется из окружения. Для генерации нужен `protoc` в `PATH`.
@@ -59,7 +63,7 @@ CLI использует собранные файлы из `dist`, поэтом
 изменений в bootstrap TypeScript-коде нужно выполнить:
 
 ```sh
-yarn build
+npm run build
 ```
 
 ## GitHub release
@@ -70,9 +74,9 @@ yarn build
 ```sh
 VERSION="$(node -p "require('./package.json').version")"
 
-yarn build
-yarn lint
-yarn test
+npm run build
+npm run lint
+npm test
 git status --short
 ```
 
@@ -236,22 +240,22 @@ CLI запускается из собранного `dist`, поэтому по
 `--help`:
 
 ```sh
-yarn build
-yarn cli --help
-yarn cli <domain> --help
-yarn cli <domain> <command> --help
+npm run build
+npm run cli -- --help
+npm run cli -- <domain> --help
+npm run cli -- <domain> <command> --help
 ```
 
 Несколько типовых вызовов:
 
 ```sh
-yarn cli account list --format=json
-yarn cli market last-prices --instrument-id=BBG00QPYJ5H0
-yarn cli operation portfolio --account-id=2000000000 --format=json
+npm run cli -- account list --format=json
+npm run cli -- market last-prices --instrument-id=BBG00QPYJ5H0
+npm run cli -- operation portfolio --account-id=2000000000 --format=json
 ```
 
 После установки SDK как зависимости CLI доступен через
-`yarn t-invest-node-sdk`. API-команды принимают параметры подключения через
+`npm exec -- t-invest-node-sdk`. API-команды принимают параметры подключения через
 `--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`.
 Пустое или состоящее только из пробелов CLI-значение не подменяется ENV fallback
 и завершается usage error с кодом `2`.
