@@ -19,8 +19,11 @@ micro-release separately.
   `@types/node` 26.1.2, `fwa` 2.1.2, and `ts-proto` 2.12.0.
 - Replaced Biome with Oxlint `1.76.0` as the sole source linter. The explicit
   error-level rule set preserves the accepted project policy where Oxlint has
-  an equivalent, generated contracts remain excluded, and formatting and
-  type-aware linting remain outside the lint command.
+  an equivalent, generated contracts remain excluded, and formatting remains
+  outside the lint command.
+- Added a focused type-aware correctness ruleset through `oxlint-tsgolint`.
+  Rules use their defaults except for the precise `node:test` safe-call
+  allowance required by `no-floating-promises`.
 - Standardized development and CI package management on npm. Replaced
   `yarn.lock` with committed `package-lock.json` and updated active project
   commands and documentation; alternative package managers are no longer
