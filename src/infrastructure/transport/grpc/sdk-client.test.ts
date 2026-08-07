@@ -106,7 +106,8 @@ describe('createSdkClient', () => {
       {
         useSsl: false,
         signal: lifecycleController.signal,
-        // biome-ignore lint/suspicious/noEmptyBlockStatements: This metadata scenario does not exercise lifecycle rejection.
+        // This metadata scenario does not exercise lifecycle rejection.
+        // oxlint-disable-next-line no-empty-function
         assertOpen() {}
       }
     );
