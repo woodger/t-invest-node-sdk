@@ -25,6 +25,9 @@ micro-release separately.
   package-manager contract, replaced `yarn.lock` with committed
   `package-lock.json`, and updated active project commands and documentation;
   alternative package managers are no longer supported.
+- Reviewed and explicitly allowed the `protobufjs@7.6.5` postinstall script
+  through a version-pinned `allowScripts` entry. Strict allow-scripts mode
+  remains disabled.
 
 ## [0.4.1] - 2026-08-05
 
