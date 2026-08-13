@@ -99,7 +99,8 @@ void main().catch((error: unknown) => {
 
 - `SignalServiceDefinition` — runtime definition для `server.add()`;
 - `SignalServiceImplementation` — compile-time contract mock implementation;
-- request, response и enum contracts — из того же package entrypoint.
+- request, response, enum contracts и их JSON-конвертеры — из того же package
+  entrypoint.
 
 Generated `*ServiceClient` намеренно не входят в public exports: настоящий
 client создается SDK facade. Deep imports из `dist/generated/**` нестабильны и

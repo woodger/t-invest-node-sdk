@@ -407,7 +407,8 @@ Guides показывают workflow, но не дублируют полный 
 
 Пакет реэкспортирует:
 - `Timestamp`;
-- типы и enum'ы из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `stoporders`, `users`;
+- типы, enum'ы и их JSON-конвертеры из `common`, `instruments`, `marketdata`,
+  `operations`, `orders`, `sandbox`, `stoporders`, `users`;
 - package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
 - generated server-side `*ServiceDefinition` и `*ServiceImplementation`
   contracts для nice-grpc server adapters.
