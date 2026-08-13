@@ -249,7 +249,9 @@ export function createMarketDataServerSideStreamRequest(
 export function createAccountStreamRequest(
   config: StreamRunConfig
 ): PortfolioStreamRequest | PositionsStreamRequest | TradesStreamRequest {
-  switch (config.stream) {
+  const stream = config.stream;
+
+  switch (stream) {
     case 'operations.portfolioStream':
       return createPortfolioStreamRequest(config);
 
@@ -259,8 +261,10 @@ export function createAccountStreamRequest(
     case 'orders.tradesStream':
       return createTradesStreamRequest(config);
 
+    case 'marketdata.marketDataServerSideStream':
+    case 'marketdata.marketDataStream':
     default:
-      throw new CliUsageError(`Expected account stream config, got '${config.stream}'`);
+      throw new CliUsageError(`Expected account stream config, got '${String(stream)}'`);
   }
 }
 

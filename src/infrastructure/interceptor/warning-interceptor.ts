@@ -49,7 +49,7 @@ export function warningInterceptor(options: InstallOptions) {
       return;
     }
 
-    return Reflect.apply(originalEmitWarning, process, [warning, ...args]);
+    Reflect.apply(originalEmitWarning, process, [warning, ...args]);
   }) as typeof process.emitWarning;
 
   return () => {
