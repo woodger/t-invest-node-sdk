@@ -24,11 +24,13 @@ import {
   SdkError,
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
+import type { SdkErrorSource } from '../../../application/errors/sdk-error';
 import type { Throttle } from '../../../application/services/unary-throttle.service';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export interface SdkCallRuntime {
   readonly useSsl: boolean;
+  readonly maxReceiveMessageLength: number;
   readonly signal: AbortSignal;
   assertOpen(): void;
 }
@@ -88,7 +90,8 @@ export function createSdkMiddleware(
         error,
         call.method.path,
         options.signal,
-        runtime?.useSsl === true
+        runtime?.useSsl === true,
+        runtime?.maxReceiveMessageLength
       );
     }
   };
@@ -185,7 +188,8 @@ function mapSdkCallError(
   error: unknown,
   path: string,
   signal: AbortSignal | undefined,
-  useSsl: boolean
+  useSsl: boolean,
+  maxReceiveMessageLength: number | undefined
 ): unknown {
   if (isCallCancellation(error, signal)) {
     return new SdkError(
@@ -208,7 +212,11 @@ function mapSdkCallError(
       grpcErrorCodes[error.code] ?? SdkErrorCode.Unknown,
       error.message,
       {
-        source: isTlsCertificateError(error, useSsl) ? 'tls' : 'grpc',
+        source: resolveClientErrorSource(
+          error,
+          useSsl,
+          maxReceiveMessageLength
+        ),
         path: error.path,
         details: error.details,
         cause: error
@@ -217,6 +225,53 @@ function mapSdkCallError(
   }
 
   return error;
+}
+
+function resolveClientErrorSource(
+  error: ClientError,
+  useSsl: boolean,
+  maxReceiveMessageLength: number | undefined
+): SdkErrorSource {
+  if (isTlsCertificateError(error, useSsl)) {
+    return 'tls';
+  }
+
+  if (isLocalReceiveMessageLimitError(error, maxReceiveMessageLength)) {
+    return 'sdk';
+  }
+
+  return 'grpc';
+}
+
+const receivedMessageLargerThanMaxPattern =
+  /^Received message larger than max \((\d+) vs (\d+)\)$/;
+
+function isLocalReceiveMessageLimitError(
+  error: ClientError,
+  maxReceiveMessageLength: number | undefined
+): boolean {
+  if (
+    maxReceiveMessageLength === undefined
+    || error.code !== Status.RESOURCE_EXHAUSTED
+  ) {
+    return false;
+  }
+
+  const rawMessageMatch = receivedMessageLargerThanMaxPattern.exec(
+    error.details
+  );
+
+  if (rawMessageMatch !== null) {
+    const receivedMessageLength = rawMessageMatch[1];
+    const configuredMessageLength = rawMessageMatch[2];
+
+    return receivedMessageLength !== undefined
+      && configuredMessageLength === String(maxReceiveMessageLength)
+      && Number(receivedMessageLength) > maxReceiveMessageLength;
+  }
+
+  return error.details ===
+    `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`;
 }
 
 function isTlsCertificateError(

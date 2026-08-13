@@ -82,6 +82,17 @@ async function main(): Promise<void> {
 
     if (
       isSdkError(error, SdkErrorCode.ResourceExhausted)
+      && error.source === 'sdk'
+    ) {
+      console.error('Ответ превысил локальный лимит размера gRPC-сообщения', {
+        path: error.path
+      });
+
+      throw error;
+    }
+
+    if (
+      isSdkError(error, SdkErrorCode.ResourceExhausted)
       && error.source === 'grpc'
     ) {
       console.error('The provider quota was exhausted', {
@@ -170,3 +181,9 @@ SDK намеренно не объявляет ошибку retryable тольк
 Особенно это относится к `ResourceExhausted`, `Unavailable`,
 `DeadlineExceeded` и mutation RPC. Универсальный retry interceptor на уровне
 SDK скрыл бы эти различия.
+
+Для `ResourceExhausted` сначала проверяйте `source`. Значение `sdk` означает,
+что входящее сообщение превысило внутренний транспортный лимит SDK;
+повтор того же вызова не изменит этот предел. Значение `grpc` относится к
+ответу провайдера и само по себе также не является достаточным основанием для
+повтора без учета метаданных, идемпотентности и задержки между повторами.

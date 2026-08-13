@@ -101,11 +101,13 @@ export class TInvestNodeSDK {
   private metadata: Metadata;
   private throttle: Throttle;
   private unaryLimitResolver: UnaryLimitResolver;
+  private readonly maxReceiveMessageLength: number;
   private closed = false;
   private lifecycleController = new AbortController();
   
   constructor(options: TInvestOptions) {
     this.options = resolveSdkInstanceOptions(options);
+    this.maxReceiveMessageLength = packageConfig.grpc.maxReceiveMessageLength;
 
     const unaryThrottleConfig = resolveUnaryThrottleConfig(
       this.options.unaryLimits
@@ -118,7 +120,7 @@ export class TInvestNodeSDK {
     );
     this.channel = createSdkChannel(
       this.options,
-      packageConfig.grpc.maxReceiveMessageLength
+      this.maxReceiveMessageLength
     );
     this.metadata = createSdkMetadata(this.options);
   }
@@ -200,6 +202,7 @@ export class TInvestNodeSDK {
         this.throttle,
         {
           useSsl: this.options.useSsl,
+          maxReceiveMessageLength: this.maxReceiveMessageLength,
           signal: this.lifecycleController.signal,
           assertOpen: () => {
             this.assertOpen();
