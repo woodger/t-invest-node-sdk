@@ -13,7 +13,7 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.3"
+npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.4"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
@@ -90,8 +90,8 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.4.3` Git tag остается `0.4.3` по исторической схеме проекта, а
-GitHub Release может называться `v0.4.3`. Release notes берутся из одноименного
+Для версии `0.4.4` Git tag остается `0.4.4` по исторической схеме проекта, а
+GitHub Release может называться `v0.4.4`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
