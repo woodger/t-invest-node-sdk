@@ -23,12 +23,15 @@ micro-release separately.
   rule namespaces, 84 selected error-level rules, and 21 risk-driven type-aware
   checks while retaining the existing generated-code boundary and unused
   suppression validation.
-- Kept `typescript/no-deprecated` and `typescript/no-unsafe-assignment` outside
-  the project ruleset after the audit found only dependency-owned deprecated
-  T-Invest fields, intentional FIGI compatibility, and test-only JSON parsing
-  diagnostics. Existing `no-empty-function`,
-  `no-meaningless-void-operator`, and `no-misused-spread` protection remains
-  enabled.
+- Kept `typescript/no-deprecated` outside the project ruleset after a diagnostic
+  run identified upstream-deprecated contracts at SDK compatibility boundaries,
+  including FIGI request fields and `klong`/`kshort` in CLI reports. These cases
+  require a separate semantic migration and cannot be resolved by mechanically
+  substituting fields such as `dlong`/`dshort`.
+- Kept `typescript/no-unsafe-assignment` outside the project ruleset because its
+  findings are limited to test-owned JSON parsing. Existing
+  `no-empty-function`, `no-meaningless-void-operator`, and
+  `no-misused-spread` protections remain enabled.
 
 ## [0.4.2] - 2026-08-07
 
