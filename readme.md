@@ -163,8 +163,12 @@ type UnaryLimits = Record<string, number>;
 
 Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
 boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
-`token` и `endpoint` должны быть непустыми строками. Прямой SDK-вызов с пустым
-значением завершается `SdkErrorCode.InvalidArgument` с `source: 'sdk'`.
+`token` и `endpoint` должны быть непустыми строками. `token` и непустой
+`appName` передаются как строковые gRPC metadata и поэтому могут содержать
+только печатные ASCII-символы. `unaryLimits` принимает только конечные
+положительные числа. Нарушение этих ограничений завершается
+`SdkErrorCode.InvalidArgument` с `source: 'sdk'` до создания transport;
+диагностическое сообщение не повторяет значение token.
 
 Bundled CA применяется только к channel текущего SDK instance и не изменяет
 system trust store. Явный `tls.rootCertificates` заменяет bundled CA, а не
@@ -326,6 +330,11 @@ terminal policy классифицирует application и framework usage erro
 передачи вызова transport-у слот не возвращается, поскольку provider уже мог
 учесть запрос.
 
+`onHeader` и `onTrailer` являются синхронными callbacks. Если callback бросает
+исключение, соответствующий unary-вызов или stream iteration отклоняется этой
+же application error; незавершённый transport call отменяется. Асинхронную
+работу следует запускать и ожидать вне callback-а.
+
 ### Ошибки SDK
 
 Из корня пакета экспортируются `SdkError`, `SdkErrorCode`, `SdkErrorSource` и
@@ -361,6 +370,12 @@ network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `detai
 `source: 'grpc'`.
 Исходные `path`, `details` и `cause` сохраняются в обоих случаях; Consumer-у
 не нужно различать эти причины по диагностическому тексту.
+
+Локальная ошибка сериализации исходящего request сохраняет
+`SdkErrorCode.Internal`, но получает `source: 'sdk'`: transport не отправлял
+такой запрос provider-у. Provider-side `INTERNAL` остается `source: 'grpc'`.
+Поля `path`, `details` и `cause` сохраняются; разбирать их для классификации не
+нужно.
 
 ```ts
 import {

@@ -245,6 +245,12 @@ packageConfig.grpc.maxReceiveMessageLength
 транспорта диагностика распознается внутри адаптера и не становится контрактом
 Consumer-а.
 
+Тот же transport adapter отделяет локальную ошибку сериализации request от
+provider-side `INTERNAL`: code сохраняется, но локальный случай получает
+`source: 'sdk'`. Response metadata callbacks защищены там же, потому что
+`nice-grpc` вызывает их из EventEmitter handlers: синхронное исключение
+возвращается владельцу RPC, а не process-level `uncaughtException`.
+
 TLS trust material разрешается отдельно для каждого channel:
 
 ```text
@@ -273,8 +279,11 @@ per-instance options -----------'
 
 Per-instance boolean values `useSsl` и `trackLimits` имеют приоритет над package
 defaults, а `undefined` не отключает package policy. Обязательные `token` и
-`endpoint` проверяются до создания transport channel. `packageConfig.sdk`
-остается внутренней authoring-формой и не расширяет публичный `defaultConfig`.
+`endpoint` проверяются до создания transport channel. Значения `token` и
+непустого `appName` дополнительно проверяются как строковые gRPC metadata, а
+ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с
+`source: 'sdk'`. `packageConfig.sdk` остается внутренней authoring-формой и не
+расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании

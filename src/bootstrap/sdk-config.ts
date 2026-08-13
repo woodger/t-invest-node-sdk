@@ -49,6 +49,11 @@ export function resolveSdkInstanceOptions(
 ): ResolvedTInvestOptions {
   assertNonBlankSdkOption(options.token, 'token');
   assertNonBlankSdkOption(options.endpoint, 'endpoint');
+  assertGrpcMetadataValue(options.token, 'token');
+
+  if (options.appName !== undefined && options.appName !== '') {
+    assertGrpcMetadataValue(options.appName, 'appName');
+  }
 
   return {
     ...options,
@@ -97,9 +102,38 @@ export function resolveUnaryThrottleConfig(
     limits
   };
 
-  assertUnaryThrottleConfig(resolvedConfig);
+  try {
+    assertUnaryThrottleConfig(resolvedConfig);
+  }
+  catch (error) {
+    throw new SdkError(
+      SdkErrorCode.InvalidArgument,
+      errorMessage(error, 'TInvestOptions.unaryLimits is invalid'),
+      {
+        source: 'sdk',
+        cause: error
+      }
+    );
+  }
 
   return resolvedConfig;
+}
+
+const grpcMetadataValuePattern = /^[ -~]*$/;
+
+function assertGrpcMetadataValue(
+  value: unknown,
+  name: 'token' | 'appName'
+): asserts value is string {
+  if (typeof value !== 'string' || !grpcMetadataValuePattern.test(value)) {
+    throw new SdkError(
+      SdkErrorCode.InvalidArgument,
+      `TInvestOptions.${name} contains characters unsupported by gRPC metadata`,
+      {
+        source: 'sdk'
+      }
+    );
+  }
 }
 
 function assertNonBlankSdkOption(
@@ -115,4 +149,14 @@ function assertNonBlankSdkOption(
       }
     );
   }
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  if (typeof error !== 'object' || error === null) {
+    return fallback;
+  }
+
+  const message = (error as Record<PropertyKey, unknown>)['message'];
+
+  return typeof message === 'string' ? message : fallback;
 }

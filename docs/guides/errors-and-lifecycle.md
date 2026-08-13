@@ -124,7 +124,7 @@ void main().catch((error: unknown) => {
 | `tls` | Transport не прошел проверку цепочки сертификатов или hostname |
 | `abort` | Вызов отменен Consumer-ом через `AbortSignal` |
 | `lifecycle` | SDK уже закрыт |
-| `sdk` | SDK отклонил локальную конфигурацию или runtime state |
+| `sdk` | SDK отклонил локальную конфигурацию, request или runtime state |
 
 `SdkErrorCode.InvalidArgument` может иметь `source: 'grpc'` для provider
 validation или `source: 'sdk'` для локально отклоненной конфигурации. По этой
@@ -132,7 +132,9 @@ validation или `source: 'sdk'` для локально отклоненной
 
 Не всякий `unknown` runtime failure обязан быть `SdkError`. Сначала применяйте
 `isSdkError()`, а неизвестную ошибку сохраняйте или передавайте дальше без
-насильственного приведения типа.
+насильственного приведения типа. В частности, синхронное исключение
+application callback-а `onHeader` или `onTrailer` возвращается без оборачивания
+в `SdkError`.
 
 ## Диагностические поля
 
@@ -149,6 +151,11 @@ validation или `source: 'sdk'` для локально отклоненной
 connection refusal/reset, timeout и обычный provider `UNAVAILABLE` сохраняют
 `source: 'grpc'`. Эта граница позволяет завершить вызов сразу при ошибке TLS,
 не разбирая `details` и не применяя к ней общий availability retry.
+
+Ошибка сериализации исходящего request получает `SdkErrorCode.Internal` с
+`source: 'sdk'`: вызов не дошел до provider-а. Provider-side `INTERNAL`
+сохраняет `source: 'grpc'`. Это различие не требует разбора `details`; исходные
+`path`, `details` и `cause` доступны только для диагностики.
 
 Brand guard распознает совместимый `SdkError` из другой физической копии
 пакета в том же JavaScript realm. После JSON, IPC или worker serialization
