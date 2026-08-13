@@ -1,6 +1,6 @@
 {
   "name": "t-invest-node-sdk",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "description": "Node.js SDK for T-Invest API",
   "keywords": [

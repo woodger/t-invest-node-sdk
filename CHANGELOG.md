@@ -12,6 +12,8 @@ micro-release separately.
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-08-13
+
 ### Changed
 
 - Updated `oxlint` to 1.78.0, `fwa` to 2.1.4, `icore` to 2.2.3, and
