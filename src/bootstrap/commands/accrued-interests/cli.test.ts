@@ -4,10 +4,10 @@ import {
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  AccruedInterest,
+import {
+  type AccruedInterest,
   GetAccruedInterestsRequest,
-  GetAccruedInterestsResponse
+  type GetAccruedInterestsResponse
 } from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
@@ -58,11 +58,15 @@ describe('accrued-interests command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: 'BOND-FIGI',
+        figi: '',
         instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
       });
+      assert.doesNotMatch(
+        JSON.stringify(GetAccruedInterestsRequest.toJSON(request)),
+        /"figi":/
+      );
     });
 
     test('rejects inverted date range', () => {
@@ -136,7 +140,7 @@ describe('accrued-interests command', () => {
       });
       assert.equal(getAccruedInterestsCalls, 1);
       assert.deepEqual(receivedRequest, {
-        figi: 'BOND-FIGI',
+        figi: '',
         instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')

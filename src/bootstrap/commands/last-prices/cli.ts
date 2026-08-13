@@ -10,11 +10,11 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetLastPricesRequest,
-  GetLastPricesResponse
+  type GetLastPricesResponse,
+  LastPriceType
 } from '../../../generated/marketdata';
-import { LastPriceType } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -103,12 +103,11 @@ export { formatLastPrices };
 export function createLastPricesRequest(
   options: LastPricesRequestOptions
 ): GetLastPricesRequest {
-  return {
-    figi: [],
+  return GetLastPricesRequest.create({
     instrumentId: parseCommaSeparatedStringListOption(
       options['instrument-id'],
       'instrument-id'
     ),
     lastPriceType: LastPriceType.LAST_PRICE_UNSPECIFIED
-  };
+  });
 }

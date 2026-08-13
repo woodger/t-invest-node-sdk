@@ -40,7 +40,7 @@ describe('trading-status command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: '',
+        figi: undefined,
         instrumentId: 'BBG00QPYJ5H0'
       });
     });
@@ -99,7 +99,7 @@ describe('trading-status command', () => {
         endpoint: 'localhost:50051'
       });
       assert.deepEqual(receivedRequest, {
-        figi: '',
+        figi: undefined,
         instrumentId: 'BBG00QPYJ5H0'
       });
       assert.equal(closeCalls, 1);

@@ -17,7 +17,7 @@ import {
   StopOrderExpirationType,
   StopOrderType,
   TakeProfitType,
-  type PostStopOrderRequest,
+  PostStopOrderRequest,
   type PostStopOrderResponse
 } from '../../../generated/stoporders';
 import { CliUsageError, type InferOptions } from 'icore';
@@ -199,8 +199,7 @@ export function createPostStopOrderRequest(
 ): PostStopOrderRequest {
   const expirationType = stopOrderExpirationTypes[options['expiration-type']];
 
-  return {
-    figi: '',
+  return PostStopOrderRequest.create({
     quantity: options.quantity,
     price: parseOptionalPositiveQuotationOption(options.price, 'price'),
     stopPrice: parsePositiveQuotationOption(options['stop-price'], 'stop-price'),
@@ -216,7 +215,7 @@ export function createPostStopOrderRequest(
     priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
     orderId: '',
     confirmMarginTrade: false
-  };
+  });
 }
 
 function createStopOrderExpireDate(

@@ -12,7 +12,7 @@
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   EditFavoritesActionType,
-  type EditFavoritesRequest,
+  EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
@@ -132,14 +132,13 @@ export { formatEditFavorites };
 export function createEditFavoritesRequest(
   options: EditFavoritesRequestOptions
 ): EditFavoritesRequest {
-  return {
+  return EditFavoritesRequest.create({
     instruments: parseCommaSeparatedStringListOption(
       resolveInstrumentIdOption(options),
       'instrument-id'
     ).map((instrumentId) => ({
-      figi: instrumentId,
       instrumentId
     })),
     actionType: editFavoriteActions[options.action]
-  };
+  });
 }

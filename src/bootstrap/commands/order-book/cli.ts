@@ -10,9 +10,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetOrderBookRequest,
-  GetOrderBookResponse
+  type GetOrderBookResponse
 } from '../../../generated/marketdata';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
@@ -118,11 +118,10 @@ export { formatOrderBook };
 export function createOrderBookRequest(
   options: OrderBookRequestOptions
 ): GetOrderBookRequest {
-  return {
-    figi: '',
+  return GetOrderBookRequest.create({
     instrumentId: options['instrument-id'],
     depth: options.depth
-  };
+  });
 }
 
 function normalizeOrderBookDepthError(error: unknown): Error {

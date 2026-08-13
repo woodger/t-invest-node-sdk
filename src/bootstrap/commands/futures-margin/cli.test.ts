@@ -51,7 +51,7 @@ describe('futures-margin command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: 'FUTFIGI',
+        figi: '',
         instrumentId: 'FUTFIGI'
       });
     });
@@ -114,7 +114,7 @@ describe('futures-margin command', () => {
       });
       assert.equal(getFuturesMarginCalls, 1);
       assert.deepEqual(receivedRequest, {
-        figi: 'FUTFIGI',
+        figi: '',
         instrumentId: 'FUTFIGI'
       });
       assert.equal(closeCalls, 1);
