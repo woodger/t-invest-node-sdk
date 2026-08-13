@@ -10,9 +10,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetBondCouponsRequest,
-  GetBondCouponsResponse
+  type GetBondCouponsResponse
 } from '../../../generated/instruments';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
@@ -125,10 +125,9 @@ export function createBondCouponsRequest(
 
   const instrumentId = resolveInstrumentIdOption(options);
 
-  return {
-    figi: instrumentId,
+  return GetBondCouponsRequest.create({
     instrumentId,
     from,
     to
-  };
+  });
 }

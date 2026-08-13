@@ -4,7 +4,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   CandleInterval,
-  type GetCandlesRequest,
+  GetCandlesRequest,
   type HistoricCandle
 } from '../../../generated/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
@@ -63,10 +63,13 @@ describe('candles command', () => {
       });
 
       assert.equal(request.instrumentId, 'BBG00QPYJ5H0');
-      assert.equal(request.figi, '');
       assert.equal(request.from?.toISOString(), '2026-06-19T00:00:00.000Z');
       assert.equal(request.to?.toISOString(), '2026-06-19T01:00:00.000Z');
       assert.equal(request.interval, CandleInterval.CANDLE_INTERVAL_HOUR);
+      assert.doesNotMatch(
+        JSON.stringify(GetCandlesRequest.toJSON(request)),
+        /"figi":/
+      );
     });
 
     test('throws when from is later than to', () => {

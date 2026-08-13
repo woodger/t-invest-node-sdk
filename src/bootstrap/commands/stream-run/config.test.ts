@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
+  MarketDataServerSideStreamRequest,
   OrderBookType,
   SubscriptionAction,
   SubscriptionInterval,
@@ -46,10 +47,44 @@ describe('stream run config', () => {
         stream: 'marketdata.marketDataStream',
         requests: [
           {
+            type: 'subscribeCandles',
+            instruments: [
+              {
+                instrumentId: 'candle-id',
+                interval: '1min'
+              }
+            ]
+          },
+          {
+            type: 'subscribeOrderBook',
+            instruments: [
+              {
+                instrumentId: 'order-book-id',
+                depth: 10
+              }
+            ]
+          },
+          {
             type: 'subscribeTrades',
             instruments: [
               {
                 instrumentId: 'trade-id'
+              }
+            ]
+          },
+          {
+            type: 'subscribeInfo',
+            instruments: [
+              {
+                instrumentId: 'info-id'
+              }
+            ]
+          },
+          {
+            type: 'subscribeLastPrice',
+            instruments: [
+              {
+                instrumentId: 'last-price-id'
               }
             ]
           },
@@ -65,6 +100,32 @@ describe('stream run config', () => {
       assert.equal(config.stream, 'marketdata.marketDataStream');
       assert.deepEqual(createMarketDataStreamRequests(config), [
         {
+          subscribeCandlesRequest: {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: [
+              {
+                figi: '',
+                interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
+                instrumentId: 'candle-id'
+              }
+            ],
+            waitingClose: false
+          }
+        },
+        {
+          subscribeOrderBookRequest: {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: [
+              {
+                figi: '',
+                depth: 10,
+                instrumentId: 'order-book-id',
+                orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
+              }
+            ]
+          }
+        },
+        {
           subscribeTradesRequest: {
             subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
             instruments: [
@@ -75,6 +136,28 @@ describe('stream run config', () => {
             ],
             tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
             withOpenInterest: false
+          }
+        },
+        {
+          subscribeInfoRequest: {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: [
+              {
+                figi: '',
+                instrumentId: 'info-id'
+              }
+            ]
+          }
+        },
+        {
+          subscribeLastPriceRequest: {
+            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+            instruments: [
+              {
+                figi: '',
+                instrumentId: 'last-price-id'
+              }
+            ]
           }
         },
         {
@@ -127,6 +210,16 @@ describe('stream run config', () => {
             {
               instrumentId: 'trade-id'
             }
+          ],
+          info: [
+            {
+              instrumentId: 'info-id'
+            }
+          ],
+          lastPrices: [
+            {
+              instrumentId: 'last-price-id'
+            }
           ]
         }
       }));
@@ -163,8 +256,22 @@ describe('stream run config', () => {
         TradeSourceType.TRADE_SOURCE_UNSPECIFIED
       );
       assert.equal(request.subscribeTradesRequest?.withOpenInterest, false);
-      assert.equal(request.subscribeInfoRequest, undefined);
-      assert.equal(request.subscribeLastPriceRequest, undefined);
+      assert.deepEqual(request.subscribeInfoRequest?.instruments, [
+        {
+          figi: '',
+          instrumentId: 'info-id'
+        }
+      ]);
+      assert.deepEqual(request.subscribeLastPriceRequest?.instruments, [
+        {
+          figi: '',
+          instrumentId: 'last-price-id'
+        }
+      ]);
+      assert.doesNotMatch(
+        JSON.stringify(MarketDataServerSideStreamRequest.toJSON(request)),
+        /"figi":/
+      );
     });
 
     test('rejects unsupported stream candle interval aliases', () => {

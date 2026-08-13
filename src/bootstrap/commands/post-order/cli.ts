@@ -14,8 +14,8 @@ import { PriceType } from '../../../generated/common';
 import {
   OrderDirection,
   OrderType,
+  PostOrderRequest,
   TimeInForceType,
-  type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
@@ -163,8 +163,7 @@ async function runPostOrderCommand(
 export { formatPostOrder };
 
 export function createPostOrderRequest(options: PostOrderRequestOptions): PostOrderRequest {
-  return {
-    figi: '',
+  return PostOrderRequest.create({
     quantity: options.quantity,
     price: parseOptionalPositiveQuotationOption(options.price, 'price'),
     direction: postOrderDirections[options.direction],
@@ -175,5 +174,5 @@ export function createPostOrderRequest(options: PostOrderRequestOptions): PostOr
     timeInForce: TimeInForceType.TIME_IN_FORCE_UNSPECIFIED,
     priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
     confirmMarginTrade: false
-  };
+  });
 }

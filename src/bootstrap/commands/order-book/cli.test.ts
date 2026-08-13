@@ -85,7 +85,7 @@ describe('order-book command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: '',
+        figi: undefined,
         instrumentId: 'BBG00QPYJ5H0',
         depth: 10
       });
@@ -146,7 +146,7 @@ describe('order-book command', () => {
         endpoint: 'localhost:50051'
       });
       assert.deepEqual(receivedRequest, {
-        figi: '',
+        figi: undefined,
         instrumentId: 'BBG00QPYJ5H0',
         depth: 10
       });

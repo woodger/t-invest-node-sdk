@@ -39,7 +39,11 @@ function waitUntilAborted(signal: AbortSignal): Promise<never> {
     void resolve;
 
     const rejectWithReason = () => {
-      reject(signal.reason ?? new Error('stream aborted'));
+      reject(
+        signal.reason instanceof Error
+          ? signal.reason
+          : new Error('stream aborted')
+      );
     };
 
     if (signal.aborted) {
@@ -446,7 +450,9 @@ describe('stream run command', () => {
       );
 
       assert.deepEqual(
-        (await collectOutput(output)).trim().split('\n').map((line) => JSON.parse(line)),
+        (await collectOutput(output)).trim().split('\n').map(
+          (line): unknown => JSON.parse(line) as unknown
+        ),
         [
           {
             ping: {

@@ -33,9 +33,17 @@ export interface ShareReportInstrument {
   issueSizePlan: number;
   /** Тип акции в формате generated enum JSON name. */
   shareType: string;
-  /** Коэффициент ставки риска long. */
+  /**
+   * Коэффициент ставки риска long.
+   * @deprecated В исходном контракте поле помечено как устаревшее. Оно
+   * сохраняется для совместимости вывода CLI; `dlong` не является прямой заменой.
+   */
   klong: string;
-  /** Коэффициент ставки риска short. */
+  /**
+   * Коэффициент ставки риска short.
+   * @deprecated В исходном контракте поле помечено как устаревшее. Оно
+   * сохраняется для совместимости вывода CLI; `dshort` не является прямой заменой.
+   */
   kshort: string;
   /** Ставка риска long. */
   dlong: string;

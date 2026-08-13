@@ -10,9 +10,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetDividendsRequest,
-  GetDividendsResponse
+  type GetDividendsResponse
 } from '../../../generated/instruments';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
@@ -125,10 +125,9 @@ export function createDividendsRequest(
 
   const instrumentId = resolveInstrumentIdOption(options);
 
-  return {
-    figi: instrumentId,
+  return GetDividendsRequest.create({
     instrumentId,
     from,
     to
-  };
+  });
 }

@@ -1,16 +1,48 @@
-# Changelog
+# История изменений
 
-All notable changes to this project will be documented in this file.
+В этом файле документируются все существенные изменения проекта.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/),
-and this project uses [Semantic Versioning](https://semver.org/).
+Формат основан на [Keep a Changelog](https://keepachangelog.com/), а версии
+проекта соответствуют [Semantic Versioning](https://semver.org/).
 
-Entries before this changelog was introduced are reconstructed from project
-memory and git history. Historical `0.1.40` and `0.0.29` sections summarize
-frequent patch versions inside their version lines instead of listing every
-micro-release separately.
+Записи, предшествующие появлению этого файла, восстановлены по истории Git и
+сведениям о проекте. Исторические разделы `0.1.40` и `0.0.29` объединяют частые
+патч-релизы в строках версий вместо перечисления каждого микрорелиза.
 
-## [Unreleased]
+## [Не выпущено]
+
+## [0.4.3] - 2026-08-13
+
+### Изменено
+
+- `oxlint` обновлён до 1.78.0, `fwa` — до 2.1.4, `icore` — до 2.2.3,
+  `pwd-fs` — до 3.5.10.
+- Конфигурация Oxlint приведена к проверенному эталонному набору правил для
+  Node.js и TypeScript. Проект использует явные пространства правил `eslint`,
+  `typescript` и `import`, 84 выбранных правила уровня `error` и 21 правило
+  анализа типов, отобранное по рискам. Исключение сгенерированного кода и
+  проверка неиспользуемых подавлений сохранены.
+- `typescript/no-deprecated` не включён в основной набор правил: диагностический
+  запуск обнаружил устаревшие исходные контракты на границах сгенерированного
+  публичного API и совместимого вывода CLI. Не все такие случаи допускают
+  механическую замену полей, в частности `klong`/`kshort` на `dlong`/`dshort`.
+- Устаревший статус `klong`/`kshort` перенесён в шесть написанных вручную
+  контрактов отчётов CLI и описан для Consumer-проектов. Существующий вывод CLI
+  в форматах JSON и table не изменён.
+- `typescript/no-unsafe-assignment` не включён в основной набор правил, поскольку
+  его срабатывания ограничены разбором JSON в тестах. Правила
+  `no-empty-function`, `no-meaningless-void-operator` и `no-misused-spread`
+  остаются включёнными.
+- Русский язык закреплён как основной для документации, комментариев и новых
+  записей в истории изменений. Технические идентификаторы сохраняют исходное
+  написание.
+
+### Исправлено
+
+- Написанные вручную фабрики запросов CLI больше не заполняют устаревшие в
+  исходном контракте FIGI-поля запросов и подписок. Совместимая опция `--figi`
+  преобразуется только в `instrumentId`; устаревшие поля сохраняют значения по
+  умолчанию protobuf и не попадают в сериализованные запросы.
 
 ## [0.4.2] - 2026-08-07
 

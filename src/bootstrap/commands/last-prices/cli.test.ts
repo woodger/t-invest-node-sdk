@@ -3,10 +3,10 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Quotation } from '../../../generated/common';
-import type {
+import {
   GetLastPricesRequest,
-  GetLastPricesResponse,
-  LastPrice
+  type GetLastPricesResponse,
+  type LastPrice
 } from '../../../generated/marketdata';
 import type { CommandRawOptions } from '../../args/command-options';
 import {
@@ -52,8 +52,11 @@ describe('last-prices command', () => {
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
       });
 
-      assert.deepEqual(request.figi, []);
       assert.deepEqual(request.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
+      assert.doesNotMatch(
+        JSON.stringify(GetLastPricesRequest.toJSON(request)),
+        /"figi":/
+      );
     });
   });
 
@@ -109,7 +112,6 @@ describe('last-prices command', () => {
         token: 'token',
         endpoint: 'localhost:50051'
       });
-      assert.deepEqual(receivedRequest?.figi, []);
       assert.deepEqual(receivedRequest?.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].figi, 'BBG00QPYJ5H0');

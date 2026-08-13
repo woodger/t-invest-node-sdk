@@ -10,9 +10,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetTradingStatusRequest,
-  GetTradingStatusResponse
+  type GetTradingStatusResponse
 } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
@@ -104,8 +104,7 @@ export { formatTradingStatus };
 export function createTradingStatusRequest(
   options: TradingStatusRequestOptions
 ): GetTradingStatusRequest {
-  return {
-    figi: '',
+  return GetTradingStatusRequest.create({
     instrumentId: options['instrument-id']
-  };
+  });
 }

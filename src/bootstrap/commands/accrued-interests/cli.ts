@@ -10,9 +10,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetAccruedInterestsRequest,
-  GetAccruedInterestsResponse
+  type GetAccruedInterestsResponse
 } from '../../../generated/instruments';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
@@ -129,10 +129,9 @@ export function createAccruedInterestsRequest(
 
   const instrumentId = resolveInstrumentIdOption(options);
 
-  return {
-    figi: instrumentId,
+  return GetAccruedInterestsRequest.create({
     instrumentId,
     from,
     to
-  };
+  });
 }

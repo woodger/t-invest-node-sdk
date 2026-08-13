@@ -38,7 +38,7 @@ describe('post-stop-order command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: '',
+        figi: undefined,
         quantity: 10,
         price: {
           units: 101,
@@ -59,7 +59,8 @@ describe('post-stop-order command', () => {
         trailingData: undefined,
         priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
         orderId: '',
-        confirmMarginTrade: false
+        confirmMarginTrade: false,
+        instantExecution: undefined
       });
     });
 
