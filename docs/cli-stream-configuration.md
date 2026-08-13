@@ -115,16 +115,16 @@ Market data subscriptions are grouped by event family:
 }
 ```
 
-Subscription defaults:
+Значения подписок по умолчанию:
 
-- `action` defaults to `subscribe`;
-- deprecated generated `figi` fields are left at their protobuf defaults and
-  are not serialized;
-- `instrumentId` is required for every instrument item;
-- `waitingClose` defaults to `false`;
-- `orderBooks[].depth` is required and must be a positive integer.
+- `action` имеет значение `subscribe`;
+- устаревшие поля `figi` сгенерированных контрактов сохраняют значения по
+  умолчанию protobuf и не сериализуются;
+- `instrumentId` обязателен для каждого инструмента;
+- `waitingClose` имеет значение `false`;
+- `orderBooks[].depth` обязателен и должен быть положительным целым числом.
 
-Supported candle interval aliases:
+Поддерживаемые алиасы интервала свечей:
 
 - `1min`;
 - `5min`.

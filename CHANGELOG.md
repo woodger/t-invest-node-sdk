@@ -1,46 +1,48 @@
-# Changelog
+# История изменений
 
-All notable changes to this project will be documented in this file.
+В этом файле документируются все существенные изменения проекта.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/),
-and this project uses [Semantic Versioning](https://semver.org/).
+Формат основан на [Keep a Changelog](https://keepachangelog.com/), а версии
+проекта соответствуют [Semantic Versioning](https://semver.org/).
 
-Entries before this changelog was introduced are reconstructed from project
-memory and git history. Historical `0.1.40` and `0.0.29` sections summarize
-frequent patch versions inside their version lines instead of listing every
-micro-release separately.
+Записи, предшествующие появлению этого файла, восстановлены по истории Git и
+сведениям о проекте. Исторические разделы `0.1.40` и `0.0.29` объединяют частые
+патч-релизы в строках версий вместо перечисления каждого микрорелиза.
 
-## [Unreleased]
+## [Не выпущено]
 
 ## [0.4.3] - 2026-08-13
 
-### Changed
+### Изменено
 
-- Updated `oxlint` to 1.78.0, `fwa` to 2.1.4, `icore` to 2.2.3, and
-  `pwd-fs` to 3.5.10.
-- Aligned the Oxlint configuration with the audited Node.js/TypeScript reference
-  baseline. The project now uses explicit `eslint`, `typescript`, and `import`
-  rule namespaces, 84 selected error-level rules, and 21 risk-driven type-aware
-  checks while retaining the existing generated-code boundary and unused
-  suppression validation.
-- Kept `typescript/no-deprecated` outside the project ruleset after a diagnostic
-  run identified upstream-deprecated contracts at generated public API and CLI
-  output compatibility boundaries. These cases cannot all be resolved by
-  mechanically substituting fields such as `dlong`/`dshort`.
-- Propagated the upstream `klong`/`kshort` deprecation to six handwritten CLI
-  report contracts and documented the Consumer migration boundary. Existing
-  CLI JSON and table output remains unchanged.
-- Kept `typescript/no-unsafe-assignment` outside the project ruleset because its
-  findings are limited to test-owned JSON parsing. Existing
-  `no-empty-function`, `no-meaningless-void-operator`, and
-  `no-misused-spread` protections remain enabled.
+- `oxlint` обновлён до 1.78.0, `fwa` — до 2.1.4, `icore` — до 2.2.3,
+  `pwd-fs` — до 3.5.10.
+- Конфигурация Oxlint приведена к проверенному эталонному набору правил для
+  Node.js и TypeScript. Проект использует явные пространства правил `eslint`,
+  `typescript` и `import`, 84 выбранных правила уровня `error` и 21 правило
+  анализа типов, отобранное по рискам. Исключение сгенерированного кода и
+  проверка неиспользуемых подавлений сохранены.
+- `typescript/no-deprecated` не включён в основной набор правил: диагностический
+  запуск обнаружил устаревшие исходные контракты на границах сгенерированного
+  публичного API и совместимого вывода CLI. Не все такие случаи допускают
+  механическую замену полей, в частности `klong`/`kshort` на `dlong`/`dshort`.
+- Устаревший статус `klong`/`kshort` перенесён в шесть написанных вручную
+  контрактов отчётов CLI и описан для Consumer-проектов. Существующий вывод CLI
+  в форматах JSON и table не изменён.
+- `typescript/no-unsafe-assignment` не включён в основной набор правил, поскольку
+  его срабатывания ограничены разбором JSON в тестах. Правила
+  `no-empty-function`, `no-meaningless-void-operator` и `no-misused-spread`
+  остаются включёнными.
+- Русский язык закреплён как основной для документации, комментариев и новых
+  записей в истории изменений. Технические идентификаторы сохраняют исходное
+  написание.
 
-### Fixed
+### Исправлено
 
-- Stopped handwritten CLI request builders from populating upstream-deprecated
-  FIGI request and subscription fields. The compatibility `--figi` option now
-  resolves only to `instrumentId`; deprecated fields remain at protobuf defaults
-  and are omitted from serialized requests.
+- Написанные вручную фабрики запросов CLI больше не заполняют устаревшие в
+  исходном контракте FIGI-поля запросов и подписок. Совместимая опция `--figi`
+  преобразуется только в `instrumentId`; устаревшие поля сохраняют значения по
+  умолчанию protobuf и не попадают в сериализованные запросы.
 
 ## [0.4.2] - 2026-08-07
 
