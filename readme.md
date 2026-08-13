@@ -13,7 +13,7 @@
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
-npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.3"
+npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.4.4"
 ```
 
 Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
@@ -90,8 +90,8 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.4.3` Git tag остается `0.4.3` по исторической схеме проекта, а
-GitHub Release может называться `v0.4.3`. Release notes берутся из одноименного
+Для версии `0.4.4` Git tag остается `0.4.4` по исторической схеме проекта, а
+GitHub Release может называться `v0.4.4`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
@@ -163,8 +163,12 @@ type UnaryLimits = Record<string, number>;
 
 Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
 boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
-`token` и `endpoint` должны быть непустыми строками. Прямой SDK-вызов с пустым
-значением завершается `SdkErrorCode.InvalidArgument` с `source: 'sdk'`.
+`token` и `endpoint` должны быть непустыми строками. `token` и непустой
+`appName` передаются как строковые gRPC metadata и поэтому могут содержать
+только печатные ASCII-символы. `unaryLimits` принимает только конечные
+положительные числа. Нарушение этих ограничений завершается
+`SdkErrorCode.InvalidArgument` с `source: 'sdk'` до создания transport;
+диагностическое сообщение не повторяет значение token.
 
 Bundled CA применяется только к channel текущего SDK instance и не изменяет
 system trust store. Явный `tls.rootCertificates` заменяет bundled CA, а не
@@ -326,6 +330,11 @@ terminal policy классифицирует application и framework usage erro
 передачи вызова transport-у слот не возвращается, поскольку provider уже мог
 учесть запрос.
 
+`onHeader` и `onTrailer` являются синхронными callbacks. Если callback бросает
+исключение, соответствующий unary-вызов или stream iteration отклоняется этой
+же application error; незавершённый transport call отменяется. Асинхронную
+работу следует запускать и ожидать вне callback-а.
+
 ### Ошибки SDK
 
 Из корня пакета экспортируются `SdkError`, `SdkErrorCode`, `SdkErrorSource` и
@@ -354,6 +363,19 @@ Consumer должен проверять сочетание `code` и `source`.
 network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `details` и
 `cause` сохраняются, но Consumer-у не нужно разбирать диагностический текст:
 стабильной machine-readable границей является `source`.
+
+Локальное превышение внутреннего лимита SDK для входящего gRPC-сообщения
+сохраняет `SdkErrorCode.ResourceExhausted`, но получает `source: 'sdk'`.
+Исчерпание квоты провайдера остается `SdkErrorCode.ResourceExhausted` с
+`source: 'grpc'`.
+Исходные `path`, `details` и `cause` сохраняются в обоих случаях; Consumer-у
+не нужно различать эти причины по диагностическому тексту.
+
+Локальная ошибка сериализации исходящего request сохраняет
+`SdkErrorCode.Internal`, но получает `source: 'sdk'`: transport не отправлял
+такой запрос provider-у. Provider-side `INTERNAL` остается `source: 'grpc'`.
+Поля `path`, `details` и `cause` сохраняются; разбирать их для классификации не
+нужно.
 
 ```ts
 import {
@@ -407,7 +429,8 @@ Guides показывают workflow, но не дублируют полный 
 
 Пакет реэкспортирует:
 - `Timestamp`;
-- типы и enum'ы из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `stoporders`, `users`;
+- типы, enum'ы и их JSON-конвертеры из `common`, `instruments`, `marketdata`,
+  `operations`, `orders`, `sandbox`, `stoporders`, `users`;
 - package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
 - generated server-side `*ServiceDefinition` и `*ServiceImplementation`
   contracts для nice-grpc server adapters.

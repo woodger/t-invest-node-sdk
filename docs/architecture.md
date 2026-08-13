@@ -234,12 +234,22 @@ override:
 ```text
 packageConfig.grpc.maxReceiveMessageLength
   --> TInvestNodeSDK bootstrap
-  --> createSdkChannel
-  --> grpc.max_receive_message_length
+       |--> createSdkChannel --> grpc.max_receive_message_length
+       '--> SdkCallRuntime --> error source classification
 ```
 
 Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует
-неявный default transport dependency.
+неявный default transport dependency. Локальное превышение этого лимита
+сохраняет gRPC-код `RESOURCE_EXHAUSTED`, но получает публичный `source: 'sdk'`;
+квота провайдера с тем же кодом остается в `source: 'grpc'`. Специфичная для
+транспорта диагностика распознается внутри адаптера и не становится контрактом
+Consumer-а.
+
+Тот же transport adapter отделяет локальную ошибку сериализации request от
+provider-side `INTERNAL`: code сохраняется, но локальный случай получает
+`source: 'sdk'`. Response metadata callbacks защищены там же, потому что
+`nice-grpc` вызывает их из EventEmitter handlers: синхронное исключение
+возвращается владельцу RPC, а не process-level `uncaughtException`.
 
 TLS trust material разрешается отдельно для каждого channel:
 
@@ -269,8 +279,11 @@ per-instance options -----------'
 
 Per-instance boolean values `useSsl` и `trackLimits` имеют приоритет над package
 defaults, а `undefined` не отключает package policy. Обязательные `token` и
-`endpoint` проверяются до создания transport channel. `packageConfig.sdk`
-остается внутренней authoring-формой и не расширяет публичный `defaultConfig`.
+`endpoint` проверяются до создания transport channel. Значения `token` и
+непустого `appName` дополнительно проверяются как строковые gRPC metadata, а
+ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с
+`source: 'sdk'`. `packageConfig.sdk` остается внутренней authoring-формой и не
+расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании

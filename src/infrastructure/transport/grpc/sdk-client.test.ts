@@ -12,6 +12,7 @@ import {
   createChannel,
   createServer,
   Metadata,
+  ServerError,
   Status
 } from 'nice-grpc';
 import type {
@@ -32,6 +33,10 @@ import { UnaryLimitResolver } from './unary-limit-resolver';
 
 const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
+const requestSerializationPath =
+  '/test.RequestSerializationService/GetPayload';
+const oneMiB = 1024 * 1024;
+const twoMiB = 2 * oneMiB;
 const maxReceiveMessageLength = 4 * 1024 * 1024;
 const tlsFixturesDirectory = resolve(
   __dirname,
@@ -48,6 +53,16 @@ const payloadServiceDefinition = {
     responseSerialize: (value: Uint8Array) => value,
     responseDeserialize: (value: Uint8Array) => value,
     options: {}
+  }
+} as const satisfies ServiceDefinition;
+
+const requestSerializationServiceDefinition = {
+  getPayload: {
+    ...payloadServiceDefinition.getPayload,
+    path: requestSerializationPath,
+    requestSerialize() {
+      throw new Error('invalid test request');
+    }
   }
 } as const satisfies ServiceDefinition;
 
@@ -105,6 +120,7 @@ describe('createSdkClient', () => {
       throttle,
       {
         useSsl: false,
+        maxReceiveMessageLength,
         signal: lifecycleController.signal,
         // This metadata scenario does not exercise lifecycle rejection.
         // oxlint-disable-next-line no-empty-function
@@ -126,6 +142,206 @@ describe('createSdkClient', () => {
       assert.equal(receivedAppName, 'sdk-app');
       assert.equal(receivedRequestId, 'request-id');
       assert.equal(throttledRule?.limitPerMinute, 60);
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('rejects a unary call when the header callback throws', async () => {
+    const server = createServer();
+    const callbackError = new Error('header callback failed');
+
+    server.add(payloadServiceDefinition, {
+      async getPayload(_request, context) {
+        context.header.set('x-response-id', 'response-id');
+
+        return payload;
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(channel, false);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}, {
+          onHeader() {
+            throw callbackError;
+          }
+        }),
+        (error: unknown) => error === callbackError
+      );
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('rejects a unary call when the trailer callback throws', async () => {
+    const server = createServer();
+    const callbackError = new Error('trailer callback failed');
+
+    server.add(payloadServiceDefinition, {
+      async getPayload(_request, context) {
+        context.trailer.set('x-response-id', 'response-id');
+
+        return payload;
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(channel, false);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}, {
+          onTrailer() {
+            throw callbackError;
+          }
+        }),
+        (error: unknown) => error === callbackError
+      );
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('maps a request serialization failure to the SDK source', async () => {
+    const server = createServer();
+    let handlerCalls = 0;
+
+    server.add(requestSerializationServiceDefinition, {
+      async getPayload() {
+        handlerCalls += 1;
+
+        return payload;
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(
+      channel,
+      false,
+      maxReceiveMessageLength,
+      requestSerializationServiceDefinition
+    );
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
+          && error.source === 'sdk'
+          && error.path === requestSerializationPath
+          && error.details?.startsWith(
+            'Request message serialization failure:'
+          ) === true
+          && error.cause instanceof ClientError
+      );
+      assert.equal(handlerCalls, 0);
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('maps a local receive message limit failure to the SDK source', async () => {
+    const server = createServer();
+
+    server.add(payloadServiceDefinition, {
+      async getPayload() {
+        return new Uint8Array(twoMiB);
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, oneMiB);
+    const client = createPayloadClient(channel, false, oneMiB);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => {
+          if (
+            !isSdkError(error, SdkErrorCode.ResourceExhausted)
+            || !(error.cause instanceof ClientError)
+          ) {
+            return false;
+          }
+
+          return error.source === 'sdk'
+            && error.path === payloadPath
+            && error.details === error.cause.details;
+        }
+      );
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('keeps provider quota exhaustion in the gRPC source', async () => {
+    const server = createServer();
+
+    server.add(payloadServiceDefinition, {
+      async getPayload() {
+        throw new ServerError(
+          Status.RESOURCE_EXHAUSTED,
+          'provider quota exhausted'
+        );
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, oneMiB);
+    const client = createPayloadClient(channel, false, oneMiB);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => {
+          if (
+            !isSdkError(error, SdkErrorCode.ResourceExhausted)
+            || !(error.cause instanceof ClientError)
+          ) {
+            return false;
+          }
+
+          return error.source === 'grpc'
+            && error.path === payloadPath
+            && error.details === 'provider quota exhausted'
+            && error.details === error.cause.details;
+        }
+      );
     }
     finally {
       channel.close();
@@ -228,12 +444,14 @@ describe('createSdkClient', () => {
 
 function createPayloadClient(
   channel: Channel,
-  useSsl: boolean
+  useSsl: boolean,
+  receiveMessageLength: number = maxReceiveMessageLength,
+  service: ServiceDefinition = payloadServiceDefinition
 ): PayloadServiceClient {
   const signal = new AbortController().signal;
 
   return createSdkClient<PayloadServiceClient>(
-    payloadServiceDefinition,
+    service,
     channel,
     new Metadata(),
     false,
@@ -241,6 +459,7 @@ function createPayloadClient(
     new Throttle(),
     {
       useSsl,
+      maxReceiveMessageLength: receiveMessageLength,
       signal,
       assertOpen() {
         if (signal.aborted) {

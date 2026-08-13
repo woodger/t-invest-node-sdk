@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import * as packageExports from './index';
 import type {
+  GetTechAnalysisRequest,
   InstrumentsServiceImplementation,
   MarketDataServiceImplementation,
   MarketDataStreamServiceImplementation,
@@ -16,6 +17,7 @@ import type {
   OperationsStreamServiceImplementation,
   OrdersServiceImplementation,
   OrdersStreamServiceImplementation,
+  PostOrderRequest,
   SandboxServiceImplementation,
   SdkError,
   SdkErrorOptions,
@@ -80,6 +82,38 @@ const signalRuntimeContractNames = [
   'Signal'
 ] as const;
 
+const generatedEnumRuntimeContractNames = [
+  ['Recommendation', 'recommendation'],
+  ['BondType', 'bondType'],
+  ['InstrumentExchangeType', 'instrumentExchangeType'],
+  ['GetBondEventsRequest_EventType', 'getBondEventsRequest_EventType'],
+  ['StructuredNote_LogicPortfolio', 'structuredNote_LogicPortfolio'],
+  ['StructuredNote_ObservationPrinciple', 'structuredNote_ObservationPrinciple'],
+  ['StructuredNote_YieldType', 'structuredNote_YieldType'],
+  ['GetAssetReportsResponse_AssetReportPeriodType', 'getAssetReportsResponse_AssetReportPeriodType'],
+  ['GetInsiderDealsResponse_TradeDirection', 'getInsiderDealsResponse_TradeDirection'],
+  ['TradeSourceType', 'tradeSourceType'],
+  ['CandleSource', 'candleSource'],
+  ['MarketValueType', 'marketValueType'],
+  ['OrderBookType', 'orderBookType'],
+  ['LastPriceType', 'lastPriceType'],
+  ['GetCandlesRequest_CandleSource', 'getCandlesRequest_CandleSource'],
+  ['GetTechAnalysisRequest_IndicatorInterval', 'getTechAnalysisRequest_IndicatorInterval'],
+  ['GetTechAnalysisRequest_TypeOfPrice', 'getTechAnalysisRequest_TypeOfPrice'],
+  ['GetTechAnalysisRequest_IndicatorType', 'getTechAnalysisRequest_IndicatorType'],
+  ['OperationsAccountSubscriptionStatus', 'operationsAccountSubscriptionStatus'],
+  ['TimeInForceType', 'timeInForceType'],
+  ['OrderIdType', 'orderIdType'],
+  ['OrderStateStreamResponse_MarkerType', 'orderStateStreamResponse_MarkerType'],
+  ['OrderStateStreamResponse_StatusCauseInfo', 'orderStateStreamResponse_StatusCauseInfo'],
+  ['StopOrderStatusOption', 'stopOrderStatusOption'],
+  ['ExchangeOrderType', 'exchangeOrderType'],
+  ['TakeProfitType', 'takeProfitType'],
+  ['TrailingValueType', 'trailingValueType'],
+  ['TrailingStopStatus', 'trailingStopStatus'],
+  ['AccountValue', 'accountValue']
+] as const;
+
 type GeneratedServiceDefinitionRuntimeContract = {
   methods: Record<string, {
     requestType?: unknown;
@@ -113,6 +147,27 @@ describe('package entrypoint', () => {
     for (const exportName of signalRuntimeContractNames) {
       assert.equal(hasPackageExport(exportName), true);
     }
+  });
+
+  test('exposes generated enum contracts used by public DTOs', () => {
+    for (const [enumName, converterName] of generatedEnumRuntimeContractNames) {
+      assert.equal(hasPackageExport(enumName), true);
+      assert.equal(typeof getPackageExport(`${converterName}FromJSON`), 'function');
+      assert.equal(typeof getPackageExport(`${converterName}ToJSON`), 'function');
+    }
+
+    const timeInForce: PostOrderRequest['timeInForce'] = packageExports.timeInForceTypeFromJSON('TIME_IN_FORCE_DAY');
+    const indicatorType: GetTechAnalysisRequest['indicatorType'] =
+      packageExports.getTechAnalysisRequest_IndicatorTypeFromJSON('INDICATOR_TYPE_SMA');
+    const interval: GetTechAnalysisRequest['interval'] =
+      packageExports.getTechAnalysisRequest_IndicatorIntervalFromJSON('INDICATOR_INTERVAL_ONE_DAY');
+    const typeOfPrice: GetTechAnalysisRequest['typeOfPrice'] =
+      packageExports.getTechAnalysisRequest_TypeOfPriceFromJSON('TYPE_OF_PRICE_CLOSE');
+
+    assert.equal(packageExports.timeInForceTypeToJSON(timeInForce), 'TIME_IN_FORCE_DAY');
+    assert.equal(packageExports.getTechAnalysisRequest_IndicatorTypeToJSON(indicatorType), 'INDICATOR_TYPE_SMA');
+    assert.equal(packageExports.getTechAnalysisRequest_IndicatorIntervalToJSON(interval), 'INDICATOR_INTERVAL_ONE_DAY');
+    assert.equal(packageExports.getTechAnalysisRequest_TypeOfPriceToJSON(typeOfPrice), 'TYPE_OF_PRICE_CLOSE');
   });
 
   test('does not expose generated client runtime contracts', () => {

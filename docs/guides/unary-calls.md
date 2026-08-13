@@ -153,6 +153,12 @@ void main().catch((error: unknown) => {
 - `onHeader` получает initial response metadata;
 - `onTrailer` получает trailing response metadata.
 
+Metadata callbacks выполняются синхронно. Если `onHeader` или `onTrailer`
+бросает исключение, SDK отклоняет этой же ошибкой владеющий RPC и отменяет
+transport call, если тот еще не завершился. Не передавайте сюда `async`
+functions: асинхронную обработку metadata нужно выполнять после завершения
+вызова.
+
 `AbortSignal.timeout()` создает независимый deadline для каждого вызова в
 примере. Если один signal нужно разделить между несколькими RPC, его отмена
 остановит все вызовы, которым он был передан.

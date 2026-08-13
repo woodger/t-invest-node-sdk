@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import {
   ClientError,
+  Metadata,
   Status
 } from 'nice-grpc';
 import {
@@ -21,6 +22,7 @@ type TestRequest = Record<string, never>;
 
 const defaultUnaryResponse = { ok: true };
 const usersPath = '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
+const maxReceiveMessageLength = 4 * 1024 * 1024;
 
 async function* createUnaryResponseIterator<Response>(
   response: Response
@@ -117,6 +119,7 @@ function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
 
   return {
     useSsl,
+    maxReceiveMessageLength,
     signal,
     assertOpen() {
       if (signal.aborted) {
@@ -284,6 +287,7 @@ describe('createSdkMiddleware', () => {
       throttle,
       {
         useSsl: false,
+        maxReceiveMessageLength,
         signal: lifecycleController.signal,
         assertOpen() {
           if (lifecycleController.signal.aborted) {
@@ -326,6 +330,59 @@ describe('createSdkMiddleware', () => {
         && error.path === path
         && error.details === 'invalid token'
         && error.cause === providerError
+    );
+  });
+
+  test('keeps provider INTERNAL failures in the gRPC source', async () => {
+    const path = '/test.Service/Method';
+    const providerError = new ClientError(
+      path,
+      Status.INTERNAL,
+      'provider internal failure'
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle()
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, providerError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
+        && error.source === 'grpc'
+        && error.details === 'provider internal failure'
+    );
+  });
+
+  test('maps a decompressed receive message limit failure to the SDK source', async () => {
+    const path = '/test.Service/Method';
+    const transportError = new ClientError(
+      path,
+      Status.RESOURCE_EXHAUSTED,
+      `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle(),
+      createOpenRuntime(false)
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, transportError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.ResourceExhausted)
+        && error.source === 'sdk'
+        && error.path === path
+        && error.details === transportError.details
+        && error.cause === transportError
     );
   });
 
@@ -458,5 +515,44 @@ describe('createSdkMiddleware', () => {
 
     assert.equal(throttleCalls, 0);
     assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
+  });
+
+  test('rejects a response stream when a metadata callback throws', async () => {
+    const path = '/test.StreamService/Watch';
+    const callbackError = new Error('stream header callback failed');
+    const call: ClientMiddlewareCall<
+      TestRequest,
+      typeof defaultUnaryResponse,
+      CallOptions
+    > = {
+      requestStream: false,
+      request: {},
+      responseStream: true,
+      method: {
+        path,
+        requestStream: false,
+        responseStream: true,
+        options: {}
+      },
+      next: async function*(_request, options) {
+        options.onHeader?.(new Metadata());
+        yield defaultUnaryResponse;
+      }
+    };
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle()
+    );
+    const iterator = middleware(call, {
+      onHeader() {
+        throw callbackError;
+      }
+    });
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => error === callbackError
+    );
   });
 });

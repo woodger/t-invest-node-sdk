@@ -24,11 +24,13 @@ import {
   SdkError,
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
+import type { SdkErrorSource } from '../../../application/errors/sdk-error';
 import type { Throttle } from '../../../application/services/unary-throttle.service';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export interface SdkCallRuntime {
   readonly useSsl: boolean;
+  readonly maxReceiveMessageLength: number;
   readonly signal: AbortSignal;
   assertOpen(): void;
 }
@@ -43,6 +45,8 @@ export function createSdkMiddleware(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
+    const callbackBoundary = createCallCallbackBoundary(options);
+
     try {
       runtime?.assertOpen();
 
@@ -70,26 +74,45 @@ export function createSdkMiddleware(
         runtime?.assertOpen();
         throwIfAborted(options.signal);
 
-        const response = yield* call.next(call.request, options);
+        const response = yield* call.next(
+          call.request,
+          callbackBoundary?.options ?? options
+        );
+
+        throwCallCallbackFailure(callbackBoundary);
 
         return response;
       }
 
       throwIfAborted(options.signal);
 
-      for await (const response of call.next(call.request, options)) {
+      for await (const response of call.next(
+        call.request,
+        callbackBoundary?.options ?? options
+      )) {
+        throwCallCallbackFailure(callbackBoundary);
         yield response;
       }
+
+      throwCallCallbackFailure(callbackBoundary);
 
       return undefined;
     }
     catch (error) {
+      if (callbackBoundary?.failure !== undefined) {
+        throw callbackBoundary.failure.reason;
+      }
+
       throw mapSdkCallError(
         error,
         call.method.path,
         options.signal,
-        runtime?.useSsl === true
+        runtime?.useSsl === true,
+        runtime?.maxReceiveMessageLength
       );
+    }
+    finally {
+      throwCallCallbackFailure(callbackBoundary);
     }
   };
 }
@@ -185,7 +208,8 @@ function mapSdkCallError(
   error: unknown,
   path: string,
   signal: AbortSignal | undefined,
-  useSsl: boolean
+  useSsl: boolean,
+  maxReceiveMessageLength: number | undefined
 ): unknown {
   if (isCallCancellation(error, signal)) {
     return new SdkError(
@@ -208,7 +232,11 @@ function mapSdkCallError(
       grpcErrorCodes[error.code] ?? SdkErrorCode.Unknown,
       error.message,
       {
-        source: isTlsCertificateError(error, useSsl) ? 'tls' : 'grpc',
+        source: resolveClientErrorSource(
+          error,
+          useSsl,
+          maxReceiveMessageLength
+        ),
         path: error.path,
         details: error.details,
         cause: error
@@ -217,6 +245,65 @@ function mapSdkCallError(
   }
 
   return error;
+}
+
+function resolveClientErrorSource(
+  error: ClientError,
+  useSsl: boolean,
+  maxReceiveMessageLength: number | undefined
+): SdkErrorSource {
+  if (isTlsCertificateError(error, useSsl)) {
+    return 'tls';
+  }
+
+  if (isLocalReceiveMessageLimitError(error, maxReceiveMessageLength)) {
+    return 'sdk';
+  }
+
+  if (isLocalRequestSerializationError(error)) {
+    return 'sdk';
+  }
+
+  return 'grpc';
+}
+
+const requestSerializationFailurePrefix =
+  'Request message serialization failure:';
+
+function isLocalRequestSerializationError(error: ClientError): boolean {
+  return error.code === Status.INTERNAL
+    && error.details.startsWith(requestSerializationFailurePrefix);
+}
+
+const receivedMessageLargerThanMaxPattern =
+  /^Received message larger than max \((\d+) vs (\d+)\)$/;
+
+function isLocalReceiveMessageLimitError(
+  error: ClientError,
+  maxReceiveMessageLength: number | undefined
+): boolean {
+  if (
+    maxReceiveMessageLength === undefined
+    || error.code !== Status.RESOURCE_EXHAUSTED
+  ) {
+    return false;
+  }
+
+  const rawMessageMatch = receivedMessageLargerThanMaxPattern.exec(
+    error.details
+  );
+
+  if (rawMessageMatch !== null) {
+    const receivedMessageLength = rawMessageMatch[1];
+    const configuredMessageLength = rawMessageMatch[2];
+
+    return receivedMessageLength !== undefined
+      && configuredMessageLength === String(maxReceiveMessageLength)
+      && Number(receivedMessageLength) > maxReceiveMessageLength;
+  }
+
+  return error.details ===
+    `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`;
 }
 
 function isTlsCertificateError(
@@ -250,6 +337,83 @@ function isCallCancellation(
 ): boolean {
   return signal?.aborted === true
     && (error === signal.reason || errorName(error) === 'AbortError');
+}
+
+interface CallCallbackFailure {
+  readonly reason: unknown;
+}
+
+interface CallCallbackBoundary {
+  readonly options: CallOptions;
+  readonly failure: CallCallbackFailure | undefined;
+}
+
+function createCallCallbackBoundary(
+  options: CallOptions
+): CallCallbackBoundary | undefined {
+  if (options.onHeader === undefined && options.onTrailer === undefined) {
+    return undefined;
+  }
+
+  // nice-grpc вызывает эти callbacks из EventEmitter handlers. Исключение
+  // нужно вернуть владельцу RPC, иначе оно обходит Promise/AsyncIterable.
+  const controller = new AbortController();
+  let failure: CallCallbackFailure | undefined;
+  const captureFailure = (reason: unknown) => {
+    if (failure === undefined) {
+      failure = { reason };
+      controller.abort(reason);
+    }
+  };
+  const protectedOptions: CallOptions = {
+    ...options,
+    signal: options.signal === undefined
+      ? controller.signal
+      : AbortSignal.any([options.signal, controller.signal])
+  };
+
+  if (options.onHeader !== undefined) {
+    protectedOptions.onHeader = protectCallCallback(
+      options.onHeader,
+      captureFailure
+    );
+  }
+
+  if (options.onTrailer !== undefined) {
+    protectedOptions.onTrailer = protectCallCallback(
+      options.onTrailer,
+      captureFailure
+    );
+  }
+
+  return {
+    options: protectedOptions,
+    get failure() {
+      return failure;
+    }
+  };
+}
+
+function protectCallCallback(
+  callback: NonNullable<CallOptions['onHeader']>,
+  captureFailure: (reason: unknown) => void
+): NonNullable<CallOptions['onHeader']> {
+  return (metadata) => {
+    try {
+      callback(metadata);
+    }
+    catch (error) {
+      captureFailure(error);
+    }
+  };
+}
+
+function throwCallCallbackFailure(
+  boundary: CallCallbackBoundary | undefined
+): void {
+  if (boundary?.failure !== undefined) {
+    throw boundary.failure.reason;
+  }
 }
 
 function errorName(error: unknown): string | undefined {
