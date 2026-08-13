@@ -57,7 +57,7 @@ describe('bond-coupons command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: 'BOND-FIGI',
+        figi: '',
         instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
@@ -135,7 +135,7 @@ describe('bond-coupons command', () => {
       });
       assert.equal(getBondCouponsCalls, 1);
       assert.deepEqual(receivedRequest, {
-        figi: 'BOND-FIGI',
+        figi: '',
         instrumentId: 'BOND-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')

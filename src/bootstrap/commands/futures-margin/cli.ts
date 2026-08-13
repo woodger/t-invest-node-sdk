@@ -10,9 +10,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
+import {
   GetFuturesMarginRequest,
-  GetFuturesMarginResponse
+  type GetFuturesMarginResponse
 } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
@@ -110,8 +110,7 @@ export function createFuturesMarginRequest(
 ): GetFuturesMarginRequest {
   const instrumentId = resolveInstrumentIdOption(options);
 
-  return {
-    figi: instrumentId,
+  return GetFuturesMarginRequest.create({
     instrumentId
-  };
+  });
 }

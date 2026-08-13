@@ -120,11 +120,10 @@ export function createLastTradesRequest(
     throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
   }
 
-  return {
-    figi: '',
+  return GetLastTradesRequest.create({
     instrumentId: options['instrument-id'],
     from,
     to,
     tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED
-  };
+  });
 }

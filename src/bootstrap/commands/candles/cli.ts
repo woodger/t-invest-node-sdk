@@ -12,7 +12,7 @@
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
   CandleInterval,
-  type GetCandlesRequest,
+  GetCandlesRequest,
   type GetCandlesResponse
 } from '../../../generated/marketdata';
 import { CliUsageError, type InferOptions } from 'icore';
@@ -158,11 +158,10 @@ export function createCandlesRequest(
     throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
   }
 
-  return {
-    figi: '',
+  return GetCandlesRequest.create({
     instrumentId: options['instrument-id'],
     from,
     to,
     interval: candleIntervals[options.interval as CandleIntervalName]
-  };
+  });
 }

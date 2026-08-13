@@ -7,7 +7,7 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
 import {
   EditFavoritesActionType,
-  type EditFavoritesRequest,
+  EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
 import type { CommandRawOptions } from '../../args/command-options';
@@ -43,16 +43,23 @@ function editFavoritesResponse(): EditFavoritesResponse {
 describe('edit-favorites command', () => {
   describe('createEditFavoritesRequest', () => {
     test('returns generated editFavorites request', () => {
-      assert.deepEqual(createEditFavoritesRequest({
+      const request = createEditFavoritesRequest({
         'instrument-id': 'figi-1,figi-2',
         action: 'add'
-      }), {
-        instruments: [
-          { figi: 'figi-1', instrumentId: 'figi-1' },
-          { figi: 'figi-2', instrumentId: 'figi-2' }
-        ],
-        actionType: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD
       });
+
+      assert.deepEqual(request, {
+        instruments: [
+          { figi: undefined, instrumentId: 'figi-1' },
+          { figi: undefined, instrumentId: 'figi-2' }
+        ],
+        actionType: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD,
+        groupId: undefined
+      });
+      assert.doesNotMatch(
+        JSON.stringify(EditFavoritesRequest.toJSON(request)),
+        /"figi":/
+      );
     });
   });
 
@@ -125,11 +132,12 @@ describe('edit-favorites command', () => {
       assert.deepEqual(receivedRequest, {
         instruments: [
           {
-            figi: 'BBG00QPYJ5H0',
+            figi: undefined,
             instrumentId: 'BBG00QPYJ5H0'
           }
         ],
-        actionType: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD
+        actionType: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD,
+        groupId: undefined
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].ticker, 'TCSG');

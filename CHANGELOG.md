@@ -24,14 +24,23 @@ micro-release separately.
   checks while retaining the existing generated-code boundary and unused
   suppression validation.
 - Kept `typescript/no-deprecated` outside the project ruleset after a diagnostic
-  run identified upstream-deprecated contracts at SDK compatibility boundaries,
-  including FIGI request fields and `klong`/`kshort` in CLI reports. These cases
-  require a separate semantic migration and cannot be resolved by mechanically
-  substituting fields such as `dlong`/`dshort`.
+  run identified upstream-deprecated contracts at generated public API and CLI
+  output compatibility boundaries. These cases cannot all be resolved by
+  mechanically substituting fields such as `dlong`/`dshort`.
+- Propagated the upstream `klong`/`kshort` deprecation to six handwritten CLI
+  report contracts and documented the Consumer migration boundary. Existing
+  CLI JSON and table output remains unchanged.
 - Kept `typescript/no-unsafe-assignment` outside the project ruleset because its
   findings are limited to test-owned JSON parsing. Existing
   `no-empty-function`, `no-meaningless-void-operator`, and
   `no-misused-spread` protections remain enabled.
+
+### Fixed
+
+- Stopped handwritten CLI request builders from populating upstream-deprecated
+  FIGI request and subscription fields. The compatibility `--figi` option now
+  resolves only to `instrumentId`; deprecated fields remain at protobuf defaults
+  and are omitted from serialized requests.
 
 ## [0.4.2] - 2026-08-07
 

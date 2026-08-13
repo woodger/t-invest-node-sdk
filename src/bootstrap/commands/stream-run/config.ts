@@ -10,11 +10,16 @@
  */
 
 import {
+  CandleInstrument,
+  InfoInstrument,
+  LastPriceInstrument,
   type MarketDataRequest,
   OrderBookType,
+  OrderBookInstrument,
   SubscriptionAction,
   SubscriptionInterval,
   TradeSourceType,
+  TradeInstrument,
   type MarketDataServerSideStreamRequest
 } from '../../../generated/marketdata';
 import type {
@@ -203,43 +208,47 @@ export function createMarketDataServerSideStreamRequest(
     subscribeCandlesRequest: candles.length > 0
       ? {
         subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: candles.map((item) => ({
-          figi: '',
+        instruments: candles.map((item) => CandleInstrument.create({
           interval: item.interval,
           instrumentId: item.instrumentId
         })),
         waitingClose: resolveCandlesWaitingClose(candles)
       }
       : undefined,
-        subscribeOrderBookRequest: orderBooks.length > 0
-          ? {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: orderBooks.map((item) => ({
-              figi: '',
-              depth: item.depth,
-              instrumentId: item.instrumentId,
-              orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-            }))
-          }
-          : undefined,
-        subscribeTradesRequest: trades.length > 0
-          ? {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: trades.map(createInstrumentRequest),
-            tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
-            withOpenInterest: false
-          }
-          : undefined,
+    subscribeOrderBookRequest: orderBooks.length > 0
+      ? {
+        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+        instruments: orderBooks.map((item) => OrderBookInstrument.create({
+          depth: item.depth,
+          instrumentId: item.instrumentId,
+          orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
+        }))
+      }
+      : undefined,
+    subscribeTradesRequest: trades.length > 0
+      ? {
+        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+        instruments: trades.map((item) => TradeInstrument.create({
+          instrumentId: item.instrumentId
+        })),
+        tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+        withOpenInterest: false
+      }
+      : undefined,
     subscribeInfoRequest: info.length > 0
       ? {
         subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: info.map(createInstrumentRequest)
+        instruments: info.map((item) => InfoInstrument.create({
+          instrumentId: item.instrumentId
+        }))
       }
       : undefined,
     subscribeLastPriceRequest: lastPrices.length > 0
       ? {
         subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: lastPrices.map(createInstrumentRequest)
+        instruments: lastPrices.map((item) => LastPriceInstrument.create({
+          instrumentId: item.instrumentId
+        }))
       }
       : undefined,
     pingSettings: undefined
@@ -378,8 +387,7 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
       return {
         subscribeCandlesRequest: {
           subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: instruments.map((item) => ({
-            figi: '',
+          instruments: instruments.map((item) => CandleInstrument.create({
             interval: item.interval,
             instrumentId: item.instrumentId
           })),
@@ -396,8 +404,7 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
           subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
           instruments: parseArray(request['instruments'], 'requests[].instruments')
             .map((item) => parseOrderBookSubscription(item, 'requests[].instruments[]'))
-            .map((item) => ({
-              figi: '',
+            .map((item) => OrderBookInstrument.create({
               depth: item.depth,
               instrumentId: item.instrumentId,
               orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
@@ -413,7 +420,9 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
           subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
           instruments: parseArray(request['instruments'], 'requests[].instruments')
             .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map(createInstrumentRequest),
+            .map((item) => TradeInstrument.create({
+              instrumentId: item.instrumentId
+            })),
           tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
           withOpenInterest: false
         }
@@ -427,7 +436,9 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
           subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
           instruments: parseArray(request['instruments'], 'requests[].instruments')
             .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map(createInstrumentRequest)
+            .map((item) => InfoInstrument.create({
+              instrumentId: item.instrumentId
+            }))
         }
       };
 
@@ -439,7 +450,9 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
           subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
           instruments: parseArray(request['instruments'], 'requests[].instruments')
             .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map(createInstrumentRequest)
+            .map((item) => LastPriceInstrument.create({
+              instrumentId: item.instrumentId
+            }))
         }
       };
 
@@ -656,11 +669,4 @@ function validateCandlesWaitingClose(candles: CandleSubscriptionConfig[]): void 
   if (candles.some((item) => item.waitingClose !== waitingClose)) {
     throw new CliUsageError("Expected 'subscriptions.candles[].waitingClose' to be the same for one request");
   }
-}
-
-function createInstrumentRequest(item: InstrumentSubscriptionConfig) {
-  return {
-    figi: '',
-    instrumentId: item.instrumentId
-  };
 }

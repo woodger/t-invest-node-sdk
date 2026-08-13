@@ -64,7 +64,7 @@ describe('dividends command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: 'SHARE-FIGI',
+        figi: '',
         instrumentId: 'SHARE-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')
@@ -141,7 +141,7 @@ describe('dividends command', () => {
       });
       assert.equal(getDividendsCalls, 1);
       assert.deepEqual(receivedRequest, {
-        figi: 'SHARE-FIGI',
+        figi: '',
         instrumentId: 'SHARE-FIGI',
         from: new Date('2026-01-01T00:00:00Z'),
         to: new Date('2026-01-31T00:00:00Z')

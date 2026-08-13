@@ -161,6 +161,38 @@ Authorization и instance `x-app-name` принадлежат SDK. Consumer meta
 объединяется с instance metadata, но не должна использоваться для подмены этих
 заголовков.
 
+## Deprecated provider-поля
+
+Публичные generated declarations повторяют upstream T-Invest contract вместе с
+его пометками `@deprecated`. Такая пометка означает, что поле нельзя переносить
+в стабильную доменную или HTTP-модель автоматически: сначала нужно определить
+его бизнес-смысл и контракт замены.
+
+В частности, `klong` и `kshort` описывают коэффициенты ставки риска по клиенту,
+а `dlong` и `dshort` — ставки риска начальной маржи. SDK не подставляет
+`dlong`/`dshort` вместо `klong`/`kshort` и не объявляет их прямой заменой.
+
+CLI reports ветки `0.4.x` сохраняют `klong` и `kshort` без изменения значений
+для совместимости существующего output. Handwritten report-контракты помечают
+эти поля как deprecated; их удаление потребует отдельного breaking change.
+
+CLI alias `--figi` сохранён для совместимости, но его значение преобразуется в
+актуальное protobuf-поле `instrumentId`. Во встроенном CLI deprecated FIGI-поля
+request- и subscription-контрактов остаются на protobuf-defaults и не
+сериализуются. При прямом вызове service facade содержимое generated request
+по-прежнему задаёт сам Consumer.
+
+Consumer-у рекомендуется:
+
+- не переносить deprecated provider-поля за пределы transport adapter, если у
+  приложения нет подтвержденного бизнес-сценария;
+- пометить уже опубликованные `klong`/`kshort` как deprecated и сохранить их на
+  переходный период, если от них зависят внешние клиенты;
+- вводить `dlong`/`dshort` как отдельные поля с собственной семантикой, а не как
+  переименование или fallback для `klong`/`kshort`;
+- изолировать временное чтение legacy-полей и объяснять точечное подавление
+  `typescript/no-deprecated` на границе T-Invest adapter.
+
 ## Throttling
 
 Локальный throttling unary-вызовов включен по умолчанию. Он защищает от

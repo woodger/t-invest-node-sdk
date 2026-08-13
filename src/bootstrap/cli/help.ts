@@ -942,7 +942,7 @@ export const commandHelp = {
       '--confirm is an SDK CLI safety guard; it is not a gRPC request field.',
       'Use a stable --order-id value for retries so provider idempotency can identify the same order request.',
       'The CLI does not infer pricing rules; provider validation decides whether --price is valid for the selected order type.',
-      'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
+      'Deprecated generated figi request field is not serialized; use --instrument-id.'
     ]
   },
   'order cancel': {
@@ -1234,7 +1234,7 @@ export const commandHelp = {
     ],
     notes: [
       'This command places a stop order and refuses to run without --confirm by default CLI policy.',
-      'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
+      'Deprecated generated figi request field is not serialized; use --instrument-id.'
     ]
   },
   'stop-order cancel': {
@@ -1395,7 +1395,7 @@ export const commandHelp = {
     ],
     notes: [
       'This command places a sandbox order and refuses to run without --confirm by default CLI policy.',
-      'Deprecated generated figi request field is sent as an empty string; use --instrument-id.'
+      'Deprecated generated figi request field is not serialized; use --instrument-id.'
     ]
   },
   'sandbox order replace': {

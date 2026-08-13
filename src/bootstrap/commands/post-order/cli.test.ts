@@ -61,7 +61,7 @@ describe('post-order command', () => {
       });
 
       assert.deepEqual(request, {
-        figi: '',
+        figi: undefined,
         quantity: 10,
         price: {
           units: 100,

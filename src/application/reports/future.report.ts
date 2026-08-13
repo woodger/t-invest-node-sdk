@@ -34,9 +34,17 @@ export interface FutureReportInstrument {
   /** Размер базового актива в строковом формате quotation. */
   basicAssetSize: string;
   basicAssetPositionUid: string;
-  /** Коэффициент ставки риска long. */
+  /**
+   * Коэффициент ставки риска long.
+   * @deprecated Upstream пометил поле как устаревшее. Оно сохраняется для
+   * совместимости CLI output; `dlong` не является прямой заменой.
+   */
   klong: string;
-  /** Коэффициент ставки риска short. */
+  /**
+   * Коэффициент ставки риска short.
+   * @deprecated Upstream пометил поле как устаревшее. Оно сохраняется для
+   * совместимости CLI output; `dshort` не является прямой заменой.
+   */
   kshort: string;
   /** Ставка риска long. */
   dlong: string;

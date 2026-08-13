@@ -118,7 +118,8 @@ Market data subscriptions are grouped by event family:
 Subscription defaults:
 
 - `action` defaults to `subscribe`;
-- deprecated generated `figi` fields are sent as empty strings;
+- deprecated generated `figi` fields are left at their protobuf defaults and
+  are not serialized;
 - `instrumentId` is required for every instrument item;
 - `waitingClose` defaults to `false`;
 - `orderBooks[].depth` is required and must be a positive integer.
@@ -196,7 +197,6 @@ Advanced raw bidirectional form:
         "subscriptionAction": "SUBSCRIPTION_ACTION_SUBSCRIBE",
         "instruments": [
           {
-            "figi": "",
             "instrumentId": "BBG00QPYJ5H0"
           }
         ]
