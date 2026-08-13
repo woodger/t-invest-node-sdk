@@ -22,6 +22,16 @@
   случай получает `ResourceExhausted` с `source: 'sdk'`, второй сохраняет
   `source: 'grpc'`.
   Поля `path`, `details` и `cause` остаются доступными для диагностики.
+- Ошибка сериализации исходящего request теперь получает `Internal` с
+  `source: 'sdk'`, поскольку запрос не покинул процесс. Provider-side
+  `INTERNAL` сохраняет `source: 'grpc'`; `path`, `details` и `cause` не
+  теряются.
+- Синхронные исключения из `onHeader` и `onTrailer` больше не выходят в
+  `uncaughtException`: соответствующий unary-вызов или stream iteration
+  отклоняется исходной ошибкой, а незавершённый transport call отменяется.
+- Недопустимые значения публичных `token`, `appName` и `unaryLimits`
+  нормализуются в `InvalidArgument` с `source: 'sdk'` до создания transport.
+  Диагностика metadata validation не содержит значение token.
 
 ## [0.4.3] - 2026-08-13
 

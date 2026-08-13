@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import {
   ClientError,
+  Metadata,
   Status
 } from 'nice-grpc';
 import {
@@ -332,6 +333,31 @@ describe('createSdkMiddleware', () => {
     );
   });
 
+  test('keeps provider INTERNAL failures in the gRPC source', async () => {
+    const path = '/test.Service/Method';
+    const providerError = new ClientError(
+      path,
+      Status.INTERNAL,
+      'provider internal failure'
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle()
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, providerError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
+        && error.source === 'grpc'
+        && error.details === 'provider internal failure'
+    );
+  });
+
   test('maps a decompressed receive message limit failure to the SDK source', async () => {
     const path = '/test.Service/Method';
     const transportError = new ClientError(
@@ -489,5 +515,44 @@ describe('createSdkMiddleware', () => {
 
     assert.equal(throttleCalls, 0);
     assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
+  });
+
+  test('rejects a response stream when a metadata callback throws', async () => {
+    const path = '/test.StreamService/Watch';
+    const callbackError = new Error('stream header callback failed');
+    const call: ClientMiddlewareCall<
+      TestRequest,
+      typeof defaultUnaryResponse,
+      CallOptions
+    > = {
+      requestStream: false,
+      request: {},
+      responseStream: true,
+      method: {
+        path,
+        requestStream: false,
+        responseStream: true,
+        options: {}
+      },
+      next: async function*(_request, options) {
+        options.onHeader?.(new Metadata());
+        yield defaultUnaryResponse;
+      }
+    };
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle()
+    );
+    const iterator = middleware(call, {
+      onHeader() {
+        throw callbackError;
+      }
+    });
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => error === callbackError
+    );
   });
 });

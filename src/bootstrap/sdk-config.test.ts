@@ -1,6 +1,10 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import type { TInvestOptions } from '../application/dto/t-invest-options';
+import {
+  isSdkError,
+  SdkErrorCode
+} from '../application/errors/sdk-error';
 import { Throttle } from '../application/services/unary-throttle.service';
 import {
   defaultConfig,
@@ -80,6 +84,34 @@ describe('resolveSdkInstanceOptions', () => {
     assert.equal(options.useSsl, true);
     assert.equal(options.trackLimits, true);
   });
+
+  test('rejects an unsupported token without exposing its value', () => {
+    const token = 'секретный-token';
+
+    assert.throws(
+      () => resolveSdkInstanceOptions({
+        token,
+        endpoint: 'localhost:50051'
+      }),
+      (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        && error.source === 'sdk'
+        && error.cause === undefined
+        && !error.message.includes(token)
+    );
+  });
+
+  test('rejects an app name unsupported by gRPC metadata', () => {
+    assert.throws(
+      () => resolveSdkInstanceOptions({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        appName: 'приложение'
+      }),
+      (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        && error.source === 'sdk'
+        && error.message.includes('TInvestOptions.appName')
+    );
+  });
 });
 
 describe('resolveUnaryThrottleConfig', () => {
@@ -131,7 +163,11 @@ describe('resolveUnaryThrottleConfig', () => {
     for (const limit of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
       assert.throws(
         () => resolveUnaryThrottleConfig({ UsersService: limit }),
-        /Unary limit UsersService must be a finite positive number/
+        (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+          && error.source === 'sdk'
+          && error.cause instanceof Error
+          && error.message ===
+            'Unary limit UsersService must be a finite positive number'
       );
     }
   });
@@ -144,7 +180,10 @@ describe('resolveUnaryThrottleConfig', () => {
 
       assert.throws(
         () => resolveUnaryThrottleConfig(),
-        /Unary limit UsersService must be a finite positive number/
+        (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+          && error.source === 'sdk'
+          && error.message ===
+            'Unary limit UsersService must be a finite positive number'
       );
     }
     finally {

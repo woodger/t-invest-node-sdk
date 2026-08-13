@@ -216,7 +216,9 @@ export interface TInvestCallOptions {
   metadata?: TInvestMetadata;
   /** Отменяет ожидание локальной квоты и переданный transport-вызов. */
   signal?: AbortSignal;
+  /** Синхронное исключение отклоняет владеющий RPC или stream iteration. */
   onHeader?(header: TInvestMetadata): void;
+  /** Синхронное исключение отклоняет владеющий RPC или stream iteration. */
   onTrailer?(trailer: TInvestMetadata): void;
 }
 

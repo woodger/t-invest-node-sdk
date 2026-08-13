@@ -45,6 +45,8 @@ export function createSdkMiddleware(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
+    const callbackBoundary = createCallCallbackBoundary(options);
+
     try {
       runtime?.assertOpen();
 
@@ -72,20 +74,35 @@ export function createSdkMiddleware(
         runtime?.assertOpen();
         throwIfAborted(options.signal);
 
-        const response = yield* call.next(call.request, options);
+        const response = yield* call.next(
+          call.request,
+          callbackBoundary?.options ?? options
+        );
+
+        throwCallCallbackFailure(callbackBoundary);
 
         return response;
       }
 
       throwIfAborted(options.signal);
 
-      for await (const response of call.next(call.request, options)) {
+      for await (const response of call.next(
+        call.request,
+        callbackBoundary?.options ?? options
+      )) {
+        throwCallCallbackFailure(callbackBoundary);
         yield response;
       }
+
+      throwCallCallbackFailure(callbackBoundary);
 
       return undefined;
     }
     catch (error) {
+      if (callbackBoundary?.failure !== undefined) {
+        throw callbackBoundary.failure.reason;
+      }
+
       throw mapSdkCallError(
         error,
         call.method.path,
@@ -93,6 +110,9 @@ export function createSdkMiddleware(
         runtime?.useSsl === true,
         runtime?.maxReceiveMessageLength
       );
+    }
+    finally {
+      throwCallCallbackFailure(callbackBoundary);
     }
   };
 }
@@ -240,7 +260,19 @@ function resolveClientErrorSource(
     return 'sdk';
   }
 
+  if (isLocalRequestSerializationError(error)) {
+    return 'sdk';
+  }
+
   return 'grpc';
+}
+
+const requestSerializationFailurePrefix =
+  'Request message serialization failure:';
+
+function isLocalRequestSerializationError(error: ClientError): boolean {
+  return error.code === Status.INTERNAL
+    && error.details.startsWith(requestSerializationFailurePrefix);
 }
 
 const receivedMessageLargerThanMaxPattern =
@@ -305,6 +337,83 @@ function isCallCancellation(
 ): boolean {
   return signal?.aborted === true
     && (error === signal.reason || errorName(error) === 'AbortError');
+}
+
+interface CallCallbackFailure {
+  readonly reason: unknown;
+}
+
+interface CallCallbackBoundary {
+  readonly options: CallOptions;
+  readonly failure: CallCallbackFailure | undefined;
+}
+
+function createCallCallbackBoundary(
+  options: CallOptions
+): CallCallbackBoundary | undefined {
+  if (options.onHeader === undefined && options.onTrailer === undefined) {
+    return undefined;
+  }
+
+  // nice-grpc вызывает эти callbacks из EventEmitter handlers. Исключение
+  // нужно вернуть владельцу RPC, иначе оно обходит Promise/AsyncIterable.
+  const controller = new AbortController();
+  let failure: CallCallbackFailure | undefined;
+  const captureFailure = (reason: unknown) => {
+    if (failure === undefined) {
+      failure = { reason };
+      controller.abort(reason);
+    }
+  };
+  const protectedOptions: CallOptions = {
+    ...options,
+    signal: options.signal === undefined
+      ? controller.signal
+      : AbortSignal.any([options.signal, controller.signal])
+  };
+
+  if (options.onHeader !== undefined) {
+    protectedOptions.onHeader = protectCallCallback(
+      options.onHeader,
+      captureFailure
+    );
+  }
+
+  if (options.onTrailer !== undefined) {
+    protectedOptions.onTrailer = protectCallCallback(
+      options.onTrailer,
+      captureFailure
+    );
+  }
+
+  return {
+    options: protectedOptions,
+    get failure() {
+      return failure;
+    }
+  };
+}
+
+function protectCallCallback(
+  callback: NonNullable<CallOptions['onHeader']>,
+  captureFailure: (reason: unknown) => void
+): NonNullable<CallOptions['onHeader']> {
+  return (metadata) => {
+    try {
+      callback(metadata);
+    }
+    catch (error) {
+      captureFailure(error);
+    }
+  };
+}
+
+function throwCallCallbackFailure(
+  boundary: CallCallbackBoundary | undefined
+): void {
+  if (boundary?.failure !== undefined) {
+    throw boundary.failure.reason;
+  }
 }
 
 function errorName(error: unknown): string | undefined {
