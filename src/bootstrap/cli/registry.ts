@@ -123,10 +123,10 @@ export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand
     throw new Error(`'${commandName}' is not a program command`);
   }
 
-  const commandName = resolvedCommand.name;
+  const commandName: unknown = resolvedCommand.name;
 
   if (!isCommandName(commandName)) {
-    throw new Error(`'${commandName}' is not a program command`);
+    throw new Error(`'${String(commandName)}' is not a program command`);
   }
 
   return {

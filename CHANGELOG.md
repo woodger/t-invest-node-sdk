@@ -12,6 +12,22 @@ micro-release separately.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `oxlint` to 1.78.0, `fwa` to 2.1.4, `icore` to 2.2.3, and
+  `pwd-fs` to 3.5.10.
+- Aligned the Oxlint configuration with the audited Node.js/TypeScript reference
+  baseline. The project now uses explicit `eslint`, `typescript`, and `import`
+  rule namespaces, 84 selected error-level rules, and 21 risk-driven type-aware
+  checks while retaining the existing generated-code boundary and unused
+  suppression validation.
+- Kept `typescript/no-deprecated` and `typescript/no-unsafe-assignment` outside
+  the project ruleset after the audit found only dependency-owned deprecated
+  T-Invest fields, intentional FIGI compatibility, and test-only JSON parsing
+  diagnostics. Existing `no-empty-function`,
+  `no-meaningless-void-operator`, and `no-misused-spread` protection remains
+  enabled.
+
 ## [0.4.2] - 2026-08-07
 
 ### Changed
