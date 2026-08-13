@@ -355,6 +355,13 @@ network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `detai
 `cause` сохраняются, но Consumer-у не нужно разбирать диагностический текст:
 стабильной machine-readable границей является `source`.
 
+Локальное превышение внутреннего лимита SDK для входящего gRPC-сообщения
+сохраняет `SdkErrorCode.ResourceExhausted`, но получает `source: 'sdk'`.
+Исчерпание квоты провайдера остается `SdkErrorCode.ResourceExhausted` с
+`source: 'grpc'`.
+Исходные `path`, `details` и `cause` сохраняются в обоих случаях; Consumer-у
+не нужно различать эти причины по диагностическому тексту.
+
 ```ts
 import {
   isSdkError,

@@ -12,6 +12,7 @@ import {
   createChannel,
   createServer,
   Metadata,
+  ServerError,
   Status
 } from 'nice-grpc';
 import type {
@@ -32,6 +33,8 @@ import { UnaryLimitResolver } from './unary-limit-resolver';
 
 const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
+const oneMiB = 1024 * 1024;
+const twoMiB = 2 * oneMiB;
 const maxReceiveMessageLength = 4 * 1024 * 1024;
 const tlsFixturesDirectory = resolve(
   __dirname,
@@ -105,6 +108,7 @@ describe('createSdkClient', () => {
       throttle,
       {
         useSsl: false,
+        maxReceiveMessageLength,
         signal: lifecycleController.signal,
         // This metadata scenario does not exercise lifecycle rejection.
         // oxlint-disable-next-line no-empty-function
@@ -126,6 +130,90 @@ describe('createSdkClient', () => {
       assert.equal(receivedAppName, 'sdk-app');
       assert.equal(receivedRequestId, 'request-id');
       assert.equal(throttledRule?.limitPerMinute, 60);
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('maps a local receive message limit failure to the SDK source', async () => {
+    const server = createServer();
+
+    server.add(payloadServiceDefinition, {
+      async getPayload() {
+        return new Uint8Array(twoMiB);
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, oneMiB);
+    const client = createPayloadClient(channel, false, oneMiB);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => {
+          if (
+            !isSdkError(error, SdkErrorCode.ResourceExhausted)
+            || !(error.cause instanceof ClientError)
+          ) {
+            return false;
+          }
+
+          return error.source === 'sdk'
+            && error.path === payloadPath
+            && error.details === error.cause.details;
+        }
+      );
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('keeps provider quota exhaustion in the gRPC source', async () => {
+    const server = createServer();
+
+    server.add(payloadServiceDefinition, {
+      async getPayload() {
+        throw new ServerError(
+          Status.RESOURCE_EXHAUSTED,
+          'provider quota exhausted'
+        );
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, oneMiB);
+    const client = createPayloadClient(channel, false, oneMiB);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => {
+          if (
+            !isSdkError(error, SdkErrorCode.ResourceExhausted)
+            || !(error.cause instanceof ClientError)
+          ) {
+            return false;
+          }
+
+          return error.source === 'grpc'
+            && error.path === payloadPath
+            && error.details === 'provider quota exhausted'
+            && error.details === error.cause.details;
+        }
+      );
     }
     finally {
       channel.close();
@@ -228,7 +316,8 @@ describe('createSdkClient', () => {
 
 function createPayloadClient(
   channel: Channel,
-  useSsl: boolean
+  useSsl: boolean,
+  receiveMessageLength: number = maxReceiveMessageLength
 ): PayloadServiceClient {
   const signal = new AbortController().signal;
 
@@ -241,6 +330,7 @@ function createPayloadClient(
     new Throttle(),
     {
       useSsl,
+      maxReceiveMessageLength: receiveMessageLength,
       signal,
       assertOpen() {
         if (signal.aborted) {

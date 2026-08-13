@@ -234,12 +234,16 @@ override:
 ```text
 packageConfig.grpc.maxReceiveMessageLength
   --> TInvestNodeSDK bootstrap
-  --> createSdkChannel
-  --> grpc.max_receive_message_length
+       |--> createSdkChannel --> grpc.max_receive_message_length
+       '--> SdkCallRuntime --> error source classification
 ```
 
 Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует
-неявный default transport dependency.
+неявный default transport dependency. Локальное превышение этого лимита
+сохраняет gRPC-код `RESOURCE_EXHAUSTED`, но получает публичный `source: 'sdk'`;
+квота провайдера с тем же кодом остается в `source: 'grpc'`. Специфичная для
+транспорта диагностика распознается внутри адаптера и не становится контрактом
+Consumer-а.
 
 TLS trust material разрешается отдельно для каждого channel:
 

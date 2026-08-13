@@ -21,6 +21,7 @@ type TestRequest = Record<string, never>;
 
 const defaultUnaryResponse = { ok: true };
 const usersPath = '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
+const maxReceiveMessageLength = 4 * 1024 * 1024;
 
 async function* createUnaryResponseIterator<Response>(
   response: Response
@@ -117,6 +118,7 @@ function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
 
   return {
     useSsl,
+    maxReceiveMessageLength,
     signal,
     assertOpen() {
       if (signal.aborted) {
@@ -284,6 +286,7 @@ describe('createSdkMiddleware', () => {
       throttle,
       {
         useSsl: false,
+        maxReceiveMessageLength,
         signal: lifecycleController.signal,
         assertOpen() {
           if (lifecycleController.signal.aborted) {
@@ -326,6 +329,34 @@ describe('createSdkMiddleware', () => {
         && error.path === path
         && error.details === 'invalid token'
         && error.cause === providerError
+    );
+  });
+
+  test('maps a decompressed receive message limit failure to the SDK source', async () => {
+    const path = '/test.Service/Method';
+    const transportError = new ClientError(
+      path,
+      Status.RESOURCE_EXHAUSTED,
+      `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`
+    );
+    const middleware = createSdkMiddleware(
+      false,
+      new UnaryLimitResolver({}),
+      new Throttle(),
+      createOpenRuntime(false)
+    );
+    const iterator = middleware(
+      createRejectedUnaryCall(path, transportError),
+      {}
+    );
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => isSdkError(error, SdkErrorCode.ResourceExhausted)
+        && error.source === 'sdk'
+        && error.path === path
+        && error.details === transportError.details
+        && error.cause === transportError
     );
   });
 
