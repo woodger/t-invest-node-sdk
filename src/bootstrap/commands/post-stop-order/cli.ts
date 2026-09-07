@@ -27,6 +27,7 @@ import type { CommandRawOptions, CommandRequestOptions } from '../../args/comman
 import {
   parseCommandOptions,
   parseDateTimeOption,
+  positiveSafeIntegerOption,
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
@@ -94,9 +95,7 @@ const postStopOrderRequestOptionsSchema = {
     required: true
   },
   quantity: {
-    type: 'number',
-    integer: true,
-    min: 1,
+    ...positiveSafeIntegerOption,
     required: true
   },
   price: {

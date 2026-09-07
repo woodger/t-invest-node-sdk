@@ -61,6 +61,13 @@ export const sdkOptionsSchema = {
   }
 } as const satisfies OptionsSchema;
 
+export const positiveSafeIntegerOption = {
+  type: 'number',
+  integer: true,
+  min: 1,
+  max: Number.MAX_SAFE_INTEGER
+} as const;
+
 export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
   ...schemas: TSchemas
 ): MergeOptionsSchemas<readonly [typeof sdkOptionsSchema, ...TSchemas]> {
@@ -90,10 +97,20 @@ export function parseCommaSeparatedStringListOption(
 }
 
 export function parseDateTimeOption(value: string, name: string): Date {
+  const match = rfc3339DateTimePattern.exec(value);
+
+  if (match === null || !hasValidDateTimeParts(match)) {
+    throw new CliUsageError(`Expected '--${name}' as date-time with explicit timezone`);
+  }
+
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    throw new CliUsageError(`Expected '--${name}' as date-time`);
+  if (
+    Number.isNaN(date.getTime())
+    || date.getUTCFullYear() < 1
+    || date.getUTCFullYear() > 9999
+  ) {
+    throw new CliUsageError(`Expected '--${name}' as date-time with explicit timezone`);
   }
 
   return date;
@@ -155,4 +172,51 @@ function toRawOptions(values: CommandRawOptions): Record<string, RawOptionValue>
   }
 
   return options;
+}
+
+const rfc3339DateTimePattern =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-](\d{2}):(\d{2}))$/;
+
+function hasValidDateTimeParts(match: RegExpExecArray): boolean {
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  const second = Number(match[6]);
+  const offsetHour = match[7] === undefined ? 0 : Number(match[7]);
+  const offsetMinute = match[8] === undefined ? 0 : Number(match[8]);
+  const daysInMonth = resolveDaysInMonth(year, month);
+
+  return daysInMonth !== undefined
+    && day >= 1
+    && day <= daysInMonth
+    && hour <= 23
+    && minute <= 59
+    && second <= 59
+    && offsetHour <= 23
+    && offsetMinute <= 59;
+}
+
+function resolveDaysInMonth(year: number, month: number): number | undefined {
+  const days = [
+    31,
+    isLeapYear(year) ? 29 : 28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+  ];
+
+  return month >= 1 && month <= 12 ? days[month - 1] : undefined;
+}
+
+function isLeapYear(year: number): boolean {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 }

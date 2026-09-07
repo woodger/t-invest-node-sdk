@@ -176,7 +176,8 @@ boolean values имеют приоритет, а `undefined` сохраняет 
 `token` и `endpoint` должны быть непустыми строками. `token` и непустой
 `appName` передаются как строковые gRPC metadata и поэтому могут содержать
 только печатные ASCII-символы. `unaryLimits` принимает только конечные
-положительные числа. Нарушение этих ограничений завершается
+положительные числа и известные service names или полные paths поддерживаемых
+unary RPC. Нарушение этих ограничений завершается
 `SdkErrorCode.InvalidArgument` с `source: 'sdk'` до создания transport;
 диагностическое сообщение не повторяет значение token.
 
@@ -276,7 +277,9 @@ npm run cli -- operation portfolio --account-id=2000000000 --format=json
 
 Команды с побочными эффектами по умолчанию требуют `--confirm`. Логические опции
 передаются как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и
-`--raw=false`.
+`--raw=false`. Положительные целочисленные опции должны находиться в безопасном
+диапазоне JavaScript. Значения дат принимаются в формате RFC 3339 с явным `Z`
+или числовым смещением timezone.
 
 Коды завершения CLI:
 
@@ -381,11 +384,10 @@ network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `detai
 Исходные `path`, `details` и `cause` сохраняются в обоих случаях; Consumer-у
 не нужно различать эти причины по диагностическому тексту.
 
-Локальная ошибка сериализации исходящего request сохраняет
-`SdkErrorCode.Internal`, но получает `source: 'sdk'`: transport не отправлял
-такой запрос provider-у. Provider-side `INTERNAL` остается `source: 'grpc'`.
-Поля `path`, `details` и `cause` сохраняются; разбирать их для классификации не
-нужно.
+Локальная ошибка сериализации исходящего request или разбора входящего response
+сохраняет `SdkErrorCode.Internal`, но получает `source: 'sdk'`. Provider-side
+`INTERNAL` остается `source: 'grpc'`. Поля `path`, `details` и `cause`
+сохраняются; разбирать их для классификации не нужно.
 
 ```ts
 import {

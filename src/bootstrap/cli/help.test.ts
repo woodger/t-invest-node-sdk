@@ -17,6 +17,9 @@ const unknownHelpNames = [
   'marketdata stream',
   'portfolio',
   'unknown-command',
+  'toString',
+  'constructor',
+  '__proto__',
   undefined
 ] as const;
 

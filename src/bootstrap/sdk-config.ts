@@ -21,6 +21,14 @@ import type {
   UnaryLimits
 } from '../config.types';
 import { packageConfig } from '../config';
+import { InstrumentsServiceDefinition } from '../generated/instruments';
+import { MarketDataServiceDefinition } from '../generated/marketdata';
+import { OperationsServiceDefinition } from '../generated/operations';
+import { OrdersServiceDefinition } from '../generated/orders';
+import { SandboxServiceDefinition } from '../generated/sandbox';
+import { SignalServiceDefinition } from '../generated/signals';
+import { StopOrdersServiceDefinition } from '../generated/stoporders';
+import { UsersServiceDefinition } from '../generated/users';
 import type { UnaryThrottleConfig } from './unary-limit-config';
 import {
   assertUnaryThrottleConfig,
@@ -36,6 +44,35 @@ export type ResolvedTInvestOptions = Omit<
 };
 
 const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
+
+interface UnaryServiceDefinitionContract {
+  readonly name: string;
+  readonly fullName: string;
+  readonly methods: Readonly<Record<string, {
+    readonly name: string;
+    readonly requestStream: boolean;
+    readonly responseStream: boolean;
+  }>>;
+}
+
+const unaryServiceDefinitions: readonly UnaryServiceDefinitionContract[] = [
+  InstrumentsServiceDefinition,
+  MarketDataServiceDefinition,
+  OperationsServiceDefinition,
+  OrdersServiceDefinition,
+  SandboxServiceDefinition,
+  SignalServiceDefinition,
+  StopOrdersServiceDefinition,
+  UsersServiceDefinition
+];
+const knownUnaryLimitRules = new Set<string>(
+  unaryServiceDefinitions.flatMap((definition) => [
+    definition.name,
+    ...Object.values(definition.methods)
+      .filter((method) => !method.requestStream && !method.responseStream)
+      .map((method) => `/${definition.fullName}/${method.name}`)
+  ])
+);
 
 export const defaultConfig: TInvestNodeSDKConfig = {
   unaryLimits: {
@@ -103,6 +140,7 @@ export function resolveUnaryThrottleConfig(
   };
 
   try {
+    assertKnownUnaryLimitRules(resolvedConfig.limits);
     assertUnaryThrottleConfig(resolvedConfig);
   }
   catch (error) {
@@ -117,6 +155,14 @@ export function resolveUnaryThrottleConfig(
   }
 
   return resolvedConfig;
+}
+
+function assertKnownUnaryLimitRules(limits: UnaryLimits): void {
+  for (const rule of Object.keys(limits)) {
+    if (!knownUnaryLimitRules.has(rule)) {
+      throw new Error(`Unknown unary limit rule ${rule}`);
+    }
+  }
 }
 
 const grpcMetadataValuePattern = /^[ -~]*$/;

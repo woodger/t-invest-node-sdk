@@ -61,9 +61,11 @@ provider-neutral правилами или моделями.
   warnings и, в диагностических сценариях, `stdout`.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
   provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные
-  report values. `MoneyValue` становится структурным `ReportMoney`, а
-  command-specific table/text представление строится отдельно. Здесь не
-  выбираются поля команд и не формируются command-specific output contracts.
+  report values. Десятичная строка строится из целых `units` и `nano` без
+  потери точности через floating-point arithmetic. `MoneyValue` становится
+  структурным `ReportMoney`, а command-specific table/text представление
+  строится отдельно. Здесь не выбираются поля команд и не формируются
+  command-specific output contracts.
 
 Здесь допустимы imports из `nice-grpc`, generated service definitions и
 application services. Application не должен импортировать concrete
@@ -245,11 +247,12 @@ packageConfig.grpc.maxReceiveMessageLength
 транспорта диагностика распознается внутри адаптера и не становится контрактом
 Consumer-а.
 
-Тот же transport adapter отделяет локальную ошибку сериализации request от
-provider-side `INTERNAL`: code сохраняется, но локальный случай получает
-`source: 'sdk'`. Response metadata callbacks защищены там же, потому что
-`nice-grpc` вызывает их из EventEmitter handlers: синхронное исключение
-возвращается владельцу RPC, а не process-level `uncaughtException`.
+Тот же transport adapter отделяет локальные ошибки сериализации request и
+разбора response от provider-side `INTERNAL`: code сохраняется, но локальные
+случаи получают `source: 'sdk'`. Response metadata callbacks защищены там же,
+потому что `nice-grpc` вызывает их из EventEmitter handlers: синхронное
+исключение возвращается владельцу RPC, а не process-level
+`uncaughtException`.
 
 TLS trust material разрешается отдельно для каждого channel:
 
@@ -282,8 +285,10 @@ defaults, а `undefined` не отключает package policy. Обязате�
 `endpoint` проверяются до создания transport channel. Значения `token` и
 непустого `appName` дополнительно проверяются как строковые gRPC metadata, а
 ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с
-`source: 'sdk'`. `packageConfig.sdk` остается внутренней authoring-формой и не
-расширяет публичный `defaultConfig`.
+`source: 'sdk'`. Допустимые service names и полные method paths выводятся из
+generated unary service definitions, поэтому опечатка не превращается в
+неиспользуемое правило. `packageConfig.sdk` остается внутренней
+authoring-формой и не расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании

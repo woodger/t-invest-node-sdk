@@ -264,6 +264,10 @@ function resolveClientErrorSource(
     return 'sdk';
   }
 
+  if (isLocalResponseParsingError(error)) {
+    return 'sdk';
+  }
+
   return 'grpc';
 }
 
@@ -273,6 +277,14 @@ const requestSerializationFailurePrefix =
 function isLocalRequestSerializationError(error: ClientError): boolean {
   return error.code === Status.INTERNAL
     && error.details.startsWith(requestSerializationFailurePrefix);
+}
+
+const responseParsingFailurePrefix =
+  'Response message parsing error:';
+
+function isLocalResponseParsingError(error: ClientError): boolean {
+  return error.code === Status.INTERNAL
+    && error.details.startsWith(responseParsingFailurePrefix);
 }
 
 const receivedMessageLargerThanMaxPattern =

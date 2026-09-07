@@ -16,7 +16,11 @@ import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
 import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import {
+  parseCommandOptions,
+  positiveSafeIntegerOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
@@ -64,9 +68,7 @@ const replaceOrderRequestOptionsSchema = {
     required: true
   },
   quantity: {
-    type: 'number',
-    integer: true,
-    min: 1,
+    ...positiveSafeIntegerOption,
     required: true
   },
   price: {

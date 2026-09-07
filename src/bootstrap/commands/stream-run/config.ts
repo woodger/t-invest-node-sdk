@@ -562,7 +562,7 @@ function parseCandleInterval(value: unknown, path: string): SubscriptionInterval
     throw new CliUsageError(`Expected '${path}' as string`);
   }
 
-  if (!(value in candleIntervalAliases)) {
+  if (!Object.hasOwn(candleIntervalAliases, value)) {
     throw new CliUsageError(`Expected '${path}' as one of: 1min, 5min`);
   }
 
