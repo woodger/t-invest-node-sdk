@@ -58,8 +58,6 @@ export function createOptionReportInstrument(instrument: Option): OptionReportIn
     expirationDate: formatReportDate(instrument.expirationDate),
     firstTradeDate: formatReportDate(instrument.firstTradeDate),
     lastTradeDate: formatReportDate(instrument.lastTradeDate),
-    klong: formatReportDecimal(instrument.klong),
-    kshort: formatReportDecimal(instrument.kshort),
     dlong: formatReportDecimal(instrument.dlong),
     dshort: formatReportDecimal(instrument.dshort),
     dlongMin: formatReportDecimal(instrument.dlongMin),

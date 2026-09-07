@@ -1,69 +1,31 @@
 import { InstrumentStatus } from '../../generated/common';
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { InstrumentIdType } from '../../generated/instruments';
 import {
-  InstrumentIdType } from '../../generated/instruments';
-import type { CommandRawOptions } from './command-options';
-import {
-  instrumentLookupArgNames,
-  instrumentStatusArgNames,
-  parseInstrumentLookupIdType,
   createInstrumentLookupRequestFromOptions,
-  createInstrumentsRequestFromOptions,
-  parseInstrumentStatus
+  createInstrumentsRequestFromOptions
 } from './instruments-args';
 
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
-
 describe('instruments args', () => {
-  describe('instrumentLookupArgNames', () => {
-    test('lists lookup option names', () => {
-      assert.equal(instrumentLookupArgNames.has('id'), true);
-      assert.equal(instrumentLookupArgNames.has('id-type'), true);
-      assert.equal(instrumentLookupArgNames.has('class-code'), true);
-    });
-  });
-
-  describe('parseInstrumentLookupIdType', () => {
-    test('maps public id type names to generated enum values', () => {
-      assert.equal(
-        parseInstrumentLookupIdType(rawOptions({ 'id-type': 'figi' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI
-      );
-      assert.equal(
-        parseInstrumentLookupIdType(rawOptions({ 'id-type': 'ticker' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
-      );
-      assert.equal(
-        parseInstrumentLookupIdType(rawOptions({ 'id-type': 'uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_UID
-      );
-      assert.equal(
-        parseInstrumentLookupIdType(rawOptions({ 'id-type': 'position-uid' })),
-        InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
-      );
-    });
-
-    test('rejects unknown id type names', () => {
-      assert.throws(
-        () => parseInstrumentLookupIdType(rawOptions({ 'id-type': 'isin' })),
-        /Expected '--id-type' as one of: figi, ticker, uid, position-uid/
-      );
-    });
-  });
-
   describe('createInstrumentLookupRequestFromOptions', () => {
-    test('returns generated instrument lookup request', () => {
-      assert.deepEqual(createInstrumentLookupRequestFromOptions({
-        id: 'BBG004730N88',
-        'id-type': 'figi'
-      }), {
-        id: 'BBG004730N88',
-        idType: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
-        classCode: ''
-      });
+    test('maps non-ticker id types to generated values', () => {
+      const cases = [
+        ['figi', InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI],
+        ['uid', InstrumentIdType.INSTRUMENT_ID_TYPE_UID],
+        ['position-uid', InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID]
+      ] as const;
+
+      for (const [idType, expected] of cases) {
+        assert.deepEqual(createInstrumentLookupRequestFromOptions({
+          id: 'instrument-id',
+          'id-type': idType
+        }), {
+          id: 'instrument-id',
+          idType: expected,
+          classCode: ''
+        });
+      }
     });
 
     test('requires class code for ticker id type', () => {
@@ -89,45 +51,21 @@ describe('instruments args', () => {
     });
   });
 
-  describe('instrumentStatusArgNames', () => {
-    test('lists status option name', () => {
-      assert.equal(instrumentStatusArgNames.has('instrument-status'), true);
-    });
-  });
-
-  describe('parseInstrumentStatus', () => {
-    test('returns base by default', () => {
-      assert.equal(parseInstrumentStatus(rawOptions()), InstrumentStatus.INSTRUMENT_STATUS_BASE);
-    });
-
-    test('maps public status names to generated enum values', () => {
-      assert.equal(
-        parseInstrumentStatus(rawOptions({ 'instrument-status': 'unspecified' })),
-        InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED
-      );
-      assert.equal(
-        parseInstrumentStatus(rawOptions({ 'instrument-status': 'base' })),
-        InstrumentStatus.INSTRUMENT_STATUS_BASE
-      );
-      assert.equal(
-        parseInstrumentStatus(rawOptions({ 'instrument-status': 'all' })),
-        InstrumentStatus.INSTRUMENT_STATUS_ALL
-      );
-    });
-
-    test('rejects unknown status names', () => {
-      assert.throws(
-        () => parseInstrumentStatus(rawOptions({ 'instrument-status': 'active' })),
-        /Expected '--instrument-status' as one of: unspecified, base, all/
-      );
-    });
-  });
-
   describe('createInstrumentsRequestFromOptions', () => {
-    test('returns generated instruments request', () => {
-      assert.deepEqual(createInstrumentsRequestFromOptions({ 'instrument-status': 'all' }), {
-        instrumentStatus: InstrumentStatus.INSTRUMENT_STATUS_ALL
-      });
+    test('maps public statuses to generated values', () => {
+      const cases = [
+        ['unspecified', InstrumentStatus.INSTRUMENT_STATUS_UNSPECIFIED],
+        ['base', InstrumentStatus.INSTRUMENT_STATUS_BASE],
+        ['all', InstrumentStatus.INSTRUMENT_STATUS_ALL]
+      ] as const;
+
+      for (const [status, expected] of cases) {
+        assert.deepEqual(createInstrumentsRequestFromOptions({
+          'instrument-status': status
+        }), {
+          instrumentStatus: expected
+        });
+      }
     });
   });
 });

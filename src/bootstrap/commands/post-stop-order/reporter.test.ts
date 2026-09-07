@@ -26,12 +26,12 @@ describe('post-stop-order reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatPostStopOrderReport({
+      const report = {
         stopOrderId: 'stop-order-id'
-      }, 'json');
-      const parsed = JSON.parse(output);
+      };
+      const output = formatPostStopOrderReport(report, 'json');
 
-      assert.equal(parsed.stopOrderId, 'stop-order-id');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

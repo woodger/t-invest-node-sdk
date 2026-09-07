@@ -11,15 +11,7 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxReplaceOrderCommand,
-  parseSandboxReplaceOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxReplaceOrderCommand } from './cli';
 
 function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -45,12 +37,6 @@ function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostO
 }
 
 describe('sandbox-replace-order command', () => {
-  describe('parseSandboxReplaceOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxReplaceOrderFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxReplaceOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

@@ -9,16 +9,7 @@ import {
   type GetLastTradesResponse,
   type Trade
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createLastTradesCommand,
-  parseLastTradesFormat,
-  createLastTradesRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createLastTradesCommand, createLastTradesRequest } from './cli';
 
 function quotation(units: number, nano: number): Quotation {
   return {
@@ -74,19 +65,6 @@ describe('last-trades command', () => {
           to: '2026-06-19T10:00:00.000Z'
         }),
         /Expected '--from' to be earlier/
-      );
-    });
-  });
-
-  describe('parseLastTradesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseLastTradesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseLastTradesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
       );
     });
   });

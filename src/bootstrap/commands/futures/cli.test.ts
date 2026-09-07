@@ -6,15 +6,7 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type FuturesResponse, type InstrumentsRequest } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createFuturesCommand,
-  parseFuturesFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createFuturesCommand } from './cli';
 
 function response(overrides: Partial<FuturesResponse> = {}): FuturesResponse {
   return {
@@ -24,19 +16,6 @@ function response(overrides: Partial<FuturesResponse> = {}): FuturesResponse {
 }
 
 describe('futures command', () => {
-  describe('parseFuturesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseFuturesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseFuturesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createFuturesCommand', () => {
     test('calls futures and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

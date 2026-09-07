@@ -271,17 +271,19 @@ external dependency
 команда поддерживает отрицательное переопределение, `--no-flag`. Формы со
 значением `--flag=true` и `--flag=false` не входят в публичный CLI-контракт.
 
-Внутри command module нужно различать два вида helper-ов:
+Внутри command module нужно различать parsing и request mapping:
 
 ```text
-parse*          -> raw CLI option parsing / focused parser checks
-create*Request -> typed command options -> generated request DTO
+icore schema    -> raw argv -> typed command options
+parse*          -> typed primitive value -> project-specific value
+create*Request  -> typed command options -> generated request DTO
 ```
 
-`parse*` helper может принимать raw option map, если тестируется именно CLI
-parser behavior: format, enum, comma-separated list или normalization error.
-`create*Request` не должен принимать raw CLI args. Он получает typed options,
-которые уже прошли `icore`, и отвечает за generated request DTO shape и
+Command-local `parse*` helpers не должны повторно принимать raw option map:
+format, enum и primitive schema validation принадлежат `icore`. Project-specific
+helper допустим для преобразования отдельного typed значения, например
+comma-separated списка. `create*Request` не принимает raw CLI args: он получает
+typed options после `icore` и отвечает за generated request DTO shape и
 request-level validation вроде date range или mutually exclusive modes.
 
 `reporter.ts` сейчас отвечает за:

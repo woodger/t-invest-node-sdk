@@ -9,15 +9,7 @@ import {
   type EtfResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createEtfCommand,
-  parseEtfFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createEtfCommand } from './cli';
 
 function etfResponse(overrides: Partial<EtfResponse> = {}): EtfResponse {
   return {
@@ -27,19 +19,6 @@ function etfResponse(overrides: Partial<EtfResponse> = {}): EtfResponse {
 }
 
 describe('etf command', () => {
-  describe('parseEtfFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseEtfFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseEtfFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createEtfCommand', () => {
     test('calls etfBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

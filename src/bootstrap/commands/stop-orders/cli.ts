@@ -18,10 +18,10 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatStopOrders, stopOrdersFormats, type StopOrdersFormat } from './reporter';
+import { formatStopOrders, stopOrdersFormats } from './reporter';
 
 type StopOrdersSdk = {
   stoporders: {
@@ -57,12 +57,6 @@ const stopOrdersOptionsSchema = withSdkOptions(
 
 type StopOrdersOptions = InferOptions<typeof stopOrdersOptionsSchema>;
 type StopOrdersRequestOptions = CommandRequestOptions<StopOrdersOptions, 'account-id'>;
-
-
-
-export function parseStopOrdersFormat(rawOptions: CommandRawOptions): StopOrdersFormat {
-  return parseCommandOptions(rawOptions, stopOrdersFormatOptionsSchema).format;
-}
 
 export function createStopOrdersCommand(
   createSdk: StopOrdersSdkFactory = defaultStopOrdersSdkFactory

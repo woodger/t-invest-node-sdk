@@ -17,14 +17,10 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommaSeparatedStringListOption,
-  parseCommandOptions,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { closePricesFormats, formatClosePrices, type ClosePricesFormat } from './reporter';
+import { closePricesFormats, formatClosePrices } from './reporter';
 
 type ClosePricesSdk = {
   marketdata: {
@@ -60,10 +56,6 @@ const closePricesOptionsSchema = withSdkOptions(
 
 type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
 type ClosePricesRequestOptions = CommandRequestOptions<ClosePricesOptions, 'instrument-id'>;
-
-export function parseClosePricesFormat(rawOptions: CommandRawOptions): ClosePricesFormat {
-  return parseCommandOptions(rawOptions, closePricesFormatOptionsSchema).format;
-}
 
 export function createClosePricesCommand(
   createSdk: ClosePricesSdkFactory = defaultClosePricesSdkFactory

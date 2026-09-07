@@ -14,14 +14,13 @@ import { type CurrenciesResponse, type InstrumentsRequest } from '../../../gener
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema
 } from '../../args/instruments-args';
-import { currenciesFormats, formatCurrencies, type CurrenciesFormat } from './reporter';
+import { currenciesFormats, formatCurrencies } from './reporter';
 
 type CurrenciesSdk = {
   instruments: {
@@ -49,10 +48,6 @@ const currenciesOptionsSchema = withSdkOptions(
 );
 
 type CurrenciesOptions = InferOptions<typeof currenciesOptionsSchema>;
-
-export function parseCurrenciesFormat(rawOptions: CommandRawOptions): CurrenciesFormat {
-  return parseCommandOptions(rawOptions, currenciesFormatOptionsSchema).format;
-}
 
 export function createCurrenciesCommand(
   createSdk: CurrenciesSdkFactory = defaultCurrenciesSdkFactory

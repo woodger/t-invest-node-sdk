@@ -9,15 +9,7 @@ import {
   type InstrumentRequest,
   type ShareResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createShareCommand,
-  parseShareFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createShareCommand } from './cli';
 
 function shareResponse(overrides: Partial<ShareResponse> = {}): ShareResponse {
   return {
@@ -27,19 +19,6 @@ function shareResponse(overrides: Partial<ShareResponse> = {}): ShareResponse {
 }
 
 describe('share command', () => {
-  describe('parseShareFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseShareFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseShareFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createShareCommand', () => {
     test('calls shareBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

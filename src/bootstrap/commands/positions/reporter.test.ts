@@ -115,16 +115,10 @@ describe('positions reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatPositionsReport(createPositionsReport(positions()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createPositionsReport(positions());
+      const output = formatPositionsReport(report, 'json');
 
-      assert.equal(parsed.limitsLoadingInProgress, false);
-      assert.equal(parsed.money[0].currency, 'rub');
-      assert.equal(parsed.money[0].amount, '100.5');
-      assert.equal(parsed.blocked[0].amount, '10.25');
-      assert.equal(parsed.securities[0].instrumentType, 'share');
-      assert.equal(parsed.futures[0].figi, 'FUTFIGI');
-      assert.equal(parsed.options[0].balance, 5);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

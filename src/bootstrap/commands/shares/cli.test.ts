@@ -6,15 +6,7 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type InstrumentsRequest, type SharesResponse } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSharesCommand,
-  parseSharesFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSharesCommand } from './cli';
 
 function response(overrides: Partial<SharesResponse> = {}): SharesResponse {
   return {
@@ -24,19 +16,6 @@ function response(overrides: Partial<SharesResponse> = {}): SharesResponse {
 }
 
 describe('shares command', () => {
-  describe('parseSharesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSharesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseSharesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createSharesCommand', () => {
     test('calls shares and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

@@ -4,16 +4,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createPositionsCommand,
-  parsePositionsFormat,
-  createPositionsRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createPositionsCommand, createPositionsRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -43,19 +34,6 @@ describe('positions command', () => {
       });
 
       assert.equal(request.accountId, 'account-id');
-    });
-  });
-
-  describe('parsePositionsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parsePositionsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parsePositionsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

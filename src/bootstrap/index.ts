@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Executable CLI entrypoint.
- *
- * Keeps the package binary in `dist/bootstrap/index.js` and delegates bootstrap
- * mechanics to the CLI runner.
+ * Исполняемая точка входа CLI сохраняет package binary в
+ * `dist/bootstrap/index.js` и делегирует bootstrap-механику CLI runner-у.
  */
 
 import { runCli } from './cli/runner';

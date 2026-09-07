@@ -12,15 +12,7 @@ import {
   type GetOrderStateRequest,
   type OrderState
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxOrderStateCommand,
-  parseSandboxOrderStateFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxOrderStateCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -57,12 +49,6 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 }
 
 describe('sandbox-order-state command', () => {
-  describe('parseSandboxOrderStateFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxOrderStateFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxOrderStateCommand', () => {
     test('calls getSandboxOrderState and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

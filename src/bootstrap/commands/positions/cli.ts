@@ -14,10 +14,10 @@ import type { PositionsRequest, PositionsResponse } from '../../../generated/ope
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatPositions, positionsFormats, type PositionsFormat } from './reporter';
+import { formatPositions, positionsFormats } from './reporter';
 
 type PositionsSdk = {
   operations: {
@@ -53,12 +53,6 @@ const positionsOptionsSchema = withSdkOptions(
 
 type PositionsOptions = InferOptions<typeof positionsOptionsSchema>;
 type PositionsRequestOptions = CommandRequestOptions<PositionsOptions, 'account-id'>;
-
-
-
-export function parsePositionsFormat(rawOptions: CommandRawOptions): PositionsFormat {
-  return parseCommandOptions(rawOptions, positionsFormatOptionsSchema).format;
-}
 
 export function createPositionsCommand(
   createSdk: PositionsSdkFactory = defaultPositionsSdkFactory

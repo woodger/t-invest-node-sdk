@@ -17,10 +17,10 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatOptionsBy, optionsByFormats, type OptionsByFormat } from './reporter';
+import { formatOptionsBy, optionsByFormats } from './reporter';
 
 type OptionsBySdk = {
   instruments: {
@@ -59,12 +59,6 @@ const optionsByOptionsSchema = withSdkOptions(
 
 type OptionsByOptions = InferOptions<typeof optionsByOptionsSchema>;
 type OptionsByRequestOptions = CommandRequestOptions<OptionsByOptions, 'basic-asset-uid' | 'basic-asset-position-uid'>;
-
-
-
-export function parseOptionsByFormat(rawOptions: CommandRawOptions): OptionsByFormat {
-  return parseCommandOptions(rawOptions, optionsByFormatOptionsSchema).format;
-}
 
 export function createOptionsByCommand(
   createSdk: OptionsBySdkFactory = defaultOptionsBySdkFactory

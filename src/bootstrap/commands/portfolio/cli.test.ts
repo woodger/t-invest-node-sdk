@@ -8,17 +8,7 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createPortfolioCommand,
-  parsePortfolioCurrency,
-  parsePortfolioFormat,
-  createPortfolioRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createPortfolioCommand, createPortfolioRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -54,24 +44,6 @@ function portfolioResponse(overrides: Partial<PortfolioResponse> = {}): Portfoli
 }
 
 describe('portfolio command', () => {
-  describe('parsePortfolioCurrency', () => {
-    test('returns rub by default', () => {
-      assert.equal(parsePortfolioCurrency(rawOptions()), PortfolioCurrency.RUB);
-    });
-
-    test('maps public currency names to generated enum values', () => {
-      assert.equal(parsePortfolioCurrency(rawOptions({ currency: 'usd' })), PortfolioCurrency.USD);
-      assert.equal(parsePortfolioCurrency(rawOptions({ currency: 'eur' })), PortfolioCurrency.EUR);
-    });
-
-    test('rejects unknown currencies', () => {
-      assert.throws(
-        () => parsePortfolioCurrency(rawOptions({ currency: 'gbp' })),
-        /Expected '--currency' as one of: rub, usd, eur/
-      );
-    });
-  });
-
   describe('createPortfolioRequest', () => {
     test('returns generated getPortfolio request', () => {
       const request = createPortfolioRequest({
@@ -82,18 +54,21 @@ describe('portfolio command', () => {
       assert.equal(request.accountId, 'account-id');
       assert.equal(request.currency, PortfolioCurrency.USD);
     });
-  });
 
-  describe('parsePortfolioFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parsePortfolioFormat(rawOptions()), 'table');
-    });
+    test('maps rub and eur currencies to generated values', () => {
+      const cases = [
+        ['rub', PortfolioCurrency.RUB],
+        ['eur', PortfolioCurrency.EUR]
+      ] as const;
 
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parsePortfolioFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
+      for (const [currency, expected] of cases) {
+        const request = createPortfolioRequest({
+          'account-id': 'account-id',
+          currency
+        });
+
+        assert.equal(request.currency, expected);
+      }
     });
   });
 

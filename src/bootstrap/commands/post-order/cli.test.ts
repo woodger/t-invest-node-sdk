@@ -13,16 +13,7 @@ import {
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createPostOrderCommand,
-  createPostOrderRequest,
-  parsePostOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createPostOrderCommand, createPostOrderRequest } from './cli';
 
 function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -76,19 +67,6 @@ describe('post-order command', () => {
         priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
         confirmMarginTrade: false
       });
-    });
-  });
-
-  describe('parsePostOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parsePostOrderFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parsePostOrderFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

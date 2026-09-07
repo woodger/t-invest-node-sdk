@@ -1,35 +1,20 @@
 /**
- * The command options module contains reusable helpers for SDK bootstrap
- * commands on top of the generic `icore` option schema runtime.
+ * Модуль общих CLI-опций собирает схемы bootstrap-команд поверх `icore`.
  *
- * Allowed here:
- * - composing common SDK option schemas with command-specific schemas;
- * - validating raw command option maps in command parser tests;
- * - validating known options and extra positionals through `icore`;
- * - preserving command handlers as the place for API-specific request logic.
+ * Здесь допустимы общие схемы и преобразования значений, которые нужны
+ * нескольким request builders. Разбор argv и проверка schema-level ограничений
+ * принадлежат command mechanics `icore`.
  *
- * Not allowed here:
- * - creating SDK clients;
- * - reading environment fallback values;
- * - building generated API requests;
- * - formatting provider responses.
+ * Здесь не должно быть создания SDK clients, чтения переменных окружения,
+ * сборки generated requests или форматирования provider responses.
  */
 
 import {
   CliUsageError,
   mergeOptionsSchema,
-  parseOptions,
-  type InferOptions,
   type MergeOptionsSchemas,
-  type OptionsSchema,
-  type RawOptionValue
+  type OptionsSchema
 } from 'icore';
-
-/**
- * Raw option maps are used by exported parser helpers and focused tests.
- * Runtime command execution receives typed options directly from `icore`.
- */
-export type CommandRawOptions = Record<string, unknown>;
 
 type OptionalCommandOptionKeys<TOptions> = {
   [TKey in keyof TOptions]: undefined extends TOptions[TKey] ? TKey : never;
@@ -72,15 +57,6 @@ export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
   ...schemas: TSchemas
 ): MergeOptionsSchemas<readonly [typeof sdkOptionsSchema, ...TSchemas]> {
   return mergeOptionsSchema(sdkOptionsSchema, ...schemas);
-}
-
-export function parseCommandOptions<const TSchema extends OptionsSchema>(
-  options: CommandRawOptions,
-  schema: TSchema
-): InferOptions<TSchema> {
-  // Command path and extra positional validation belong to `icore.runCommand`;
-  // this helper validates only named options for parser helpers and tests.
-  return parseOptions(schema, toRawOptions(options));
 }
 
 export function parseCommaSeparatedStringListOption(
@@ -150,28 +126,6 @@ export function parseOptionalNonNegativeIntegerOption(
   }
 
   return parsed;
-}
-
-function toRawOptions(values: CommandRawOptions): Record<string, RawOptionValue> {
-  const options: Record<string, RawOptionValue> = {};
-
-  for (const name of Object.keys(values)) {
-    const value = values[name];
-
-    if (value === undefined) {
-      continue;
-    }
-
-    if (typeof value !== 'string' && typeof value !== 'boolean') {
-      throw new CliUsageError(`Expected '--${name}' as scalar option`);
-    }
-
-    // `icore.parseOptions` owns schema-level parsing; this adapter only rejects
-    // values that cannot come from raw CLI option parsing.
-    options[name] = value;
-  }
-
-  return options;
 }
 
 const rfc3339DateTimePattern =

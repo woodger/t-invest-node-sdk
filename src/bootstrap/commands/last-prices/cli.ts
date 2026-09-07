@@ -18,14 +18,10 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommaSeparatedStringListOption,
-  parseCommandOptions,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatLastPrices, lastPricesFormats, type LastPricesFormat } from './reporter';
+import { formatLastPrices, lastPricesFormats } from './reporter';
 
 type LastPricesSdk = {
   marketdata: {
@@ -61,10 +57,6 @@ const lastPricesOptionsSchema = withSdkOptions(
 
 type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
 type LastPricesRequestOptions = CommandRequestOptions<LastPricesOptions, 'instrument-id'>;
-
-export function parseLastPricesFormat(rawOptions: CommandRawOptions): LastPricesFormat {
-  return parseCommandOptions(rawOptions, lastPricesFormatOptionsSchema).format;
-}
 
 export function createLastPricesCommand(
   createSdk: LastPricesSdkFactory = defaultLastPricesSdkFactory

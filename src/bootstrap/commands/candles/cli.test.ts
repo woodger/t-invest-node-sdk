@@ -7,17 +7,7 @@ import {
   GetCandlesRequest,
   type HistoricCandle
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createCandlesCommand,
-  parseCandleInterval,
-  parseCandlesFormat,
-  createCandlesRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createCandlesCommand, createCandlesRequest } from './cli';
 
 function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {
   return {
@@ -33,26 +23,6 @@ function candle(overrides: Partial<HistoricCandle> = {}): HistoricCandle {
 }
 
 describe('candles command', () => {
-  describe('parseCandleInterval', () => {
-    test('maps public interval names to generated enum values', () => {
-      assert.equal(
-        parseCandleInterval(rawOptions({ interval: '1min' })),
-        CandleInterval.CANDLE_INTERVAL_1_MIN
-      );
-      assert.equal(
-        parseCandleInterval(rawOptions({ interval: 'day' })),
-        CandleInterval.CANDLE_INTERVAL_DAY
-      );
-    });
-
-    test('throws for unsupported interval names', () => {
-      assert.throws(
-        () => parseCandleInterval(rawOptions({ interval: 'year' })),
-        /Expected '--interval' as one of:/
-      );
-    });
-  });
-
   describe('createCandlesRequest', () => {
     test('returns generated getCandles request', () => {
       const request = createCandlesRequest({
@@ -72,6 +42,24 @@ describe('candles command', () => {
       );
     });
 
+    test('maps minute and day intervals to generated values', () => {
+      const cases = [
+        ['1min', CandleInterval.CANDLE_INTERVAL_1_MIN],
+        ['day', CandleInterval.CANDLE_INTERVAL_DAY]
+      ] as const;
+
+      for (const [interval, expected] of cases) {
+        const request = createCandlesRequest({
+          'instrument-id': 'instrument-id',
+          from: '2026-06-19T00:00:00.000Z',
+          to: '2026-06-19T01:00:00.000Z',
+          interval
+        });
+
+        assert.equal(request.interval, expected);
+      }
+    });
+
     test('throws when from is later than to', () => {
       assert.throws(
         () => createCandlesRequest({
@@ -82,12 +70,6 @@ describe('candles command', () => {
         }),
         /Expected '--from' to be earlier/
       );
-    });
-  });
-
-  describe('parseCandlesFormat', () => {
-    test('returns json by default', () => {
-      assert.equal(parseCandlesFormat(rawOptions()), 'json');
     });
   });
 

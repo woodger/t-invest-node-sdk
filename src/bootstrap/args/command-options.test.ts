@@ -1,9 +1,8 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { CommandRawOptions } from './command-options';
+import { parseOptions } from 'icore';
 import {
   parseCommaSeparatedStringListOption,
-  parseCommandOptions,
   parseDateTimeOption,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
@@ -12,20 +11,10 @@ import {
   withSdkOptions
 } from './command-options';
 
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
-
 describe('command options', () => {
   describe('withSdkOptions', () => {
     test('allows common SDK options with command-specific options', () => {
-      const options = parseCommandOptions(
-        rawOptions({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          format: 'json',
-          cursor: 'next'
-        }),
+      const options = parseOptions(
         withSdkOptions(
           {
             format: {
@@ -39,7 +28,13 @@ describe('command options', () => {
               type: 'string'
             }
           }
-        )
+        ),
+        {
+          token: 'token',
+          endpoint: 'localhost:50051',
+          format: 'json',
+          cursor: 'next'
+        }
       );
 
       assert.deepEqual(options, {
@@ -53,42 +48,42 @@ describe('command options', () => {
     });
   });
 
-  describe('parseCommandOptions', () => {
-    test('rejects unexpected named options', () => {
-      assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ unexpected: 'value' }),
-          withSdkOptions({})
+  describe('positiveSafeIntegerOption', () => {
+    test('parses a positive integer', () => {
+      assert.deepEqual(
+        parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '10' }
         ),
-        /Unexpected argument '--unexpected'/
+        { quantity: 10 }
       );
     });
 
-    test('rejects non-scalar raw option values', () => {
+    test('rejects zero', () => {
       assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ token: ['token'] }),
-          withSdkOptions({})
+        () => parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '0' }
         ),
-        /Expected '--token' as scalar option/
+        /Expected '--quantity' to be greater than or equal to 1/
       );
     });
 
-    test('rejects text values for boolean options', () => {
+    test('rejects fractional values', () => {
       assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ insecure: 'false' }),
-          withSdkOptions({})
+        () => parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '1.5' }
         ),
-        /Expected '--insecure' as boolean flag/
+        /Expected '--quantity' as integer/
       );
     });
 
     test('rejects positive integers outside the safe number range', () => {
       assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ quantity: '9007199254740993' }),
-          { quantity: positiveSafeIntegerOption }
+        () => parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '9007199254740993' }
         ),
         /Expected '--quantity' to be less than or equal to 9007199254740991/
       );

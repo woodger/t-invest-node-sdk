@@ -78,12 +78,10 @@ describe('assets reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatAssetsReport(createAssetsReport([asset()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createAssetsReport([asset()]);
+      const output = formatAssetsReport(report, 'json');
 
-      assert.equal(parsed[0].uid, 'asset-uid');
-      assert.equal(parsed[0].instruments[0].ticker, 'TCSG');
-      assert.equal(parsed[0].instruments[0].links[0].instrumentUid, 'linked-instrument-uid');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

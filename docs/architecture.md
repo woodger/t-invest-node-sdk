@@ -57,8 +57,8 @@ provider-neutral правилами или моделями.
   middleware и typed clients, а также построение и разрешение полных gRPC
   paths в transport-neutral throttle rules и mapping transport failures в
   публичный `SdkError`.
-- `infrastructure/interceptor` - технические hooks для фильтрации process
-  warnings и, в диагностических сценариях, `stdout`.
+- `infrastructure/interceptor` - технический hook для фильтрации известных
+  process warnings.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
   provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные
   report values. Десятичная строка строится из целых `units` и `nano` без
@@ -159,9 +159,10 @@ stdout; help/version используют тот же канал, а warnings и
 через `Output.error` в stderr. Runner принимает injected `Output` или создает
 default facade.
 
-`bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
-project-specific CLI-контракты поверх typed/raw option values и нормализует
-общие `TInvestOptions` из CLI/ENV.
+`bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он содержит общие
+option schemas, проверяет project-specific значения уже типизированных опций и
+нормализует `TInvestOptions` из CLI/ENV. Разбор raw argv и schema-level
+валидация принадлежат `icore`.
 
 ## Публичные точки входа
 

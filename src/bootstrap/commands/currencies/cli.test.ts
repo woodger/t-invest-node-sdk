@@ -6,15 +6,7 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type CurrenciesResponse, type InstrumentsRequest } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createCurrenciesCommand,
-  parseCurrenciesFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createCurrenciesCommand } from './cli';
 
 function response(overrides: Partial<CurrenciesResponse> = {}): CurrenciesResponse {
   return {
@@ -24,19 +16,6 @@ function response(overrides: Partial<CurrenciesResponse> = {}): CurrenciesRespon
 }
 
 describe('currencies command', () => {
-  describe('parseCurrenciesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseCurrenciesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseCurrenciesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createCurrenciesCommand', () => {
     test('calls currencies and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

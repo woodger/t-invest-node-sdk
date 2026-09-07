@@ -48,8 +48,6 @@ function option(overrides: Partial<Option> = {}): Option {
     sector: 'Currencies',
     lot: 1,
     basicAssetSize: quotation(1000, 0),
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -114,8 +112,6 @@ describe('option reporter', () => {
         expirationDate: '2026-06-19T00:00:00.000Z',
         firstTradeDate: '2026-03-01T00:00:00.000Z',
         lastTradeDate: '2026-06-18T00:00:00.000Z',
-        klong: '2',
-        kshort: '1.5',
         dlong: '0.1',
         dshort: '0.2',
         dlongMin: '0.3',
@@ -154,17 +150,10 @@ describe('option reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOptionReport(createOptionReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createOptionReport(response());
+      const output = formatOptionReport(report, 'json');
 
-      assert.equal(parsed.uid, 'option-uid');
-      assert.equal(parsed.direction, 'OPTION_DIRECTION_CALL');
-      assert.equal(parsed.basicAsset, 'USD/RUB');
-      assert.equal(parsed.basicAssetPositionUid, 'asset-position-uid');
-      assert.deepEqual(parsed.strikePrice, {
-        currency: 'rub',
-        amount: '12500.5'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing option as json null and table header', () => {

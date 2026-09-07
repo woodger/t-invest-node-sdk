@@ -17,19 +17,15 @@ import type {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  formatSandboxPayIn,
-  sandboxPayInFormats,
-  type SandboxPayInFormat
-} from './reporter';
+import { formatSandboxPayIn, sandboxPayInFormats } from './reporter';
 
 type SandboxPayInSdk = {
   sandbox: {
@@ -44,8 +40,6 @@ const sandboxPayInCommandPath = ['sandbox', 'pay-in'] as const;
 const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const sandboxPayInCurrencies = ['rub', 'usd'] as const;
-
-type SandboxPayInCurrency = typeof sandboxPayInCurrencies[number];
 
 const sandboxPayInRequestOptionsSchema = {
   'account-id': {
@@ -82,14 +76,6 @@ type SandboxPayInRequestOptions = CommandRequestOptions<
   SandboxPayInOptions,
   'account-id' | 'amount' | 'currency'
 >;
-
-export function parseSandboxPayInCurrency(rawOptions: CommandRawOptions): SandboxPayInCurrency {
-  return parseCommandOptions(rawOptions, sandboxPayInRequestOptionsSchema).currency;
-}
-
-export function parseSandboxPayInFormat(rawOptions: CommandRawOptions): SandboxPayInFormat {
-  return parseCommandOptions(rawOptions, sandboxPayInFormatOptionsSchema).format;
-}
 
 export function createSandboxPayInCommand(
   createSdk: SandboxPayInSdkFactory = defaultSandboxPayInSdkFactory

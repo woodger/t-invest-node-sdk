@@ -7,15 +7,7 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetCountriesRequest,
   GetCountriesResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createCountriesCommand,
-  parseCountriesFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createCountriesCommand } from './cli';
 
 function response(overrides: Partial<GetCountriesResponse> = {}): GetCountriesResponse {
   return {
@@ -32,19 +24,6 @@ function response(overrides: Partial<GetCountriesResponse> = {}): GetCountriesRe
 }
 
 describe('countries command', () => {
-  describe('parseCountriesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseCountriesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseCountriesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createCountriesCommand', () => {
     test('calls getCountries and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

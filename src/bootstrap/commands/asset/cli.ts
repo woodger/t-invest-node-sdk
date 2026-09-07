@@ -14,10 +14,10 @@ import type { AssetRequest, AssetResponse } from '../../../generated/instruments
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { assetFormats, formatAsset, type AssetFormat } from './reporter';
+import { assetFormats, formatAsset } from './reporter';
 
 type AssetSdk = {
   instruments: {
@@ -53,12 +53,6 @@ const assetOptionsSchema = withSdkOptions(
 
 type AssetOptions = InferOptions<typeof assetOptionsSchema>;
 type AssetRequestOptions = CommandRequestOptions<AssetOptions, 'id'>;
-
-
-
-export function parseAssetFormat(rawOptions: CommandRawOptions): AssetFormat {
-  return parseCommandOptions(rawOptions, assetFormatOptionsSchema).format;
-}
 
 export function createAssetCommand(
   createSdk: AssetSdkFactory = defaultAssetSdkFactory

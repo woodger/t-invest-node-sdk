@@ -17,22 +17,14 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
 } from '../../args/instrument-id-options';
-import {
-  accruedInterestsFormats,
-  formatAccruedInterests,
-  type AccruedInterestsFormat
-} from './reporter';
+import { accruedInterestsFormats, formatAccruedInterests } from './reporter';
 
 type AccruedInterestsSdk = {
   instruments: {
@@ -76,12 +68,6 @@ type AccruedInterestsRequestOptions = CommandRequestOptions<
   AccruedInterestsOptions,
   'from' | 'to' | 'instrument-id' | 'figi'
 >;
-
-
-
-export function parseAccruedInterestsFormat(rawOptions: CommandRawOptions): AccruedInterestsFormat {
-  return parseCommandOptions(rawOptions, accruedInterestsFormatOptionsSchema).format;
-}
 
 export function createAccruedInterestsCommand(
   createSdk: AccruedInterestsSdkFactory = defaultAccruedInterestsSdkFactory

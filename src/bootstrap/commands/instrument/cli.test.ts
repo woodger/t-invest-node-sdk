@@ -8,15 +8,7 @@ import { InstrumentIdType,
   type InstrumentRequest,
   type InstrumentResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createInstrumentCommand,
-  parseInstrumentFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createInstrumentCommand } from './cli';
 
 function instrumentResponse(overrides: Partial<InstrumentResponse> = {}): InstrumentResponse {
   return {
@@ -26,19 +18,6 @@ function instrumentResponse(overrides: Partial<InstrumentResponse> = {}): Instru
 }
 
 describe('instrument command', () => {
-  describe('parseInstrumentFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseInstrumentFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseInstrumentFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createInstrumentCommand', () => {
     test('calls getInstrumentBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

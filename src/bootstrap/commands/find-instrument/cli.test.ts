@@ -10,17 +10,7 @@ import type {
   FindInstrumentResponse,
   InstrumentShort
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createFindInstrumentCommand,
-  parseFindInstrumentFormat,
-  parseFindInstrumentKind,
-  createFindInstrumentRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createFindInstrumentCommand, createFindInstrumentRequest } from './cli';
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
   return {
@@ -52,31 +42,6 @@ function response(overrides: Partial<FindInstrumentResponse> = {}): FindInstrume
 }
 
 describe('find-instrument command', () => {
-  describe('parseFindInstrumentKind', () => {
-    test('returns unspecified by default', () => {
-      assert.equal(
-        parseFindInstrumentKind(rawOptions()),
-        InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED
-      );
-    });
-
-    test('maps public instrument kind names to generated enum values', () => {
-      assert.equal(parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'share' })), InstrumentType.INSTRUMENT_TYPE_SHARE);
-      assert.equal(parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'bond' })), InstrumentType.INSTRUMENT_TYPE_BOND);
-      assert.equal(
-        parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'clearing-certificate' })),
-        InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
-      );
-    });
-
-    test('rejects unknown instrument kind names', () => {
-      assert.throws(
-        () => parseFindInstrumentKind(rawOptions({ 'instrument-kind': 'stock' })),
-        /Expected '--instrument-kind' as one of: unspecified, bond, share/
-      );
-    });
-  });
-
   describe('createFindInstrumentRequest', () => {
     test('returns generated findInstrument request', () => {
       const request = createFindInstrumentRequest({
@@ -92,18 +57,24 @@ describe('find-instrument command', () => {
       });
     });
 
-  });
+    test('maps unspecified, bond, and clearing certificate kinds', () => {
+      const cases = [
+        ['unspecified', InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED],
+        ['bond', InstrumentType.INSTRUMENT_TYPE_BOND],
+        ['clearing-certificate', InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE]
+      ] as const;
 
-  describe('parseFindInstrumentFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseFindInstrumentFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseFindInstrumentFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
+      for (const [instrumentKind, expected] of cases) {
+        assert.deepEqual(createFindInstrumentRequest({
+          query: 'instrument',
+          'instrument-kind': instrumentKind,
+          'api-trade-available': false
+        }), {
+          query: 'instrument',
+          instrumentKind: expected,
+          apiTradeAvailableFlag: false
+        });
+      }
     });
   });
 

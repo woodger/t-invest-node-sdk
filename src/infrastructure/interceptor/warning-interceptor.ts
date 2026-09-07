@@ -29,7 +29,7 @@ export function warningInterceptor(options: InstallOptions) {
   } = options;
 
   if (!enabled) {
-    // No hook is installed when the interceptor is disabled.
+    // Отключённый interceptor не устанавливает process hook.
     // oxlint-disable-next-line no-empty-function
     return () => {};
   }

@@ -17,18 +17,14 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
 } from '../../args/instrument-id-options';
-import { bondCouponsFormats, formatBondCoupons, type BondCouponsFormat } from './reporter';
+import { bondCouponsFormats, formatBondCoupons } from './reporter';
 
 type BondCouponsSdk = {
   instruments: {
@@ -72,12 +68,6 @@ type BondCouponsRequestOptions = CommandRequestOptions<
   BondCouponsOptions,
   'from' | 'to' | 'instrument-id' | 'figi'
 >;
-
-
-
-export function parseBondCouponsFormat(rawOptions: CommandRawOptions): BondCouponsFormat {
-  return parseCommandOptions(rawOptions, bondCouponsFormatOptionsSchema).format;
-}
 
 export function createBondCouponsCommand(
   createSdk: BondCouponsSdkFactory = defaultBondCouponsSdkFactory

@@ -18,14 +18,10 @@ import type { FindInstrumentRequest,
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  findInstrumentFormats,
-  formatFindInstrument,
-  type FindInstrumentFormat
-} from './reporter';
+import { findInstrumentFormats, formatFindInstrument } from './reporter';
 
 type FindInstrumentSdk = {
   instruments: {
@@ -51,7 +47,7 @@ const instrumentKinds = {
   'clearing-certificate': InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
 } as const;
 
-export const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<keyof typeof instrumentKinds>;
+const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<keyof typeof instrumentKinds>;
 
 type InstrumentKindName = typeof findInstrumentKindNames[number];
 
@@ -86,18 +82,6 @@ const findInstrumentOptionsSchema = withSdkOptions(
 
 type FindInstrumentOptions = InferOptions<typeof findInstrumentOptionsSchema>;
 type FindInstrumentRequestOptions = CommandRequestOptions<FindInstrumentOptions, 'instrument-kind' | 'api-trade-available' | 'query'>;
-
-
-export function parseFindInstrumentKind(rawOptions: CommandRawOptions): InstrumentType {
-  const instrumentKind = parseCommandOptions(rawOptions, { 'instrument-kind': findInstrumentRequestOptionsSchema['instrument-kind'] } as const)['instrument-kind'];
-
-  return instrumentKinds[instrumentKind as InstrumentKindName];
-}
-
-
-export function parseFindInstrumentFormat(rawOptions: CommandRawOptions): FindInstrumentFormat {
-  return parseCommandOptions(rawOptions, findInstrumentFormatOptionsSchema).format;
-}
 
 export function createFindInstrumentCommand(
   createSdk: FindInstrumentSdkFactory = defaultFindInstrumentSdkFactory

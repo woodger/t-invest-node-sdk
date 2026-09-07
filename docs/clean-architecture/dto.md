@@ -101,10 +101,11 @@ Command-specific primitive options описываются декларативн
 или форматировать reports.
 
 После `icore` validation command handler работает с typed command options. Raw
-CLI option maps не должны передаваться в request builders. Если нужен focused
-parser для CLI edge case, он должен оставаться `parse*` helper-ом и работать с
-raw options. Mapping typed options в generated request DTO должен жить в
-`create*Request` helper-е.
+CLI option maps не должны передаваться ни в command-local parser helpers, ни в
+request builders. Project-specific `parse*` helper может преобразовывать
+отдельное уже типизированное значение, например RFC 3339 date-time или
+comma-separated список. Mapping typed options в generated request DTO должен
+жить в `create*Request` helper-е.
 
 ## Mapping
 

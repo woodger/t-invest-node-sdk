@@ -9,16 +9,7 @@ import {
   type Account,
   type GetAccountsRequest
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxAccountsCommand,
-  createSandboxAccountsRequest,
-  parseSandboxAccountsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxAccountsCommand, createSandboxAccountsRequest } from './cli';
 
 function account(overrides: Partial<Account> = {}): Account {
   return {
@@ -37,19 +28,6 @@ describe('sandbox-accounts command', () => {
   describe('createSandboxAccountsRequest', () => {
     test('returns generated getSandboxAccounts request', () => {
       assert.deepEqual(createSandboxAccountsRequest(), {});
-    });
-  });
-
-  describe('parseSandboxAccountsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxAccountsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseSandboxAccountsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

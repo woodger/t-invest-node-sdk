@@ -18,14 +18,10 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { candlesFormats, formatCandles, type CandlesFormat } from './reporter';
+import { candlesFormats, formatCandles } from './reporter';
 
 type CandlesSdk = {
   marketdata: {
@@ -101,18 +97,6 @@ type CandlesRequestOptions = CommandRequestOptions<
   'to' |
   'interval'
 >;
-
-
-export function parseCandleInterval(rawOptions: CommandRawOptions): CandleInterval {
-  const { interval } = parseCommandOptions(rawOptions, { interval: candlesRequestOptionsSchema.interval } as const);
-
-  return candleIntervals[interval as CandleIntervalName];
-}
-
-
-export function parseCandlesFormat(rawOptions: CommandRawOptions): CandlesFormat {
-  return parseCommandOptions(rawOptions, candlesFormatOptionsSchema).format;
-}
 
 export function createCandlesCommand(
   createSdk: CandlesSdkFactory = defaultCandlesSdkFactory

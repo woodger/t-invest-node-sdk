@@ -58,9 +58,8 @@ external dependency
 quota bucket и передает application scheduler-у только `bucket` и
 `limitPerMinute`. Application не разбирает gRPC path.
 
-`infrastructure/interceptor` содержит технические process hooks для warnings и
-диагностического перехвата `stdout`. Это не штатный CLI output sink: normal
-command output проходит через terminal app.
+`infrastructure/interceptor` содержит технический process hook для известных
+warnings. Обычный вывод команд проходит через terminal app.
 
 `infrastructure/report-values.ts` - принадлежащий проекту адаптер скалярных
 значений:

@@ -8,16 +8,7 @@ import {
   type GetLastPricesResponse,
   type LastPrice
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createLastPricesCommand,
-  parseLastPricesFormat,
-  createLastPricesRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createLastPricesCommand, createLastPricesRequest } from './cli';
 
 function quotation(units: number, nano: number): Quotation {
   return {
@@ -56,19 +47,6 @@ describe('last-prices command', () => {
       assert.doesNotMatch(
         JSON.stringify(GetLastPricesRequest.toJSON(request)),
         /"figi":/
-      );
-    });
-  });
-
-  describe('parseLastPricesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseLastPricesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseLastPricesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
       );
     });
   });

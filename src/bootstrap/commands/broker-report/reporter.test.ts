@@ -194,14 +194,8 @@ describe('broker-report reporter', () => {
       }));
 
       const output = formatBrokerReportReport(report, 'json');
-      const parsed = JSON.parse(output);
 
-      assert.equal(parsed.type, 'page');
-      assert.equal(parsed.items[0].tradeId, 'trade-id');
-      assert.deepEqual(parsed.items[0].exchangeClearingCommission, {
-        currency: 'rub',
-        amount: '0.1'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats empty report as table', () => {

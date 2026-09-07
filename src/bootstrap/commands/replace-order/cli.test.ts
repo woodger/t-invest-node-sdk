@@ -12,16 +12,7 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createReplaceOrderCommand,
-  createReplaceOrderRequest,
-  parseReplaceOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createReplaceOrderCommand, createReplaceOrderRequest } from './cli';
 
 function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -70,12 +61,6 @@ describe('replace-order command', () => {
         priceType: PriceType.PRICE_TYPE_CURRENCY,
         confirmMarginTrade: false
       });
-    });
-  });
-
-  describe('parseReplaceOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseReplaceOrderFormat(rawOptions()), 'table');
     });
   });
 

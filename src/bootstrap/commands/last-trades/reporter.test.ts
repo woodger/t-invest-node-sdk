@@ -66,15 +66,10 @@ describe('last-trades reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatLastTradesReport(createLastTradesReport([trade()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createLastTradesReport([trade()]);
+      const output = formatLastTradesReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed[0].instrumentUid, 'instrument-uid');
-      assert.equal(parsed[0].direction, 'TRADE_DIRECTION_BUY');
-      assert.equal(parsed[0].price, '123.45');
-      assert.equal(parsed[0].quantity, 10);
-      assert.equal(parsed[0].time, '2026-06-19T10:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

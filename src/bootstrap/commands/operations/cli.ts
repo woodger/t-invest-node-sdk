@@ -18,18 +18,14 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveOptionalInstrumentIdOption
 } from '../../args/instrument-id-options';
-import { formatOperations, operationsFormats, type OperationsFormat } from './reporter';
+import { formatOperations, operationsFormats } from './reporter';
 
 type OperationsSdk = {
   operations: {
@@ -102,18 +98,6 @@ type OperationsRequestOptions = CommandRequestOptions<
   'instrument-id' |
   'figi'
 >;
-
-
-export function parseOperationsState(rawOptions: CommandRawOptions): OperationState {
-  const { state } = parseCommandOptions(rawOptions, operationsStateOptionsSchema);
-
-  return operationStates[state];
-}
-
-
-export function parseOperationsFormat(rawOptions: CommandRawOptions): OperationsFormat {
-  return parseCommandOptions(rawOptions, operationsFormatOptionsSchema).format;
-}
 
 export function createOperationsCommand(
   createSdk: OperationsSdkFactory = defaultOperationsSdkFactory

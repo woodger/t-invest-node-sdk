@@ -17,14 +17,13 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
 } from '../../args/instruments-args';
-import { bondFormats, formatBond, type BondFormat } from './reporter';
+import { bondFormats, formatBond } from './reporter';
 
 type BondSdk = {
   instruments: {
@@ -52,10 +51,6 @@ const bondOptionsSchema = withSdkOptions(
 );
 
 type BondOptions = InferOptions<typeof bondOptionsSchema>;
-
-export function parseBondFormat(rawOptions: CommandRawOptions): BondFormat {
-  return parseCommandOptions(rawOptions, bondFormatOptionsSchema).format;
-}
 
 export function createBondCommand(
   createSdk: BondSdkFactory = defaultBondSdkFactory

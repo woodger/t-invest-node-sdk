@@ -9,16 +9,7 @@ import {
   GetAccruedInterestsRequest,
   type GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createAccruedInterestsCommand,
-  parseAccruedInterestsFormat,
-  createAccruedInterestsRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createAccruedInterestsCommand, createAccruedInterestsRequest } from './cli';
 
 function accruedInterest(overrides: Partial<AccruedInterest> = {}): AccruedInterest {
   return {
@@ -77,19 +68,6 @@ describe('accrued-interests command', () => {
           to: '2026-01-01T00:00:00Z'
         }),
         /Expected '--from' to be earlier than or equal to '--to'/
-      );
-    });
-  });
-
-  describe('parseAccruedInterestsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseAccruedInterestsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseAccruedInterestsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
       );
     });
   });

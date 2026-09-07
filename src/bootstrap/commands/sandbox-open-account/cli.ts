@@ -17,18 +17,13 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  formatOpenSandboxAccount,
-  openSandboxAccountFormats,
-  type OpenSandboxAccountFormat
-} from './reporter';
+import { formatOpenSandboxAccount, openSandboxAccountFormats } from './reporter';
 
 type SandboxOpenAccountSdk = {
   sandbox: {
@@ -56,12 +51,6 @@ const sandboxOpenAccountOptionsSchema = withSdkOptions(
 );
 
 type SandboxOpenAccountOptions = InferOptions<typeof sandboxOpenAccountOptionsSchema>;
-
-export function parseSandboxOpenAccountFormat(
-  rawOptions: CommandRawOptions
-): OpenSandboxAccountFormat {
-  return parseCommandOptions(rawOptions, sandboxOpenAccountFormatOptionsSchema).format;
-}
 
 export function createSandboxOpenAccountCommand(
   createSdk: SandboxOpenAccountSdkFactory = defaultSandboxOpenAccountSdkFactory

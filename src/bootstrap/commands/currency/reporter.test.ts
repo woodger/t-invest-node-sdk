@@ -24,8 +24,6 @@ function currency(overrides: Partial<Currency> = {}): Currency {
     isin: 'USD000UTSTOM',
     lot: 1000,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -85,8 +83,6 @@ describe('currency reporter', () => {
           currency: 'usd',
           amount: '1'
         },
-        klong: '2',
-        kshort: '1.5',
         dlong: '0.1',
         dshort: '0.2',
         dlongMin: '0.3',
@@ -125,16 +121,10 @@ describe('currency reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatCurrencyReport(createCurrencyReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createCurrencyReport(response());
+      const output = formatCurrencyReport(report, 'json');
 
-      assert.equal(parsed.figi, 'BBG0013HGFT4');
-      assert.deepEqual(parsed.nominal, {
-        currency: 'usd',
-        amount: '1'
-      });
-      assert.equal(parsed.minPriceIncrement, '0.0025');
-      assert.equal(parsed.tradingStatus, 'SECURITY_TRADING_STATUS_NORMAL_TRADING');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing currency as json null and table header', () => {

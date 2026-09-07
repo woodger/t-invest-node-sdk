@@ -6,16 +6,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelOrderRequest
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createCancelOrderCommand,
-  createCancelOrderRequest,
-  parseCancelOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createCancelOrderCommand, createCancelOrderRequest } from './cli';
 
 describe('cancel-order command', () => {
   describe('createCancelOrderRequest', () => {
@@ -27,12 +18,6 @@ describe('cancel-order command', () => {
         accountId: 'account-id',
         orderId: 'order-id'
       });
-    });
-  });
-
-  describe('parseCancelOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseCancelOrderFormat(rawOptions()), 'table');
     });
   });
 

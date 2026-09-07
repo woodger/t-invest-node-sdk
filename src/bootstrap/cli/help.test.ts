@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { commandNames, resolveCommand } from './registry';
+import { commandLineCommands } from './registry';
 import {
   commandHelp,
   isCommandHelpName,
@@ -27,7 +27,7 @@ describe('commandHelp', () => {
   test('contains help entries for preferred public bootstrap commands', () => {
     assert.deepEqual(
       Object.keys(commandHelp).sort(),
-      [...commandNames].sort()
+      [...commandLineCommands.names].sort()
     );
   });
 });
@@ -230,9 +230,6 @@ describe('renderDomainHelp', () => {
           continue;
         }
 
-        const command = resolveCommand(commandName.split(' '));
-
-        assert.equal(command.name, commandName);
         assert.match(help, new RegExp(commandName.split(' ').slice(1).join(' ')));
       }
     }

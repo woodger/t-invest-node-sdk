@@ -3,15 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createUserInfoCommand,
-  parseUserInfoFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createUserInfoCommand } from './cli';
 
 function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
   return {
@@ -24,19 +16,6 @@ function response(overrides: Partial<GetInfoResponse> = {}): GetInfoResponse {
 }
 
 describe('user-info command', () => {
-  describe('parseUserInfoFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseUserInfoFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseUserInfoFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createUserInfoCommand', () => {
     test('calls getInfo and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

@@ -14,10 +14,10 @@ import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/ord
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatOrders, ordersFormats, type OrdersFormat } from './reporter';
+import { formatOrders, ordersFormats } from './reporter';
 
 type OrdersSdk = {
   orders: {
@@ -53,12 +53,6 @@ const ordersOptionsSchema = withSdkOptions(
 
 type OrdersOptions = InferOptions<typeof ordersOptionsSchema>;
 type OrdersRequestOptions = CommandRequestOptions<OrdersOptions, 'account-id'>;
-
-
-
-export function parseOrdersFormat(rawOptions: CommandRawOptions): OrdersFormat {
-  return parseCommandOptions(rawOptions, ordersFormatOptionsSchema).format;
-}
 
 export function createOrdersCommand(
   createSdk: OrdersSdkFactory = defaultOrdersSdkFactory

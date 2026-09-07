@@ -15,23 +15,15 @@ import { type PostOrderResponse, type ReplaceOrderRequest } from '../../../gener
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  positiveSafeIntegerOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  formatReplaceOrder,
-  replaceOrderFormats,
-  type ReplaceOrderFormat
-} from './reporter';
+import { formatReplaceOrder, replaceOrderFormats } from './reporter';
 
 type ReplaceOrderSdk = {
   orders: {
@@ -106,10 +98,6 @@ type ReplaceOrderRequestOptions = CommandRequestOptions<
   'price' |
   'price-type'
 >;
-
-export function parseReplaceOrderFormat(rawOptions: CommandRawOptions): ReplaceOrderFormat {
-  return parseCommandOptions(rawOptions, replaceOrderFormatOptionsSchema).format;
-}
 
 export function createReplaceOrderCommand(
   createSdk: ReplaceOrderSdkFactory = defaultReplaceOrderSdkFactory

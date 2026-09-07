@@ -17,14 +17,13 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
 } from '../../args/instruments-args';
-import { etfFormats, formatEtf, type EtfFormat } from './reporter';
+import { etfFormats, formatEtf } from './reporter';
 
 type EtfSdk = {
   instruments: {
@@ -52,10 +51,6 @@ const etfOptionsSchema = withSdkOptions(
 );
 
 type EtfOptions = InferOptions<typeof etfOptionsSchema>;
-
-export function parseEtfFormat(rawOptions: CommandRawOptions): EtfFormat {
-  return parseCommandOptions(rawOptions, etfFormatOptionsSchema).format;
-}
 
 export function createEtfCommand(
   createSdk: EtfSdkFactory = defaultEtfSdkFactory

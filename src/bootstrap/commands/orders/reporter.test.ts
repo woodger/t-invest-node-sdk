@@ -164,16 +164,10 @@ describe('orders reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOrdersReport(createOrdersReport(orders()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createOrdersReport(orders());
+      const output = formatOrdersReport(report, 'json');
 
-      assert.equal(parsed[0].orderId, 'order-id');
-      assert.equal(parsed[0].status, 'EXECUTION_REPORT_STATUS_NEW');
-      assert.deepEqual(parsed[0].initialOrderPrice, {
-        currency: 'rub',
-        amount: '100.5'
-      });
-      assert.equal(parsed[0].stages.at(0)?.tradeId, 'trade-id');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

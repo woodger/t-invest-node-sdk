@@ -17,15 +17,11 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createWithdrawLimitsRequest } from '../withdraw-limits/cli';
-import {
-  formatWithdrawLimits,
-  withdrawLimitsFormats,
-  type WithdrawLimitsFormat
-} from '../withdraw-limits/reporter';
+import { formatWithdrawLimits, withdrawLimitsFormats } from '../withdraw-limits/reporter';
 
 type SandboxWithdrawLimitsSdk = {
   sandbox: {
@@ -66,12 +62,6 @@ type SandboxWithdrawLimitsRequestOptions = CommandRequestOptions<
   SandboxWithdrawLimitsOptions,
   'account-id'
 >;
-
-export function parseSandboxWithdrawLimitsFormat(
-  rawOptions: CommandRawOptions
-): WithdrawLimitsFormat {
-  return parseCommandOptions(rawOptions, sandboxWithdrawLimitsFormatOptionsSchema).format;
-}
 
 export function createSandboxWithdrawLimitsCommand(
   createSdk: SandboxWithdrawLimitsSdkFactory = defaultSandboxWithdrawLimitsSdkFactory

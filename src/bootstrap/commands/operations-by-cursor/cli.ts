@@ -20,19 +20,14 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
 import {
   parseCommaSeparatedStringListOption,
-  parseCommandOptions,
   parseDateTimeOption,
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  formatOperationsByCursor,
-  operationsByCursorFormats,
-  type OperationsByCursorFormat
-} from './reporter';
+import { formatOperationsByCursor, operationsByCursorFormats } from './reporter';
 
 type OperationsByCursorSdk = {
   operations: {
@@ -142,19 +137,6 @@ type OperationsByCursorRequestOptions = CommandRequestOptions<
   'state'
 >;
 
-
-export function parseOperationsByCursorState(rawOptions: CommandRawOptions): OperationState {
-  const { state } = parseCommandOptions(rawOptions, operationsByCursorStateOptionsSchema);
-
-  return operationStates[state];
-}
-
-export function parseOperationsByCursorLimit(rawOptions: CommandRawOptions): number {
-  const { limit } = parseCommandOptions(rawOptions, operationsByCursorLimitOptionsSchema);
-
-  return parseOperationsByCursorLimitOption(limit);
-}
-
 function parseOperationsByCursorLimitOption(rawValue: string | undefined): number {
   if (rawValue === undefined) {
     return 0;
@@ -171,12 +153,6 @@ function parseOperationsByCursorLimitOption(rawValue: string | undefined): numbe
   }
 
   return limit;
-}
-
-export function parseOperationsByCursorOperationTypes(rawOptions: CommandRawOptions): OperationType[] {
-  const options = parseCommandOptions(rawOptions, operationsByCursorOperationTypesOptionsSchema);
-
-  return parseOperationsByCursorOperationTypesOption(options['operation-type']);
 }
 
 function parseOperationsByCursorOperationTypesOption(
@@ -197,11 +173,6 @@ function parseOperationsByCursorOperationTypesOption(
 
     return operationType;
   });
-}
-
-
-export function parseOperationsByCursorFormat(rawOptions: CommandRawOptions): OperationsByCursorFormat {
-  return parseCommandOptions(rawOptions, operationsByCursorFormatOptionsSchema).format;
 }
 
 export function createOperationsByCursorCommand(
