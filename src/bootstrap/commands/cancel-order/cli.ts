@@ -17,18 +17,14 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  cancelOrderFormats,
-  formatCancelOrder,
-  type CancelOrderFormat
-} from './reporter';
+import { cancelOrderFormats, formatCancelOrder } from './reporter';
 
 type CancelOrderSdk = {
   orders: {
@@ -72,10 +68,6 @@ type CancelOrderRequestOptions = CommandRequestOptions<
   CancelOrderOptions,
   'account-id' | 'order-id'
 >;
-
-export function parseCancelOrderFormat(rawOptions: CommandRawOptions): CancelOrderFormat {
-  return parseCommandOptions(rawOptions, cancelOrderFormatOptionsSchema).format;
-}
 
 export function createCancelOrderCommand(
   createSdk: CancelOrderSdkFactory = defaultCancelOrderSdkFactory

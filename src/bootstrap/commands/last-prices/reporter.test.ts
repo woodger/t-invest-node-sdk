@@ -56,13 +56,10 @@ describe('last-prices reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatLastPricesReport(createLastPricesReport([lastPrice()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createLastPricesReport([lastPrice()]);
+      const output = formatLastPricesReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed[0].instrumentUid, 'instrument-uid');
-      assert.equal(parsed[0].price, '123.45');
-      assert.equal(parsed[0].time, '2026-06-19T10:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

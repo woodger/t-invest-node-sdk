@@ -8,9 +8,9 @@ import {
   TradeSourceType
 } from '../../../generated/marketdata';
 import {
-  createAccountStreamRequest,
   createMarketDataStreamRequests,
   createMarketDataServerSideStreamRequest,
+  createPortfolioStreamRequest,
   parseStreamRunConfig
 } from './config';
 
@@ -32,7 +32,7 @@ describe('stream run config', () => {
       }));
 
       assert.equal(config.stream, 'operations.portfolioStream');
-      assert.deepEqual(createAccountStreamRequest(config), {
+      assert.deepEqual(createPortfolioStreamRequest(config), {
         accounts: ['account-id'],
         pingSettings: undefined
       });

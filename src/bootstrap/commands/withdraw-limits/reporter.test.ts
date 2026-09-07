@@ -63,13 +63,10 @@ describe('withdraw-limits reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatWithdrawLimitsReport(createWithdrawLimitsReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createWithdrawLimitsReport(response());
+      const output = formatWithdrawLimitsReport(report, 'json');
 
-      assert.equal(parsed.money[0].currency, 'rub');
-      assert.equal(parsed.money[0].amount, '100');
-      assert.equal(parsed.blocked[0].amount, '10.25');
-      assert.equal(parsed.blockedGuarantee[0].amount, '1.5');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

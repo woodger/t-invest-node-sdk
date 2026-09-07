@@ -17,18 +17,14 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  closeSandboxAccountFormats,
-  formatCloseSandboxAccount,
-  type CloseSandboxAccountFormat
-} from './reporter';
+import { closeSandboxAccountFormats, formatCloseSandboxAccount } from './reporter';
 
 type SandboxCloseAccountSdk = {
   sandbox: {
@@ -68,12 +64,6 @@ type SandboxCloseAccountRequestOptions = CommandRequestOptions<
   SandboxCloseAccountOptions,
   'account-id'
 >;
-
-export function parseSandboxCloseAccountFormat(
-  rawOptions: CommandRawOptions
-): CloseSandboxAccountFormat {
-  return parseCommandOptions(rawOptions, sandboxCloseAccountFormatOptionsSchema).format;
-}
 
 export function createSandboxCloseAccountCommand(
   createSdk: SandboxCloseAccountSdkFactory = defaultSandboxCloseAccountSdkFactory

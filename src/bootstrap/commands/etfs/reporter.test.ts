@@ -7,7 +7,7 @@ import {
   SecurityTradingStatus,
   type Quotation
 } from '../../../generated/common';
-import { type Etf } from '../../../generated/instruments';
+import type { Etf } from '../../../generated/instruments';
 import { createEtfsReport, formatEtfsReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -22,8 +22,6 @@ function etf(overrides: Partial<Etf> = {}): Etf {
     isin: 'RU000A101X76',
     lot: 1,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -83,8 +81,6 @@ describe('etfs reporter', () => {
           fixedCommission: '0.79',
           releasedDate: '2020-01-20T00:00:00.000Z',
           numShares: '1000000',
-          klong: '2',
-          kshort: '1.5',
           dlong: '0.1',
           dshort: '0.2',
           dlongMin: '0.3',
@@ -121,13 +117,10 @@ describe('etfs reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatEtfsReport(createEtfsReport([etf()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createEtfsReport([etf()]);
+      const output = formatEtfsReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'BBG333333333');
-      assert.equal(parsed[0].focusType, 'equity');
-      assert.equal(parsed[0].fixedCommission, '0.79');
-      assert.equal(parsed[0].releasedDate, '2020-01-20T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

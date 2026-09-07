@@ -17,20 +17,15 @@ import type {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
 import {
-  parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  dividendsForeignIssuerFormats,
-  formatDividendsForeignIssuer,
-  type DividendsForeignIssuerFormat
-} from './reporter';
+import { dividendsForeignIssuerFormats, formatDividendsForeignIssuer } from './reporter';
 
 type DividendsForeignIssuerSdk = {
   operations: {
@@ -91,7 +86,6 @@ type DividendsForeignIssuerRequestOptions = CommandRequestOptions<
   'page'
 >;
 
-
 export function createDividendsForeignIssuerRequest(
   options: DividendsForeignIssuerRequestOptions
 ): GetDividendsForeignIssuerRequest {
@@ -133,13 +127,6 @@ export function createDividendsForeignIssuerRequest(
     },
     getDivForeignIssuerReport: undefined
   };
-}
-
-
-export function parseDividendsForeignIssuerFormat(
-  rawOptions: CommandRawOptions
-): DividendsForeignIssuerFormat {
-  return parseCommandOptions(rawOptions, dividendsForeignIssuerFormatOptionsSchema).format;
 }
 
 export function createDividendsForeignIssuerCommand(

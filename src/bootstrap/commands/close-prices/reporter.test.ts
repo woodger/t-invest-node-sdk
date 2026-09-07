@@ -58,13 +58,10 @@ describe('close-prices reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatClosePricesReport(createClosePricesReport([closePrice()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createClosePricesReport([closePrice()]);
+      const output = formatClosePricesReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed[0].instrumentUid, 'instrument-uid');
-      assert.equal(parsed[0].price, '123.45');
-      assert.equal(parsed[0].time, '2026-06-19T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

@@ -14,10 +14,9 @@ import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/ins
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { brandsFormats, formatBrands, type BrandsFormat } from './reporter';
+import { brandsFormats, formatBrands } from './reporter';
 
 type BrandsSdk = {
   instruments: {
@@ -40,10 +39,6 @@ const brandsOptionsSchema = withSdkOptions({
 } as const);
 
 type BrandsOptions = InferOptions<typeof brandsOptionsSchema>;
-
-export function parseBrandsFormat(rawOptions: CommandRawOptions): BrandsFormat {
-  return parseCommandOptions(rawOptions, brandsOptionsSchema).format;
-}
 
 export function createBrandsCommand(
   createSdk: BrandsSdkFactory = defaultBrandsSdkFactory

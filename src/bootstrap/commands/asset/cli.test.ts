@@ -7,16 +7,7 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { AssetRequest,
   AssetResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createAssetCommand,
-  parseAssetFormat,
-  createAssetRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createAssetCommand, createAssetRequest } from './cli';
 
 function response(overrides: Partial<AssetResponse> = {}): AssetResponse {
   return {
@@ -35,19 +26,6 @@ describe('asset command', () => {
       });
     });
 
-  });
-
-  describe('parseAssetFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseAssetFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseAssetFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
   });
 
   describe('createAssetCommand', () => {

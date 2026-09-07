@@ -18,14 +18,10 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatLastTrades, lastTradesFormats, type LastTradesFormat } from './reporter';
+import { formatLastTrades, lastTradesFormats } from './reporter';
 
 type LastTradesSdk = {
   marketdata: {
@@ -69,12 +65,6 @@ const lastTradesOptionsSchema = withSdkOptions(
 
 type LastTradesOptions = InferOptions<typeof lastTradesOptionsSchema>;
 type LastTradesRequestOptions = CommandRequestOptions<LastTradesOptions, 'instrument-id' | 'from' | 'to'>;
-
-
-
-export function parseLastTradesFormat(rawOptions: CommandRawOptions): LastTradesFormat {
-  return parseCommandOptions(rawOptions, lastTradesFormatOptionsSchema).format;
-}
 
 export function createLastTradesCommand(
   createSdk: LastTradesSdkFactory = defaultLastTradesSdkFactory

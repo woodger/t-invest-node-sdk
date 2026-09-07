@@ -17,14 +17,13 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentsRequestFromOptions,
   instrumentStatusOptionsSchema
 } from '../../args/instruments-args';
-import { formatFutures, futuresFormats, type FuturesFormat } from './reporter';
+import { formatFutures, futuresFormats } from './reporter';
 
 type FuturesSdk = {
   instruments: {
@@ -52,10 +51,6 @@ const futuresOptionsSchema = withSdkOptions(
 );
 
 type FuturesOptions = InferOptions<typeof futuresOptionsSchema>;
-
-export function parseFuturesFormat(rawOptions: CommandRawOptions): FuturesFormat {
-  return parseCommandOptions(rawOptions, futuresFormatOptionsSchema).format;
-}
 
 export function createFuturesCommand(
   createSdk: FuturesSdkFactory = defaultFuturesSdkFactory

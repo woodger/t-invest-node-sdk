@@ -7,15 +7,7 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxWithdrawLimitsCommand,
-  parseSandboxWithdrawLimitsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxWithdrawLimitsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -37,12 +29,6 @@ function withdrawLimitsResponse(
 }
 
 describe('sandbox-withdraw-limits command', () => {
-  describe('parseSandboxWithdrawLimitsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxWithdrawLimitsFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxWithdrawLimitsCommand', () => {
     test('calls getSandboxWithdrawLimits and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

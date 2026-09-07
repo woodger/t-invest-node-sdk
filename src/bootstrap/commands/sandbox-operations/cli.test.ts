@@ -10,15 +10,7 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxOperationsCommand,
-  parseSandboxOperationsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxOperationsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -59,12 +51,6 @@ function operationsResponse(overrides: Partial<OperationsResponse> = {}): Operat
 }
 
 describe('sandbox-operations command', () => {
-  describe('parseSandboxOperationsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxOperationsFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxOperationsCommand', () => {
     test('calls getSandboxOperations and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

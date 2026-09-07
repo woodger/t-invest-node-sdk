@@ -7,16 +7,7 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createMarginAttributesCommand,
-  parseMarginAttributesFormat,
-  createMarginAttributesRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createMarginAttributesCommand, createMarginAttributesRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -57,19 +48,6 @@ describe('margin-attributes command', () => {
       assert.deepEqual(request, {
         accountId: 'account-id'
       });
-    });
-  });
-
-  describe('parseMarginAttributesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseMarginAttributesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseMarginAttributesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

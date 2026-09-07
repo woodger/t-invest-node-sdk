@@ -9,15 +9,7 @@ import {
   type CurrencyResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createCurrencyCommand,
-  parseCurrencyFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createCurrencyCommand } from './cli';
 
 function currencyResponse(overrides: Partial<CurrencyResponse> = {}): CurrencyResponse {
   return {
@@ -27,19 +19,6 @@ function currencyResponse(overrides: Partial<CurrencyResponse> = {}): CurrencyRe
 }
 
 describe('currency command', () => {
-  describe('parseCurrencyFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseCurrencyFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseCurrencyFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createCurrencyCommand', () => {
     test('calls currencyBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

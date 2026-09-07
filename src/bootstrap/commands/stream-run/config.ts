@@ -255,28 +255,6 @@ export function createMarketDataServerSideStreamRequest(
   };
 }
 
-export function createAccountStreamRequest(
-  config: StreamRunConfig
-): PortfolioStreamRequest | PositionsStreamRequest | TradesStreamRequest {
-  const stream = config.stream;
-
-  switch (stream) {
-    case 'operations.portfolioStream':
-      return createPortfolioStreamRequest(config);
-
-    case 'operations.positionsStream':
-      return createPositionsStreamRequest(config);
-
-    case 'orders.tradesStream':
-      return createTradesStreamRequest(config);
-
-    case 'marketdata.marketDataServerSideStream':
-    case 'marketdata.marketDataStream':
-    default:
-      throw new CliUsageError(`Expected account stream config, got '${String(stream)}'`);
-  }
-}
-
 export function createPortfolioStreamRequest(config: StreamRunConfig): PortfolioStreamRequest {
   if (config.stream !== 'operations.portfolioStream') {
     throw new CliUsageError(`Expected portfolio stream config, got '${config.stream}'`);

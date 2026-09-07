@@ -9,15 +9,7 @@ import {
   type InstrumentRequest,
   type OptionResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createOptionCommand,
-  parseOptionFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createOptionCommand } from './cli';
 
 function optionResponse(overrides: Partial<OptionResponse> = {}): OptionResponse {
   return {
@@ -27,19 +19,6 @@ function optionResponse(overrides: Partial<OptionResponse> = {}): OptionResponse
 }
 
 describe('option command', () => {
-  describe('parseOptionFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseOptionFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseOptionFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createOptionCommand', () => {
     test('calls optionBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

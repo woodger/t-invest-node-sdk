@@ -17,14 +17,10 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  formatMarginAttributes,
-  marginAttributesFormats,
-  type MarginAttributesFormat
-} from './reporter';
+import { formatMarginAttributes, marginAttributesFormats } from './reporter';
 
 type MarginAttributesSdk = {
   users: {
@@ -60,12 +56,6 @@ const marginAttributesOptionsSchema = withSdkOptions(
 
 type MarginAttributesOptions = InferOptions<typeof marginAttributesOptionsSchema>;
 type MarginAttributesRequestOptions = CommandRequestOptions<MarginAttributesOptions, 'account-id'>;
-
-
-
-export function parseMarginAttributesFormat(rawOptions: CommandRawOptions): MarginAttributesFormat {
-  return parseCommandOptions(rawOptions, marginAttributesFormatOptionsSchema).format;
-}
 
 export function createMarginAttributesCommand(
   createSdk: MarginAttributesSdkFactory = defaultMarginAttributesSdkFactory

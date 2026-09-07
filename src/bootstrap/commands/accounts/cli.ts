@@ -13,11 +13,10 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import type { GetAccountsResponse } from '../../../generated/users';
-import { accountsFormats, formatAccounts, type AccountsFormat } from './reporter';
+import { accountsFormats, formatAccounts } from './reporter';
 
 type AccountsSdk = {
   users: {
@@ -40,10 +39,6 @@ const accountsOptionsSchema = withSdkOptions({
 } as const);
 
 type AccountsOptions = InferOptions<typeof accountsOptionsSchema>;
-
-export function parseAccountsFormat(rawOptions: CommandRawOptions): AccountsFormat {
-  return parseCommandOptions(rawOptions, accountsOptionsSchema).format;
-}
 
 export function createAccountsCommand(
   createSdk: AccountsSdkFactory = defaultAccountsSdkFactory

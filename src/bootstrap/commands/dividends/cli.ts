@@ -17,18 +17,14 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
 } from '../../args/instrument-id-options';
-import { dividendsFormats, formatDividends, type DividendsFormat } from './reporter';
+import { dividendsFormats, formatDividends } from './reporter';
 
 type DividendsSdk = {
   instruments: {
@@ -72,12 +68,6 @@ type DividendsRequestOptions = CommandRequestOptions<
   DividendsOptions,
   'from' | 'to' | 'instrument-id' | 'figi'
 >;
-
-
-
-export function parseDividendsFormat(rawOptions: CommandRawOptions): DividendsFormat {
-  return parseCommandOptions(rawOptions, dividendsFormatOptionsSchema).format;
-}
 
 export function createDividendsCommand(
   createSdk: DividendsSdkFactory = defaultDividendsSdkFactory

@@ -49,15 +49,10 @@ describe('trading-status reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatTradingStatusReport(createTradingStatusReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createTradingStatusReport(response());
+      const output = formatTradingStatusReport(report, 'json');
 
-      assert.equal(parsed.figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed.instrumentUid, 'instrument-uid');
-      assert.equal(parsed.tradingStatus, 'SECURITY_TRADING_STATUS_NORMAL_TRADING');
-      assert.equal(parsed.limitOrderAvailable, true);
-      assert.equal(parsed.marketOrderAvailable, false);
-      assert.equal(parsed.apiTradeAvailable, true);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

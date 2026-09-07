@@ -12,16 +12,7 @@ import {
   type GetOrderStateRequest,
   type OrderState
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createOrderStateCommand,
-  parseOrderStateFormat,
-  createOrderStateRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createOrderStateCommand, createOrderStateRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -70,19 +61,6 @@ describe('order-state command', () => {
         orderId: 'order-id',
         priceType: PriceType.PRICE_TYPE_UNSPECIFIED
       });
-    });
-  });
-
-  describe('parseOrderStateFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseOrderStateFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseOrderStateFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

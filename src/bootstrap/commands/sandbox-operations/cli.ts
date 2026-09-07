@@ -14,15 +14,12 @@ import type { OperationsRequest, OperationsResponse } from '../../../generated/o
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
-import {
-  createOperationsRequest,
-  parseOperationsState
-} from '../operations/cli';
-import { formatOperations, operationsFormats, type OperationsFormat } from '../operations/reporter';
+import { createOperationsRequest } from '../operations/cli';
+import { formatOperations, operationsFormats } from '../operations/reporter';
 
 type SandboxOperationsSdk = {
   sandbox: {
@@ -75,14 +72,6 @@ type SandboxOperationsRequestOptions = CommandRequestOptions<
   SandboxOperationsOptions,
   'account-id' | 'from' | 'to' | 'instrument-id' | 'figi' | 'state'
 >;
-
-export function parseSandboxOperationsState(rawOptions: CommandRawOptions) {
-  return parseOperationsState(rawOptions);
-}
-
-export function parseSandboxOperationsFormat(rawOptions: CommandRawOptions): OperationsFormat {
-  return parseCommandOptions(rawOptions, sandboxOperationsFormatOptionsSchema).format;
-}
 
 export function createSandboxOperationsCommand(
   createSdk: SandboxOperationsSdkFactory = defaultSandboxOperationsSdkFactory

@@ -18,10 +18,10 @@ import type { AssetsRequest,
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { assetsFormats, formatAssets, type AssetsFormat } from './reporter';
+import { assetsFormats, formatAssets } from './reporter';
 
 type AssetsSdk = {
   instruments: {
@@ -47,7 +47,7 @@ const assetInstrumentTypes = {
   'clearing-certificate': InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
 } as const;
 
-export const assetInstrumentTypeNames = Object.keys(assetInstrumentTypes) as Array<keyof typeof assetInstrumentTypes>;
+const assetInstrumentTypeNames = Object.keys(assetInstrumentTypes) as Array<keyof typeof assetInstrumentTypes>;
 
 type AssetInstrumentTypeName = typeof assetInstrumentTypeNames[number];
 
@@ -74,18 +74,6 @@ const assetsOptionsSchema = withSdkOptions(
 
 type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
 type AssetsRequestOptions = CommandRequestOptions<AssetsOptions, 'instrument-type'>;
-
-
-export function parseAssetsInstrumentType(rawOptions: CommandRawOptions): InstrumentType {
-  const options = parseCommandOptions(rawOptions, assetsInstrumentTypeOptionsSchema);
-
-  return assetInstrumentTypes[options['instrument-type'] as AssetInstrumentTypeName];
-}
-
-
-export function parseAssetsFormat(rawOptions: CommandRawOptions): AssetsFormat {
-  return parseCommandOptions(rawOptions, assetsFormatOptionsSchema).format;
-}
 
 export function createAssetsCommand(
   createSdk: AssetsSdkFactory = defaultAssetsSdkFactory

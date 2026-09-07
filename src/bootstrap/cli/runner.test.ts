@@ -1,8 +1,8 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
+import packageJson from '../../../package.json';
 import { parseCliInput, runCli } from './runner';
-import { appVersion } from './version';
 
 function createIo() {
   let stdout = '';
@@ -242,7 +242,7 @@ describe('bootstrap cli runner', () => {
         assert.equal(exitCode, 0);
         assert.equal(
           read().stdout,
-          `t-invest-node-sdk ${appVersion}\n`
+          `t-invest-node-sdk ${packageJson.version}\n`
         );
         assert.equal(read().stderr, '');
       }
@@ -341,7 +341,7 @@ describe('bootstrap cli runner', () => {
           }
         },
         stderr: {
-          // This scenario does not exercise stderr output.
+          // Этот сценарий не проверяет вывод в stderr.
           // oxlint-disable-next-line no-empty-function
           write() {}
         }
@@ -414,7 +414,7 @@ describe('bootstrap cli runner', () => {
       let stderrWrites = 0;
       const exitCode = runCli(['unknown-command'], createOutput({
         stdout: {
-          // This scenario does not exercise stdout output.
+          // Этот сценарий не проверяет вывод в stdout.
           // oxlint-disable-next-line no-empty-function
           write() {}
         },

@@ -1,9 +1,8 @@
 /**
- * Scalar value adapters for stable CLI report contracts.
+ * Модуль преобразует скалярные provider DTO в стабильные значения CLI-отчётов.
  *
- * The module converts provider scalar DTO values into reusable application
- * report values and presentation strings. It must not know command names,
- * command report shapes, renderers or stdout/stderr delivery.
+ * Здесь не должно быть имён команд, форм конкретных отчётов, renderers или
+ * доставки в stdout/stderr.
  */
 
 import type { ReportMoney } from '../application/reports/money.report';

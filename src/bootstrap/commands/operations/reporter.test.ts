@@ -109,17 +109,10 @@ describe('operations reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOperationsReport(createOperationsReport([operation()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createOperationsReport([operation()]);
+      const output = formatOperationsReport(report, 'json');
 
-      assert.equal(parsed[0].id, 'operation-id');
-      assert.equal(parsed[0].operationType, 'OPERATION_TYPE_BUY');
-      assert.equal(parsed[0].state, 'OPERATION_STATE_EXECUTED');
-      assert.deepEqual(parsed[0].payment, {
-        currency: 'rub',
-        amount: '100'
-      });
-      assert.equal(parsed[0].tradesCount, 1);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

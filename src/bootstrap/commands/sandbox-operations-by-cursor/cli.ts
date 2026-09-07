@@ -17,19 +17,13 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createOperationsByCursorRequest,
-  parseOperationsByCursorLimit,
-  parseOperationsByCursorOperationTypes,
-  parseOperationsByCursorState
-} from '../operations-by-cursor/cli';
+import { createOperationsByCursorRequest } from '../operations-by-cursor/cli';
 import {
   formatOperationsByCursor,
-  operationsByCursorFormats,
-  type OperationsByCursorFormat
+  operationsByCursorFormats
 } from '../operations-by-cursor/reporter';
 
 type SandboxOperationsByCursorSdk = {
@@ -120,24 +114,6 @@ type SandboxOperationsByCursorRequestOptions = CommandRequestOptions<
   'limit' |
   'state'
 >;
-
-export function parseSandboxOperationsByCursorState(rawOptions: CommandRawOptions) {
-  return parseOperationsByCursorState(rawOptions);
-}
-
-export function parseSandboxOperationsByCursorLimit(rawOptions: CommandRawOptions): number {
-  return parseOperationsByCursorLimit(rawOptions);
-}
-
-export function parseSandboxOperationsByCursorOperationTypes(rawOptions: CommandRawOptions) {
-  return parseOperationsByCursorOperationTypes(rawOptions);
-}
-
-export function parseSandboxOperationsByCursorFormat(
-  rawOptions: CommandRawOptions
-): OperationsByCursorFormat {
-  return parseCommandOptions(rawOptions, sandboxOperationsByCursorFormatOptionsSchema).format;
-}
 
 export function createSandboxOperationsByCursorCommand(
   createSdk: SandboxOperationsByCursorSdkFactory = defaultSandboxOperationsByCursorSdkFactory

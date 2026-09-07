@@ -53,15 +53,10 @@ describe('favorites reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatFavoritesReport(
-        createFavoritesReport([favoriteInstrument()]),
-        'json'
-      );
-      const parsed = JSON.parse(output);
+      const report = createFavoritesReport([favoriteInstrument()]);
+      const output = formatFavoritesReport(report, 'json');
 
-      assert.equal(parsed[0].ticker, 'TCSG');
-      assert.equal(parsed[0].instrumentKind, 'INSTRUMENT_TYPE_SHARE');
-      assert.equal(parsed[0].apiTradeAvailableFlag, true);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

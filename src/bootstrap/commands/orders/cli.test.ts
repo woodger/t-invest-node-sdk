@@ -12,16 +12,7 @@ import {
   type GetOrdersRequest,
   type GetOrdersResponse
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createOrdersCommand,
-  parseOrdersFormat,
-  createOrdersRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createOrdersCommand, createOrdersRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -69,19 +60,6 @@ describe('orders command', () => {
       });
 
       assert.equal(request.accountId, 'account-id');
-    });
-  });
-
-  describe('parseOrdersFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseOrdersFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseOrdersFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

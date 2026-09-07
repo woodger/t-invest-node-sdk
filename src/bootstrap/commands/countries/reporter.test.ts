@@ -38,11 +38,10 @@ describe('countries reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatCountriesReport(createCountriesReport([country()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createCountriesReport([country()]);
+      const output = formatCountriesReport(report, 'json');
 
-      assert.equal(parsed[0].alfaTwo, 'RU');
-      assert.equal(parsed[0].nameBrief, 'Russia');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

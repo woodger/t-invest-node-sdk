@@ -17,15 +17,11 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createCancelOrderRequest } from '../cancel-order/cli';
-import {
-  cancelOrderFormats,
-  formatCancelOrder,
-  type CancelOrderFormat
-} from '../cancel-order/reporter';
+import { cancelOrderFormats, formatCancelOrder } from '../cancel-order/reporter';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
@@ -73,10 +69,6 @@ type SandboxCancelOrderRequestOptions = CommandRequestOptions<
   SandboxCancelOrderOptions,
   'account-id' | 'order-id'
 >;
-
-export function parseSandboxCancelOrderFormat(rawOptions: CommandRawOptions): CancelOrderFormat {
-  return parseCommandOptions(rawOptions, sandboxCancelOrderFormatOptionsSchema).format;
-}
 
 export function createSandboxCancelOrderCommand(
   createSdk: SandboxCancelOrderSdkFactory = defaultSandboxCancelOrderSdkFactory

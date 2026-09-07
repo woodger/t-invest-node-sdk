@@ -14,11 +14,11 @@ import type { PositionsRequest, PositionsResponse } from '../../../generated/ope
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPositionsRequest } from '../positions/cli';
-import { formatPositions, positionsFormats, type PositionsFormat } from '../positions/reporter';
+import { formatPositions, positionsFormats } from '../positions/reporter';
 
 type SandboxPositionsSdk = {
   sandbox: {
@@ -54,10 +54,6 @@ const sandboxPositionsOptionsSchema = withSdkOptions(
 
 type SandboxPositionsOptions = InferOptions<typeof sandboxPositionsOptionsSchema>;
 type SandboxPositionsRequestOptions = CommandRequestOptions<SandboxPositionsOptions, 'account-id'>;
-
-export function parseSandboxPositionsFormat(rawOptions: CommandRawOptions): PositionsFormat {
-  return parseCommandOptions(rawOptions, sandboxPositionsFormatOptionsSchema).format;
-}
 
 export function createSandboxPositionsCommand(
   createSdk: SandboxPositionsSdkFactory = defaultSandboxPositionsSdkFactory

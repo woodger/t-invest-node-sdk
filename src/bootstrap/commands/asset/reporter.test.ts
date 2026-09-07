@@ -156,13 +156,10 @@ describe('asset reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatAssetReport(createAssetReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createAssetReport(response());
+      const output = formatAssetReport(report, 'json');
 
-      assert.equal(parsed.uid, 'asset-uid');
-      assert.equal(parsed.securityIsin, 'RU000A107UL4');
-      assert.equal(parsed.brand.uid, 'brand-uid');
-      assert.equal(parsed.instruments[0].links[0].instrumentUid, 'linked-instrument-uid');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing asset as json null and table header', () => {

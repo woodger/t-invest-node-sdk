@@ -48,14 +48,10 @@ describe('accounts reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatAccountsReport(createAccountsReport([account()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createAccountsReport([account()]);
+      const output = formatAccountsReport(report, 'json');
 
-      assert.equal(parsed[0].id, 'account-id');
-      assert.equal(parsed[0].type, 'ACCOUNT_TYPE_TINKOFF');
-      assert.equal(parsed[0].status, 'ACCOUNT_STATUS_OPEN');
-      assert.equal(parsed[0].accessLevel, 'ACCOUNT_ACCESS_LEVEL_FULL_ACCESS');
-      assert.equal(parsed[0].openedDate, '2026-06-19T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

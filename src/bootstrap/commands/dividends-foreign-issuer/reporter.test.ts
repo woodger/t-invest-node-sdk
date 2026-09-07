@@ -146,11 +146,8 @@ describe('dividends-foreign-issuer reporter', () => {
       }));
 
       const output = formatDividendsForeignIssuerReport(report, 'json');
-      const parsed = JSON.parse(output);
 
-      assert.equal(parsed.type, 'page');
-      assert.equal(parsed.items[0].isin, 'US0000000001');
-      assert.equal(parsed.items[0].externalCommission, '0.1');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats empty report as table', () => {

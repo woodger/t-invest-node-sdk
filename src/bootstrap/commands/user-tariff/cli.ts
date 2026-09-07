@@ -14,10 +14,9 @@ import type { GetUserTariffResponse } from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatUserTariff, userTariffFormats, type UserTariffFormat } from './reporter';
+import { formatUserTariff, userTariffFormats } from './reporter';
 
 type UserTariffSdk = {
   users: {
@@ -40,10 +39,6 @@ const userTariffOptionsSchema = withSdkOptions({
 } as const);
 
 type UserTariffOptions = InferOptions<typeof userTariffOptionsSchema>;
-
-export function parseUserTariffFormat(rawOptions: CommandRawOptions): UserTariffFormat {
-  return parseCommandOptions(rawOptions, userTariffOptionsSchema).format;
-}
 
 export function createUserTariffCommand(
   createSdk: UserTariffSdkFactory = defaultUserTariffSdkFactory

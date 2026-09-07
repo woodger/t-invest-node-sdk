@@ -72,14 +72,10 @@ describe('futures-margin reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatFuturesMarginReport(createFuturesMarginReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createFuturesMarginReport(response());
+      const output = formatFuturesMarginReport(report, 'json');
 
-      assert.deepEqual(parsed.initialMarginOnBuy, {
-        currency: 'rub',
-        amount: '1000.25'
-      });
-      assert.equal(parsed.minPriceIncrementAmount, '10.5');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

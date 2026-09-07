@@ -9,15 +9,7 @@ import {
   type BondResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createBondCommand,
-  parseBondFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createBondCommand } from './cli';
 
 function bondResponse(overrides: Partial<BondResponse> = {}): BondResponse {
   return {
@@ -27,19 +19,6 @@ function bondResponse(overrides: Partial<BondResponse> = {}): BondResponse {
 }
 
 describe('bond command', () => {
-  describe('parseBondFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseBondFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseBondFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createBondCommand', () => {
     test('calls bondBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

@@ -96,12 +96,10 @@ describe('trading-schedules reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatTradingSchedulesReport(createTradingSchedulesReport([schedule()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createTradingSchedulesReport([schedule()]);
+      const output = formatTradingSchedulesReport(report, 'json');
 
-      assert.equal(parsed[0].exchange, 'MOEX');
-      assert.equal(parsed[0].openingAuctionStartTime, '2026-01-02T06:50:00.000Z');
-      assert.equal(parsed[0].premarketEndTime, '2026-01-02T06:45:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

@@ -521,7 +521,7 @@ describe('stream run command', () => {
                 );
               }
             },
-            // The test SDK owns no resources.
+            // Тестовый SDK не владеет ресурсами.
             // oxlint-disable-next-line no-empty-function
             close() {}
           };
@@ -600,7 +600,7 @@ describe('stream run command', () => {
                 );
               }
             },
-            // The test SDK owns no resources.
+            // Тестовый SDK не владеет ресурсами.
             // oxlint-disable-next-line no-empty-function
             close() {}
           };
@@ -724,7 +724,7 @@ describe('stream run command', () => {
             ordersStream: {
               tradesStream: createUnusedStream('tradesStream')
             },
-            // The test SDK owns no resources.
+            // Тестовый SDK не владеет ресурсами.
             // oxlint-disable-next-line no-empty-function
             close() {}
           };

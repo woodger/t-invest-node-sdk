@@ -18,12 +18,8 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommaSeparatedStringListOption,
-  parseCommandOptions,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
@@ -33,11 +29,7 @@ import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
 } from '../../args/instrument-id-options';
-import {
-  editFavoritesFormats,
-  formatEditFavorites,
-  type EditFavoritesFormat
-} from './reporter';
+import { editFavoritesFormats, formatEditFavorites } from './reporter';
 
 type EditFavoritesSdk = {
   instruments: {
@@ -88,10 +80,6 @@ type EditFavoritesRequestOptions = CommandRequestOptions<
   EditFavoritesOptions,
   'instrument-id' | 'figi' | 'action'
 >;
-
-export function parseEditFavoritesFormat(rawOptions: CommandRawOptions): EditFavoritesFormat {
-  return parseCommandOptions(rawOptions, editFavoritesFormatOptionsSchema).format;
-}
 
 export function createEditFavoritesCommand(
   createSdk: EditFavoritesSdkFactory = defaultEditFavoritesSdkFactory

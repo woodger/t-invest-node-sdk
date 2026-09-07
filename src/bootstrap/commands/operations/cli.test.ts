@@ -10,17 +10,7 @@ import {
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createOperationsCommand,
-  parseOperationsFormat,
-  createOperationsRequest,
-  parseOperationsState
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createOperationsCommand, createOperationsRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -61,25 +51,6 @@ function operationsResponse(overrides: Partial<OperationsResponse> = {}): Operat
 }
 
 describe('operations command', () => {
-  describe('parseOperationsState', () => {
-    test('returns unspecified by default', () => {
-      assert.equal(parseOperationsState(rawOptions()), OperationState.OPERATION_STATE_UNSPECIFIED);
-    });
-
-    test('maps public state names to generated enum values', () => {
-      assert.equal(parseOperationsState(rawOptions({ state: 'executed' })), OperationState.OPERATION_STATE_EXECUTED);
-      assert.equal(parseOperationsState(rawOptions({ state: 'canceled' })), OperationState.OPERATION_STATE_CANCELED);
-      assert.equal(parseOperationsState(rawOptions({ state: 'progress' })), OperationState.OPERATION_STATE_PROGRESS);
-    });
-
-    test('rejects unknown states', () => {
-      assert.throws(
-        () => parseOperationsState(rawOptions({ state: 'done' })),
-        /Expected '--state' as one of: unspecified, executed, canceled, progress/
-      );
-    });
-  });
-
   describe('createOperationsRequest', () => {
     test('returns generated getOperations request', () => {
       const request = createOperationsRequest({
@@ -97,6 +68,25 @@ describe('operations command', () => {
       assert.equal(request.figi, 'BBG00QPYJ5H0');
     });
 
+    test('maps unspecified, canceled, and progress states', () => {
+      const cases = [
+        ['unspecified', OperationState.OPERATION_STATE_UNSPECIFIED],
+        ['canceled', OperationState.OPERATION_STATE_CANCELED],
+        ['progress', OperationState.OPERATION_STATE_PROGRESS]
+      ] as const;
+
+      for (const [state, expected] of cases) {
+        const request = createOperationsRequest({
+          'account-id': 'account-id',
+          from: '2026-06-01T00:00:00.000Z',
+          to: '2026-06-19T00:00:00.000Z',
+          state
+        });
+
+        assert.equal(request.state, expected);
+      }
+    });
+
     test('throws when from is later than to', () => {
       assert.throws(
         () => createOperationsRequest({
@@ -106,19 +96,6 @@ describe('operations command', () => {
           state: 'unspecified'
         }),
         /Expected '--from' to be earlier/
-      );
-    });
-  });
-
-  describe('parseOperationsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseOperationsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseOperationsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
       );
     });
   });

@@ -44,8 +44,6 @@ export function createEtfReportInstrument(instrument: Etf): EtfReportInstrument 
     fixedCommission: formatReportDecimal(instrument.fixedCommission),
     releasedDate: formatReportDate(instrument.releasedDate),
     numShares: formatReportDecimal(instrument.numShares),
-    klong: formatReportDecimal(instrument.klong),
-    kshort: formatReportDecimal(instrument.kshort),
     dlong: formatReportDecimal(instrument.dlong),
     dshort: formatReportDecimal(instrument.dshort),
     dlongMin: formatReportDecimal(instrument.dlongMin),

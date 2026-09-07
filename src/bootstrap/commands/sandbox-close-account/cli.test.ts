@@ -3,16 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CloseSandboxAccountRequest } from '../../../generated/sandbox';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxCloseAccountCommand,
-  createSandboxCloseAccountRequest,
-  parseSandboxCloseAccountFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxCloseAccountCommand, createSandboxCloseAccountRequest } from './cli';
 
 describe('sandbox-close-account command', () => {
   describe('createSandboxCloseAccountRequest', () => {
@@ -22,12 +13,6 @@ describe('sandbox-close-account command', () => {
       }), {
         accountId: 'sandbox-account-id'
       });
-    });
-  });
-
-  describe('parseSandboxCloseAccountFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxCloseAccountFormat(rawOptions()), 'table');
     });
   });
 

@@ -134,7 +134,7 @@ describe('createSdkClient', () => {
         useSsl: false,
         maxReceiveMessageLength,
         signal: lifecycleController.signal,
-        // This metadata scenario does not exercise lifecycle rejection.
+        // Сценарий metadata не проверяет отказ закрытого lifecycle.
         // oxlint-disable-next-line no-empty-function
         assertOpen() {}
       }

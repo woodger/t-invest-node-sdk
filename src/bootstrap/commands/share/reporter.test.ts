@@ -28,8 +28,6 @@ function share(overrides: Partial<Share> = {}): Share {
     isin: 'RU0009029540',
     lot: 10,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -99,8 +97,6 @@ describe('share reporter', () => {
         issueSize: 21586948000,
         issueSizePlan: 21586948000,
         shareType: 'SHARE_TYPE_COMMON',
-        klong: '2',
-        kshort: '1.5',
         dlong: '0.1',
         dshort: '0.2',
         dlongMin: '0.3',
@@ -141,16 +137,10 @@ describe('share reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatShareReport(createShareReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createShareReport(response());
+      const output = formatShareReport(report, 'json');
 
-      assert.equal(parsed.figi, 'BBG004730N88');
-      assert.deepEqual(parsed.nominal, {
-        currency: 'rub',
-        amount: '3'
-      });
-      assert.equal(parsed.shareType, 'SHARE_TYPE_COMMON');
-      assert.equal(parsed.ipoDate, '2007-07-20T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing share as json null and table header', () => {

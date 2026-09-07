@@ -8,17 +8,7 @@ import type {
   GetOrderBookResponse,
   Order
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createOrderBookCommand,
-  parseOrderBookDepth,
-  parseOrderBookFormat,
-  createOrderBookRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createOrderBookCommand, createOrderBookRequest } from './cli';
 
 function quotation(units: number, nano: number): Quotation {
   return {
@@ -56,27 +46,6 @@ function orderBookResponse(
 }
 
 describe('order-book command', () => {
-  describe('parseOrderBookDepth', () => {
-    test('returns positive integer depth', () => {
-      assert.equal(parseOrderBookDepth(rawOptions({ depth: '10' })), 10);
-    });
-
-    test('rejects non-positive or non-integer depth', () => {
-      assert.throws(
-        () => parseOrderBookDepth(rawOptions({ depth: '0' })),
-        /Expected '--depth' as positive integer/
-      );
-      assert.throws(
-        () => parseOrderBookDepth(rawOptions({ depth: '1.5' })),
-        /Expected '--depth' as positive integer/
-      );
-      assert.throws(
-        () => parseOrderBookDepth(rawOptions({ depth: '1e2' })),
-        /Expected '--depth' as positive integer/
-      );
-    });
-  });
-
   describe('createOrderBookRequest', () => {
     test('returns generated getOrderBook request', () => {
       const request = createOrderBookRequest({
@@ -89,19 +58,6 @@ describe('order-book command', () => {
         instrumentId: 'BBG00QPYJ5H0',
         depth: 10
       });
-    });
-  });
-
-  describe('parseOrderBookFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseOrderBookFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseOrderBookFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

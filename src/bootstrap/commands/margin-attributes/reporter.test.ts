@@ -96,26 +96,10 @@ describe('margin-attributes reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatMarginAttributesReport(createMarginAttributesReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createMarginAttributesReport(response());
+      const output = formatMarginAttributesReport(report, 'json');
 
-      assert.deepEqual(parsed.liquidPortfolio, {
-        currency: 'rub',
-        amount: '1000'
-      });
-      assert.deepEqual(parsed.startingMargin, {
-        currency: 'rub',
-        amount: '200'
-      });
-      assert.deepEqual(parsed.minimalMargin, {
-        currency: 'rub',
-        amount: '100'
-      });
-      assert.equal(parsed.fundsSufficiencyLevel, '5.5');
-      assert.deepEqual(parsed.correctedMargin, {
-        currency: 'rub',
-        amount: '250.25'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

@@ -6,15 +6,7 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type BondsResponse, type InstrumentsRequest } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createBondsCommand,
-  parseBondsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createBondsCommand } from './cli';
 
 function response(overrides: Partial<BondsResponse> = {}): BondsResponse {
   return {
@@ -24,19 +16,6 @@ function response(overrides: Partial<BondsResponse> = {}): BondsResponse {
 }
 
 describe('bonds command', () => {
-  describe('parseBondsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseBondsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseBondsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createBondsCommand', () => {
     test('calls bonds and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

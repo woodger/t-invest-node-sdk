@@ -15,12 +15,12 @@ describe('cancel-stop-order reporter', () => {
 
   describe('formatCancelStopOrderReport', () => {
     test('formats report as json', () => {
-      const output = formatCancelStopOrderReport({
+      const report = {
         time: '2026-06-19T10:00:00.000Z'
-      }, 'json');
-      const parsed = JSON.parse(output);
+      };
+      const output = formatCancelStopOrderReport(report, 'json');
 
-      assert.equal(parsed.time, '2026-06-19T10:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

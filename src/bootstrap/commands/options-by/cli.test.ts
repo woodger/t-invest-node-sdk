@@ -8,16 +8,7 @@ import type {
   FilterOptionsRequest,
   OptionsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createOptionsByCommand,
-  parseOptionsByFormat,
-  createOptionsByRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createOptionsByCommand, createOptionsByRequest } from './cli';
 
 function response(overrides: Partial<OptionsResponse> = {}): OptionsResponse {
   return {
@@ -51,19 +42,6 @@ describe('options-by command', () => {
       });
     });
 
-  });
-
-  describe('parseOptionsByFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseOptionsByFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseOptionsByFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
   });
 
   describe('createOptionsByCommand', () => {

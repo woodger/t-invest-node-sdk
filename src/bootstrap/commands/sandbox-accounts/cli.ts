@@ -14,10 +14,9 @@ import type { GetAccountsRequest, GetAccountsResponse } from '../../../generated
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { accountsFormats, formatAccounts, type AccountsFormat } from '../accounts/reporter';
+import { accountsFormats, formatAccounts } from '../accounts/reporter';
 
 type SandboxAccountsSdk = {
   sandbox: {
@@ -40,10 +39,6 @@ const sandboxAccountsOptionsSchema = withSdkOptions({
 } as const);
 
 type SandboxAccountsOptions = InferOptions<typeof sandboxAccountsOptionsSchema>;
-
-export function parseSandboxAccountsFormat(rawOptions: CommandRawOptions): AccountsFormat {
-  return parseCommandOptions(rawOptions, sandboxAccountsOptionsSchema).format;
-}
 
 export function createSandboxAccountsCommand(
   createSdk: SandboxAccountsSdkFactory = defaultSandboxAccountsSdkFactory

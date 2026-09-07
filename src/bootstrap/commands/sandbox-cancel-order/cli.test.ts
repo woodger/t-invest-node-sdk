@@ -6,23 +6,9 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelOrderRequest
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxCancelOrderCommand,
-  parseSandboxCancelOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxCancelOrderCommand } from './cli';
 
 describe('sandbox-cancel-order command', () => {
-  describe('parseSandboxCancelOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxCancelOrderFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxCancelOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

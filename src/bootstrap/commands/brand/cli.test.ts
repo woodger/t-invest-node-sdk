@@ -7,16 +7,7 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Brand,
   GetBrandRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createBrandCommand,
-  parseBrandFormat,
-  createBrandRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createBrandCommand, createBrandRequest } from './cli';
 
 function brand(overrides: Partial<Brand> = {}): Brand {
   return {
@@ -40,19 +31,6 @@ describe('brand command', () => {
       assert.deepEqual(request, {
         id: 'brand-uid'
       });
-    });
-  });
-
-  describe('parseBrandFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseBrandFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseBrandFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

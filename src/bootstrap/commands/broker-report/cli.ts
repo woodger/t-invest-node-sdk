@@ -17,20 +17,15 @@ import type {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
 import {
-  parseCommandOptions,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  brokerReportFormats,
-  formatBrokerReport,
-  type BrokerReportFormat
-} from './reporter';
+import { brokerReportFormats, formatBrokerReport } from './reporter';
 
 type BrokerReportSdk = {
   operations: {
@@ -85,7 +80,6 @@ type BrokerReportRequestOptions = CommandRequestOptions<
   'page'
 >;
 
-
 export function createBrokerReportRequest(
   options: BrokerReportRequestOptions
 ): BrokerReportRequest {
@@ -127,11 +121,6 @@ export function createBrokerReportRequest(
     },
     getBrokerReportRequest: undefined
   };
-}
-
-
-export function parseBrokerReportFormat(rawOptions: CommandRawOptions): BrokerReportFormat {
-  return parseCommandOptions(rawOptions, brokerReportFormatOptionsSchema).format;
 }
 
 export function createBrokerReportCommand(

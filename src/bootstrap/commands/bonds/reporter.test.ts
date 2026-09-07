@@ -27,8 +27,6 @@ function bond(overrides: Partial<Bond> = {}): Bond {
     isin: 'RU000A1038V6',
     lot: 1,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -117,8 +115,6 @@ describe('bonds reporter', () => {
           issueKind: 'non_documentary',
           issueSize: 1000000,
           issueSizePlan: 2000000,
-          klong: '2',
-          kshort: '1.5',
           dlong: '0.1',
           dshort: '0.2',
           dlongMin: '0.3',
@@ -160,16 +156,10 @@ describe('bonds reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatBondsReport(createBondsReport([bond()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createBondsReport([bond()]);
+      const output = formatBondsReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'BBG00B9XRY4J');
-      assert.deepEqual(parsed[0].placementPrice, {
-        currency: 'rub',
-        amount: '99.5'
-      });
-      assert.equal(parsed[0].riskLevel, 'RISK_LEVEL_LOW');
-      assert.equal(parsed[0].maturityDate, '2041-05-15T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

@@ -10,16 +10,7 @@ import {
   EditFavoritesRequest,
   type EditFavoritesResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createEditFavoritesCommand,
-  createEditFavoritesRequest,
-  parseEditFavoritesFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createEditFavoritesCommand, createEditFavoritesRequest } from './cli';
 
 function editFavoritesResponse(): EditFavoritesResponse {
   return {
@@ -60,12 +51,6 @@ describe('edit-favorites command', () => {
         JSON.stringify(EditFavoritesRequest.toJSON(request)),
         /"figi":/
       );
-    });
-  });
-
-  describe('parseEditFavoritesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseEditFavoritesFormat(rawOptions()), 'table');
     });
   });
 

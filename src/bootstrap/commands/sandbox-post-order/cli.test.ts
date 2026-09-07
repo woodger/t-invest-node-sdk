@@ -11,15 +11,7 @@ import {
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxPostOrderCommand,
-  parseSandboxPostOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxPostOrderCommand } from './cli';
 
 function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -45,12 +37,6 @@ function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrde
 }
 
 describe('sandbox-post-order command', () => {
-  describe('parseSandboxPostOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxPostOrderFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxPostOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

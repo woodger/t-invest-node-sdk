@@ -14,14 +14,11 @@ import type { PortfolioRequest, PortfolioResponse } from '../../../generated/ope
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createPortfolioRequest,
-  parsePortfolioCurrency
-} from '../portfolio/cli';
-import { formatPortfolio, portfolioFormats, type PortfolioFormat } from '../portfolio/reporter';
+import { createPortfolioRequest } from '../portfolio/cli';
+import { formatPortfolio, portfolioFormats } from '../portfolio/reporter';
 
 type SandboxPortfolioSdk = {
   sandbox: {
@@ -65,14 +62,6 @@ type SandboxPortfolioRequestOptions = CommandRequestOptions<
   SandboxPortfolioOptions,
   'account-id' | 'currency'
 >;
-
-export function parseSandboxPortfolioCurrency(rawOptions: CommandRawOptions) {
-  return parsePortfolioCurrency(rawOptions);
-}
-
-export function parseSandboxPortfolioFormat(rawOptions: CommandRawOptions): PortfolioFormat {
-  return parseCommandOptions(rawOptions, sandboxPortfolioFormatOptionsSchema).format;
-}
 
 export function createSandboxPortfolioCommand(
   createSdk: SandboxPortfolioSdkFactory = defaultSandboxPortfolioSdkFactory

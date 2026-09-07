@@ -284,7 +284,7 @@ describe('UnaryLimitResolver', () => {
 });
 
 describe('command options', () => {
-  describe('parseCommandOptions', () => {
+  describe('parseDateTimeOption', () => {
     // ...
   });
 });

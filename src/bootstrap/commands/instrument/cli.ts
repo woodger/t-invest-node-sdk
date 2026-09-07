@@ -14,14 +14,13 @@ import { type InstrumentRequest, type InstrumentResponse } from '../../../genera
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
 } from '../../args/instruments-args';
-import { formatInstrument, instrumentFormats, type InstrumentFormat } from './reporter';
+import { formatInstrument, instrumentFormats } from './reporter';
 
 type InstrumentSdk = {
   instruments: {
@@ -49,10 +48,6 @@ const instrumentOptionsSchema = withSdkOptions(
 );
 
 type InstrumentOptions = InferOptions<typeof instrumentOptionsSchema>;
-
-export function parseInstrumentFormat(rawOptions: CommandRawOptions): InstrumentFormat {
-  return parseCommandOptions(rawOptions, instrumentFormatOptionsSchema).format;
-}
 
 export function createInstrumentCommand(
   createSdk: InstrumentSdkFactory = defaultInstrumentSdkFactory

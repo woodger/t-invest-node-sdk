@@ -78,12 +78,10 @@ describe('find-instrument reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatFindInstrumentReport(createFindInstrumentReport([instrument()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createFindInstrumentReport([instrument()]);
+      const output = formatFindInstrumentReport(report, 'json');
 
-      assert.equal(parsed[0].ticker, 'TCSG');
-      assert.equal(parsed[0].instrumentKind, 'INSTRUMENT_TYPE_SHARE');
-      assert.equal(parsed[0].apiTradeAvailableFlag, true);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

@@ -85,12 +85,10 @@ describe('trading-statuses reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatTradingStatusesReport(createTradingStatusesReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createTradingStatusesReport(response());
+      const output = formatTradingStatusesReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed[1].instrumentUid, 'second-instrument-uid');
-      assert.equal(parsed[1].tradingStatus, 'SECURITY_TRADING_STATUS_BREAK_IN_TRADING');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

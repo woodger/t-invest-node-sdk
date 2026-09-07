@@ -10,15 +10,7 @@ import {
   type GetOperationsByCursorResponse,
   type OperationItem
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxOperationsByCursorCommand,
-  parseSandboxOperationsByCursorFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxOperationsByCursorCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -73,12 +65,6 @@ function operationsByCursorResponse(
 }
 
 describe('sandbox-operations-by-cursor command', () => {
-  describe('parseSandboxOperationsByCursorFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxOperationsByCursorFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxOperationsByCursorCommand', () => {
     test('calls getSandboxOperationsByCursor and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

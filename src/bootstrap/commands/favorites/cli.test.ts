@@ -8,15 +8,7 @@ import { InstrumentType } from '../../../generated/common';
 import type { GetFavoritesRequest,
   GetFavoritesResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createFavoritesCommand,
-  parseFavoritesFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createFavoritesCommand } from './cli';
 
 function response(overrides: Partial<GetFavoritesResponse> = {}): GetFavoritesResponse {
   return {
@@ -37,19 +29,6 @@ function response(overrides: Partial<GetFavoritesResponse> = {}): GetFavoritesRe
 }
 
 describe('favorites command', () => {
-  describe('parseFavoritesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseFavoritesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseFavoritesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createFavoritesCommand', () => {
     test('calls getFavorites and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

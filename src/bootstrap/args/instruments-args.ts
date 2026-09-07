@@ -12,17 +12,6 @@ import {
   type InstrumentsRequest
 } from '../../generated/instruments';
 import { CliUsageError, parseOptions, type RawOptionValue } from 'icore';
-import type { CommandRawOptions } from './command-options';
-
-export const instrumentLookupArgNames = new Set([
-  'id',
-  'id-type',
-  'class-code'
-]);
-
-export const instrumentStatusArgNames = new Set([
-  'instrument-status'
-]);
 
 const instrumentIdTypes = {
   figi: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
@@ -75,7 +64,7 @@ const instrumentStatuses = {
 
 type InstrumentStatusName = keyof typeof instrumentStatuses;
 
-export const instrumentStatusNames = Object.keys(instrumentStatuses) as InstrumentStatusName[];
+const instrumentStatusNames = Object.keys(instrumentStatuses) as InstrumentStatusName[];
 
 export const instrumentStatusOptionsSchema = {
   'instrument-status': {
@@ -84,15 +73,6 @@ export const instrumentStatusOptionsSchema = {
     default: 'base'
   }
 } as const;
-
-export function parseInstrumentLookupIdType(rawOptions: CommandRawOptions): InstrumentIdType {
-  const options = parseOptions(
-    instrumentLookupIdTypeOptionsSchema,
-    toRawOptionValues(rawOptions, ['id-type'])
-  );
-
-  return instrumentIdTypes[options['id-type']];
-}
 
 export function createInstrumentLookupRequestFromOptions(
   options: {
@@ -123,45 +103,12 @@ export function createInstrumentLookupRequestFromOptions(
   };
 }
 
-export function parseInstrumentStatus(rawOptions: CommandRawOptions): InstrumentStatus {
-  const options = parseOptions(
-    instrumentStatusOptionsSchema,
-    toRawOptionValues(rawOptions, ['instrument-status'])
-  );
-  const status = options['instrument-status'];
-
-  return instrumentStatuses[status];
-}
-
 export function createInstrumentsRequestFromOptions(
   options: { 'instrument-status': InstrumentStatusName }
 ): InstrumentsRequest {
   return {
     instrumentStatus: instrumentStatuses[options['instrument-status']]
   };
-}
-
-function toRawOptionValues(
-  rawOptions: CommandRawOptions,
-  names: readonly string[]
-): Record<string, RawOptionValue> {
-  const options: Record<string, RawOptionValue> = {};
-
-  for (const name of names) {
-    const value = rawOptions[name];
-
-    if (value === undefined) {
-      continue;
-    }
-
-    if (typeof value !== 'string' && typeof value !== 'boolean') {
-      throw new CliUsageError(`Expected '--${name}' as scalar option`);
-    }
-
-    options[name] = value;
-  }
-
-  return options;
 }
 
 function toDefinedRawOptionValues(

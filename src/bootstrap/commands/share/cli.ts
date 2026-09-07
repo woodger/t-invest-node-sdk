@@ -14,14 +14,13 @@ import { type InstrumentRequest, type ShareResponse } from '../../../generated/i
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createInstrumentLookupRequestFromOptions,
   instrumentLookupOptionsSchema
 } from '../../args/instruments-args';
-import { formatShare, shareFormats, type ShareFormat } from './reporter';
+import { formatShare, shareFormats } from './reporter';
 
 type ShareSdk = {
   instruments: {
@@ -49,10 +48,6 @@ const shareOptionsSchema = withSdkOptions(
 );
 
 type ShareOptions = InferOptions<typeof shareOptionsSchema>;
-
-export function parseShareFormat(rawOptions: CommandRawOptions): ShareFormat {
-  return parseCommandOptions(rawOptions, shareFormatOptionsSchema).format;
-}
 
 export function createShareCommand(
   createSdk: ShareSdkFactory = defaultShareSdkFactory

@@ -23,9 +23,8 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
 import {
-  parseCommandOptions,
   parseDateTimeOption,
   positiveSafeIntegerOption,
   withSdkOptions
@@ -37,11 +36,7 @@ import {
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  formatPostStopOrder,
-  postStopOrderFormats,
-  type PostStopOrderFormat
-} from './reporter';
+import { formatPostStopOrder, postStopOrderFormats } from './reporter';
 
 type PostStopOrderSdk = {
   stoporders: {
@@ -152,10 +147,6 @@ type PostStopOrderRequestOptions = CommandRequestOptions<
   'stop-order-type' |
   'expire-date'
 >;
-
-export function parsePostStopOrderFormat(rawOptions: CommandRawOptions): PostStopOrderFormat {
-  return parseCommandOptions(rawOptions, postStopOrderFormatOptionsSchema).format;
-}
 
 export function createPostStopOrderCommand(
   createSdk: PostStopOrderSdkFactory = defaultPostStopOrderSdkFactory

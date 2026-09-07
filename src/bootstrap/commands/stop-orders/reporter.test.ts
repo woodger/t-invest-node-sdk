@@ -102,20 +102,10 @@ describe('stop-orders reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatStopOrdersReport(createStopOrdersReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createStopOrdersReport(response());
+      const output = formatStopOrdersReport(report, 'json');
 
-      assert.equal(parsed[0].stopOrderId, 'stop-order-id');
-      assert.equal(parsed[0].direction, 'STOP_ORDER_DIRECTION_BUY');
-      assert.equal(parsed[0].orderType, 'STOP_ORDER_TYPE_STOP_LOSS');
-      assert.deepEqual(parsed[0].price, {
-        currency: 'rub',
-        amount: '100'
-      });
-      assert.deepEqual(parsed[0].stopPrice, {
-        currency: 'rub',
-        amount: '95.5'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });
