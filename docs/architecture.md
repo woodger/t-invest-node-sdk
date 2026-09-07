@@ -4,7 +4,7 @@
 > practical companion к
 > [архитектурной политике](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
 > Дополнительные design notes по развитию слоев находятся в
-> [Clean Architecture Notes](./clean-architecture/index.md).
+> [заметках по Clean Architecture](./clean-architecture/index.md).
 
 Проект использует Clean Architecture Lite. Слои выделяются только там, где у
 кода есть самостоятельная ответственность.
@@ -57,13 +57,15 @@ provider-neutral правилами или моделями.
   middleware и typed clients, а также построение и разрешение полных gRPC
   paths в transport-neutral throttle rules и mapping transport failures в
   публичный `SdkError`.
-- `infrastructure/interceptor` - технические hooks для фильтрации process
-  warnings и, в диагностических сценариях, `stdout`.
+- `infrastructure/interceptor` - технический hook для фильтрации известных
+  process warnings.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования
   provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные
-  report values. `MoneyValue` становится структурным `ReportMoney`, а
-  command-specific table/text представление строится отдельно. Здесь не
-  выбираются поля команд и не формируются command-specific output contracts.
+  report values. Десятичная строка строится из целых `units` и `nano` без
+  потери точности через floating-point arithmetic. `MoneyValue` становится
+  структурным `ReportMoney`, а command-specific table/text представление
+  строится отдельно. Здесь не выбираются поля команд и не формируются
+  command-specific output contracts.
 
 Здесь допустимы imports из `nice-grpc`, generated service definitions и
 application services. Application не должен импортировать concrete
@@ -157,11 +159,12 @@ stdout; help/version используют тот же канал, а warnings и
 через `Output.error` в stderr. Runner принимает injected `Output` или создает
 default facade.
 
-`bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он только проверяет
-project-specific CLI-контракты поверх typed/raw option values и нормализует
-общие `TInvestOptions` из CLI/ENV.
+`bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он содержит общие
+option schemas, проверяет project-specific значения уже типизированных опций и
+нормализует `TInvestOptions` из CLI/ENV. Разбор raw argv и schema-level
+валидация принадлежат `icore`.
 
-## Public Entrypoints
+## Публичные точки входа
 
 Поддерживаемая public surface собирается `src/index.ts`. Public service
 interfaces экспортируются из application DTO. Generated server-side service
@@ -245,11 +248,12 @@ packageConfig.grpc.maxReceiveMessageLength
 транспорта диагностика распознается внутри адаптера и не становится контрактом
 Consumer-а.
 
-Тот же transport adapter отделяет локальную ошибку сериализации request от
-provider-side `INTERNAL`: code сохраняется, но локальный случай получает
-`source: 'sdk'`. Response metadata callbacks защищены там же, потому что
-`nice-grpc` вызывает их из EventEmitter handlers: синхронное исключение
-возвращается владельцу RPC, а не process-level `uncaughtException`.
+Тот же transport adapter отделяет локальные ошибки сериализации request и
+разбора response от provider-side `INTERNAL`: code сохраняется, но локальные
+случаи получают `source: 'sdk'`. Response metadata callbacks защищены там же,
+потому что `nice-grpc` вызывает их из EventEmitter handlers: синхронное
+исключение возвращается владельцу RPC, а не process-level
+`uncaughtException`.
 
 TLS trust material разрешается отдельно для каждого channel:
 
@@ -282,8 +286,10 @@ defaults, а `undefined` не отключает package policy. Обязате�
 `endpoint` проверяются до создания transport channel. Значения `token` и
 непустого `appName` дополнительно проверяются как строковые gRPC metadata, а
 ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с
-`source: 'sdk'`. `packageConfig.sdk` остается внутренней authoring-формой и не
-расширяет публичный `defaultConfig`.
+`source: 'sdk'`. Допустимые service names и полные method paths выводятся из
+generated unary service definitions, поэтому опечатка не превращается в
+неиспользуемое правило. `packageConfig.sdk` остается внутренней
+authoring-формой и не расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остается изменяемым public compatibility
 facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
@@ -320,11 +326,12 @@ Ownership разделен так:
 adapter-у — без compiler-а и второй декларации. Mapping/resolver logic не
 должна возвращаться в `src/config.ts`.
 
-## Generated Code
+## Сгенерированный код
 
 Официальный upstream T-Invest API — активный репозиторий
 `https://opensource.tbank.ru/invest/invest-contracts`. Его tag, commit и
-исходный каталог фиксируются в `contracts/upstream.json`.
+исходный каталог фиксируются в
+[manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
 
 Proto compiler читает `local.rawContractsPath` и `local.generatedPath` из этого
 manifest. Пути до vendored и generated контрактов не дублируются в bootstrap
@@ -333,6 +340,10 @@ manifest. Пути до vendored и generated контрактов не дубл
 T-Invest proto-файлы копируются без изменения плоской структуры и import-путей
 в `contracts/*.proto`. Supporting Google contracts перечислены отдельно в
 `local.supportingContracts` и не считаются частью T-Invest upstream snapshot.
+`google/api/field_behavior.proto` поставляется в том же snapshot T-Invest, а
+источник `google/protobuf/descriptor.proto` и
+`google/protobuf/timestamp.proto` зафиксирован в `supportingSources` как
+официальный protobuf `v32.1`.
 
 `src/generated/*.ts` зеркально воспроизводится из плоского layout контрактов и
 не редактируется вручную.
@@ -351,7 +362,12 @@ generated DTO/enums public API и server-side
    `source.release`;
 2. заменить T-Invest файлы в `local.rawContractsPath`;
 3. обновить source commit/release в `contracts/upstream.json`;
-4. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и
+4. при изменении вспомогательных contracts получить их из точного выпуска и
+   обновить соответствующую запись `supportingSources`;
+5. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и
    `npm test`.
 
 Proto generation использует только vendored snapshot и не выполняет network IO.
+Версия системного `protoc` не закреплена package dependency. Для побайтового
+воспроизведения нужно использовать версию из заголовков текущих generated
+файлов; сейчас это `protoc 3.19.6`.

@@ -14,10 +14,9 @@ import type { GetInfoResponse } from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatUserInfo, userInfoFormats, type UserInfoFormat } from './reporter';
+import { formatUserInfo, userInfoFormats } from './reporter';
 
 type UserInfoSdk = {
   users: {
@@ -40,10 +39,6 @@ const userInfoOptionsSchema = withSdkOptions({
 } as const);
 
 type UserInfoOptions = InferOptions<typeof userInfoOptionsSchema>;
-
-export function parseUserInfoFormat(rawOptions: CommandRawOptions): UserInfoFormat {
-  return parseCommandOptions(rawOptions, userInfoOptionsSchema).format;
-}
 
 export function createUserInfoCommand(
   createSdk: UserInfoSdkFactory = defaultUserInfoSdkFactory

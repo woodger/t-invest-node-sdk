@@ -9,15 +9,7 @@ import {
   type FutureResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createFutureCommand,
-  parseFutureFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createFutureCommand } from './cli';
 
 function futureResponse(overrides: Partial<FutureResponse> = {}): FutureResponse {
   return {
@@ -27,19 +19,6 @@ function futureResponse(overrides: Partial<FutureResponse> = {}): FutureResponse
 }
 
 describe('future command', () => {
-  describe('parseFutureFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseFutureFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseFutureFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createFutureCommand', () => {
     test('calls futureBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

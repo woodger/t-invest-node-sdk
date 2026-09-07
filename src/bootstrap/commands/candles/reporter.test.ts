@@ -35,16 +35,10 @@ describe('candles reporter', () => {
 
   describe('formatCandlesReport', () => {
     test('formats report as json', () => {
-      const output = formatCandlesReport(createCandlesReport([candle()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createCandlesReport([candle()]);
+      const output = formatCandlesReport(report, 'json');
 
-      assert.equal(parsed[0].time, '2026-06-19T00:00:00.000Z');
-      assert.equal(parsed[0].open, '10.5');
-      assert.equal(parsed[0].high, '11');
-      assert.equal(parsed[0].low, '9.25');
-      assert.equal(parsed[0].close, '10.75');
-      assert.equal(parsed[0].volume, 42);
-      assert.equal(parsed[0].isComplete, true);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats report as csv', () => {

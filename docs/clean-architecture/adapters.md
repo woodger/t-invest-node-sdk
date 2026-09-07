@@ -1,4 +1,4 @@
-# Adapters
+# Адаптеры
 
 > Type: Design Note. Документ фиксирует текущий placement project adapters и
 > границу bootstrap-интеграции с внешней зависимостью `icore`.
@@ -58,11 +58,11 @@ external dependency
 quota bucket и передает application scheduler-у только `bucket` и
 `limitPerMinute`. Application не разбирает gRPC path.
 
-`infrastructure/interceptor` содержит технические process hooks для warnings и
-диагностического перехвата `stdout`. Это не штатный CLI output sink: normal
-command output проходит через terminal app.
+`infrastructure/interceptor` содержит технический process hook для известных
+warnings. Обычный вывод команд проходит через terminal app.
 
-`infrastructure/report-values.ts` - project-owned scalar value adapter:
+`infrastructure/report-values.ts` - принадлежащий проекту адаптер скалярных
+значений:
 
 - преобразует повторяющиеся provider scalar DTO values в reusable report values;
 - сохраняет `MoneyValue` в JSON как структурный `ReportMoney`;
@@ -86,7 +86,7 @@ command output проходит через terminal app.
 - направляет help, version и warnings через output facade;
 - передает prepared command в terminal app для выполнения и записи результата.
 
-## Adapter И Output
+## Адаптер и вывод
 
 Command-specific presentation и terminal output - разные ответственности:
 
@@ -112,7 +112,7 @@ joining и plain-text table alignment. `icore` `Output` знает только 
 Локальные wrappers над этими primitives не нужны, пока у проекта нет
 самостоятельного поведения или контракта поверх generic API.
 
-## Dependency Direction
+## Направление зависимостей
 
 Допустимо:
 
@@ -139,7 +139,7 @@ generic output facade -> выбор полей или JSON contract команд
 bootstrap остается внешним composition/presentation слоем и интегрирует
 external mechanics с локальными contracts.
 
-## Migration Notes
+## История перехода
 
 Текущая модель появилась после переноса generic presentation/output mechanics
 в `icore`:

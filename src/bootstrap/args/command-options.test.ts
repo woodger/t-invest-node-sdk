@@ -1,30 +1,20 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import type { CommandRawOptions } from './command-options';
+import { parseOptions } from 'icore';
 import {
   parseCommaSeparatedStringListOption,
-  parseCommandOptions,
   parseDateTimeOption,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
+  positiveSafeIntegerOption,
   requireStringOption,
   withSdkOptions
 } from './command-options';
 
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
-
 describe('command options', () => {
   describe('withSdkOptions', () => {
     test('allows common SDK options with command-specific options', () => {
-      const options = parseCommandOptions(
-        rawOptions({
-          token: 'token',
-          endpoint: 'localhost:50051',
-          format: 'json',
-          cursor: 'next'
-        }),
+      const options = parseOptions(
         withSdkOptions(
           {
             format: {
@@ -38,7 +28,13 @@ describe('command options', () => {
               type: 'string'
             }
           }
-        )
+        ),
+        {
+          token: 'token',
+          endpoint: 'localhost:50051',
+          format: 'json',
+          cursor: 'next'
+        }
       );
 
       assert.deepEqual(options, {
@@ -52,34 +48,44 @@ describe('command options', () => {
     });
   });
 
-  describe('parseCommandOptions', () => {
-    test('rejects unexpected named options', () => {
-      assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ unexpected: 'value' }),
-          withSdkOptions({})
+  describe('positiveSafeIntegerOption', () => {
+    test('parses a positive integer', () => {
+      assert.deepEqual(
+        parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '10' }
         ),
-        /Unexpected argument '--unexpected'/
+        { quantity: 10 }
       );
     });
 
-    test('rejects non-scalar raw option values', () => {
+    test('rejects zero', () => {
       assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ token: ['token'] }),
-          withSdkOptions({})
+        () => parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '0' }
         ),
-        /Expected '--token' as scalar option/
+        /Expected '--quantity' to be greater than or equal to 1/
       );
     });
 
-    test('rejects text values for boolean options', () => {
+    test('rejects fractional values', () => {
       assert.throws(
-        () => parseCommandOptions(
-          rawOptions({ insecure: 'false' }),
-          withSdkOptions({})
+        () => parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '1.5' }
         ),
-        /Expected '--insecure' as boolean flag/
+        /Expected '--quantity' as integer/
+      );
+    });
+
+    test('rejects positive integers outside the safe number range', () => {
+      assert.throws(
+        () => parseOptions(
+          { quantity: positiveSafeIntegerOption },
+          { quantity: '9007199254740993' }
+        ),
+        /Expected '--quantity' to be less than or equal to 9007199254740991/
       );
     });
   });
@@ -108,10 +114,38 @@ describe('command options', () => {
       );
     });
 
+    test('returns date-time with an explicit numeric offset', () => {
+      assert.deepEqual(
+        parseDateTimeOption('2026-01-01T03:00:00+03:00', 'from'),
+        new Date('2026-01-01T00:00:00Z')
+      );
+    });
+
     test('rejects invalid date-time values', () => {
       assert.throws(
         () => parseDateTimeOption('not-a-date', 'from'),
-        /Expected '--from' as date-time/
+        /Expected '--from' as date-time with explicit timezone/
+      );
+    });
+
+    test('rejects calendar dates that do not exist', () => {
+      assert.throws(
+        () => parseDateTimeOption('2024-02-30T00:00:00Z', 'from'),
+        /Expected '--from' as date-time with explicit timezone/
+      );
+    });
+
+    test('rejects date-time values without an explicit timezone', () => {
+      assert.throws(
+        () => parseDateTimeOption('2026-01-01T00:00:00', 'from'),
+        /Expected '--from' as date-time with explicit timezone/
+      );
+    });
+
+    test('rejects implementation-dependent date syntax', () => {
+      assert.throws(
+        () => parseDateTimeOption('January 1, 2026', 'from'),
+        /Expected '--from' as date-time with explicit timezone/
       );
     });
   });

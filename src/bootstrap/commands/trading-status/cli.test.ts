@@ -7,16 +7,7 @@ import type {
   GetTradingStatusRequest,
   GetTradingStatusResponse
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createTradingStatusCommand,
-  parseTradingStatusFormat,
-  createTradingStatusRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createTradingStatusCommand, createTradingStatusRequest } from './cli';
 
 function response(
   overrides: Partial<GetTradingStatusResponse> = {}
@@ -43,19 +34,6 @@ describe('trading-status command', () => {
         figi: undefined,
         instrumentId: 'BBG00QPYJ5H0'
       });
-    });
-  });
-
-  describe('parseTradingStatusFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseTradingStatusFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseTradingStatusFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

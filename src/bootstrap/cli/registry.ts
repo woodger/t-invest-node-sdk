@@ -80,61 +80,8 @@ import { userTariffCommand } from '../commands/user-tariff/cli';
 import { versionCommand } from '../commands/version/cli';
 import { withdrawLimitsCommand } from '../commands/withdraw-limits/cli';
 import { command } from './contract';
-import {
-  isCommandName as isCommandLineCommandName,
-  resolveCommand as resolveCommandLineCommand,
-  type CommandPath
-} from 'icore';
-import {
-  commandPathAliases,
-  type CliCommandName
-} from './domains';
-
-export type ResolvedCommand = {
-  name: CommandName;
-  path: readonly string[];
-  matchedPath: readonly string[];
-};
-
-export type CommandName = CliCommandName;
-
-export function isCommandName(value: unknown): value is CommandName {
-  return isCommandLineCommandName(commandLineRegistry, value);
-}
-
-function commandNameFromPositionals(positionals: readonly unknown[]): string {
-  return positionals.length === 0
-    ? '<empty>'
-    : positionals.map((value) => String(value)).join(' ');
-}
-
-export function resolveCommand(positionals: readonly unknown[]): ResolvedCommand {
-  let resolvedCommand;
-
-  try {
-    resolvedCommand = resolveCommandLineCommand(
-      commandLineRegistry,
-      positionals.map((value) => String(value))
-    );
-  }
-  catch {
-    const commandName = commandNameFromPositionals(positionals);
-
-    throw new Error(`'${commandName}' is not a program command`);
-  }
-
-  const commandName: unknown = resolvedCommand.name;
-
-  if (!isCommandName(commandName)) {
-    throw new Error(`'${String(commandName)}' is not a program command`);
-  }
-
-  return {
-    name: commandName,
-    path: resolvedCommand.path,
-    matchedPath: resolvedCommand.matchedPath
-  };
-}
+import type { CommandPath } from 'icore';
+import { commandPathAliases } from './domains';
 
 type CliCommandDefinition = ReturnType<typeof command.define>;
 type CliCommandDefinitionPath = Pick<CliCommandDefinition, 'path'>;
@@ -242,9 +189,6 @@ export const commandLineCommands = command.registry(
     defineCommandLineCommand(versionCommand)
   ]
 );
-const commandLineRegistry = commandLineCommands.registry;
-
-export const commandNames = commandLineCommands.names as readonly CommandName[];
 
 function defineCommandLineCommand<
   const TDefinition extends CliCommandDefinitionPath

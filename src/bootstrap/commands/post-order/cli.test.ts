@@ -13,16 +13,7 @@ import {
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createPostOrderCommand,
-  createPostOrderRequest,
-  parsePostOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createPostOrderCommand, createPostOrderRequest } from './cli';
 
 function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -79,19 +70,6 @@ describe('post-order command', () => {
     });
   });
 
-  describe('parsePostOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parsePostOrderFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parsePostOrderFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createPostOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;
@@ -116,6 +94,34 @@ describe('post-order command', () => {
           undefined
         ),
         /Expected '--confirm' to execute side-effect command/
+      );
+      assert.equal(sdkCreated, false);
+    });
+
+    test('rejects an unsafe quantity before creating sdk', async () => {
+      let sdkCreated = false;
+      const command = createPostOrderCommand(() => {
+        sdkCreated = true;
+        throw new Error('must not create sdk');
+      });
+
+      await assert.rejects(
+        () => commandFacade.run(
+          command,
+          [
+            'order',
+            'place',
+            '--account-id=account-id',
+            '--instrument-id=instrument-id',
+            '--quantity=9007199254740993',
+            '--direction=buy',
+            '--order-type=market',
+            '--order-id=idempotency-key',
+            '--confirm'
+          ],
+          undefined
+        ),
+        /Expected '--quantity' to be less than or equal to 9007199254740991/
       );
       assert.equal(sdkCreated, false);
     });

@@ -2,13 +2,8 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { isPreparedCommandName } from 'icore';
 import { canonicalizeCommandName } from './domains';
-import {
-  commandLineCommands,
-  commandNames,
-  isCommandName,
-  resolveCommand
-} from './registry';
-import { appVersion } from './version';
+import { commandLineCommands } from './registry';
+import { renderVersionInfo } from './version';
 
 const legacyCommandNames = [
   'compile-proto',
@@ -223,44 +218,22 @@ const acceptedCommandNames = [
   ])
 ] as const;
 
-const canonicalCommandNameSet = new Set<string>(canonicalCommandNames);
-
-const unknownCommandNames = [
-  'instruments options',
-  'instruments bond list',
-  'instruments favorite list',
-  'instruments share list',
-  'marketdata stream',
-  'operations broker-report',
-  'operations list',
-  'operations portfolio',
-  'portfolio',
-  'sandbox account get-sandbox-accounts',
-  'sandbox order post-sandbox-order',
-  'stoporders list',
-  'stoporders place',
-  'unknown-command',
-  undefined
-] as const;
-
 function commandPath(commandName: string): string[] {
   return commandName.split(' ');
 }
 
-describe('commandNames', () => {
+describe('commandLineCommands', () => {
   test('contains canonical command names only', () => {
     assert.deepEqual(
-      [...commandNames].sort(),
+      [...commandLineCommands.names].sort(),
       [...canonicalCommandNames].sort()
     );
   });
-});
 
-describe('resolveCommand', () => {
   test('resolves every accepted path to its canonical command', () => {
     for (const commandName of acceptedCommandNames) {
       const path = commandPath(commandName);
-      const command = resolveCommand(path);
+      const command = commandLineCommands.resolve(path);
       const canonicalName = canonicalizeCommandName(commandName);
 
       assert.equal(command.name, canonicalName);
@@ -292,7 +265,7 @@ describe('resolveCommand', () => {
       throw new Error('Expected version command output as string');
     }
 
-    assert.equal(output, `t-invest-node-sdk ${appVersion}\n`);
+    assert.equal(output, renderVersionInfo());
   });
 
   test('runs a help command through the native registry', async () => {
@@ -336,33 +309,15 @@ describe('resolveCommand', () => {
 
   test('throws for unknown command', () => {
     assert.throws(
-      () => resolveCommand(['unknown-command']),
-      /is not a program command/
+      () => commandLineCommands.resolve(['unknown-command']),
+      /Unknown command/
     );
   });
 
   test('does not resolve legacy shortcut names', () => {
     assert.throws(
-      () => resolveCommand(['portfolio']),
-      /is not a program command/
+      () => commandLineCommands.resolve(['portfolio']),
+      /Unknown command/
     );
-  });
-});
-
-describe('isCommandName', () => {
-  test('accepts canonical command names only', () => {
-    for (const commandName of canonicalCommandNames) {
-      assert.equal(isCommandName(commandName), true);
-    }
-
-    for (const commandName of acceptedCommandNames) {
-      if (!canonicalCommandNameSet.has(commandName)) {
-        assert.equal(isCommandName(commandName), false);
-      }
-    }
-
-    for (const commandName of unknownCommandNames) {
-      assert.equal(isCommandName(commandName), false);
-    }
   });
 });

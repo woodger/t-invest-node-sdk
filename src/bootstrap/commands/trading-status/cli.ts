@@ -17,14 +17,10 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  formatTradingStatus,
-  tradingStatusFormats,
-  type TradingStatusFormat
-} from './reporter';
+import { formatTradingStatus, tradingStatusFormats } from './reporter';
 
 type TradingStatusSdk = {
   marketdata: {
@@ -60,12 +56,6 @@ const tradingStatusOptionsSchema = withSdkOptions(
 
 type TradingStatusOptions = InferOptions<typeof tradingStatusOptionsSchema>;
 type TradingStatusRequestOptions = CommandRequestOptions<TradingStatusOptions, 'instrument-id'>;
-
-
-
-export function parseTradingStatusFormat(rawOptions: CommandRawOptions): TradingStatusFormat {
-  return parseCommandOptions(rawOptions, tradingStatusFormatOptionsSchema).format;
-}
 
 export function createTradingStatusCommand(
   createSdk: TradingStatusSdkFactory = defaultTradingStatusSdkFactory

@@ -63,16 +63,10 @@ describe('order-state reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOrderStateReport(createSingleOrderStateReport(orderState()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createSingleOrderStateReport(orderState());
+      const output = formatOrderStateReport(report, 'json');
 
-      assert.equal(parsed.orderId, 'order-id');
-      assert.equal(parsed.status, 'EXECUTION_REPORT_STATUS_NEW');
-      assert.deepEqual(parsed.initialOrderPrice, {
-        currency: 'rub',
-        amount: '100.5'
-      });
-      assert.equal(parsed.stages.at(0)?.tradeId, 'trade-id');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

@@ -1,9 +1,8 @@
 /**
- * Scalar value adapters for stable CLI report contracts.
+ * Модуль преобразует скалярные provider DTO в стабильные значения CLI-отчётов.
  *
- * The module converts provider scalar DTO values into reusable application
- * report values and presentation strings. It must not know command names,
- * command report shapes, renderers or stdout/stderr delivery.
+ * Здесь не должно быть имён команд, форм конкретных отчётов, renderers или
+ * доставки в stdout/stderr.
  */
 
 import type { ReportMoney } from '../application/reports/money.report';
@@ -23,7 +22,20 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
     return '';
   }
 
-  return String(value.units + value.nano / 1e9);
+  const nanosPerUnit = 1_000_000_000n;
+  const totalNanos = BigInt(value.units) * nanosPerUnit + BigInt(value.nano);
+  const sign = totalNanos < 0n ? '-' : '';
+  const absoluteNanos = totalNanos < 0n ? -totalNanos : totalNanos;
+  const units = absoluteNanos / nanosPerUnit;
+  const nanos = absoluteNanos % nanosPerUnit;
+
+  if (nanos === 0n) {
+    return `${sign}${units}`;
+  }
+
+  const fraction = nanos.toString().padStart(9, '0').replace(/0+$/, '');
+
+  return `${sign}${units}.${fraction}`;
 }
 
 export function toReportMoney(value: MoneyValue): ReportMoney;

@@ -55,19 +55,10 @@ describe('user-tariff reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatUserTariffReport(createUserTariffReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createUserTariffReport(response());
+      const output = formatUserTariffReport(report, 'json');
 
-      assert.equal(parsed.unaryLimits[0].limitPerMinute, 100);
-      assert.deepEqual(parsed.unaryLimits[0].methods, [
-        'UsersService/GetAccounts',
-        'UsersService/GetInfo'
-      ]);
-      assert.equal(parsed.streamLimits[0].limit, 10);
-      assert.equal(parsed.streamLimits[0].open, 2);
-      assert.deepEqual(parsed.streamLimits[0].streams, [
-        'MarketDataStreamService/MarketDataStream'
-      ]);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

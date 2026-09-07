@@ -36,13 +36,10 @@ describe('user-info reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatUserInfoReport(createUserInfoReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createUserInfoReport(response());
+      const output = formatUserInfoReport(report, 'json');
 
-      assert.equal(parsed.premStatus, true);
-      assert.equal(parsed.qualStatus, false);
-      assert.deepEqual(parsed.qualifiedForWorkWith, ['shares', 'bonds']);
-      assert.equal(parsed.tariff, 'premium');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

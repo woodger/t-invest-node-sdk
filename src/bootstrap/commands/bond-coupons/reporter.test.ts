@@ -78,14 +78,10 @@ describe('bond-coupons reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatBondCouponsReport(createBondCouponsReport([coupon()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createBondCouponsReport([coupon()]);
+      const output = formatBondCouponsReport(report, 'json');
 
-      assert.deepEqual(parsed[0].payOneBond, {
-        currency: 'rub',
-        amount: '25.5'
-      });
-      assert.equal(parsed[0].couponType, 'COUPON_TYPE_CONSTANT');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

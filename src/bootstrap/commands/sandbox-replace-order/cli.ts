@@ -14,15 +14,11 @@ import type { PostOrderResponse, ReplaceOrderRequest } from '../../../generated/
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createReplaceOrderRequest } from '../replace-order/cli';
-import {
-  formatReplaceOrder,
-  replaceOrderFormats,
-  type ReplaceOrderFormat
-} from '../replace-order/reporter';
+import { formatReplaceOrder, replaceOrderFormats } from '../replace-order/reporter';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
@@ -54,9 +50,7 @@ const sandboxReplaceOrderRequestOptionsSchema = {
     required: true
   },
   quantity: {
-    type: 'number',
-    integer: true,
-    min: 1,
+    ...positiveSafeIntegerOption,
     required: true
   },
   price: {
@@ -94,12 +88,6 @@ type SandboxReplaceOrderRequestOptions = CommandRequestOptions<
   'price' |
   'price-type'
 >;
-
-export function parseSandboxReplaceOrderFormat(
-  rawOptions: CommandRawOptions
-): ReplaceOrderFormat {
-  return parseCommandOptions(rawOptions, sandboxReplaceOrderFormatOptionsSchema).format;
-}
 
 export function createSandboxReplaceOrderCommand(
   createSdk: SandboxReplaceOrderSdkFactory = defaultSandboxReplaceOrderSdkFactory

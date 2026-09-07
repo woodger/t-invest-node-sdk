@@ -8,15 +8,7 @@ import type { Brand,
   GetBrandsRequest,
   GetBrandsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createBrandsCommand,
-  parseBrandsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createBrandsCommand } from './cli';
 
 function brand(overrides: Partial<Brand> = {}): Brand {
   return {
@@ -40,19 +32,6 @@ function response(overrides: Partial<GetBrandsResponse> = {}): GetBrandsResponse
 }
 
 describe('brands command', () => {
-  describe('parseBrandsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseBrandsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseBrandsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createBrandsCommand', () => {
     test('calls getBrands and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

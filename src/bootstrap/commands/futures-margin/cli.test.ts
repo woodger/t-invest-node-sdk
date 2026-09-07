@@ -8,16 +8,7 @@ import type {
   GetFuturesMarginRequest,
   GetFuturesMarginResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createFuturesMarginCommand,
-  parseFuturesMarginFormat,
-  createFuturesMarginRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createFuturesMarginCommand, createFuturesMarginRequest } from './cli';
 
 function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFuturesMarginResponse {
   return {
@@ -54,19 +45,6 @@ describe('futures-margin command', () => {
         figi: '',
         instrumentId: 'FUTFIGI'
       });
-    });
-  });
-
-  describe('parseFuturesMarginFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseFuturesMarginFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseFuturesMarginFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

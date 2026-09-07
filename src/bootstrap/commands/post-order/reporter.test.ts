@@ -111,18 +111,10 @@ describe('post-order reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOrderMutationReport(
-        createOrderMutationReport(postOrderResponse()),
-        'json'
-      );
-      const parsed = JSON.parse(output);
+      const report = createOrderMutationReport(postOrderResponse());
+      const output = formatOrderMutationReport(report, 'json');
 
-      assert.equal(parsed.orderId, 'order-id');
-      assert.equal(parsed.status, 'EXECUTION_REPORT_STATUS_NEW');
-      assert.deepEqual(parsed.totalOrderAmount, {
-        currency: 'rub',
-        amount: '200'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

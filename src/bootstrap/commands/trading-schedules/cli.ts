@@ -17,18 +17,10 @@ import type {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommandOptions,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  formatTradingSchedules,
-  tradingSchedulesFormats,
-  type TradingSchedulesFormat
-} from './reporter';
+import { formatTradingSchedules, tradingSchedulesFormats } from './reporter';
 
 type TradingSchedulesSdk = {
   instruments: {
@@ -71,12 +63,6 @@ const tradingSchedulesOptionsSchema = withSdkOptions(
 
 type TradingSchedulesOptions = InferOptions<typeof tradingSchedulesOptionsSchema>;
 type TradingSchedulesRequestOptions = CommandRequestOptions<TradingSchedulesOptions, 'from' | 'to' | 'exchange'>;
-
-
-
-export function parseTradingSchedulesFormat(rawOptions: CommandRawOptions): TradingSchedulesFormat {
-  return parseCommandOptions(rawOptions, tradingSchedulesFormatOptionsSchema).format;
-}
 
 export function createTradingSchedulesCommand(
   createSdk: TradingSchedulesSdkFactory = defaultTradingSchedulesSdkFactory

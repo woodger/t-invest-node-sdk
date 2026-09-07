@@ -17,14 +17,10 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  formatWithdrawLimits,
-  withdrawLimitsFormats,
-  type WithdrawLimitsFormat
-} from './reporter';
+import { formatWithdrawLimits, withdrawLimitsFormats } from './reporter';
 
 type WithdrawLimitsSdk = {
   operations: {
@@ -60,12 +56,6 @@ const withdrawLimitsOptionsSchema = withSdkOptions(
 
 type WithdrawLimitsOptions = InferOptions<typeof withdrawLimitsOptionsSchema>;
 type WithdrawLimitsRequestOptions = CommandRequestOptions<WithdrawLimitsOptions, 'account-id'>;
-
-
-
-export function parseWithdrawLimitsFormat(rawOptions: CommandRawOptions): WithdrawLimitsFormat {
-  return parseCommandOptions(rawOptions, withdrawLimitsFormatOptionsSchema).format;
-}
 
 export function createWithdrawLimitsCommand(
   createSdk: WithdrawLimitsSdkFactory = defaultWithdrawLimitsSdkFactory

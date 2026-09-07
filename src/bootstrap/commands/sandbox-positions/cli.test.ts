@@ -4,15 +4,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxPositionsCommand,
-  parseSandboxPositionsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxPositionsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -35,12 +27,6 @@ function positionsResponse(overrides: Partial<PositionsResponse> = {}): Position
 }
 
 describe('sandbox-positions command', () => {
-  describe('parseSandboxPositionsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxPositionsFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxPositionsCommand', () => {
     test('calls getSandboxPositions and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

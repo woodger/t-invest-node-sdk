@@ -8,9 +8,9 @@ import {
   TradeSourceType
 } from '../../../generated/marketdata';
 import {
-  createAccountStreamRequest,
   createMarketDataStreamRequests,
   createMarketDataServerSideStreamRequest,
+  createPortfolioStreamRequest,
   parseStreamRunConfig
 } from './config';
 
@@ -32,7 +32,7 @@ describe('stream run config', () => {
       }));
 
       assert.equal(config.stream, 'operations.portfolioStream');
-      assert.deepEqual(createAccountStreamRequest(config), {
+      assert.deepEqual(createPortfolioStreamRequest(config), {
         accounts: ['account-id'],
         pingSettings: undefined
       });
@@ -283,6 +283,23 @@ describe('stream run config', () => {
               {
                 instrumentId: 'instrument-id',
                 interval: '10min'
+              }
+            ]
+          }
+        })),
+        /Expected 'subscriptions\.candles\[\]\.interval' as one of: 1min, 5min/
+      );
+    });
+
+    test('rejects inherited object property names as candle intervals', () => {
+      assert.throws(
+        () => parseStreamRunConfig(configJson({
+          stream: 'marketdata.marketDataServerSideStream',
+          subscriptions: {
+            candles: [
+              {
+                instrumentId: 'instrument-id',
+                interval: 'toString'
               }
             ]
           }

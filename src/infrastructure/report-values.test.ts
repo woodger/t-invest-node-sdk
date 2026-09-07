@@ -26,6 +26,22 @@ describe('report values', () => {
       assert.equal(formatReportDecimal({ units: 10, nano: 0 }), '10');
     });
 
+    test('preserves nanos when units exceed precise floating-point range', () => {
+      assert.equal(
+        formatReportDecimal({ units: 100_000_000, nano: 1 }),
+        '100000000.000000001'
+      );
+    });
+
+    test('uses fixed decimal notation for sub-unit values', () => {
+      assert.equal(formatReportDecimal({ units: 0, nano: 1 }), '0.000000001');
+    });
+
+    test('formats negative and mixed-sign values by their exact total nanos', () => {
+      assert.equal(formatReportDecimal({ units: -10, nano: -250_000_000 }), '-10.25');
+      assert.equal(formatReportDecimal({ units: 1, nano: -500_000_000 }), '0.5');
+    });
+
     test('returns an empty string for missing values', () => {
       assert.equal(formatReportDecimal(undefined), '');
     });

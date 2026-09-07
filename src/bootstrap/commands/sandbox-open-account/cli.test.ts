@@ -3,27 +3,12 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { OpenSandboxAccountRequest } from '../../../generated/sandbox';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxOpenAccountCommand,
-  createSandboxOpenAccountRequest,
-  parseSandboxOpenAccountFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxOpenAccountCommand, createSandboxOpenAccountRequest } from './cli';
 
 describe('sandbox-open-account command', () => {
   describe('createSandboxOpenAccountRequest', () => {
     test('returns generated openSandboxAccount request', () => {
       assert.deepEqual(createSandboxOpenAccountRequest(), {});
-    });
-  });
-
-  describe('parseSandboxOpenAccountFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxOpenAccountFormat(rawOptions()), 'table');
     });
   });
 

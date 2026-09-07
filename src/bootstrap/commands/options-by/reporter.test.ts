@@ -47,8 +47,6 @@ function option(overrides: Partial<Option> = {}): Option {
     sector: 'Currencies',
     lot: 1,
     basicAssetSize: quotation(1000, 0),
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -107,8 +105,6 @@ describe('options-by reporter', () => {
           expirationDate: '2026-06-19T00:00:00.000Z',
           firstTradeDate: '2026-03-01T00:00:00.000Z',
           lastTradeDate: '2026-06-18T00:00:00.000Z',
-          klong: '2',
-          kshort: '1.5',
           dlong: '0.1',
           dshort: '0.2',
           dlongMin: '0.3',
@@ -144,17 +140,10 @@ describe('options-by reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOptionsByReport(createOptionsByReport([option()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createOptionsByReport([option()]);
+      const output = formatOptionsByReport(report, 'json');
 
-      assert.equal(parsed[0].uid, 'option-uid');
-      assert.equal(parsed[0].direction, 'OPTION_DIRECTION_CALL');
-      assert.equal(parsed[0].basicAsset, 'USD/RUB');
-      assert.equal(parsed[0].basicAssetPositionUid, 'asset-position-uid');
-      assert.deepEqual(parsed[0].strikePrice, {
-        currency: 'rub',
-        amount: '12500.5'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

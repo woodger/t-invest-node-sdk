@@ -8,16 +8,7 @@ import type {
   GetClosePricesResponse,
   InstrumentClosePriceResponse
 } from '../../../generated/marketdata';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createClosePricesCommand,
-  parseClosePricesFormat,
-  createClosePricesRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createClosePricesCommand, createClosePricesRequest } from './cli';
 
 function quotation(units: number, nano: number): Quotation {
   return {
@@ -58,19 +49,6 @@ describe('close-prices command', () => {
         { instrumentId: 'BBG00QPYJ5H0' },
         { instrumentId: 'instrument-uid' }
       ]);
-    });
-  });
-
-  describe('parseClosePricesFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseClosePricesFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseClosePricesFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

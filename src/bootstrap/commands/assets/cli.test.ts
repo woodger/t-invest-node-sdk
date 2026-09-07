@@ -5,20 +5,11 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
-import type { AssetsRequest,
+import type {
+  AssetsRequest,
   AssetsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createAssetsCommand,
-  parseAssetsFormat,
-  parseAssetsInstrumentType,
-  createAssetsRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createAssetsCommand, createAssetsRequest } from './cli';
 
 function response(overrides: Partial<AssetsResponse> = {}): AssetsResponse {
   return {
@@ -28,31 +19,6 @@ function response(overrides: Partial<AssetsResponse> = {}): AssetsResponse {
 }
 
 describe('assets command', () => {
-  describe('parseAssetsInstrumentType', () => {
-    test('returns unspecified by default', () => {
-      assert.equal(
-        parseAssetsInstrumentType(rawOptions()),
-        InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED
-      );
-    });
-
-    test('maps public instrument type names to generated enum values', () => {
-      assert.equal(parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'share' })), InstrumentType.INSTRUMENT_TYPE_SHARE);
-      assert.equal(parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'bond' })), InstrumentType.INSTRUMENT_TYPE_BOND);
-      assert.equal(
-        parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'clearing-certificate' })),
-        InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
-      );
-    });
-
-    test('rejects unknown instrument type names', () => {
-      assert.throws(
-        () => parseAssetsInstrumentType(rawOptions({ 'instrument-type': 'stock' })),
-        /Expected '--instrument-type' as one of: unspecified, bond, share/
-      );
-    });
-  });
-
   describe('createAssetsRequest', () => {
     test('returns generated getAssets request', () => {
       const request = createAssetsRequest({ 'instrument-type': 'share' });
@@ -61,18 +27,21 @@ describe('assets command', () => {
         instrumentType: InstrumentType.INSTRUMENT_TYPE_SHARE
       });
     });
-  });
 
-  describe('parseAssetsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseAssetsFormat(rawOptions()), 'table');
-    });
+    test('maps unspecified, bond, and clearing certificate types', () => {
+      const cases = [
+        ['unspecified', InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED],
+        ['bond', InstrumentType.INSTRUMENT_TYPE_BOND],
+        ['clearing-certificate', InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE]
+      ] as const;
 
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseAssetsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
+      for (const [instrumentType, expected] of cases) {
+        assert.deepEqual(createAssetsRequest({
+          'instrument-type': instrumentType
+        }), {
+          instrumentType: expected
+        });
+      }
     });
   });
 

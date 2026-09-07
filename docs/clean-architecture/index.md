@@ -1,4 +1,4 @@
-# Clean Architecture Notes
+# Заметки по Clean Architecture
 
 > Type: Navigation. Этот раздел переносит и адаптирует Clean Architecture notes
 > из Inventory под текущий компактный SDK.
@@ -23,15 +23,15 @@ Policy source of truth по ограничениям и направлению �
 
 ## Документы
 
-- [Application](./application.md) - роль `application` в текущем SDK.
+- [Application-слой](./application.md) - роль `application` в текущем SDK.
 - [DTO и Reports](./dto.md) - где живут boundary contracts.
-- [API Commands](./api-commands.md) - текущий CLI flow и границы command layer.
+- [API-команды](./api-commands.md) - текущий CLI flow и границы command layer.
 - [Adapters](./adapters.md) - место project adapters и граница с `icore`.
 - [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) -
   границы command-specific formatting, generic primitives и terminal output.
-- [Stream CLI Reference](../cli-stream-reference.md) - текущий контракт
+- [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт
   `stream run` и будущие stream-расширения.
-- [Stream CLI Configuration Reference](../cli-stream-configuration.md) -
+- [Справочник конфигурации потокового CLI](../cli-stream-configuration.md) -
   JSON config для stream CLI.
 
 ## Текущая Карта
@@ -39,6 +39,7 @@ Policy source of truth по ограничениям и направлению �
 ```text
 src/application
   dto/
+  errors/
   reports/
   services/
 

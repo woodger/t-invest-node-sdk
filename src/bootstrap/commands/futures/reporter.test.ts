@@ -7,7 +7,7 @@ import {
   SecurityTradingStatus,
   type Quotation
 } from '../../../generated/common';
-import { type Future } from '../../../generated/instruments';
+import type { Future } from '../../../generated/instruments';
 import { createFuturesReport, formatFuturesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -21,8 +21,6 @@ function future(overrides: Partial<Future> = {}): Future {
     classCode: 'SPBFUT',
     lot: 1,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -86,8 +84,6 @@ describe('futures reporter', () => {
           basicAsset: 'USD/RUB',
           basicAssetSize: '1000',
           basicAssetPositionUid: 'basic-position-uid',
-          klong: '2',
-          kshort: '1.5',
           dlong: '0.1',
           dshort: '0.2',
           dlongMin: '0.3',
@@ -123,13 +119,10 @@ describe('futures reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatFuturesReport(createFuturesReport([future()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createFuturesReport([future()]);
+      const output = formatFuturesReport(report, 'json');
 
-      assert.equal(parsed[0].figi, 'FUTFIGI');
-      assert.equal(parsed[0].basicAsset, 'USD/RUB');
-      assert.equal(parsed[0].basicAssetPositionUid, 'basic-position-uid');
-      assert.equal(parsed[0].expirationDate, '2026-06-19T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

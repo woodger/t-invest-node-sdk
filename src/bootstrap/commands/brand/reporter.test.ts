@@ -27,11 +27,10 @@ describe('brand reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatBrandReport(createSingleBrandReport(brand()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createSingleBrandReport(brand());
+      const output = formatBrandReport(report, 'json');
 
-      assert.equal(parsed.uid, 'brand-uid');
-      assert.equal(parsed.description, 'Banking services');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

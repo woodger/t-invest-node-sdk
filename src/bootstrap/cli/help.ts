@@ -1680,7 +1680,7 @@ export const commandHelp = {
 export type CommandHelpName = keyof typeof commandHelp;
 
 export function isCommandHelpName(value: unknown): value is CommandHelpName {
-  return typeof value === 'string' && value in commandHelp;
+  return typeof value === 'string' && Object.hasOwn(commandHelp, value);
 }
 
 export function resolveCommandHelpName(positionals: readonly unknown[]): CommandHelpName | undefined {

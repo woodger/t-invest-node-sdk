@@ -183,17 +183,10 @@ describe('operations-by-cursor reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOperationsByCursorReport(
-        createOperationsByCursorReport(response()),
-        'json'
-      );
-      const parsed = JSON.parse(output);
+      const report = createOperationsByCursorReport(response());
+      const output = formatOperationsByCursorReport(report, 'json');
 
-      assert.equal(parsed.page.hasNext, true);
-      assert.equal(parsed.page.nextCursor, 'next-cursor');
-      assert.equal(parsed.page.itemsCount, 1);
-      assert.equal(parsed.items[0].id, 'operation-id');
-      assert.equal(parsed.items[0].tradesCount, 1);
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

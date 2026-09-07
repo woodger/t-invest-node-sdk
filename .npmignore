@@ -6,3 +6,4 @@ tsconfig.json
 **/*.test.*
 .env
 package-lock.json
+MR.md

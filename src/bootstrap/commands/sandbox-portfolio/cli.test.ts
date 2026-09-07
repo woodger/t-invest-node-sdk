@@ -8,15 +8,7 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxPortfolioCommand,
-  parseSandboxPortfolioFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxPortfolioCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -52,12 +44,6 @@ function portfolioResponse(overrides: Partial<PortfolioResponse> = {}): Portfoli
 }
 
 describe('sandbox-portfolio command', () => {
-  describe('parseSandboxPortfolioFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxPortfolioFormat(rawOptions()), 'table');
-    });
-  });
-
   describe('createSandboxPortfolioCommand', () => {
     test('calls getSandboxPortfolio and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

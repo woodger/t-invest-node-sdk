@@ -8,15 +8,7 @@ import {
   AccountType,
   type Account
 } from '../../../generated/users';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createAccountsCommand,
-  parseAccountsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createAccountsCommand } from './cli';
 
 function account(overrides: Partial<Account> = {}): Account {
   return {
@@ -32,19 +24,6 @@ function account(overrides: Partial<Account> = {}): Account {
 }
 
 describe('accounts command', () => {
-  describe('parseAccountsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseAccountsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseAccountsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createAccountsCommand', () => {
     test('calls getAccounts and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

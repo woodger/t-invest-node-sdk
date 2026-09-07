@@ -17,18 +17,14 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
   resolveInstrumentIdOption
 } from '../../args/instrument-id-options';
-import {
-  formatFuturesMargin,
-  futuresMarginFormats,
-  type FuturesMarginFormat
-} from './reporter';
+import { formatFuturesMargin, futuresMarginFormats } from './reporter';
 
 type FuturesMarginSdk = {
   instruments: {
@@ -64,12 +60,6 @@ type FuturesMarginRequestOptions = CommandRequestOptions<
   FuturesMarginOptions,
   'instrument-id' | 'figi'
 >;
-
-
-
-export function parseFuturesMarginFormat(rawOptions: CommandRawOptions): FuturesMarginFormat {
-  return parseCommandOptions(rawOptions, futuresMarginFormatOptionsSchema).format;
-}
 
 export function createFuturesMarginCommand(
   createSdk: FuturesMarginSdkFactory = defaultFuturesMarginSdkFactory

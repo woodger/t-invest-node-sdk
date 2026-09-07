@@ -14,10 +14,9 @@ import type { GetCountriesRequest, GetCountriesResponse } from '../../../generat
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { countriesFormats, formatCountries, type CountriesFormat } from './reporter';
+import { countriesFormats, formatCountries } from './reporter';
 
 type CountriesSdk = {
   instruments: {
@@ -40,10 +39,6 @@ const countriesOptionsSchema = withSdkOptions({
 } as const);
 
 type CountriesOptions = InferOptions<typeof countriesOptionsSchema>;
-
-export function parseCountriesFormat(rawOptions: CommandRawOptions): CountriesFormat {
-  return parseCommandOptions(rawOptions, countriesOptionsSchema).format;
-}
 
 export function createCountriesCommand(
   createSdk: CountriesSdkFactory = defaultCountriesSdkFactory

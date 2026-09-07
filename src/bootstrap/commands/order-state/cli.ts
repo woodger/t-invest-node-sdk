@@ -18,10 +18,10 @@ import type {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatOrderState, orderStateFormats, type OrderStateFormat } from './reporter';
+import { formatOrderState, orderStateFormats } from './reporter';
 
 type OrderStateSdk = {
   orders: {
@@ -61,12 +61,6 @@ const orderStateOptionsSchema = withSdkOptions(
 
 type OrderStateOptions = InferOptions<typeof orderStateOptionsSchema>;
 type OrderStateRequestOptions = CommandRequestOptions<OrderStateOptions, 'account-id' | 'order-id'>;
-
-
-
-export function parseOrderStateFormat(rawOptions: CommandRawOptions): OrderStateFormat {
-  return parseCommandOptions(rawOptions, orderStateFormatOptionsSchema).format;
-}
 
 export function createOrderStateCommand(
   createSdk: OrderStateSdkFactory = defaultOrderStateSdkFactory

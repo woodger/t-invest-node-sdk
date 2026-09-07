@@ -11,16 +11,7 @@ import {
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createStopOrdersCommand,
-  parseStopOrdersFormat,
-  createStopOrdersRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createStopOrdersCommand, createStopOrdersRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -70,19 +61,6 @@ describe('stop-orders command', () => {
         from: undefined,
         to: undefined
       });
-    });
-  });
-
-  describe('parseStopOrdersFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseStopOrdersFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseStopOrdersFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

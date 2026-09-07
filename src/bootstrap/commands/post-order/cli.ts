@@ -21,15 +21,15 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
   parseOptionalPositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import { formatPostOrder, postOrderFormats, type PostOrderFormat } from './reporter';
+import { formatPostOrder, postOrderFormats } from './reporter';
 
 type PostOrderSdk = {
   orders: {
@@ -72,9 +72,7 @@ const postOrderRequestOptionsSchema = {
     required: true
   },
   quantity: {
-    type: 'number',
-    integer: true,
-    min: 1,
+    ...positiveSafeIntegerOption,
     required: true
   },
   price: {
@@ -121,10 +119,6 @@ type PostOrderRequestOptions = CommandRequestOptions<
   'order-type' |
   'order-id'
 >;
-
-export function parsePostOrderFormat(rawOptions: CommandRawOptions): PostOrderFormat {
-  return parseCommandOptions(rawOptions, postOrderFormatOptionsSchema).format;
-}
 
 export function createPostOrderCommand(
   createSdk: PostOrderSdkFactory = defaultPostOrderSdkFactory

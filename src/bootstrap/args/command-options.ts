@@ -1,35 +1,20 @@
 /**
- * The command options module contains reusable helpers for SDK bootstrap
- * commands on top of the generic `icore` option schema runtime.
+ * Модуль общих CLI-опций собирает схемы bootstrap-команд поверх `icore`.
  *
- * Allowed here:
- * - composing common SDK option schemas with command-specific schemas;
- * - validating raw command option maps in command parser tests;
- * - validating known options and extra positionals through `icore`;
- * - preserving command handlers as the place for API-specific request logic.
+ * Здесь допустимы общие схемы и преобразования значений, которые нужны
+ * нескольким request builders. Разбор argv и проверка schema-level ограничений
+ * принадлежат command mechanics `icore`.
  *
- * Not allowed here:
- * - creating SDK clients;
- * - reading environment fallback values;
- * - building generated API requests;
- * - formatting provider responses.
+ * Здесь не должно быть создания SDK clients, чтения переменных окружения,
+ * сборки generated requests или форматирования provider responses.
  */
 
 import {
   CliUsageError,
   mergeOptionsSchema,
-  parseOptions,
-  type InferOptions,
   type MergeOptionsSchemas,
-  type OptionsSchema,
-  type RawOptionValue
+  type OptionsSchema
 } from 'icore';
-
-/**
- * Raw option maps are used by exported parser helpers and focused tests.
- * Runtime command execution receives typed options directly from `icore`.
- */
-export type CommandRawOptions = Record<string, unknown>;
 
 type OptionalCommandOptionKeys<TOptions> = {
   [TKey in keyof TOptions]: undefined extends TOptions[TKey] ? TKey : never;
@@ -61,19 +46,17 @@ export const sdkOptionsSchema = {
   }
 } as const satisfies OptionsSchema;
 
+export const positiveSafeIntegerOption = {
+  type: 'number',
+  integer: true,
+  min: 1,
+  max: Number.MAX_SAFE_INTEGER
+} as const;
+
 export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
   ...schemas: TSchemas
 ): MergeOptionsSchemas<readonly [typeof sdkOptionsSchema, ...TSchemas]> {
   return mergeOptionsSchema(sdkOptionsSchema, ...schemas);
-}
-
-export function parseCommandOptions<const TSchema extends OptionsSchema>(
-  options: CommandRawOptions,
-  schema: TSchema
-): InferOptions<TSchema> {
-  // Command path and extra positional validation belong to `icore.runCommand`;
-  // this helper validates only named options for parser helpers and tests.
-  return parseOptions(schema, toRawOptions(options));
 }
 
 export function parseCommaSeparatedStringListOption(
@@ -90,10 +73,20 @@ export function parseCommaSeparatedStringListOption(
 }
 
 export function parseDateTimeOption(value: string, name: string): Date {
+  const match = rfc3339DateTimePattern.exec(value);
+
+  if (match === null || !hasValidDateTimeParts(match)) {
+    throw new CliUsageError(`Expected '--${name}' as date-time with explicit timezone`);
+  }
+
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    throw new CliUsageError(`Expected '--${name}' as date-time`);
+  if (
+    Number.isNaN(date.getTime())
+    || date.getUTCFullYear() < 1
+    || date.getUTCFullYear() > 9999
+  ) {
+    throw new CliUsageError(`Expected '--${name}' as date-time with explicit timezone`);
   }
 
   return date;
@@ -135,24 +128,49 @@ export function parseOptionalNonNegativeIntegerOption(
   return parsed;
 }
 
-function toRawOptions(values: CommandRawOptions): Record<string, RawOptionValue> {
-  const options: Record<string, RawOptionValue> = {};
+const rfc3339DateTimePattern =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-](\d{2}):(\d{2}))$/;
 
-  for (const name of Object.keys(values)) {
-    const value = values[name];
+function hasValidDateTimeParts(match: RegExpExecArray): boolean {
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  const second = Number(match[6]);
+  const offsetHour = match[7] === undefined ? 0 : Number(match[7]);
+  const offsetMinute = match[8] === undefined ? 0 : Number(match[8]);
+  const daysInMonth = resolveDaysInMonth(year, month);
 
-    if (value === undefined) {
-      continue;
-    }
+  return daysInMonth !== undefined
+    && day >= 1
+    && day <= daysInMonth
+    && hour <= 23
+    && minute <= 59
+    && second <= 59
+    && offsetHour <= 23
+    && offsetMinute <= 59;
+}
 
-    if (typeof value !== 'string' && typeof value !== 'boolean') {
-      throw new CliUsageError(`Expected '--${name}' as scalar option`);
-    }
+function resolveDaysInMonth(year: number, month: number): number | undefined {
+  const days = [
+    31,
+    isLeapYear(year) ? 29 : 28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+  ];
 
-    // `icore.parseOptions` owns schema-level parsing; this adapter only rejects
-    // values that cannot come from raw CLI option parsing.
-    options[name] = value;
-  }
+  return month >= 1 && month <= 12 ? days[month - 1] : undefined;
+}
 
-  return options;
+function isLeapYear(year: number): boolean {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 }

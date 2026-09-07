@@ -18,8 +18,6 @@ import type { TradesStreamResponse } from '../../../generated/orders';
 
 export const streamRunFormats = ['jsonl'] as const;
 
-export type StreamRunFormat = typeof streamRunFormats[number];
-
 export type StreamRunResponse =
   | MarketDataResponse
   | PortfolioStreamResponse

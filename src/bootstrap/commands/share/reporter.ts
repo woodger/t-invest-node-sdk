@@ -45,8 +45,6 @@ export function createShareReportInstrument(instrument: Share): ShareReportInstr
     issueSize: instrument.issueSize,
     issueSizePlan: instrument.issueSizePlan,
     shareType: shareTypeToJSON(instrument.shareType),
-    klong: formatReportDecimal(instrument.klong),
-    kshort: formatReportDecimal(instrument.kshort),
     dlong: formatReportDecimal(instrument.dlong),
     dshort: formatReportDecimal(instrument.dshort),
     dlongMin: formatReportDecimal(instrument.dlongMin),

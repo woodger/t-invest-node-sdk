@@ -45,7 +45,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 
 ## Категории
 
-### Active Runtime Code
+### Активный runtime-код
 
 Код имеет подтвержденный путь из production graph.
 
@@ -59,7 +59,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 
 Решение: `keep`.
 
-### Generated Contract Code
+### Сгенерированный код контрактов
 
 Код получен из `contracts/*.proto` и воспроизводится proto workflow.
 
@@ -149,7 +149,7 @@ Barrel export сам по себе не доказывает жизненнос�
 
 Внутренняя зависимость внутри острова не делает остров активным.
 
-### Roadmap Code
+### Код из roadmap
 
 Код выражает будущее намерение, но не имеет текущего consumer-а.
 

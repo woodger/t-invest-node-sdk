@@ -3,15 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createUserTariffCommand,
-  parseUserTariffFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createUserTariffCommand } from './cli';
 
 function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariffResponse {
   return {
@@ -33,19 +25,6 @@ function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariff
 }
 
 describe('user-tariff command', () => {
-  describe('parseUserTariffFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseUserTariffFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseUserTariffFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createUserTariffCommand', () => {
     test('calls getUserTariff and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

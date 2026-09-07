@@ -7,16 +7,7 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createWithdrawLimitsCommand,
-  parseWithdrawLimitsFormat,
-  createWithdrawLimitsRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createWithdrawLimitsCommand, createWithdrawLimitsRequest } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -47,19 +38,6 @@ describe('withdraw-limits command', () => {
       assert.deepEqual(request, {
         accountId: 'account-id'
       });
-    });
-  });
-
-  describe('parseWithdrawLimitsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseWithdrawLimitsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseWithdrawLimitsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
     });
   });
 

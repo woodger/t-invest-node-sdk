@@ -10,7 +10,7 @@ runtime. Добавьте `nice-grpc` как прямую dev-зависимос
 не полагаясь на transitive hoisting:
 
 ```sh
-npm install --save-dev nice-grpc@^2.1.15
+npm install --save-dev nice-grpc@^2.1.17
 ```
 
 ## Полный пример с `SignalService`
@@ -98,7 +98,7 @@ void main().catch((error: unknown) => {
 Используйте только root imports:
 
 - `SignalServiceDefinition` — runtime definition для `server.add()`;
-- `SignalServiceImplementation` — compile-time contract mock implementation;
+- `SignalServiceImplementation` — типовой контракт mock-реализации;
 - request, response, enum contracts и их JSON-конвертеры — из того же package
   entrypoint.
 

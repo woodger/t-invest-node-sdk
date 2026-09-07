@@ -88,14 +88,10 @@ describe('dividends reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatDividendsReport(createDividendsReport([dividend()]), 'json');
-      const parsed = JSON.parse(output);
+      const report = createDividendsReport([dividend()]);
+      const output = formatDividendsReport(report, 'json');
 
-      assert.deepEqual(parsed[0].dividendNet, {
-        currency: 'rub',
-        amount: '12.5'
-      });
-      assert.equal(parsed[0].yieldValue, '5.125');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

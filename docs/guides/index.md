@@ -12,7 +12,7 @@
 
 ## Долгоживущие операции
 
-- [Streams и отмена](./streams-and-cancellation.md) — server-side и
+- [Потоки и отмена](./streams-and-cancellation.md) — server-side и
   bidirectional streams, `AbortSignal` и владение shutdown lifecycle.
 - [Ошибки и lifecycle](./errors-and-lifecycle.md) — narrowing `SdkError`,
   различение источников ошибок и граница retry policy.
@@ -23,7 +23,7 @@
   регистрация `*ServiceDefinition` и типизированной implementation без deep
   imports.
 
-## Reference
+## Справочные материалы
 
 Актуальный список public exports определяет корневой entrypoint пакета.
 Generated DTO, enum-ы и service methods определяются vendored proto contracts,
@@ -32,6 +32,6 @@ Generated DTO, enum-ы и service methods определяются vendored prot
 Дополнительные reference-документы:
 
 - [Лимитная политика](../limits-policy.md);
-- [Stream CLI Reference](../cli-stream-reference.md);
-- [Stream CLI Configuration Reference](../cli-stream-configuration.md);
+- [Справочник потокового CLI](../cli-stream-reference.md);
+- [Справочник конфигурации потокового CLI](../cli-stream-configuration.md);
 - [Навигация по документации](../index.md).

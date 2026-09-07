@@ -6,15 +6,7 @@ import {
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type EtfsResponse, type InstrumentsRequest } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createEtfsCommand,
-  parseEtfsFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createEtfsCommand } from './cli';
 
 function response(overrides: Partial<EtfsResponse> = {}): EtfsResponse {
   return {
@@ -24,19 +16,6 @@ function response(overrides: Partial<EtfsResponse> = {}): EtfsResponse {
 }
 
 describe('etfs command', () => {
-  describe('parseEtfsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseEtfsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseEtfsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
-      );
-    });
-  });
-
   describe('createEtfsCommand', () => {
     test('calls etfs and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

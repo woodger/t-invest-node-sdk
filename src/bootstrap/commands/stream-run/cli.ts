@@ -35,7 +35,10 @@ import type {
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import { withSdkOptions } from '../../args/command-options';
+import {
+  positiveSafeIntegerOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   createMarketDataStreamRequests,
@@ -87,14 +90,17 @@ type StreamRunSdk = {
 type StreamRunSdkFactory = (options: TInvestOptions) => StreamRunSdk;
 type StreamRunConfigReader = (path: string) => Promise<string>;
 type StreamRunClock = () => Date;
+type StreamRunElapsedClock = () => number;
 
 type StreamRunDependencies = {
   createSdk?: StreamRunSdkFactory;
   readConfig?: StreamRunConfigReader;
   now?: StreamRunClock;
+  elapsedNow?: StreamRunElapsedClock;
 };
 
 const streamRunCommandPath = ['stream', 'run'] as const;
+const maxTimerDelayMs = 2_147_483_647;
 const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) => new TInvestNodeSDK(options);
 const defaultStreamRunConfigReader: StreamRunConfigReader = (path) => readFile(path, 'utf8');
 
@@ -104,19 +110,13 @@ const streamRunOptionsSchema = withSdkOptions({
     required: true
   },
   'max-events': {
-    type: 'number',
-    integer: true,
-    min: 1
+    ...positiveSafeIntegerOption
   },
   'duration-ms': {
-    type: 'number',
-    integer: true,
-    min: 1
+    ...positiveSafeIntegerOption
   },
   'idle-timeout-ms': {
-    type: 'number',
-    integer: true,
-    min: 1
+    ...positiveSafeIntegerOption
   },
   'include-pings': {
     type: 'boolean'
@@ -140,6 +140,7 @@ export function createStreamRunCommand(
   const createSdk = dependencies.createSdk ?? defaultStreamRunSdkFactory;
   const readConfig = dependencies.readConfig ?? defaultStreamRunConfigReader;
   const now = dependencies.now ?? (() => new Date());
+  const elapsedNow = dependencies.elapsedNow ?? (() => performance.now());
 
   return command.define({
     path: streamRunCommandPath,
@@ -148,7 +149,8 @@ export function createStreamRunCommand(
       return createStreamRunOutput(options, provided, {
         createSdk,
         readConfig,
-        now
+        now,
+        elapsedNow
       });
     }
   });
@@ -210,6 +212,7 @@ function runStreamRunSession(
         responses,
         runtime,
         dependencies.now,
+        dependencies.elapsedNow,
         () => {
           controller.abort();
         }
@@ -277,10 +280,11 @@ async function* formatStreamRunResponses(
   responses: AsyncIterable<StreamRunResponse>,
   runtime: StreamRunRuntime,
   now: StreamRunClock,
+  elapsedNow: StreamRunElapsedClock,
   cancelStream: () => void
 ): AsyncIterable<string> {
   const iterator = responses[Symbol.asyncIterator]();
-  const startedAt = Date.now();
+  const startedAt = elapsedNow();
   let lastResponseAt = startedAt;
   let sequence = 1;
   let emittedEvents = 0;
@@ -288,7 +292,12 @@ async function* formatStreamRunResponses(
 
   try {
     while (true) {
-      const timeoutMs = resolveNextTimeoutMs(startedAt, lastResponseAt, runtime);
+      const timeoutMs = resolveNextTimeoutMs(
+        startedAt,
+        lastResponseAt,
+        runtime,
+        elapsedNow
+      );
 
       if (timeoutMs !== undefined && timeoutMs <= 0) {
         break;
@@ -296,7 +305,11 @@ async function* formatStreamRunResponses(
 
       pendingRead = iterator.next();
 
-      const result = await readNextWithTimeout(pendingRead, timeoutMs);
+      const result = await readNextWithTimeout(
+        pendingRead,
+        timeoutMs,
+        elapsedNow
+      );
 
       if (result === streamReadTimedOut) {
         cancelStream();
@@ -312,7 +325,7 @@ async function* formatStreamRunResponses(
         break;
       }
 
-      lastResponseAt = Date.now();
+      lastResponseAt = elapsedNow();
 
       const line = formatStreamRunResponse(result.value, {
         stream,
@@ -350,9 +363,10 @@ async function* formatStreamRunResponses(
 function resolveNextTimeoutMs(
   startedAt: number,
   lastResponseAt: number,
-  runtime: StreamRunRuntime
+  runtime: StreamRunRuntime,
+  elapsedNow: StreamRunElapsedClock
 ): number | undefined {
-  const now = Date.now();
+  const now = elapsedNow();
   const remainingTimeouts = [
     runtime.durationMs === undefined ? undefined : runtime.durationMs - (now - startedAt),
     runtime.idleTimeoutMs === undefined ? undefined : runtime.idleTimeoutMs - (now - lastResponseAt)
@@ -369,15 +383,29 @@ const streamReadTimedOut = Symbol('streamReadTimedOut');
 
 async function readNextWithTimeout<T>(
   next: Promise<IteratorResult<T>>,
-  timeoutMs: number | undefined
+  timeoutMs: number | undefined,
+  elapsedNow: StreamRunElapsedClock
 ): Promise<IteratorResult<T> | typeof streamReadTimedOut> {
   if (timeoutMs === undefined) {
     return next;
   }
 
+  const deadline = elapsedNow() + timeoutMs;
   let timeout: ReturnType<typeof setTimeout> | undefined;
   const timedOut = new Promise<typeof streamReadTimedOut>((resolve) => {
-    timeout = setTimeout(() => resolve(streamReadTimedOut), timeoutMs);
+    const schedule = () => {
+      const remaining = deadline - elapsedNow();
+
+      if (remaining <= 0) {
+        resolve(streamReadTimedOut);
+
+        return;
+      }
+
+      timeout = setTimeout(schedule, Math.min(remaining, maxTimerDelayMs));
+    };
+
+    schedule();
   });
 
   try {

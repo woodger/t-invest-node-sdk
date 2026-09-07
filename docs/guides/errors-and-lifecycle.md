@@ -3,7 +3,7 @@
 > Type: Guide. Руководство показывает machine-readable обработку `SdkError`
 > без привязки Consumer-а к transport error classes.
 
-## Narrowing по коду и источнику
+## Сужение типа по коду и источнику
 
 Один `code` не всегда определяет причину ошибки. Например, `CANCELLED` может
 прийти от локального `AbortSignal` или от provider-а. Когда это влияет на
@@ -152,10 +152,10 @@ connection refusal/reset, timeout и обычный provider `UNAVAILABLE` со�
 `source: 'grpc'`. Эта граница позволяет завершить вызов сразу при ошибке TLS,
 не разбирая `details` и не применяя к ней общий availability retry.
 
-Ошибка сериализации исходящего request получает `SdkErrorCode.Internal` с
-`source: 'sdk'`: вызов не дошел до provider-а. Provider-side `INTERNAL`
-сохраняет `source: 'grpc'`. Это различие не требует разбора `details`; исходные
-`path`, `details` и `cause` доступны только для диагностики.
+Ошибка сериализации исходящего request или разбора входящего response получает
+`SdkErrorCode.Internal` с `source: 'sdk'`. Provider-side `INTERNAL` сохраняет
+`source: 'grpc'`. Это различие не требует разбора `details`; исходные `path`,
+`details` и `cause` доступны только для диагностики.
 
 Brand guard распознает совместимый `SdkError` из другой физической копии
 пакета в том же JavaScript realm. После JSON, IPC или worker serialization
@@ -173,9 +173,9 @@ Brand guard распознает совместимый `SdkError` из друг
 детерминированного shutdown Consumer должен отменить их собственный
 `AbortSignal`, дождаться settlement и только затем закрыть SDK. Для stream
 lifecycle используйте руководство
-[Streams и отмена](./streams-and-cancellation.md).
+[Потоки и отмена](./streams-and-cancellation.md).
 
-## Retry boundary
+## Граница повторных попыток
 
 SDK намеренно не объявляет ошибку retryable только по gRPC status. Перед
 повтором нужно одновременно определить:

@@ -28,8 +28,6 @@ function bond(overrides: Partial<Bond> = {}): Bond {
     isin: 'RU000A1038V6',
     lot: 1,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -124,8 +122,6 @@ describe('bond reporter', () => {
         issueKind: 'non_documentary',
         issueSize: 1000000,
         issueSizePlan: 2000000,
-        klong: '2',
-        kshort: '1.5',
         dlong: '0.1',
         dshort: '0.2',
         dlongMin: '0.3',
@@ -170,16 +166,10 @@ describe('bond reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatBondReport(createBondReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createBondReport(response());
+      const output = formatBondReport(report, 'json');
 
-      assert.equal(parsed.figi, 'BBG00B9XRY4J');
-      assert.deepEqual(parsed.placementPrice, {
-        currency: 'rub',
-        amount: '99.5'
-      });
-      assert.equal(parsed.riskLevel, 'RISK_LEVEL_LOW');
-      assert.equal(parsed.maturityDate, '2041-05-15T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing bond as json null and table header', () => {

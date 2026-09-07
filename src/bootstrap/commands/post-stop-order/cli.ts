@@ -23,10 +23,10 @@ import {
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
 import {
-  parseCommandOptions,
   parseDateTimeOption,
+  positiveSafeIntegerOption,
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
@@ -36,11 +36,7 @@ import {
   parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import {
-  formatPostStopOrder,
-  postStopOrderFormats,
-  type PostStopOrderFormat
-} from './reporter';
+import { formatPostStopOrder, postStopOrderFormats } from './reporter';
 
 type PostStopOrderSdk = {
   stoporders: {
@@ -94,9 +90,7 @@ const postStopOrderRequestOptionsSchema = {
     required: true
   },
   quantity: {
-    type: 'number',
-    integer: true,
-    min: 1,
+    ...positiveSafeIntegerOption,
     required: true
   },
   price: {
@@ -153,10 +147,6 @@ type PostStopOrderRequestOptions = CommandRequestOptions<
   'stop-order-type' |
   'expire-date'
 >;
-
-export function parsePostStopOrderFormat(rawOptions: CommandRawOptions): PostStopOrderFormat {
-  return parseCommandOptions(rawOptions, postStopOrderFormatOptionsSchema).format;
-}
 
 export function createPostStopOrderCommand(
   createSdk: PostStopOrderSdkFactory = defaultPostStopOrderSdkFactory

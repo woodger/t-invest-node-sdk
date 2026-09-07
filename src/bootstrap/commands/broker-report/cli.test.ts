@@ -6,16 +6,7 @@ import type {
   BrokerReportRequest,
   BrokerReportResponse
 } from '../../../generated/operations';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createBrokerReportCommand,
-  parseBrokerReportFormat,
-  createBrokerReportRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createBrokerReportCommand, createBrokerReportRequest } from './cli';
 
 function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportResponse {
   return {
@@ -107,19 +98,6 @@ describe('broker-report command', () => {
           to: '2026-06-01T00:00:00.000Z'
         }),
         /Expected '--from' to be earlier than or equal to '--to'/
-      );
-    });
-  });
-
-  describe('parseBrokerReportFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseBrokerReportFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseBrokerReportFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
       );
     });
   });

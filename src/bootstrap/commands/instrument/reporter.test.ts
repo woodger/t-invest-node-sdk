@@ -18,8 +18,6 @@ function instrument(overrides: Partial<Instrument> = {}): Instrument {
     isin: 'RU000A107UL4',
     lot: 1,
     currency: 'rub',
-    klong: undefined,
-    kshort: undefined,
     dlong: undefined,
     dshort: undefined,
     dlongMin: undefined,
@@ -108,13 +106,10 @@ describe('instrument reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatInstrumentReport(createInstrumentReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createInstrumentReport(response());
+      const output = formatInstrumentReport(report, 'json');
 
-      assert.equal(parsed.figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed.uid, 'instrument-uid');
-      assert.equal(parsed.instrumentKind, 'INSTRUMENT_TYPE_SHARE');
-      assert.equal(parsed.tradingStatus, 'SECURITY_TRADING_STATUS_NORMAL_TRADING');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing instrument as json null and table header', () => {

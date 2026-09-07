@@ -51,8 +51,6 @@ export function createBondReportInstrument(instrument: Bond): BondReportInstrume
     issueKind: instrument.issueKind,
     issueSize: instrument.issueSize,
     issueSizePlan: instrument.issueSizePlan,
-    klong: formatReportDecimal(instrument.klong),
-    kshort: formatReportDecimal(instrument.kshort),
     dlong: formatReportDecimal(instrument.dlong),
     dshort: formatReportDecimal(instrument.dshort),
     dlongMin: formatReportDecimal(instrument.dlongMin),

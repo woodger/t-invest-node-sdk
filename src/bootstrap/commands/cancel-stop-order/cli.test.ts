@@ -3,16 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelStopOrderRequest } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createCancelStopOrderCommand,
-  createCancelStopOrderRequest,
-  parseCancelStopOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createCancelStopOrderCommand, createCancelStopOrderRequest } from './cli';
 
 describe('cancel-stop-order command', () => {
   describe('createCancelStopOrderRequest', () => {
@@ -24,12 +15,6 @@ describe('cancel-stop-order command', () => {
         accountId: 'account-id',
         stopOrderId: 'stop-order-id'
       });
-    });
-  });
-
-  describe('parseCancelStopOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseCancelStopOrderFormat(rawOptions()), 'table');
     });
   });
 

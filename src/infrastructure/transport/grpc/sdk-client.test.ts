@@ -35,6 +35,8 @@ const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
 const requestSerializationPath =
   '/test.RequestSerializationService/GetPayload';
+const responseParsingPath =
+  '/test.ResponseParsingService/GetPayload';
 const oneMiB = 1024 * 1024;
 const twoMiB = 2 * oneMiB;
 const maxReceiveMessageLength = 4 * 1024 * 1024;
@@ -62,6 +64,16 @@ const requestSerializationServiceDefinition = {
     path: requestSerializationPath,
     requestSerialize() {
       throw new Error('invalid test request');
+    }
+  }
+} as const satisfies ServiceDefinition;
+
+const responseParsingServiceDefinition = {
+  getPayload: {
+    ...payloadServiceDefinition.getPayload,
+    path: responseParsingPath,
+    responseDeserialize() {
+      throw new Error('invalid test response');
     }
   }
 } as const satisfies ServiceDefinition;
@@ -122,7 +134,7 @@ describe('createSdkClient', () => {
         useSsl: false,
         maxReceiveMessageLength,
         signal: lifecycleController.signal,
-        // This metadata scenario does not exercise lifecycle rejection.
+        // Сценарий metadata не проверяет отказ закрытого lifecycle.
         // oxlint-disable-next-line no-empty-function
         assertOpen() {}
       }
@@ -258,6 +270,46 @@ describe('createSdkClient', () => {
           && error.cause instanceof ClientError
       );
       assert.equal(handlerCalls, 0);
+    }
+    finally {
+      channel.close();
+      await server.shutdown();
+    }
+  });
+
+  test('maps a response parsing failure to the SDK source', async () => {
+    const server = createServer();
+
+    server.add(responseParsingServiceDefinition, {
+      async getPayload() {
+        return payload;
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(
+      channel,
+      false,
+      maxReceiveMessageLength,
+      responseParsingServiceDefinition
+    );
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
+          && error.source === 'sdk'
+          && error.path === responseParsingPath
+          && error.details?.startsWith(
+            'Response message parsing error:'
+          ) === true
+          && error.cause instanceof ClientError
+      );
     }
     finally {
       channel.close();

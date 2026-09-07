@@ -3,39 +3,9 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { SandboxPayInRequest } from '../../../generated/sandbox';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createSandboxPayInCommand,
-  createSandboxPayInRequest,
-  parseSandboxPayInCurrency,
-  parseSandboxPayInFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createSandboxPayInCommand, createSandboxPayInRequest } from './cli';
 
 describe('sandbox-pay-in command', () => {
-  describe('parseSandboxPayInCurrency', () => {
-    test('returns rub by default', () => {
-      assert.equal(parseSandboxPayInCurrency(rawOptions({
-        'account-id': 'sandbox-account-id',
-        amount: '100'
-      })), 'rub');
-    });
-
-    test('rejects unknown currencies before request mapping', () => {
-      assert.throws(
-        () => parseSandboxPayInCurrency(rawOptions({
-          'account-id': 'sandbox-account-id',
-          amount: '100',
-          currency: 'eur'
-        })),
-        /Expected '--currency' as one of: rub, usd/
-      );
-    });
-  });
-
   describe('createSandboxPayInRequest', () => {
     test('returns generated sandboxPayIn request', () => {
       assert.deepEqual(createSandboxPayInRequest({
@@ -61,12 +31,6 @@ describe('sandbox-pay-in command', () => {
         }),
         /Unsupported '--currency=usd' for sandbox-pay-in/
       );
-    });
-  });
-
-  describe('parseSandboxPayInFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseSandboxPayInFormat(rawOptions()), 'table');
     });
   });
 

@@ -21,8 +21,6 @@ function future(overrides: Partial<Future> = {}): Future {
     classCode: 'SPBFUT',
     lot: 1,
     currency: 'rub',
-    klong: quotation(2, 0),
-    kshort: quotation(1, 500000000),
     dlong: quotation(0, 100000000),
     dshort: quotation(0, 200000000),
     dlongMin: quotation(0, 300000000),
@@ -92,8 +90,6 @@ describe('future reporter', () => {
         basicAsset: 'USD/RUB',
         basicAssetSize: '1000',
         basicAssetPositionUid: 'basic-position-uid',
-        klong: '2',
-        kshort: '1.5',
         dlong: '0.1',
         dshort: '0.2',
         dlongMin: '0.3',
@@ -132,13 +128,10 @@ describe('future reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatFutureReport(createFutureReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createFutureReport(response());
+      const output = formatFutureReport(report, 'json');
 
-      assert.equal(parsed.figi, 'FUTFIGI');
-      assert.equal(parsed.basicAsset, 'USD/RUB');
-      assert.equal(parsed.basicAssetPositionUid, 'basic-position-uid');
-      assert.equal(parsed.expirationDate, '2026-06-19T00:00:00.000Z');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
 
     test('formats missing future as json null and table header', () => {

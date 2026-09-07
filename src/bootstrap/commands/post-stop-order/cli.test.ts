@@ -11,16 +11,7 @@ import {
   TakeProfitType,
   type PostStopOrderRequest
 } from '../../../generated/stoporders';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createPostStopOrderCommand,
-  createPostStopOrderRequest,
-  parsePostStopOrderFormat
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createPostStopOrderCommand, createPostStopOrderRequest } from './cli';
 
 describe('post-stop-order command', () => {
   describe('createPostStopOrderRequest', () => {
@@ -91,12 +82,6 @@ describe('post-stop-order command', () => {
         }),
         /Expected '--expire-date' only with '--expiration-type=good-till-date'/
       );
-    });
-  });
-
-  describe('parsePostStopOrderFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parsePostStopOrderFormat(rawOptions()), 'table');
     });
   });
 

@@ -14,11 +14,11 @@ import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/ord
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createOrdersRequest } from '../orders/cli';
-import { formatOrders, ordersFormats, type OrdersFormat } from '../orders/reporter';
+import { formatOrders, ordersFormats } from '../orders/reporter';
 
 type SandboxOrdersSdk = {
   sandbox: {
@@ -54,10 +54,6 @@ const sandboxOrdersOptionsSchema = withSdkOptions(
 
 type SandboxOrdersOptions = InferOptions<typeof sandboxOrdersOptionsSchema>;
 type SandboxOrdersRequestOptions = CommandRequestOptions<SandboxOrdersOptions, 'account-id'>;
-
-export function parseSandboxOrdersFormat(rawOptions: CommandRawOptions): OrdersFormat {
-  return parseCommandOptions(rawOptions, sandboxOrdersFormatOptionsSchema).format;
-}
 
 export function createSandboxOrdersCommand(
   createSdk: SandboxOrdersSdkFactory = defaultSandboxOrdersSdkFactory

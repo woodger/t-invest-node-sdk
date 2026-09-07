@@ -43,8 +43,6 @@ export function createCurrencyReportInstrument(
     exchange: instrument.exchange,
     realExchange: realExchangeToJSON(instrument.realExchange),
     nominal: toReportMoney(instrument.nominal),
-    klong: formatReportDecimal(instrument.klong),
-    kshort: formatReportDecimal(instrument.kshort),
     dlong: formatReportDecimal(instrument.dlong),
     dshort: formatReportDecimal(instrument.dshort),
     dlongMin: formatReportDecimal(instrument.dlongMin),

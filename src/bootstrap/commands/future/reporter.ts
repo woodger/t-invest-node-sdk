@@ -46,8 +46,6 @@ export function createFutureReportInstrument(instrument: Future): FutureReportIn
     basicAsset: instrument.basicAsset,
     basicAssetSize: formatReportQuotation(instrument.basicAssetSize),
     basicAssetPositionUid: instrument.basicAssetPositionUid,
-    klong: formatReportQuotation(instrument.klong),
-    kshort: formatReportQuotation(instrument.kshort),
     dlong: formatReportQuotation(instrument.dlong),
     dshort: formatReportQuotation(instrument.dshort),
     dlongMin: formatReportQuotation(instrument.dlongMin),

@@ -14,13 +14,13 @@ import {
   GetOrderBookRequest,
   type GetOrderBookResponse
 } from '../../../generated/marketdata';
-import { CliUsageError, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRawOptions, CommandRequestOptions } from '../../args/command-options';
-import { parseCommandOptions, withSdkOptions } from '../../args/command-options';
+import type { CommandRequestOptions } from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatOrderBook, orderBookFormats, type OrderBookFormat } from './reporter';
+import { formatOrderBook, orderBookFormats } from './reporter';
 
 type OrderBookSdk = {
   marketdata: {
@@ -36,9 +36,7 @@ const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TInvest
 
 const orderBookDepthOptionsSchema = {
   depth: {
-    type: 'number',
-    integer: true,
-    min: 1,
+    ...positiveSafeIntegerOption,
     required: true
   }
 } as const;
@@ -66,20 +64,6 @@ const orderBookOptionsSchema = withSdkOptions(
 
 type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
 type OrderBookRequestOptions = CommandRequestOptions<OrderBookOptions, 'instrument-id' | 'depth'>;
-
-export function parseOrderBookDepth(rawOptions: CommandRawOptions): number {
-  try {
-    return parseCommandOptions(rawOptions, orderBookDepthOptionsSchema).depth;
-  }
-  catch (error) {
-    throw normalizeOrderBookDepthError(error);
-  }
-}
-
-
-export function parseOrderBookFormat(rawOptions: CommandRawOptions): OrderBookFormat {
-  return parseCommandOptions(rawOptions, orderBookFormatOptionsSchema).format;
-}
 
 export function createOrderBookCommand(
   createSdk: OrderBookSdkFactory = defaultOrderBookSdkFactory
@@ -122,15 +106,4 @@ export function createOrderBookRequest(
     instrumentId: options['instrument-id'],
     depth: options.depth
   });
-}
-
-function normalizeOrderBookDepthError(error: unknown): Error {
-  if (
-    error instanceof Error
-    && error.message.startsWith("Expected '--depth'")
-  ) {
-    return new CliUsageError("Expected '--depth' as positive integer");
-  }
-
-  return error instanceof Error ? error : new Error(String(error));
 }

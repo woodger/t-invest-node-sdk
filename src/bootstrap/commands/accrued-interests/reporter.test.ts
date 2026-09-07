@@ -68,14 +68,10 @@ describe('accrued-interests reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatAccruedInterestsReport(
-        createAccruedInterestsReport([accruedInterest()]),
-        'json'
-      );
-      const parsed = JSON.parse(output);
+      const report = createAccruedInterestsReport([accruedInterest()]);
+      const output = formatAccruedInterestsReport(report, 'json');
 
-      assert.equal(parsed[0].value, '10.25');
-      assert.equal(parsed[0].valuePercent, '5.5');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

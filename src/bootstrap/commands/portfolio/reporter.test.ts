@@ -27,10 +27,8 @@ function position(overrides: Partial<PortfolioPosition> = {}): PortfolioPosition
     averagePositionPrice: money(100, 250000000),
     expectedYield: quotation(12, 500000000),
     currentNkd: undefined,
-    averagePositionPricePt: undefined,
     currentPrice: money(105, 750000000),
     averagePositionPriceFifo: undefined,
-    quantityLots: undefined,
     blocked: false,
     blockedLots: undefined,
     positionUid: 'position-uid',
@@ -131,20 +129,10 @@ describe('portfolio reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatPortfolioReport(createPortfolioReport(portfolio()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createPortfolioReport(portfolio());
+      const output = formatPortfolioReport(report, 'json');
 
-      assert.equal(parsed.summary.accountId, 'account-id');
-      assert.deepEqual(parsed.summary.totalAmountPortfolio, {
-        currency: 'rub',
-        amount: '3700.5'
-      });
-      assert.equal(parsed.summary.expectedYield, '15.25');
-      assert.equal(parsed.positions[0].figi, 'BBG00QPYJ5H0');
-      assert.deepEqual(parsed.positions[0].averagePositionPrice, {
-        currency: 'rub',
-        amount: '100.25'
-      });
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

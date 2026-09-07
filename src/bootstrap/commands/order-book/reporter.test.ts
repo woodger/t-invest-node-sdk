@@ -105,13 +105,10 @@ describe('order-book reporter', () => {
     });
 
     test('formats report as json', () => {
-      const output = formatOrderBookReport(createOrderBookReport(response()), 'json');
-      const parsed = JSON.parse(output);
+      const report = createOrderBookReport(response());
+      const output = formatOrderBookReport(report, 'json');
 
-      assert.equal(parsed.figi, 'BBG00QPYJ5H0');
-      assert.equal(parsed.instrumentUid, 'instrument-uid');
-      assert.equal(parsed.levels[0].side, 'bid');
-      assert.equal(parsed.levels[1].side, 'ask');
+      assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
   });
 });

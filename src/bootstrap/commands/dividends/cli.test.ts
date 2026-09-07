@@ -9,16 +9,7 @@ import type {
   GetDividendsRequest,
   GetDividendsResponse
 } from '../../../generated/instruments';
-import type { CommandRawOptions } from '../../args/command-options';
-import {
-  createDividendsCommand,
-  parseDividendsFormat,
-  createDividendsRequest
-} from './cli';
-
-function rawOptions(args: CommandRawOptions = {}): CommandRawOptions {
-  return args;
-}
+import { createDividendsCommand, createDividendsRequest } from './cli';
 
 function dividend(overrides: Partial<Dividend> = {}): Dividend {
   return {
@@ -79,19 +70,6 @@ describe('dividends command', () => {
           to: '2026-01-01T00:00:00Z'
         }),
         /Expected '--from' to be earlier than or equal to '--to'/
-      );
-    });
-  });
-
-  describe('parseDividendsFormat', () => {
-    test('returns table by default', () => {
-      assert.equal(parseDividendsFormat(rawOptions()), 'table');
-    });
-
-    test('rejects unknown formats', () => {
-      assert.throws(
-        () => parseDividendsFormat(rawOptions({ format: 'xml' })),
-        /Expected '--format' as one of: json, table/
       );
     });
   });

@@ -1,10 +1,10 @@
-# Streams и отмена
+# Потоки и отмена
 
 > Type: Guide. Руководство показывает владение долгоживущим stream lifecycle,
 > application-owned `AbortSignal` и порядок остановки transport call перед
 > закрытием SDK.
 
-## Server-side stream
+## Server-side поток
 
 Процесс устанавливает обработчики сигналов, передает один `AbortSignal` в
 stream RPC и считает локальную отмену штатным завершением. Provider failure не
@@ -105,7 +105,7 @@ void main().catch((error: unknown) => {
 });
 ```
 
-## Bidirectional market data stream
+## Bidirectional Market Data поток
 
 Bidirectional RPC получает async request source, совместимый с generated
 `MarketDataRequest`. Для конечного набора initial requests source может
@@ -174,4 +174,4 @@ export async function runMarketDataStream(
 Локальный unary throttling к stream calls не применяется. Ограничения stream
 connections и subscriptions описаны в
 [лимитной политике](../limits-policy.md). Готовая CLI lifecycle-модель
-описана в [Stream CLI Reference](../cli-stream-reference.md).
+описана в [справочнике потокового CLI](../cli-stream-reference.md).
