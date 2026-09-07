@@ -339,6 +339,100 @@ describe('stream run command', () => {
       assert.equal(closeCalls, 1);
     });
 
+    test('splits session duration beyond the Node.js timer range', async () => {
+      const maxTimerDelayMs = 2_147_483_647;
+      const durationMs = maxTimerDelayMs + 10;
+      const originalSetTimeout = global.setTimeout;
+      const originalClearTimeout = global.clearTimeout;
+      const delays: number[] = [];
+      const callbacks = new Map<number, () => void>();
+      let elapsed = 0;
+      let nextTimer = 1;
+      let closeCalls = 0;
+
+      global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
+        const timer = nextTimer;
+
+        nextTimer += 1;
+        delays.push(delay ?? 0);
+        callbacks.set(timer, callback);
+
+        return timer as never;
+      }) as unknown as typeof setTimeout;
+      global.clearTimeout = ((timer: ReturnType<typeof setTimeout>) => {
+        callbacks.delete(Number(timer));
+      }) as typeof clearTimeout;
+
+      try {
+        const command = createStreamRunCommand({
+          readConfig: async () => JSON.stringify({
+            stream: 'orders.tradesStream',
+            accounts: ['account-id'],
+            runtime: {
+              durationMs
+            }
+          }),
+          elapsedNow: () => elapsed,
+          createSdk() {
+            return {
+              marketdataStream: {
+                marketDataStream: createUnusedStream('marketDataStream'),
+                marketDataServerSideStream: createUnusedStream('marketDataServerSideStream')
+              },
+              operationsStream: {
+                portfolioStream: createUnusedStream('portfolioStream'),
+                positionsStream: createUnusedStream('positionsStream')
+              },
+              ordersStream: {
+                tradesStream(request, options) {
+                  void request;
+
+                  const signal = options?.signal;
+
+                  if (signal === undefined) {
+                    throw new Error('Expected stream AbortSignal');
+                  }
+
+                  return responsesUntilAborted<TradesStreamResponse>([], signal);
+                }
+              },
+              close() {
+                closeCalls += 1;
+              }
+            };
+          }
+        });
+        const output = await commandFacade.run(
+          command,
+          [
+            'stream',
+            'run',
+            '--config=stream.json',
+            '--token=token',
+            '--endpoint=localhost:50051'
+          ],
+          undefined
+        );
+        const completion = collectOutput(output);
+
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        assert.deepEqual(delays, [maxTimerDelayMs]);
+
+        elapsed = maxTimerDelayMs;
+        runNextTimer(callbacks);
+        assert.deepEqual(delays, [maxTimerDelayMs, 10]);
+
+        elapsed = durationMs;
+        runNextTimer(callbacks);
+        assert.equal(await completion, '');
+        assert.equal(closeCalls, 1);
+      }
+      finally {
+        global.setTimeout = originalSetTimeout;
+        global.clearTimeout = originalClearTimeout;
+      }
+    });
+
     test('does not mask a stream failure that precedes the timeout', async () => {
       const providerError = new Error('provider failed');
       let closeCalls = 0;
@@ -682,3 +776,14 @@ describe('stream run command', () => {
     });
   });
 });
+
+function runNextTimer(callbacks: Map<number, () => void>): void {
+  const entry = callbacks.entries().next().value;
+
+  assert.notEqual(entry, undefined);
+
+  const [timer, callback] = entry as [number, () => void];
+
+  callbacks.delete(timer);
+  callback();
+}

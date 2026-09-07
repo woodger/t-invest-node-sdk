@@ -120,6 +120,34 @@ describe('post-order command', () => {
       assert.equal(sdkCreated, false);
     });
 
+    test('rejects an unsafe quantity before creating sdk', async () => {
+      let sdkCreated = false;
+      const command = createPostOrderCommand(() => {
+        sdkCreated = true;
+        throw new Error('must not create sdk');
+      });
+
+      await assert.rejects(
+        () => commandFacade.run(
+          command,
+          [
+            'order',
+            'place',
+            '--account-id=account-id',
+            '--instrument-id=instrument-id',
+            '--quantity=9007199254740993',
+            '--direction=buy',
+            '--order-type=market',
+            '--order-id=idempotency-key',
+            '--confirm'
+          ],
+          undefined
+        ),
+        /Expected '--quantity' to be less than or equal to 9007199254740991/
+      );
+      assert.equal(sdkCreated, false);
+    });
+
     test('calls postOrder and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: PostOrderRequest | undefined;

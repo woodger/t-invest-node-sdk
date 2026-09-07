@@ -539,7 +539,7 @@ const explicitAliasDomains = createExplicitAliasDomains(cliPathAliases);
 export const cliDomainNames = Object.keys(cliDomains) as CliDomainName[];
 
 export function isCliDomainName(value: unknown): value is CliDomainName {
-  return typeof value === 'string' && value in cliDomains;
+  return typeof value === 'string' && Object.hasOwn(cliDomains, value);
 }
 
 export function commandPathToName(path: readonly string[]): string {
@@ -600,7 +600,7 @@ export function commandActionName(commandName: string): string {
 }
 
 function isLegacyPathHead(value: string): value is keyof typeof publicDomainByLegacyHead {
-  return value in publicDomainByLegacyHead;
+  return Object.hasOwn(publicDomainByLegacyHead, value);
 }
 
 function createPreferredPathByAliasName(

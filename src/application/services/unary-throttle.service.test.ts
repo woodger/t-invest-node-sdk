@@ -73,7 +73,7 @@ describe('Throttle', () => {
       ]);
     });
 
-    assert.deepEqual(delays, [600, 1200]);
+    assert.deepEqual(delays, [600, 600]);
   });
 
   test('preserves the interval after a delayed timer callback', async () => {
@@ -178,29 +178,56 @@ describe('Throttle', () => {
       runNext();
       await waitingCall;
 
-      assert.deepEqual(delays, [600, 1200]);
+      assert.deepEqual(delays, [600, 600]);
 
       runNext();
       await followingCall;
     });
   });
+
+  test('splits waits that exceed the Node.js timer range', async () => {
+    const throttle = new Throttle();
+    const maxTimerDelayMs = 2_147_483_647;
+    const interval = maxTimerDelayMs + 10;
+    const rule: ThrottleRule = {
+      bucket: 'rule:VeryLowLimitService',
+      limitPerMinute: 60_000 / interval
+    };
+
+    await withControlledThrottleTimers(async ({
+      delays,
+      runNext,
+      setCurrentTime
+    }) => {
+      await throttle.reduce(rule);
+
+      const waitingCall = throttle.reduce(rule);
+
+      assert.deepEqual(delays, [maxTimerDelayMs]);
+
+      setCurrentTime(10_000 + maxTimerDelayMs);
+      runNext();
+      assert.deepEqual(delays, [maxTimerDelayMs, 10]);
+
+      setCurrentTime(10_000 + interval);
+      runNext();
+      await waitingCall;
+    });
+  });
 });
 
 async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]> {
-  const originalDate = global.Date;
+  const originalPerformance = global.performance;
   const originalSetTimeout = global.setTimeout;
-  const now = 10_000;
+  let now = 10_000;
   const delays: number[] = [];
 
-  class FakeDate extends Date {
-    constructor(value?: string | number | Date) {
-      super(value ?? now);
-    }
-  }
-
-  global.Date = FakeDate as DateConstructor;
+  global.performance = { now: () => now } as Performance;
   global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
-    delays.push(delay ?? 0);
+    const resolvedDelay = delay ?? 0;
+
+    delays.push(resolvedDelay);
+    now += resolvedDelay;
     callback();
 
     return 0 as never;
@@ -212,7 +239,7 @@ async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]
     return delays;
   }
   finally {
-    global.Date = originalDate;
+    global.performance = originalPerformance;
     global.setTimeout = originalSetTimeout;
   }
 }
@@ -226,27 +253,27 @@ interface ControlledThrottleTimers {
 async function withControlledThrottleTimers(
   run: (timers: ControlledThrottleTimers) => Promise<void>
 ): Promise<void> {
-  const originalDate = global.Date;
+  const originalPerformance = global.performance;
   const originalSetTimeout = global.setTimeout;
   const originalClearTimeout = global.clearTimeout;
   let now = 10_000;
   const delays: number[] = [];
-  const callbacks = new Map<number, () => void>();
+  const callbacks = new Map<number, {
+    callback: () => void;
+    dueAt: number;
+  }>();
   let nextTimer = 1;
 
-  class FakeDate extends Date {
-    constructor(value?: string | number | Date) {
-      super(value ?? now);
-    }
-  }
-
-  global.Date = FakeDate as DateConstructor;
+  global.performance = { now: () => now } as Performance;
   global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
     const timer = nextTimer;
 
     nextTimer += 1;
     delays.push(delay ?? 0);
-    callbacks.set(timer, callback);
+    callbacks.set(timer, {
+      callback,
+      dueAt: now + (delay ?? 0)
+    });
 
     return timer as never;
   }) as unknown as typeof setTimeout;
@@ -262,10 +289,14 @@ async function withControlledThrottleTimers(
 
         assert.notEqual(entry, undefined);
 
-        const [timer, callback] = entry as [number, () => void];
+        const [timer, scheduled] = entry as [
+          number,
+          { callback: () => void; dueAt: number }
+        ];
 
         callbacks.delete(timer);
-        callback();
+        now = Math.max(now, scheduled.dueAt);
+        scheduled.callback();
       },
       setCurrentTime(value) {
         now = value;
@@ -273,7 +304,7 @@ async function withControlledThrottleTimers(
     });
   }
   finally {
-    global.Date = originalDate;
+    global.performance = originalPerformance;
     global.setTimeout = originalSetTimeout;
     global.clearTimeout = originalClearTimeout;
   }

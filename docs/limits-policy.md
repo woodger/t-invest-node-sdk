@@ -88,6 +88,8 @@ SDK поддерживает локальный throttling unary-запросо�
 Что делает SDK:
 
 - равномерно распределяет unary-вызовы по времени;
+- использует монотонное время для интервалов и разбивает ожидания длиннее
+  диапазона Node.js timer на безопасные части;
 - отсчитывает полный интервал от фактической выдачи локального слота, поэтому
   задержка timer callback не приводит к последующему burst queued calls;
 - использует сервисные fallback и более специфичные лимиты по полным gRPC
@@ -148,7 +150,9 @@ OperationsService: {
 неположительные или неконечные числовые значения. Публичный
 `defaultConfig.unaryLimits` остается плоским для совместимости. После merge с
 public defaults и per-instance overrides bootstrap повторно проверяет весь
-итоговый snapshot до создания transport resolver и scheduler.
+итоговый snapshot до создания transport resolver и scheduler, включая
+соответствие service names и полных method paths поддерживаемым generated unary
+definitions.
 
 Пример точечного ограничения для отдельного экземпляра:
 

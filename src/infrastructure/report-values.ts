@@ -23,7 +23,20 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
     return '';
   }
 
-  return String(value.units + value.nano / 1e9);
+  const nanosPerUnit = 1_000_000_000n;
+  const totalNanos = BigInt(value.units) * nanosPerUnit + BigInt(value.nano);
+  const sign = totalNanos < 0n ? '-' : '';
+  const absoluteNanos = totalNanos < 0n ? -totalNanos : totalNanos;
+  const units = absoluteNanos / nanosPerUnit;
+  const nanos = absoluteNanos % nanosPerUnit;
+
+  if (nanos === 0n) {
+    return `${sign}${units}`;
+  }
+
+  const fraction = nanos.toString().padStart(9, '0').replace(/0+$/, '');
+
+  return `${sign}${units}.${fraction}`;
 }
 
 export function toReportMoney(value: MoneyValue): ReportMoney;

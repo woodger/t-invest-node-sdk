@@ -37,6 +37,8 @@ interface ThrottleSchedule {
   timer: ThrottleTimer | undefined;
 }
 
+const maxTimerDelayMs = 2_147_483_647;
+
 /**
  * Throttle распределяет unary-запросы по времени на основе лимита запросов в минуту.
  * Например, при лимите 200 запросов в минуту минимальный интервал между ними составляет 300 мс.
@@ -91,7 +93,7 @@ export class Throttle {
       return;
     }
 
-    const time = new Date().getTime();
+    const time = performance.now();
     const scheduledAt = Math.max(schedule.nextAvailableAt, time);
     const delay = scheduledAt - time;
 
@@ -118,8 +120,8 @@ export class Throttle {
         schedule.timer = undefined;
       }
 
-      this.dispatch(schedule, scheduledAt);
-    }, delay);
+      this.start(schedule);
+    }, Math.min(delay, maxTimerDelayMs));
   }
 
   private dispatch(schedule: ThrottleSchedule, scheduledAt: number): void {
@@ -132,7 +134,7 @@ export class Throttle {
     request.signal?.removeEventListener('abort', request.onAbort);
     const dispatchedAt = Math.max(
       scheduledAt,
-      new Date().getTime()
+      performance.now()
     );
 
     schedule.nextAvailableAt = dispatchedAt + request.interval;

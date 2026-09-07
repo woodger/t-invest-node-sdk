@@ -3,7 +3,8 @@ import { describe, test } from 'node:test';
 import {
   canonicalizeCommandName,
   commandPathAliases,
-  commandPathToName
+  commandPathToName,
+  isCliDomainName
 } from './domains';
 
 function commandAliasNames(path: readonly [string, ...string[]]): string[] {
@@ -11,6 +12,14 @@ function commandAliasNames(path: readonly [string, ...string[]]): string[] {
 }
 
 describe('CLI domains', () => {
+  describe('isCliDomainName', () => {
+    test('rejects inherited object property names', () => {
+      for (const name of ['toString', 'constructor', '__proto__']) {
+        assert.equal(isCliDomainName(name), false);
+      }
+    });
+  });
+
   describe('canonicalizeCommandName', () => {
     test('normalizes friendly, technical and legacy paths to the preferred command path', () => {
       assert.equal(canonicalizeCommandName('account list'), 'account list');

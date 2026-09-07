@@ -33,13 +33,15 @@ export type UnaryLimits = Record<string, number>;
  * Человекочитаемые per-instance overrides без shared quota groups.
  * Package defaults подмешиваются отдельно при создании SDK instance.
  */
-export type UnaryLimitsDefinition = Record<string, {
-  /** Service fallback в запросах в минуту. */
-  default?: number;
+export type UnaryLimitsDefinition = {
+  [Service in keyof PackageUnaryLimitsConfig]?: {
+    /** Service fallback в запросах в минуту. */
+    default?: number;
 
-  /** Индивидуальные method limits в запросах в минуту. */
-  methods?: Record<string, number>;
-}>;
+    /** Индивидуальные method limits в запросах в минуту. */
+    methods?: PackageUnaryLimitsConfig[Service]['methods'];
+  }
+};
 
 /** Одна общая квота provider-а для непустого списка generated RPC names. */
 export interface UnaryQuotaGroupConfig<Method extends string = string> {

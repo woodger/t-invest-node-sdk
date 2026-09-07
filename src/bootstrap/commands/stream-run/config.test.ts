@@ -291,6 +291,23 @@ describe('stream run config', () => {
       );
     });
 
+    test('rejects inherited object property names as candle intervals', () => {
+      assert.throws(
+        () => parseStreamRunConfig(configJson({
+          stream: 'marketdata.marketDataServerSideStream',
+          subscriptions: {
+            candles: [
+              {
+                instrumentId: 'instrument-id',
+                interval: 'toString'
+              }
+            ]
+          }
+        })),
+        /Expected 'subscriptions\.candles\[\]\.interval' as one of: 1min, 5min/
+      );
+    });
+
     test('rejects mixed candle waitingClose values during config parsing', () => {
       assert.throws(
         () => parseStreamRunConfig(configJson({

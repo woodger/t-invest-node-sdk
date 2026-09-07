@@ -149,6 +149,25 @@ describe('resolveUnaryThrottleConfig', () => {
     );
   });
 
+  test('accepts an override for a generated method without a package-specific rule', () => {
+    const overrides = defineUnaryLimits({
+      MarketDataService: {
+        methods: {
+          GetOrderBook: 300
+        }
+      }
+    });
+    const config = resolveUnaryThrottleConfig(overrides);
+    const resolver = new UnaryLimitResolver(config.limits, config.buckets);
+
+    assert.equal(
+      resolver.resolve(
+        '/tinkoff.public.invest.api.contract.v1.MarketDataService/GetOrderBook'
+      )?.limitPerMinute,
+      300
+    );
+  });
+
   test('returns an isolated snapshot for each resolution', () => {
     const first = resolveUnaryThrottleConfig();
     const second = resolveUnaryThrottleConfig();
@@ -170,6 +189,15 @@ describe('resolveUnaryThrottleConfig', () => {
             'Unary limit UsersService must be a finite positive number'
       );
     }
+  });
+
+  test('rejects unknown per-instance limit rules', () => {
+    assert.throws(
+      () => resolveUnaryThrottleConfig({ MarketDataServce: 1 }),
+      (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        && error.source === 'sdk'
+        && error.message === 'Unknown unary limit rule MarketDataServce'
+    );
   });
 
   test('rejects an invalid limit changed through public config', () => {
@@ -395,20 +423,17 @@ function resolveRequiredRule(
 }
 
 async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]> {
-  const originalDate = global.Date;
+  const originalPerformance = global.performance;
   const originalSetTimeout = global.setTimeout;
-  const now = 10_000;
+  let now = 10_000;
   const delays: number[] = [];
 
-  class FakeDate extends Date {
-    constructor(value?: string | number | Date) {
-      super(value ?? now);
-    }
-  }
-
-  global.Date = FakeDate as DateConstructor;
+  global.performance = { now: () => now } as Performance;
   global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
-    delays.push(delay ?? 0);
+    const resolvedDelay = delay ?? 0;
+
+    delays.push(resolvedDelay);
+    now += resolvedDelay;
     callback();
 
     return 0 as never;
@@ -420,7 +445,7 @@ async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]
     return delays;
   }
   finally {
-    global.Date = originalDate;
+    global.performance = originalPerformance;
     global.setTimeout = originalSetTimeout;
   }
 }

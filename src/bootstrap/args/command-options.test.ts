@@ -7,6 +7,7 @@ import {
   parseDateTimeOption,
   parseOptionalNonNegativeIntegerOption,
   parseRequiredDateTimeOption,
+  positiveSafeIntegerOption,
   requireStringOption,
   withSdkOptions
 } from './command-options';
@@ -82,6 +83,16 @@ describe('command options', () => {
         /Expected '--insecure' as boolean flag/
       );
     });
+
+    test('rejects positive integers outside the safe number range', () => {
+      assert.throws(
+        () => parseCommandOptions(
+          rawOptions({ quantity: '9007199254740993' }),
+          { quantity: positiveSafeIntegerOption }
+        ),
+        /Expected '--quantity' to be less than or equal to 9007199254740991/
+      );
+    });
   });
 
   describe('parseCommaSeparatedStringListOption', () => {
@@ -108,10 +119,38 @@ describe('command options', () => {
       );
     });
 
+    test('returns date-time with an explicit numeric offset', () => {
+      assert.deepEqual(
+        parseDateTimeOption('2026-01-01T03:00:00+03:00', 'from'),
+        new Date('2026-01-01T00:00:00Z')
+      );
+    });
+
     test('rejects invalid date-time values', () => {
       assert.throws(
         () => parseDateTimeOption('not-a-date', 'from'),
-        /Expected '--from' as date-time/
+        /Expected '--from' as date-time with explicit timezone/
+      );
+    });
+
+    test('rejects calendar dates that do not exist', () => {
+      assert.throws(
+        () => parseDateTimeOption('2024-02-30T00:00:00Z', 'from'),
+        /Expected '--from' as date-time with explicit timezone/
+      );
+    });
+
+    test('rejects date-time values without an explicit timezone', () => {
+      assert.throws(
+        () => parseDateTimeOption('2026-01-01T00:00:00', 'from'),
+        /Expected '--from' as date-time with explicit timezone/
+      );
+    });
+
+    test('rejects implementation-dependent date syntax', () => {
+      assert.throws(
+        () => parseDateTimeOption('January 1, 2026', 'from'),
+        /Expected '--from' as date-time with explicit timezone/
       );
     });
   });
