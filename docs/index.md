@@ -7,7 +7,7 @@
 
 - Пользовательская установка, быстрый старт, SDK options и release workflow:
   [README](../readme.md).
-- Законченные SDK, stream, error-handling и Consumer testing workflows:
+- Законченные сценарии работы с SDK, потоками, ошибками и Consumer-тестами:
   [Руководства для Consumer-ов](./guides/index.md).
 - История версий и инструкции по миграции:
   [CHANGELOG](../CHANGELOG.md).
@@ -19,11 +19,11 @@
 ## CLI
 
 - Поддерживаемые команды, preferred paths и compatibility aliases:
-  [API Commands](./clean-architecture/api-commands.md).
+  [API-команды](./clean-architecture/api-commands.md).
 - Контракт `stream run`:
-  [Stream CLI Reference](./cli-stream-reference.md).
+  [Справочник потокового CLI](./cli-stream-reference.md).
 - JSON-конфигурация streaming-команд:
-  [Stream CLI Configuration Reference](./cli-stream-configuration.md).
+  [Справочник конфигурации потокового CLI](./cli-stream-configuration.md).
 - Границы command-specific formatting, render primitives и terminal output:
   [Разделение форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md).
 
@@ -31,11 +31,11 @@
 контракт CLI принадлежит `src/bootstrap/cli/**`,
 `src/bootstrap/commands/**` и соответствующим tests.
 
-## Guides
+## Руководства
 
 - [Первый SDK-вызов](./guides/getting-started.md).
 - [Unary-вызовы](./guides/unary-calls.md).
-- [Streams и отмена](./guides/streams-and-cancellation.md).
+- [Потоки и отмена](./guides/streams-and-cancellation.md).
 - [Ошибки и lifecycle](./guides/errors-and-lifecycle.md).
 - [Mock-сервисы через public exports](./guides/testing-with-service-definitions.md).
 
@@ -50,10 +50,12 @@ reference остаются в public types и proto/generated contracts.
   [Лимитная политика](./limits-policy.md).
 - Bundled CA, per-instance trust override и границы TLS policy:
   [TLS-доверие](./tls-policy.md).
-- Design notes по application, DTO/reports и adapters:
-  [Clean Architecture Notes](./clean-architecture/index.md).
+- Архитектурные заметки по application, DTO, отчётам и адаптерам:
+  [Заметки по Clean Architecture](./clean-architecture/index.md).
 - Граница project adapters и внешнего API `icore`:
-  [Adapters](./clean-architecture/adapters.md).
+  [Адаптеры](./clean-architecture/adapters.md).
+- Неутверждённые варианты будущих изменений:
+  [Roadmap и рабочие идеи](./roadmap.md).
 
 ## Proto и generated contracts
 
@@ -65,7 +67,7 @@ Wire contracts в
 `contracts/*.proto` и generated sources в `src/generated/**` не заменяются
 ручным Markdown reference.
 
-## Source of truth
+## Источники истины
 
 Подробные правила выбора источника истины и обновления документации:
 [Политика документации](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/documentation-policy.md).

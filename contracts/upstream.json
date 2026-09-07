@@ -6,6 +6,18 @@
     "release": "1.49",
     "path": "src/docs/contracts"
   },
+  "supportingSources": [
+    {
+      "name": "Protocol Buffers well-known contracts",
+      "repository": "https://github.com/protocolbuffers/protobuf",
+      "release": "v32.1",
+      "path": "src/google/protobuf",
+      "contracts": [
+        "contracts/google/protobuf/timestamp.proto",
+        "contracts/google/protobuf/descriptor.proto"
+      ]
+    }
+  ],
   "local": {
     "rawContractsPath": "contracts",
     "supportingContracts": [

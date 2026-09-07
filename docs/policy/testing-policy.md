@@ -374,7 +374,7 @@ test('should process data', () => {
 
 ## Публичное поведение вместо private implementation
 
-Private implementation details should not normally have dedicated suite names.
+Детали приватной реализации обычно не должны получать отдельные имена suite.
 
 Приватные детали нужно тестировать через публичное поведение.
 

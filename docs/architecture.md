@@ -4,7 +4,7 @@
 > practical companion к
 > [архитектурной политике](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
 > Дополнительные design notes по развитию слоев находятся в
-> [Clean Architecture Notes](./clean-architecture/index.md).
+> [заметках по Clean Architecture](./clean-architecture/index.md).
 
 Проект использует Clean Architecture Lite. Слои выделяются только там, где у
 кода есть самостоятельная ответственность.
@@ -161,7 +161,7 @@ default facade.
 project-specific CLI-контракты поверх typed/raw option values и нормализует
 общие `TInvestOptions` из CLI/ENV.
 
-## Public Entrypoints
+## Публичные точки входа
 
 Поддерживаемая public surface собирается `src/index.ts`. Public service
 interfaces экспортируются из application DTO. Generated server-side service
@@ -320,11 +320,12 @@ Ownership разделен так:
 adapter-у — без compiler-а и второй декларации. Mapping/resolver logic не
 должна возвращаться в `src/config.ts`.
 
-## Generated Code
+## Сгенерированный код
 
 Официальный upstream T-Invest API — активный репозиторий
 `https://opensource.tbank.ru/invest/invest-contracts`. Его tag, commit и
-исходный каталог фиксируются в `contracts/upstream.json`.
+исходный каталог фиксируются в
+[manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
 
 Proto compiler читает `local.rawContractsPath` и `local.generatedPath` из этого
 manifest. Пути до vendored и generated контрактов не дублируются в bootstrap
@@ -333,6 +334,10 @@ manifest. Пути до vendored и generated контрактов не дубл
 T-Invest proto-файлы копируются без изменения плоской структуры и import-путей
 в `contracts/*.proto`. Supporting Google contracts перечислены отдельно в
 `local.supportingContracts` и не считаются частью T-Invest upstream snapshot.
+`google/api/field_behavior.proto` поставляется в том же snapshot T-Invest, а
+источник `google/protobuf/descriptor.proto` и
+`google/protobuf/timestamp.proto` зафиксирован в `supportingSources` как
+официальный protobuf `v32.1`.
 
 `src/generated/*.ts` зеркально воспроизводится из плоского layout контрактов и
 не редактируется вручную.
@@ -351,7 +356,12 @@ generated DTO/enums public API и server-side
    `source.release`;
 2. заменить T-Invest файлы в `local.rawContractsPath`;
 3. обновить source commit/release в `contracts/upstream.json`;
-4. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и
+4. при изменении вспомогательных contracts получить их из точного выпуска и
+   обновить соответствующую запись `supportingSources`;
+5. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и
    `npm test`.
 
 Proto generation использует только vendored snapshot и не выполняет network IO.
+Версия системного `protoc` не закреплена package dependency. Для побайтового
+воспроизведения нужно использовать версию из заголовков текущих generated
+файлов; сейчас это `protoc 3.19.6`.

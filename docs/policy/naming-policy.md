@@ -221,7 +221,7 @@ enum ExternalStatus {
 }
 ```
 
-## Runtime names
+## Runtime-имена
 
 Runtime names и file names не обязаны следовать правилам TypeScript-идентификаторов.
 
@@ -240,7 +240,7 @@ const optionName = '--track-limits';
 const serviceName = 'MARKET_DATA_SERVICE';
 ```
 
-## Generated code
+## Сгенерированный код
 
 Generated code может нарушать эту policy, если такое имя пришло из proto contract или code generator.
 
