@@ -3,7 +3,7 @@
 > Type: Guide. Руководство показывает machine-readable обработку `SdkError`
 > без привязки Consumer-а к transport error classes.
 
-## Narrowing по коду и источнику
+## Сужение типа по коду и источнику
 
 Один `code` не всегда определяет причину ошибки. Например, `CANCELLED` может
 прийти от локального `AbortSignal` или от provider-а. Когда это влияет на
@@ -173,9 +173,9 @@ Brand guard распознает совместимый `SdkError` из друг
 детерминированного shutdown Consumer должен отменить их собственный
 `AbortSignal`, дождаться settlement и только затем закрыть SDK. Для stream
 lifecycle используйте руководство
-[Streams и отмена](./streams-and-cancellation.md).
+[Потоки и отмена](./streams-and-cancellation.md).
 
-## Retry boundary
+## Граница повторных попыток
 
 SDK намеренно не объявляет ошибку retryable только по gRPC status. Перед
 повтором нужно одновременно определить:

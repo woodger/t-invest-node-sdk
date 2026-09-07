@@ -1,4 +1,4 @@
-# API Commands
+# API-команды
 
 > Type: Design Note. Документ фиксирует текущую структуру CLI API-команд и
 > проблему роста `bootstrap`.
@@ -158,18 +158,20 @@ Technical и legacy paths остаются совместимыми aliases, н�
   (`sandbox get-sandbox-withdraw-limits`);
 - `sandbox pay-in` -> `sdk.sandbox.sandboxPayIn`
   (`sandbox sandbox-pay-in`);
-- `stream run` -> stream selected by JSON config;
+- `stream run` -> поток выбирается в JSON config;
 - `dev compile-proto` -> TypeScript contract generation (`compile-proto`).
+- `help` -> встроенная справка по CLI, домену или команде;
+- `version` -> версия пакета.
 
 Новые API-команды добавляются инкрементально, когда выбран конкретный SDK
 method и понятен CLI-контракт команды. Preferred path должен быть добавлен в
 command definition и help, а technical/legacy aliases - только через единый
 alias layer, который передает их в native command definition `icore`.
 
-## To Introduce
+## Отложенные расширения
 
-Команды ниже пока не являются текущим CLI-контрактом. Этот список фиксирует
-отложенные группы API-команд, которые нужно вводить отдельно и осознанно.
+Этот раздел отделяет текущий CLI-контракт от возможностей, которые потребуют
+отдельного проектирования и изменения документации.
 
 Реализованные команды с side effects являются текущим CLI-контрактом и по
 умолчанию требуют явный `--confirm` через
@@ -185,8 +187,8 @@ keys автоматически:
 Stream API вводится отдельно от unary CLI-команд через utility-команду
 `stream run --config=PATH`. CLI-контракт для долгоживущих подписок, завершения
 процесса и формата событий описан в
-[Stream CLI Reference](../cli-stream-reference.md) и
-[Stream CLI Configuration Reference](../cli-stream-configuration.md).
+[справочнике потокового CLI](../cli-stream-reference.md) и
+[справочнике его конфигурации](../cli-stream-configuration.md).
 
 Текущая реализация поддерживает server-side streams и статический initial
 request contract для bidirectional market data stream:
@@ -214,7 +216,7 @@ Command flow объединяет несколько разных ответст
 3. command handler создает `TInvestNodeSDK`;
 4. command handler вызывает API method;
 5. reporter преобразует unary response в stable report или stream event в
-   command-local output contract;
+   локальный контракт вывода команды;
 6. reporter выбирает command-specific output и использует generic render
    primitives, когда они подходят;
 7. terminal app получает готовую строку или stream для вывода.
@@ -265,9 +267,9 @@ external dependency
 - вызов API;
 - закрытие SDK.
 
-Boolean CLI options follow `icore` flag syntax: `--flag` and, when the
-command supports a negative override, `--no-flag`. Assigned boolean values
-like `--flag=true` or `--flag=false` are not part of the public CLI contract.
+Логические CLI options используют синтаксис флагов `icore`: `--flag` и, если
+команда поддерживает отрицательное переопределение, `--no-flag`. Формы со
+значением `--flag=true` и `--flag=false` не входят в публичный CLI-контракт.
 
 Внутри command module нужно различать два вида helper-ов:
 
@@ -408,13 +410,13 @@ external dependency
 - `bootstrap/commands/*/cli.ts` - command definition, API-specific mapping и SDK
   lifecycle;
 - `bootstrap/commands/*/reporter.ts` - provider result -> stable report или
-  command-local event contract -> command-specific CLI output;
+  локальный контракт события -> специализированный вывод CLI-команды;
 - public render primitives `icore` - механика JSON/CSV-row/table rendering;
 - `icore` `TerminalApp`/`Output.write`, собранные в
   `bootstrap/cli/runner.ts`, - штатная запись готовой строки или stream в
   stdout;
 - `icore` `Output.error` - warnings/errors в stderr;
-- `application/reports/**` - stable unary output contracts.
+- `application/reports/**` - стабильные контракты вывода unary-команд.
 
 ## Когда Нужен Use-Case
 
@@ -424,7 +426,7 @@ external dependency
 Use-case стоит выделять, если появляется хотя бы одно:
 
 - несколько API calls в одном сценарии;
-- retry/fallback/cache decision;
+- решение о retry/fallback/cache;
 - сценарные ошибки и partial success;
 - provider-neutral contract;
 - reuse того же сценария вне CLI;

@@ -75,7 +75,7 @@ warnings/errors -> Output.error -> stderr
 ```
 
 Текст warnings определяет project CLI layer; текст errors и exit code -
-project-owned error policy.
+политика ошибок проекта.
 
 ## Поток Команды
 
@@ -119,8 +119,8 @@ warnings через command terminal app, а normal command result переда�
 `bootstrap/commands/<command>/reporter.ts` отвечает за смысл пользовательского
 вывода:
 
-- mapping unary response в `application/reports` или stream event в
-  command-local event contract;
+- mapping unary response в `application/reports` или stream event в локальный
+  контракт события команды;
 - выбор полей;
 - порядок и имена колонок;
 - представление enum/date/nullable values;

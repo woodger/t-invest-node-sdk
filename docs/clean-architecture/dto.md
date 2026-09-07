@@ -1,4 +1,4 @@
-# DTO И Reports
+# DTO и отчёты
 
 > Type: Design Note. Документ объясняет boundary contracts текущего SDK.
 
@@ -12,7 +12,7 @@
 - CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options
   из `src/bootstrap/args/**`.
 
-## Generated DTO
+## Сгенерированные DTO
 
 Vendored T-Invest proto-файлы хранятся в плоской структуре
 `contracts/*.proto`. `src/generated/*.ts` зеркально воспроизводится из этого
@@ -40,7 +40,7 @@ layout. Официальный upstream snapshot фиксируется в `cont
 `*ServiceImplementation` являются частью root public API, потому что пакет
 поддерживает nice-grpc server adapters у потребителей.
 
-## Application DTO
+## DTO уровня application
 
 `src/application/dto/t-invest-options.ts` описывает options SDK facade.
 
@@ -61,7 +61,7 @@ interfaces SDK facade: `UsersService`, `OrdersService`,
 и generated request/response DTO, но не раскрывают `nice-grpc`
 `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
 
-## Reports
+## Отчёты
 
 `src/application/reports/**` содержит stable output contracts API-команд.
 
@@ -79,7 +79,7 @@ Reports отвечают на вопрос:
 
 Форматирование должно жить во внешнем adapter/presentation слое.
 
-## CLI Input
+## Входные данные CLI
 
 Raw `process.argv` остается на executable-границе `src/bootstrap/index.ts`; дальше
 `bootstrap/cli/runner.ts` обрабатывает argv через `icore` terminal app и command registry:

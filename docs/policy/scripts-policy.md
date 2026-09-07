@@ -29,11 +29,13 @@
 Также запрещено:
 
 ```json
-"clean": "rm -rf dist",
-"build": "npm run clean && tsc",
-"test": "npm run clean && fwa",
-"prebuild": "rm -rf dist",
-"pretest": "rm -rf dist"
+{
+  "clean": "rm -rf dist",
+  "build": "npm run clean && tsc",
+  "test": "npm run clean && fwa",
+  "prebuild": "rm -rf dist",
+  "pretest": "rm -rf dist"
+}
 ```
 
 Исключение: `test` script может передавать штатный флаг test runner-а

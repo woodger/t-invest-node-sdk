@@ -145,7 +145,7 @@ void main().catch((error: unknown) => {
 });
 ```
 
-## Per-call options
+## Опции отдельного вызова
 
 `TInvestCallOptions` действует на один RPC:
 
@@ -200,7 +200,7 @@ Consumer-у рекомендуется:
 - изолировать временное чтение устаревших полей и объяснять точечное подавление
   `typescript/no-deprecated` на границе адаптера T-Invest.
 
-## Throttling
+## Ограничение частоты запросов
 
 Локальный throttling unary-вызовов включен по умолчанию. Он защищает от
 очевидного превышения package limits, но не заменяет provider quota, тариф

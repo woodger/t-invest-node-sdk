@@ -1,4 +1,4 @@
-# Application Layer
+# Application-слой
 
 > Type: Design Note. Документ фиксирует роль `application`-слоя в текущем SDK.
 > Canonical границы слоев описаны в [Архитектура SDK](../architecture.md).
@@ -18,16 +18,12 @@ reusable правила, которые нужны SDK facade и CLI-коман�
 src/application
   dto/
     t-invest-options.ts
+    t-invest-services.ts
   errors/
     sdk-error.ts
   reports/
-    accounts.report.ts
-    candles.report.ts
-    instrument.report.ts
-    last-prices.report.ts
-    orders.report.ts
-    portfolio.report.ts
-    positions.report.ts
+    *.report.ts
+    index.ts
   services/
     unary-throttle.service.ts
 ```
@@ -59,7 +55,7 @@ src/application
 - filesystem paths;
 - concrete infrastructure modules.
 
-## Reports
+## Отчёты
 
 `application/reports` описывает, что команда сообщает наружу, но не решает,
 как это показать пользователю.
@@ -82,7 +78,7 @@ Report contract не должен импортировать `bootstrap` или 
 infrastructure. Он может быть использован CLI, тестом, будущим HTTP transport
 или file writer без изменения семантики.
 
-## Errors
+## Ошибки
 
 `application/errors/sdk-error.ts` задает публичные `SdkError`,
 `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`, не импортируя `nice-grpc`.
@@ -96,7 +92,7 @@ Error code предоставляет классификацию, но не об
 решение о повторе дополнительно зависит от idempotency, provider metadata и
 backoff policy Consumer-а.
 
-## Services
+## Сервисы
 
 `application/services` подходит для небольших правил, которые:
 

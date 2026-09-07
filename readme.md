@@ -3,13 +3,15 @@
 Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Invest через `nice-grpc`.
 
 Текущий публичный API модуля состоит из:
-- класса `TInvestNodeSDK` для unary-запросов;
+
+- класса `TInvestNodeSDK` для unary- и streaming-запросов;
 - выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
   vendored upstream proto contracts в `contracts/*.proto`.
 
 ## Установка из GitHub
 
 Пакет предназначен для установки напрямую из GitHub и не публикуется в npm.
+Для работы требуется Node.js `>=20.19.0`.
 Для приватного репозитория у окружения должен быть настроен SSH-доступ:
 
 ```sh
@@ -30,10 +32,10 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 - [Навигация по документации](docs/index.md)
 - [Руководства для Consumer-ов](docs/guides/index.md)
 - [Архитектура SDK](docs/architecture.md)
-- [Clean Architecture Notes](docs/clean-architecture/index.md)
+- [Заметки по Clean Architecture](docs/clean-architecture/index.md)
 - [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
-- [Stream CLI Reference](docs/cli-stream-reference.md)
-- [Stream CLI Configuration Reference](docs/cli-stream-configuration.md)
+- [Справочник потокового CLI](docs/cli-stream-reference.md)
+- [Справочник конфигурации потокового CLI](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
 - [TLS-доверие](docs/tls-policy.md)
 - [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md)
@@ -54,10 +56,18 @@ Proto compiler берется из окружения. Для генерации
 TypeScript plugin берется из dev-зависимости `ts-proto`.
 Официальный upstream — активный репозиторий
 [`invest-contracts`](https://opensource.tbank.ru/invest/invest-contracts).
-Зафиксированные tag и commit описаны в `contracts/upstream.json`. Vendored
-T-Invest контракты хранятся в плоской структуре `contracts/*.proto`, а
-generated TypeScript — в `src/generated/*.ts`. Команда генерации не скачивает
-upstream.
+Зафиксированные tag и commit описаны в
+[manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
+Vendored T-Invest контракты хранятся в плоской структуре `contracts/*.proto`,
+а generated TypeScript — в `src/generated/*.ts`. Команда генерации не
+скачивает upstream.
+
+Вспомогательные `google/protobuf/descriptor.proto` и
+`google/protobuf/timestamp.proto` соответствуют официальному выпуску protobuf
+`v32.1`; их источник зафиксирован в том же manifest. Версия системного
+`protoc` не закрепляется проектом. Для побайтового воспроизведения generated
+файлов нужно использовать версию, указанную в их заголовках; текущая генерация
+выполнена с `protoc 3.19.6`.
 
 CLI использует собранные файлы из `dist`, поэтому перед первым запуском после
 изменений в bootstrap TypeScript-коде нужно выполнить:
@@ -66,7 +76,7 @@ CLI использует собранные файлы из `dist`, поэтом
 npm run build
 ```
 
-## GitHub release
+## Релиз на GitHub
 
 Пакет помечен как `private`, поэтому registry publication для него отключена.
 Перед merge release commit проверьте версию и проект:
@@ -231,7 +241,7 @@ interface TInvestNodeSDKConfig {
 
 Подробности по официальной лимитной политике API и её связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
 
-## gRPC transport policy
+## Политика gRPC-транспорта
 
 SDK явно ограничивает размер одного входящего gRPC-сообщения значением 4 MiB.
 Это package-owned transport policy из `src/config.ts`, а не неявный default
@@ -243,7 +253,7 @@ CLI запускается из собранного `dist`, поэтому по
 нужно пересобрать. Актуальные домены, команды и опции доступны через встроенный
 `--help`:
 
-```sh
+```text
 npm run build
 npm run cli -- --help
 npm run cli -- <domain> --help
@@ -282,7 +292,7 @@ terminal policy классифицирует application и framework usage erro
 изменяются.
 
 Полный список команд и совместимых псевдонимов описан в
-[API Commands](docs/clean-architecture/api-commands.md). Для потоковых команд
+[API-команды](docs/clean-architecture/api-commands.md). Для потоковых команд
 есть отдельные [справочник CLI](docs/cli-stream-reference.md) и
 [справочник по конфигурации](docs/cli-stream-configuration.md). Изменения
 форматов вывода и инструкции по миграции фиксируются в
@@ -414,7 +424,7 @@ application protocol.
   и освобождение ресурсов;
 - [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, Signals,
   deadline и response metadata;
-- [Streams и отмена](docs/guides/streams-and-cancellation.md) — server-side и
+- [Потоки и отмена](docs/guides/streams-and-cancellation.md) — server-side и
   bidirectional streams с application-owned `AbortSignal`;
 - [Ошибки и lifecycle](docs/guides/errors-and-lifecycle.md) — narrowing по
   `SdkError.code` и `source`, shutdown и retry boundary;
@@ -430,7 +440,7 @@ Guides показывают workflow, но не дублируют полный 
 Пакет реэкспортирует:
 - `Timestamp`;
 - типы, enum'ы и их JSON-конвертеры из `common`, `instruments`, `marketdata`,
-  `operations`, `orders`, `sandbox`, `stoporders`, `users`;
+  `operations`, `orders`, `sandbox`, `signals`, `stoporders`, `users`;
 - package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
 - generated server-side `*ServiceDefinition` и `*ServiceImplementation`
   contracts для nice-grpc server adapters.

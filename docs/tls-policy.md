@@ -3,7 +3,7 @@
 > Type: Reference. Документ описывает package-owned trust material,
 > per-instance override и границы TLS policy SDK.
 
-## Default для T-Invest
+## Настройки по умолчанию для T-Invest
 
 T-Invest API требует сертификаты НУЦ Минцифры РФ для prod и sandbox endpoints.
 SDK включает Russian Trusted Root CA как статический PEM asset и при
@@ -20,7 +20,7 @@ Asset применяется только к gRPC channel конкретного
 Официальные endpoints и требование сертификатов описаны в
 [документации T-Invest](https://developer.tbank.ru/invest/intro/developer/network).
 
-## Provenance bundled asset
+## Происхождение встроенного сертификата
 
 Источник — [страница сертификатов Госуслуг](https://www.gosuslugi.ru/crt).
 В package хранится PEM из
@@ -38,7 +38,7 @@ Asset применяется только к gRPC channel конкретного
 Fingerprint относится к X.509 certificate, а не к текстовому PEM-файлу и его
 line endings. Subject, issuer, validity и fingerprint защищены regression-тестом.
 
-## Per-instance override
+## Переопределение для экземпляра SDK
 
 Custom или test endpoint может передать собственный PEM root bundle:
 
@@ -64,7 +64,7 @@ secret storage и rotation custom CA принадлежат Consumer-у.
 подмешиваются. При `useSsl: false` создаются insecure credentials, а `tls`
 игнорируется.
 
-## Security boundary
+## Граница безопасности
 
 Bundled CA решает воспроизводимое TLS-доверие к цепочке T-Invest, но не является
 pinning-ом конкретного публичного ключа T-Bank. Владелец доверенного CA способен

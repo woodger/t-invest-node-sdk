@@ -1,4 +1,4 @@
-# Stream CLI Configuration Reference
+# Справочник конфигурации потокового CLI
 
 > Type: Reference. Документ описывает JSON config для команды
 > `t-invest-node-sdk stream run --config=PATH`.
@@ -9,30 +9,35 @@ Stream config должен быть достаточно близок к generat
 не скрывать SDK/API смысл, но достаточно удобен, чтобы пользователь не писал
 generated DTO вручную для типовых подписок.
 
-Базовая форма:
+Минимальная допустимая конфигурация:
 
 ```json
 {
   "stream": "marketdata.marketDataServerSideStream",
-  "subscriptions": {},
+  "subscriptions": {
+    "trades": [
+      {
+        "instrumentId": "BBG00QPYJ5H0"
+      }
+    ]
+  },
   "runtime": {
     "format": "jsonl"
   }
 }
 ```
 
-## Top-Level Fields
+## Поля верхнего уровня
 
-| Field | Type | Required | Description |
+| Поле | Тип | Обязательность | Назначение |
 | --- | --- | --- | --- |
-| `stream` | string | yes | Stream method selector |
-| `subscriptions` | object | for server-side marketdata stream | Market data subscriptions |
-| `requests` | object[] | for bidirectional marketdata stream | Static initial market data stream requests |
-| `accounts` | string[] | for account streams | Account ids for operations/orders streams |
-| `runtime` | object | no | Output and process lifecycle options |
-| `rawRequests` | object[] | no | Reserved future generated-request-like mode |
+| `stream` | string | всегда | Выбирает stream method |
+| `subscriptions` | object | для server-side Market Data stream | Подписки на рыночные данные |
+| `requests` | object[] | для bidirectional Market Data stream | Статический набор начальных запросов |
+| `accounts` | string[] | для потоков по счетам | Идентификаторы счетов Operations/Orders streams |
+| `runtime` | object | нет | Настройки вывода и lifecycle процесса |
 
-Allowed `stream` values:
+Допустимые значения `stream`:
 
 - `marketdata.marketDataStream`;
 - `marketdata.marketDataServerSideStream`;
@@ -44,7 +49,11 @@ Allowed `stream` values:
 это bidirectional stream: CLI сначала отправляет заданный в config набор
 request-ов, а затем читает события provider-а.
 
-## Runtime
+Имя `rawRequests` зарезервировано для возможного будущего расширения, но не
+входит в текущий публичный config contract и отклоняется parser-ом для любого
+stream.
+
+## Настройки runtime
 
 ```json
 {
@@ -60,19 +69,19 @@ request-ов, а затем читает события provider-а.
 }
 ```
 
-Fields:
+Поля:
 
-- `format` - output format. Initial implementation supports only `jsonl`;
-- `maxEvents` - stop after N output events;
-- `durationMs` - stop after N milliseconds from stream start;
-- `idleTimeoutMs` - stop after N milliseconds without events;
-- `includePings` - include ping events in stdout;
-- `includeSubscriptionEvents` - include subscription status events in stdout;
-- `raw` - output generated response shape without normalized envelope.
+- `format` — формат вывода; поддерживается только `jsonl`;
+- `maxEvents` — завершиться после N выведенных событий;
+- `durationMs` — завершиться через N миллисекунд после запуска stream;
+- `idleTimeoutMs` — завершиться после N миллисекунд без событий;
+- `includePings` — включать события `ping` в `stdout`;
+- `includeSubscriptionEvents` — включать статусы подписок в `stdout`;
+- `raw` — выводить generated response без нормализованного envelope.
 
-## Market Data Subscriptions
+## Подписки на рыночные данные
 
-Market data subscriptions are grouped by event family:
+Подписки на рыночные данные группируются по семействам событий:
 
 ```json
 {
@@ -133,16 +142,17 @@ Market data subscriptions are grouped by event family:
 что generated `SubscriptionInterval` для stream contract сейчас содержит
 только one-minute и five-minutes интервалы.
 
-## MarketDataStream vs MarketDataServerSideStream
+## Сравнение MarketDataStream и MarketDataServerSideStream
 
-`marketdata.marketDataServerSideStream` sends one initial request and then reads
-events. Its request is derived from the `subscriptions` field.
+`marketdata.marketDataServerSideStream` отправляет один начальный запрос,
+собранный из поля `subscriptions`, а затем читает события.
 
-`marketdata.marketDataStream` is bidirectional. Current `stream run`
-implementation supports only static initial typed requests from config. It does
-not read additional requests from stdin, files, timers or interactive input.
+`marketdata.marketDataStream` является bidirectional stream. Текущая реализация
+`stream run` поддерживает только статический набор типизированных начальных
+запросов из config. Дополнительные запросы из `stdin`, файлов, таймеров или
+interactive input не читаются.
 
-Typed bidirectional form:
+Типизированная bidirectional-форма:
 
 ```json
 {
@@ -167,7 +177,7 @@ Typed bidirectional form:
 }
 ```
 
-Supported request `type` values:
+Поддерживаемые значения `type` запроса:
 
 - `subscribeCandles`;
 - `subscribeOrderBook`;
@@ -176,46 +186,22 @@ Supported request `type` values:
 - `subscribeLastPrice`;
 - `getMySubscriptions`.
 
-Subscription request items use the same instrument fields as server-side market
-data subscriptions:
+Элементы запроса используют те же поля инструмента, что и server-side подписки
+на рыночные данные:
 
-- `subscribeCandles` requires `instrumentId` and `interval`, optional
-  `waitingClose`;
-- `subscribeOrderBook` requires `instrumentId` and `depth`;
-- `subscribeTrades`, `subscribeInfo` and `subscribeLastPrice` require
+- `subscribeCandles` требует `instrumentId` и `interval`; `waitingClose`
+  необязателен;
+- `subscribeOrderBook` требует `instrumentId` и `depth`;
+- `subscribeTrades`, `subscribeInfo` и `subscribeLastPrice` требуют
   `instrumentId`;
-- `getMySubscriptions` does not accept `instruments`.
+- `getMySubscriptions` не принимает `instruments`.
 
-Advanced raw bidirectional form:
+Режим raw bidirectional requests сейчас не поддерживается. Используйте поле
+`requests` и перечисленные выше типизированные варианты.
 
-```json
-{
-  "stream": "marketdata.marketDataStream",
-  "rawRequests": [
-    {
-      "subscribeTradesRequest": {
-        "subscriptionAction": "SUBSCRIPTION_ACTION_SUBSCRIBE",
-        "instruments": [
-          {
-            "instrumentId": "BBG00QPYJ5H0"
-          }
-        ]
-      }
-    }
-  ],
-  "runtime": {
-    "format": "jsonl",
-    "maxEvents": 50
-  }
-}
-```
+## Потоки по счетам
 
-Raw bidirectional request mode is a future extension for users who need
-generated contract fidelity before the typed config surface covers their case.
-
-## Account Streams
-
-Portfolio stream:
+Поток портфеля:
 
 ```json
 {
@@ -228,7 +214,7 @@ Portfolio stream:
 }
 ```
 
-Positions stream:
+Поток позиций:
 
 ```json
 {
@@ -241,7 +227,7 @@ Positions stream:
 }
 ```
 
-Orders trades stream:
+Поток сделок по поручениям:
 
 ```json
 {
@@ -254,32 +240,33 @@ Orders trades stream:
 }
 ```
 
-Rules:
+Правила:
 
-- `accounts` must contain at least one account id;
-- account ids are passed to generated request `accounts`;
-- account streams do not use `subscriptions`;
-- unknown account stream fields should be rejected before SDK creation.
+- `accounts` должен содержать хотя бы один идентификатор счёта;
+- идентификаторы передаются в поле `accounts` generated request;
+- потоки по счетам не используют `subscriptions`;
+- неизвестные поля отклоняются до создания SDK.
 
-## Validation Rules
+## Правила проверки
 
-The first implementation should reject:
+Текущая реализация отклоняет:
 
-- unknown `stream` values;
-- missing `accounts` for account streams;
-- empty `subscriptions` for marketdata server-side streams;
-- missing or empty `requests` for `marketdata.marketDataStream`;
-- unknown top-level fields, except explicitly supported future extension fields;
-- unsupported `runtime.format`;
-- non-positive numeric runtime limits;
-- market data instrument items without `instrumentId`;
-- generated enum names or aliases not supported by the config mapper.
+- неизвестные значения `stream`;
+- отсутствие `accounts` для потоков по счетам;
+- пустой `subscriptions` для server-side Market Data stream;
+- отсутствующий или пустой `requests` для `marketdata.marketDataStream`;
+- неизвестные поля верхнего уровня;
+- неподдерживаемое поле `rawRequests`;
+- неподдерживаемый `runtime.format`;
+- неположительные числовые runtime limits;
+- элементы Market Data без `instrumentId`;
+- generated enum names и aliases, которые не поддерживает config mapper.
 
-Config validation must happen before `TInvestNodeSDK` creation.
+Config проверяется до создания `TInvestNodeSDK`.
 
-## CLI Overrides
+## Переопределения через CLI
 
-Runtime options may be overridden by CLI flags:
+Runtime options можно переопределить CLI-флагами:
 
 ```bash
 t-invest-node-sdk stream run \
@@ -288,31 +275,31 @@ t-invest-node-sdk stream run \
   --include-pings
 ```
 
-Boolean runtime flags use `--flag` / `--no-flag` syntax. For example,
-`--no-include-pings` or `--no-raw` can turn off a `true` value from config;
-`--flag=true` and `--flag=false` are not supported.
+Логические runtime-флаги используют синтаксис `--flag` / `--no-flag`.
+Например, `--no-include-pings` или `--no-raw` отключает значение `true` из
+config; формы `--flag=true` и `--flag=false` не поддерживаются.
 
-Subscription and account selection should stay in config. This keeps command
-line usage stable and avoids a large set of fragile stream-specific flags.
+Подписки и выбор счетов остаются в config. Это сохраняет стабильную командную
+строку и не создаёт большое количество хрупких stream-specific флагов.
 
-## Output Modes
+## Режимы вывода
 
-Default normalized event:
+Нормализованное событие по умолчанию:
 
 ```json
 {"stream":"orders.tradesStream","sequence":1,"receivedAt":"2026-06-29T12:00:00.000Z","type":"orderTrades","payload":{"orderId":"..."}}
 ```
 
-Raw event when `runtime.raw` is `true`:
+Raw-событие при `runtime.raw: true`:
 
 ```json
 {"orderTrades":{"orderId":"..."}}
 ```
 
-Normalized output is the default because it gives every stream method the same
-observable event envelope.
+Нормализованный вывод используется по умолчанию и задаёт единый наблюдаемый
+event envelope для каждого stream method.
 
-## Related Documentation
+## Связанная документация
 
-- [Stream CLI Reference](./cli-stream-reference.md)
-- [API Commands](./clean-architecture/api-commands.md)
+- [Справочник потокового CLI](./cli-stream-reference.md)
+- [API-команды](./clean-architecture/api-commands.md)
