@@ -10,9 +10,11 @@
 
 ## Язык
 
-Основной язык документации и новых записей в `CHANGELOG.md` — русский. Имена
-API, идентификаторы, команды, значения параметров и устойчивые технические
-термины сохраняются в исходном написании, если перевод снижает точность.
+Основной язык документации и новых записей в `CHANGELOG.md` — русский. Имена API, идентификаторы, команды, значения параметров и устойчивые технические термины сохраняются в исходном написании, если перевод снижает точность.
+
+## Форматирование строк
+
+Обычный абзац и продолжение одного пункта списка записываются одной физической строкой без ручного переноса по ширине. Новая строка используется только как элемент структуры Markdown: для нового абзаца, заголовка, пункта списка, blockquote, таблицы или блока кода. Markdown hard break через пробелы в конце строки и любые другие trailing spaces не используются.
 
 ## Источники истины
 
@@ -26,17 +28,12 @@ API, идентификаторы, команды, значения параме
 - bundled TLS trust material: `certificates/russian-trusted-root-ca.pem`;
 - unary quota source policy: `src/config.ts`;
 - authoring и public runtime type contracts: `src/config.types.ts`;
-- per-instance SDK config input:
-  `src/application/dto/t-invest-options.ts`;
+- per-instance SDK config input: `src/application/dto/t-invest-options.ts`;
 - public SDK error contract: `src/application/errors/sdk-error.ts`;
-- unary config compilation и readable override shape adapter:
-  `src/bootstrap/unary-limit-config.ts`;
+- unary config compilation и readable override shape adapter: `src/bootstrap/unary-limit-config.ts`;
 - public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;
-- public unary limiter port и необязательная process-local реализация:
-  `src/application/services/unary-limiter.ts`;
-- transport-specific unary rule paths и resolution:
-  `src/infrastructure/transport/grpc/unary-limits.ts`,
-  `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
+- public unary limiter port и необязательная process-local реализация: `src/application/services/unary-limiter.ts`;
+- transport-specific unary rule paths и resolution: `src/infrastructure/transport/grpc/unary-limits.ts`, `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;
@@ -50,9 +47,7 @@ Markdown должен объяснять, где находится актуал
 
 ## Сгенерированный код и proto
 
-Официальный контракт внешнего API живет в upstream, зафиксированном в
-`contracts/upstream.json`. Воспроизводимый локальный snapshot хранится в
-`contracts/*.proto`.
+Официальный контракт внешнего API живет в upstream, зафиксированном в `contracts/upstream.json`. Воспроизводимый локальный snapshot хранится в `contracts/*.proto`.
 
 Если меняется proto workflow, documentation update должен объяснить:
 

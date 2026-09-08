@@ -9,25 +9,19 @@
 - proto-generated DTO из `src/generated/*.ts`;
 - application DTO из `src/application/dto/**`;
 - application report contracts из `src/application/reports/**`;
-- CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options
-  из `src/bootstrap/args/**`.
+- CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options из `src/bootstrap/args/**`.
 
 ## Сгенерированные DTO
 
-Vendored T-Invest proto-файлы хранятся в плоской структуре
-`contracts/*.proto`. `src/generated/*.ts` зеркально воспроизводится из этого
-layout. Официальный upstream snapshot фиксируется в `contracts/upstream.json`.
+Vendored T-Invest proto-файлы хранятся в плоской структуре `contracts/*.proto`. `src/generated/*.ts` зеркально воспроизводится из этого layout. Официальный upstream snapshot фиксируется в `contracts/upstream.json`.
 
-Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя
-использовать как место для project-specific правил.
+Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя использовать как место для project-specific правил.
 
 Допустимо:
 
 - импортировать generated types в infrastructure adapters;
-- использовать generated service definitions при создании gRPC clients внутри
-  bootstrap/infrastructure;
-- использовать generated request/response DTO в package-owned public service
-  interfaces SDK facade.
+- использовать generated service definitions при создании gRPC clients внутри bootstrap/infrastructure;
+- использовать generated request/response DTO в package-owned public service interfaces SDK facade.
 
 Нежелательно:
 
@@ -36,16 +30,13 @@ layout. Официальный upstream snapshot фиксируется в `cont
 - завязывать CLI output format на нестабильный generated JSON shape.
 - экспортировать generated service clients как root public API.
 
-Исключение: server-side generated `*ServiceDefinition` и
-`*ServiceImplementation` являются частью root public API, потому что пакет
-поддерживает nice-grpc server adapters у потребителей.
+Исключение: server-side generated `*ServiceDefinition` и `*ServiceImplementation` являются частью root public API, потому что пакет поддерживает nice-grpc server adapters у потребителей.
 
 ## DTO уровня application
 
 `src/application/dto/t-invest-options.ts` описывает options SDK facade.
 
-Это не CLI DTO и не gRPC DTO. Один и тот же contract может использоваться из
-bootstrap, tests и публичного SDK facade.
+Это не CLI DTO и не gRPC DTO. Один и тот же contract может использоваться из bootstrap, tests и публичного SDK facade.
 
 Правило:
 
@@ -55,11 +46,7 @@ CLI/env parsing -> TInvestOptions -> SDK facade/infrastructure
 
 `application/dto` не должен читать env и не должен знать про CLI flags.
 
-`src/application/dto/t-invest-services.ts` описывает публичные service
-interfaces SDK facade: `UsersService`, `OrdersService`,
-`MarketDataStreamService` и т.п. Эти interfaces сохраняют upstream method names
-и generated request/response DTO, но не раскрывают `nice-grpc`
-`*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
+`src/application/dto/t-invest-services.ts` описывает публичные service interfaces SDK facade: `UsersService`, `OrdersService`, `MarketDataStreamService` и т.п. Эти interfaces сохраняют upstream method names и generated request/response DTO, но не раскрывают `nice-grpc` `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
 
 ## Отчёты
 
@@ -81,31 +68,17 @@ Reports отвечают на вопрос:
 
 ## Входные данные CLI
 
-Raw `process.argv` остается на executable-границе `src/bootstrap/index.ts`; дальше
-`bootstrap/cli/runner.ts` обрабатывает argv через `icore` terminal app и command registry:
+Raw `process.argv` остается на executable-границе `src/bootstrap/index.ts`; дальше `bootstrap/cli/runner.ts` обрабатывает argv через `icore` terminal app и command registry:
 
 ```text
 process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
 ```
 
-Runner использует двухфазный flow `prepare -> runPrepared`: это позволяет
-вывести warnings после command resolution без повторного разбора argv. Ошибки
-всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`.
-`isUsageError()` из `icore` распознаёт framework usage errors и публичный
-`CliUsageError`, используемый project validators; они получают exit code `2`.
-Runtime и command-definition errors получают exit code `1`.
+Runner использует двухфазный flow `prepare -> runPrepared`: это позволяет вывести warnings после command resolution без повторного разбора argv. Ошибки всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`. `isUsageError()` из `icore` распознаёт framework usage errors и публичный `CliUsageError`, используемый project validators; они получают exit code `2`. Runtime и command-definition errors получают exit code `1`.
 
-Command-specific primitive options описываются декларативными `icore` schemas в
-`src/bootstrap/commands/**`. Общие SDK options нормализуются в
-`src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API
-или форматировать reports.
+Command-specific primitive options описываются декларативными `icore` schemas в `src/bootstrap/commands/**`. Общие SDK options нормализуются в `src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API или форматировать reports.
 
-После `icore` validation command handler работает с typed command options. Raw
-CLI option maps не должны передаваться ни в command-local parser helpers, ни в
-request builders. Project-specific `parse*` helper может преобразовывать
-отдельное уже типизированное значение, например RFC 3339 date-time или
-comma-separated список. Mapping typed options в generated request DTO должен
-жить в `create*Request` helper-е.
+После `icore` validation command handler работает с typed command options. Raw CLI option maps не должны передаваться ни в command-local parser helpers, ни в request builders. Project-specific `parse*` helper может преобразовывать отдельное уже типизированное значение, например RFC 3339 date-time или comma-separated список. Mapping typed options в generated request DTO должен жить в `create*Request` helper-е.
 
 ## Mapping
 

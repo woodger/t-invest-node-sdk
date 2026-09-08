@@ -1,13 +1,10 @@
 # Ошибки и lifecycle
 
-> Type: Guide. Руководство показывает machine-readable обработку `SdkError`
-> без привязки Consumer-а к transport error classes.
+> Type: Guide. Руководство показывает machine-readable обработку `SdkError` без привязки Consumer-а к transport error classes.
 
 ## Сужение типа по коду и источнику
 
-Один `code` не всегда определяет причину ошибки. Например, `CANCELLED` может
-прийти от локального `AbortSignal` или от provider-а. Когда это влияет на
-решение Consumer-а, проверяйте сочетание `code` и `source`.
+Один `code` не всегда определяет причину ошибки. Например, `CANCELLED` может прийти от локального `AbortSignal` или от provider-а. Когда это влияет на решение Consumer-а, проверяйте сочетание `code` и `source`.
 
 ```ts
 import {
@@ -126,40 +123,21 @@ void main().catch((error: unknown) => {
 | `lifecycle` | SDK уже закрыт |
 | `sdk` | SDK отклонил локальную конфигурацию, request или runtime state |
 
-`SdkErrorCode.InvalidArgument` может иметь `source: 'grpc'` для provider
-validation или `source: 'sdk'` для локально отклоненной конфигурации. По этой
-причине обработчик не должен классифицировать источник только по имени code.
+`SdkErrorCode.InvalidArgument` может иметь `source: 'grpc'` для provider validation или `source: 'sdk'` для локально отклоненной конфигурации. По этой причине обработчик не должен классифицировать источник только по имени code.
 
-Не всякий `unknown` runtime failure обязан быть `SdkError`. Сначала применяйте
-`isSdkError()`, а неизвестную ошибку сохраняйте или передавайте дальше без
-насильственного приведения типа. В частности, синхронное исключение
-application callback-а `onHeader` или `onTrailer` возвращается без оборачивания
-в `SdkError`.
+Не всякий `unknown` runtime failure обязан быть `SdkError`. Сначала применяйте `isSdkError()`, а неизвестную ошибку сохраняйте или передавайте дальше без насильственного приведения типа. В частности, синхронное исключение application callback-а `onHeader` или `onTrailer` возвращается без оборачивания в `SdkError`.
 
 ## Диагностические поля
 
 - `path` содержит gRPC method path, когда он известен.
-- `details` содержит диагностический текст transport/provider-а. Это не
-  стабильный provider business code и его не следует разбирать регулярным
-  выражением.
-- `cause` сохраняет исходную ошибку, но остается transport-specific
-  диагностикой. Business logic не должна зависеть от класса ошибки
-  `nice-grpc`.
+- `details` содержит диагностический текст transport/provider-а. Это не стабильный provider business code и его не следует разбирать регулярным выражением.
+- `cause` сохраняет исходную ошибку, но остается transport-specific диагностикой. Business logic не должна зависеть от класса ошибки `nice-grpc`.
 
-Для однозначных certificate trust и hostname verification failures SDK
-возвращает `SdkErrorCode.Unavailable` с `source: 'tls'`. DNS failures,
-connection refusal/reset, timeout и обычный provider `UNAVAILABLE` сохраняют
-`source: 'grpc'`. Эта граница позволяет завершить вызов сразу при ошибке TLS,
-не разбирая `details` и не применяя к ней общий availability retry.
+Для однозначных certificate trust и hostname verification failures SDK возвращает `SdkErrorCode.Unavailable` с `source: 'tls'`. DNS failures, connection refusal/reset, timeout и обычный provider `UNAVAILABLE` сохраняют `source: 'grpc'`. Эта граница позволяет завершить вызов сразу при ошибке TLS, не разбирая `details` и не применяя к ней общий availability retry.
 
-Ошибка сериализации исходящего request или разбора входящего response получает
-`SdkErrorCode.Internal` с `source: 'sdk'`. Provider-side `INTERNAL` сохраняет
-`source: 'grpc'`. Это различие не требует разбора `details`; исходные `path`,
-`details` и `cause` доступны только для диагностики.
+Ошибка сериализации исходящего request или разбора входящего response получает `SdkErrorCode.Internal` с `source: 'sdk'`. Provider-side `INTERNAL` сохраняет `source: 'grpc'`. Это различие не требует разбора `details`; исходные `path`, `details` и `cause` доступны только для диагностики.
 
-Brand guard распознает совместимый `SdkError` из другой физической копии
-пакета в том же JavaScript realm. После JSON, IPC или worker serialization
-нужен отдельный application protocol.
+Brand guard распознает совместимый `SdkError` из другой физической копии пакета в том же JavaScript realm. После JSON, IPC или worker serialization нужен отдельный application protocol.
 
 ## Закрытие SDK
 
@@ -169,28 +147,17 @@ Brand guard распознает совместимый `SdkError` из друг
 - отменяет операции, которые еще ждут локальную unary-квоту;
 - закрывает shared channel.
 
-Он не ожидает завершения уже переданных transport-у операций. Для
-детерминированного shutdown Consumer должен отменить их собственный
-`AbortSignal`, дождаться settlement и только затем закрыть SDK. Для stream
-lifecycle используйте руководство
-[Потоки и отмена](./streams-and-cancellation.md).
+Он не ожидает завершения уже переданных transport-у операций. Для детерминированного shutdown Consumer должен отменить их собственный `AbortSignal`, дождаться settlement и только затем закрыть SDK. Для stream lifecycle используйте руководство [Потоки и отмена](./streams-and-cancellation.md).
 
 ## Граница повторных попыток
 
-SDK намеренно не объявляет ошибку retryable только по gRPC status. Перед
-повтором нужно одновременно определить:
+SDK намеренно не объявляет ошибку retryable только по gRPC status. Перед повтором нужно одновременно определить:
 
 - является ли операция idempotent;
 - мог ли provider уже применить side effect;
 - присутствует ли retry/rate-limit metadata;
 - какой backoff и общий deadline допустимы для приложения.
 
-Особенно это относится к `ResourceExhausted`, `Unavailable`,
-`DeadlineExceeded` и mutation RPC. Универсальный retry interceptor на уровне
-SDK скрыл бы эти различия.
+Особенно это относится к `ResourceExhausted`, `Unavailable`, `DeadlineExceeded` и mutation RPC. Универсальный retry interceptor на уровне SDK скрыл бы эти различия.
 
-Для `ResourceExhausted` сначала проверяйте `source`. Значение `sdk` означает,
-что входящее сообщение превысило внутренний транспортный лимит SDK;
-повтор того же вызова не изменит этот предел. Значение `grpc` относится к
-ответу провайдера и само по себе также не является достаточным основанием для
-повтора без учета метаданных, идемпотентности и задержки между повторами.
+Для `ResourceExhausted` сначала проверяйте `source`. Значение `sdk` означает, что входящее сообщение превысило внутренний транспортный лимит SDK; повтор того же вызова не изменит этот предел. Значение `grpc` относится к ответу провайдера и само по себе также не является достаточным основанием для повтора без учета метаданных, идемпотентности и задержки между повторами.

@@ -1,13 +1,10 @@
 # Справочник конфигурации потокового CLI
 
-> Type: Reference. Документ описывает JSON config для команды
-> `t-invest-node-sdk stream run --config=PATH`.
+> Type: Reference. Документ описывает JSON config для команды `t-invest-node-sdk stream run --config=PATH`.
 
 ## Цель
 
-Stream config должен быть достаточно близок к generated gRPC contracts, чтобы
-не скрывать SDK/API смысл, но достаточно удобен, чтобы пользователь не писал
-generated DTO вручную для типовых подписок.
+Stream config должен быть достаточно близок к generated gRPC contracts, чтобы не скрывать SDK/API смысл, но достаточно удобен, чтобы пользователь не писал generated DTO вручную для типовых подписок.
 
 Минимальная допустимая конфигурация:
 
@@ -45,13 +42,9 @@ generated DTO вручную для типовых подписок.
 - `operations.positionsStream`;
 - `orders.tradesStream`.
 
-`marketdata.marketDataStream` использует отдельное поле `requests`, потому что
-это bidirectional stream: CLI сначала отправляет заданный в config набор
-request-ов, а затем читает события provider-а.
+`marketdata.marketDataStream` использует отдельное поле `requests`, потому что это bidirectional stream: CLI сначала отправляет заданный в config набор request-ов, а затем читает события provider-а.
 
-Имя `rawRequests` зарезервировано для возможного будущего расширения, но не
-входит в текущий публичный config contract и отклоняется parser-ом для любого
-stream.
+Имя `rawRequests` зарезервировано для возможного будущего расширения, но не входит в текущий публичный config contract и отклоняется parser-ом для любого stream.
 
 ## Настройки runtime
 
@@ -127,8 +120,7 @@ stream.
 Значения подписок по умолчанию:
 
 - `action` имеет значение `subscribe`;
-- устаревшие поля `figi` сгенерированных контрактов сохраняют значения по
-  умолчанию protobuf и не сериализуются;
+- устаревшие поля `figi` сгенерированных контрактов сохраняют значения по умолчанию protobuf и не сериализуются;
 - `instrumentId` обязателен для каждого инструмента;
 - `waitingClose` имеет значение `false`;
 - `orderBooks[].depth` обязателен и должен быть положительным целым числом.
@@ -138,19 +130,13 @@ stream.
 - `1min`;
 - `5min`.
 
-Другие aliases из unary historical candles CLI не принимаются здесь, потому
-что generated `SubscriptionInterval` для stream contract сейчас содержит
-только one-minute и five-minutes интервалы.
+Другие aliases из unary historical candles CLI не принимаются здесь, потому что generated `SubscriptionInterval` для stream contract сейчас содержит только one-minute и five-minutes интервалы.
 
 ## Сравнение MarketDataStream и MarketDataServerSideStream
 
-`marketdata.marketDataServerSideStream` отправляет один начальный запрос,
-собранный из поля `subscriptions`, а затем читает события.
+`marketdata.marketDataServerSideStream` отправляет один начальный запрос, собранный из поля `subscriptions`, а затем читает события.
 
-`marketdata.marketDataStream` является bidirectional stream. Текущая реализация
-`stream run` поддерживает только статический набор типизированных начальных
-запросов из config. Дополнительные запросы из `stdin`, файлов, таймеров или
-interactive input не читаются.
+`marketdata.marketDataStream` является bidirectional stream. Текущая реализация `stream run` поддерживает только статический набор типизированных начальных запросов из config. Дополнительные запросы из `stdin`, файлов, таймеров или interactive input не читаются.
 
 Типизированная bidirectional-форма:
 
@@ -186,18 +172,14 @@ interactive input не читаются.
 - `subscribeLastPrice`;
 - `getMySubscriptions`.
 
-Элементы запроса используют те же поля инструмента, что и server-side подписки
-на рыночные данные:
+Элементы запроса используют те же поля инструмента, что и server-side подписки на рыночные данные:
 
-- `subscribeCandles` требует `instrumentId` и `interval`; `waitingClose`
-  необязателен;
+- `subscribeCandles` требует `instrumentId` и `interval`; `waitingClose` необязателен;
 - `subscribeOrderBook` требует `instrumentId` и `depth`;
-- `subscribeTrades`, `subscribeInfo` и `subscribeLastPrice` требуют
-  `instrumentId`;
+- `subscribeTrades`, `subscribeInfo` и `subscribeLastPrice` требуют `instrumentId`;
 - `getMySubscriptions` не принимает `instruments`.
 
-Режим raw bidirectional requests сейчас не поддерживается. Используйте поле
-`requests` и перечисленные выше типизированные варианты.
+Режим raw bidirectional requests сейчас не поддерживается. Используйте поле `requests` и перечисленные выше типизированные варианты.
 
 ## Потоки по счетам
 
@@ -275,12 +257,9 @@ t-invest-node-sdk stream run \
   --include-pings
 ```
 
-Логические runtime-флаги используют синтаксис `--flag` / `--no-flag`.
-Например, `--no-include-pings` или `--no-raw` отключает значение `true` из
-config; формы `--flag=true` и `--flag=false` не поддерживаются.
+Логические runtime-флаги используют синтаксис `--flag` / `--no-flag`. Например, `--no-include-pings` или `--no-raw` отключает значение `true` из config; формы `--flag=true` и `--flag=false` не поддерживаются.
 
-Подписки и выбор счетов остаются в config. Это сохраняет стабильную командную
-строку и не создаёт большое количество хрупких stream-specific флагов.
+Подписки и выбор счетов остаются в config. Это сохраняет стабильную командную строку и не создаёт большое количество хрупких stream-specific флагов.
 
 ## Режимы вывода
 
@@ -296,8 +275,7 @@ Raw-событие при `runtime.raw: true`:
 {"orderTrades":{"orderId":"..."}}
 ```
 
-Нормализованный вывод используется по умолчанию и задаёт единый наблюдаемый
-event envelope для каждого stream method.
+Нормализованный вывод используется по умолчанию и задаёт единый наблюдаемый event envelope для каждого stream method.
 
 ## Связанная документация
 

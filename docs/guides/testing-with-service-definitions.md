@@ -1,13 +1,10 @@
 # Mock-сервисы через public exports
 
-> Type: Guide. Руководство показывает Consumer-тест с generated service
-> definition и implementation type, экспортированными из корня SDK.
+> Type: Guide. Руководство показывает Consumer-тест с generated service definition и implementation type, экспортированными из корня SDK.
 
 ## Зависимость server adapter
 
-SDK экспортирует service contracts, но Consumer сам владеет mock server
-runtime. Добавьте `nice-grpc` как прямую dev-зависимость тестируемого проекта,
-не полагаясь на transitive hoisting:
+SDK экспортирует service contracts, но Consumer сам владеет mock server runtime. Добавьте `nice-grpc` как прямую dev-зависимость тестируемого проекта, не полагаясь на transitive hoisting:
 
 ```sh
 npm install --save-dev nice-grpc@^2.1.17
@@ -98,13 +95,8 @@ void main().catch((error: unknown) => {
 
 - `SignalServiceDefinition` — runtime definition для `server.add()`;
 - `SignalServiceImplementation` — типовой контракт mock-реализации;
-- request, response, enum contracts и их JSON-конвертеры — из того же package
-  entrypoint.
+- request, response, enum contracts и их JSON-конвертеры — из того же package entrypoint.
 
-Generated `*ServiceClient` намеренно не входят в public exports: настоящий
-client создается SDK facade. Deep imports из `dist/generated/**` нестабильны и
-блокируются package `exports`.
+Generated `*ServiceClient` намеренно не входят в public exports: настоящий client создается SDK facade. Deep imports из `dist/generated/**` нестабильны и блокируются package `exports`.
 
-Для других сервисов применяется тот же подход с соответствующими
-`*ServiceDefinition` и `*ServiceImplementation`. Полный список не дублируется
-здесь: актуальную export surface определяет корневой entrypoint пакета.
+Для других сервисов применяется тот же подход с соответствующими `*ServiceDefinition` и `*ServiceImplementation`. Полный список не дублируется здесь: актуальную export surface определяет корневой entrypoint пакета.
