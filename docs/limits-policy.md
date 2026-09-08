@@ -164,7 +164,7 @@ import {
   defineUnaryLimits,
   TInvestNodeSDK,
   type TInvestUnaryLimiter
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 declare const unaryLimiter: TInvestUnaryLimiter;
 

@@ -5,7 +5,7 @@
 
 ## Начало работы
 
-- [Первый SDK-вызов](./getting-started.md) — установка из GitHub, настройка
+- [Первый SDK-вызов](./getting-started.md) — установка из npm, настройка
   окружения, выбор счета и корректное закрытие SDK.
 - [Unary-вызовы](./unary-calls.md) — портфель, свечи, сигналы, deadline и
   response metadata.

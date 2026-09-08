@@ -15,10 +15,12 @@ type VersionOptions = {
   version?: unknown;
 };
 
+export const cliName = 't-invest-node-sdk' satisfies keyof typeof packageJson.bin;
+
 export function isVersionRequested(options: VersionOptions): boolean {
   return options.version === true;
 }
 
 export function renderVersionInfo(): string {
-  return `${packageJson.name} ${packageJson.version}\n`;
+  return `${cliName} ${packageJson.version}\n`;
 }

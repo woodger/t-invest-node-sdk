@@ -126,7 +126,7 @@ PEM root bundle:
 
 ```ts
 import { readFile } from 'node:fs/promises';
-import { TInvestNodeSDK } from 't-invest-node-sdk';
+import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 const rootCertificates = await readFile('./certificates/custom-root.pem');
 const sdk = new TInvestNodeSDK({

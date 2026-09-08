@@ -17,7 +17,7 @@ import {
   SubscriptionAction,
   SubscriptionInterval,
   TInvestNodeSDK
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
   | 'T_INVEST_TOKEN'
@@ -117,7 +117,7 @@ import {
   SubscriptionAction,
   SubscriptionInterval,
   TInvestNodeSDK
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 async function* initialRequests() {
   yield {

@@ -8,20 +8,21 @@
 - выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
   vendored upstream proto contracts в `contracts/*.proto`.
 
-## Установка из GitHub
+## Установка
 
-Пакет предназначен для установки напрямую из GitHub и не публикуется в npm.
-Для работы требуется Node.js `>=20.19.0`.
-Для приватного репозитория у окружения должен быть настроен SSH-доступ:
+Пакет публикуется в npm под именем `@woodger/t-invest-node-sdk`. Для работы
+требуется Node.js `>=20.19.0`:
 
 ```sh
-npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.5.1"
+npm install @woodger/t-invest-node-sdk
 ```
 
-Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
-после получения Git dependency.
+Публикуемый архив уже содержит собранный `dist`; установка из реестра npm не
+запускает компилятор TypeScript для SDK. Git URL не является поддерживаемым
+каналом установки: npm запускает `prepack` при установке Git-зависимости и
+собирает её из исходного кода.
 
-Для development и CI проект поддерживает только npm. После checkout зависимости
+Для разработки и CI проект поддерживает только npm. После checkout зависимости
 устанавливаются через `npm ci`; Yarn и другие альтернативные менеджеры пакетов
 не поддерживаются.
 
@@ -80,10 +81,12 @@ CLI использует собранные файлы из `dist`, поэтом
 npm run build
 ```
 
-## Релиз на GitHub
+## Публикация релиза
 
-Пакет помечен как `private`, поэтому registry publication для него отключена.
-Перед merge release commit проверьте версию и проект:
+Пакет с областью видимости публикуется как общедоступный благодаря
+`publishConfig.access`. Сценарий `prepack` выполняет `tsc` перед `npm pack` и
+`npm publish`. Перед слиянием релизного коммита проверьте версию, changelog и
+проект:
 
 ```sh
 VERSION="$(node -p "require('./package.json').version")"
@@ -91,6 +94,7 @@ VERSION="$(node -p "require('./package.json').version")"
 npm run build
 npm run lint
 npm test
+npm pack --dry-run
 git status --short
 ```
 
@@ -104,6 +108,12 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
+Из того же коммита `origin/main` пакет публикуется в общедоступный реестр npm:
+
+```sh
+npm publish
+```
+
 Для версии `0.5.1` Git tag остается `0.5.1` по исторической схеме проекта, а
 GitHub Release может называться `v0.5.1`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
@@ -112,7 +122,7 @@ GitHub Release может называться `v0.5.1`. Release notes беру�
 ## Быстрый старт
 
 ```ts
-import { TInvestNodeSDK } from 't-invest-node-sdk';
+import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 const token = process.env.T_INVEST_TOKEN?.trim();
 const endpoint = process.env.T_INVEST_ENDPOINT?.trim();
@@ -384,7 +394,7 @@ network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `detai
 import {
   isSdkError,
   SdkErrorCode
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 try {
   await sdk.users.getAccounts({});
@@ -449,7 +459,7 @@ import {
   CandleInterval,
   InstrumentsService,
   MarketDataStreamService,
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 ```
 
 ## Дисклеймер

@@ -39,7 +39,7 @@ import type {
   TInvestUnaryLimiter,
   TInvestUnaryLimits,
   TInvestUnaryQuota
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 ```
 
 Их контракт имеет следующую форму:
@@ -200,7 +200,7 @@ Limiter принадлежит коду, который его создал:
 import {
   TInvestNodeSDK,
   type TInvestUnaryLimiter
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 declare const unaryLimiter: TInvestUnaryLimiter;
 
@@ -244,7 +244,7 @@ import type {
   TInvestUnaryLimitContext,
   TInvestUnaryLimiter,
   TInvestUnaryQuota
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 interface BucketState {
   readonly maxRequests: number;
@@ -386,7 +386,7 @@ function abortReason(signal: AbortSignal): unknown {
 передать во все соответствующие SDK instances:
 
 ```ts
-import { TInvestNodeSDK } from 't-invest-node-sdk';
+import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 const unaryLimiter = new RollingWindowUnaryLimiter();
 
@@ -411,7 +411,7 @@ const sdk = new TInvestNodeSDK({
 import type {
   TInvestUnaryLimitContext,
   TInvestUnaryLimiter
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 interface CoordinatorClient {
   acquire(
@@ -471,7 +471,7 @@ import {
   defineUnaryLimits,
   TInvestNodeSDK,
   type TInvestUnaryLimiter
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 declare const unaryLimiter: TInvestUnaryLimiter;
 
@@ -515,7 +515,7 @@ Overrides проверяются при создании SDK независим�
 import {
   createInMemoryUnaryLimiter,
   TInvestNodeSDK
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 const sdk = new TInvestNodeSDK({
   token,

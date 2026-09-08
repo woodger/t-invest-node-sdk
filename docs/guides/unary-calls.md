@@ -16,7 +16,7 @@ import {
   TInvestNodeSDK,
   type TInvestCallOptions,
   type TInvestMetadata
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
   | 'T_INVEST_TOKEN'

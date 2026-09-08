@@ -23,7 +23,7 @@ import {
   StrategyType,
   TInvestNodeSDK,
   type SignalServiceImplementation
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 const signalService: SignalServiceImplementation = {
   async getStrategies(request) {

@@ -1,7 +1,6 @@
 {
-  "name": "t-invest-node-sdk",
+  "name": "@woodger/t-invest-node-sdk",
   "version": "0.5.1",
-  "private": true,
   "description": "Node.js SDK for T-Invest API",
   "keywords": [
     "t-invest",
@@ -30,12 +29,15 @@
   "directories": {
     "doc": "docs"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=20.19.0"
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "tsc",
+    "prepack": "tsc",
     "test": "fwa --prune",
     "lint": "oxlint src",
     "cli": "node dist/bootstrap/index.js"
