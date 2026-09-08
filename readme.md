@@ -61,7 +61,9 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 [manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
 Vendored T-Invest контракты хранятся в плоской структуре `contracts/*.proto`,
 а generated TypeScript — в `src/generated/*.ts`. Команда генерации не
-скачивает upstream.
+скачивает upstream. Контракты и производный generated-код распространяются на
+условиях Apache License 2.0; лицензионный источник и уведомления приведены в
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 Вспомогательные `google/protobuf/descriptor.proto` и
 `google/protobuf/timestamp.proto` соответствуют официальному выпуску protobuf
@@ -453,4 +455,5 @@ import {
 T-Invest, T-Банку или их аффилированным лицам. Названия продуктов и компаний
 используются только для обозначения совместимости с публичным API.
 
-Сведения о сторонних контрактах и generated-коде включены в [LICENSE](LICENSE).
+Сведения о сторонних контрактах и generated-коде включены в
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

@@ -6,8 +6,20 @@ MIT License в [`LICENSE`](./LICENSE) применяется к исходном
 
 ## T-Invest API contracts
 
-Пакет может содержать артефакты, полученные из proto-контрактов T-Invest API.
-Проект не заявляет права собственности на эти контракты и не является
+Пакет содержит JavaScript-код и TypeScript declarations, сгенерированные из
+официальных proto-контрактов T-Invest API версии 1.49. Исходный snapshot
+зафиксирован в
+[`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
+
+Официальный артефакт
+[`ru.tinkoff.piapi:java-sdk-grpc-contract:1.49`](https://central.sonatype.com/artifact/ru.tinkoff.piapi/java-sdk-grpc-contract/1.49)
+содержит тот же snapshot контрактов и опубликован на условиях Apache License
+2.0. Сгенерированные из этих контрактов файлы `dist/generated/*.js` и
+`dist/generated/*.d.ts` распространяются с сохранением этих условий. Полный
+текст лицензии находится в
+[`LICENSES/Apache-2.0.txt`](./LICENSES/Apache-2.0.txt).
+
+Проект не заявляет права собственности на контракты и не является
 аффилированным, одобренным или спонсируемым T-Invest, T-Bank либо связанными с
 ними организациями.
 
