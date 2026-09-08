@@ -1,5 +1,10 @@
 # Node.js SDK for T-Invest API
 
+[![npm version](https://img.shields.io/npm/v/%40woodger%2Ft-invest-node-sdk.svg)](https://www.npmjs.com/package/@woodger/t-invest-node-sdk)
+[![node](https://img.shields.io/node/v/%40woodger%2Ft-invest-node-sdk.svg)](https://www.npmjs.com/package/@woodger/t-invest-node-sdk)
+[![types](https://img.shields.io/npm/types/%40woodger%2Ft-invest-node-sdk.svg)](https://www.npmjs.com/package/@woodger/t-invest-node-sdk)
+[![license](https://img.shields.io/npm/l/%40woodger%2Ft-invest-node-sdk.svg)](LICENSE)
+
 Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Invest через `nice-grpc`.
 
 Текущий публичный API модуля состоит из:
