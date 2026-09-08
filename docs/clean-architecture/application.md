@@ -1,16 +1,12 @@
 # Application-слой
 
-> Type: Design Note. Документ фиксирует роль `application`-слоя в текущем SDK.
-> Canonical границы слоев описаны в [Архитектура SDK](../architecture.md).
+> Type: Design Note. Документ фиксирует роль `application`-слоя в текущем SDK. Canonical границы слоев описаны в [Архитектура SDK](../architecture.md).
 
 ## Главная Идея
 
-`application` содержит код, который должен оставаться независимым от runtime
-entrypoints и конкретных transport/infrastructure деталей.
+`application` содержит код, который должен оставаться независимым от runtime entrypoints и конкретных transport/infrastructure деталей.
 
-В Inventory application уже содержит use-case-ы, ports, reports, services и
-pipeline orchestration. В текущем SDK этот слой меньше: есть только contracts и
-reusable правила, которые нужны SDK facade и CLI-командам.
+В Inventory application уже содержит use-case-ы, ports, reports, services и pipeline orchestration. В текущем SDK этот слой меньше: есть только contracts и reusable правила, которые нужны SDK facade и CLI-командам.
 
 ## Что Сейчас Есть В `application`
 
@@ -33,8 +29,7 @@ src/application
 - `application/dto` - входные SDK options и application-level contracts;
 - `application/errors` - стабильные transport-neutral errors и runtime guards;
 - `application/reports` - стабильные output/report contracts API-команд;
-- `application/services` - application ports и reusable правила, например
-  `TInvestUnaryLimiter` и его необязательная process-local реализация.
+- `application/services` - application ports и reusable правила, например `TInvestUnaryLimiter` и его необязательная process-local реализация.
 
 ## Что Допустимо В `application`
 
@@ -57,8 +52,7 @@ src/application
 
 ## Отчёты
 
-`application/reports` описывает, что команда сообщает наружу, но не решает,
-как это показать пользователю.
+`application/reports` описывает, что команда сообщает наружу, но не решает, как это показать пользователю.
 
 Пример ответственности:
 
@@ -74,23 +68,13 @@ icore TerminalApp/Output
   warnings/errors -> Output.error -> stderr
 ```
 
-Report contract не должен импортировать `bootstrap` или concrete
-infrastructure. Он может быть использован CLI, тестом, будущим HTTP transport
-или file writer без изменения семантики.
+Report contract не должен импортировать `bootstrap` или concrete infrastructure. Он может быть использован CLI, тестом, будущим HTTP transport или file writer без изменения семантики.
 
 ## Ошибки
 
-`application/errors/sdk-error.ts` задает публичные `SdkError`,
-`SdkErrorCode`, `SdkErrorSource` и `isSdkError()`, не импортируя `nice-grpc`.
-Infrastructure преобразует известные gRPC failures в этот contract, а
-bootstrap facade создает lifecycle error после `close()`. Исходная ошибка
-сохраняется как `cause`. Однозначные ошибки проверки TLS certificate chain и
-hostname получают source `tls`, не меняя code `Unavailable`; обычные provider
-и network failures сохраняют source `grpc`.
+`application/errors/sdk-error.ts` задает публичные `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`, не импортируя `nice-grpc`. Infrastructure преобразует известные gRPC failures в этот contract, а bootstrap facade создает lifecycle error после `close()`. Исходная ошибка сохраняется как `cause`. Однозначные ошибки проверки TLS certificate chain и hostname получают source `tls`, не меняя code `Unavailable`; обычные provider и network failures сохраняют source `grpc`.
 
-Error code предоставляет классификацию, но не объявляет операцию retryable:
-решение о повторе дополнительно зависит от idempotency, provider metadata и
-backoff policy Consumer-а.
+Error code предоставляет классификацию, но не объявляет операцию retryable: решение о повторе дополнительно зависит от idempotency, provider metadata и backoff policy Consumer-а.
 
 ## Сервисы
 
@@ -101,17 +85,11 @@ backoff policy Consumer-а.
 - не требуют конкретного SDK adapter-а;
 - имеют самостоятельное поведение и тесты.
 
-`TInvestUnaryLimiter` получает готовые `path`, `bucket`, `maxRequests`,
-`windowMs` и `AbortSignal`. Сопоставление gRPC method path с service/method
-rule остаётся в transport adapter-е. Consumer может реализовать port без deep
-imports; SDK не владеет lifecycle переданного объекта.
+`TInvestUnaryLimiter` получает готовые `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Сопоставление gRPC method path с service/method rule остаётся в transport adapter-е. Consumer может реализовать port без deep imports; SDK не владеет lifecycle переданного объекта.
 
-`createInMemoryUnaryLimiter()` предоставляет необязательную реализацию с
-отменяемой bucket queue. Она не знает, какой transport выполняет вызов, и не
-координирует другие процессы.
+`createInMemoryUnaryLimiter()` предоставляет необязательную реализацию с отменяемой bucket queue. Она не знает, какой transport выполняет вызов, и не координирует другие процессы.
 
-Если helper используется один раз и не выражает отдельное правило, его лучше
-оставить рядом с consumer-ом.
+Если helper используется один раз и не выражает отдельное правило, его лучше оставить рядом с consumer-ом.
 
 ## Чего Сейчас Нет
 
@@ -120,18 +98,14 @@ imports; SDK не владеет lifecycle переданного объекта
 - `application/use-cases`;
 - `domain`.
 
-Их не нужно создавать заранее. Добавление такой директории допустимо только
-когда появляется реальная ответственность:
+Их не нужно создавать заранее. Добавление такой директории допустимо только когда появляется реальная ответственность:
 
-- use-case - если команда начинает координировать сценарий, а не просто
-  вызывает один SDK method;
+- use-case - если команда начинает координировать сценарий, а не просто вызывает один SDK method;
 - domain - если появляются provider-neutral правила или модели.
 
 ## Короткие Правила
 
-- `application` описывает application-level контракт, а не формат
-  пользовательского вывода.
+- `application` описывает application-level контракт, а не формат пользовательского вывода.
 - Provider/gRPC mapping не должен протекать в чистые application contracts.
 - Bootstrap может вызывать application, но application не импортирует bootstrap.
-- Если output formatting содержит бизнес-семантику, нужно решить, это report
-  contract, application service или adapter logic.
+- Если output formatting содержит бизнес-семантику, нужно решить, это report contract, application service или adapter logic.

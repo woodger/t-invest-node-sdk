@@ -1,25 +1,19 @@
 # Заметки по Clean Architecture
 
-> Type: Navigation. Этот раздел переносит и адаптирует Clean Architecture notes
-> из Inventory под текущий компактный SDK.
+> Type: Navigation. Этот раздел переносит и адаптирует Clean Architecture notes из Inventory под текущий компактный SDK.
 
-Canonical source of truth по фактической карте слоев:
-[Архитектура SDK](../architecture.md).
+Canonical source of truth по фактической карте слоев: [Архитектура SDK](../architecture.md).
 
-Policy source of truth по ограничениям и направлению зависимостей:
-[Архитектурная политика](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
+Policy source of truth по ограничениям и направлению зависимостей: [Архитектурная политика](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
 
 ## Зачем Этот Раздел
 
-Текущий SDK меньше Inventory: здесь пока нет `domain`, `use-cases`,
-`ports`, HTTP transport и dataset pipeline. Но уже появились `application`,
-`infrastructure`, `bootstrap` и первые API-команды CLI.
+Текущий SDK меньше Inventory: здесь пока нет `domain`, `use-cases`, `ports`, HTTP transport и dataset pipeline. Но уже появились `application`, `infrastructure`, `bootstrap` и первые API-команды CLI.
 
 Эти notes нужны для двух задач:
 
 - объяснить, как применять Clean Architecture Lite к текущей структуре;
-- зафиксировать, куда двигать `commands`-слой, если CLI formatting и adapters
-  начнут расти.
+- зафиксировать, куда двигать `commands`-слой, если CLI formatting и adapters начнут расти.
 
 ## Документы
 
@@ -27,12 +21,9 @@ Policy source of truth по ограничениям и направлению �
 - [DTO и Reports](./dto.md) - где живут boundary contracts.
 - [API-команды](./api-commands.md) - текущий CLI flow и границы command layer.
 - [Adapters](./adapters.md) - место project adapters и граница с `icore`.
-- [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) -
-  границы command-specific formatting, generic primitives и terminal output.
-- [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт
-  `stream run` и будущие stream-расширения.
-- [Справочник конфигурации потокового CLI](../cli-stream-configuration.md) -
-  JSON config для stream CLI.
+- [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) - границы command-specific formatting, generic primitives и terminal output.
+- [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт `stream run` и будущие stream-расширения.
+- [Справочник конфигурации потокового CLI](../cli-stream-configuration.md) - JSON config для stream CLI.
 
 ## Текущая Карта
 
@@ -71,8 +62,7 @@ external dependency
     TerminalApp/Output
 ```
 
-`domain` пока не выделен: SDK сейчас в основном оборачивает generated gRPC
-contracts и не содержит самостоятельную provider-neutral доменную модель.
+`domain` пока не выделен: SDK сейчас в основном оборачивает generated gRPC contracts и не содержит самостоятельную provider-neutral доменную модель.
 
 ## Главная Идея
 
@@ -80,10 +70,8 @@ contracts и не содержит самостоятельную provider-neutr
 
 - `application` описывает стабильные контракты и reusable application rules;
 - `infrastructure` содержит внешние технологии и adapters;
-- `bootstrap` собирает runtime entrypoints, связывает зависимости и интегрирует
-  публичный API `icore` с project-owned CLI contracts;
+- `bootstrap` собирает runtime entrypoints, связывает зависимости и интегрирует публичный API `icore` с project-owned CLI contracts;
 - `generated` содержит proto-generated contracts в плоском source layout и не редактируется вручную;
 - `bootstrap/generated-exports.ts` остается generated DTO/enums и server-side contracts public export exception.
 
-Если новая логика не укладывается в эту карту, нужно сначала уточнить
-архитектурное намерение и обновить документацию.
+Если новая логика не укладывается в эту карту, нужно сначала уточнить архитектурное намерение и обновить документацию.

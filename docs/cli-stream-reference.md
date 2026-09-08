@@ -1,8 +1,6 @@
 # Справочник потокового CLI
 
-> Type: Reference. Документ фиксирует текущий CLI-контракт `stream run` для
-> server-side streams, статических bidirectional market data requests и
-> отдельно отмечает будущие расширения.
+> Type: Reference. Документ фиксирует текущий CLI-контракт `stream run` для server-side streams, статических bidirectional market data requests и отдельно отмечает будущие расширения.
 
 ## Статус
 
@@ -12,9 +10,7 @@ CLI-команды реализованы в canonical форме:
 t-invest-node-sdk <domain> <command> [options]
 ```
 
-Stream API требует отдельного контракта: команда не возвращает один response и
-не завершается сразу. Она открывает долгоживущий stream, печатает события и
-завершается по лимиту, таймауту, сигналу или ошибке provider-а.
+Stream API требует отдельного контракта: команда не возвращает один response и не завершается сразу. Она открывает долгоживущий stream, печатает события и завершается по лимиту, таймауту, сигналу или ошибке provider-а.
 
 Текущая точка входа:
 
@@ -22,9 +18,7 @@ Stream API требует отдельного контракта: команд�
 t-invest-node-sdk stream run --config=PATH [runtime options]
 ```
 
-`stream run` является domain-level entrypoint для stream-сценариев:
-конкретный generated stream method выбирается внутри config-файла. Это нужно,
-чтобы не угадывать десятки specialized flags для разных stream-сценариев.
+`stream run` является domain-level entrypoint для stream-сценариев: конкретный generated stream method выбирается внутри config-файла. Это нужно, чтобы не угадывать десятки specialized flags для разных stream-сценариев.
 
 Текущая реализация поддерживает:
 
@@ -34,8 +28,7 @@ t-invest-node-sdk stream run --config=PATH [runtime options]
 - `operations.positionsStream`;
 - `orders.tradesStream`.
 
-Динамические bidirectional request sources не реализованы: команда не читает
-дополнительные request-ы из stdin, файлов, таймеров или interactive input.
+Динамические bidirectional request sources не реализованы: команда не читает дополнительные request-ы из stdin, файлов, таймеров или interactive input.
 
 ## Доступные stream methods
 
@@ -54,24 +47,18 @@ t-invest-node-sdk stream run --config=PATH [runtime options]
 1. прочитать и провалидировать config;
 2. применить CLI runtime overrides;
 3. создать `TInvestNodeSDK`;
-4. создать initial request для server-side stream или конечный initial request
-   iterator для `marketdata.marketDataStream`;
+4. создать initial request для server-side stream или конечный initial request iterator для `marketdata.marketDataStream`;
 5. открыть stream;
 6. писать события в `stdout`;
 7. писать diagnostics/errors/status в `stderr`;
-8. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию stream
-   или provider error;
+8. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию stream или provider error;
 9. закрыть SDK channel в `finally`.
 
-При срабатывании `durationMs` или `idleTimeoutMs` команда сначала отменяет
-pending transport read через session `AbortSignal`, затем завершает iterator и
-закрывает SDK. Runtime timeout остается штатным завершением, а provider error,
-полученная раньше timeout, не маскируется.
+При срабатывании `durationMs` или `idleTimeoutMs` команда сначала отменяет pending transport read через session `AbortSignal`, затем завершает iterator и закрывает SDK. Runtime timeout остается штатным завершением, а provider error, полученная раньше timeout, не маскируется.
 
 ## Контракт вывода
 
-Базовый формат stream output - `jsonl`. Каждое событие печатается отдельной
-строкой JSON:
+Базовый формат stream output - `jsonl`. Каждое событие печатается отдельной строкой JSON:
 
 ```json
 {"stream":"marketdata.marketDataServerSideStream","sequence":1,"receivedAt":"2026-06-29T12:00:00.000Z","type":"candle","payload":{"instrumentUid":"..."}}
@@ -85,9 +72,7 @@ pending transport read через session `AbortSignal`, затем заверш
 - `type` - нормализованный тип события;
 - `payload` - event payload.
 
-`stdout` предназначен только для event output. Сообщения о старте, завершении,
-ошибках provider-а, rejected subscriptions и retry-политике должны идти в
-`stderr`.
+`stdout` предназначен только для event output. Сообщения о старте, завершении, ошибках provider-а, rejected subscriptions и retry-политике должны идти в `stderr`.
 
 ## Типы событий
 
@@ -122,13 +107,11 @@ pending transport read через session `AbortSignal`, затем заверш
 - `orderTrades`;
 - `ping`.
 
-По умолчанию `ping` события не печатаются в `stdout`, если
-`runtime.includePings` не равен `true`.
+По умолчанию `ping` события не печатаются в `stdout`, если `runtime.includePings` не равен `true`.
 
 ## Настройки runtime
 
-Config задает runtime defaults. CLI flags могут переопределять только runtime,
-не subscription contract:
+Config задает runtime defaults. CLI flags могут переопределять только runtime, не subscription contract:
 
 ```bash
 t-invest-node-sdk stream run \
@@ -148,14 +131,9 @@ t-invest-node-sdk stream run \
 - `--raw` — печатать generated response без нормализованного envelope;
 - `--format=jsonl` — формат вывода; поддерживается только `jsonl`.
 
-Логические runtime-флаги поддерживают синтаксис `--flag` / `--no-flag`.
-Используйте `--no-include-pings` или `--no-raw`, чтобы переопределить значение
-`true` из config; формы `--flag=true` и `--flag=false` не поддерживаются.
+Логические runtime-флаги поддерживают синтаксис `--flag` / `--no-flag`. Используйте `--no-include-pings` или `--no-raw`, чтобы переопределить значение `true` из config; формы `--flag=true` и `--flag=false` не поддерживаются.
 
-Числовые runtime-значения должны быть положительными безопасными целыми
-JavaScript. Время сессии и простоя отсчитывается монотонно; ожидания длиннее
-диапазона одного Node.js timer выполняются несколькими последовательными
-таймерами.
+Числовые runtime-значения должны быть положительными безопасными целыми JavaScript. Время сессии и простоя отсчитывается монотонно; ожидания длиннее диапазона одного Node.js timer выполняются несколькими последовательными таймерами.
 
 ## Коды завершения
 
@@ -165,17 +143,11 @@ JavaScript. Время сессии и простоя отсчитывается
 - `130` - процесс остановлен через `SIGINT`;
 - `143` - процесс остановлен через `SIGTERM`.
 
-При штатном завершении, runtime timeout или обработанной ошибке команда закрывает
-SDK в `finally`. Для `SIGINT` и `SIGTERM` встроенный CLI сохраняет стандартное
-завершение процесса Node.js; graceful cancellation и выполнение `finally` в
-этом случае не гарантируются.
+При штатном завершении, runtime timeout или обработанной ошибке команда закрывает SDK в `finally`. Для `SIGINT` и `SIGTERM` встроенный CLI сохраняет стандартное завершение процесса Node.js; graceful cancellation и выполнение `finally` в этом случае не гарантируются.
 
 ## Обратное давление
 
-`stream run` отдает output как последовательность chunks, чтобы не собирать
-бесконечный stream в одну строку. Запись в `stdout` и `stderr` учитывает
-writable backpressure: если stream buffer заполнен, CLI ждет событие `drain`
-или ошибку записи.
+`stream run` отдает output как последовательность chunks, чтобы не собирать бесконечный stream в одну строку. Запись в `stdout` и `stderr` учитывает writable backpressure: если stream buffer заполнен, CLI ждет событие `drain` или ошибку записи.
 
 ## Что не входит в текущую реализацию
 

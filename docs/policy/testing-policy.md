@@ -47,8 +47,7 @@ Runner `fwa`:
 - делегирует выполнение стандартному `node:test`;
 - запускает тестовые файлы в отдельных процессах.
 
-Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run build` и повторить запуск.
-Если `npm test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
+Если `npm test` сообщает, что compiled tests старше source tests, нужно выполнить `npm run build` и повторить запуск. Если `npm test` удаляет stale compiled tests без source-пары, это ожидаемое поведение `fwa --prune`.
 
 ## Обязательность тестов
 
@@ -124,20 +123,16 @@ src/bootstrap/cli/runner.ts         -> src/bootstrap/cli/runner.test.ts
 src/bootstrap/cli/version.ts        -> src/bootstrap/cli/version.test.ts
 ```
 
-Запрещено создавать тест, который по имени выглядит как тест директории или
-barrel-модуля:
+Запрещено создавать тест, который по имени выглядит как тест директории или barrel-модуля:
 
 ```text
 src/bootstrap/cli.test.ts           # покрывает директорию cli/
 src/bootstrap/cli/index.test.ts     # покрывает barrel-only index.ts
 ```
 
-Исключение допустимо только если файл действительно является runtime entrypoint
-или package entrypoint с собственным поведением. В этом случае тест должен
-проверять именно поведение entrypoint, а не внутренние файлы директории.
+Исключение допустимо только если файл действительно является runtime entrypoint или package entrypoint с собственным поведением. В этом случае тест должен проверять именно поведение entrypoint, а не внутренние файлы директории.
 
-Если `index.ts` содержит только re-export-ы, отдельный тест для него не нужен.
-Тестировать нужно файлы, в которых находится логика.
+Если `index.ts` содержит только re-export-ы, отдельный тест для него не нужен. Тестировать нужно файлы, в которых находится логика.
 
 ## Импорты в тестах
 
@@ -156,12 +151,9 @@ import { renderCliHelp } from './index';
 import { renderCliHelp } from '../help';
 ```
 
-Второй пример запрещен, если `../help` резолвится как директория или barrel, а
-не как конкретный файл.
+Второй пример запрещен, если `../help` резолвится как директория или barrel, а не как конкретный файл.
 
-Integration-тест может идти через публичный entrypoint, если проверяет
-наблюдаемое поведение entrypoint: exit code, stdout/stderr, dispatch, wiring или
-public API contract.
+Integration-тест может идти через публичный entrypoint, если проверяет наблюдаемое поведение entrypoint: exit code, stdout/stderr, dispatch, wiring или public API contract.
 
 ## Изоляция
 
