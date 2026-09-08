@@ -51,6 +51,8 @@ reference остаются в public types и proto/generated contracts.
   [Лимитная политика](./limits-policy.md).
 - Bundled CA, per-instance trust override и границы TLS policy:
   [TLS-доверие](./tls-policy.md).
+- Происхождение, границы распространения и техническое подключение bundled CA:
+  [Встроенный Russian Trusted Root CA](./bundled-ca.md).
 - Архитектурные заметки по application, DTO, отчётам и адаптерам:
   [Заметки по Clean Architecture](./clean-architecture/index.md).
 - Граница project adapters и внешнего API `icore`:

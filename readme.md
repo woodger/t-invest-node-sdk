@@ -39,6 +39,7 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 - [Лимитная политика API](docs/limits-policy.md)
 - [Собственная реализация unary limiter-а](docs/guides/custom-unary-limiter.md)
 - [TLS-доверие](docs/tls-policy.md)
+- [Происхождение и подключение встроенного CA](docs/bundled-ca.md)
 - [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md)
 - [Политика тестирования](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
 - [Политика комментариев в тестах](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
@@ -193,8 +194,10 @@ Default `useSsl` задаётся package config; явно переданное 
 Bundled CA применяется только к channel текущего SDK instance и не изменяет
 system trust store. Явный `tls.rootCertificates` заменяет bundled CA, а не
 добавляется к нему; SDK принимает содержимое сертификатов в `Buffer`, но не
-путь к файлу. При `useSsl: false` TLS options игнорируются. Полный контракт и
-provenance asset описаны в [TLS policy](docs/tls-policy.md).
+путь к файлу. При `useSsl: false` TLS options игнорируются. Runtime-контракт
+описан в [TLS policy](docs/tls-policy.md), а источник, юридические границы и
+техническое подключение asset-а — в
+[отдельном документе](docs/bundled-ca.md).
 
 Для читаемой группировки overrides по сервисам и методам доступен
 `defineUnaryLimits()`. Тип вложенного аргумента экспортируется как
