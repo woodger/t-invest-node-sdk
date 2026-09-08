@@ -59,7 +59,7 @@ Runner `fwa`:
 - shared modules;
 - SDK internals;
 - middleware;
-- throttling logic;
+- unary limiter logic;
 - parsing;
 - validation;
 - adapters к внешним API;
@@ -76,7 +76,7 @@ Runner `fwa`:
 - публичное поведение `TInvestNodeSDK`;
 - создание metadata, channel и typed clients;
 - middleware behavior для unary и streaming calls;
-- throttling и resolution лимитов;
+- unary limiter и resolution квот;
 - mapping конфигурации в runtime behavior;
 - validation helpers;
 - edge cases, которые могут привести к silent data corruption;
@@ -187,8 +187,12 @@ public API contract.
 
 ```ts
 test('returns undefined for an unknown path', () => {
+  const perMinute = (maxRequests: number) => ({
+    maxRequests,
+    windowMs: 60_000
+  });
   const resolver = new UnaryLimitResolver({
-    KnownService: 100
+    KnownService: perMinute(100)
   });
 
   assert.equal(
@@ -201,15 +205,19 @@ test('returns undefined for an unknown path', () => {
 Плохо:
 
 ```ts
-test('validates throttling', () => {
+test('validates unary quotas', () => {
+  const perMinute = (maxRequests: number) => ({
+    maxRequests,
+    windowMs: 60_000
+  });
   const resolver = new UnaryLimitResolver({
-    InstrumentsService: 200,
-    MarketDataService: 300,
-    OperationsService: 200,
-    OrdersService: 100,
-    SandboxService: 200,
-    StopOrdersService: 50,
-    UsersService: 100
+    InstrumentsService: perMinute(200),
+    MarketDataService: perMinute(300),
+    OperationsService: perMinute(200),
+    OrdersService: perMinute(100),
+    SandboxService: perMinute(200),
+    StopOrdersService: perMinute(50),
+    UsersService: perMinute(100)
   });
 
   assert.equal(
@@ -235,7 +243,7 @@ Top-level `describe()` называет unit under test:
 Хорошо:
 
 ```ts
-describe('Throttle', () => {
+describe('createInMemoryUnaryLimiter', () => {
   // ...
 });
 
@@ -353,7 +361,7 @@ test('throws for unknown unary limit path', async () => {
   // ...
 });
 
-test('does not throttle response streams', async () => {
+test('does not invoke the unary limiter for response streams', async () => {
   // ...
 });
 ```

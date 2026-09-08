@@ -9,6 +9,7 @@ import {
   isSdkError,
   SdkErrorCode
 } from '../application/errors/sdk-error';
+import type { TInvestUnaryLimitContext } from '../application/services/unary-limiter';
 import { SignalServiceDefinition } from '../generated/signals';
 import { TInvestNodeSDK } from './t-invest-node-sdk';
 
@@ -115,6 +116,53 @@ describe('TInvestNodeSDK', () => {
           && error.source === 'grpc'
           && error.details === 'invalid token'
       );
+    }
+    finally {
+      sdk.close();
+      await server.shutdown();
+    }
+  });
+
+  test('uses the limiter supplied to the SDK instance', async () => {
+    const server = createServer();
+    let limiterContext: TInvestUnaryLimitContext | undefined;
+
+    server.add(SignalServiceDefinition, {
+      async getStrategies() {
+        return { strategies: [] };
+      },
+      async getSignals() {
+        return {
+          signals: [],
+          paging: undefined
+        };
+      }
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const sdk = new TInvestNodeSDK({
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false,
+      unaryLimiter: {
+        async acquire(context) {
+          limiterContext = context;
+        }
+      }
+    });
+
+    try {
+      await sdk.signals.getSignals({});
+
+      assert.equal(
+        limiterContext?.path,
+        '/tinkoff.public.invest.api.contract.v1.SignalService/GetSignals'
+      );
+      assert.deepEqual(limiterContext?.quota, {
+        bucket: 'rule:SignalService',
+        maxRequests: 100,
+        windowMs: 60_000
+      });
     }
     finally {
       sdk.close();

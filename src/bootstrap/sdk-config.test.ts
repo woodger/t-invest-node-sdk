@@ -5,11 +5,10 @@ import {
   isSdkError,
   SdkErrorCode
 } from '../application/errors/sdk-error';
-import { Throttle } from '../application/services/unary-throttle.service';
 import {
   defaultConfig,
   resolveSdkInstanceOptions,
-  resolveUnaryThrottleConfig
+  resolveUnaryLimitConfig
 } from './sdk-config';
 import { defineUnaryLimits } from './unary-limit-config';
 import {
@@ -31,7 +30,7 @@ describe('defaultConfig', () => {
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
-      assert.equal(resolver.resolve(path)?.limitPerMinute, limit);
+      assert.equal(resolver.resolve(path)?.maxRequests, limit);
     }
   });
 
@@ -49,7 +48,7 @@ describe('defaultConfig', () => {
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
-      assert.equal(resolver.resolve(path)?.limitPerMinute, limit);
+      assert.equal(resolver.resolve(path)?.maxRequests, limit);
     }
   });
 
@@ -57,7 +56,7 @@ describe('defaultConfig', () => {
     const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
       '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders': 200,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': 900,
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': 15,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrderAsync': 600,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/CancelOrder': 300,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/ReplaceOrder': 300,
@@ -65,24 +64,29 @@ describe('defaultConfig', () => {
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
-      assert.equal(resolver.resolve(path)?.limitPerMinute, limit);
+      assert.equal(resolver.resolve(path)?.maxRequests, limit);
     }
+
+    assert.equal(
+      resolver.resolve(
+        '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
+      )?.windowMs,
+      1_000
+    );
   });
 
 });
 
 describe('resolveSdkInstanceOptions', () => {
-  test('keeps boolean package defaults for explicitly undefined options', () => {
+  test('keeps the TLS package default for an explicitly undefined option', () => {
     const unsafeOptions = {
       token: 'token',
       endpoint: 'localhost:50051',
-      useSsl: undefined,
-      trackLimits: undefined
+      useSsl: undefined
     } as unknown as TInvestOptions;
     const options = resolveSdkInstanceOptions(unsafeOptions);
 
     assert.equal(options.useSsl, true);
-    assert.equal(options.trackLimits, true);
   });
 
   test('rejects an unsupported token without exposing its value', () => {
@@ -112,39 +116,65 @@ describe('resolveSdkInstanceOptions', () => {
         && error.message.includes('TInvestOptions.appName')
     );
   });
+
+  test('rejects a limiter without a callable acquire capability', () => {
+    assert.throws(
+      () => resolveSdkInstanceOptions({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        unaryLimiter: {} as never
+      }),
+      (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        && error.source === 'sdk'
+        && error.message.includes('TInvestOptions.unaryLimiter')
+    );
+  });
+
+  test('rejects the removed trackLimits option instead of ignoring it', () => {
+    assert.throws(
+      () => resolveSdkInstanceOptions({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        trackLimits: true
+      } as never),
+      (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        && error.source === 'sdk'
+        && error.message.includes('configure unaryLimiter explicitly')
+    );
+  });
 });
 
-describe('resolveUnaryThrottleConfig', () => {
+describe('resolveUnaryLimitConfig', () => {
   test('merges per-instance overrides over package defaults', () => {
-    const { limits } = resolveUnaryThrottleConfig({
-      UsersService: 25
+    const { limits } = resolveUnaryLimitConfig({
+      UsersService: perMinute(25)
     });
 
-    assert.equal(limits['UsersService'], 25);
-    assert.equal(limits['MarketDataService'], 600);
+    assert.deepEqual(limits['UsersService'], perMinute(25));
+    assert.deepEqual(limits['MarketDataService'], perMinute(600));
   });
 
   test('merges method overrides produced from nested definitions', () => {
     const overrides = defineUnaryLimits({
       OrdersService: {
         methods: {
-          PostOrder: 300
+          PostOrder: perMinute(300)
         }
       }
     });
-    const config = resolveUnaryThrottleConfig(overrides);
+    const config = resolveUnaryLimitConfig(overrides);
     const resolver = new UnaryLimitResolver(config.limits, config.buckets);
 
     assert.equal(
       resolver.resolve(
         '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
-      )?.limitPerMinute,
+      )?.maxRequests,
       300
     );
     assert.equal(
       resolver.resolve(
         '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
-      )?.limitPerMinute,
+      )?.maxRequests,
       100
     );
   });
@@ -153,47 +183,75 @@ describe('resolveUnaryThrottleConfig', () => {
     const overrides = defineUnaryLimits({
       MarketDataService: {
         methods: {
-          GetOrderBook: 300
+          GetOrderBook: perMinute(300)
         }
       }
     });
-    const config = resolveUnaryThrottleConfig(overrides);
+    const config = resolveUnaryLimitConfig(overrides);
     const resolver = new UnaryLimitResolver(config.limits, config.buckets);
 
     assert.equal(
       resolver.resolve(
         '/tinkoff.public.invest.api.contract.v1.MarketDataService/GetOrderBook'
-      )?.limitPerMinute,
+      )?.maxRequests,
       300
     );
   });
 
   test('returns an isolated snapshot for each resolution', () => {
-    const first = resolveUnaryThrottleConfig();
-    const second = resolveUnaryThrottleConfig();
+    const first = resolveUnaryLimitConfig();
+    const second = resolveUnaryLimitConfig();
 
-    first.limits['UsersService'] = 25;
+    const firstUsersLimit = first.limits['UsersService'];
 
-    assert.equal(second.limits['UsersService'], 100);
-    assert.equal(defaultConfig.unaryLimits['UsersService'], 100);
+    if (firstUsersLimit === undefined) {
+      assert.fail('Expected UsersService limit');
+    }
+
+    (firstUsersLimit as { maxRequests: number }).maxRequests = 25;
+
+    assert.deepEqual(second.limits['UsersService'], perMinute(100));
+    assert.deepEqual(defaultConfig.unaryLimits['UsersService'], perMinute(100));
   });
 
-  test('rejects invalid per-instance limits after merging overrides', () => {
+  test('rejects invalid per-instance request counts after merging overrides', () => {
     for (const limit of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
       assert.throws(
-        () => resolveUnaryThrottleConfig({ UsersService: limit }),
+        () => resolveUnaryLimitConfig({
+          UsersService: {
+            maxRequests: limit,
+            windowMs: 60_000
+          }
+        }),
         (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
           && error.source === 'sdk'
           && error.cause instanceof Error
           && error.message ===
-            'Unary limit UsersService must be a finite positive number'
+            'Unary limit UsersService.maxRequests must be a finite positive number'
       );
     }
   });
 
+  test('rejects an invalid per-instance quota window', () => {
+    assert.throws(
+      () => resolveUnaryLimitConfig({
+        UsersService: {
+          maxRequests: 100,
+          windowMs: 0
+        }
+      }),
+      (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        && error.source === 'sdk'
+        && error.message ===
+          'Unary limit UsersService.windowMs must be a finite positive number'
+    );
+  });
+
   test('rejects unknown per-instance limit rules', () => {
     assert.throws(
-      () => resolveUnaryThrottleConfig({ MarketDataServce: 1 }),
+      () => resolveUnaryLimitConfig({
+        MarketDataServce: perMinute(1)
+      }),
       (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
         && error.source === 'sdk'
         && error.message === 'Unknown unary limit rule MarketDataServce'
@@ -204,14 +262,14 @@ describe('resolveUnaryThrottleConfig', () => {
     const previousLimit = defaultConfig.unaryLimits['UsersService'];
 
     try {
-      defaultConfig.unaryLimits['UsersService'] = 0;
+      defaultConfig.unaryLimits['UsersService'] = perMinute(0);
 
       assert.throws(
-        () => resolveUnaryThrottleConfig(),
+        () => resolveUnaryLimitConfig(),
         (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
           && error.source === 'sdk'
           && error.message ===
-            'Unary limit UsersService must be a finite positive number'
+            'Unary limit UsersService.maxRequests must be a finite positive number'
       );
     }
     finally {
@@ -238,31 +296,31 @@ describe('resolveUnaryThrottleConfig', () => {
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport',
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
     ];
-    const instrumentRules = instrumentPaths.map((path) => (
-      resolveRequiredRule(resolver, path)
+    const instrumentQuotas = instrumentPaths.map((path) => (
+      resolveRequiredQuota(resolver, path)
     ));
-    const reportRules = reportPaths.map((path) => (
-      resolveRequiredRule(resolver, path)
+    const reportQuotas = reportPaths.map((path) => (
+      resolveRequiredQuota(resolver, path)
     ));
-    const instrumentBucket = instrumentRules[0]?.bucket;
-    const reportBucket = reportRules[0]?.bucket;
+    const instrumentBucket = instrumentQuotas[0]?.bucket;
+    const reportBucket = reportQuotas[0]?.bucket;
 
     if (instrumentBucket === undefined || reportBucket === undefined) {
       assert.fail('Expected package quota rules');
     }
 
-    for (const rule of instrumentRules) {
-      assert.equal(rule.bucket, instrumentBucket);
+    for (const quota of instrumentQuotas) {
+      assert.equal(quota.bucket, instrumentBucket);
     }
 
-    for (const rule of reportRules) {
-      assert.equal(rule.bucket, reportBucket);
+    for (const quota of reportQuotas) {
+      assert.equal(quota.bucket, reportBucket);
     }
 
     assert.notEqual(instrumentBucket, reportBucket);
   });
 
-  test('does not couple a changed method override to its former quota group', async () => {
+  test('does not couple a changed method override to its former quota group', () => {
     const brokerReportPath =
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport';
     const dividendsReportPath =
@@ -270,38 +328,33 @@ describe('resolveUnaryThrottleConfig', () => {
     const overrides = defineUnaryLimits({
       OperationsService: {
         methods: {
-          GetBrokerReport: 10
+          GetBrokerReport: perMinute(10)
         }
       }
     });
-    const config = resolveUnaryThrottleConfig(overrides);
+    const config = resolveUnaryLimitConfig(overrides);
     const resolver = new UnaryLimitResolver(config.limits, config.buckets);
-    const throttle = new Throttle();
+    const brokerReport = resolveRequiredQuota(resolver, brokerReportPath);
+    const dividendsReport = resolveRequiredQuota(resolver, dividendsReportPath);
 
-    const delays = await captureThrottleDelays(async () => {
-      await throttle.reduce(resolveRequiredRule(resolver, brokerReportPath));
-      await throttle.reduce(resolveRequiredRule(resolver, dividendsReportPath));
-      await throttle.reduce(resolveRequiredRule(resolver, brokerReportPath));
-    });
-
-    assert.deepEqual(delays, [6000]);
+    assert.notEqual(brokerReport.bucket, dividendsReport.bucket);
   });
 
   test('keeps a method grouped when an override repeats its package limit', () => {
     const overrides = defineUnaryLimits({
       OperationsService: {
         methods: {
-          GetBrokerReport: 5
+          GetBrokerReport: perMinute(5)
         }
       }
     });
-    const config = resolveUnaryThrottleConfig(overrides);
+    const config = resolveUnaryLimitConfig(overrides);
     const resolver = new UnaryLimitResolver(config.limits, config.buckets);
-    const brokerReport = resolveRequiredRule(
+    const brokerReport = resolveRequiredQuota(
       resolver,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'
     );
-    const dividendsReport = resolveRequiredRule(
+    const dividendsReport = resolveRequiredQuota(
       resolver,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
     );
@@ -313,24 +366,24 @@ describe('resolveUnaryThrottleConfig', () => {
     const overrides = defineUnaryLimits({
       OperationsService: {
         methods: {
-          GetBrokerReport: 10,
-          GetDividendsForeignIssuer: 10
+          GetBrokerReport: perMinute(10),
+          GetDividendsForeignIssuer: perMinute(10)
         }
       }
     });
-    const config = resolveUnaryThrottleConfig(overrides);
+    const config = resolveUnaryLimitConfig(overrides);
     const resolver = new UnaryLimitResolver(config.limits, config.buckets);
-    const brokerReport = resolveRequiredRule(
+    const brokerReport = resolveRequiredQuota(
       resolver,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport'
     );
-    const dividendsReport = resolveRequiredRule(
+    const dividendsReport = resolveRequiredQuota(
       resolver,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
     );
 
-    assert.equal(brokerReport.limitPerMinute, 10);
-    assert.equal(dividendsReport.limitPerMinute, 10);
+    assert.equal(brokerReport.maxRequests, 10);
+    assert.equal(dividendsReport.maxRequests, 10);
     assert.equal(brokerReport.bucket, dividendsReport.bucket);
   });
 
@@ -339,18 +392,18 @@ describe('resolveUnaryThrottleConfig', () => {
     const previousLimit = defaultConfig.unaryLimits[path];
 
     try {
-      defaultConfig.unaryLimits[path] = 10;
+      defaultConfig.unaryLimits[path] = perMinute(10);
 
-      const { limits, buckets } = resolveUnaryThrottleConfig();
+      const { limits, buckets } = resolveUnaryLimitConfig();
       const resolver = new UnaryLimitResolver(limits, buckets);
-      const rule = resolveRequiredRule(resolver, path);
-      const groupedRule = resolveRequiredRule(
+      const quota = resolveRequiredQuota(resolver, path);
+      const groupedQuota = resolveRequiredQuota(
         resolver,
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
       );
 
-      assert.equal(rule.limitPerMinute, 10);
-      assert.notEqual(rule.bucket, groupedRule.bucket);
+      assert.equal(quota.maxRequests, 10);
+      assert.notEqual(quota.bucket, groupedQuota.bucket);
     }
     finally {
       if (previousLimit === undefined) {
@@ -369,16 +422,16 @@ describe('resolveUnaryThrottleConfig', () => {
     try {
       delete defaultConfig.unaryLimits[path];
 
-      const { limits, buckets } = resolveUnaryThrottleConfig();
+      const { limits, buckets } = resolveUnaryLimitConfig();
       const resolver = new UnaryLimitResolver(limits, buckets);
-      const rule = resolveRequiredRule(resolver, path);
-      const fallbackRule = resolveRequiredRule(
+      const quota = resolveRequiredQuota(resolver, path);
+      const fallbackQuota = resolveRequiredQuota(
         resolver,
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio'
       );
 
-      assert.equal(rule.limitPerMinute, 200);
-      assert.equal(rule.bucket, fallbackRule.bucket);
+      assert.equal(quota.maxRequests, 200);
+      assert.equal(quota.bucket, fallbackQuota.bucket);
     }
     finally {
       if (previousLimit !== undefined) {
@@ -388,8 +441,8 @@ describe('resolveUnaryThrottleConfig', () => {
   });
 
   test('returns an isolated bucket snapshot for each resolution', () => {
-    const first = resolveUnaryThrottleConfig();
-    const second = resolveUnaryThrottleConfig();
+    const first = resolveUnaryLimitConfig();
+    const second = resolveUnaryLimitConfig();
     const path = '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport';
     const expectedBucket = second.buckets[path];
 
@@ -404,48 +457,27 @@ describe('resolveUnaryThrottleConfig', () => {
 });
 
 function createDefaultUnaryLimitResolver(): UnaryLimitResolver {
-  const config = resolveUnaryThrottleConfig();
+  const config = resolveUnaryLimitConfig();
 
   return new UnaryLimitResolver(config.limits, config.buckets);
 }
 
-function resolveRequiredRule(
+function resolveRequiredQuota(
   resolver: UnaryLimitResolver,
   path: string
 ) {
-  const rule = resolver.resolve(path);
+  const quota = resolver.resolve(path);
 
-  if (rule === undefined) {
-    throw new Error(`Expected unary limit rule for ${path}`);
+  if (quota === undefined) {
+    throw new Error(`Expected unary quota for ${path}`);
   }
 
-  return rule;
+  return quota;
 }
 
-async function captureThrottleDelays(run: () => Promise<void>): Promise<number[]> {
-  const originalPerformance = global.performance;
-  const originalSetTimeout = global.setTimeout;
-  let now = 10_000;
-  const delays: number[] = [];
-
-  global.performance = { now: () => now } as Performance;
-  global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
-    const resolvedDelay = delay ?? 0;
-
-    delays.push(resolvedDelay);
-    now += resolvedDelay;
-    callback();
-
-    return 0 as never;
-  }) as unknown as typeof setTimeout;
-
-  try {
-    await run();
-
-    return delays;
-  }
-  finally {
-    global.performance = originalPerformance;
-    global.setTimeout = originalSetTimeout;
-  }
+function perMinute(maxRequests: number) {
+  return {
+    maxRequests,
+    windowMs: 60_000
+  };
 }

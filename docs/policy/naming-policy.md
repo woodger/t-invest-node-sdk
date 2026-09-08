@@ -30,7 +30,7 @@ export function createSdkMetadata() {
   // ...
 }
 
-type UnaryLimits = Record<string, number>;
+type UnaryLimits = Record<string, TInvestUnaryLimit>;
 
 interface TInvestOptions {
   // ...
@@ -172,7 +172,7 @@ const externalPayload = {
 
 ```ts
 const options = {
-  trackLimits: true,
+  maxRequests: 100,
   useSsl: true
 };
 ```
@@ -181,7 +181,7 @@ const options = {
 
 ```ts
 const options = {
-  TRACK_LIMITS: true,
+  MAX_REQUESTS: 100,
   USE_SSL: true
 };
 ```

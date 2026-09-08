@@ -25,7 +25,7 @@ src/application
     *.report.ts
     index.ts
   services/
-    unary-throttle.service.ts
+    unary-limiter.ts
 ```
 
 Текущие зоны:
@@ -33,8 +33,8 @@ src/application
 - `application/dto` - входные SDK options и application-level contracts;
 - `application/errors` - стабильные transport-neutral errors и runtime guards;
 - `application/reports` - стабильные output/report contracts API-команд;
-- `application/services` - reusable application rules, например unary
-  scheduling по transport-neutral `ThrottleRule`.
+- `application/services` - application ports и reusable правила, например
+  `TInvestUnaryLimiter` и его необязательная process-local реализация.
 
 ## Что Допустимо В `application`
 
@@ -101,10 +101,14 @@ backoff policy Consumer-а.
 - не требуют конкретного SDK adapter-а;
 - имеют самостоятельное поведение и тесты.
 
-`Throttle` получает только готовые `bucket` и `limitPerMinute`. Сопоставление
-gRPC method path с service/method rule остается в transport adapter-е.
-`AbortSignal` отменяет ожидающую reservation; scheduler удаляет ее из bucket
-queue и не знает, какой transport должен был выполнить вызов.
+`TInvestUnaryLimiter` получает готовые `path`, `bucket`, `maxRequests`,
+`windowMs` и `AbortSignal`. Сопоставление gRPC method path с service/method
+rule остаётся в transport adapter-е. Consumer может реализовать port без deep
+imports; SDK не владеет lifecycle переданного объекта.
+
+`createInMemoryUnaryLimiter()` предоставляет необязательную реализацию с
+отменяемой bucket queue. Она не знает, какой transport выполняет вызов, и не
+координирует другие процессы.
 
 Если helper используется один раз и не выражает отдельное правило, его лучше
 оставить рядом с consumer-ом.
@@ -114,7 +118,6 @@ queue и не знает, какой transport должен был выполн�
 В текущем SDK пока нет:
 
 - `application/use-cases`;
-- `application/ports`;
 - `domain`.
 
 Их не нужно создавать заранее. Добавление такой директории допустимо только
@@ -122,14 +125,12 @@ queue и не знает, какой transport должен был выполн�
 
 - use-case - если команда начинает координировать сценарий, а не просто
   вызывает один SDK method;
-- port - если application должен описать внешнюю возможность без знания
-  concrete adapter-а;
 - domain - если появляются provider-neutral правила или модели.
 
 ## Короткие Правила
 
-- `application` описывает внутренний контракт, а не формат пользовательского
-  вывода.
+- `application` описывает application-level контракт, а не формат
+  пользовательского вывода.
 - Provider/gRPC mapping не должен протекать в чистые application contracts.
 - Bootstrap может вызывать application, но application не импортирует bootstrap.
 - Если output formatting содержит бизнес-семантику, нужно решить, это report

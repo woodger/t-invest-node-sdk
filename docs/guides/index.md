@@ -17,6 +17,12 @@
 - [Ошибки и lifecycle](./errors-and-lifecycle.md) — narrowing `SdkError`,
   различение источников ошибок и граница retry policy.
 
+## Управление unary-квотами
+
+- [Собственная реализация unary limiter-а](./custom-unary-limiter.md) —
+  публичный port, точный lifecycle `acquire()`, cancellation, ownership,
+  process-local и межпроцессные варианты.
+
 ## Consumer-тесты
 
 - [Mock-сервисы через public exports](./testing-with-service-definitions.md) —

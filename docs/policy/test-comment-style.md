@@ -64,14 +64,17 @@
 test('returns undefined for an unknown path', () => {
   // Arrange
   const resolver = new UnaryLimitResolver({
-    KnownService: 100
+    KnownService: {
+      maxRequests: 100,
+      windowMs: 60_000
+    }
   });
 
   // Act
-  const rule = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
+  const quota = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
 
   // Assert
-  assert.equal(rule, undefined);
+  assert.equal(quota, undefined);
 });
 ```
 
@@ -80,7 +83,10 @@ test('returns undefined for an unknown path', () => {
 ```ts
 test('returns undefined for an unknown path', () => {
   const resolver = new UnaryLimitResolver({
-    KnownService: 100
+    KnownService: {
+      maxRequests: 100,
+      windowMs: 60_000
+    }
   });
 
   assert.equal(
@@ -221,14 +227,19 @@ Regression-комментарий должен объяснять production-р�
 
 ```ts
 test('waits according to the configured limit between requests', async () => {
-  const throttle = new Throttle();
-  const rule = {
-    bucket: 'rule:OrdersService',
-    limitPerMinute: 100
+  const limiter = createInMemoryUnaryLimiter();
+  const context = {
+    path: '/test.OrdersService/GetOrders',
+    quota: {
+      bucket: 'rule:OrdersService',
+      maxRequests: 100,
+      windowMs: 60_000
+    },
+    signal: new AbortController().signal
   };
 
-  await throttle.reduce(rule);
-  await throttle.reduce(rule);
+  await limiter.acquire(context);
+  await limiter.acquire(context);
 
   // 600 ms = 60_000 ms / 100 requests per minute.
   assert.deepEqual(delays, [600]);
@@ -239,14 +250,19 @@ test('waits according to the configured limit between requests', async () => {
 
 ```ts
 test('waits according to the configured limit between requests', async () => {
-  const throttle = new Throttle();
-  const rule = {
-    bucket: 'rule:OrdersService',
-    limitPerMinute: 100
+  const limiter = createInMemoryUnaryLimiter();
+  const context = {
+    path: '/test.OrdersService/GetOrders',
+    quota: {
+      bucket: 'rule:OrdersService',
+      maxRequests: 100,
+      windowMs: 60_000
+    },
+    signal: new AbortController().signal
   };
 
-  await throttle.reduce(rule);
-  await throttle.reduce(rule);
+  await limiter.acquire(context);
+  await limiter.acquire(context);
 
   // Check delay
   assert.deepEqual(delays, [600]);
@@ -284,7 +300,7 @@ Mock, stub или fake нужно комментировать только ес
 
 ```ts
 // Stub не эмулирует real gRPC channel намеренно:
-// этот тест проверяет middleware throttling, а не behavior nice-grpc.
+// этот тест проверяет unary limiter middleware, а не behavior nice-grpc.
 const call = createUnaryCall(path);
 ```
 
@@ -309,14 +325,17 @@ const call = createUnaryCall(path);
 test('returns undefined for an unknown path', () => {
   // Given
   const resolver = new UnaryLimitResolver({
-    KnownService: 100
+    KnownService: {
+      maxRequests: 100,
+      windowMs: 60_000
+    }
   });
 
   // When
-  const rule = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
+  const quota = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
 
   // Then
-  assert.equal(rule, undefined);
+  assert.equal(quota, undefined);
 });
 ```
 
@@ -330,11 +349,11 @@ test('returns undefined for an unknown path', () => {
 
 ```ts
 /**
- * Сценарий: SDK middleware применяет throttling только к unary calls.
+ * Сценарий: SDK middleware вызывает limiter только для unary calls.
  *
  * Защищает:
- * - unary limit policy;
- * - отсутствие throttling на response streams.
+ * - unary limiter contract;
+ * - отсутствие вызова limiter-а для response streams.
  *
  * Не проверяет:
  * - сетевое поведение gRPC channel;
@@ -366,14 +385,14 @@ Intentional omission полезен там, где граница теста м�
 
 ```ts
 test('works correctly', async () => {
-  // Проверяем, что response streams не throttled.
+  // Проверяем, что response streams не проходят через unary limiter.
 });
 ```
 
 Хорошо:
 
 ```ts
-test('does not throttle response streams', async () => {
+test('does not invoke the unary limiter for response streams', async () => {
   const responses = [];
 
   for await (const response of iterator) {

@@ -5,8 +5,7 @@ import { packageConfig } from './config';
 describe('packageConfig', () => {
   test('defines defaults for each SDK instance', () => {
     assert.deepEqual(packageConfig.sdk, {
-      useSsl: true,
-      trackLimits: true
+      useSsl: true
     });
   });
 

@@ -51,12 +51,13 @@ external dependency
 - metadata;
 - middleware;
 - typed clients;
-- mapping gRPC method path в transport-neutral `ThrottleRule`;
+- mapping gRPC method path в transport-neutral `TInvestUnaryQuota`;
 - mapping `nice-grpc` client failures в transport-neutral `SdkError`.
 
-`unary-limit-resolver.ts` выбирает method rule или service fallback, разрешает
-quota bucket и передает application scheduler-у только `bucket` и
-`limitPerMinute`. Application не разбирает gRPC path.
+`unary-limit-resolver.ts` выбирает method rule или service fallback и разрешает
+quota bucket. Middleware передаёт Consumer-owned limiter-у полный `path`,
+`bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Application port не
+разбирает gRPC path и не владеет transport lifecycle.
 
 `infrastructure/interceptor` содержит технический process hook для известных
 warnings. Обычный вывод команд проходит через terminal app.
@@ -123,7 +124,8 @@ bootstrap/commands/*/reporter.ts -> icore presentation primitives
 bootstrap/cli/runner.ts          -> icore TerminalApp/Output
 infrastructure/report-values.ts  -> application/reports
 infrastructure/transport/grpc    -> application services/contracts
-infrastructure/unary resolver    -> application ThrottleRule
+infrastructure/unary resolver    -> application TInvestUnaryQuota
+infrastructure/grpc middleware   -> application TInvestUnaryLimiter
 ```
 
 Недопустимо:

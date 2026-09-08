@@ -2,13 +2,13 @@
  * Модуль bootstrap config adapter собирает runtime policy для SDK instances.
  *
  * Здесь допустимы:
- * - компиляция package defaults в совместимый public flat config;
+ * - компиляция package defaults в public flat config;
  * - разрешение per-instance unary limit overrides;
  * - согласование overrides с package quota groups;
  * - проверка инвариантов итогового instance snapshot;
  *
  * Здесь не должно быть transport initialization, provider tariff refresh или
- * throttling state.
+ * limiter state.
  */
 
 import type { TInvestOptions } from '../application/dto/t-invest-options';
@@ -29,18 +29,19 @@ import { SandboxServiceDefinition } from '../generated/sandbox';
 import { SignalServiceDefinition } from '../generated/signals';
 import { StopOrdersServiceDefinition } from '../generated/stoporders';
 import { UsersServiceDefinition } from '../generated/users';
-import type { UnaryThrottleConfig } from './unary-limit-config';
+import type { UnaryLimitConfig } from './unary-limit-config';
 import {
-  assertUnaryThrottleConfig,
-  compileUnaryLimits
+  assertUnaryLimitConfig,
+  cloneUnaryLimits,
+  compileUnaryLimits,
+  sameUnaryLimit
 } from './unary-limit-config';
 
 export type ResolvedTInvestOptions = Omit<
   TInvestOptions,
-  'useSsl' | 'trackLimits'
+  'useSsl'
 > & {
   useSsl: boolean;
-  trackLimits: boolean;
 };
 
 const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
@@ -75,15 +76,14 @@ const knownUnaryLimitRules = new Set<string>(
 );
 
 export const defaultConfig: TInvestNodeSDKConfig = {
-  unaryLimits: {
-    ...packageUnaryLimits.limits
-  },
+  unaryLimits: cloneUnaryLimits(packageUnaryLimits.limits),
   requireSideEffectConfirmation: packageConfig.requireSideEffectConfirmation
 };
 
 export function resolveSdkInstanceOptions(
   options: TInvestOptions
 ): ResolvedTInvestOptions {
+  assertRemovedTrackLimitsOption(options);
   assertNonBlankSdkOption(options.token, 'token');
   assertNonBlankSdkOption(options.endpoint, 'endpoint');
   assertGrpcMetadataValue(options.token, 'token');
@@ -92,56 +92,65 @@ export function resolveSdkInstanceOptions(
     assertGrpcMetadataValue(options.appName, 'appName');
   }
 
+  assertUnaryLimiter(options.unaryLimiter);
+
   return {
     ...options,
-    useSsl: options.useSsl ?? packageConfig.sdk.useSsl,
-    trackLimits: options.trackLimits ?? packageConfig.sdk.trackLimits
+    useSsl: options.useSsl ?? packageConfig.sdk.useSsl
   };
 }
 
-export function resolveUnaryThrottleConfig(
+export function resolveUnaryLimitConfig(
   overrides?: UnaryLimits
-): UnaryThrottleConfig {
-  const buckets = {
-    ...packageUnaryLimits.buckets
-  };
-  const limits = {
-    ...defaultConfig.unaryLimits,
-    ...overrides
-  };
-  const limitsByBucket = new Map<string, Set<number | undefined>>();
-
-  for (const [key, bucket] of Object.entries(buckets)) {
-    const limit = limits[key];
-    const bucketLimits = limitsByBucket.get(bucket) ?? new Set<number | undefined>();
-
-    bucketLimits.add(limit);
-    limitsByBucket.set(bucket, bucketLimits);
-  }
-
-  // Измененный method limit отсоединяется, только если иначе группа получила
-  // бы разные значения. Согласованный override всей группы сохраняет bucket.
-  for (const [key, bucket] of Object.entries(buckets)) {
-    const bucketLimits = limitsByBucket.get(bucket);
-    const hasOneDefinedLimit = bucketLimits?.size === 1
-      && !bucketLimits.has(undefined);
-
-    if (
-      !hasOneDefinedLimit
-      && packageUnaryLimits.limits[key] !== limits[key]
-    ) {
-      delete buckets[key];
-    }
-  }
-
-  const resolvedConfig = {
-    buckets,
-    limits
-  };
-
+): UnaryLimitConfig {
   try {
+    const buckets = {
+      ...packageUnaryLimits.buckets
+    };
+    const limits = cloneUnaryLimits({
+      ...defaultConfig.unaryLimits,
+      ...overrides
+    });
+    const limitsByBucket = new Map<
+      string,
+      (UnaryLimits[string] | undefined)[]
+    >();
+
+    for (const [key, bucket] of Object.entries(buckets)) {
+      const limit = limits[key];
+      const bucketLimits = limitsByBucket.get(bucket) ?? [];
+
+      bucketLimits.push(limit);
+      limitsByBucket.set(bucket, bucketLimits);
+    }
+
+    // Измененный method limit отсоединяется, только если иначе группа получила
+    // бы разные значения. Согласованный override всей группы сохраняет bucket.
+    for (const [key, bucket] of Object.entries(buckets)) {
+      const bucketLimits = limitsByBucket.get(bucket);
+      const firstLimit = bucketLimits?.[0];
+      const hasOneDefinedLimit = firstLimit !== undefined
+        && bucketLimits?.every(
+          (limit) => sameUnaryLimit(firstLimit, limit)
+        ) === true;
+
+      if (
+        !hasOneDefinedLimit
+        && !sameUnaryLimit(packageUnaryLimits.limits[key], limits[key])
+      ) {
+        delete buckets[key];
+      }
+    }
+
+    const resolvedConfig = {
+      buckets,
+      limits
+    };
+
     assertKnownUnaryLimitRules(resolvedConfig.limits);
-    assertUnaryThrottleConfig(resolvedConfig);
+    assertUnaryLimitConfig(resolvedConfig);
+
+    return resolvedConfig;
   }
   catch (error) {
     throw new SdkError(
@@ -153,8 +162,37 @@ export function resolveUnaryThrottleConfig(
       }
     );
   }
+}
 
-  return resolvedConfig;
+function assertRemovedTrackLimitsOption(options: TInvestOptions): void {
+  if (Object.hasOwn(options, 'trackLimits')) {
+    throw new SdkError(
+      SdkErrorCode.InvalidArgument,
+      'TInvestOptions.trackLimits is not supported; configure unaryLimiter explicitly',
+      {
+        source: 'sdk'
+      }
+    );
+  }
+}
+
+function assertUnaryLimiter(limiter: TInvestOptions['unaryLimiter']): void {
+  if (
+    limiter !== undefined
+    && (
+      (typeof limiter !== 'object' && typeof limiter !== 'function')
+      || limiter === null
+      || typeof limiter.acquire !== 'function'
+    )
+  ) {
+    throw new SdkError(
+      SdkErrorCode.InvalidArgument,
+      'TInvestOptions.unaryLimiter must provide an acquire function',
+      {
+        source: 'sdk'
+      }
+    );
+  }
 }
 
 function assertKnownUnaryLimitRules(limits: UnaryLimits): void {

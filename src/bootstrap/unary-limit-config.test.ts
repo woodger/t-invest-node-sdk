@@ -1,27 +1,38 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
-  assertUnaryThrottleConfig,
+  assertUnaryLimitConfig,
   compileUnaryLimits,
   defineUnaryLimits
 } from './unary-limit-config';
+
+const perMinute = (maxRequests: number) => ({
+  maxRequests,
+  windowMs: 60_000
+});
 
 describe('defineUnaryLimits', () => {
   test('converts nested definitions to the flat runtime contract', () => {
     const limits = defineUnaryLimits({
       UsersService: {
-        default: 50
+        default: perMinute(50)
       },
       OrdersService: {
         methods: {
-          PostOrder: 300
+          PostOrder: {
+            maxRequests: 15,
+            windowMs: 1_000
+          }
         }
       }
     });
 
     assert.deepEqual(limits, {
-      UsersService: 50,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': 300
+      UsersService: perMinute(50),
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': {
+        maxRequests: 15,
+        windowMs: 1_000
+      }
     });
   });
 });
@@ -30,13 +41,13 @@ describe('compileUnaryLimits', () => {
   test('compiles service, method, and shared group rules together', () => {
     const compiled = compileUnaryLimits({
       OperationsService: {
-        default: 200,
+        default: perMinute(200),
         methods: {
-          GetPortfolio: 100
+          GetPortfolio: perMinute(100)
         },
         groups: {
           reports: {
-            limit: 5,
+            limit: perMinute(5),
             methods: [
               'GetBrokerReport',
               'GetDividendsForeignIssuer'
@@ -47,10 +58,13 @@ describe('compileUnaryLimits', () => {
     });
 
     assert.deepEqual(compiled.limits, {
-      OperationsService: 200,
-      '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio': 100,
-      '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport': 5,
-      '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer': 5
+      OperationsService: perMinute(200),
+      '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio':
+        perMinute(100),
+      '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport':
+        perMinute(5),
+      '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer':
+        perMinute(5)
     });
     assert.deepEqual(compiled.buckets, {
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport':
@@ -64,13 +78,13 @@ describe('compileUnaryLimits', () => {
     assert.throws(
       () => compileUnaryLimits({
         OperationsService: {
-          default: 200,
+          default: perMinute(200),
           methods: {
-            GetBrokerReport: 10
+            GetBrokerReport: perMinute(10)
           },
           groups: {
             reports: {
-              limit: 5,
+              limit: perMinute(5),
               methods: ['GetBrokerReport']
             }
           }
@@ -84,14 +98,14 @@ describe('compileUnaryLimits', () => {
     assert.throws(
       () => compileUnaryLimits({
         OperationsService: {
-          default: 200,
+          default: perMinute(200),
           groups: {
             first: {
-              limit: 5,
+              limit: perMinute(5),
               methods: ['GetBrokerReport']
             },
             second: {
-              limit: 5,
+              limit: perMinute(5),
               methods: ['GetBrokerReport']
             }
           }
@@ -101,47 +115,36 @@ describe('compileUnaryLimits', () => {
     );
   });
 
-  test('rejects non-positive and non-finite limits', () => {
+  test('rejects invalid request counts and windows', () => {
     assert.throws(
       () => compileUnaryLimits({
         UsersService: {
-          default: 0
+          default: perMinute(0)
         }
       }),
-      /UsersService must be a finite positive number/
+      /UsersService\.maxRequests must be a finite positive number/
     );
     assert.throws(
       () => compileUnaryLimits({
         OrdersService: {
-          default: 100,
+          default: perMinute(100),
           methods: {
-            PostOrder: Number.POSITIVE_INFINITY
-          }
-        }
-      }),
-      /OrdersService\/PostOrder must be a finite positive number/
-    );
-    assert.throws(
-      () => compileUnaryLimits({
-        OperationsService: {
-          default: 200,
-          groups: {
-            reports: {
-              limit: -1,
-              methods: ['GetBrokerReport']
+            PostOrder: {
+              maxRequests: 15,
+              windowMs: Number.POSITIVE_INFINITY
             }
           }
         }
       }),
-      /OperationsService:reports must be a finite positive number/
+      /OrdersService\/PostOrder\.windowMs must be a finite positive number/
     );
   });
 });
 
-describe('assertUnaryThrottleConfig', () => {
+describe('assertUnaryLimitConfig', () => {
   test('rejects a quota bucket that references an unknown rule', () => {
     assert.throws(
-      () => assertUnaryThrottleConfig({
+      () => assertUnaryLimitConfig({
         buckets: {
           '/test.Service/First': 'test:shared'
         },
@@ -156,14 +159,14 @@ describe('assertUnaryThrottleConfig', () => {
     const secondPath = '/test.Service/Second';
 
     assert.throws(
-      () => assertUnaryThrottleConfig({
+      () => assertUnaryLimitConfig({
         buckets: {
           [firstPath]: 'test:shared',
           [secondPath]: 'test:shared'
         },
         limits: {
-          [firstPath]: 100,
-          [secondPath]: 200
+          [firstPath]: perMinute(100),
+          [secondPath]: perMinute(200)
         }
       }),
       /quota group test:shared contains inconsistent limits/

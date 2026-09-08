@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - lazy creation generated service clients;
  * - владение shared gRPC channel и metadata;
- * - подключение application throttling policy к transport adapters;
+ * - подключение Consumer-owned unary limiter-а к transport adapters;
  *
  * Здесь не должно быть CLI command logic или generated DTO mapping.
  */
@@ -57,7 +57,6 @@ import {
   SdkError,
   SdkErrorCode
 } from '../application/errors/sdk-error';
-import { Throttle } from '../application/services/unary-throttle.service';
 import {
   createSdkChannel,
   createSdkClient,
@@ -66,7 +65,7 @@ import {
 } from '../infrastructure/transport/grpc';
 import {
   resolveSdkInstanceOptions,
-  resolveUnaryThrottleConfig,
+  resolveUnaryLimitConfig,
   type ResolvedTInvestOptions
 } from './sdk-config';
 
@@ -99,7 +98,6 @@ export class TInvestNodeSDK {
   private storage: Map<ServiceDefinition, ServiceClient> = new Map();
   private channel: Channel;
   private metadata: Metadata;
-  private throttle: Throttle;
   private unaryLimitResolver: UnaryLimitResolver;
   private readonly maxReceiveMessageLength: number;
   private closed = false;
@@ -109,14 +107,13 @@ export class TInvestNodeSDK {
     this.options = resolveSdkInstanceOptions(options);
     this.maxReceiveMessageLength = packageConfig.grpc.maxReceiveMessageLength;
 
-    const unaryThrottleConfig = resolveUnaryThrottleConfig(
+    const unaryLimitConfig = resolveUnaryLimitConfig(
       this.options.unaryLimits
     );
 
-    this.throttle = new Throttle();
     this.unaryLimitResolver = new UnaryLimitResolver(
-      unaryThrottleConfig.limits,
-      unaryThrottleConfig.buckets
+      unaryLimitConfig.limits,
+      unaryLimitConfig.buckets
     );
     this.channel = createSdkChannel(
       this.options,
@@ -197,9 +194,8 @@ export class TInvestNodeSDK {
         service,
         this.channel,
         this.metadata,
-        this.options.trackLimits,
+        this.options.unaryLimiter,
         this.unaryLimitResolver,
-        this.throttle,
         {
           useSsl: this.options.useSsl,
           maxReceiveMessageLength: this.maxReceiveMessageLength,

@@ -11,7 +11,11 @@ import {
   SdkError,
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
-import { Throttle } from '../../../application/services/unary-throttle.service';
+import type {
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter
+} from '../../../application/services/unary-limiter';
+import { createInMemoryUnaryLimiter } from '../../../application/services/unary-limiter';
 import {
   createSdkMiddleware,
   type SdkCallRuntime
@@ -23,6 +27,10 @@ type TestRequest = Record<string, never>;
 const defaultUnaryResponse = { ok: true };
 const usersPath = '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
 const maxReceiveMessageLength = 4 * 1024 * 1024;
+const usersLimit = {
+  maxRequests: 100,
+  windowMs: 60_000
+};
 
 async function* createUnaryResponseIterator<Response>(
   response: Response
@@ -130,29 +138,28 @@ function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
 }
 
 describe('createSdkMiddleware', () => {
-  test('throttles unary calls when trackLimits is enabled', async () => {
+  test('passes a resolved quota to the unary limiter before transport', async () => {
     const resolver = new UnaryLimitResolver({
-      UsersService: 100
+      UsersService: usersLimit
     });
-    const expectedRule = resolver.resolve(usersPath);
-    const throttle = new Throttle();
-    let throttleCalls = 0;
-
-    if (expectedRule === undefined) {
-      assert.fail('Expected UsersService throttle rule');
-    }
-
-    throttle.reduce = async (rule) => {
-      throttleCalls += 1;
-      assert.deepEqual(rule, expectedRule);
+    let receivedContext: TInvestUnaryLimitContext | undefined;
+    const limiter: TInvestUnaryLimiter = {
+      async acquire(context) {
+        receivedContext = context;
+      }
     };
 
-    const middleware = createSdkMiddleware(true, resolver, throttle);
+    const middleware = createSdkMiddleware(limiter, resolver);
     const iterator = middleware(createUnaryCall(usersPath), {});
 
     const result = await iterator.next();
 
-    assert.equal(throttleCalls, 1);
+    assert.equal(receivedContext?.path, usersPath);
+    assert.deepEqual(receivedContext?.quota, {
+      bucket: 'rule:UsersService',
+      ...usersLimit
+    });
+    assert.equal(receivedContext?.signal.aborted, false);
     assert.deepEqual(result, {
       done: true,
       value: { ok: true }
@@ -160,25 +167,30 @@ describe('createSdkMiddleware', () => {
   });
 
   test('uses dependencies from the current middleware instance', async () => {
-    const resolverA = new UnaryLimitResolver({ UsersService: 100 });
-    const resolverB = new UnaryLimitResolver({ UsersService: 50 });
-    const throttleA = new Throttle();
-    const throttleB = new Throttle();
+    const resolverA = new UnaryLimitResolver({ UsersService: usersLimit });
+    const resolverB = new UnaryLimitResolver({
+      UsersService: {
+        maxRequests: 50,
+        windowMs: 60_000
+      }
+    });
     let callsA = 0;
     let callsB = 0;
-
-    throttleA.reduce = async (rule) => {
-      callsA += 1;
-      assert.equal(rule.limitPerMinute, 100);
+    const limiterA: TInvestUnaryLimiter = {
+      async acquire({ quota }) {
+        callsA += 1;
+        assert.equal(quota.maxRequests, 100);
+      }
+    };
+    const limiterB: TInvestUnaryLimiter = {
+      async acquire({ quota }) {
+        callsB += 1;
+        assert.equal(quota.maxRequests, 50);
+      }
     };
 
-    throttleB.reduce = async (rule) => {
-      callsB += 1;
-      assert.equal(rule.limitPerMinute, 50);
-    };
-
-    const middlewareA = createSdkMiddleware(true, resolverA, throttleA);
-    const middlewareB = createSdkMiddleware(true, resolverB, throttleB);
+    const middlewareA = createSdkMiddleware(limiterA, resolverA);
+    const middlewareB = createSdkMiddleware(limiterB, resolverB);
 
     const [resultA, resultB] = await Promise.all([
       middlewareA(createUnaryCall(usersPath), {}).next(),
@@ -194,22 +206,13 @@ describe('createSdkMiddleware', () => {
     assert.deepEqual(resultB, resultA);
   });
 
-  test('skips unary throttling when trackLimits is disabled', async () => {
-    const throttle = new Throttle();
-    let throttleCalls = 0;
-
-    throttle.reduce = async () => {
-      throttleCalls += 1;
-    };
-
+  test('dispatches unary calls immediately when no limiter is supplied', async () => {
     const middleware = createSdkMiddleware(
-      false,
-      new UnaryLimitResolver({}),
-      throttle
+      undefined,
+      new UnaryLimitResolver({})
     );
     const result = await middleware(createUnaryCall(usersPath), {}).next();
 
-    assert.equal(throttleCalls, 0);
     assert.deepEqual(result, {
       done: true,
       value: { ok: true }
@@ -218,9 +221,8 @@ describe('createSdkMiddleware', () => {
 
   test('rejects a unary call without a configured limit rule', async () => {
     const middleware = createSdkMiddleware(
-      true,
-      new UnaryLimitResolver({}),
-      new Throttle()
+      createInMemoryUnaryLimiter(),
+      new UnaryLimitResolver({})
     );
     const iterator = middleware(createUnaryCall(usersPath), {});
 
@@ -232,21 +234,25 @@ describe('createSdkMiddleware', () => {
     );
   });
 
-  test('cancels local throttle waiting through call signal', async () => {
+  test('cancels limiter waiting through call signal', async () => {
     const resolver = new UnaryLimitResolver({
-      UsersService: 100
+      UsersService: usersLimit
     });
-    const throttle = new Throttle();
-    const rule = resolver.resolve(usersPath);
+    const limiter = createInMemoryUnaryLimiter();
+    const quota = resolver.resolve(usersPath);
 
-    if (rule === undefined) {
-      assert.fail('Expected UsersService throttle rule');
+    if (quota === undefined) {
+      assert.fail('Expected UsersService quota');
     }
 
-    await throttle.reduce(rule);
+    await limiter.acquire({
+      path: usersPath,
+      quota,
+      signal: new AbortController().signal
+    });
 
     const controller = new AbortController();
-    const middleware = createSdkMiddleware(true, resolver, throttle);
+    const middleware = createSdkMiddleware(limiter, resolver);
     const result = middleware(createUnaryCall(usersPath), {
       signal: controller.signal
     }).next();
@@ -260,18 +266,22 @@ describe('createSdkMiddleware', () => {
     );
   });
 
-  test('cancels local throttle waiting when SDK lifecycle closes', async () => {
+  test('cancels limiter waiting when SDK lifecycle closes', async () => {
     const resolver = new UnaryLimitResolver({
-      UsersService: 100
+      UsersService: usersLimit
     });
-    const throttle = new Throttle();
-    const rule = resolver.resolve(usersPath);
+    const limiter = createInMemoryUnaryLimiter();
+    const quota = resolver.resolve(usersPath);
 
-    if (rule === undefined) {
-      assert.fail('Expected UsersService throttle rule');
+    if (quota === undefined) {
+      assert.fail('Expected UsersService quota');
     }
 
-    await throttle.reduce(rule);
+    await limiter.acquire({
+      path: usersPath,
+      quota,
+      signal: new AbortController().signal
+    });
 
     const lifecycleController = new AbortController();
     const closeError = new SdkError(
@@ -282,9 +292,8 @@ describe('createSdkMiddleware', () => {
       }
     );
     const middleware = createSdkMiddleware(
-      true,
+      limiter,
       resolver,
-      throttle,
       {
         useSsl: false,
         maxReceiveMessageLength,
@@ -314,9 +323,8 @@ describe('createSdkMiddleware', () => {
       'invalid token'
     );
     const middleware = createSdkMiddleware(
-      false,
-      new UnaryLimitResolver({}),
-      new Throttle()
+      undefined,
+      new UnaryLimitResolver({})
     );
     const iterator = middleware(
       createRejectedUnaryCall(path, providerError),
@@ -341,9 +349,8 @@ describe('createSdkMiddleware', () => {
       'provider internal failure'
     );
     const middleware = createSdkMiddleware(
-      false,
-      new UnaryLimitResolver({}),
-      new Throttle()
+      undefined,
+      new UnaryLimitResolver({})
     );
     const iterator = middleware(
       createRejectedUnaryCall(path, providerError),
@@ -358,6 +365,28 @@ describe('createSdkMiddleware', () => {
     );
   });
 
+  test('propagates a limiter failure without transport remapping', async () => {
+    const limiterError = new ClientError(
+      usersPath,
+      Status.UNAVAILABLE,
+      'coordinator unavailable'
+    );
+    const limiter: TInvestUnaryLimiter = {
+      async acquire() {
+        throw limiterError;
+      }
+    };
+    const middleware = createSdkMiddleware(
+      limiter,
+      new UnaryLimitResolver({ UsersService: usersLimit })
+    );
+
+    await assert.rejects(
+      middleware(createUnaryCall(usersPath), {}).next(),
+      (error: unknown) => error === limiterError
+    );
+  });
+
   test('maps a decompressed receive message limit failure to the SDK source', async () => {
     const path = '/test.Service/Method';
     const transportError = new ClientError(
@@ -366,9 +395,8 @@ describe('createSdkMiddleware', () => {
       `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`
     );
     const middleware = createSdkMiddleware(
-      false,
+      undefined,
       new UnaryLimitResolver({}),
-      new Throttle(),
       createOpenRuntime(false)
     );
     const iterator = middleware(
@@ -394,9 +422,8 @@ describe('createSdkMiddleware', () => {
       'self-signed certificate in certificate chain'
     );
     const middleware = createSdkMiddleware(
-      false,
+      undefined,
       new UnaryLimitResolver({}),
-      new Throttle(),
       createOpenRuntime(true)
     );
     const iterator = middleware(
@@ -422,9 +449,8 @@ describe('createSdkMiddleware', () => {
       'self-signed certificate in certificate chain'
     );
     const middleware = createSdkMiddleware(
-      false,
+      undefined,
       new UnaryLimitResolver({}),
-      new Throttle(),
       createOpenRuntime(false)
     );
     const iterator = middleware(
@@ -447,9 +473,8 @@ describe('createSdkMiddleware', () => {
       'No connection established. Last error: connect ECONNREFUSED'
     );
     const middleware = createSdkMiddleware(
-      false,
+      undefined,
       new UnaryLimitResolver({}),
-      new Throttle(),
       createOpenRuntime(true)
     );
     const iterator = middleware(
@@ -472,9 +497,8 @@ describe('createSdkMiddleware', () => {
       'temporarily unavailable'
     );
     const middleware = createSdkMiddleware(
-      false,
+      undefined,
       new UnaryLimitResolver({}),
-      new Throttle(),
       createOpenRuntime(true)
     );
     const iterator = middleware(
@@ -490,16 +514,16 @@ describe('createSdkMiddleware', () => {
     );
   });
 
-  test('does not throttle response streams', async () => {
+  test('does not invoke the unary limiter for response streams', async () => {
     const resolver = new UnaryLimitResolver({});
-    const throttle = new Throttle();
-    let throttleCalls = 0;
-
-    throttle.reduce = async () => {
-      throttleCalls += 1;
+    let limiterCalls = 0;
+    const limiter: TInvestUnaryLimiter = {
+      async acquire() {
+        limiterCalls += 1;
+      }
     };
 
-    const middleware = createSdkMiddleware(true, resolver, throttle);
+    const middleware = createSdkMiddleware(limiter, resolver);
     const iterator = middleware(
       createResponseStreamCall('/test.StreamService/Watch', [
         { seq: 1 },
@@ -513,7 +537,7 @@ describe('createSdkMiddleware', () => {
       responses.push(response);
     }
 
-    assert.equal(throttleCalls, 0);
+    assert.equal(limiterCalls, 0);
     assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
   });
 
@@ -540,9 +564,8 @@ describe('createSdkMiddleware', () => {
       }
     };
     const middleware = createSdkMiddleware(
-      false,
-      new UnaryLimitResolver({}),
-      new Throttle()
+      undefined,
+      new UnaryLimitResolver({})
     );
     const iterator = middleware(call, {
       onHeader() {

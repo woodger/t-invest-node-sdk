@@ -5,7 +5,7 @@
  * Здесь допустимы:
  * - человекочитаемые package defaults;
  * - transport safety policy общего gRPC channel;
- * - unary limit policy по generated service и RPC names;
+ * - unary quota policy по generated service и RPC names;
  * - CLI safety policy, общая для package entrypoints;
  *
  * Здесь не должно быть secrets, environment parsing, deployment-specific
@@ -17,10 +17,7 @@ import type { PackageConfigDefinition } from './config.types';
 export const packageConfig = {
   sdk: {
     /** TLS включен для каждого SDK instance, если consumer не переопределил его. */
-    useSsl: true,
-
-    /** Локальный unary throttling включен по умолчанию для каждого SDK instance. */
-    trackLimits: true
+    useSsl: true
   },
 
   grpc: {
@@ -33,15 +30,21 @@ export const packageConfig = {
 
   unaryLimits: {
     /**
-     * Локальный fallback 200 применяется к RPC без более специфичного rule.
+     * Fallback 200 запросов в минуту применяется к RPC без более специфичного rule.
      * Шесть list RPC расходуют одну общую квоту 15 запросов в минуту, поэтому
      * перечислены в одной group с единственным значением limit.
      */
     InstrumentsService: {
-      default: 200,
+      default: {
+        maxRequests: 200,
+        windowMs: 60_000
+      },
       groups: {
         'list-methods': {
-          limit: 15,
+          limit: {
+            maxRequests: 15,
+            windowMs: 60_000
+          },
           methods: [
             'Bonds',
             'Shares',
@@ -59,18 +62,27 @@ export const packageConfig = {
      * Stream connections регулируются отдельной provider policy.
      */
     MarketDataService: {
-      default: 600
+      default: {
+        maxRequests: 600,
+        windowMs: 60_000
+      }
     },
 
     /**
-     * Локальный limiter не различает запуск и получение отчета по request
+     * Quota resolver не различает запуск и получение отчета по request
      * payload, поэтому оба report RPC консервативно делят общую квоту 5.
      */
     OperationsService: {
-      default: 200,
+      default: {
+        maxRequests: 200,
+        windowMs: 60_000
+      },
       groups: {
         reports: {
-          limit: 5,
+          limit: {
+            maxRequests: 5,
+            windowMs: 60_000
+          },
           methods: [
             'GetBrokerReport',
             'GetDividendsForeignIssuer'
@@ -81,17 +93,34 @@ export const packageConfig = {
 
     /**
      * Method quotas заменяют service fallback 100 для перечисленных RPC.
-     * Лимит PostOrder 15 запросов в секунду хранится как 900 в минуту, потому
-     * что все значения UnaryLimits используют одну минутную единицу.
+     * Исходное секундное окно PostOrder сохраняется без нормализации в минуту.
      */
     OrdersService: {
-      default: 100,
+      default: {
+        maxRequests: 100,
+        windowMs: 60_000
+      },
       methods: {
-        GetOrders: 200,
-        PostOrder: 900,
-        PostOrderAsync: 600,
-        CancelOrder: 300,
-        ReplaceOrder: 300
+        GetOrders: {
+          maxRequests: 200,
+          windowMs: 60_000
+        },
+        PostOrder: {
+          maxRequests: 15,
+          windowMs: 1_000
+        },
+        PostOrderAsync: {
+          maxRequests: 600,
+          windowMs: 60_000
+        },
+        CancelOrder: {
+          maxRequests: 300,
+          windowMs: 60_000
+        },
+        ReplaceOrder: {
+          maxRequests: 300,
+          windowMs: 60_000
+        }
       }
     },
 
@@ -100,7 +129,10 @@ export const packageConfig = {
      * production service rules к нему не применяются.
      */
     SandboxService: {
-      default: 200
+      default: {
+        maxRequests: 200,
+        windowMs: 60_000
+      }
     },
 
     /**
@@ -108,7 +140,10 @@ export const packageConfig = {
      * в минуту.
      */
     SignalService: {
-      default: 100
+      default: {
+        maxRequests: 100,
+        windowMs: 60_000
+      }
     },
 
     /**
@@ -116,9 +151,15 @@ export const packageConfig = {
      * остальные RPC наследуют service fallback 50.
      */
     StopOrdersService: {
-      default: 50,
+      default: {
+        maxRequests: 50,
+        windowMs: 60_000
+      },
       methods: {
-        GetStopOrders: 60
+        GetStopOrders: {
+          maxRequests: 60,
+          windowMs: 60_000
+        }
       }
     },
 
@@ -127,7 +168,10 @@ export const packageConfig = {
      * счетам пользователя.
      */
     UsersService: {
-      default: 100
+      default: {
+        maxRequests: 100,
+        windowMs: 60_000
+      }
     }
   },
 

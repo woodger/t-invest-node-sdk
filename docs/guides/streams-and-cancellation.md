@@ -171,7 +171,7 @@ export async function runMarketDataStream(
 переданного transport-у stream. Закрытие channel без собственной отмены не
 заменяет управление pending read.
 
-Локальный unary throttling к stream calls не применяется. Ограничения stream
+`TInvestUnaryLimiter` к stream calls не применяется. Ограничения stream
 connections и subscriptions описаны в
 [лимитной политике](../limits-policy.md). Готовая CLI lifecycle-модель
 описана в [справочнике потокового CLI](../cli-stream-reference.md).

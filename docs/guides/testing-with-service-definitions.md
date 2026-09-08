@@ -67,8 +67,7 @@ async function main(): Promise<void> {
     sdk = new TInvestNodeSDK({
       token: 'test-token',
       endpoint: `127.0.0.1:${port}`,
-      useSsl: false,
-      trackLimits: false
+      useSsl: false
     });
 
     const response = await sdk.signals.getStrategies({

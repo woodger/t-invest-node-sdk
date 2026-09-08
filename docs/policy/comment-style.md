@@ -139,7 +139,7 @@ createSdkMetadata(...)
 Хорошо:
 
 ```ts
-// Stream calls не проходят через unary throttling:
+// Stream calls не проходят через unary limiter:
 // лимиты stream-соединений управляются отдельной политикой API.
 if (call.responseStream) {
   return call.next(call.request, options);
@@ -150,7 +150,7 @@ if (call.responseStream) {
 
 ```ts
 // Первый unary-запрос не задерживается:
-// throttling ограничивает интервал между последовательными вызовами.
+// limiter ограничивает интервал между последовательными вызовами.
 if (lastCallTime === undefined) {
   lastCallTime = now;
   return;
@@ -254,7 +254,7 @@ return iterator;
 
 Если комментарий фиксирует важный инвариант, желательно, чтобы он был защищен тестом.
 
-Например, если комментарий говорит, что stream calls не throttled unary policy, это должно быть проверено тестом middleware behavior.
+Например, если комментарий говорит, что stream calls не проходят через unary limiter, это должно быть проверено тестом middleware behavior.
 
 ## Практика применения
 

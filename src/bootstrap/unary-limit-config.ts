@@ -1,17 +1,18 @@
 /**
  * Модуль bootstrap config compiler преобразует декларативную unary policy в
- * runtime rules локального throttling.
+ * runtime-квоты для Consumer-owned limiter-а.
  *
  * Здесь допустимы:
  * - построение полных gRPC paths для method rules;
  * - сборка quota buckets и проверка инвариантов декларации;
  * - проверка инвариантов итогового runtime snapshot;
- * - public mapping читаемых per-instance overrides в flat UnaryLimits;
+ * - public mapping читаемых per-instance overrides в flat UnaryLimits.
  *
- * Здесь не должно быть package defaults, runtime throttling state или
- * provider tariff refresh.
+ * Здесь не должно быть package defaults, limiter state или provider tariff
+ * refresh.
  */
 
+import type { TInvestUnaryLimit } from '../application/services/unary-limiter';
 import type {
   UnaryLimits,
   UnaryLimitsConfig,
@@ -20,7 +21,7 @@ import type {
 import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-limits';
 
 /** Path-keyed runtime policy, которую принимает transport resolver. */
-export interface UnaryThrottleConfig {
+export interface UnaryLimitConfig {
   buckets: Record<string, string>;
   limits: UnaryLimits;
 }
@@ -37,11 +38,13 @@ export function defineUnaryLimits(
 
   for (const [service, serviceLimits] of Object.entries(definition)) {
     if (serviceLimits.default !== undefined) {
-      limits[service] = serviceLimits.default;
+      limits[service] = cloneUnaryLimit(serviceLimits.default);
     }
 
     for (const [method, limit] of Object.entries(serviceLimits.methods ?? {})) {
-      limits[unaryMethodPath(service, method)] = limit;
+      if (limit !== undefined) {
+        limits[unaryMethodPath(service, method)] = cloneUnaryLimit(limit);
+      }
     }
   }
 
@@ -50,11 +53,11 @@ export function defineUnaryLimits(
 
 /**
  * Отклоняет повторное объявление RPC, а также неположительные и неконечные
- * limits до создания SDK instance.
+ * значения квот до создания SDK instance.
  */
 export function compileUnaryLimits(
   definition: UnaryLimitsConfig
-): UnaryThrottleConfig {
+): UnaryLimitConfig {
   const buckets: Record<string, string> = {};
   const limits: UnaryLimits = {};
 
@@ -62,7 +65,7 @@ export function compileUnaryLimits(
     const assignedMethods = new Set<string>();
 
     assertUnaryLimit(serviceLimits.default, service);
-    limits[service] = serviceLimits.default;
+    limits[service] = cloneUnaryLimit(serviceLimits.default);
 
     for (const [method, limit] of Object.entries(serviceLimits.methods ?? {})) {
       if (limit === undefined) {
@@ -71,7 +74,7 @@ export function compileUnaryLimits(
 
       assertUnaryLimit(limit, `${service}/${method}`);
       assignedMethods.add(method);
-      limits[unaryMethodPath(service, method)] = limit;
+      limits[unaryMethodPath(service, method)] = cloneUnaryLimit(limit);
     }
 
     for (const [groupName, group] of Object.entries(serviceLimits.groups ?? {})) {
@@ -90,7 +93,7 @@ export function compileUnaryLimits(
 
         const path = unaryMethodPath(service, method);
 
-        limits[path] = group.limit;
+        limits[path] = cloneUnaryLimit(group.limit);
         buckets[path] = bucket;
       }
     }
@@ -101,19 +104,17 @@ export function compileUnaryLimits(
     limits
   };
 
-  assertUnaryThrottleConfig(compiled);
+  assertUnaryLimitConfig(compiled);
 
   return compiled;
 }
 
 /**
  * Проверяет limits и quota groups после применения public defaults и
- * per-instance overrides, до создания transport resolver и scheduler.
+ * per-instance overrides, до создания transport resolver.
  */
-export function assertUnaryThrottleConfig(
-  config: UnaryThrottleConfig
-): void {
-  const bucketLimits = new Map<string, number>();
+export function assertUnaryLimitConfig(config: UnaryLimitConfig): void {
+  const limitsByBucket = new Map<string, TInvestUnaryLimit>();
 
   for (const [rule, limit] of Object.entries(config.limits)) {
     assertUnaryLimit(limit, rule);
@@ -128,22 +129,62 @@ export function assertUnaryThrottleConfig(
       );
     }
 
-    const bucketLimit = bucketLimits.get(bucket);
+    const bucketLimit = limitsByBucket.get(bucket);
 
-    if (bucketLimit !== undefined && bucketLimit !== limit) {
+    if (bucketLimit !== undefined && !sameUnaryLimit(bucketLimit, limit)) {
       throw new Error(
         `Unary quota group ${bucket} contains inconsistent limits`
       );
     }
 
-    bucketLimits.set(bucket, limit);
+    limitsByBucket.set(bucket, limit);
   }
 }
 
-function assertUnaryLimit(limit: number, rule: string): void {
-  if (!Number.isFinite(limit) || limit <= 0) {
+export function cloneUnaryLimits(limits: UnaryLimits): UnaryLimits {
+  return Object.fromEntries(
+    Object.entries(limits).map(([rule, limit]) => [
+      rule,
+      cloneUnaryLimit(limit)
+    ])
+  );
+}
+
+export function sameUnaryLimit(
+  first: TInvestUnaryLimit | undefined,
+  second: TInvestUnaryLimit | undefined
+): boolean {
+  return first !== undefined
+    && second !== undefined
+    && first.maxRequests === second.maxRequests
+    && first.windowMs === second.windowMs;
+}
+
+function cloneUnaryLimit(limit: TInvestUnaryLimit): TInvestUnaryLimit {
+  return {
+    maxRequests: limit.maxRequests,
+    windowMs: limit.windowMs
+  };
+}
+
+function assertUnaryLimit(
+  limit: TInvestUnaryLimit,
+  rule: string
+): void {
+  if (
+    typeof limit !== 'object'
+    || limit === null
+    || !Number.isFinite(limit.maxRequests)
+    || limit.maxRequests <= 0
+  ) {
     throw new Error(
-      `Unary limit ${rule} must be a finite positive number`
+      `Unary limit ${rule}.maxRequests must be a finite positive number`
+    );
+  }
+
+  if (!Number.isFinite(limit.windowMs) || limit.windowMs <= 0) {
+    throw new Error(
+      `Unary limit ${rule}.windowMs must be a finite positive number`
     );
   }
 }
