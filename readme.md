@@ -86,7 +86,7 @@ git push origin "$VERSION"
 npm publish
 ```
 
-Для версии `0.5.1` Git tag остается `0.5.1` по исторической схеме проекта, а GitHub Release может называться `v0.5.1`. Release notes берутся из одноименного раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и `git user.email`.
+Для версии `0.5.2` Git tag остается `0.5.2` по исторической схеме проекта, а GitHub Release может называться `v0.5.2`. Release notes берутся из одноименного раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и `git user.email`.
 
 ## Быстрый старт
 
