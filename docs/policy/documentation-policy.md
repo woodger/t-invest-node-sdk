@@ -24,7 +24,7 @@ API, идентификаторы, команды, значения параме
 - Clean Architecture design notes: `docs/clean-architecture/**`;
 - runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
 - bundled TLS trust material: `certificates/russian-trusted-root-ca.pem`;
-- unary throttling source policy: `src/config.ts`;
+- unary quota source policy: `src/config.ts`;
 - authoring и public runtime type contracts: `src/config.types.ts`;
 - per-instance SDK config input:
   `src/application/dto/t-invest-options.ts`;
@@ -32,8 +32,8 @@ API, идентификаторы, команды, значения параме
 - unary config compilation и readable override shape adapter:
   `src/bootstrap/unary-limit-config.ts`;
 - public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;
-- transport-neutral throttling runtime:
-  `src/application/services/unary-throttle.service.ts`;
+- public unary limiter port и необязательная process-local реализация:
+  `src/application/services/unary-limiter.ts`;
 - transport-specific unary rule paths и resolution:
   `src/infrastructure/transport/grpc/unary-limits.ts`,
   `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;

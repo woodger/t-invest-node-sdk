@@ -1,6 +1,6 @@
 # TLS-доверие
 
-> Type: Reference. Документ описывает package-owned trust material,
+> Type: Reference. Документ описывает bundled trust material,
 > per-instance override и границы TLS policy SDK.
 
 ## Настройки по умолчанию для T-Invest
@@ -22,47 +22,17 @@ Asset применяется только к gRPC channel конкретного
 
 ## Происхождение встроенного сертификата
 
-Источник — [страница сертификатов Госуслуг](https://www.gosuslugi.ru/crt).
-В package хранится PEM из
-[официального download endpoint](https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt):
-[`certificates/russian-trusted-root-ca.pem`](../certificates/russian-trusted-root-ca.pem).
-
-| Поле | Значение |
-| --- | --- |
-| Subject | `C=RU, O=The Ministry of Digital Development and Communications, CN=Russian Trusted Root CA` |
-| Issuer | совпадает с Subject |
-| Valid from | `2022-03-01T21:04:15Z` |
-| Valid to | `2032-02-27T21:04:15Z` |
-| SHA-256 fingerprint | `D2:6D:2D:02:31:B7:C3:9F:92:CC:73:85:12:BA:54:10:35:19:E4:40:5D:68:B5:BD:70:3E:97:88:CA:8E:CF:31` |
-
-Fingerprint относится к X.509 certificate, а не к текстовому PEM-файлу и его
-line endings. Subject, issuer, validity и fingerprint защищены regression-тестом.
+Официальный источник, путь получения, X.509 fingerprint, границы
+распространения, package path и Consumer override описаны в отдельном документе
+[«Встроенный Russian Trusted Root CA»](./bundled-ca.md).
 
 ## Переопределение для экземпляра SDK
 
-Custom или test endpoint может передать собственный PEM root bundle:
-
-```ts
-import { readFile } from 'node:fs/promises';
-import { TInvestNodeSDK } from 't-invest-node-sdk';
-
-const rootCertificates = await readFile('./certificates/custom-root.pem');
-const sdk = new TInvestNodeSDK({
-  token,
-  endpoint,
-  tls: {
-    rootCertificates
-  }
-});
-```
-
-SDK принимает содержимое сертификатов, а не filesystem path. Чтение файла,
-secret storage и rotation custom CA принадлежат Consumer-у.
-
-Явный `tls.rootCertificates` полностью заменяет bundled Russian Trusted Root CA
-для создаваемого channel. Стандартные roots Node.js автоматически не
-подмешиваются. При `useSsl: false` создаются insecure credentials, а `tls`
-игнорируется.
+Custom или test endpoint может передать собственный PEM root bundle через
+`tls.rootCertificates`. SDK принимает содержимое сертификатов в `Buffer`, а не
+filesystem path. Явный bundle полностью заменяет встроенный сертификат для
+создаваемого channel; при `useSsl: false` TLS options игнорируются. Законченный
+пример приведён в [документе о встроенном сертификате](./bundled-ca.md#переопределение-в-коде-consumer-а).
 
 ## Граница безопасности
 
@@ -71,12 +41,8 @@ pinning-ом конкретного публичного ключа T-Bank. Вл
 выпустить сертификат для другого endpoint, поэтому более строгий SPKI pin, если
 он потребуется, должен вводиться отдельной policy с собственной rotation model.
 
-При обновлении CA необходимо:
-
-1. получить сертификат только из официального источника;
-2. проверить subject, issuer, validity и согласованный fingerprint;
-3. обновить asset и regression-тест одним изменением;
-4. проверить TLS-вызов, Git installation и состав package tarball.
+Процедура проверяемого обновления сертификата зафиксирована в
+[документе о встроенном сертификате](./bundled-ca.md#обновление-сертификата).
 
 ## Ошибки проверки сертификата
 

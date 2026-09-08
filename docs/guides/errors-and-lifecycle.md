@@ -14,7 +14,7 @@ import {
   isSdkError,
   SdkErrorCode,
   TInvestNodeSDK
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
   | 'T_INVEST_TOKEN'

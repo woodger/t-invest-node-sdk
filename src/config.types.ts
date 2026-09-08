@@ -20,14 +20,18 @@ import type {
   StopOrdersService,
   UsersService
 } from './application/dto/t-invest-services';
+import type {
+  TInvestUnaryLimit,
+  TInvestUnaryLimits
+} from './application/services/unary-limiter';
 
 type GrpcMethodName<Service> = Capitalize<Extract<keyof Service, string>>;
 
 /**
- * Flat runtime rules локального throttling. Ключ — generated service name или
- * полный gRPC method path, значение — разрешенное число запросов в минуту.
+ * Flat runtime rules unary-квот. Ключ — generated service name или полный
+ * gRPC method path, значение — число запросов и размер окна.
  */
-export type UnaryLimits = Record<string, number>;
+export type UnaryLimits = TInvestUnaryLimits;
 
 /**
  * Человекочитаемые per-instance overrides без shared quota groups.
@@ -35,18 +39,18 @@ export type UnaryLimits = Record<string, number>;
  */
 export type UnaryLimitsDefinition = {
   [Service in keyof PackageUnaryLimitsConfig]?: {
-    /** Service fallback в запросах в минуту. */
-    default?: number;
+    /** Service fallback. */
+    default?: TInvestUnaryLimit;
 
-    /** Индивидуальные method limits в запросах в минуту. */
+    /** Индивидуальные method quotas. */
     methods?: PackageUnaryLimitsConfig[Service]['methods'];
   }
 };
 
 /** Одна общая квота provider-а для непустого списка generated RPC names. */
 export interface UnaryQuotaGroupConfig<Method extends string = string> {
-  /** Общий предел запросов в минуту для всех methods группы. */
-  limit: number;
+  /** Общая квота для всех methods группы. */
+  limit: TInvestUnaryLimit;
 
   /** RPC, которые расходуют один quota bucket. */
   methods: readonly [Method, ...Method[]];
@@ -54,11 +58,11 @@ export interface UnaryQuotaGroupConfig<Method extends string = string> {
 
 /** Декларативная unary limit policy одного generated service. */
 export interface UnaryServiceLimitsConfig<Method extends string = string> {
-  /** Service fallback в запросах в минуту. */
-  default: number;
+  /** Service fallback. */
+  default: TInvestUnaryLimit;
 
   /** Независимые method quotas, которые заменяют service fallback. */
-  methods?: Readonly<Partial<Record<Method, number>>>;
+  methods?: Readonly<Partial<Record<Method, TInvestUnaryLimit>>>;
 
   /** Именованные shared quota buckets. */
   groups?: Readonly<Record<string, UnaryQuotaGroupConfig<Method>>>;
@@ -92,9 +96,6 @@ export interface PackageConfigDefinition {
   sdk: {
     /** Использовать TLS, если instance option не задан. */
     useSsl: boolean;
-
-    /** Применять локальный unary throttling, если instance option не задан. */
-    trackLimits: boolean;
   };
 
   /** Package-owned transport policy общего gRPC channel. */

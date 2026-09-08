@@ -24,6 +24,11 @@ import type {
   SdkErrorSource,
   SignalServiceImplementation,
   StopOrdersServiceImplementation,
+  TInvestUnaryLimit,
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter,
+  TInvestUnaryLimits,
+  TInvestUnaryQuota,
   UsersServiceImplementation
 } from './index';
 
@@ -47,8 +52,17 @@ type RootSdkErrorContracts = [
   SdkErrorSource
 ];
 
+type RootUnaryLimiterContracts = [
+  TInvestUnaryLimit,
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter,
+  TInvestUnaryLimits,
+  TInvestUnaryQuota
+];
+
 const expectedServerSideImplementationContractCount: RootServerSideImplementationContracts['length'] = 11;
 const expectedSdkErrorContractCount: RootSdkErrorContracts['length'] = 3;
+const expectedUnaryLimiterContractCount: RootUnaryLimiterContracts['length'] = 5;
 
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
@@ -181,10 +195,12 @@ describe('package entrypoint', () => {
     assert.equal(hasPackageExport('OrderType'), true);
     assert.equal(hasPackageExport('defaultConfig'), true);
     assert.equal(hasPackageExport('defineUnaryLimits'), true);
+    assert.equal(hasPackageExport('createInMemoryUnaryLimiter'), true);
     assert.equal(hasPackageExport('SdkError'), true);
     assert.equal(hasPackageExport('SdkErrorCode'), true);
     assert.equal(hasPackageExport('isSdkError'), true);
     assert.equal(expectedSdkErrorContractCount, 3);
+    assert.equal(expectedUnaryLimiterContractCount, 5);
   });
 });
 

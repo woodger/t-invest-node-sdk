@@ -20,6 +20,7 @@ import {
   isCliDomainName,
   type CliDomainName
 } from './domains';
+import { cliName } from './version';
 
 export interface CommandHelp {
   description: string;
@@ -1758,15 +1759,15 @@ export function renderCliHelp(): string {
   const domainNameWidth = Math.max(...cliDomainNames.map((name) => name.length));
 
   return [
-    `${packageJson.name} ${packageJson.version}`,
+    `${cliName} ${packageJson.version}`,
     packageJson.description,
     '',
     'Usage:',
-    `  ${packageJson.name} <domain> <command> [options]`,
-    `  ${packageJson.name} <domain> --help`,
-    `  ${packageJson.name} <domain> <command> --help`,
-    `  ${packageJson.name} --help`,
-    `  ${packageJson.name} --version`,
+    `  ${cliName} <domain> <command> [options]`,
+    `  ${cliName} <domain> --help`,
+    `  ${cliName} <domain> <command> --help`,
+    `  ${cliName} --help`,
+    `  ${cliName} --version`,
     '',
     'Domains:',
     ...cliDomainNames.map(
@@ -1778,7 +1779,7 @@ export function renderCliHelp(): string {
     '  --version, -v    Show package version',
     '',
     'Domain details:',
-    `  ${packageJson.name} <domain> --help`,
+    `  ${cliName} <domain> --help`,
     ''
   ].join('\n');
 }
@@ -1794,12 +1795,12 @@ export function renderDomainHelp(domainName: CliDomainName): string {
   const commandNameWidth = Math.max(...commands.map(({ action }) => action.length));
 
   return [
-    `${packageJson.name} ${packageJson.version}`,
+    `${cliName} ${packageJson.version}`,
     `${domainName} - ${cliDomains[domainName].description}`,
     '',
     'Usage:',
-    `  ${packageJson.name} ${domainName} <command> [options]`,
-    `  ${packageJson.name} ${domainName} <command> --help`,
+    `  ${cliName} ${domainName} <command> [options]`,
+    `  ${cliName} ${domainName} <command> --help`,
     '',
     'Commands:',
     ...commands.map(
@@ -1807,7 +1808,7 @@ export function renderDomainHelp(domainName: CliDomainName): string {
     ),
     '',
     'Command details:',
-    `  ${packageJson.name} ${domainName} <command> --help`,
+    `  ${cliName} ${domainName} <command> --help`,
     ''
   ].join('\n');
 }
@@ -1820,7 +1821,7 @@ export function renderCommandHelp(commandName: CommandHelpName): string {
   }
 
   return [
-    `${packageJson.name} ${packageJson.version}`,
+    `${cliName} ${packageJson.version}`,
     `${commandName} - ${command.description}`,
     ...renderCommandContract(command),
     ...renderSection('Usage', command.usage),

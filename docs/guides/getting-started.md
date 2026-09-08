@@ -7,15 +7,16 @@
 
 Для работы SDK требуется Node.js `>=20.19.0`.
 
-Проект устанавливается из зафиксированного Git tag:
+Пакет устанавливается из общедоступного реестра npm:
 
 ```sh
-SDK_TAG=0.5.0
-npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#$SDK_TAG"
+npm install @woodger/t-invest-node-sdk
 ```
 
-Для приватного репозитория среде сборки нужен настроенный SSH-доступ. Lifecycle
-`prepare` собирает TypeScript после получения Git dependency.
+Публикуемый архив содержит JavaScript и TypeScript declarations из `dist`,
+поэтому при установке из реестра npm Consumer-у не требуется собирать исходный
+код SDK. Git-зависимость не является поддерживаемым каналом установки: npm
+запускает для неё `prepack` и собирает исходный код.
 
 ## Переменные окружения
 
@@ -36,7 +37,7 @@ TLS включён по умолчанию. SDK использует bundled Rus
 ## Законченный пример
 
 ```ts
-import { TInvestNodeSDK } from 't-invest-node-sdk';
+import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
   | 'T_INVEST_TOKEN'

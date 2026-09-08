@@ -1,6 +1,5 @@
 /**
- * Transport resolver сопоставляет gRPC method path с готовыми unary limit
- * rules и quota buckets.
+ * Transport resolver сопоставляет gRPC method path с готовыми unary quotas.
  *
  * Здесь допустимы:
  * - точное сопоставление method paths;
@@ -8,12 +7,15 @@
  * - выбор runtime bucket для найденного правила.
  *
  * Здесь не должно быть compilation package config, validation limits или
- * throttling state.
+ * limiter state.
  */
 
-import type { ThrottleRule } from '../../../application/services/unary-throttle.service';
+import type {
+  TInvestUnaryLimit,
+  TInvestUnaryQuota
+} from '../../../application/services/unary-limiter';
 
-type UnaryLimitRules = Readonly<Record<string, number>>;
+type UnaryLimitRules = Readonly<Record<string, TInvestUnaryLimit>>;
 type UnaryLimitBuckets = Readonly<Record<string, string>>;
 
 export class UnaryLimitResolver {
@@ -22,9 +24,9 @@ export class UnaryLimitResolver {
     private readonly buckets: UnaryLimitBuckets = {}
   ) {}
 
-  resolve(path: string): ThrottleRule | undefined {
+  resolve(path: string): TInvestUnaryQuota | undefined {
     let matchedKey: string | undefined;
-    let limitPerMinute: number | undefined;
+    let matchedLimit: TInvestUnaryLimit | undefined;
 
     for (const [key, limit] of Object.entries(this.limits)) {
       if (
@@ -32,11 +34,11 @@ export class UnaryLimitResolver {
         && (matchedKey === undefined || key.length > matchedKey.length)
       ) {
         matchedKey = key;
-        limitPerMinute = limit;
+        matchedLimit = limit;
       }
     }
 
-    if (matchedKey === undefined || limitPerMinute === undefined) {
+    if (matchedKey === undefined || matchedLimit === undefined) {
       return undefined;
     }
 
@@ -46,7 +48,8 @@ export class UnaryLimitResolver {
       bucket: quotaBucket === undefined
         ? `rule:${matchedKey}`
         : `quota:${quotaBucket}`,
-      limitPerMinute
+      maxRequests: matchedLimit.maxRequests,
+      windowMs: matchedLimit.windowMs
     };
   }
 

@@ -37,6 +37,7 @@
 - [Unary-вызовы](./guides/unary-calls.md).
 - [Потоки и отмена](./guides/streams-and-cancellation.md).
 - [Ошибки и lifecycle](./guides/errors-and-lifecycle.md).
+- [Собственная реализация unary limiter-а](./guides/custom-unary-limiter.md).
 - [Mock-сервисы через public exports](./guides/testing-with-service-definitions.md).
 
 Guides содержат законченные Consumer workflows. Полные method, DTO и enum
@@ -46,10 +47,12 @@ reference остаются в public types и proto/generated contracts.
 
 - Публичный package entrypoint:
   [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts).
-- Лимиты provider-а, локальный throttling и quota buckets:
+- Лимиты provider-а, unary limiter port и quota buckets:
   [Лимитная политика](./limits-policy.md).
 - Bundled CA, per-instance trust override и границы TLS policy:
   [TLS-доверие](./tls-policy.md).
+- Происхождение, границы распространения и техническое подключение bundled CA:
+  [Встроенный Russian Trusted Root CA](./bundled-ca.md).
 - Архитектурные заметки по application, DTO, отчётам и адаптерам:
   [Заметки по Clean Architecture](./clean-architecture/index.md).
 - Граница project adapters и внешнего API `icore`:

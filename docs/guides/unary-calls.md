@@ -16,7 +16,7 @@ import {
   TInvestNodeSDK,
   type TInvestCallOptions,
   type TInvestMetadata
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 type RequiredEnvironmentVariable =
   | 'T_INVEST_TOKEN'
@@ -204,10 +204,11 @@ Consumer-у рекомендуется:
 
 ## Ограничение частоты запросов
 
-Локальный throttling unary-вызовов включен по умолчанию. Он защищает от
-очевидного превышения package limits, но не заменяет provider quota, тариф
-пользователя или IP-level limits. Подробная модель описана в
-[лимитной политике](../limits-policy.md).
+Unary limiter не включается по умолчанию. Consumer может передать собственную
+реализацию через `TInvestOptions.unaryLimiter`; SDK разрешит для неё package
+quota и объединённый `AbortSignal`. Подробный контракт описан в
+[руководстве по собственной реализации](./custom-unary-limiter.md), а значения
+provider-а — в [лимитной политике](../limits-policy.md).
 
 Ошибку `RESOURCE_EXHAUSTED` нельзя автоматически повторять только на основании
 кода. Перед retry нужно учитывать idempotency RPC, metadata provider-а и

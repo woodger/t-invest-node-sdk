@@ -8,6 +8,11 @@
  * Здесь не должно быть environment fallback logic или transport creation.
  */
 
+import type {
+  TInvestUnaryLimiter,
+  TInvestUnaryLimits
+} from '../services/unary-limiter';
+
 export interface TInvestTlsOptions {
   /**
    * PEM-содержимое root CA bundle для channel этого SDK instance.
@@ -24,7 +29,8 @@ export interface TInvestOptions {
   appName?: string;
   useSsl?: boolean;
   tls?: TInvestTlsOptions;
-  trackLimits?: boolean;
-  /** Per-instance конечные положительные лимиты запросов в минуту. */
-  unaryLimits?: Record<string, number>;
+  /** Необязательная Consumer-owned стратегия ожидания перед unary-вызовами. */
+  unaryLimiter?: TInvestUnaryLimiter;
+  /** Per-instance конечные положительные overrides unary-квот. */
+  unaryLimits?: TInvestUnaryLimits;
 }

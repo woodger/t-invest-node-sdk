@@ -24,8 +24,10 @@ import {
   isSdkError,
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
-import type { ThrottleRule } from '../../../application/services/unary-throttle.service';
-import { Throttle } from '../../../application/services/unary-throttle.service';
+import type {
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter
+} from '../../../application/services/unary-limiter';
 import { createSdkChannel } from './sdk-channel';
 import { createSdkClient } from './sdk-client';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
@@ -86,7 +88,7 @@ interface PayloadServiceClient {
 }
 
 describe('createSdkClient', () => {
-  test('merges SDK-owned and per-call metadata before throttled calls', async () => {
+  test('merges SDK-owned and per-call metadata around limited calls', async () => {
     const server = createServer();
     let receivedAuthorization: string | undefined;
     let receivedAppName: string | undefined;
@@ -110,11 +112,11 @@ describe('createSdkClient', () => {
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
     }, 4 * 1024 * 1024);
-    const throttle = new Throttle();
-    let throttledRule: ThrottleRule | undefined;
-
-    throttle.reduce = async (rule) => {
-      throttledRule = rule;
+    let limiterContext: TInvestUnaryLimitContext | undefined;
+    const limiter: TInvestUnaryLimiter = {
+      async acquire(context) {
+        limiterContext = context;
+      }
     };
 
     const lifecycleController = new AbortController();
@@ -125,11 +127,13 @@ describe('createSdkClient', () => {
         Authorization: 'Bearer token',
         'x-app-name': 'sdk-app'
       }),
-      true,
+      limiter,
       new UnaryLimitResolver({
-        PayloadService: 60
+        PayloadService: {
+          maxRequests: 60,
+          windowMs: 60_000
+        }
       }),
-      throttle,
       {
         useSsl: false,
         maxReceiveMessageLength,
@@ -153,7 +157,8 @@ describe('createSdkClient', () => {
       assert.equal(receivedAuthorization, 'Bearer token');
       assert.equal(receivedAppName, 'sdk-app');
       assert.equal(receivedRequestId, 'request-id');
-      assert.equal(throttledRule?.limitPerMinute, 60);
+      assert.equal(limiterContext?.quota.maxRequests, 60);
+      assert.equal(limiterContext?.path, payloadPath);
     }
     finally {
       channel.close();
@@ -506,9 +511,8 @@ function createPayloadClient(
     service,
     channel,
     new Metadata(),
-    false,
+    undefined,
     new UnaryLimitResolver({}),
-    new Throttle(),
     {
       useSsl,
       maxReceiveMessageLength: receiveMessageLength,

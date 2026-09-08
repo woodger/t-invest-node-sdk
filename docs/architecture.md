@@ -44,8 +44,8 @@ provider-neutral правилами или моделями.
 - `application/errors` - transport-neutral `SdkError`, стабильные symbolic
   codes и runtime narrowing;
 - `application/reports` - стабильные output/report contracts API-команд;
-- `application/services` - reusable application services, например transport-neutral
-  планирование unary calls по готовым throttle rules.
+- `application/services` - transport-neutral unary limiter port и его
+  необязательная process-local реализация.
 
 ## `infrastructure`
 
@@ -55,7 +55,7 @@ provider-neutral правилами или моделями.
 
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata,
   middleware и typed clients, а также построение и разрешение полных gRPC
-  paths в transport-neutral throttle rules и mapping transport failures в
+  paths в transport-neutral quotas, вызов Consumer-owned limiter-а и mapping transport failures в
   публичный `SdkError`.
 - `infrastructure/interceptor` - технический hook для фильтрации известных
   process warnings.
@@ -215,20 +215,22 @@ source config. В source config не допускаются runtime imports, fun
 calls, spreads, merge/resolver logic и параллельные декларации одной
 policy.
 
-Unary throttling config проходит следующий pipeline:
+Unary quota config проходит следующий pipeline:
 
 ```text
 packageConfig -- compileUnaryLimits --> internal package baseline
                                           |-- copy limits --> defaultConfig
                                           `-- limits + buckets ---------.
-current defaultConfig.unaryLimits -------------------------------------+--> resolveUnaryThrottleConfig
+current defaultConfig.unaryLimits -------------------------------------+--> resolveUnaryLimitConfig
 per-instance unaryLimits ----------------------------------------------'
                                                                           |
                                                                           `--> runtime snapshot
 
-runtime snapshot --.
-                   +--> UnaryLimitResolver --> ThrottleRule --> Throttle
-gRPC method path --'
+runtime snapshot -----.
+                       +--> UnaryLimitResolver --> TInvestUnaryQuota --.
+gRPC method path ------'                                        |
+                                                                +--> unaryLimiter.acquire()
+per-instance unaryLimiter --------------------------------------'
 ```
 
 Package-owned gRPC transport policy проходит без public или per-instance
@@ -281,19 +283,20 @@ packageConfig.sdk -- defaults --.
 per-instance options -----------'
 ```
 
-Per-instance boolean values `useSsl` и `trackLimits` имеют приоритет над package
-defaults, а `undefined` не отключает package policy. Обязательные `token` и
-`endpoint` проверяются до создания transport channel. Значения `token` и
-непустого `appName` дополнительно проверяются как строковые gRPC metadata, а
-ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с
-`source: 'sdk'`. Допустимые service names и полные method paths выводятся из
-generated unary service definitions, поэтому опечатка не превращается в
-неиспользуемое правило. `packageConfig.sdk` остается внутренней
-authoring-формой и не расширяет публичный `defaultConfig`.
+Per-instance `useSsl` имеет приоритет над package default, а `undefined` не
+отключает package policy. `unaryLimiter` не имеет package default: без него SDK
+не выполняет скрытого ожидания. Обязательные `token` и `endpoint` проверяются
+до создания transport channel. Значения `token` и непустого `appName`
+дополнительно проверяются как строковые gRPC metadata, а ошибки итоговых
+`unaryLimits` преобразуются в публичный `InvalidArgument` с `source: 'sdk'`.
+Допустимые service names и полные method paths выводятся из generated unary
+service definitions, поэтому опечатка не превращается в неиспользуемое
+правило. `packageConfig.sdk` остаётся внутренней authoring-формой и не
+расширяет публичный `defaultConfig`.
 
-`defaultConfig.unaryLimits` остается изменяемым public compatibility
-facade. `resolveUnaryThrottleConfig()` читает его текущие values при создании
-SDK instance, накладывает per-instance overrides и возвращает отдельный snapshot.
+`defaultConfig.unaryLimits` остаётся изменяемым public facade.
+`resolveUnaryLimitConfig()` читает его текущие values при создании SDK
+instance, накладывает per-instance overrides и возвращает отдельный snapshot.
 
 Ownership разделен так:
 
@@ -312,14 +315,16 @@ Ownership разделен так:
   package transport policy в channel options, но не default value;
 - `src/infrastructure/transport/grpc/tls-root-certificates.ts` владеет только
   разрешением package asset и ленивым чтением bundled trust material;
-- `src/application/services/unary-throttle.service.ts` владеет планированием
-  и отменяемой bucket queue по готовому `ThrottleRule`, не интерпретируя source
-  config или gRPC paths;
+- `src/application/services/unary-limiter.ts` владеет публичным limiter port и
+  необязательной process-local реализацией, не интерпретируя source config или
+  gRPC paths;
 - `src/infrastructure/transport/grpc/unary-limits.ts` владеет только
   transport-specific построением gRPC method path;
 - `src/infrastructure/transport/grpc/unary-limit-resolver.ts` владеет
   сопоставлением path с method/service rule и выбором runtime bucket, но не
-  compilation package policy или throttling state.
+  compilation package policy или состоянием limiter-а;
+- Consumer владеет переданным `unaryLimiter`, его внешними ресурсами и scope;
+  `TInvestNodeSDK.close()` этот lifecycle не завершает.
 
 Новая структурная config semantics добавляется в authoring contract и
 соответствующий compiler. Готовые scalar values bootstrap передает напрямую

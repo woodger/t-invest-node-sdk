@@ -3,6 +3,14 @@ export type {
   TInvestOptions,
   TInvestTlsOptions
 } from './application/dto/t-invest-options';
+export { createInMemoryUnaryLimiter } from './application/services/unary-limiter';
+export type {
+  TInvestUnaryLimit,
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter,
+  TInvestUnaryLimits,
+  TInvestUnaryQuota
+} from './application/services/unary-limiter';
 export {
   isSdkError,
   SdkError,

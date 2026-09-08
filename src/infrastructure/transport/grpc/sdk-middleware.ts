@@ -1,10 +1,10 @@
 /**
- * Модуль gRPC middleware adapter связывает transport calls с application throttling.
+ * Модуль gRPC middleware adapter связывает transport calls с unary limiter port.
  *
  * Здесь допустимы:
- * - разрешение gRPC path в transport-neutral throttle rule;
- * - применение unary throttling scheduler;
- * - пропуск response stream calls без unary задержки;
+ * - разрешение gRPC path в transport-neutral quota;
+ * - вызов Consumer-owned limiter-а перед unary transport call;
+ * - пропуск response stream calls без limiter-а;
  * - проверка SDK lifecycle и mapping известных call failures в `SdkError`;
  * - делегирование actual call execution в nice-grpc middleware chain;
  *
@@ -25,7 +25,7 @@ import {
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
 import type { SdkErrorSource } from '../../../application/errors/sdk-error';
-import type { Throttle } from '../../../application/services/unary-throttle.service';
+import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export interface SdkCallRuntime {
@@ -36,42 +36,32 @@ export interface SdkCallRuntime {
 }
 
 export function createSdkMiddleware(
-  trackLimits: boolean,
+  unaryLimiter: TInvestUnaryLimiter | undefined,
   unaryLimitResolver: UnaryLimitResolver,
-  throttle: Throttle,
   runtime?: SdkCallRuntime
 ) {
   return async function*<Request, Response>(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
+    runtime?.assertOpen();
+
+    if (!call.responseStream && unaryLimiter !== undefined) {
+      await acquireUnaryPermit(
+        unaryLimiter,
+        unaryLimitResolver,
+        call.method.path,
+        options.signal,
+        runtime?.signal
+      );
+    }
+
     const callbackBoundary = createCallCallbackBoundary(options);
 
     try {
       runtime?.assertOpen();
 
       if (!call.responseStream) {
-        if (trackLimits) {
-          const rule = unaryLimitResolver.resolve(call.method.path);
-
-          if (rule === undefined) {
-            throw new SdkError(
-              SdkErrorCode.UnknownUnaryLimit,
-              `Unhandled unary limits for ${call.method.path}`,
-              {
-                source: 'sdk',
-                path: call.method.path
-              }
-            );
-          }
-
-          await throttle.reduce(
-            rule,
-            resolveThrottleSignal(options.signal, runtime?.signal)
-          );
-        }
-
-        runtime?.assertOpen();
         throwIfAborted(options.signal);
 
         const response = yield* call.next(
@@ -187,15 +177,79 @@ const standaloneTlsCertificateErrorMessages: ReadonlySet<string> = new Set([
 
 const grpcConnectionErrorMarker = 'no connection established. last error:';
 
-function resolveThrottleSignal(
+const passiveUnaryLimitSignal = new AbortController().signal;
+
+async function acquireUnaryPermit(
+  limiter: TInvestUnaryLimiter,
+  resolver: UnaryLimitResolver,
+  path: string,
   callSignal: AbortSignal | undefined,
   lifecycleSignal: AbortSignal | undefined
-): AbortSignal | undefined {
+): Promise<void> {
+  const quota = resolver.resolve(path);
+
+  if (quota === undefined) {
+    throw new SdkError(
+      SdkErrorCode.UnknownUnaryLimit,
+      `Unhandled unary limits for ${path}`,
+      {
+        source: 'sdk',
+        path
+      }
+    );
+  }
+
+  const signal = resolveUnaryLimitSignal(callSignal, lifecycleSignal);
+
+  try {
+    throwIfAborted(signal);
+    await limiter.acquire({
+      path,
+      quota,
+      signal
+    });
+    throwIfAborted(signal);
+  }
+  catch (error) {
+    if (isCallCancellation(error, callSignal)) {
+      throw new SdkError(
+        SdkErrorCode.Cancelled,
+        errorMessage(error, `SDK call ${path} was cancelled`),
+        {
+          source: 'abort',
+          path,
+          cause: error
+        }
+      );
+    }
+
+    if (
+      lifecycleSignal?.aborted === true
+      && (
+        error === lifecycleSignal.reason
+        || errorName(error) === 'AbortError'
+      )
+    ) {
+      throw lifecycleSignal.reason ?? error;
+    }
+
+    if (isSdkError(error)) {
+      throw error;
+    }
+
+    throw error;
+  }
+}
+
+function resolveUnaryLimitSignal(
+  callSignal: AbortSignal | undefined,
+  lifecycleSignal: AbortSignal | undefined
+): AbortSignal {
   if (callSignal !== undefined && lifecycleSignal !== undefined) {
     return AbortSignal.any([callSignal, lifecycleSignal]);
   }
 
-  return callSignal ?? lifecycleSignal;
+  return callSignal ?? lifecycleSignal ?? passiveUnaryLimitSignal;
 }
 
 function throwIfAborted(signal: AbortSignal | undefined): void {

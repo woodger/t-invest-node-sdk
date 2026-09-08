@@ -23,7 +23,7 @@ import {
   StrategyType,
   TInvestNodeSDK,
   type SignalServiceImplementation
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 const signalService: SignalServiceImplementation = {
   async getStrategies(request) {
@@ -67,8 +67,7 @@ async function main(): Promise<void> {
     sdk = new TInvestNodeSDK({
       token: 'test-token',
       endpoint: `127.0.0.1:${port}`,
-      useSsl: false,
-      trackLimits: false
+      useSsl: false
     });
 
     const response = await sdk.signals.getStrategies({

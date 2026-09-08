@@ -5,7 +5,7 @@
 
 ## Начало работы
 
-- [Первый SDK-вызов](./getting-started.md) — установка из GitHub, настройка
+- [Первый SDK-вызов](./getting-started.md) — установка из npm, настройка
   окружения, выбор счета и корректное закрытие SDK.
 - [Unary-вызовы](./unary-calls.md) — портфель, свечи, сигналы, deadline и
   response metadata.
@@ -16,6 +16,12 @@
   bidirectional streams, `AbortSignal` и владение shutdown lifecycle.
 - [Ошибки и lifecycle](./errors-and-lifecycle.md) — narrowing `SdkError`,
   различение источников ошибок и граница retry policy.
+
+## Управление unary-квотами
+
+- [Собственная реализация unary limiter-а](./custom-unary-limiter.md) —
+  публичный port, точный lifecycle `acquire()`, cancellation, ownership,
+  process-local и межпроцессные варианты.
 
 ## Consumer-тесты
 

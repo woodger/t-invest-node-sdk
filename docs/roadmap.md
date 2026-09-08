@@ -8,10 +8,10 @@
 
 ### Контекст
 
-Локальный unary throttling включен по умолчанию, но каждый `TInvestNodeSDK`
-создает собственный in-memory scheduler. Два независимо запущенных CLI-процесса
-не видят reservations друг друга и каждый планирует вызовы так, будто владеет
-полной квотой.
+Unary limiter не включается фасадом по умолчанию. Consumer может передать
+собственную реализацию или явно создать process-local limiter. Два независимо
+созданных process-local limiter-а не видят reservations друг друга и каждый
+планирует вызовы по полной переданной квоте.
 
 Для команд, использующих разные provider services, service quotas могут не
 пересекаться. При этом процессы все равно участвуют в общих ограничениях
@@ -22,10 +22,10 @@
 
 Текущие source of truth:
 
-- создание per-instance scheduler —
+- публичный port и необязательная process-local реализация —
+  [`src/application/services/unary-limiter.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/application/services/unary-limiter.ts);
+- wiring Consumer-owned limiter-а —
   [`src/bootstrap/t-invest-node-sdk.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/bootstrap/t-invest-node-sdk.ts);
-- очередь, интервалы и cancellation —
-  [`src/application/services/unary-throttle.service.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/application/services/unary-throttle.service.ts);
 - разрешение RPC в quota bucket —
   [`src/infrastructure/transport/grpc/unary-limit-resolver.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/infrastructure/transport/grpc/unary-limit-resolver.ts).
 
@@ -58,7 +58,7 @@ CLI / scheduler
   -> sync-worker
        -> candles sync
        -> instruments sync
-       -> один SDK lifecycle и один набор throttle counters
+       -> один SDK lifecycle и один набор quota counters
 ```
 
 Преимущества:
@@ -104,35 +104,44 @@ CLI / scheduler
 не меньше полного учитываемого quota window перед выдачей новых permits. Это
 осознанная плата за отсутствие базы данных.
 
-### Вариант: injectable limiter contract в SDK
+### Реализованная граница: injectable limiter contract
 
-SDK потенциально может предоставить capability-based port без зависимости от
-конкретного backend-а:
+SDK предоставляет capability-based port без зависимости от конкретного
+backend-а:
 
 ```ts
-interface UnaryRateLimitRequest {
-  readonly bucket: string;
-  readonly limitPerMinute: number;
-  readonly signal?: AbortSignal;
+interface TInvestUnaryLimitContext {
+  readonly path: string;
+  readonly quota: {
+    readonly bucket: string;
+    readonly maxRequests: number;
+    readonly windowMs: number;
+  };
+  readonly signal: AbortSignal;
 }
 
-interface UnaryRateLimiter {
-  acquire(request: UnaryRateLimitRequest): Promise<void>;
+interface TInvestUnaryLimiter {
+  acquire(context: TInvestUnaryLimitContext): Promise<void>;
 }
 ```
 
-Предполагаемая семантика:
+Текущая семантика:
 
-- SDK сам разрешает gRPC method в `bucket` и `limitPerMinute`;
-- Consumer передает реализацию limiter-а, но не формирует bucket вручную;
-- без injection сохраняется текущий per-instance scheduler;
-- `trackLimits: false` отключает throttling независимо от реализации;
-- injected limiter принадлежит Consumer-у и не закрывается через `sdk.close()`;
-- backend failure не должен незаметно переключать SDK на локальные counters.
+- SDK сам разрешает gRPC method в `path`, `bucket`, `maxRequests` и
+  `windowMs`;
+- Consumer передаёт реализацию limiter-а, но не формирует buckets вручную;
+- без injection SDK не создаёт скрытого scheduler-а;
+- injected limiter принадлежит Consumer-у и не закрывается через
+  `sdk.close()`;
+- backend failure не переключает SDK на локальные counters;
+- streams через этот port не проходят.
 
-Один только port не решает межпроцессную координацию. Он имеет смысл, только
-если одновременно существует реальный coordinator и его integration tests.
-Добавлять публичный контракт заранее не планируется.
+Полный публичный контракт и примеры описаны в
+[Consumer guide](./guides/custom-unary-limiter.md).
+
+Один только port не решает межпроцессную координацию. Для неё по-прежнему нужен
+реальный coordinator и его integration tests. Ниже сохранены рассмотренные
+варианты такой реализации.
 
 ### Вариант: Redis или другое общее хранилище
 
@@ -143,7 +152,7 @@ CLI-процессов.
 
 Для текущего проекта вариант исключен: Redis, SQL и любая другая база данных не
 должны становиться инфраструктурным требованием SDK или Consumer-а только ради
-throttling. Не следует добавлять Redis dependency, optional dynamic import или
+координации квот. Не следует добавлять Redis dependency, optional dynamic import или
 неявный сетевой fallback.
 
 К этому варианту имеет смысл возвращаться только при появлении уже существующей
@@ -185,10 +194,11 @@ mapping или application scheduling rules SDK.
 
 ### Текущее решение
 
-Межпроцессный limiter сейчас не реализуется. Публичный SDK contract не меняется.
+Межпроцессный limiter внутри SDK не реализуется. Публичный port позволяет
+Consumer-у подключить coordinator без изменения таблицы квот SDK, но не
+определяет coordinator runtime.
 
-Для текущего Consumer-сценария предпочтительно сначала оценить один
-долгоживущий sync-worker. Локальный IPC coordinator остается возможным
-следующим вариантом, если независимые CLI-процессы необходимо сохранить и все
+Один долгоживущий sync-worker остаётся отдельным вариантом. Локальный IPC
+coordinator возможен, если независимые CLI-процессы необходимо сохранить и все
 они работают на одной машине. Redis и другие базы данных исключены из текущего
 направления.

@@ -13,6 +13,61 @@
 
 ## [Не выпущено]
 
+### Добавлено
+
+- Добавлен отдельный документ о встроенном Russian Trusted Root CA: в нём
+  зафиксированы официальный источник и путь получения, X.509 fingerprint,
+  официальный прецедент T-Invest Python SDK, границы распространения, package
+  path и пример `tls.rootCertificates`. MIT License SDK явно не представлена
+  как отдельное лицензионное разрешение на сертификат.
+
+### Изменено
+
+- Пакет подготовлен к публичной публикации в npm под именем
+  `@woodger/t-invest-node-sdk`: снят флаг `private`, для пакета с областью
+  видимости явно задан `publishConfig.access: public`, а сборка архива
+  перенесена с `prepare` на `prepack`. Поддерживаемым каналом установки
+  становится реестр npm; при установке Git-зависимости npm по-прежнему запускает
+  `prepack`. Имя CLI-команды и вывод версии остаются `t-invest-node-sdk`.
+- Для T-Invest proto-контрактов версии 1.49 и производного generated-кода
+  зафиксирована Apache License 2.0 со ссылкой на официальный
+  `ru.tinkoff.piapi:java-sdk-grpc-contract:1.49`. Полный текст лицензии
+  приведён в `THIRD_PARTY_NOTICES.md` и включён в package archive; MIT License
+  продолжает применяться только к собственному коду SDK.
+
+## [0.5.1] - 2026-09-08
+
+### Добавлено
+
+- Добавлен публичный структурный port `TInvestUnaryLimiter`. Перед каждым
+  unary transport call SDK передаёт реализации полный gRPC `path`,
+  разрешённые `bucket`, `maxRequests`, `windowMs` и объединённый
+  `AbortSignal`. Lifecycle и внешние ресурсы limiter-а остаются у Consumer-а.
+- Экспортирована необязательная фабрика `createInMemoryUnaryLimiter()` с
+  process-local очередями, монотонным временем и отменой ожидающих permits.
+  Один объект можно передать нескольким SDK instances для общего состояния в
+  пределах процесса.
+- Добавлено отдельное руководство по собственной реализации limiter-а,
+  cancellation, конфликтам квот, ownership и подключению межпроцессного
+  coordinator-а.
+
+### Изменено
+
+- Unary limiter больше не создаётся фасадом SDK автоматически. Без
+  `TInvestOptions.unaryLimiter` unary-вызов сразу передаётся transport-у;
+  встроенный CLI также не добавляет limiter. Streams через этот port не
+  проходят. Ошибки пользовательской реализации не маскируются под gRPC
+  failures.
+- `UnaryLimits` теперь хранит явные пары `{ maxRequests, windowMs }` вместо
+  нормализованных чисел запросов в минуту. Секундная квота `PostOrder`
+  передаётся как `15` запросов за `1_000` мс без изменения burst-семантики.
+
+### Удалено
+
+- Удалена опция `trackLimits`. Для прежнего локального поведения нужно явно
+  передать `unaryLimiter: createInMemoryUnaryLimiter()`; отсутствие limiter-а
+  соответствует прежнему `trackLimits: false`.
+
 ## [0.5.0] - 2026-09-07
 
 ### Исправлено

@@ -8,20 +8,21 @@
 - выборочных реэкспортов сгенерированных типов, enum'ов и service definition из
   vendored upstream proto contracts в `contracts/*.proto`.
 
-## Установка из GitHub
+## Установка
 
-Пакет предназначен для установки напрямую из GitHub и не публикуется в npm.
-Для работы требуется Node.js `>=20.19.0`.
-Для приватного репозитория у окружения должен быть настроен SSH-доступ:
+Пакет публикуется в npm под именем `@woodger/t-invest-node-sdk`. Для работы
+требуется Node.js `>=20.19.0`:
 
 ```sh
-npm install "git+ssh://git@github.com/woodger/t-invest-node-sdk.git#0.5.0"
+npm install @woodger/t-invest-node-sdk
 ```
 
-Tag фиксирует устанавливаемую версию, а lifecycle `prepare` собирает TypeScript
-после получения Git dependency.
+Публикуемый архив уже содержит собранный `dist`; установка из реестра npm не
+запускает компилятор TypeScript для SDK. Git URL не является поддерживаемым
+каналом установки: npm запускает `prepack` при установке Git-зависимости и
+собирает её из исходного кода.
 
-Для development и CI проект поддерживает только npm. После checkout зависимости
+Для разработки и CI проект поддерживает только npm. После checkout зависимости
 устанавливаются через `npm ci`; Yarn и другие альтернативные менеджеры пакетов
 не поддерживаются.
 
@@ -37,7 +38,9 @@ Tag фиксирует устанавливаемую версию, а lifecycle
 - [Справочник потокового CLI](docs/cli-stream-reference.md)
 - [Справочник конфигурации потокового CLI](docs/cli-stream-configuration.md)
 - [Лимитная политика API](docs/limits-policy.md)
+- [Собственная реализация unary limiter-а](docs/guides/custom-unary-limiter.md)
 - [TLS-доверие](docs/tls-policy.md)
+- [Происхождение и подключение встроенного CA](docs/bundled-ca.md)
 - [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md)
 - [Политика тестирования](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
 - [Политика комментариев в тестах](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
@@ -60,7 +63,9 @@ TypeScript plugin берется из dev-зависимости `ts-proto`.
 [manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
 Vendored T-Invest контракты хранятся в плоской структуре `contracts/*.proto`,
 а generated TypeScript — в `src/generated/*.ts`. Команда генерации не
-скачивает upstream.
+скачивает upstream. Контракты и производный generated-код распространяются на
+условиях Apache License 2.0; лицензионный источник и уведомления приведены в
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 Вспомогательные `google/protobuf/descriptor.proto` и
 `google/protobuf/timestamp.proto` соответствуют официальному выпуску protobuf
@@ -76,10 +81,12 @@ CLI использует собранные файлы из `dist`, поэтом
 npm run build
 ```
 
-## Релиз на GitHub
+## Публикация релиза
 
-Пакет помечен как `private`, поэтому registry publication для него отключена.
-Перед merge release commit проверьте версию и проект:
+Пакет с областью видимости публикуется как общедоступный благодаря
+`publishConfig.access`. Сценарий `prepack` выполняет `tsc` перед `npm pack` и
+`npm publish`. Перед слиянием релизного коммита проверьте версию, changelog и
+проект:
 
 ```sh
 VERSION="$(node -p "require('./package.json').version")"
@@ -87,6 +94,7 @@ VERSION="$(node -p "require('./package.json').version")"
 npm run build
 npm run lint
 npm test
+npm pack --dry-run
 git status --short
 ```
 
@@ -100,15 +108,21 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Для версии `0.5.0` Git tag остается `0.5.0` по исторической схеме проекта, а
-GitHub Release может называться `v0.5.0`. Release notes берутся из одноименного
+Из того же коммита `origin/main` пакет публикуется в общедоступный реестр npm:
+
+```sh
+npm publish
+```
+
+Для версии `0.5.1` Git tag остается `0.5.1` по исторической схеме проекта, а
+GitHub Release может называться `v0.5.1`. Release notes берутся из одноименного
 раздела `CHANGELOG.md`. Annotated tag требует настроенные `git user.name` и
 `git user.email`.
 
 ## Быстрый старт
 
 ```ts
-import { TInvestNodeSDK } from 't-invest-node-sdk';
+import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 const token = process.env.T_INVEST_TOKEN?.trim();
 const endpoint = process.env.T_INVEST_ENDPOINT?.trim();
@@ -150,7 +164,7 @@ interface TInvestOptions {
   appName?: string;
   useSsl?: boolean;
   tls?: TInvestTlsOptions;
-  trackLimits?: boolean;
+  unaryLimiter?: TInvestUnaryLimiter;
   unaryLimits?: UnaryLimits;
 }
 
@@ -158,7 +172,12 @@ interface TInvestTlsOptions {
   rootCertificates?: Buffer;
 }
 
-type UnaryLimits = Record<string, number>;
+interface TInvestUnaryLimit {
+  maxRequests: number;
+  windowMs: number;
+}
+
+type UnaryLimits = Record<string, TInvestUnaryLimit>;
 ```
 
 - `token` - OAuth токен.
@@ -167,62 +186,43 @@ type UnaryLimits = Record<string, number>;
 - `useSsl` - использовать TLS, по умолчанию `true`.
 - `tls.rootCertificates` - PEM-содержимое custom root CA bundle для одного
   channel. При отсутствии используется bundled Russian Trusted Root CA.
-- `trackLimits` - включить локальный throttling unary-запросов, по умолчанию `true`.
-- `unaryLimits` - per-instance overrides лимитов в запросах за минуту. Значения
-  объединяются с `defaultConfig.unaryLimits` при создании SDK.
+- `unaryLimiter` - необязательная Consumer-owned стратегия ожидания перед
+  unary-вызовами. Без неё SDK сразу передаёт unary-вызов transport-у.
+- `unaryLimits` - per-instance overrides квот. Значения объединяются с
+  `defaultConfig.unaryLimits` и передаются настроенному limiter-у.
 
-Defaults `useSsl` и `trackLimits` задаются package config; явно переданные
-boolean values имеют приоритет, а `undefined` сохраняет безопасный default.
+Default `useSsl` задаётся package config; явно переданное boolean value имеет
+приоритет, а `undefined` сохраняет default.
 `token` и `endpoint` должны быть непустыми строками. `token` и непустой
 `appName` передаются как строковые gRPC metadata и поэтому могут содержать
-только печатные ASCII-символы. `unaryLimits` принимает только конечные
-положительные числа и известные service names или полные paths поддерживаемых
-unary RPC. Нарушение этих ограничений завершается
+только печатные ASCII-символы. Поля `maxRequests` и `windowMs` в `unaryLimits`
+принимают только конечные положительные числа, а keys — известные service names
+или полные paths поддерживаемых unary RPC. Нарушение этих ограничений завершается
 `SdkErrorCode.InvalidArgument` с `source: 'sdk'` до создания transport;
 диагностическое сообщение не повторяет значение token.
 
 Bundled CA применяется только к channel текущего SDK instance и не изменяет
 system trust store. Явный `tls.rootCertificates` заменяет bundled CA, а не
 добавляется к нему; SDK принимает содержимое сертификатов в `Buffer`, но не
-путь к файлу. При `useSsl: false` TLS options игнорируются. Полный контракт и
-provenance asset описаны в [TLS policy](docs/tls-policy.md).
+путь к файлу. При `useSsl: false` TLS options игнорируются. Runtime-контракт
+описан в [TLS policy](docs/tls-policy.md), а источник, юридические границы и
+техническое подключение asset-а — в
+[отдельном документе](docs/bundled-ca.md).
 
-Для читаемой группировки лимитов по сервисам и методам используйте
-`defineUnaryLimits()`. `default` задает сервисный fallback, а `methods` —
-исключения для отдельных RPC:
+Для читаемой группировки overrides по сервисам и методам доступен
+`defineUnaryLimits()`. Тип вложенного аргумента экспортируется как
+`UnaryLimitsDefinition`; плоская запись также допустима. Полный контракт
+`TInvestUnaryLimiter`, точная семантика `acquire()`, cancellation, ownership,
+ошибки и законченный пример собственной реализации вынесены в отдельное
+[руководство по unary limiter-у](docs/guides/custom-unary-limiter.md).
 
-```ts
-import {
-  defineUnaryLimits,
-  TInvestNodeSDK
-} from 't-invest-node-sdk';
-
-const sdk = new TInvestNodeSDK({
-  token,
-  endpoint,
-  unaryLimits: defineUnaryLimits({
-    UsersService: {
-      default: 50
-    },
-    OrdersService: {
-      methods: {
-        PostOrder: 300
-      }
-    }
-  })
-});
-```
-
-Helper возвращает прежний плоский `UnaryLimits`, поэтому плоская запись также
-остается доступна для совместимости. Тип вложенного аргумента экспортируется
-как `UnaryLimitsDefinition`. Package defaults могут объединять несколько
-method rules в общий quota bucket; per-instance override с другим значением
-делает отдельный метод самостоятельным правилом. Одинаковый override всех
-методов группы сохраняет общий bucket.
+Пакет также экспортирует `createInMemoryUnaryLimiter()` как необязательную
+process-local реализацию с равномерной выдачей permits. Это один из возможных
+вариантов, а не требование к Consumer-архитектуре.
 
 В исходном package config эти defaults описаны одной типизированной вложенной
 декларацией; в публичный `defaultConfig.unaryLimits` она компилируется в
-совместимую плоскую runtime-таблицу.
+плоскую runtime-таблицу.
 
 ## Опции `defaultConfig`
 
@@ -233,9 +233,10 @@ interface TInvestNodeSDKConfig {
 }
 ```
 
-- `unaryLimits` - плоская runtime-таблица default unary-лимитов по generated
-  service names и полным gRPC method paths. Более специфичный method path
-  имеет приоритет над сервисным fallback. Общие method quota groups описаны в
+- `unaryLimits` - плоская runtime-таблица default unary-квот по generated
+  service names и полным gRPC method paths. Каждое значение содержит
+  `maxRequests` и `windowMs`; более специфичный method path имеет приоритет над
+  сервисным fallback. Общие method quota groups описаны в
   [лимитной политике](docs/limits-policy.md).
 - `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с
   side effects, по умолчанию `true`.
@@ -336,12 +337,12 @@ terminal policy классифицирует application и framework usage erro
 детерминированного завершения Consumer должен передать собственный
 `AbortSignal` и дождаться результата.
 
-`TInvestCallOptions.signal` действует на весь SDK-вызов. Он отменяет как
-ожидание локального throttling, так и последующий gRPC-вызов. Если операция
-отменена во время ожидания, ее reservation удаляется из quota bucket, а
-следующие вызовы занимают освободившийся слот. После выдачи локального слота и
-передачи вызова transport-у слот не возвращается, поскольку provider уже мог
-учесть запрос.
+`TInvestCallOptions.signal` действует на весь SDK-вызов. При настроенном
+`unaryLimiter` SDK передаёт ему signal для отмены ожидания, а затем использует
+тот же signal в gRPC-вызове. Реализация limiter-а должна удалить
+неотправленную операцию из своей очереди. После выдачи permit и передачи вызова
+transport-у его не следует возвращать, поскольку provider уже мог учесть
+request.
 
 `onHeader` и `onTrailer` являются синхронными callbacks. Если callback бросает
 исключение, соответствующий unary-вызов или stream iteration отклоняется этой
@@ -393,7 +394,7 @@ network `UNAVAILABLE` остается `source: 'grpc'`. Поля `path`, `detai
 import {
   isSdkError,
   SdkErrorCode
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 
 try {
   await sdk.users.getAccounts({});
@@ -458,7 +459,7 @@ import {
   CandleInterval,
   InstrumentsService,
   MarketDataStreamService,
-} from 't-invest-node-sdk';
+} from '@woodger/t-invest-node-sdk';
 ```
 
 ## Дисклеймер
@@ -467,4 +468,5 @@ import {
 T-Invest, T-Банку или их аффилированным лицам. Названия продуктов и компаний
 используются только для обозначения совместимости с публичным API.
 
-Сведения о сторонних контрактах и generated-коде включены в [LICENSE](LICENSE).
+Сведения о сторонних контрактах и generated-коде включены в
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
