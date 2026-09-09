@@ -57,7 +57,7 @@ Runtime entrypoints разделены между публичными package e
 - `bootstrap/index.ts` - executable CLI entrypoint, который публикуется как package binary `dist/bootstrap/index.js`;
 - `bootstrap/t-invest-node-sdk.ts` - публичный runtime facade SDK, владелец shared channel и lifecycle `close()`;
 - `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - compiler и runtime adapter с [разделенным ownership](#конфигурация-терминология-и-ownership);
-- `bootstrap/proto/compile-proto.ts` - proto generation mechanics через системный `protoc` и локальный `ts-proto` plugin;
+- `bootstrap/proto/compile-proto.ts` - proto generation mechanics через закреплённые локальные `protoc` и `ts-proto`;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
 - `bootstrap/cli` - CLI contract, registry, help, version, terminal error policy и runner layer;
 - `bootstrap/commands` - handlers CLI-команд;
@@ -201,4 +201,4 @@ T-Invest proto-файлы копируются без изменения пло�
 4. при изменении вспомогательных contracts получить их из точного выпуска и обновить соответствующую запись `supportingSources`;
 5. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и `npm test`.
 
-Proto generation использует только vendored snapshot и не выполняет network IO. Версия системного `protoc` не закреплена package dependency. Для побайтового воспроизведения нужно использовать версию из заголовков текущих generated файлов; сейчас это `protoc 3.19.6`.
+Proto generation использует только vendored snapshot и не выполняет network IO. Compiler `protoc` и plugin `ts-proto` закреплены в dev-зависимостях, а команда запускает их из локального `node_modules`; системный `protoc` не используется. Текущий generated snapshot создан с `protoc 32.1`.

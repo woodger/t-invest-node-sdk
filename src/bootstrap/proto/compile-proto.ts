@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - чтение локальных generation paths из proto upstream manifest;
  * - поиск vendored proto-файлов в contracts directory;
- * - вызов системного `protoc` с текущими ts-proto options;
+ * - вызов закреплённого локального `protoc` с текущими ts-proto options;
  * - проверка обязательных tool/runtime prerequisites перед генерацией;
  *
  * Здесь не должно быть post-processing generated sources или SDK runtime wiring.
@@ -14,8 +14,16 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pfs } from 'pwd-fs';
 
-const compilerCommand = 'protoc';
-const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', 'protoc-gen-ts_proto');
+const compilerLauncherPath = path.join(
+  pfs.pwd,
+  'node_modules',
+  'protoc',
+  'protoc.cjs'
+);
+const pluginExecutable = process.platform === 'win32'
+  ? 'protoc-gen-ts_proto.cmd'
+  : 'protoc-gen-ts_proto';
+const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', pluginExecutable);
 
 type ProtoGenerationPaths = {
   contractsDir: string;
@@ -96,42 +104,39 @@ function assertProtoCompilerReady(contractsDir: string): void {
     throw new Error(`Missing contracts directory at ${contractsDir}`);
   }
 
+  if (!pfs.test(compilerLauncherPath, { sync: true })) {
+    throw new Error(`Missing local protoc compiler at ${compilerLauncherPath}`);
+  }
+
   if (!pfs.test(pluginPath, { sync: true })) {
     throw new Error(`Missing ts-proto plugin at ${pluginPath}`);
   }
 
-  try {
-    execFileSync(compilerCommand, ['--version'], {
-      cwd: pfs.pwd,
-      stdio: 'ignore',
-    });
-  }
-  catch (error) {
-    handleMissingProtoCompiler(error);
-  }
+  // npm-пакет предоставляет Node.js launcher над локальным native binary;
+  // process.execPath позволяет не искать compiler через shell или системный PATH.
+  execFileSync(process.execPath, [compilerLauncherPath, '--version'], {
+    cwd: pfs.pwd,
+    stdio: ['ignore', 'ignore', 'inherit'],
+  });
 }
 
 function runProtoCompiler(
   protoFiles: readonly string[],
   paths: ProtoGenerationPaths
 ): void {
-  try {
-    execFileSync(compilerCommand, [
-      `--plugin=protoc-gen-ts_proto=${pluginPath}`,
-      `--proto_path=${paths.contractsDir}`,
-      `--ts_proto_out=${paths.generatedDir}`,
-      '--ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false',
-      '--ts_proto_opt=env=node',
-      '--ts_proto_opt=esModuleInterop=true',
-      ...protoFiles,
-    ], {
-      cwd: pfs.pwd,
-      stdio: 'inherit',
-    });
-  }
-  catch (error) {
-    handleMissingProtoCompiler(error);
-  }
+  execFileSync(process.execPath, [
+    compilerLauncherPath,
+    `--plugin=protoc-gen-ts_proto=${pluginPath}`,
+    `--proto_path=${paths.contractsDir}`,
+    `--ts_proto_out=${paths.generatedDir}`,
+    '--ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false',
+    '--ts_proto_opt=env=node',
+    '--ts_proto_opt=esModuleInterop=true',
+    ...protoFiles,
+  ], {
+    cwd: pfs.pwd,
+    stdio: 'inherit',
+  });
 }
 
 function requireManifestPath(
@@ -150,12 +155,4 @@ function requireManifestPath(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function handleMissingProtoCompiler(error: unknown): never {
-  if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-    throw new Error('System protoc compiler is not installed or is not available in PATH', { cause: error });
-  }
-
-  throw error;
 }

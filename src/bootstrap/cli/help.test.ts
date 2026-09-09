@@ -407,7 +407,7 @@ describe('renderCommandHelp', () => {
 
     assert.match(help, /dev compile-proto - Generate TypeScript contracts/);
     assert.match(help, /t-invest-node-sdk dev compile-proto/);
-    assert.match(help, /system protoc/);
+    assert.match(help, /pinned protoc compiler/);
     assert.match(help, /does not download upstream proto sources/);
   });
 });
