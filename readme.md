@@ -46,7 +46,7 @@ npm install @woodger/t-invest-node-sdk
 npm run cli -- dev compile-proto
 ```
 
-Проект использует закреплённые dev-зависимости `protoc` и `ts-proto`, поэтому устанавливать compiler в систему не нужно. Официальный upstream — активный репозиторий [`invest-contracts`](https://opensource.tbank.ru/invest/invest-contracts). [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит точные tag и commit. T-Invest контракты лежат в плоской структуре `contracts/*.proto`, а generated TypeScript — в `src/generated/*.ts`. Генератор работает только с локальными файлами и не скачивает upstream. Контракты и производный generated-код распространяются по Apache License 2.0; источник лицензии и уведомления собраны в [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+Проект использует закреплённые dev-зависимости `protoc` и `ts-proto`, поэтому устанавливать compiler в систему не нужно. Официальный upstream — активный репозиторий [`invest-contracts`](https://opensource.tbank.ru/invest/invest-contracts). [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит точные tag и commit. T-Invest контракты лежат в плоской структуре `contracts/*.proto`, а generated TypeScript — в `src/generated/*.ts`. Генератор работает только с локальными файлами и не скачивает upstream. Контракты и производный generated-код распространяются по [Apache License 2.0](LICENSE-APACHE-2.0); происхождение компонентов и необходимые уведомления приведены в [`NOTICE`](NOTICE).
 
 Вспомогательные `google/protobuf/descriptor.proto` и `google/protobuf/timestamp.proto` взяты из официального выпуска protobuf `v32.1`; тот же manifest хранит их источник. `package.json` закрепляет версию compiler-а, сейчас это `protoc 36.0`.
 
@@ -328,4 +328,4 @@ import {
 
 Проект является независимой реализацией и не имеет никакого отношения к T-Invest, T-Банку или их аффилированным лицам. Названия продуктов и компаний используются только для обозначения совместимости с публичным API.
 
-Сведения о сторонних контрактах и generated-коде включены в [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+Собственный код SDK распространяется по [MIT License](LICENSE). Для сторонних компонентов сохранены полный текст [Apache License 2.0](LICENSE-APACHE-2.0) и [`NOTICE`](NOTICE) с границами лицензий и необходимыми уведомлениями.
