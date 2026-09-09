@@ -53,6 +53,16 @@ describe('UnaryLimitResolver', () => {
     ), undefined);
   });
 
+  test('does not resolve inherited limit rules', () => {
+    const inheritedLimits = Object.create({
+      [ordersPath]: perMinute(200),
+      OrdersService: perMinute(100)
+    }) as Record<string, ReturnType<typeof perMinute>>;
+    const resolver = new UnaryLimitResolver(inheritedLimits);
+
+    assert.equal(resolver.resolve(ordersPath), undefined);
+  });
+
   test('uses a configured quota bucket for a matched rule', () => {
     const brokerReportPath =
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport';

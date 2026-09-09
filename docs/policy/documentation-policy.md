@@ -1,12 +1,12 @@
 # Политика документации
 
-> Type: Policy. Этот документ задает правила выбора source of truth для документации и запрещает дублировать кодовые контракты в постоянных reference-страницах.
+> Type: Policy. Здесь описано, как выбирать source of truth для документации и не дублировать кодовые контракты в постоянных reference-страницах.
 
 ## Назначение
 
-Документация должна помогать найти актуальный контракт, а не создавать второй источник истины рядом с кодом.
+Документация должна вести к актуальному контракту, а не создавать рядом с кодом второй источник истины.
 
-Если контракт уже выражен runtime-механизмом, source file, proto contract или tests, Markdown-документ должен ссылаться на этот источник и объяснять маршрут работы, а не копировать полный reference.
+Если контракт уже задан runtime-механизмом, source file, proto contract или tests, Markdown должен ссылаться на него и объяснять работу с ним, а не копировать полный reference.
 
 ## Язык
 
@@ -14,11 +14,11 @@
 
 ## Форматирование строк
 
-Обычный абзац и продолжение одного пункта списка записываются одной физической строкой без ручного переноса по ширине. Новая строка используется только как элемент структуры Markdown: для нового абзаца, заголовка, пункта списка, blockquote, таблицы или блока кода. Markdown hard break через пробелы в конце строки и любые другие trailing spaces не используются.
+Записывайте обычный абзац и продолжение одного пункта списка одной физической строкой, без ручного переноса по ширине. Начинайте новую строку только для нового элемента структуры Markdown: абзаца, заголовка, пункта списка, blockquote, таблицы или блока кода. Не используйте Markdown hard break через пробелы в конце строки и любые другие trailing spaces.
 
 ## Источники истины
 
-Для SDK действуют следующие источники истины:
+Источники истины SDK:
 
 - public package entrypoint: `src/index.ts`;
 - SDK client API: `src/bootstrap/t-invest-node-sdk.ts`;
@@ -33,7 +33,7 @@
 - unary config compilation и readable override shape adapter: `src/bootstrap/unary-limit-config.ts`;
 - public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;
 - public unary limiter port и необязательная process-local реализация: `src/application/services/unary-limiter.ts`;
-- transport-specific unary rule paths и resolution: `src/infrastructure/transport/grpc/unary-limits.ts`, `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
+- transport-specific unary rule paths и resolution: `src/infrastructure/transport/grpc/unary-method-path.ts`, `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
 - CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
 - proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
 - CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;
@@ -43,13 +43,13 @@
 - test runner contract: `package.json` `test` script and `fwa` package behavior;
 - package scripts: `package.json`.
 
-Markdown должен объяснять, где находится актуальный контракт и как с ним работать.
+Markdown должен указывать, где находится актуальный контракт и как с ним работать.
 
 ## Сгенерированный код и proto
 
-Официальный контракт внешнего API живет в upstream, зафиксированном в `contracts/upstream.json`. Воспроизводимый локальный snapshot хранится в `contracts/*.proto`.
+Официальный контракт внешнего API находится в upstream, указанном в `contracts/upstream.json`. Его воспроизводимый локальный snapshot хранится в `contracts/*.proto`.
 
-Если меняется proto workflow, documentation update должен объяснить:
+При изменении proto workflow документация должна объяснять:
 
 - какой script запускать;
 - какой generated code обновляется;
@@ -68,7 +68,7 @@ Markdown должен объяснять, где находится актуал
 - [Политика тестирования](./testing-policy.md);
 - [Политика комментариев в тестах](./test-comment-style.md).
 
-Если меняется test runner, stale artifact behavior или порядок запуска тестов, нужно обновить:
+При изменении test runner, stale artifact behavior или порядка запуска тестов обновите:
 
 - `package.json` `test` script;
 - [Политика тестирования](./testing-policy.md);
@@ -78,7 +78,7 @@ Markdown должен объяснять, где находится актуал
 
 ## Когда нужен отдельный Markdown-документ
 
-Отдельный документ допустим, если он объясняет:
+Отдельный документ уместен, если он объясняет:
 
 - workflow;
 - architecture boundary;
@@ -87,7 +87,7 @@ Markdown должен объяснять, где находится актуал
 - external API assumptions;
 - связь runtime behavior с внешней документацией.
 
-Отдельный документ не нужен, если он просто переписывает:
+Не создавайте отдельный документ, если он просто переписывает:
 
 - полный public API из `src/index.ts`;
 - generated DTO и enum'ы;

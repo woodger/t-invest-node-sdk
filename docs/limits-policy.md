@@ -1,8 +1,8 @@
 # Лимитная политика T-Invest API
 
-Документ фиксирует лимиты из активной официальной документации T-Bank Dev Portal: <https://developer.tbank.ru/invest/intro/intro/limits>.
+Здесь собраны лимиты из актуальной официальной документации T-Bank Dev Portal: <https://developer.tbank.ru/invest/intro/intro/limits>.
 
-Актуальность значений зависит от политики брокера. При изменении официальной документации нужно обновить этот файл, декларацию `packageConfig.unaryLimits` в `src/config.ts` и связанные тесты одним изменением.
+Брокер может изменить эти значения. В таком случае обновите одним изменением этот файл, декларацию `packageConfig.unaryLimits` в `src/config.ts` и связанные тесты.
 
 ## Что важно учитывать
 
@@ -13,7 +13,7 @@
 
 ## Лимиты unary-методов
 
-SDK работает через `gRPC`, поэтому ниже приведены значения его статической unary quota policy.
+SDK работает через `gRPC`. В таблице приведена его статическая unary quota policy.
 
 | Сервис или метод | gRPC-лимит |
 | --- | ---: |
@@ -38,7 +38,7 @@ SDK работает через `gRPC`, поэтому ниже приведен
 
 `UnaryLimits` хранит каждое правило как пару `maxRequests` и `windowMs`. Поэтому секундное окно `PostOrder` остаётся `{ maxRequests: 15, windowMs: 1_000 }` и не нормализуется в допускающую другую burst-семантику минутную запись.
 
-`GetBrokerReport` и `GetDividendsForeignIssuer` объединяют запуск формирования и получение готового отчета в одном RPC. Transport resolver не анализирует request payload и для всех режимов обоих RPC выбирает одно общее правило с квотой `5` запросов за `60_000` мс.
+`GetBrokerReport` и `GetDividendsForeignIssuer` совмещают в одном RPC запуск формирования и получение готового отчёта. Transport resolver не анализирует request payload, поэтому для всех режимов обоих RPC выбирает общее правило: `5` запросов за `60_000` мс.
 
 ## Лимиты stream-соединений
 
@@ -70,15 +70,15 @@ SDK предоставляет необязательный `TInvestUnaryLimiter
 
 Без `unaryLimiter` скрытого ожидания и локальных counters нет. Streams через этот port не проходят. Встроенный CLI также не добавляет limiter. SDK создаёт отдельный snapshot таблицы квот для каждого instance, объединяет per-instance `unaryLimits` с `defaultConfig.unaryLimits`, но не обновляет его автоматически из `users.getUserTariff()` или response metadata.
 
-После выдачи permit и передачи unary-вызова transport-у слот не возвращается даже при последующей отмене: provider уже мог учесть запрос в своей квоте.
+После выдачи permit и передачи unary-вызова transport-у limiter не возвращает слот даже при последующей отмене: provider уже мог учесть запрос в своей квоте.
 
-Для одного вызова gRPC resolver выбирает только самое специфичное совпавшее правило. Method override заменяет service fallback и не передаётся как второе одновременное ограничение, поэтому один resolved context не воспроизводит все service aggregate и IP policies provider-а. Package policy дополнительно связывает некоторые method rules с общей quota group. Per-instance override, который меняет квоту отдельного метода, отсоединяет его от package default group; согласованный override всех методов группы сохраняет общий bucket.
+Для каждого вызова gRPC resolver выбирает самое специфичное совпавшее правило. Method override заменяет service fallback и не становится вторым одновременным ограничением. Поэтому один resolved context не описывает все service aggregate и IP policies provider-а. Package policy дополнительно связывает некоторые method rules общей quota group. Если per-instance override меняет квоту одного метода, этот метод отделяется от package default group; согласованный override всех методов группы сохраняет общий bucket.
 
-Полный контракт создания собственной реализации, cancellation и ownership описан в [отдельном руководстве](./guides/custom-unary-limiter.md). Пакет также предоставляет необязательную process-local фабрику `createInMemoryUnaryLimiter()`: она равномерно распределяет permits, использует монотонное время и отменяемую очередь, но не координирует разные процессы и не является полной моделью всех ограничений provider-а.
+[Отдельное руководство](./guides/custom-unary-limiter.md) подробно описывает собственную реализацию, cancellation и ownership. Пакет также экспортирует необязательную process-local фабрику `createInMemoryUnaryLimiter()`. Она равномерно распределяет permits, использует монотонное время и отменяемую очередь, но не координирует разные процессы и не моделирует все ограничения provider-а.
 
 ## Декларативный package config
 
-Package defaults хранятся в `src/config.ts` как одна типизированная декларация. Термины source/runtime config и ownership этого pipeline зафиксированы в [архитектуре SDK](./architecture.md#конфигурация-терминология-и-ownership). Сервисный fallback задается через `default`, индивидуальные RPC — через `methods`, а общая квота — одним элементом `groups`:
+Package defaults хранятся в `src/config.ts` как одна типизированная декларация. [Архитектура SDK](./architecture.md#конфигурация-терминология-и-ownership) описывает термины source/runtime config и ownership этого pipeline. Поле `default` задаёт service fallback, `methods` — правила отдельных RPC, а один элемент `groups` — общую квоту:
 
 ```ts
 OperationsService: {
@@ -101,7 +101,7 @@ OperationsService: {
 }
 ```
 
-`PackageConfigDefinition` из `src/config.types.ts` проверяет при компиляции значения квот, имена сервисов и RPC. Bootstrap compiler один раз преобразует декларацию в плоские runtime limits и quota buckets и отклоняет неположительные или неконечные `maxRequests` и `windowMs`. Публичный `defaultConfig.unaryLimits` остаётся плоским. После merge с public defaults и per-instance overrides bootstrap повторно проверяет весь итоговый snapshot до создания transport resolver, включая соответствие service names и полных method paths поддерживаемым generated unary definitions.
+`PackageConfigDefinition` из `src/config.types.ts` проверяет при компиляции значения квот, имена сервисов и RPC. Bootstrap compiler один раз преобразует декларацию в плоские runtime limits и quota buckets, отклоняя неположительные или неконечные `maxRequests` и `windowMs`. Публичный `defaultConfig.unaryLimits` остаётся плоским. После merge public defaults с per-instance overrides bootstrap повторно проверяет итоговый snapshot до создания transport resolver, включая соответствие service names и полных method paths поддерживаемым generated unary definitions.
 
 Пример точечного ограничения для отдельного экземпляра:
 
@@ -139,4 +139,4 @@ const sdk = new TInvestNodeSDK({
 
 `defineUnaryLimits()` преобразует вложенную декларацию в плоский runtime `UnaryLimits`. Остальные service и method limits в этом примере наследуются из `defaultConfig.unaryLimits`.
 
-Consumer-owned limiter должен учитывать выбранную границу координации, фактический тариф пользователя и rate-limit metadata provider-а. Наличие статической package policy само по себе не определяет retry или deployment policy приложения.
+Consumer-owned limiter должен учитывать выбранную границу координации, фактический тариф пользователя и rate-limit metadata provider-а. Статическая package policy сама по себе не задаёт retry или deployment policy приложения.

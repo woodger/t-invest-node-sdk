@@ -1,6 +1,6 @@
 {
   "name": "@woodger/t-invest-node-sdk",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Node.js SDK for T-Invest API",
   "keywords": [
     "t-invest",
@@ -53,6 +53,7 @@
     "fwa": "^2.1.4",
     "oxlint": "1.81.0",
     "oxlint-tsgolint": "^7.0.2001",
+    "protoc": "36.0.0",
     "ts-proto": "^2.12.2",
     "typescript": "^7.0.2"
   },

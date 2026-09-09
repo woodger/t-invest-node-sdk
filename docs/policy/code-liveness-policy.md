@@ -1,12 +1,12 @@
 # Политика жизненности кода
 
-> Type: Policy. Этот документ задает правила классификации кода при refactoring audit, deletion audit и cleanup pass.
+> Type: Policy. Здесь описана классификация кода для refactoring audit, deletion audit и cleanup pass.
 
 ## Назначение
 
-Код считается живым не потому, что он компилируется, экспортируется или имеет тесты. Код считается живым, если у него есть подтвержденная роль в текущем production graph, поддерживаемом public/internal contract или runtime binding.
+Компиляция, export или наличие тестов сами по себе не делают код живым. Для этого нужна подтверждённая роль в текущем production graph, поддерживаемом public/internal contract или runtime binding.
 
-Эта policy помогает отличать:
+Эта policy различает:
 
 - активный runtime-код;
 - полностью неиспользуемые файлы;
@@ -39,9 +39,9 @@ Production graph начинается от runtime entrypoints и рабочих
 
 Test graph начинается от `*.test.ts` и `package.json` `test` script, который вызывает test runner `fwa`.
 
-Тесты подтверждают, что код имеет проверяемое поведение. Тесты не доказывают, что код используется SDK в runtime.
+Тесты подтверждают проверяемое поведение кода, но не доказывают, что SDK использует его в runtime.
 
-Если модуль достижим только из test graph, он классифицируется отдельно и не удаляется без owner decision.
+Модуль, достижимый только из test graph, относится к отдельной категории. Не удаляйте его без owner decision.
 
 ## Категории
 
@@ -54,8 +54,8 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 - импортируется runtime-кодом;
 - участвует в package entrypoint или public exports;
 - используется SDK client, middleware, generated exports или runtime config;
-- является declaration/config/entrypoint-файлом, нужным сборке или запуску;
-- является явно поддерживаемым public/internal API.
+- нужен сборке или запуску как declaration/config/entrypoint-файл;
+- явно поддерживается как public/internal API.
 
 Решение: `keep`.
 
@@ -71,7 +71,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 
 Решение: `keep`, если source proto и exports актуальны.
 
-Generated code нельзя чистить вручную как обычный handwritten code. Если он устарел, нужно исправлять proto workflow или source contracts.
+Не чистите generated code вручную как обычный handwritten code. Если он устарел, исправьте proto workflow или source contracts.
 
 ### Unused File
 
@@ -85,7 +85,7 @@ Generated code нельзя чистить вручную как обычный 
 - нет docs references;
 - нет package script / entrypoint references;
 - нет dynamic string references;
-- файл не является declaration/config/entrypoint-файлом.
+- файл не нужен как declaration/config/entrypoint.
 
 Решение: `delete candidate`, если нет архитектурного намерения или публичного контракта.
 
@@ -117,7 +117,7 @@ Generated code нельзя чистить вручную как обычный 
 
 Решение: `needs owner decision`.
 
-Такой код нельзя удалять механически: сначала нужно понять, это устаревшая реализация, потерянный runtime flow или намеренно сохраненный contract.
+Не удаляйте такой код механически. Сначала выясните, что перед вами: устаревшая реализация, потерянный runtime flow или намеренно сохранённый contract.
 
 ### Barrel-only Export
 
@@ -132,7 +132,7 @@ Generated code нельзя чистить вручную как обычный 
 
 Решение: `needs owner decision`.
 
-Barrel export сам по себе не доказывает жизненность внутреннего кода, но может быть public API contract. Удаление требует отдельного решения.
+Barrel export сам по себе не доказывает жизненность внутреннего кода, но может входить в public API contract. Для удаления нужно отдельное решение.
 
 ### Orphaned Island
 
@@ -147,7 +147,7 @@ Barrel export сам по себе не доказывает жизненнос�
 
 Решение: `needs owner decision` или отдельный small deletion pass после подтверждения владельца.
 
-Внутренняя зависимость внутри острова не делает остров активным.
+Внутренние зависимости не делают такой остров активным.
 
 ### Код из roadmap
 
@@ -168,29 +168,29 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 
 ### Keep
 
-Используется, если код:
+Выберите `keep`, если код:
 
 - достижим из production graph;
 - нужен сборке, типам, declarations или runtime config;
-- является package entrypoint;
+- служит package entrypoint;
 - поддерживается как public/internal API;
 - имеет действующий documented contract.
 
 ### Delete Candidate
 
-Используется, если код:
+Считайте код `delete candidate`, если он:
 
 - не имеет production usage;
 - не имеет public/internal API роли;
 - не нужен test harness как осознанный contract;
-- не является declaration/config/entrypoint;
+- не нужен как declaration/config/entrypoint;
 - не содержит важного архитектурного намерения.
 
-Удаление выполняется только small batch-ами.
+Удаляйте такой код только small batch-ами.
 
 ### Move To Roadmap
 
-Используется, если код:
+Выберите `move to roadmap`, если код:
 
 - описывает будущую возможность;
 - не имеет текущего consumer-а;
@@ -199,7 +199,7 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 
 ### Needs Owner Decision
 
-Используется, если код:
+Выберите `needs owner decision`, если код:
 
 - имеет реальную реализацию;
 - покрыт тестами;
@@ -211,7 +211,7 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 
 ## Чеклист аудита
 
-Перед deletion pass нужно проверить:
+Перед deletion pass проверьте:
 
 - imports по имени файла;
 - imports по exported symbols;
@@ -224,7 +224,7 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 - proto workflow;
 - runtime config;
 - dynamic string references;
-- является ли файл частью orphaned island.
+- не входит ли файл в orphaned island.
 
 ## Минимальное правило удаления
 
@@ -240,4 +240,4 @@ Deletion pass должен быть ограничен заранее переч
 - запускать build, tests, lint и diff checks;
 - показывать diff summary.
 
-Если по файлу есть сомнение, он остается в `needs owner decision`.
+Если по файлу есть сомнение, оставьте его в `needs owner decision`.

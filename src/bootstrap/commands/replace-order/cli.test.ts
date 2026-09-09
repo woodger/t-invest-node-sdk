@@ -12,7 +12,7 @@ import {
   type PostOrderResponse,
   type ReplaceOrderRequest
 } from '../../../generated/orders';
-import { createReplaceOrderCommand, createReplaceOrderRequest } from './cli';
+import { createReplaceOrderCommand } from './cli';
 
 function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -38,32 +38,6 @@ function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostO
 }
 
 describe('replace-order command', () => {
-  describe('createReplaceOrderRequest', () => {
-    test('returns generated replaceOrder request', () => {
-      const request = createReplaceOrderRequest({
-        'account-id': 'account-id',
-        'order-id': 'order-id',
-        'idempotency-key': 'new-idempotency-key',
-        quantity: 5,
-        price: '101.5',
-        'price-type': 'currency'
-      });
-
-      assert.deepEqual(request, {
-        accountId: 'account-id',
-        orderId: 'order-id',
-        idempotencyKey: 'new-idempotency-key',
-        quantity: 5,
-        price: {
-          units: 101,
-          nano: 500_000_000
-        },
-        priceType: PriceType.PRICE_TYPE_CURRENCY,
-        confirmMarginTrade: false
-      });
-    });
-  });
-
   describe('createReplaceOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

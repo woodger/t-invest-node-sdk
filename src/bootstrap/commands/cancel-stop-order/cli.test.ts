@@ -50,7 +50,7 @@ describe('cancel-stop-order command', () => {
         receivedOptions = options;
 
         return {
-          stoporders: {
+    stopOrders: {
             async cancelStopOrder(request) {
               receivedRequest = request;
 

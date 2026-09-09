@@ -7,7 +7,7 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import { createWithdrawLimitsCommand, createWithdrawLimitsRequest } from './cli';
+import { createWithdrawLimitsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -29,18 +29,6 @@ function withdrawLimitsResponse(
 }
 
 describe('withdraw-limits command', () => {
-  describe('createWithdrawLimitsRequest', () => {
-    test('returns generated getWithdrawLimits request', () => {
-      const request = createWithdrawLimitsRequest({
-        'account-id': 'account-id'
-      });
-
-      assert.deepEqual(request, {
-        accountId: 'account-id'
-      });
-    });
-  });
-
   describe('createWithdrawLimitsCommand', () => {
     test('calls getWithdrawLimits and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

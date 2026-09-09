@@ -6,21 +6,9 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelOrderRequest
 } from '../../../generated/orders';
-import { createCancelOrderCommand, createCancelOrderRequest } from './cli';
+import { createCancelOrderCommand } from './cli';
 
 describe('cancel-order command', () => {
-  describe('createCancelOrderRequest', () => {
-    test('returns generated cancelOrder request', () => {
-      assert.deepEqual(createCancelOrderRequest({
-        'account-id': 'account-id',
-        'order-id': 'order-id'
-      }), {
-        accountId: 'account-id',
-        orderId: 'order-id'
-      });
-    });
-  });
-
   describe('createCancelOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

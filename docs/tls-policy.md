@@ -1,12 +1,12 @@
 # TLS-доверие
 
-> Type: Reference. Документ описывает bundled trust material, per-instance override и границы TLS policy SDK.
+> Type: Reference. Здесь описаны встроенный корневой сертификат, его переопределение для отдельного SDK instance и границы TLS policy.
 
 ## Настройки по умолчанию для T-Invest
 
 T-Invest API требует сертификаты НУЦ Минцифры РФ для prod и sandbox endpoints. SDK включает Russian Trusted Root CA как статический PEM asset и при `useSsl: true` передаёт его в `ChannelCredentials.createSsl()`.
 
-Asset применяется только к gRPC channel конкретного SDK instance:
+Сертификат действует только для gRPC channel конкретного SDK instance:
 
 - system trust store не изменяется;
 - `NODE_EXTRA_CA_CERTS` не используется;
@@ -22,18 +22,18 @@ Asset применяется только к gRPC channel конкретного
 
 ## Переопределение для экземпляра SDK
 
-Custom или test endpoint может передать собственный PEM root bundle через `tls.rootCertificates`. SDK принимает содержимое сертификатов в `Buffer`, а не filesystem path. Явный bundle полностью заменяет встроенный сертификат для создаваемого channel; при `useSsl: false` TLS options игнорируются. Законченный пример приведён в [документе о встроенном сертификате](./bundled-ca.md#переопределение-в-коде-consumer-а).
+Для custom или test endpoint можно передать собственный PEM root bundle через `tls.rootCertificates`. SDK принимает содержимое сертификатов в `Buffer`, а не filesystem path. Переданный bundle полностью заменяет встроенный сертификат для нового channel; при `useSsl: false` SDK игнорирует TLS options. Полный пример приведён в [документе о встроенном сертификате](./bundled-ca.md#переопределение-в-коде-consumer-а).
 
 ## Граница безопасности
 
-Bundled CA решает воспроизводимое TLS-доверие к цепочке T-Invest, но не является pinning-ом конкретного публичного ключа T-Bank. Владелец доверенного CA способен выпустить сертификат для другого endpoint, поэтому более строгий SPKI pin, если он потребуется, должен вводиться отдельной policy с собственной rotation model.
+Bundled CA обеспечивает воспроизводимое доверие к TLS-цепочке T-Invest, но не закрепляет конкретный публичный ключ T-Bank. Владелец доверенного CA может выпустить сертификат для другого endpoint. Если проекту понадобится более строгий SPKI pin, для него потребуется отдельная policy и собственная модель ротации.
 
-Процедура проверяемого обновления сертификата зафиксирована в [документе о встроенном сертификате](./bundled-ca.md#обновление-сертификата).
+Порядок проверяемого обновления сертификата описан в [документе о встроенном сертификате](./bundled-ca.md#обновление-сертификата).
 
 ## Ошибки проверки сертификата
 
-Если TLS transport однозначно сообщает об ошибке проверки цепочки сертификатов или несоответствии hostname, SDK возвращает `SdkErrorCode.Unavailable` с `source: 'tls'`. При этом сохраняются gRPC method `path`, исходные `details` и transport-specific `cause`.
+Если TLS transport однозначно сообщает об ошибке проверки цепочки сертификатов или несовпадении hostname, SDK возвращает `SdkErrorCode.Unavailable` с `source: 'tls'`. Ошибка сохраняет gRPC method `path`, исходные `details` и transport-specific `cause`.
 
 Обычные provider и network `UNAVAILABLE`, включая DNS failures, connection refusal/reset и timeout, остаются `source: 'grpc'`. SDK не объявляет ни одну из этих ошибок retryable: решение о повторе принадлежит Consumer-у.
 
-Текущий `nice-grpc` boundary не сохраняет структурированный low-level TLS code в публичной ошибке. Поэтому infrastructure adapter распознает закрытый набор однозначных certificate diagnostics внутри SDK. Это implementation detail: Consumer должен проверять `code` и `source`, но не разбирать `details` или `cause`.
+На границе с `nice-grpc` публичная ошибка не сохраняет структурированный low-level TLS code. Поэтому infrastructure adapter распознаёт внутри SDK закрытый набор однозначных certificate diagnostics. Это implementation detail: Consumer должен проверять `code` и `source`, но не разбирать `details` или `cause`.

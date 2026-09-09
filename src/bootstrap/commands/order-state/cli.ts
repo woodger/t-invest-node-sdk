@@ -3,25 +3,24 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { PriceType } from '../../../generated/common';
 import type {
   GetOrderStateRequest,
   OrderState
 } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrderState, orderStateFormats } from './reporter';
+import { createOrderStateRequest } from './request.mapper';
 
 type OrderStateSdk = {
   orders: {
@@ -60,8 +59,6 @@ const orderStateOptionsSchema = withSdkOptions(
 );
 
 type OrderStateOptions = InferOptions<typeof orderStateOptionsSchema>;
-type OrderStateRequestOptions = CommandRequestOptions<OrderStateOptions, 'account-id' | 'order-id'>;
-
 export function createOrderStateCommand(
   createSdk: OrderStateSdkFactory = defaultOrderStateSdkFactory
 ) {
@@ -82,26 +79,9 @@ async function runOrderStateCommand(
 ): Promise<string> {
   const request = createOrderStateRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.orders.getOrderState(request);
 
     return formatOrderState(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatOrderState };
-
-export function createOrderStateRequest(
-  options: OrderStateRequestOptions
-): GetOrderStateRequest {
-  return {
-    accountId: options['account-id'],
-    orderId: options['order-id'],
-    priceType: PriceType.PRICE_TYPE_UNSPECIFIED
-  };
+  });
 }

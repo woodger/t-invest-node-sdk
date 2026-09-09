@@ -1,10 +1,10 @@
 # Справочник конфигурации потокового CLI
 
-> Type: Reference. Документ описывает JSON config для команды `t-invest-node-sdk stream run --config=PATH`.
+> Type: Reference. Здесь описан JSON config для команды `t-invest-node-sdk stream run --config=PATH`.
 
 ## Цель
 
-Stream config должен быть достаточно близок к generated gRPC contracts, чтобы не скрывать SDK/API смысл, но достаточно удобен, чтобы пользователь не писал generated DTO вручную для типовых подписок.
+Stream config следует generated gRPC contracts и не скрывает смысл SDK/API, но избавляет пользователя от ручной сборки generated DTO для типовых подписок.
 
 Минимальная допустимая конфигурация:
 
@@ -44,7 +44,7 @@ Stream config должен быть достаточно близок к generat
 
 `marketdata.marketDataStream` использует отдельное поле `requests`, потому что это bidirectional stream: CLI сначала отправляет заданный в config набор request-ов, а затем читает события provider-а.
 
-Имя `rawRequests` зарезервировано для возможного будущего расширения, но не входит в текущий публичный config contract и отклоняется parser-ом для любого stream.
+Имя `rawRequests` оставлено для возможного будущего расширения. Сейчас оно не входит в публичный config contract, поэтому parser отклоняет его для любого stream.
 
 ## Настройки runtime
 
@@ -74,7 +74,7 @@ Stream config должен быть достаточно близок к generat
 
 ## Подписки на рыночные данные
 
-Подписки на рыночные данные группируются по семействам событий:
+Поле `subscriptions` группирует подписки по семействам событий:
 
 ```json
 {
@@ -136,7 +136,7 @@ Stream config должен быть достаточно близок к generat
 
 `marketdata.marketDataServerSideStream` отправляет один начальный запрос, собранный из поля `subscriptions`, а затем читает события.
 
-`marketdata.marketDataStream` является bidirectional stream. Текущая реализация `stream run` поддерживает только статический набор типизированных начальных запросов из config. Дополнительные запросы из `stdin`, файлов, таймеров или interactive input не читаются.
+`marketdata.marketDataStream` — bidirectional stream. `stream run` поддерживает только статический набор типизированных начальных запросов из config и не читает дополнительные запросы из `stdin`, файлов, таймеров или interactive input.
 
 Типизированная bidirectional-форма:
 
@@ -231,7 +231,7 @@ Stream config должен быть достаточно близок к generat
 
 ## Правила проверки
 
-Текущая реализация отклоняет:
+Parser отклоняет:
 
 - неизвестные значения `stream`;
 - отсутствие `accounts` для потоков по счетам;
@@ -244,7 +244,7 @@ Stream config должен быть достаточно близок к generat
 - элементы Market Data без `instrumentId`;
 - generated enum names и aliases, которые не поддерживает config mapper.
 
-Config проверяется до создания `TInvestNodeSDK`.
+CLI проверяет config до создания `TInvestNodeSDK`.
 
 ## Переопределения через CLI
 
@@ -259,7 +259,7 @@ t-invest-node-sdk stream run \
 
 Логические runtime-флаги используют синтаксис `--flag` / `--no-flag`. Например, `--no-include-pings` или `--no-raw` отключает значение `true` из config; формы `--flag=true` и `--flag=false` не поддерживаются.
 
-Подписки и выбор счетов остаются в config. Это сохраняет стабильную командную строку и не создаёт большое количество хрупких stream-specific флагов.
+Подписки и выбор счетов задаются только в config. Благодаря этому командная строка остаётся стабильной и не обрастает множеством хрупких stream-specific флагов.
 
 ## Режимы вывода
 
@@ -275,7 +275,7 @@ Raw-событие при `runtime.raw: true`:
 {"orderTrades":{"orderId":"..."}}
 ```
 
-Нормализованный вывод используется по умолчанию и задаёт единый наблюдаемый event envelope для каждого stream method.
+По умолчанию CLI выводит нормализованные события в едином event envelope для всех stream methods.
 
 ## Связанная документация
 

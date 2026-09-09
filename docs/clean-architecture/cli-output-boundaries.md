@@ -1,12 +1,12 @@
-# Разделение Форматирования И Вывода В CLI
+# Разделение форматирования и вывода в CLI
 
-> Type: Design Note. Документ фиксирует принятую границу между command-specific CLI formatting, generic JSON/CSV/table mechanics из `icore` и доставкой готового результата через `icore` `Output`.
+> Type: Design Note. Здесь описана граница между command-specific CLI formatting, общей механикой JSON/CSV/table из `icore` и доставкой готового результата через `Output`.
 
 ## Контекст
 
 CLI-команды живут в `bootstrap`, но не вся логика вокруг вывода имеет одну ответственность. Команда определяет смысл пользовательского представления; generic primitives сериализуют уже выбранные значения; terminal output доставляет готовую строку или stream.
 
-`icore` предоставляет generic mechanics как внешняя зависимость. Он не является слоем проекта и не владеет application reports или output contract конкретной команды.
+`icore` предоставляет общую механику как внешняя зависимость. Это не слой проекта: application reports и output contract конкретной команды остаются в SDK.
 
 Текущая структура:
 
@@ -38,7 +38,7 @@ external dependency
     Output
 ```
 
-## Основная Граница
+## Основная граница
 
 Нужно разделять три операции:
 
@@ -46,19 +46,19 @@ external dependency
 application report/command-local event -> command-specific output values
 ```
 
-Это responsibility `bootstrap/commands/*/reporter.ts`.
+За это отвечает `bootstrap/commands/*/reporter.ts`.
 
 ```text
 output values -> JSON / CSV document or row / table string
 ```
 
-Для общей механики reporter использует публичные render primitives `icore`. Структура документа, headers и порядок rows остаются command-specific policy. Trailing newline для JSON, CSV document и text table задают generic primitives.
+Для общей механики reporter использует публичные render primitives `icore`. Структура документа, headers и порядок rows остаются command-specific policy. Generic primitives добавляют trailing newline в JSON, CSV document и text table.
 
 ```text
 string/AsyncIterable -> TerminalApp -> Output.write -> stdout
 ```
 
-В штатном CLI flow это normal output responsibility `icore` `TerminalApp` и `Output`, собранных в `bootstrap/cli/runner.ts`.
+В штатном CLI flow готовый результат выводят `TerminalApp` и `Output` из `icore`, собранные в `bootstrap/cli/runner.ts`.
 
 ```text
 warnings/errors -> Output.error -> stderr
@@ -66,7 +66,7 @@ warnings/errors -> Output.error -> stderr
 
 Текст warnings определяет project CLI layer; текст errors и exit code - политика ошибок проекта.
 
-## Поток Команды
+## Поток команды
 
 ```text
 src/bootstrap/index.ts
@@ -94,11 +94,11 @@ icore TerminalApp -> Output.write
 stdout
 ```
 
-Runner отдельно владеет публичными short aliases, help/version shortcuts и command warnings. Он направляет help/version через lightweight terminal app, warnings через command terminal app, а normal command result передает в `runPrepared`. Оба экземпляра используют один `Output` и одну error policy.
+Runner отдельно управляет публичными short aliases, help/version shortcuts и command warnings. Он направляет help/version через lightweight terminal app, warnings — через command terminal app, а normal command result передаёт в `runPrepared`. Оба экземпляра используют один `Output` и одну error policy.
 
-Последний аварийный fallback executable entrypoint использует `console.error`. Поэтому `icore` `Output` является контрактом штатного terminal flow, а не абсолютно единственной записью в process streams во всех аварийных сценариях.
+Штатный terminal flow идёт через `Output` из `icore`. Только крайний аварийный fallback в executable entrypoint пишет через `console.error`.
 
-## Что Остается В Reporter Команды
+## Что остаётся в reporter команды
 
 `bootstrap/commands/<command>/reporter.ts` отвечает за смысл пользовательского вывода:
 
@@ -113,7 +113,7 @@ Runner отдельно владеет публичными short aliases, help/
 
 Reporter может импортировать `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`, но generic primitive не должен определять поля или contract команды.
 
-## Что Предоставляют Render Primitives `icore`
+## Что предоставляют render primitives `icore`
 
 Generic primitives отвечают только за механику текстового формата:
 
@@ -131,11 +131,11 @@ Generic primitives отвечают только за механику текс�
 - command-specific redaction или normalization;
 - сборку CSV-документа конкретной команды.
 
-Если общей primitive недостаточно, project-specific formatter остается рядом с reporter-ом. Это не повод создавать forwarding wrapper, который только повторяет public API `icore`.
+Если общей primitive недостаточно, оставьте project-specific formatter рядом с reporter-ом. Не создавайте forwarding wrapper, который только повторяет public API `icore`.
 
-## Что Предоставляют `TerminalApp` И `Output`
+## Что предоставляют `TerminalApp` и `Output`
 
-`bootstrap/cli/runner.ts` создает default output через `createOutput` или принимает injected `Output`. Lightweight terminal app обслуживает shortcuts и external errors без загрузки command definitions; command terminal app создается после lazy import registry. Оба получают один и тот же `Output`.
+`bootstrap/cli/runner.ts` создаёт default output через `createOutput` или принимает injected `Output`. Lightweight terminal app обслуживает shortcuts и external errors без загрузки command definitions; command terminal app создаётся после lazy import registry. Оба получают один `Output`.
 
 Output boundary отвечает за:
 
@@ -152,13 +152,13 @@ Output boundary не должен знать:
 - правила отображения значений;
 - какие поля нужно скрыть или показать.
 
-Project `terminalErrorPolicy` определяет текст ошибки и exit code. `icore` terminal app применяет policy и выполняет delivery. Поэтому error ownership также разделено, а не целиком передано зависимости.
+Project `terminalErrorPolicy` задаёт текст ошибки и exit code, а terminal app из `icore` применяет policy и доставляет результат. Таким образом, error ownership остаётся разделённым и не переходит целиком внешней зависимости.
 
-Command registry типизирует результаты публичным `TerminalCommandOutput` из `icore`. Текущие SDK commands возвращают строки, async string streams или `undefined`; runtime narrowing выполняет `TerminalApp.runPrepared()` через собственный публичный guard, поэтому локальная повторная проверка не нужна.
+Command registry типизирует результаты публичным `TerminalCommandOutput` из `icore`. SDK commands возвращают строки, async string streams или `undefined`. `TerminalApp.runPrepared()` сам выполняет runtime narrowing через публичный guard, поэтому локальная повторная проверка не нужна.
 
-## Почему Не Нужны Локальные Generic Wrappers
+## Почему не нужны локальные generic wrappers
 
-Удаленные project-owned renderers и writers больше не являются архитектурными точками расширения. Wrapper без собственного контракта добавит второй source of truth и снова позволит документации и runtime разойтись.
+Удалённые project-owned renderers и writers больше не служат архитектурными точками расширения. Wrapper без собственного контракта добавит второй source of truth, и документация снова сможет разойтись с runtime.
 
 Локальный adapter оправдан, только если он добавляет самостоятельное project-specific поведение:
 
@@ -167,9 +167,9 @@ Command registry типизирует результаты публичным `T
 - policy, которой нет в `icore`;
 - изоляцию внешней зависимости, необходимую для наблюдаемого поведения.
 
-Сам по себе более короткий import или предполагаемая будущая замена зависимости не является достаточной причиной.
+Одного более короткого import или предположения о будущей замене зависимости недостаточно.
 
-## Правило Для Новых Команд
+## Правило для новых команд
 
 При добавлении новой API-команды:
 
@@ -182,7 +182,7 @@ Command registry типизирует результаты публичным `T
 - generated DTO не становится стабильным CLI output contract;
 - output contract выбирается для конкретной команды, а не для будущего неизвестного списка команд.
 
-## Признаки Неверной Границы
+## Признаки неверной границы
 
 Command-specific policy утекла в generic mechanics, если код:
 
@@ -213,4 +213,4 @@ normal output        -> `icore` TerminalApp -> Output.write -> stdout
 diagnostics          -> `icore` Output.error -> stderr
 ```
 
-Так project-owned presentation policy не смешивается с generic serialization и технической доставкой результата.
+Так project-owned presentation policy не смешивается с общей сериализацией и технической доставкой результата.

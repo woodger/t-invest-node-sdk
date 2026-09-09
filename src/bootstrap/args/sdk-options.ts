@@ -12,7 +12,7 @@
 import type { TInvestOptions } from '../../application/dto/t-invest-options';
 import { CliUsageError } from 'icore';
 
-type SdkCommandOptions = {
+export type SdkCommandOptions = {
   token?: string | undefined;
   endpoint?: string | undefined;
   'app-name'?: string | undefined;

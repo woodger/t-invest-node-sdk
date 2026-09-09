@@ -82,7 +82,7 @@ describe('candles command', () => {
         receivedOptions = options;
 
         return {
-          marketdata: {
+    marketData: {
             async getCandles(request) {
               receivedRequest = request;
 

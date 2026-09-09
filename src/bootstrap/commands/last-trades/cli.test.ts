@@ -78,7 +78,7 @@ describe('last-trades command', () => {
         receivedOptions = options;
 
         return {
-          marketdata: {
+    marketData: {
             async getLastTrades(request) {
               receivedRequest = request;
 
@@ -120,7 +120,7 @@ describe('last-trades command', () => {
     test('closes sdk when getLastTrades rejects', async () => {
       let closeCalls = 0;
       const command = createLastTradesCommand(() => ({
-        marketdata: {
+    marketData: {
           async getLastTrades() {
             throw new Error('api failed');
           }

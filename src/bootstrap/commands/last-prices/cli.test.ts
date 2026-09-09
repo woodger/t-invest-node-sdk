@@ -60,7 +60,7 @@ describe('last-prices command', () => {
         receivedOptions = options;
 
         return {
-          marketdata: {
+    marketData: {
             async getLastPrices(request) {
               receivedRequest = request;
 
@@ -98,7 +98,7 @@ describe('last-prices command', () => {
     test('closes sdk when getLastPrices rejects', async () => {
       let closeCalls = 0;
       const command = createLastPricesCommand(() => ({
-        marketdata: {
+    marketData: {
           async getLastPrices() {
             throw new Error('api failed');
           }

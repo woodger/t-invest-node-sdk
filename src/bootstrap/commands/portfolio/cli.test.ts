@@ -8,7 +8,7 @@ import {
   type PortfolioRequest,
   type PortfolioResponse
 } from '../../../generated/operations';
-import { createPortfolioCommand, createPortfolioRequest } from './cli';
+import { createPortfolioCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -44,34 +44,6 @@ function portfolioResponse(overrides: Partial<PortfolioResponse> = {}): Portfoli
 }
 
 describe('portfolio command', () => {
-  describe('createPortfolioRequest', () => {
-    test('returns generated getPortfolio request', () => {
-      const request = createPortfolioRequest({
-        'account-id': 'account-id',
-        currency: 'usd'
-      });
-
-      assert.equal(request.accountId, 'account-id');
-      assert.equal(request.currency, PortfolioCurrency.USD);
-    });
-
-    test('maps rub and eur currencies to generated values', () => {
-      const cases = [
-        ['rub', PortfolioCurrency.RUB],
-        ['eur', PortfolioCurrency.EUR]
-      ] as const;
-
-      for (const [currency, expected] of cases) {
-        const request = createPortfolioRequest({
-          'account-id': 'account-id',
-          currency
-        });
-
-        assert.equal(request.currency, expected);
-      }
-    });
-  });
-
   describe('createPortfolioCommand', () => {
     test('calls getPortfolio and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

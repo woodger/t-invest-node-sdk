@@ -1,18 +1,18 @@
 # Первый SDK-вызов
 
-> Type: Guide. Руководство показывает минимальный законченный lifecycle Consumer-приложения: установка, конфигурация, запрос и освобождение ресурсов.
+> Type: Guide. Здесь разобран минимальный полный lifecycle Consumer-приложения: установка, конфигурация, запрос и освобождение ресурсов.
 
 ## Установка
 
-Для работы SDK требуется Node.js `>=20.19.0`.
+SDK требует Node.js `>=20.19.0`.
 
-Пакет устанавливается из общедоступного реестра npm:
+Установите пакет из npm:
 
 ```sh
 npm install @woodger/t-invest-node-sdk
 ```
 
-Публикуемый архив содержит JavaScript и TypeScript declarations из `dist`, поэтому при установке из реестра npm Consumer-у не требуется собирать исходный код SDK. Git-зависимость не является поддерживаемым каналом установки: npm запускает для неё `prepack` и собирает исходный код.
+Архив npm уже содержит JavaScript и TypeScript declarations из `dist`, поэтому Consumer не собирает SDK из исходников. Проект не поддерживает установку по Git URL: в этом случае npm запускает `prepack` и собирает исходный код.
 
 ## Переменные окружения
 
@@ -21,9 +21,9 @@ npm install @woodger/t-invest-node-sdk
 - `T_INVEST_TOKEN` — OAuth token;
 - `T_INVEST_ENDPOINT` — gRPC endpoint в формате `host:port`.
 
-Не записывайте token в исходный код, логи или committed `.env`. Пустые значения нужно отклонять до создания SDK, чтобы ошибка конфигурации не выглядела как ошибка provider-а.
+Не записывайте token в исходный код, логи или committed `.env`. Проверяйте пустые значения до создания SDK, чтобы сразу отличить ошибку конфигурации от ошибки provider-а.
 
-TLS включён по умолчанию. SDK использует bundled Russian Trusted Root CA только для своего gRPC channel, поэтому устанавливать сертификат в систему или задавать `NODE_EXTRA_CA_CERTS` не требуется. Custom CA описан в [TLS policy](../tls-policy.md).
+TLS включён по умолчанию. SDK подключает bundled Russian Trusted Root CA только к своему gRPC channel, поэтому не нужно устанавливать сертификат в систему или задавать `NODE_EXTRA_CA_CERTS`. О custom CA читайте в [TLS policy](../tls-policy.md).
 
 ## Законченный пример
 
@@ -78,9 +78,9 @@ void main().catch((error: unknown) => {
 
 ## Почему lifecycle выглядит именно так
 
-- Service clients создаются лениво и используют один shared gRPC channel.
+- SDK создаёт service clients по первому обращению и подключает их к одному shared gRPC channel.
 - `sdk.close()` идемпотентен, но после него нельзя получать новые clients или вызывать методы через ранее полученные clients.
-- Unary-вызов сначала нужно дождаться, затем закрыть SDK в `finally`.
-- Отсутствие счета — допустимый результат `getAccounts()`. Нельзя подменять его пустым `accountId`: следующий RPC должен выполняться только после явного выбора существующего счета.
+- Сначала дождитесь unary-вызова, затем закройте SDK в `finally`.
+- `getAccounts()` может не вернуть ни одного счёта. Не подставляйте пустой `accountId`: вызывайте следующий RPC только после явного выбора существующего счёта.
 
 Для deadline, response metadata и нескольких связанных unary-вызовов используйте руководство [Unary-вызовы](./unary-calls.md). Для machine-readable обработки ошибок — [Ошибки и lifecycle](./errors-and-lifecycle.md).

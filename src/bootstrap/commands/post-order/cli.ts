@@ -3,33 +3,28 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { PriceType } from '../../../generated/common';
 import {
-  OrderDirection,
-  OrderType,
-  PostOrderRequest,
-  TimeInForceType,
+  type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
-  parseOptionalPositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
 import { formatPostOrder, postOrderFormats } from './reporter';
+import { createPostOrderRequest } from './request.mapper';
 
 type PostOrderSdk = {
   orders: {
@@ -43,24 +38,8 @@ type PostOrderSdkFactory = (options: TInvestOptions) => PostOrderSdk;
 const postOrderCommandPath = ['order', 'place'] as const;
 const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) => new TInvestNodeSDK(options);
 
-const postOrderDirections = {
-  buy: OrderDirection.ORDER_DIRECTION_BUY,
-  sell: OrderDirection.ORDER_DIRECTION_SELL
-} as const;
-
-type PostOrderDirectionName = keyof typeof postOrderDirections;
-
-const postOrderDirectionNames = Object.keys(postOrderDirections) as PostOrderDirectionName[];
-
-const postOrderTypes = {
-  limit: OrderType.ORDER_TYPE_LIMIT,
-  market: OrderType.ORDER_TYPE_MARKET,
-  bestprice: OrderType.ORDER_TYPE_BESTPRICE
-} as const;
-
-type PostOrderTypeName = keyof typeof postOrderTypes;
-
-const postOrderTypeNames = Object.keys(postOrderTypes) as PostOrderTypeName[];
+const postOrderDirectionNames = ['buy', 'sell'] as const;
+const postOrderTypeNames = ['limit', 'market', 'bestprice'] as const;
 
 const postOrderRequestOptionsSchema = {
   'account-id': {
@@ -109,17 +88,6 @@ const postOrderOptionsSchema = withSdkOptions(
 );
 
 type PostOrderOptions = InferOptions<typeof postOrderOptionsSchema>;
-type PostOrderRequestOptions = CommandRequestOptions<
-  PostOrderOptions,
-  'account-id' |
-  'instrument-id' |
-  'quantity' |
-  'price' |
-  'direction' |
-  'order-type' |
-  'order-id'
->;
-
 export function createPostOrderCommand(
   createSdk: PostOrderSdkFactory = defaultPostOrderSdkFactory
 ) {
@@ -142,31 +110,9 @@ async function runPostOrderCommand(
 
   const request = createPostOrderRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.orders.postOrder(request);
 
     return formatPostOrder(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatPostOrder };
-
-export function createPostOrderRequest(options: PostOrderRequestOptions): PostOrderRequest {
-  return PostOrderRequest.create({
-    quantity: options.quantity,
-    price: parseOptionalPositiveQuotationOption(options.price, 'price'),
-    direction: postOrderDirections[options.direction],
-    accountId: options['account-id'],
-    orderType: postOrderTypes[options['order-type']],
-    orderId: options['order-id'],
-    instrumentId: options['instrument-id'],
-    timeInForce: TimeInForceType.TIME_IN_FORCE_UNSPECIFIED,
-    priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
-    confirmMarginTrade: false
   });
 }

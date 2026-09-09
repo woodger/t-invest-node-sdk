@@ -1,6 +1,6 @@
 # Руководства для Consumer-ов
 
-> Type: Navigation. Этот раздел содержит законченные сценарии использования публичного API пакета и не заменяет generated contracts или CLI reference.
+> Type: Navigation. Здесь собраны законченные сценарии для публичного API. За точными generated contracts и CLI reference переходите к исходным справочникам.
 
 ## Начало работы
 
@@ -22,9 +22,9 @@
 
 ## Справочные материалы
 
-Актуальный список public exports определяет корневой entrypoint пакета. Generated DTO, enum-ы и service methods определяются vendored proto contracts, а не этим разделом.
+Актуальные public exports смотрите в корневом entrypoint пакета, а generated DTO, enum-ы и service methods — в proto contracts проекта.
 
-Дополнительные reference-документы:
+Дополнительные справочники:
 
 - [Лимитная политика](../limits-policy.md);
 - [Справочник потокового CLI](../cli-stream-reference.md);

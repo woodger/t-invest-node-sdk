@@ -13,6 +13,25 @@
 
 ## [Не выпущено]
 
+## [0.5.3] - 2026-09-09
+
+### Изменено
+
+- Публичные service getters фасада приведены к именам `marketData` и `stopOrders`.
+- Повторяемый lifecycle 66 коротких API-команд вынесен в `runSdkCommand()`. Общий production/Sandbox request mapping больше не импортируется через соседние command entrypoints, а formatter-ы доступны только из файлов-владельцев.
+- Config parsing, generated request mapping и lifecycle команды `stream run` разделены по самостоятельным модулям; transport error classification отделена от выполнения gRPC middleware, а статический каталог CLI-справки — от rendering.
+- Внутренние имена facade client cache, service client factory, in-memory limiter и process warning hook приведены к их фактической ответственности. Файл построения gRPC method path переименован в `unary-method-path.ts`, однострочный interceptor barrel удалён.
+- Разрешение unary-квоты больше не перебирает всю таблицу правил для каждого
+  RPC: точный method path и service fallback читаются напрямую с прежним
+  приоритетом.
+- Генерация proto переведена с незакреплённого системного `protoc` на локальную
+  dev-зависимость `protoc@36.0.0`. Команда `dev compile-proto` не требует
+  compiler в `PATH`, не скачивает инструменты во время запуска и воспроизводит
+  прежний generated API; в generated-заголовках обновлена только версия
+  compiler.
+- Документация переписана более прямым языком без изменения описанных API и runtime-контрактов.
+- Полный текст Apache License 2.0 вынесен в корневой `LICENSE-APACHE-2.0`; `LICENSE` по-прежнему содержит только MIT License SDK, а `NOTICE` — границы сторонних компонентов, атрибуцию и условия Protocol Buffers.
+
 ## [0.5.2] - 2026-09-08
 
 ### Добавлено

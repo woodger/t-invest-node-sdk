@@ -12,7 +12,7 @@ import {
   type GetOrderStateRequest,
   type OrderState
 } from '../../../generated/orders';
-import { createOrderStateCommand, createOrderStateRequest } from './cli';
+import { createOrderStateCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -49,21 +49,6 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 }
 
 describe('order-state command', () => {
-  describe('createOrderStateRequest', () => {
-    test('returns generated getOrderState request', () => {
-      const request = createOrderStateRequest({
-        'account-id': 'account-id',
-        'order-id': 'order-id'
-      });
-
-      assert.deepEqual(request, {
-        accountId: 'account-id',
-        orderId: 'order-id',
-        priceType: PriceType.PRICE_TYPE_UNSPECIFIED
-      });
-    });
-  });
-
   describe('createOrderStateCommand', () => {
     test('calls getOrderState and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

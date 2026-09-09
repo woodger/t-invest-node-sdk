@@ -3,8 +3,8 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - переиспользование общего production/Sandbox request mapper-а;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -16,11 +16,11 @@ import type {
 } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { createWithdrawLimitsRequest } from '../withdraw-limits/cli';
+import { createWithdrawLimitsRequest } from '../withdraw-limits/request.mapper';
 import { formatWithdrawLimits, withdrawLimitsFormats } from '../withdraw-limits/reporter';
 
 type SandboxWithdrawLimitsSdk = {
@@ -83,19 +83,12 @@ async function runSandboxWithdrawLimitsCommand(
 ): Promise<string> {
   const request = createSandboxWithdrawLimitsRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.sandbox.getSandboxWithdrawLimits(request);
 
     return formatWithdrawLimits(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatWithdrawLimits };
 
 export function createSandboxWithdrawLimitsRequest(
   options: SandboxWithdrawLimitsRequestOptions

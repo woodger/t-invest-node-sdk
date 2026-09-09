@@ -24,7 +24,7 @@ import type { SdkCallRuntime } from './sdk-middleware';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export function createSdkClient<T>(
-  service: unknown,
+  serviceDefinition: unknown,
   channel: Channel,
   metadata: Metadata,
   unaryLimiter: TInvestUnaryLimiter | undefined,
@@ -38,7 +38,7 @@ export function createSdkClient<T>(
       runtime
     ))
     .use(createSdkMetadataMiddleware(metadata))
-    .create(service as never, channel) as T;
+    .create(serviceDefinition as never, channel) as T;
 }
 
 function createSdkMetadataMiddleware(metadata: Metadata) {

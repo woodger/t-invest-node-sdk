@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - объявление command path и option schema;
  * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -22,7 +22,7 @@ import {
 } from '../../../generated/stoporders';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import {
   parseDateTimeOption,
@@ -39,7 +39,7 @@ import {
 import { formatPostStopOrder, postStopOrderFormats } from './reporter';
 
 type PostStopOrderSdk = {
-  stoporders: {
+  stopOrders: {
     postStopOrder(request: PostStopOrderRequest): Promise<PostStopOrderResponse>;
   };
   close(): void;
@@ -170,19 +170,12 @@ async function runPostStopOrderCommand(
 
   const request = createPostStopOrderRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
-    const response = await sdk.stoporders.postStopOrder(request);
+  return runSdkCommand(options, createSdk, async (sdk) => {
+    const response = await sdk.stopOrders.postStopOrder(request);
 
     return formatPostStopOrder(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatPostStopOrder };
 
 export function createPostStopOrderRequest(
   options: PostStopOrderRequestOptions

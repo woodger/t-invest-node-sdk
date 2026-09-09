@@ -73,7 +73,7 @@ describe('stop-orders command', () => {
         receivedOptions = options;
 
         return {
-          stoporders: {
+    stopOrders: {
             async getStopOrders(request) {
               receivedRequest = request;
 
@@ -116,7 +116,7 @@ describe('stop-orders command', () => {
     test('closes sdk when getStopOrders rejects', async () => {
       let closeCalls = 0;
       const command = createStopOrdersCommand(() => ({
-        stoporders: {
+    stopOrders: {
           async getStopOrders() {
             throw new Error('api failed');
           }

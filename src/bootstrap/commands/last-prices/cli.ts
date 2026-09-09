@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - объявление command path и option schema;
  * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -17,14 +17,14 @@ import {
 } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatLastPrices, lastPricesFormats } from './reporter';
 
 type LastPricesSdk = {
-  marketdata: {
+  marketData: {
     getLastPrices(request: GetLastPricesRequest): Promise<GetLastPricesResponse>;
   };
   close(): void;
@@ -78,19 +78,12 @@ async function runLastPricesCommand(
 ): Promise<string> {
   const request = createLastPricesRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
-    const response = await sdk.marketdata.getLastPrices(request);
+  return runSdkCommand(options, createSdk, async (sdk) => {
+    const response = await sdk.marketData.getLastPrices(request);
 
     return formatLastPrices(response.lastPrices, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatLastPrices };
 
 export function createLastPricesRequest(
   options: LastPricesRequestOptions

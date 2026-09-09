@@ -4,16 +4,14 @@ import {
   test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { PriceType } from '../../../generated/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
-  TimeInForceType,
   type PostOrderRequest,
   type PostOrderResponse
 } from '../../../generated/orders';
-import { createPostOrderCommand, createPostOrderRequest } from './cli';
+import { createPostOrderCommand } from './cli';
 
 function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
   return {
@@ -39,37 +37,6 @@ function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrde
 }
 
 describe('post-order command', () => {
-  describe('createPostOrderRequest', () => {
-    test('returns generated postOrder request', () => {
-      const request = createPostOrderRequest({
-        'account-id': 'account-id',
-        'instrument-id': 'instrument-id',
-        quantity: 10,
-        price: '100.25',
-        direction: 'buy',
-        'order-type': 'limit',
-        'order-id': 'idempotency-key'
-      });
-
-      assert.deepEqual(request, {
-        figi: undefined,
-        quantity: 10,
-        price: {
-          units: 100,
-          nano: 250_000_000
-        },
-        direction: OrderDirection.ORDER_DIRECTION_BUY,
-        accountId: 'account-id',
-        orderType: OrderType.ORDER_TYPE_LIMIT,
-        orderId: 'idempotency-key',
-        instrumentId: 'instrument-id',
-        timeInForce: TimeInForceType.TIME_IN_FORCE_UNSPECIFIED,
-        priceType: PriceType.PRICE_TYPE_UNSPECIFIED,
-        confirmMarginTrade: false
-      });
-    });
-  });
-
   describe('createPostOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

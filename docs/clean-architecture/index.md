@@ -1,19 +1,19 @@
 # Заметки по Clean Architecture
 
-> Type: Navigation. Этот раздел переносит и адаптирует Clean Architecture notes из Inventory под текущий компактный SDK.
+> Type: Navigation. Здесь собраны адаптированные для компактного SDK заметки по Clean Architecture из Inventory.
 
-Canonical source of truth по фактической карте слоев: [Архитектура SDK](../architecture.md).
+Фактическая карта слоёв приведена в документе [«Архитектура SDK»](../architecture.md).
 
-Policy source of truth по ограничениям и направлению зависимостей: [Архитектурная политика](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
+Ограничения и направление зависимостей задаёт [архитектурная политика](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md).
 
-## Зачем Этот Раздел
+## Зачем этот раздел
 
 Текущий SDK меньше Inventory: здесь пока нет `domain`, `use-cases`, `ports`, HTTP transport и dataset pipeline. Но уже появились `application`, `infrastructure`, `bootstrap` и первые API-команды CLI.
 
-Эти notes нужны для двух задач:
+Этот раздел решает две задачи:
 
 - объяснить, как применять Clean Architecture Lite к текущей структуре;
-- зафиксировать, куда двигать `commands`-слой, если CLI formatting и adapters начнут расти.
+- показать, куда развивать `commands`-слой, если CLI formatting и adapters начнут расти.
 
 ## Документы
 
@@ -25,7 +25,7 @@ Policy source of truth по ограничениям и направлению �
 - [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт `stream run` и будущие stream-расширения.
 - [Справочник конфигурации потокового CLI](../cli-stream-configuration.md) - JSON config для stream CLI.
 
-## Текущая Карта
+## Текущая карта
 
 ```text
 src/application
@@ -46,6 +46,7 @@ src/bootstrap
   cli/
     contract.ts
     error.ts
+    help-catalog.ts
     help.ts
     registry.ts
     runner.ts
@@ -62,16 +63,16 @@ external dependency
     TerminalApp/Output
 ```
 
-`domain` пока не выделен: SDK сейчас в основном оборачивает generated gRPC contracts и не содержит самостоятельную provider-neutral доменную модель.
+Отдельного `domain` пока нет: SDK в основном оборачивает generated gRPC contracts и не содержит самостоятельной provider-neutral доменной модели.
 
-## Главная Идея
+## Главная идея
 
-Слой должен выбираться по ответственности, а не по удобству imports:
+Выбирайте слой по ответственности, а не по удобству imports:
 
 - `application` описывает стабильные контракты и reusable application rules;
 - `infrastructure` содержит внешние технологии и adapters;
 - `bootstrap` собирает runtime entrypoints, связывает зависимости и интегрирует публичный API `icore` с project-owned CLI contracts;
-- `generated` содержит proto-generated contracts в плоском source layout и не редактируется вручную;
+- `generated` содержит proto-generated contracts в плоском source layout; вручную этот код не редактируется;
 - `bootstrap/generated-exports.ts` остается generated DTO/enums и server-side contracts public export exception.
 
-Если новая логика не укладывается в эту карту, нужно сначала уточнить архитектурное намерение и обновить документацию.
+Если новая логика не укладывается в эту карту, сначала уточните архитектурное намерение и обновите документацию.

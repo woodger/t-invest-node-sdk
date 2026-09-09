@@ -1,6 +1,6 @@
 # Ошибки и lifecycle
 
-> Type: Guide. Руководство показывает machine-readable обработку `SdkError` без привязки Consumer-а к transport error classes.
+> Type: Guide. Здесь показано, как разбирать `SdkError` по стабильным полям и не привязывать Consumer к transport error classes.
 
 ## Сужение типа по коду и источнику
 
@@ -123,19 +123,19 @@ void main().catch((error: unknown) => {
 | `lifecycle` | SDK уже закрыт |
 | `sdk` | SDK отклонил локальную конфигурацию, request или runtime state |
 
-`SdkErrorCode.InvalidArgument` может иметь `source: 'grpc'` для provider validation или `source: 'sdk'` для локально отклоненной конфигурации. По этой причине обработчик не должен классифицировать источник только по имени code.
+`SdkErrorCode.InvalidArgument` получает `source: 'grpc'` при provider validation и `source: 'sdk'` при локальной ошибке конфигурации. Поэтому определяйте источник не только по code.
 
-Не всякий `unknown` runtime failure обязан быть `SdkError`. Сначала применяйте `isSdkError()`, а неизвестную ошибку сохраняйте или передавайте дальше без насильственного приведения типа. В частности, синхронное исключение application callback-а `onHeader` или `onTrailer` возвращается без оборачивания в `SdkError`.
+Не каждая unknown runtime error — это `SdkError`. Сначала вызовите `isSdkError()`, а неизвестную ошибку сохраните или передайте дальше без принудительного приведения типа. Например, SDK не оборачивает в `SdkError` синхронное исключение application callback-а `onHeader` или `onTrailer`.
 
 ## Диагностические поля
 
 - `path` содержит gRPC method path, когда он известен.
-- `details` содержит диагностический текст transport/provider-а. Это не стабильный provider business code и его не следует разбирать регулярным выражением.
+- `details` содержит диагностический текст transport/provider-а. Это не стабильный provider business code, поэтому не разбирайте его регулярным выражением.
 - `cause` сохраняет исходную ошибку, но остается transport-specific диагностикой. Business logic не должна зависеть от класса ошибки `nice-grpc`.
 
-Для однозначных certificate trust и hostname verification failures SDK возвращает `SdkErrorCode.Unavailable` с `source: 'tls'`. DNS failures, connection refusal/reset, timeout и обычный provider `UNAVAILABLE` сохраняют `source: 'grpc'`. Эта граница позволяет завершить вызов сразу при ошибке TLS, не разбирая `details` и не применяя к ней общий availability retry.
+Однозначные certificate trust и hostname verification failures получают `SdkErrorCode.Unavailable` с `source: 'tls'`. DNS failures, connection refusal/reset, timeout и обычный provider `UNAVAILABLE` сохраняют `source: 'grpc'`. По `source` можно сразу завершить вызов при ошибке TLS, не разбирая `details` и не запуская общий availability retry.
 
-Ошибка сериализации исходящего request или разбора входящего response получает `SdkErrorCode.Internal` с `source: 'sdk'`. Provider-side `INTERNAL` сохраняет `source: 'grpc'`. Это различие не требует разбора `details`; исходные `path`, `details` и `cause` доступны только для диагностики.
+Ошибки сериализации request и разбора response получают `SdkErrorCode.Internal` с `source: 'sdk'`, а provider-side `INTERNAL` сохраняет `source: 'grpc'`. Для различения достаточно `source`; используйте исходные `path`, `details` и `cause` только для диагностики.
 
 Brand guard распознает совместимый `SdkError` из другой физической копии пакета в том же JavaScript realm. После JSON, IPC или worker serialization нужен отдельный application protocol.
 
@@ -147,17 +147,17 @@ Brand guard распознает совместимый `SdkError` из друг
 - отменяет операции, которые еще ждут локальную unary-квоту;
 - закрывает shared channel.
 
-Он не ожидает завершения уже переданных transport-у операций. Для детерминированного shutdown Consumer должен отменить их собственный `AbortSignal`, дождаться settlement и только затем закрыть SDK. Для stream lifecycle используйте руководство [Потоки и отмена](./streams-and-cancellation.md).
+`sdk.close()` не ждёт операции, уже переданные transport-у. Для предсказуемого shutdown отмените их собственный `AbortSignal`, дождитесь settlement и только затем закройте SDK. Stream lifecycle подробно разобран в руководстве [Потоки и отмена](./streams-and-cancellation.md).
 
 ## Граница повторных попыток
 
-SDK намеренно не объявляет ошибку retryable только по gRPC status. Перед повтором нужно одновременно определить:
+SDK намеренно не считает ошибку retryable только по gRPC status. Перед повтором проверьте:
 
-- является ли операция idempotent;
+- idempotent ли операция;
 - мог ли provider уже применить side effect;
 - присутствует ли retry/rate-limit metadata;
 - какой backoff и общий deadline допустимы для приложения.
 
 Особенно это относится к `ResourceExhausted`, `Unavailable`, `DeadlineExceeded` и mutation RPC. Универсальный retry interceptor на уровне SDK скрыл бы эти различия.
 
-Для `ResourceExhausted` сначала проверяйте `source`. Значение `sdk` означает, что входящее сообщение превысило внутренний транспортный лимит SDK; повтор того же вызова не изменит этот предел. Значение `grpc` относится к ответу провайдера и само по себе также не является достаточным основанием для повтора без учета метаданных, идемпотентности и задержки между повторами.
+Для `ResourceExhausted` сначала проверяйте `source`. Значение `sdk` означает, что входящее сообщение превысило внутренний транспортный лимит SDK; повтор того же вызова ничего не изменит. Значение `grpc` указывает на ответ провайдера, но тоже не даёт достаточных оснований для повтора без учёта metadata, idempotency и backoff.

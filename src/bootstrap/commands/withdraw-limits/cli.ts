@@ -3,8 +3,8 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -16,11 +16,11 @@ import type {
 } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatWithdrawLimits, withdrawLimitsFormats } from './reporter';
+import { createWithdrawLimitsRequest } from './request.mapper';
 
 type WithdrawLimitsSdk = {
   operations: {
@@ -55,8 +55,6 @@ const withdrawLimitsOptionsSchema = withSdkOptions(
 );
 
 type WithdrawLimitsOptions = InferOptions<typeof withdrawLimitsOptionsSchema>;
-type WithdrawLimitsRequestOptions = CommandRequestOptions<WithdrawLimitsOptions, 'account-id'>;
-
 export function createWithdrawLimitsCommand(
   createSdk: WithdrawLimitsSdkFactory = defaultWithdrawLimitsSdkFactory
 ) {
@@ -77,24 +75,9 @@ async function runWithdrawLimitsCommand(
 ): Promise<string> {
   const request = createWithdrawLimitsRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.operations.getWithdrawLimits(request);
 
     return formatWithdrawLimits(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatWithdrawLimits };
-
-export function createWithdrawLimitsRequest(
-  options: WithdrawLimitsRequestOptions
-): WithdrawLimitsRequest {
-  return {
-    accountId: options['account-id']
-  };
+  });
 }

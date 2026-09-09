@@ -3,8 +3,8 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - переиспользование общего production/Sandbox request mapper-а;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -13,11 +13,11 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { createPortfolioRequest } from '../portfolio/cli';
+import { createPortfolioRequest } from '../portfolio/request.mapper';
 import { formatPortfolio, portfolioFormats } from '../portfolio/reporter';
 
 type SandboxPortfolioSdk = {
@@ -83,19 +83,12 @@ async function runSandboxPortfolioCommand(
 ): Promise<string> {
   const request = createSandboxPortfolioRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.sandbox.getSandboxPortfolio(request);
 
     return formatPortfolio(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatPortfolio };
 
 export function createSandboxPortfolioRequest(
   options: SandboxPortfolioRequestOptions

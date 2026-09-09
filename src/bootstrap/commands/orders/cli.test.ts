@@ -12,7 +12,7 @@ import {
   type GetOrdersRequest,
   type GetOrdersResponse
 } from '../../../generated/orders';
-import { createOrdersCommand, createOrdersRequest } from './cli';
+import { createOrdersCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -53,16 +53,6 @@ function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersRe
 }
 
 describe('orders command', () => {
-  describe('createOrdersRequest', () => {
-    test('returns generated getOrders request', () => {
-      const request = createOrdersRequest({
-        'account-id': 'account-id'
-      });
-
-      assert.equal(request.accountId, 'account-id');
-    });
-  });
-
   describe('createOrdersCommand', () => {
     test('calls getOrders and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

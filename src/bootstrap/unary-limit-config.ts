@@ -18,7 +18,7 @@ import type {
   UnaryLimitsConfig,
   UnaryLimitsDefinition
 } from '../config.types';
-import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-limits';
+import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-method-path';
 
 /** Path-keyed runtime policy, которую принимает transport resolver. */
 export interface UnaryLimitConfig {

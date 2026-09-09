@@ -70,7 +70,7 @@ describe('order-book command', () => {
         receivedOptions = options;
 
         return {
-          marketdata: {
+    marketData: {
             async getOrderBook(request) {
               receivedRequest = request;
 
@@ -113,7 +113,7 @@ describe('order-book command', () => {
     test('closes sdk when getOrderBook rejects', async () => {
       let closeCalls = 0;
       const command = createOrderBookCommand(() => ({
-        marketdata: {
+    marketData: {
           async getOrderBook() {
             throw new Error('api failed');
           }
