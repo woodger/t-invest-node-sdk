@@ -1,10 +1,10 @@
 # Потоки и отмена
 
-> Type: Guide. Руководство показывает владение долгоживущим stream lifecycle, application-owned `AbortSignal` и порядок остановки transport call перед закрытием SDK.
+> Type: Guide. Здесь показано, как приложение владеет долгоживущим stream lifecycle, передаёт свой `AbortSignal` и останавливает transport call перед закрытием SDK.
 
 ## Server-side поток
 
-Процесс устанавливает обработчики сигналов, передает один `AbortSignal` в stream RPC и считает локальную отмену штатным завершением. Provider failure не маскируется.
+Пример устанавливает обработчики сигналов процесса, передаёт один `AbortSignal` в stream RPC и считает локальную отмену штатным завершением. Ошибка provider-а проходит без маскировки.
 
 ```ts
 import {
@@ -103,7 +103,7 @@ void main().catch((error: unknown) => {
 
 ## Bidirectional Market Data поток
 
-Bidirectional RPC получает async request source, совместимый с generated `MarketDataRequest`. Для конечного набора initial requests source может завершиться сразу после `yield`, а response stream продолжит работать до отмены или закрытия provider-ом:
+Bidirectional RPC принимает async request source, совместимый с generated `MarketDataRequest`. Если initial requests конечны, source может завершиться сразу после `yield`, а response stream продолжит работать до отмены или закрытия provider-ом:
 
 ```ts
 import {
@@ -146,7 +146,7 @@ export async function runMarketDataStream(
 }
 ```
 
-Здесь `sdk` и переданный `signal` создаются и освобождаются так же, как в полном server-side примере выше. Если request source динамический и не заканчивается после initial subscription, он также должен наблюдать signal, останавливать producers и удалять event listeners.
+Создавайте и освобождайте `sdk` и `signal` так же, как в полном server-side примере выше. Динамический request source, который продолжает работать после initial subscription, тоже должен следить за signal, останавливать producers и удалять event listeners.
 
 ## Порядок завершения
 
@@ -157,6 +157,6 @@ export async function runMarketDataStream(
 3. освободить application-owned producers и process listeners;
 4. вызвать `sdk.close()`.
 
-`sdk.close()` идемпотентен, но не является graceful shutdown barrier для уже переданного transport-у stream. Закрытие channel без собственной отмены не заменяет управление pending read.
+`sdk.close()` идемпотентен, но не ждёт stream, уже переданный transport-у. Сначала отмените pending read своим signal, а затем закрывайте channel.
 
-`TInvestUnaryLimiter` к stream calls не применяется. Ограничения stream connections и subscriptions описаны в [лимитной политике](../limits-policy.md). Готовая CLI lifecycle-модель описана в [справочнике потокового CLI](../cli-stream-reference.md).
+Stream calls не проходят через `TInvestUnaryLimiter`. Ограничения stream connections и subscriptions описаны в [лимитной политике](../limits-policy.md), а готовый CLI lifecycle — в [справочнике потокового CLI](../cli-stream-reference.md).

@@ -1,10 +1,10 @@
 # API-команды
 
-> Type: Design Note. Документ фиксирует текущую структуру CLI API-команд и проблему роста `bootstrap`.
+> Type: Design Note. Здесь описаны текущая структура CLI API-команд и риск разрастания `bootstrap`.
 
 ## Контекст
 
-В SDK появились API-команды. Публичная форма CLI строится как preferred friendly path: `<domain> <resource/action>`.
+SDK публикует API-команды в виде preferred friendly path: `<domain> <resource/action>`.
 
 Публичные domains:
 
@@ -18,7 +18,7 @@
 - `stream`;
 - `dev`.
 
-Technical и legacy paths остаются совместимыми aliases, но help и документация продвигают только preferred paths. Registry хранит один canonical definition на команду и передает остальные пути через first-class `icore` aliases; resolved `name`/`path` остаются preferred, а введенный путь сохраняется в `matchedPath`. Список ниже фиксирует текущий CLI contract:
+Technical и legacy paths работают как compatibility aliases, но help и документация показывают только preferred paths. Registry хранит один canonical definition на команду и передаёт остальные пути через first-class aliases `icore`. В resolved command поля `name` и `path` содержат preferred identity, а `matchedPath` — введённый путь. Текущий CLI contract:
 
 - `account list` -> `sdk.users.getAccounts` (`account get-accounts`, `users get-accounts`);
 - `account info` -> `sdk.users.getInfo` (`account get-info`, `users get-info`);
@@ -91,19 +91,19 @@ Technical и legacy paths остаются совместимыми aliases, н�
 - `help` -> встроенная справка по CLI, домену или команде;
 - `version` -> версия пакета.
 
-Новые API-команды добавляются инкрементально, когда выбран конкретный SDK method и понятен CLI-контракт команды. Preferred path должен быть добавлен в command definition и help, а technical/legacy aliases - только через единый alias layer, который передает их в native command definition `icore`.
+Добавляйте API-команды по одной, когда выбран конкретный SDK method и понятен CLI-контракт. Preferred path должен попасть в command definition и help, а technical/legacy aliases — только в единый alias layer, который передаёт их в native command definition `icore`.
 
 ## Отложенные расширения
 
-Этот раздел отделяет текущий CLI-контракт от возможностей, которые потребуют отдельного проектирования и изменения документации.
+Ниже перечислены возможности, которые не входят в текущий CLI-контракт и потребуют отдельного проектирования и обновления документации.
 
-Реализованные команды с side effects являются текущим CLI-контрактом и по умолчанию требуют явный `--confirm` через `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency keys автоматически: `order place` принимает `--order-id`, а `order replace` принимает `--idempotency-key`.
+Действующие команды с side effects входят в текущий CLI-контракт и по умолчанию требуют явный `--confirm` через `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency keys автоматически: `order place` принимает `--order-id`, а `order replace` — `--idempotency-key`.
 
-`sandbox pay-in` принимает `--currency=rub|usd`. Неизвестные currency значения отклоняются CLI parser-ом, а `--currency=usd` завершается ошибкой как явно неподдержанный provider-кейс.
+`sandbox pay-in` принимает `--currency=rub|usd`. CLI parser отклоняет неизвестные currency values, а для явно неподдержанного provider-кейса `--currency=usd` команда возвращает ошибку.
 
-Stream API вводится отдельно от unary CLI-команд через utility-команду `stream run --config=PATH`. CLI-контракт для долгоживущих подписок, завершения процесса и формата событий описан в [справочнике потокового CLI](../cli-stream-reference.md) и [справочнике его конфигурации](../cli-stream-configuration.md).
+Для Stream API есть отдельная utility-команда `stream run --config=PATH`. Контракт долгоживущих подписок, завершения процесса и формата событий описан в [справочнике потокового CLI](../cli-stream-reference.md) и [справочнике его конфигурации](../cli-stream-configuration.md).
 
-Текущая реализация поддерживает server-side streams и статический initial request contract для bidirectional market data stream:
+Сейчас CLI поддерживает server-side streams и статический initial request contract для bidirectional market data stream:
 
 - `sdk.marketdataStream.marketDataStream`;
 - `sdk.marketdataStream.marketDataServerSideStream`;
@@ -113,13 +113,13 @@ Stream API вводится отдельно от unary CLI-команд чер�
 
 Динамические bidirectional request sources остаются отложенным API-контрактом.
 
-Deprecated generated methods не вводятся как публичные CLI-команды:
+Публичный CLI не добавляет команды для deprecated generated methods:
 
 - `sdk.instruments.options` - deprecated в generated contract; вместо него используется `instrument option list` / `sdk.instruments.optionsBy`.
 
-Перед расширением stream command нужно сверять поведение с этими reference-документами и отдельно фиксировать любые изменения контракта.
+Перед расширением stream command сверьте поведение с этими reference-документами и отдельно опишите любое изменение контракта.
 
-Command flow объединяет несколько разных ответственностей:
+В command flow участвуют несколько ответственностей:
 
 1. runner и `icore` разбирают CLI args и валидируют primitive options по schema;
 2. command handler или его command-owned mapper выполняет API-specific validation и request mapping;
@@ -129,9 +129,9 @@ Command flow объединяет несколько разных ответст
 6. reporter выбирает command-specific output и использует generic render primitives, когда они подходят;
 7. terminal app получает готовую строку или stream для вывода.
 
-Если свести эти обязанности обратно в один command handler, command layer быстро станет местом для любой логики вокруг CLI.
+Если снова собрать эти обязанности в одном command handler, command layer быстро начнёт принимать любую логику вокруг CLI.
 
-## Текущая Структура
+## Текущая структура
 
 ```text
 src/bootstrap
@@ -173,7 +173,7 @@ external dependency
     TerminalApp/Output
 ```
 
-`cli.ts` сейчас отвечает за:
+`cli.ts` отвечает за:
 
 - объявление command path, declarative option schema и handler-а через локальный command facade над `icore`;
 - локальный request mapping или делегирование в `request.mapper.ts`, когда mapping разделяет несколько команд;
@@ -182,7 +182,7 @@ external dependency
 - вызов API;
 - выбор reporter-а для результата.
 
-Логические CLI options используют синтаксис флагов `icore`: `--flag` и, если команда поддерживает отрицательное переопределение, `--no-flag`. Формы со значением `--flag=true` и `--flag=false` не входят в публичный CLI-контракт.
+Логические CLI options используют синтаксис флагов `icore`: `--flag` и, если команда поддерживает отрицательное переопределение, `--no-flag`. Публичный CLI-контракт не принимает формы `--flag=true` и `--flag=false`.
 
 Внутри command module нужно различать parsing и request mapping:
 
@@ -192,27 +192,27 @@ parse*          -> typed primitive value -> project-specific value
 create*Request  -> typed command options -> generated request DTO
 ```
 
-Command-local `parse*` helpers не должны повторно принимать raw option map: format, enum и primitive schema validation принадлежат `icore`. Project-specific helper допустим для преобразования отдельного typed значения, например comma-separated списка. `create*Request` не принимает raw CLI args: он получает typed options после `icore` и отвечает за generated request DTO shape и request-level validation вроде date range или mutually exclusive modes.
+Command-local `parse*` helpers не должны повторно принимать raw option map: `icore` отвечает за format, enum и primitive schema validation. Project-specific helper может преобразовать отдельное typed значение, например comma-separated список. `create*Request` получает не raw CLI args, а typed options после `icore`; он отвечает за форму generated request DTO и request-level validation, например date range или mutually exclusive modes.
 
-`reporter.ts` сейчас отвечает за:
+`reporter.ts` отвечает за:
 
 - mapping unary response в application report или stream event в command-local output contract;
 - выбор command-specific output contract;
 - выбор полей, headers, порядка и подготовку значений для JSON/CSV/table output;
 - вызов generic render primitives `icore`, когда они подходят формату.
 
-`icore` сейчас предоставляет:
+`icore` предоставляет:
 
 - primitive option parsing, typed schema validation и command mechanics;
 - технические детали JSON, plain-text table и CSV rendering;
 - `TerminalApp`/`Output.write` для штатной записи готовой строки или stream в stdout;
 - `Output.error` для warnings/errors в stderr.
 
-Project CLI layer собирает terminal app, объявляет native short aliases, передает compatible command paths как first-class aliases canonical definitions, обслуживает help/version shortcuts и warnings, а project error policy определяет текст ошибки и exit code.
+Project CLI layer собирает terminal app, объявляет native short aliases, передаёт compatibility paths как first-class aliases canonical definitions и обслуживает help/version shortcuts и warnings. Project error policy задаёт текст ошибки и exit code.
 
-Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами adapter-модулей. Они не задают публичный CLI path: публичный контракт команды фиксируется в `bootstrap/cli/registry.ts`, а статические данные справки — в `bootstrap/cli/help-catalog.ts`.
+Директории внутри `bootstrap/commands/*` носят компактные имена adapter-модулей и не задают публичный CLI path. Контракт команды находится в `bootstrap/cli/registry.ts`, а статические данные справки — в `bootstrap/cli/help-catalog.ts`.
 
-## Что Уже Хорошо
+## Что уже хорошо
 
 - primitive option validation выражена `icore` schemas, а reusable project-specific normalizers отделены в `bootstrap/args`;
 - raw CLI parsing отделен от typed generated request mapping;
@@ -222,7 +222,7 @@ Project CLI layer собирает terminal app, объявляет native short
 - JSON pretty-print, table alignment и CSV escaping не дублируются в command reporter-ах;
 - `stdout`/`stderr` delivery отделен от построения JSON/CSV/table.
 
-## Текущая Проблема
+## Текущая проблема
 
 `bootstrap` по смыслу должен быть composition/entrypoint layer:
 
@@ -230,7 +230,7 @@ Project CLI layer собирает terminal app, объявляет native short
 parse entrypoint -> assemble dependencies -> call command -> return status/output
 ```
 
-В `bootstrap` остается command-specific presentation/adaptation logic:
+В `bootstrap` остаётся command-specific presentation/adaptation logic:
 
 ```text
 unary response -> stable report
@@ -238,11 +238,11 @@ stream event -> command-local output contract
 report/event contract -> command-specific output values
 ```
 
-Это осознанный компактный вариант, близкий к Inventory. Риск появляется, если generic primitives начнут использоваться как место выбора полей, redaction, normalization или версионирования output конкретной команды. Обратный риск - дублировать JSON/CSV/table механику в reporter-ах или создавать локальные forwarding wrappers над `icore` без собственного контракта.
+Это осознанный компактный вариант, близкий к Inventory. Проблема возникнет, если generic primitives начнут выбирать поля, выполнять redaction или normalization либо версионировать output конкретной команды. Другая крайность — дублировать механику JSON/CSV/table в reporter-ах или создавать forwarding wrappers над `icore` без собственного контракта.
 
-Подробные правила разделения command-specific formatting, generic render primitives и stdout delivery описаны в [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md).
+Подробные правила разделения command-specific formatting, generic render primitives и stdout delivery приведены в документе [«Разделение форматирования и вывода в CLI»](./cli-output-boundaries.md).
 
-## Важное Разделение
+## Важное разделение
 
 Нужно различать три ответственности:
 
@@ -270,7 +270,7 @@ warnings/errors -> Output.error -> stderr
 
 Output boundary не должен знать, как строить JSON, CSV или table.
 
-## Принятое Разделение
+## Принятое разделение
 
 ```text
 src/bootstrap
@@ -309,9 +309,9 @@ external dependency
 - `icore` `Output.error` - warnings/errors в stderr;
 - `application/reports/**` - стабильные контракты вывода unary-команд.
 
-## Когда Нужен Use-Case
+## Когда нужен use-case
 
-Текущие API-команды тонкие: они вызывают один SDK method и форматируют результат. Для таких команд отдельный use-case не обязателен.
+Текущие API-команды тонкие: они вызывают один SDK method и форматируют результат. Отдельный use-case им не нужен.
 
 Use-case стоит выделять, если появляется хотя бы одно:
 
@@ -322,7 +322,7 @@ Use-case стоит выделять, если появляется хотя б�
 - reuse того же сценария вне CLI;
 - тесты начинают мокать слишком много деталей SDK.
 
-## Правило Для Новых Команд
+## Правило для новых команд
 
 - не добавлять новую formatting logic в `cli.ts`;
 - держать command handler тонким;
@@ -338,11 +338,11 @@ Use-case стоит выделять, если появляется хотя б�
 - не вводить общий command framework до появления реального повторения в нескольких командах;
 - сверять новые output-решения с [Разделением форматирования и вывода в CLI](./cli-output-boundaries.md).
 
-## Когда Обобщать Commands
+## Когда обобщать commands
 
-Обобщение command lifecycle допустимо только после появления повторения с одинаковой ответственностью.
+Обобщайте command lifecycle только после появления повторения с одинаковой ответственностью.
 
-Каждая команда остаётся явной, а повторяемый lifecycle коротких вызовов вынесен отдельно:
+Каждая команда остаётся явной, а общий lifecycle коротких вызовов вынесен отдельно:
 
 ```text
 bootstrap/commands/<command-adapter>/cli.ts

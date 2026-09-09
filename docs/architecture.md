@@ -1,6 +1,6 @@
 # Архитектура SDK
 
-> Type: Reference. Этот документ фиксирует текущую карту слоев SDK и служит practical companion к [архитектурной политике](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md). Дополнительные design notes по развитию слоев находятся в [заметках по Clean Architecture](./clean-architecture/index.md).
+> Type: Reference. Здесь показана текущая карта слоёв SDK. Правила задаёт [архитектурная политика](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/architecture.md), а варианты развития собраны в [заметках по Clean Architecture](./clean-architecture/index.md).
 
 Проект использует Clean Architecture Lite. Слои выделяются только там, где у кода есть самостоятельная ответственность.
 
@@ -22,11 +22,11 @@ src/generated
   -> generated proto contracts in flat source layout
 ```
 
-`src/domain` сейчас не выделен: в SDK нет самостоятельной доменной модели, отделенной от gRPC contract. Добавлять `domain` нужно только вместе с реальными provider-neutral правилами или моделями.
+Отдельного `src/domain` сейчас нет: SDK не содержит самостоятельной доменной модели, отделённой от gRPC contract. Этот слой понадобится только вместе с реальными provider-neutral правилами или моделями.
 
 ## `application`
 
-`application` содержит contracts и reusable правила, которые не должны знать о `nice-grpc`.
+В `application` находятся contracts и reusable-правила, которые не зависят от `nice-grpc`.
 
 Текущие зоны:
 
@@ -38,19 +38,19 @@ src/generated
 
 ## `infrastructure`
 
-`infrastructure` содержит внешние технологии и adapter-level wiring.
+В `infrastructure` находятся внешние технологии и adapter-level wiring.
 
 Текущие зоны:
 
 - `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata, middleware и typed clients, а также построение и разрешение полных gRPC paths в transport-neutral quotas. Выполнение middleware отделено от классификации transport failures в `sdk-call-error.ts`.
 - `infrastructure/interceptor` - технический hook для фильтрации известных process warnings.
-- `infrastructure/report-values.ts` - общие scalar adapters для преобразования provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные report values. Десятичная строка строится из целых `units` и `nano` без потери точности через floating-point arithmetic. `MoneyValue` становится структурным `ReportMoney`, а command-specific table/text представление строится отдельно. Здесь не выбираются поля команд и не формируются command-specific output contracts.
+- `infrastructure/report-values.ts` - общие scalar adapters, которые преобразуют `MoneyValue`, `Quotation`, `Date` и другие значения provider DTO в стабильные report values. Десятичная строка собирается из целых `units` и `nano` без преобразования во floating point и связанной с ним потери точности. `MoneyValue` преобразуется в структурный `ReportMoney`, а command-specific table/text представление строится отдельно. Этот модуль не выбирает поля команд и не формирует command-specific output contracts.
 
 Здесь допустимы imports из `nice-grpc`, generated service definitions и application services. Application не должен импортировать concrete infrastructure modules.
 
 ## `bootstrap`
 
-Runtime entrypoints разделены между публичными package entrypoints и bootstrap-механикой.
+Runtime entrypoints разделены на публичные package entrypoints и внутреннюю bootstrap-механику.
 
 Текущие зоны:
 
@@ -65,39 +65,39 @@ Runtime entrypoints разделены между публичными package e
 - `bootstrap/commands/stream-run` - отдельно config parser, generated request mapper, stream session lifecycle и reporter;
 - `bootstrap/commands/*/reporter.ts` - command-specific mapping и presentation formatting. Unary reporter-ы обычно строят `application/reports`, а специализированный stream reporter может владеть локальным event contract.
 
-Generic option/command mechanics, JSON/CSV-row/table primitives и default terminal output facade предоставляет внешняя зависимость `icore`. Она не является отдельным слоем проекта: integration wiring остается в `bootstrap`, а project-specific adapters и policies остаются в файлах-владельцах.
+Внешняя зависимость `icore` предоставляет общую механику options и commands, примитивы JSON/CSV-row/table и default terminal output facade. Это не отдельный слой проекта: integration wiring остаётся в `bootstrap`, а project-specific adapters и policies — в своих файлах-владельцах.
 
-CLI слой сейчас поддерживает utility-команды `help`, `version` и API-команды в preferred friendly форме `<domain> <resource/action>`. Публичные domains: `account`, `instrument`, `market`, `order`, `stop-order`, `operation`, `sandbox`, `stream`, `dev`. Proto generation доступен как `dev compile-proto`.
+CLI поддерживает utility-команды `help`, `version` и API-команды в preferred-форме `<domain> <resource/action>`. Публичные domains: `account`, `instrument`, `market`, `order`, `stop-order`, `operation`, `sandbox`, `stream`, `dev`. Для proto generation служит команда `dev compile-proto`.
 
-Technical и legacy paths вида `account get-accounts`, `users get-accounts`, `market get-candles`, `marketdata get-candles`, `instrument shares`, `instruments shares`, `order post-order`, `orders post-order`, `stop-order get-stop-orders`, `stoporders get-stop-orders`, `operation get-portfolio`, `operations get-portfolio`, `sandbox get-sandbox-accounts` и `compile-proto` остаются совместимыми aliases, но help продвигает только preferred paths.
+Technical и legacy paths вида `account get-accounts`, `users get-accounts`, `market get-candles`, `marketdata get-candles`, `instrument shares`, `instruments shares`, `order post-order`, `orders post-order`, `stop-order get-stop-orders`, `stoporders get-stop-orders`, `operation get-portfolio`, `operations get-portfolio`, `sandbox get-sandbox-accounts` и `compile-proto` работают как compatibility aliases. В help указаны только preferred paths.
 
-API-команды остаются тонкими bootstrap handlers. Runner объявляет короткие `-h`/`-v` через native option aliases `icore`. Project registry прикрепляет technical и legacy paths к единственному canonical command definition через first-class command aliases `icore`: `name`/`path` остаются preferred, а фактически использованный путь доступен как `matchedPath`. Затем `icore` terminal app разрешает command path, валидирует declarative schema и передает handler-у typed command options. API-specific validation и mapping в generated request остаются в project-owned helpers.
+API-команды остаются тонкими bootstrap handlers. Runner объявляет короткие `-h`/`-v` через native option aliases `icore`. Project registry прикрепляет technical и legacy paths к одному canonical command definition через first-class command aliases `icore`: `name` и `path` хранят preferred identity, а `matchedPath` — фактически использованный путь. Затем terminal app из `icore` разрешает command path, проверяет declarative schema и передаёт handler-у typed command options. API-specific validation и mapping в generated request выполняют project-owned helpers.
 
-Глобальные help/version shortcuts используют lightweight `TerminalApp` без command definitions. Полный registry загружается через dynamic import только перед `prepare`, поэтому shortcut path не инициализирует API commands, SDK facade и generated contracts. Оба экземпляра `TerminalApp` используют один injected `Output` и одну project error policy.
+Глобальные shortcuts help/version используют lightweight `TerminalApp` без command definitions. Полный registry загружается через dynamic import только перед `prepare`, поэтому быстрый путь не инициализирует API commands, SDK facade и generated contracts. Оба экземпляра `TerminalApp` разделяют один injected `Output` и одну project error policy.
 
-`bootstrap/cli/contract.ts` один раз закрепляет общие application-level типы команд через `createCommand.withTypes()`, сохраняя конкретные schema, path, payload и result каждого definition. Registry добавляет вычисленные compatibility aliases capability-based декоратором: ограничение требует только читаемый декоратором `path`, исходный definition проходит без расширения, а runtime aliases честно представлены как `readonly CommandPath[]`.
+`bootstrap/cli/contract.ts` один раз связывает общие application-level типы команд через `createCommand.withTypes()` и сохраняет конкретные schema, path, payload и result каждого definition. Registry добавляет вычисленные compatibility aliases capability-based декоратором. Его ограничение требует только `path`, который декоратор действительно читает; исходный definition не расширяется, а runtime aliases имеют честный тип `readonly CommandPath[]`.
 
-Runner один раз выполняет `prepare`, пишет command warnings и передает prepared command в `runPrepared`. В штатном terminal flow общая error policy сохраняет единый stderr для фаз `prepare`, `execute`, `render`, `write` и внешних bootstrap-операций.
+Runner один раз вызывает `prepare`, пишет command warnings и передаёт prepared command в `runPrepared`. Общая error policy направляет ошибки фаз `prepare`, `execute`, `render`, `write` и внешних bootstrap-операций в единый stderr.
 
-Exit code определяется типом ошибки, а не фазой. Публичный `isUsageError()` из `icore` распознаёт framework errors категории `usage` и application validators, которые выбрасывают публичный `CliUsageError`; они завершаются с кодом `2`. Runtime, provider, output и `icore` definition errors завершаются с кодом `1`. `CliUsageError` используется для command-specific аргументов, обязательных CLI/ENV-значений и уже прочитанной JSON command config; ошибки чтения файла остаются runtime. Command `cli.ts` получает generated request из command-owned mapper или создаёт его локально, а общий `runSdkCommand()` создаёт и гарантированно закрывает facade для короткого вызова. Stream session владеет отдельным lifecycle до завершения async iterator. Unary reporter-ы обычно преобразуют generated DTO в `application/reports` contracts; stream reporter может формировать command-local event contract. Reporter выбирает поля, порядок и command-specific представление, а для общей механики формата при необходимости вызывает публичные `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`. Готовую строку или stream terminal app штатно направляет через `Output.write` в stdout; help/version используют тот же канал, а warnings и errors проходят через `Output.error` в stderr. Runner принимает injected `Output` или создает default facade.
+Тип ошибки, а не фаза, определяет exit code. Публичный `isUsageError()` из `icore` распознаёт framework errors категории `usage` и публичный `CliUsageError` от application validators; такие ошибки завершаются с кодом `2`. Runtime, provider, output и `icore` definition errors завершаются с кодом `1`. Validators используют `CliUsageError` для command-specific аргументов, обязательных CLI/ENV-значений и уже прочитанного JSON config; ошибки чтения файла остаются runtime. Command `cli.ts` получает generated request из command-owned mapper или создаёт его локально, а общий `runSdkCommand()` создаёт и гарантированно закрывает facade для короткого вызова. Stream session владеет отдельным lifecycle до завершения async iterator. Unary reporter-ы обычно преобразуют generated DTO в `application/reports` contracts; stream reporter может формировать command-local event contract. Reporter выбирает поля, порядок и command-specific представление, а общую механику формата при необходимости делегирует публичным `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`. Terminal app направляет готовую строку или stream через `Output.write` в stdout. Help/version используют тот же канал, а warnings и errors проходят через `Output.error` в stderr. Runner принимает injected `Output` или создаёт default facade.
 
-`bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он содержит общие option schemas, проверяет project-specific значения уже типизированных опций и нормализует `TInvestOptions` из CLI/ENV. Разбор raw argv и schema-level валидация принадлежат `icore`.
+`bootstrap/args` не вызывает SDK и не создаёт gRPC-клиенты. Здесь находятся общие option schemas, проверки project-specific значений уже типизированных опций и нормализация `TInvestOptions` из CLI/ENV. Raw argv разбирает `icore`; ему же принадлежит schema-level validation.
 
 ## Публичные точки входа
 
-Поддерживаемая public surface собирается `src/index.ts`. Public service interfaces экспортируются из application DTO. Generated server-side service definitions/implementation types входят в root public surface для nice-grpc server adapters; generated service clients остаются внутри bootstrap/infrastructure:
+`src/index.ts` собирает поддерживаемую public surface. Public service interfaces экспортируются из application DTO. Root API также включает generated server-side service definitions и implementation types для nice-grpc server adapters, но не generated service clients — они остаются внутри bootstrap/infrastructure:
 
 - `src/index.ts` - основной package entrypoint;
 - `src/bootstrap/sdk-config.ts` - владелец публичного flat `defaultConfig`;
 - `src/bootstrap/generated-exports.ts` - aggregation layer для публичных generated exports.
 
-Package policy хранится отдельно и не образует дополнительный public entrypoint:
+Package policy хранится отдельно и не создаёт дополнительный public entrypoint:
 
-- `src/config.ts` и `src/config.types.ts` - source declaration и ее type contracts; точные границы зафиксированы ниже.
+- `src/config.ts` и `src/config.types.ts` - source declaration и её type contracts; точные границы описаны ниже.
 
-Публичные runtime/provider errors задаются `src/application/errors/sdk-error.ts`. gRPC mapping остается в `infrastructure/transport/grpc`, а lifecycle errors создает facade. Retry policy не входит в error contract: один status code не определяет безопасность повторения конкретной операции.
+Публичные runtime/provider errors задаёт `src/application/errors/sdk-error.ts`. gRPC mapping остаётся в `infrastructure/transport/grpc`, а lifecycle errors создаёт facade. Retry policy не входит в error contract: одного status code недостаточно, чтобы решить, безопасно ли повторять конкретную операцию.
 
-Новый код должен импортировать реализацию из слоя-владельца. Root-level compatibility wrappers не создаются.
+Новый код должен импортировать реализацию из слоя-владельца. Не добавляйте root-level compatibility wrappers.
 
 ## Конфигурация: терминология и ownership
 
@@ -110,7 +110,7 @@ Package policy хранится отдельно и не образует доп
 - `per-instance overrides` - вход от consumer-а для одного SDK instance, а не второй source package policy;
 - `resolved runtime snapshot` - изолированный итог для одного SDK instance, который не изменяет baseline или `defaultConfig`.
 
-Декларативный package config — это неисполняемые данные (inert data): значения записаны непосредственно в object literal и проверяются через `as const satisfies`. Вызов builder-а или mapper-а над object literal, например `defineConfig({...})`, является executable DSL, а не package source config. В source config не допускаются runtime imports, function calls, spreads, merge/resolver logic и параллельные декларации одной policy.
+Декларативный package config содержит только неисполняемые данные (inert data): значения записаны прямо в object literal и проверяются через `as const satisfies`. Вызов builder-а или mapper-а над object literal, например `defineConfig({...})`, превращает его в executable DSL, а не package source config. Source config не допускает runtime imports, function calls, spreads, merge/resolver logic и параллельные декларации одной policy.
 
 Unary quota config проходит следующий pipeline:
 
@@ -130,7 +130,7 @@ gRPC method path ------'                                        |
 per-instance unaryLimiter --------------------------------------'
 ```
 
-Package-owned gRPC transport policy проходит без public или per-instance override:
+У package-owned gRPC transport policy нет public или per-instance override:
 
 ```text
 packageConfig.grpc.maxReceiveMessageLength
@@ -139,11 +139,11 @@ packageConfig.grpc.maxReceiveMessageLength
        '--> SdkCallRuntime --> error source classification
 ```
 
-Так SDK явно фиксирует максимальный размер входящего сообщения и не наследует неявный default transport dependency. Локальное превышение этого лимита сохраняет gRPC-код `RESOURCE_EXHAUSTED`, но получает публичный `source: 'sdk'`; квота провайдера с тем же кодом остается в `source: 'grpc'`. Специфичная для транспорта диагностика распознается внутри адаптера и не становится контрактом Consumer-а.
+SDK явно задаёт максимальный размер входящего сообщения и не наследует неявный default transport dependency. Локальное превышение лимита сохраняет gRPC-код `RESOURCE_EXHAUSTED`, но получает публичный `source: 'sdk'`; квота провайдера с тем же кодом остаётся в `source: 'grpc'`. Адаптер распознаёт transport-specific диагностику внутри SDK и не раскрывает её как контракт Consumer-а.
 
-Тот же transport adapter отделяет локальные ошибки сериализации request и разбора response от provider-side `INTERNAL`: code сохраняется, но локальные случаи получают `source: 'sdk'`. Response metadata callbacks защищены там же, потому что `nice-grpc` вызывает их из EventEmitter handlers: синхронное исключение возвращается владельцу RPC, а не process-level `uncaughtException`.
+Тот же transport adapter отделяет локальные ошибки сериализации request и разбора response от provider-side `INTERNAL`: code сохраняется, но локальные случаи получают `source: 'sdk'`. Там же защищены response metadata callbacks, которые `nice-grpc` вызывает из EventEmitter handlers: синхронное исключение возвращается владельцу RPC, а не превращается в process-level `uncaughtException`.
 
-TLS trust material разрешается отдельно для каждого channel:
+SDK выбирает TLS trust material отдельно для каждого channel:
 
 ```text
 certificates/russian-trusted-root-ca.pem -- default --.
@@ -151,11 +151,11 @@ certificates/russian-trusted-root-ca.pem -- default --.
 per-instance tls.rootCertificates ------- override-'
 ```
 
-Infrastructure лениво читает bundled asset только для TLS channel. Explicit buffer полностью заменяет package root bundle; `useSsl: false` выбирает insecure credentials без чтения сертификата. Ни system trust store, ни process-wide environment SDK не изменяет.
+Infrastructure лениво читает bundled asset только для TLS channel. Explicit buffer полностью заменяет package root bundle; при `useSsl: false` выбираются insecure credentials без чтения сертификата. SDK не изменяет ни system trust store, ни process-wide environment.
 
 Middleware получает resolved `useSsl` вместе с call runtime. Для известных ошибок проверки certificate chain и hostname он сохраняет gRPC code `UNAVAILABLE`, но меняет публичный source на `tls`. Provider и network `UNAVAILABLE` остаются `grpc`; transport adapter не принимает retry-решений.
 
-Package defaults для публичных instance options разрешаются при создании SDK:
+SDK объединяет package defaults с публичными instance options при создании экземпляра:
 
 ```text
 packageConfig.sdk -- defaults --.
@@ -163,11 +163,11 @@ packageConfig.sdk -- defaults --.
 per-instance options -----------'
 ```
 
-Per-instance `useSsl` имеет приоритет над package default, а `undefined` не отключает package policy. `unaryLimiter` не имеет package default: без него SDK не выполняет скрытого ожидания. Обязательные `token` и `endpoint` проверяются до создания transport channel. Значения `token` и непустого `appName` дополнительно проверяются как строковые gRPC metadata, а ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с `source: 'sdk'`. Допустимые service names и полные method paths выводятся из generated unary service definitions, поэтому опечатка не превращается в неиспользуемое правило. `packageConfig.sdk` остаётся внутренней authoring-формой и не расширяет публичный `defaultConfig`.
+Per-instance `useSsl` имеет приоритет над package default, а `undefined` не отключает package policy. Для `unaryLimiter` нет package default: без него SDK не задерживает вызовы для соблюдения квоты. Обязательные `token` и `endpoint` проверяются до создания transport channel. SDK также проверяет `token` и непустой `appName` как строковые gRPC metadata, а ошибки итоговых `unaryLimits` преобразует в публичный `InvalidArgument` с `source: 'sdk'`. Список допустимых service names и полных method paths строится из generated unary service definitions, поэтому опечатка не превращается в неиспользуемое правило. `packageConfig.sdk` остаётся внутренней authoring-формой и не расширяет публичный `defaultConfig`.
 
-`defaultConfig.unaryLimits` остаётся изменяемым public facade. `resolveUnaryLimitConfig()` читает его текущие values при создании SDK instance, накладывает per-instance overrides и возвращает отдельный snapshot.
+`defaultConfig.unaryLimits` остаётся изменяемым public facade. При создании SDK instance функция `resolveUnaryLimitConfig()` читает его текущие values, накладывает per-instance overrides и возвращает отдельный snapshot.
 
-Ownership разделен так:
+Ответственность разделена так:
 
 - `src/config.ts` владеет values и связями package policy;
 - `src/config.types.ts` владеет authoring и public runtime contracts, но не default values или runtime validation;
@@ -182,17 +182,17 @@ Ownership разделен так:
 - `src/infrastructure/transport/grpc/sdk-call-error.ts` владеет классификацией gRPC, TLS, codec, receive-limit и cancellation errors, но не выполнением middleware или retry policy;
 - Consumer владеет переданным `unaryLimiter`, его внешними ресурсами и scope; `TInvestNodeSDK.close()` этот lifecycle не завершает.
 
-Новая структурная config semantics добавляется в authoring contract и соответствующий compiler. Готовые scalar values bootstrap передает напрямую adapter-у — без compiler-а и второй декларации. Mapping/resolver logic не должна возвращаться в `src/config.ts`.
+Новую структурную config semantics нужно добавлять в authoring contract и соответствующий compiler. Готовые scalar values bootstrap передаёт напрямую adapter-у, без compiler-а и второй декларации. Mapping/resolver logic не должна возвращаться в `src/config.ts`.
 
 ## Сгенерированный код
 
-Официальный upstream T-Invest API — активный репозиторий `https://opensource.tbank.ru/invest/invest-contracts`. Его tag, commit и исходный каталог фиксируются в [manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
+Официальный upstream T-Invest API находится в активном репозитории `https://opensource.tbank.ru/invest/invest-contracts`. [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит его tag, commit и исходный каталог.
 
-Proto compiler читает `local.rawContractsPath` и `local.generatedPath` из этого manifest. Пути до vendored и generated контрактов не дублируются в bootstrap коде.
+Proto compiler читает `local.rawContractsPath` и `local.generatedPath` из manifest, поэтому bootstrap-код не дублирует пути к vendored и generated контрактам.
 
-T-Invest proto-файлы копируются без изменения плоской структуры и import-путей в `contracts/*.proto`. Supporting Google contracts перечислены отдельно в `local.supportingContracts` и не считаются частью T-Invest upstream snapshot. `google/api/field_behavior.proto` поставляется в том же snapshot T-Invest, а источник `google/protobuf/descriptor.proto` и `google/protobuf/timestamp.proto` зафиксирован в `supportingSources` как официальный protobuf `v32.1`.
+T-Invest proto-файлы копируются в `contracts/*.proto` с исходной плоской структурой и import-путями. Supporting Google contracts перечислены отдельно в `local.supportingContracts` и не входят в T-Invest upstream snapshot. `google/api/field_behavior.proto` поставляется вместе со snapshot T-Invest, а `supportingSources` указывает источником `google/protobuf/descriptor.proto` и `google/protobuf/timestamp.proto` официальный protobuf `v32.1`.
 
-`src/generated/*.ts` зеркально воспроизводится из плоского layout контрактов и не редактируется вручную. `src/generated/**` и `src/bootstrap/generated-exports.ts` являются исключениями из обычной слоевой структуры, потому что package entrypoint реэкспортирует generated DTO/enums public API и server-side `*ServiceDefinition` / `*ServiceImplementation` contracts. Generated `*ServiceClient` contracts остаются внутренними transport contracts и не являются root public exports.
+Генератор зеркально создаёт `src/generated/*.ts` из плоского layout контрактов; вручную эти файлы не редактируются. `src/generated/**` и `src/bootstrap/generated-exports.ts` выходят за обычную слоевую структуру, потому что package entrypoint реэкспортирует generated DTO/enums public API и server-side contracts `*ServiceDefinition` / `*ServiceImplementation`. Generated `*ServiceClient` остаются внутренними transport contracts и не входят в root public exports.
 
 ### Обновление proto snapshot
 
@@ -204,4 +204,4 @@ T-Invest proto-файлы копируются без изменения пло�
 4. при изменении вспомогательных contracts получить их из точного выпуска и обновить соответствующую запись `supportingSources`;
 5. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и `npm test`.
 
-Proto generation использует только vendored snapshot и не выполняет network IO. Compiler `protoc` и plugin `ts-proto` закреплены в dev-зависимостях, а команда запускает их из локального `node_modules`; системный `protoc` не используется. Текущий generated snapshot создан с `protoc 36.0`.
+Proto generation читает только vendored snapshot и не обращается к сети. Compiler `protoc` и plugin `ts-proto` закреплены в dev-зависимостях, а команда запускает их из локального `node_modules`; системный `protoc` не нужен. Текущий generated snapshot создан с `protoc 36.0`.

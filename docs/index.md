@@ -1,6 +1,6 @@
 # Документация проекта
 
-> Type: Navigation. Эта страница помогает выбрать актуальный документ и не дублирует пользовательские контракты из README, кода, CLI help или tests.
+> Type: Navigation. Здесь собраны ссылки на актуальные документы. Пользовательские контракты остаются в README, коде, CLI help и tests.
 
 ## Начать отсюда
 
@@ -17,7 +17,7 @@
 - JSON-конфигурация streaming-команд: [Справочник конфигурации потокового CLI](./cli-stream-configuration.md).
 - Границы command-specific formatting, render primitives и terminal output: [Разделение форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md).
 
-Актуальные команды и опции также доступны через встроенный `--help`. Runtime контракт CLI принадлежит `src/bootstrap/cli/**`, `src/bootstrap/commands/**` и соответствующим tests.
+Актуальные команды и опции также показывает встроенный `--help`. Runtime-контракт CLI задают `src/bootstrap/cli/**`, `src/bootstrap/commands/**` и соответствующие tests.
 
 ## Руководства
 
@@ -28,7 +28,7 @@
 - [Собственная реализация unary limiter-а](./guides/custom-unary-limiter.md).
 - [Mock-сервисы через public exports](./guides/testing-with-service-definitions.md).
 
-Guides содержат законченные Consumer workflows. Полные method, DTO и enum reference остаются в public types и proto/generated contracts.
+В guides разобраны законченные Consumer workflows. Полный список методов, DTO и enum доступен в public types и proto/generated contracts.
 
 ## SDK и runtime policies
 
@@ -42,7 +42,7 @@ Guides содержат законченные Consumer workflows. Полные 
 
 ## Proto и generated contracts
 
-Workflow генерации описан в разделе [«Генерация proto»](../readme.md#генерация-proto). Официальный upstream, зафиксированные tag и commit хранятся в [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json). Wire contracts в `contracts/*.proto` и generated sources в `src/generated/**` не заменяются ручным Markdown reference.
+Процесс генерации описан в разделе [«Генерация proto»](../readme.md#генерация-proto). [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит официальный upstream и закреплённые tag и commit. Актуальные wire-контракты находятся в `contracts/*.proto`, а generated sources — в `src/generated/**`; Markdown не дублирует их как отдельный справочник.
 
 ## Источники истины
 
@@ -50,8 +50,8 @@ Workflow генерации описан в разделе [«Генерация
 
 Кратко:
 
-- public exports определяет [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts);
-- scripts и dependency versions определяет [`package.json`](../package.json);
-- CLI behavior определяют runtime source и tests;
-- wire API определяют vendored proto contracts и upstream metadata;
-- Markdown объясняет workflow, границы и маршрут к актуальному контракту.
+- public exports задаёт [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts);
+- scripts и версии зависимостей задаёт [`package.json`](../package.json);
+- поведение CLI задают runtime source и tests;
+- wire API задают vendored proto contracts и upstream metadata;
+- Markdown объясняет workflows и границы, а также указывает путь к актуальному контракту.

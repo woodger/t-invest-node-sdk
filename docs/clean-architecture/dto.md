@@ -1,6 +1,6 @@
 # DTO и отчёты
 
-> Type: Design Note. Документ объясняет boundary contracts текущего SDK.
+> Type: Design Note. Здесь описаны boundary contracts текущего SDK.
 
 ## Кратко
 
@@ -13,7 +13,7 @@
 
 ## Сгенерированные DTO
 
-Vendored T-Invest proto-файлы хранятся в плоской структуре `contracts/*.proto`. `src/generated/*.ts` зеркально воспроизводится из этого layout. Официальный upstream snapshot фиксируется в `contracts/upstream.json`.
+Vendored T-Invest proto-файлы хранятся в плоской структуре `contracts/*.proto`. Генератор зеркально создаёт из этого layout файлы `src/generated/*.ts`. `contracts/upstream.json` указывает официальный upstream snapshot.
 
 Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя использовать как место для project-specific правил.
 
@@ -30,7 +30,7 @@ Vendored T-Invest proto-файлы хранятся в плоской струк
 - завязывать CLI output format на нестабильный generated JSON shape.
 - экспортировать generated service clients как root public API.
 
-Исключение: server-side generated `*ServiceDefinition` и `*ServiceImplementation` являются частью root public API, потому что пакет поддерживает nice-grpc server adapters у потребителей.
+Исключение — server-side generated `*ServiceDefinition` и `*ServiceImplementation`. Они входят в root public API, потому что пакет поддерживает nice-grpc server adapters у Consumers.
 
 ## DTO уровня application
 
@@ -46,11 +46,11 @@ CLI/env parsing -> TInvestOptions -> SDK facade/infrastructure
 
 `application/dto` не должен читать env и не должен знать про CLI flags.
 
-`src/application/dto/t-invest-services.ts` описывает публичные service interfaces SDK facade: `UsersService`, `OrdersService`, `MarketDataStreamService` и т.п. Эти interfaces сохраняют upstream method names и generated request/response DTO, но не раскрывают `nice-grpc` `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
+`src/application/dto/t-invest-services.ts` описывает публичные service interfaces SDK facade: `UsersService`, `OrdersService`, `MarketDataStreamService` и другие. Эти interfaces сохраняют upstream method names и generated request/response DTO, но не раскрывают `nice-grpc` `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
 
 ## Отчёты
 
-`src/application/reports/**` содержит stable output contracts API-команд.
+В `src/application/reports/**` находятся стабильные output contracts API-команд.
 
 Reports отвечают на вопрос:
 
@@ -68,13 +68,13 @@ Reports отвечают на вопрос:
 
 ## Входные данные CLI
 
-Raw `process.argv` остается на executable-границе `src/bootstrap/index.ts`; дальше `bootstrap/cli/runner.ts` обрабатывает argv через `icore` terminal app и command registry:
+Raw `process.argv` остаётся на executable-границе `src/bootstrap/index.ts`. Затем `bootstrap/cli/runner.ts` передаёт argv в terminal app и command registry из `icore`:
 
 ```text
 process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
 ```
 
-Runner использует двухфазный flow `prepare -> runPrepared`: это позволяет вывести warnings после command resolution без повторного разбора argv. Ошибки всех terminal-фаз проходят через policy из `bootstrap/cli/error.ts`. `isUsageError()` из `icore` распознаёт framework usage errors и публичный `CliUsageError`, используемый project validators; они получают exit code `2`. Runtime и command-definition errors получают exit code `1`.
+Runner использует двухфазный flow `prepare -> runPrepared`, чтобы вывести warnings после command resolution без повторного разбора argv. Policy из `bootstrap/cli/error.ts` обрабатывает ошибки всех terminal-фаз. `isUsageError()` из `icore` распознаёт framework usage errors и публичный `CliUsageError` от project validators; для них exit code равен `2`. Runtime и command-definition errors получают exit code `1`.
 
 Command-specific primitive options описываются декларативными `icore` schemas в `src/bootstrap/commands/**`. Общие SDK options нормализуются в `src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API или форматировать reports.
 
@@ -109,7 +109,7 @@ process.argv
 | string/stream -> stdout | `icore` `TerminalApp`/`Output.write`, собираемые в `bootstrap/cli/runner.ts` | штатный normal output wiring остается в runner-е |
 | warning/error -> stderr | `icore` `Output.error`; project CLI/error policy владеет содержанием | без изменений |
 
-## Типичные Ошибки
+## Типичные ошибки
 
 - передавать raw CLI args глубже bootstrap boundary;
 - смешивать raw CLI parsing и generated request DTO mapping в одной функции;

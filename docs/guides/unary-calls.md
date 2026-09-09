@@ -1,6 +1,6 @@
 # Unary-вызовы
 
-> Type: Guide. Руководство показывает несколько связанных unary-запросов через публичный SDK facade, per-call deadline и чтение response metadata.
+> Type: Guide. Здесь показаны связанные unary-запросы через публичный SDK facade, отдельный deadline для каждого вызова и чтение response metadata.
 
 ## Полный сценарий
 
@@ -151,15 +151,15 @@ void main().catch((error: unknown) => {
 - `onHeader` получает initial response metadata;
 - `onTrailer` получает trailing response metadata.
 
-Metadata callbacks выполняются синхронно. Если `onHeader` или `onTrailer` бросает исключение, SDK отклоняет этой же ошибкой владеющий RPC и отменяет transport call, если тот еще не завершился. Не передавайте сюда `async` functions: асинхронную обработку metadata нужно выполнять после завершения вызова.
+Metadata callbacks работают синхронно. Если `onHeader` или `onTrailer` бросает исключение, SDK отклоняет той же ошибкой текущий RPC и отменяет незавершённый transport call. Не передавайте сюда `async` functions: обрабатывайте metadata асинхронно после завершения вызова.
 
 `AbortSignal.timeout()` создает независимый deadline для каждого вызова в примере. Если один signal нужно разделить между несколькими RPC, его отмена остановит все вызовы, которым он был передан.
 
-Authorization и instance `x-app-name` принадлежат SDK. Consumer metadata объединяется с instance metadata, но не должна использоваться для подмены этих заголовков.
+SDK управляет заголовками authorization и instance `x-app-name`. Он добавляет Consumer metadata к instance metadata, но не позволяет подменить эти два заголовка.
 
 ## Устаревшие поля провайдера
 
-Публичные сгенерированные декларации повторяют исходный контракт T-Invest вместе с его пометками `@deprecated`. Такая пометка означает, что поле нельзя автоматически переносить в стабильную доменную или HTTP-модель: сначала нужно определить его бизнес-смысл и контракт замены.
+Публичные generated declarations повторяют исходный контракт T-Invest вместе с пометками `@deprecated`. Не переносите такое поле автоматически в стабильную доменную или HTTP-модель: сначала разберитесь в его бизнес-смысле и контракте замены.
 
 В частности, `klong` и `kshort` описывают коэффициенты ставки риска по клиенту, а `dlong` и `dshort` — ставки риска начальной маржи. SDK не подставляет `dlong`/`dshort` вместо `klong`/`kshort` и не объявляет их прямой заменой.
 
@@ -167,7 +167,7 @@ Authorization и instance `x-app-name` принадлежат SDK. Consumer meta
 
 Алиас CLI `--figi` сохранён для совместимости, но его значение преобразуется в актуальное protobuf-поле `instrumentId`. Во встроенном CLI устаревшие FIGI-поля контрактов запросов и подписок сохраняют значения по умолчанию protobuf и не сериализуются. При прямом вызове фасада сервисов содержимое сгенерированного запроса по-прежнему задаёт сам Consumer.
 
-Consumer-у рекомендуется:
+Consumer-у стоит:
 
 - не переносить устаревшие поля провайдера за пределы транспортного адаптера, если у приложения нет подтвержденного бизнес-сценария;
 - пометить уже опубликованные `klong`/`kshort` как устаревшие и сохранить их на переходный период, если от них зависят внешние клиенты;
@@ -176,6 +176,6 @@ Consumer-у рекомендуется:
 
 ## Ограничение частоты запросов
 
-Unary limiter не включается по умолчанию. Consumer может передать собственную реализацию через `TInvestOptions.unaryLimiter`; SDK разрешит для неё package quota и объединённый `AbortSignal`. Подробный контракт описан в [руководстве по собственной реализации](./custom-unary-limiter.md), а значения provider-а — в [лимитной политике](../limits-policy.md).
+Unary limiter по умолчанию выключен. Consumer может передать собственную реализацию через `TInvestOptions.unaryLimiter`; SDK передаст ей package quota и объединённый `AbortSignal`. Подробный контракт разобран в [руководстве по собственной реализации](./custom-unary-limiter.md), а значения provider-а — в [лимитной политике](../limits-policy.md).
 
-Ошибку `RESOURCE_EXHAUSTED` нельзя автоматически повторять только на основании кода. Перед retry нужно учитывать idempotency RPC, metadata provider-а и backoff. Пример narrowing приведен в руководстве [Ошибки и lifecycle](./errors-and-lifecycle.md).
+Не повторяйте `RESOURCE_EXHAUSTED` только из-за кода. Перед retry учтите idempotency RPC, metadata provider-а и backoff. Пример narrowing есть в руководстве [Ошибки и lifecycle](./errors-and-lifecycle.md).
