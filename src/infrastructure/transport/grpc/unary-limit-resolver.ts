@@ -25,23 +25,35 @@ export class UnaryLimitResolver {
   ) {}
 
   resolve(path: string): TInvestUnaryQuota | undefined {
-    let matchedKey: string | undefined;
-    let matchedLimit: TInvestUnaryLimit | undefined;
+    const exactLimit = this.getOwnLimit(path);
 
-    for (const [key, limit] of Object.entries(this.limits)) {
-      if (
-        this.matchesRule(path, key)
-        && (matchedKey === undefined || key.length > matchedKey.length)
-      ) {
-        matchedKey = key;
-        matchedLimit = limit;
-      }
+    if (exactLimit !== undefined) {
+      return this.createQuota(path, exactLimit);
     }
 
-    if (matchedKey === undefined || matchedLimit === undefined) {
+    const serviceName = this.resolveServiceName(path);
+
+    if (serviceName === undefined) {
       return undefined;
     }
 
+    const serviceLimit = this.getOwnLimit(serviceName);
+
+    return serviceLimit === undefined
+      ? undefined
+      : this.createQuota(serviceName, serviceLimit);
+  }
+
+  private getOwnLimit(key: string): TInvestUnaryLimit | undefined {
+    return Object.hasOwn(this.limits, key)
+      ? this.limits[key]
+      : undefined;
+  }
+
+  private createQuota(
+    matchedKey: string,
+    matchedLimit: TInvestUnaryLimit
+  ): TInvestUnaryQuota {
     const quotaBucket = this.buckets[matchedKey];
 
     return {
@@ -53,19 +65,11 @@ export class UnaryLimitResolver {
     };
   }
 
-  private matchesRule(path: string, key: string): boolean {
-    if (path === key) {
-      return true;
-    }
-
-    if (key.indexOf('/') > -1) {
-      return false;
-    }
-
+  private resolveServiceName(path: string): string | undefined {
     const methodSeparator = path.lastIndexOf('/');
 
     if (methodSeparator < 1) {
-      return false;
+      return undefined;
     }
 
     const qualifiedService = path.slice(0, methodSeparator);
@@ -74,6 +78,6 @@ export class UnaryLimitResolver {
       qualifiedService.lastIndexOf('/')
     );
 
-    return qualifiedService.slice(serviceSeparator + 1) === key;
+    return qualifiedService.slice(serviceSeparator + 1);
   }
 }
