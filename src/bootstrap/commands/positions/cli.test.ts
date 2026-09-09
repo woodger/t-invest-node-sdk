@@ -4,7 +4,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue } from '../../../generated/common';
 import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
-import { createPositionsCommand, createPositionsRequest } from './cli';
+import { createPositionsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -27,16 +27,6 @@ function positionsResponse(overrides: Partial<PositionsResponse> = {}): Position
 }
 
 describe('positions command', () => {
-  describe('createPositionsRequest', () => {
-    test('returns generated getPositions request', () => {
-      const request = createPositionsRequest({
-        'account-id': 'account-id'
-      });
-
-      assert.equal(request.accountId, 'account-id');
-    });
-  });
-
   describe('createPositionsCommand', () => {
     test('calls getPositions and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

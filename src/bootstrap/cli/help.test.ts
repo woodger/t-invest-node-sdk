@@ -1,8 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { commandLineCommands } from './registry';
 import {
-  commandHelp,
   isCommandHelpName,
   isHelpRequested,
   renderDomainHelp,
@@ -10,6 +8,7 @@ import {
   renderCommandHelp,
   renderHelp
 } from './help';
+import { commandHelp } from './help-catalog';
 import { cliDomainNames } from './domains';
 
 const unknownHelpNames = [
@@ -22,15 +21,6 @@ const unknownHelpNames = [
   '__proto__',
   undefined
 ] as const;
-
-describe('commandHelp', () => {
-  test('contains help entries for preferred public bootstrap commands', () => {
-    assert.deepEqual(
-      Object.keys(commandHelp).sort(),
-      [...commandLineCommands.names].sort()
-    );
-  });
-});
 
 describe('isCommandHelpName', () => {
   test('accepts preferred help command names only', () => {
@@ -361,7 +351,7 @@ describe('renderCommandHelp', () => {
     const help = renderCommandHelp('market candles');
 
     assert.match(help, /market candles - Print historical candles/);
-    assert.match(help, /SDK call:\n {2}sdk\.marketdata\.getCandles/);
+    assert.match(help, /SDK call:\n {2}sdk\.marketData\.getCandles/);
     assert.match(help, /gRPC method:\n {2}MarketDataService\/GetCandles/);
     assert.match(help, /Required options:/);
     assert.match(help, /--instrument-id=ID/);

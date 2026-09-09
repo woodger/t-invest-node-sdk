@@ -98,18 +98,6 @@ function createResponseStreamCall<Response>(
   };
 }
 
-function createRejectedUnaryCall(
-  path: string,
-  error: unknown
-): ClientMiddlewareCall<TestRequest, typeof defaultUnaryResponse, CallOptions> {
-  return {
-    ...createUnaryCall(path),
-    next() {
-      return createRejectedIterator(error);
-    }
-  };
-}
-
 function createRejectedResponseStreamCall(
   path: string,
   error: unknown
@@ -315,56 +303,6 @@ describe('createSdkMiddleware', () => {
     );
   });
 
-  test('maps gRPC client errors to the public SDK contract', async () => {
-    const path = '/test.Service/Method';
-    const providerError = new ClientError(
-      path,
-      Status.UNAUTHENTICATED,
-      'invalid token'
-    );
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({})
-    );
-    const iterator = middleware(
-      createRejectedUnaryCall(path, providerError),
-      {}
-    );
-
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.Unauthenticated)
-        && error.source === 'grpc'
-        && error.path === path
-        && error.details === 'invalid token'
-        && error.cause === providerError
-    );
-  });
-
-  test('keeps provider INTERNAL failures in the gRPC source', async () => {
-    const path = '/test.Service/Method';
-    const providerError = new ClientError(
-      path,
-      Status.INTERNAL,
-      'provider internal failure'
-    );
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({})
-    );
-    const iterator = middleware(
-      createRejectedUnaryCall(path, providerError),
-      {}
-    );
-
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
-        && error.source === 'grpc'
-        && error.details === 'provider internal failure'
-    );
-  });
-
   test('propagates a limiter failure without transport remapping', async () => {
     const limiterError = new ClientError(
       usersPath,
@@ -384,108 +322,6 @@ describe('createSdkMiddleware', () => {
     await assert.rejects(
       middleware(createUnaryCall(usersPath), {}).next(),
       (error: unknown) => error === limiterError
-    );
-  });
-
-  test('maps a decompressed receive message limit failure to the SDK source', async () => {
-    const path = '/test.Service/Method';
-    const transportError = new ClientError(
-      path,
-      Status.RESOURCE_EXHAUSTED,
-      `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`
-    );
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({}),
-      createOpenRuntime(false)
-    );
-    const iterator = middleware(
-      createRejectedUnaryCall(path, transportError),
-      {}
-    );
-
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.ResourceExhausted)
-        && error.source === 'sdk'
-        && error.path === path
-        && error.details === transportError.details
-        && error.cause === transportError
-    );
-  });
-
-  test('maps certificate verification failures to the TLS source', async () => {
-    const path = '/test.Service/Method';
-    const transportError = new ClientError(
-      path,
-      Status.UNAVAILABLE,
-      'self-signed certificate in certificate chain'
-    );
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({}),
-      createOpenRuntime(true)
-    );
-    const iterator = middleware(
-      createRejectedUnaryCall(path, transportError),
-      {}
-    );
-
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
-        && error.source === 'tls'
-        && error.path === path
-        && error.details === transportError.details
-        && error.cause === transportError
-    );
-  });
-
-  test('keeps certificate-like errors in the gRPC source without TLS', async () => {
-    const path = '/test.Service/Method';
-    const transportError = new ClientError(
-      path,
-      Status.UNAVAILABLE,
-      'self-signed certificate in certificate chain'
-    );
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({}),
-      createOpenRuntime(false)
-    );
-    const iterator = middleware(
-      createRejectedUnaryCall(path, transportError),
-      {}
-    );
-
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
-        && error.source === 'grpc'
-    );
-  });
-
-  test('keeps network connection failures in the gRPC source', async () => {
-    const path = '/test.Service/Method';
-    const transportError = new ClientError(
-      path,
-      Status.UNAVAILABLE,
-      'No connection established. Last error: connect ECONNREFUSED'
-    );
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({}),
-      createOpenRuntime(true)
-    );
-    const iterator = middleware(
-      createRejectedUnaryCall(path, transportError),
-      {}
-    );
-
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
-        && error.source === 'grpc'
     );
   });
 

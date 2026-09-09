@@ -3,27 +3,25 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
-import { PriceType } from '../../../generated/common';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { type PostOrderResponse, type ReplaceOrderRequest } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
-  parsePositiveQuotationOption,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
 import { formatReplaceOrder, replaceOrderFormats } from './reporter';
+import { createReplaceOrderRequest } from './request.mapper';
 
 type ReplaceOrderSdk = {
   orders: {
@@ -37,14 +35,7 @@ type ReplaceOrderSdkFactory = (options: TInvestOptions) => ReplaceOrderSdk;
 const replaceOrderCommandPath = ['order', 'replace'] as const;
 const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) => new TInvestNodeSDK(options);
 
-const replaceOrderPriceTypes = {
-  point: PriceType.PRICE_TYPE_POINT,
-  currency: PriceType.PRICE_TYPE_CURRENCY
-} as const;
-
-type ReplaceOrderPriceTypeName = keyof typeof replaceOrderPriceTypes;
-
-const replaceOrderPriceTypeNames = Object.keys(replaceOrderPriceTypes) as ReplaceOrderPriceTypeName[];
+const replaceOrderPriceTypeNames = ['point', 'currency'] as const;
 
 const replaceOrderRequestOptionsSchema = {
   'account-id': {
@@ -89,16 +80,6 @@ const replaceOrderOptionsSchema = withSdkOptions(
 );
 
 type ReplaceOrderOptions = InferOptions<typeof replaceOrderOptionsSchema>;
-type ReplaceOrderRequestOptions = CommandRequestOptions<
-  ReplaceOrderOptions,
-  'account-id' |
-  'order-id' |
-  'idempotency-key' |
-  'quantity' |
-  'price' |
-  'price-type'
->;
-
 export function createReplaceOrderCommand(
   createSdk: ReplaceOrderSdkFactory = defaultReplaceOrderSdkFactory
 ) {
@@ -121,30 +102,9 @@ async function runReplaceOrderCommand(
 
   const request = createReplaceOrderRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.orders.replaceOrder(request);
 
     return formatReplaceOrder(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatReplaceOrder };
-
-export function createReplaceOrderRequest(
-  options: ReplaceOrderRequestOptions
-): ReplaceOrderRequest {
-  return {
-    accountId: options['account-id'],
-    orderId: options['order-id'],
-    idempotencyKey: options['idempotency-key'],
-    quantity: options.quantity,
-    price: parsePositiveQuotationOption(options.price, 'price'),
-    priceType: replaceOrderPriceTypes[options['price-type']],
-    confirmMarginTrade: false
-  };
+  });
 }

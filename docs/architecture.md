@@ -42,7 +42,7 @@ src/generated
 
 Текущие зоны:
 
-- `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata, middleware и typed clients, а также построение и разрешение полных gRPC paths в transport-neutral quotas, вызов Consumer-owned limiter-а и mapping transport failures в публичный `SdkError`.
+- `infrastructure/transport/grpc` - создание `nice-grpc` channel, metadata, middleware и typed clients, а также построение и разрешение полных gRPC paths в transport-neutral quotas. Выполнение middleware отделено от классификации transport failures в `sdk-call-error.ts`.
 - `infrastructure/interceptor` - технический hook для фильтрации известных process warnings.
 - `infrastructure/report-values.ts` - общие scalar adapters для преобразования provider DTO значений вроде `MoneyValue`, `Quotation` и `Date` в стабильные report values. Десятичная строка строится из целых `units` и `nano` без потери точности через floating-point arithmetic. `MoneyValue` становится структурным `ReportMoney`, а command-specific table/text представление строится отдельно. Здесь не выбираются поля команд и не формируются command-specific output contracts.
 
@@ -59,8 +59,10 @@ Runtime entrypoints разделены между публичными package e
 - `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - compiler и runtime adapter с [разделенным ownership](#конфигурация-терминология-и-ownership);
 - `bootstrap/proto/compile-proto.ts` - proto generation mechanics через закреплённые локальные `protoc` и `ts-proto`;
 - `bootstrap/args` - reusable guards и normalizers для CLI options;
-- `bootstrap/cli` - CLI contract, registry, help, version, terminal error policy и runner layer;
-- `bootstrap/commands` - handlers CLI-команд;
+- `bootstrap/cli` - CLI contract, registry, rendering help, декларативный `help-catalog.ts`, version, terminal error policy и runner layer;
+- `bootstrap/commands` - handlers CLI-команд и общий `sdk-command-lifecycle.ts` для коротких SDK-вызовов;
+- `bootstrap/commands/*/request.mapper.ts` - request mapping, который разделяют production и Sandbox варианты одной операции;
+- `bootstrap/commands/stream-run` - отдельно config parser, generated request mapper, stream session lifecycle и reporter;
 - `bootstrap/commands/*/reporter.ts` - command-specific mapping и presentation formatting. Unary reporter-ы обычно строят `application/reports`, а специализированный stream reporter может владеть локальным event contract.
 
 Generic option/command mechanics, JSON/CSV-row/table primitives и default terminal output facade предоставляет внешняя зависимость `icore`. Она не является отдельным слоем проекта: integration wiring остается в `bootstrap`, а project-specific adapters и policies остаются в файлах-владельцах.
@@ -77,7 +79,7 @@ API-команды остаются тонкими bootstrap handlers. Runner о
 
 Runner один раз выполняет `prepare`, пишет command warnings и передает prepared command в `runPrepared`. В штатном terminal flow общая error policy сохраняет единый stderr для фаз `prepare`, `execute`, `render`, `write` и внешних bootstrap-операций.
 
-Exit code определяется типом ошибки, а не фазой. Публичный `isUsageError()` из `icore` распознаёт framework errors категории `usage` и application validators, которые выбрасывают публичный `CliUsageError`; они завершаются с кодом `2`. Runtime, provider, output и `icore` definition errors завершаются с кодом `1`. `CliUsageError` используется для command-specific аргументов, обязательных CLI/ENV-значений и уже прочитанной JSON command config; ошибки чтения файла остаются runtime. Command `cli.ts` создает generated request DTO из typed options, создает SDK facade и передает provider response в reporter-модуль. Unary reporter-ы обычно преобразуют generated DTO в `application/reports` contracts; stream reporter может формировать command-local event contract. Reporter выбирает поля, порядок и command-specific представление, а для общей механики формата при необходимости вызывает публичные `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`. Готовую строку или stream terminal app штатно направляет через `Output.write` в stdout; help/version используют тот же канал, а warnings и errors проходят через `Output.error` в stderr. Runner принимает injected `Output` или создает default facade.
+Exit code определяется типом ошибки, а не фазой. Публичный `isUsageError()` из `icore` распознаёт framework errors категории `usage` и application validators, которые выбрасывают публичный `CliUsageError`; они завершаются с кодом `2`. Runtime, provider, output и `icore` definition errors завершаются с кодом `1`. `CliUsageError` используется для command-specific аргументов, обязательных CLI/ENV-значений и уже прочитанной JSON command config; ошибки чтения файла остаются runtime. Command `cli.ts` получает generated request из command-owned mapper или создаёт его локально, а общий `runSdkCommand()` создаёт и гарантированно закрывает facade для короткого вызова. Stream session владеет отдельным lifecycle до завершения async iterator. Unary reporter-ы обычно преобразуют generated DTO в `application/reports` contracts; stream reporter может формировать command-local event contract. Reporter выбирает поля, порядок и command-specific представление, а для общей механики формата при необходимости вызывает публичные `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`. Готовую строку или stream terminal app штатно направляет через `Output.write` в stdout; help/version используют тот же канал, а warnings и errors проходят через `Output.error` в stderr. Runner принимает injected `Output` или создает default facade.
 
 `bootstrap/args` не вызывает SDK и не создает gRPC-клиенты. Он содержит общие option schemas, проверяет project-specific значения уже типизированных опций и нормализует `TInvestOptions` из CLI/ENV. Разбор raw argv и schema-level валидация принадлежат `icore`.
 
@@ -175,8 +177,9 @@ Ownership разделен так:
 - `src/infrastructure/transport/grpc/sdk-channel.ts` владеет mapping готовой package transport policy в channel options, но не default value;
 - `src/infrastructure/transport/grpc/tls-root-certificates.ts` владеет только разрешением package asset и ленивым чтением bundled trust material;
 - `src/application/services/unary-limiter.ts` владеет публичным limiter port и необязательной process-local реализацией, не интерпретируя source config или gRPC paths;
-- `src/infrastructure/transport/grpc/unary-limits.ts` владеет только transport-specific построением gRPC method path;
+- `src/infrastructure/transport/grpc/unary-method-path.ts` владеет только transport-specific построением gRPC method path;
 - `src/infrastructure/transport/grpc/unary-limit-resolver.ts` владеет сопоставлением path с method/service rule и выбором runtime bucket, но не compilation package policy или состоянием limiter-а;
+- `src/infrastructure/transport/grpc/sdk-call-error.ts` владеет классификацией gRPC, TLS, codec, receive-limit и cancellation errors, но не выполнением middleware или retry policy;
 - Consumer владеет переданным `unaryLimiter`, его внешними ресурсами и scope; `TInvestNodeSDK.close()` этот lifecycle не завершает.
 
 Новая структурная config semantics добавляется в authoring contract и соответствующий compiler. Готовые scalar values bootstrap передает напрямую adapter-у — без compiler-а и второй декларации. Mapping/resolver logic не должна возвращаться в `src/config.ts`.

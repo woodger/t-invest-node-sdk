@@ -3,31 +3,24 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
-  OperationState,
-  OperationType,
-  operationTypeFromJSON,
   type GetOperationsByCursorRequest,
   type GetOperationsByCursorResponse
 } from '../../../generated/operations';
-import { CliUsageError, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommaSeparatedStringListOption,
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOperationsByCursor, operationsByCursorFormats } from './reporter';
+import { createOperationsByCursorRequest } from './request.mapper';
 
 type OperationsByCursorSdk = {
   operations: {
@@ -43,16 +36,7 @@ type OperationsByCursorSdkFactory = (options: TInvestOptions) => OperationsByCur
 const operationsByCursorCommandPath = ['operation', 'page'] as const;
 const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TInvestNodeSDK(options);
 
-const operationStates = {
-  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
-  executed: OperationState.OPERATION_STATE_EXECUTED,
-  canceled: OperationState.OPERATION_STATE_CANCELED,
-  progress: OperationState.OPERATION_STATE_PROGRESS
-} as const;
-
-type OperationStateName = keyof typeof operationStates;
-
-const operationStateNames = Object.keys(operationStates) as OperationStateName[];
+const operationStateNames = ['unspecified', 'executed', 'canceled', 'progress'] as const;
 
 const operationsByCursorStateOptionsSchema = {
   state: {
@@ -122,59 +106,6 @@ const operationsByCursorOptionsSchema = withSdkOptions(
 );
 
 type OperationsByCursorOptions = InferOptions<typeof operationsByCursorOptionsSchema>;
-type OperationsByCursorRequestOptions = CommandRequestOptions<
-  OperationsByCursorOptions,
-  'account-id' |
-  'instrument-id' |
-  'operation-type' |
-  'without-commissions' |
-  'without-trades' |
-  'without-overnights' |
-  'from' |
-  'to' |
-  'cursor' |
-  'limit' |
-  'state'
->;
-
-function parseOperationsByCursorLimitOption(rawValue: string | undefined): number {
-  if (rawValue === undefined) {
-    return 0;
-  }
-
-  if (!/^\d+$/.test(rawValue)) {
-    throw new CliUsageError("Expected '--limit' as integer from 1 to 1000");
-  }
-
-  const limit = Number(rawValue);
-
-  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1000) {
-    throw new CliUsageError("Expected '--limit' as integer from 1 to 1000");
-  }
-
-  return limit;
-}
-
-function parseOperationsByCursorOperationTypesOption(
-  rawValue: string | undefined
-): OperationType[] {
-  if (rawValue === undefined) {
-    return [];
-  }
-
-  const operationTypes = parseCommaSeparatedStringListOption(rawValue, 'operation-type');
-
-  return operationTypes.map((value) => {
-    const operationType = operationTypeFromJSON(value);
-
-    if (operationType === OperationType.UNRECOGNIZED) {
-      throw new CliUsageError("Expected '--operation-type' as generated OperationType name");
-    }
-
-    return operationType;
-  });
-}
-
 export function createOperationsByCursorCommand(
   createSdk: OperationsByCursorSdkFactory = defaultOperationsByCursorSdkFactory
 ) {
@@ -195,49 +126,9 @@ async function runOperationsByCursorCommand(
 ): Promise<string> {
   const request = createOperationsByCursorRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.operations.getOperationsByCursor(request);
 
     return formatOperationsByCursor(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatOperationsByCursor };
-
-export function createOperationsByCursorRequest(
-  options: OperationsByCursorRequestOptions
-): GetOperationsByCursorRequest {
-  const from = parseOptionalDateTimeOption(options.from, 'from');
-  const to = parseOptionalDateTimeOption(options.to, 'to');
-
-  if (from !== undefined && to !== undefined && from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    accountId: options['account-id'],
-    instrumentId: options['instrument-id'] ?? '',
-    from,
-    to,
-    cursor: options.cursor ?? '',
-    limit: parseOperationsByCursorLimitOption(options.limit),
-    operationTypes: parseOperationsByCursorOperationTypesOption(options['operation-type']),
-    state: operationStates[options.state],
-    withoutCommissions: options['without-commissions'],
-    withoutTrades: options['without-trades'],
-    withoutOvernights: options['without-overnights']
-  };
-}
-
-function parseOptionalDateTimeOption(value: string | undefined, name: string): Date | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  return parseDateTimeOption(value, name);
+  });
 }

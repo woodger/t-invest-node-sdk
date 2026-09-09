@@ -14,7 +14,7 @@ import { SignalServiceDefinition } from '../generated/signals';
 import { TInvestNodeSDK } from './t-invest-node-sdk';
 
 describe('TInvestNodeSDK', () => {
-  test('exposes stream clients', () => {
+  test('exposes service clients through canonical facade names', () => {
     const sdk = new TInvestNodeSDK({
       token: 'token',
       endpoint: 'localhost:50051',
@@ -22,11 +22,35 @@ describe('TInvestNodeSDK', () => {
     });
 
     try {
+      assert.equal(typeof sdk.marketData.getCandles, 'function');
+      assert.equal(typeof sdk.stopOrders.getStopOrders, 'function');
       assert.equal(typeof sdk.marketdataStream.marketDataStream, 'function');
       assert.equal(typeof sdk.marketdataStream.marketDataServerSideStream, 'function');
       assert.equal(typeof sdk.operationsStream.portfolioStream, 'function');
       assert.equal(typeof sdk.operationsStream.positionsStream, 'function');
       assert.equal(typeof sdk.ordersStream.tradesStream, 'function');
+    }
+    finally {
+      sdk.close();
+    }
+  });
+
+  test('rejects deprecated facade service names with migration guidance', () => {
+    const sdk = new TInvestNodeSDK({
+      token: 'token',
+      endpoint: 'localhost:50051',
+      useSsl: false
+    });
+
+    try {
+      for (const serviceName of ['marketdata', 'stoporders'] as const) {
+        assert.throws(
+          () => Reflect.get(sdk, serviceName),
+          (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+            && error.source === 'sdk'
+            && error.message === 'Прежние sdk.marketdata и sdk.stoporders не используйте: они устарели. Используйте вместо них sdk.marketData и sdk.stopOrders.'
+        );
+      }
     }
     finally {
       sdk.close();

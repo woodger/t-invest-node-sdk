@@ -46,7 +46,7 @@ describe('trading-status command', () => {
         receivedOptions = options;
 
         return {
-          marketdata: {
+    marketData: {
             async getTradingStatus(request) {
               receivedRequest = request;
 
@@ -87,7 +87,7 @@ describe('trading-status command', () => {
     test('closes sdk when getTradingStatus rejects', async () => {
       let closeCalls = 0;
       const command = createTradingStatusCommand(() => ({
-        marketdata: {
+    marketData: {
           async getTradingStatus() {
             throw new Error('api failed');
           }

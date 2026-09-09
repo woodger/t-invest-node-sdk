@@ -101,7 +101,7 @@ process.argv
 | Mapping | Текущее место | Возможное целевое место |
 | --- | --- | --- |
 | typed command options -> `TInvestOptions` | `bootstrap/args` | без изменений |
-| typed command options -> generated request DTO | `bootstrap/commands/*/cli.ts`, `create*Request` | application use-case, если command перестает быть тонким adapter-ом |
+| typed command options -> generated request DTO | command-local `cli.ts` или `request.mapper.ts`, `create*Request` | application use-case, если command перестает быть тонким adapter-ом |
 | generated unary response -> application report | `bootstrap/commands/*/reporter.ts` | CLI adapter или application use-case, зависит от выбранной границы |
 | stream event -> command-local event contract | `bootstrap/commands/stream-run/reporter.ts` | application report, если contract потребуется вне CLI |
 | report/event contract -> command-specific output values | `bootstrap/commands/*/reporter.ts` | без изменений для компактного Inventory-style CLI |

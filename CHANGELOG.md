@@ -15,6 +15,10 @@
 
 ### Изменено
 
+- Публичные service getters фасада приведены к именам `marketData` и `stopOrders`.
+- Повторяемый lifecycle 66 коротких API-команд вынесен в `runSdkCommand()`. Общий production/Sandbox request mapping больше не импортируется через соседние command entrypoints, а formatter-ы доступны только из файлов-владельцев.
+- Config parsing, generated request mapping и lifecycle команды `stream run` разделены по самостоятельным модулям; transport error classification отделена от выполнения gRPC middleware, а статический каталог CLI-справки — от rendering.
+- Внутренние имена facade client cache, service client factory, in-memory limiter и process warning hook приведены к их фактической ответственности. Файл построения gRPC method path переименован в `unary-method-path.ts`, однострочный interceptor barrel удалён.
 - Разрешение unary-квоты больше не перебирает всю таблицу правил для каждого
   RPC: точный method path и service fallback читаются напрямую с прежним
   приоритетом.

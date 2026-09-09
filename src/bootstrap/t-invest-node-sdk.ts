@@ -94,14 +94,14 @@ type ServiceClient = InstrumentsServiceClient
   | UsersServiceClient;
 
 export class TInvestNodeSDK {
-  private options: ResolvedTInvestOptions;
-  private storage: Map<ServiceDefinition, ServiceClient> = new Map();
-  private channel: Channel;
-  private metadata: Metadata;
-  private unaryLimitResolver: UnaryLimitResolver;
+  private readonly options: ResolvedTInvestOptions;
+  private readonly clientsByServiceDefinition: Map<ServiceDefinition, ServiceClient> = new Map();
+  private readonly channel: Channel;
+  private readonly metadata: Metadata;
+  private readonly unaryLimitResolver: UnaryLimitResolver;
   private readonly maxReceiveMessageLength: number;
   private closed = false;
-  private lifecycleController = new AbortController();
+  private readonly lifecycleController = new AbortController();
   
   constructor(options: TInvestOptions) {
     this.options = resolveSdkInstanceOptions(options);
@@ -123,51 +123,51 @@ export class TInvestNodeSDK {
   }
 
   get instruments() {
-    return this.useServiceAsClient<InstrumentsServiceClient>(InstrumentsServiceDefinition) as InstrumentsService;
+    return this.getOrCreateServiceClient<InstrumentsServiceClient>(InstrumentsServiceDefinition) as InstrumentsService;
   }
   
-  get marketdata() {
-    return this.useServiceAsClient<MarketDataServiceClient>(MarketDataServiceDefinition) as MarketDataService;
+  get marketData() {
+    return this.getOrCreateServiceClient<MarketDataServiceClient>(MarketDataServiceDefinition) as MarketDataService;
   }
 
   get marketdataStream() {
-    return this.useServiceAsClient<MarketDataStreamServiceClient>(
+    return this.getOrCreateServiceClient<MarketDataStreamServiceClient>(
       MarketDataStreamServiceDefinition
     ) as MarketDataStreamService;
   }
 
   get operations() {
-    return this.useServiceAsClient<OperationsServiceClient>(OperationsServiceDefinition) as OperationsService;
+    return this.getOrCreateServiceClient<OperationsServiceClient>(OperationsServiceDefinition) as OperationsService;
   }
 
   get operationsStream() {
-    return this.useServiceAsClient<OperationsStreamServiceClient>(
+    return this.getOrCreateServiceClient<OperationsStreamServiceClient>(
       OperationsStreamServiceDefinition
     ) as OperationsStreamService;
   }
   
   get orders() {
-    return this.useServiceAsClient<OrdersServiceClient>(OrdersServiceDefinition) as OrdersService;
+    return this.getOrCreateServiceClient<OrdersServiceClient>(OrdersServiceDefinition) as OrdersService;
   }
 
   get ordersStream() {
-    return this.useServiceAsClient<OrdersStreamServiceClient>(OrdersStreamServiceDefinition) as OrdersStreamService;
+    return this.getOrCreateServiceClient<OrdersStreamServiceClient>(OrdersStreamServiceDefinition) as OrdersStreamService;
   }
 
   get sandbox() {
-    return this.useServiceAsClient<SandboxServiceClient>(SandboxServiceDefinition) as SandboxService;
+    return this.getOrCreateServiceClient<SandboxServiceClient>(SandboxServiceDefinition) as SandboxService;
   }
 
   get signals() {
-    return this.useServiceAsClient<SignalServiceClient>(SignalServiceDefinition) as SignalService;
+    return this.getOrCreateServiceClient<SignalServiceClient>(SignalServiceDefinition) as SignalService;
   }
 
-  get stoporders() {
-    return this.useServiceAsClient<StopOrdersServiceClient>(StopOrdersServiceDefinition) as StopOrdersService;
+  get stopOrders() {
+    return this.getOrCreateServiceClient<StopOrdersServiceClient>(StopOrdersServiceDefinition) as StopOrdersService;
   }
   
   get users() {
-    return this.useServiceAsClient<UsersServiceClient>(UsersServiceDefinition) as UsersService;
+    return this.getOrCreateServiceClient<UsersServiceClient>(UsersServiceDefinition) as UsersService;
   }
 
   /**
@@ -184,14 +184,16 @@ export class TInvestNodeSDK {
     this.channel.close();
   }
 
-  private useServiceAsClient<T extends ServiceClient>(service: ServiceDefinition) {
+  private getOrCreateServiceClient<T extends ServiceClient>(
+    serviceDefinition: ServiceDefinition
+  ) {
     this.assertOpen();
 
-    let client = this.storage.get(service);
+    let client = this.clientsByServiceDefinition.get(serviceDefinition);
 
     if (!client) {
       client = createSdkClient<ServiceClient>(
-        service,
+        serviceDefinition,
         this.channel,
         this.metadata,
         this.options.unaryLimiter,
@@ -206,7 +208,7 @@ export class TInvestNodeSDK {
         }
       );
 
-      this.storage.set(service, client);
+      this.clientsByServiceDefinition.set(serviceDefinition, client);
     }
 
     return client as T;
@@ -228,3 +230,24 @@ export class TInvestNodeSDK {
     );
   }
 }
+
+function throwDeprecatedServiceGetter(): never {
+  throw new SdkError(
+    SdkErrorCode.InvalidArgument,
+    'Прежние sdk.marketdata и sdk.stoporders не используйте: они устарели. Используйте вместо них sdk.marketData и sdk.stopOrders.',
+    {
+      source: 'sdk'
+    }
+  );
+}
+
+Object.defineProperties(TInvestNodeSDK.prototype, {
+  marketdata: {
+    configurable: true,
+    get: throwDeprecatedServiceGetter
+  },
+  stoporders: {
+    configurable: true,
+    get: throwDeprecatedServiceGetter
+  }
+});

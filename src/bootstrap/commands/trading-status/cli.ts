@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - объявление command path и option schema;
  * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -16,14 +16,14 @@ import {
 } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatTradingStatus, tradingStatusFormats } from './reporter';
 
 type TradingStatusSdk = {
-  marketdata: {
+  marketData: {
     getTradingStatus(request: GetTradingStatusRequest): Promise<GetTradingStatusResponse>;
   };
   close(): void;
@@ -77,19 +77,12 @@ async function runTradingStatusCommand(
 ): Promise<string> {
   const request = createTradingStatusRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
-    const response = await sdk.marketdata.getTradingStatus(request);
+  return runSdkCommand(options, createSdk, async (sdk) => {
+    const response = await sdk.marketData.getTradingStatus(request);
 
     return formatTradingStatus(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatTradingStatus };
 
 export function createTradingStatusRequest(
   options: TradingStatusRequestOptions

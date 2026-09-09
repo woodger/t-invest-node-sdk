@@ -46,6 +46,7 @@ src/bootstrap
   cli/
     contract.ts
     error.ts
+    help-catalog.ts
     help.ts
     registry.ts
     runner.ts

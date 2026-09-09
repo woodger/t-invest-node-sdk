@@ -92,7 +92,7 @@ async function main(): Promise<void> {
 
     const now = new Date();
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-    const candles = await sdk.marketdata.getCandles(
+    const candles = await sdk.marketData.getCandles(
       {
         instrumentId: 'BBG00QPYJ5H0',
         interval: CandleInterval.CANDLE_INTERVAL_1_MIN,

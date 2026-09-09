@@ -10,7 +10,7 @@ import {
   type GetOperationsByCursorResponse,
   type OperationItem
 } from '../../../generated/operations';
-import { createOperationsByCursorCommand, createOperationsByCursorRequest } from './cli';
+import { createOperationsByCursorCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -65,130 +65,6 @@ function operationsByCursorResponse(
 }
 
 describe('operations-by-cursor command', () => {
-  describe('createOperationsByCursorRequest', () => {
-    test('returns generated getOperationsByCursor request', () => {
-      const request = createOperationsByCursorRequest({
-        'account-id': 'account-id',
-        'instrument-id': 'instrument-uid',
-        from: '2026-06-01T00:00:00.000Z',
-        to: '2026-06-19T00:00:00.000Z',
-        cursor: 'cursor',
-        limit: '1000',
-        'operation-type': 'OPERATION_TYPE_BUY',
-        state: 'executed',
-        'without-commissions': true,
-        'without-trades': true,
-        'without-overnights': true
-      });
-
-      assert.equal(request.accountId, 'account-id');
-      assert.equal(request.instrumentId, 'instrument-uid');
-      assert.equal(request.from?.toISOString(), '2026-06-01T00:00:00.000Z');
-      assert.equal(request.to?.toISOString(), '2026-06-19T00:00:00.000Z');
-      assert.equal(request.cursor, 'cursor');
-      assert.equal(request.limit, 1000);
-      assert.deepEqual(request.operationTypes, [OperationType.OPERATION_TYPE_BUY]);
-      assert.equal(request.state, OperationState.OPERATION_STATE_EXECUTED);
-      assert.equal(request.withoutCommissions, true);
-      assert.equal(request.withoutTrades, true);
-      assert.equal(request.withoutOvernights, true);
-    });
-
-    test('uses provider defaults for omitted pagination filters', () => {
-      const request = createOperationsByCursorRequest({
-        'account-id': 'account-id',
-        state: 'unspecified',
-        'without-commissions': false,
-        'without-trades': false,
-        'without-overnights': false
-      });
-
-      assert.equal(request.limit, 0);
-      assert.deepEqual(request.operationTypes, []);
-      assert.equal(request.state, OperationState.OPERATION_STATE_UNSPECIFIED);
-    });
-
-    test('maps canceled and progress states to generated values', () => {
-      const cases = [
-        ['canceled', OperationState.OPERATION_STATE_CANCELED],
-        ['progress', OperationState.OPERATION_STATE_PROGRESS]
-      ] as const;
-
-      for (const [state, expected] of cases) {
-        const request = createOperationsByCursorRequest({
-          'account-id': 'account-id',
-          state,
-          'without-commissions': false,
-          'without-trades': false,
-          'without-overnights': false
-        });
-
-        assert.equal(request.state, expected);
-      }
-    });
-
-    test('maps comma-separated generated operation types', () => {
-      const request = createOperationsByCursorRequest({
-        'account-id': 'account-id',
-        'operation-type': 'OPERATION_TYPE_BUY, OPERATION_TYPE_SELL',
-        state: 'unspecified',
-        'without-commissions': false,
-        'without-trades': false,
-        'without-overnights': false
-      });
-
-      assert.deepEqual(request.operationTypes, [
-        OperationType.OPERATION_TYPE_BUY,
-        OperationType.OPERATION_TYPE_SELL
-      ]);
-    });
-
-    test('throws for limits outside the provider range', () => {
-      for (const limit of ['0', '1001']) {
-        assert.throws(
-          () => createOperationsByCursorRequest({
-            'account-id': 'account-id',
-            limit,
-            state: 'unspecified',
-            'without-commissions': false,
-            'without-trades': false,
-            'without-overnights': false
-          }),
-          /Expected '--limit' as integer from 1 to 1000/
-        );
-      }
-    });
-
-    test('throws for unknown generated operation types', () => {
-      assert.throws(
-        () => createOperationsByCursorRequest({
-          'account-id': 'account-id',
-          'operation-type': 'buy',
-          state: 'unspecified',
-          'without-commissions': false,
-          'without-trades': false,
-          'without-overnights': false
-        }),
-        /Expected '--operation-type' as generated OperationType name/
-      );
-    });
-
-    test('throws when from is later than to', () => {
-      assert.throws(
-        () => createOperationsByCursorRequest({
-          'account-id': 'account-id',
-          from: '2026-06-20T00:00:00.000Z',
-          to: '2026-06-19T00:00:00.000Z',
-          state: 'unspecified',
-          'without-commissions': false,
-          'without-trades': false,
-          'without-overnights': false
-        }),
-        /Expected '--from' to be earlier/
-      );
-    });
-  });
-
   describe('createOperationsByCursorCommand', () => {
     test('calls getOperationsByCursor and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

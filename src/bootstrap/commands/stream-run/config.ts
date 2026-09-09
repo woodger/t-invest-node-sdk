@@ -19,14 +19,8 @@ import {
   SubscriptionAction,
   SubscriptionInterval,
   TradeSourceType,
-  TradeInstrument,
-  type MarketDataServerSideStreamRequest
+  TradeInstrument
 } from '../../../generated/marketdata';
-import type {
-  PortfolioStreamRequest,
-  PositionsStreamRequest
-} from '../../../generated/operations';
-import type { TradesStreamRequest } from '../../../generated/orders';
 import { CliUsageError } from 'icore';
 
 export const streamRunStreamNames = [
@@ -38,7 +32,6 @@ export const streamRunStreamNames = [
 ] as const;
 
 export type StreamRunStreamName = typeof streamRunStreamNames[number];
-export type SupportedStreamRunStreamName = StreamRunStreamName;
 
 export type StreamRunRuntime = {
   format: 'jsonl';
@@ -51,14 +44,14 @@ export type StreamRunRuntime = {
 };
 
 export type StreamRunConfig = {
-  stream: SupportedStreamRunStreamName;
+  stream: StreamRunStreamName;
   accounts?: string[];
   requests?: MarketDataRequest[];
   subscriptions?: MarketDataSubscriptions;
   runtime: StreamRunRuntime;
 };
 
-type MarketDataSubscriptions = {
+export type MarketDataSubscriptions = {
   candles?: CandleSubscriptionConfig[] | undefined;
   orderBooks?: OrderBookSubscriptionConfig[] | undefined;
   trades?: InstrumentSubscriptionConfig[] | undefined;
@@ -66,16 +59,16 @@ type MarketDataSubscriptions = {
   lastPrices?: InstrumentSubscriptionConfig[] | undefined;
 };
 
-type CandleSubscriptionConfig = InstrumentSubscriptionConfig & {
+export type CandleSubscriptionConfig = InstrumentSubscriptionConfig & {
   interval: SubscriptionInterval;
   waitingClose: boolean;
 };
 
-type OrderBookSubscriptionConfig = InstrumentSubscriptionConfig & {
+export type OrderBookSubscriptionConfig = InstrumentSubscriptionConfig & {
   depth: number;
 };
 
-type InstrumentSubscriptionConfig = {
+export type InstrumentSubscriptionConfig = {
   instrumentId: string;
 };
 
@@ -177,118 +170,7 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
   };
 }
 
-export function createMarketDataStreamRequests(config: StreamRunConfig): MarketDataRequest[] {
-  if (config.stream !== 'marketdata.marketDataStream') {
-    throw new CliUsageError(`Expected marketdata bidirectional stream config, got '${config.stream}'`);
-  }
-
-  return config.requests ?? [];
-}
-
-export function createMarketDataServerSideStreamRequest(
-  config: StreamRunConfig
-): MarketDataServerSideStreamRequest {
-  if (config.stream !== 'marketdata.marketDataServerSideStream') {
-    throw new CliUsageError(`Expected marketdata server-side stream config, got '${config.stream}'`);
-  }
-
-  const subscriptions = config.subscriptions;
-
-  if (!subscriptions) {
-    throw new CliUsageError("Expected 'subscriptions' for marketdata server-side stream config");
-  }
-
-  const candles = subscriptions.candles ?? [];
-  const orderBooks = subscriptions.orderBooks ?? [];
-  const trades = subscriptions.trades ?? [];
-  const info = subscriptions.info ?? [];
-  const lastPrices = subscriptions.lastPrices ?? [];
-
-  return {
-    subscribeCandlesRequest: candles.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: candles.map((item) => CandleInstrument.create({
-          interval: item.interval,
-          instrumentId: item.instrumentId
-        })),
-        waitingClose: resolveCandlesWaitingClose(candles)
-      }
-      : undefined,
-    subscribeOrderBookRequest: orderBooks.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: orderBooks.map((item) => OrderBookInstrument.create({
-          depth: item.depth,
-          instrumentId: item.instrumentId,
-          orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-        }))
-      }
-      : undefined,
-    subscribeTradesRequest: trades.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: trades.map((item) => TradeInstrument.create({
-          instrumentId: item.instrumentId
-        })),
-        tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
-        withOpenInterest: false
-      }
-      : undefined,
-    subscribeInfoRequest: info.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: info.map((item) => InfoInstrument.create({
-          instrumentId: item.instrumentId
-        }))
-      }
-      : undefined,
-    subscribeLastPriceRequest: lastPrices.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: lastPrices.map((item) => LastPriceInstrument.create({
-          instrumentId: item.instrumentId
-        }))
-      }
-      : undefined,
-    pingSettings: undefined
-  };
-}
-
-export function createPortfolioStreamRequest(config: StreamRunConfig): PortfolioStreamRequest {
-  if (config.stream !== 'operations.portfolioStream') {
-    throw new CliUsageError(`Expected portfolio stream config, got '${config.stream}'`);
-  }
-
-  return {
-    accounts: config.accounts ?? [],
-    pingSettings: undefined
-  };
-}
-
-export function createPositionsStreamRequest(config: StreamRunConfig): PositionsStreamRequest {
-  if (config.stream !== 'operations.positionsStream') {
-    throw new CliUsageError(`Expected positions stream config, got '${config.stream}'`);
-  }
-
-  return {
-    accounts: config.accounts ?? [],
-    withInitialPositions: false,
-    pingSettings: undefined
-  };
-}
-
-export function createTradesStreamRequest(config: StreamRunConfig): TradesStreamRequest {
-  if (config.stream !== 'orders.tradesStream') {
-    throw new CliUsageError(`Expected trades stream config, got '${config.stream}'`);
-  }
-
-  return {
-    accounts: config.accounts ?? []
-  };
-}
-
-function parseStreamName(value: unknown): SupportedStreamRunStreamName {
+function parseStreamName(value: unknown): StreamRunStreamName {
   if (typeof value !== 'string') {
     throw new CliUsageError("Expected 'stream' as string");
   }
@@ -297,7 +179,7 @@ function parseStreamName(value: unknown): SupportedStreamRunStreamName {
     throw new CliUsageError(`Expected 'stream' as one of: ${streamRunStreamNames.join(', ')}`);
   }
 
-  return value as SupportedStreamRunStreamName;
+  return value as StreamRunStreamName;
 }
 
 function parseRuntime(value: unknown): StreamRunRuntime {
@@ -635,7 +517,7 @@ function assertAbsent(value: unknown, message: string): void {
   }
 }
 
-function resolveCandlesWaitingClose(candles: CandleSubscriptionConfig[]): boolean {
+export function resolveCandlesWaitingClose(candles: CandleSubscriptionConfig[]): boolean {
   validateCandlesWaitingClose(candles);
 
   return candles[0]?.waitingClose ?? false;

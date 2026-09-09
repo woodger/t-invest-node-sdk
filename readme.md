@@ -222,12 +222,12 @@ Application validators используют публичный `CliUsageError` �
 Экземпляр `TInvestNodeSDK` лениво создает unary-клиенты для сервисов:
 
 - `sdk.instruments`
-- `sdk.marketdata`
+- `sdk.marketData`
 - `sdk.operations`
 - `sdk.orders`
 - `sdk.sandbox`
 - `sdk.signals`
-- `sdk.stoporders`
+- `sdk.stopOrders`
 - `sdk.users`
 
 Все методы этих клиентов соответствуют сгенерированным gRPC-описаниям.

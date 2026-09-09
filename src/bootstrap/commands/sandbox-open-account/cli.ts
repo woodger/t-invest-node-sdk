@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - объявление command path и option schema;
  * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -16,7 +16,7 @@ import type {
 } from '../../../generated/sandbox';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
@@ -73,19 +73,12 @@ async function runSandboxOpenAccountCommand(
   assertSideEffectConfirmed(options.confirm);
 
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.sandbox.openSandboxAccount(createSandboxOpenAccountRequest());
 
     return formatOpenSandboxAccount(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatOpenSandboxAccount };
 
 export function createSandboxOpenAccountRequest(): OpenSandboxAccountRequest {
   return {};

@@ -6,9 +6,9 @@
  */
 
 import { runCli } from './cli/runner';
-import { warningInterceptor } from '../infrastructure/interceptor';
+import { installWarningInterceptor } from '../infrastructure/interceptor/warning-interceptor';
 
-warningInterceptor({
+installWarningInterceptor({
   rules: [
     { messageIncludes: 'client.query() when the client is already executing' }
   ]

@@ -3,8 +3,8 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -13,11 +13,11 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrders, ordersFormats } from './reporter';
+import { createOrdersRequest } from './request.mapper';
 
 type OrdersSdk = {
   orders: {
@@ -52,8 +52,6 @@ const ordersOptionsSchema = withSdkOptions(
 );
 
 type OrdersOptions = InferOptions<typeof ordersOptionsSchema>;
-type OrdersRequestOptions = CommandRequestOptions<OrdersOptions, 'account-id'>;
-
 export function createOrdersCommand(
   createSdk: OrdersSdkFactory = defaultOrdersSdkFactory
 ) {
@@ -74,24 +72,9 @@ async function runOrdersCommand(
 ): Promise<string> {
   const request = createOrdersRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.orders.getOrders(request);
 
     return formatOrders(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatOrders };
-
-export function createOrdersRequest(
-  options: OrdersRequestOptions
-): GetOrdersRequest {
-  return {
-    accountId: options['account-id']
-  };
+  });
 }

@@ -3,29 +3,27 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
-  OperationState,
   type OperationsRequest,
   type OperationsResponse
 } from '../../../generated/operations';
-import { CliUsageError, type InferOptions } from 'icore';
+import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
+import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
-  instrumentIdWithDeprecatedFigiOptionsSchema,
-  resolveOptionalInstrumentIdOption
+  instrumentIdWithDeprecatedFigiOptionsSchema
 } from '../../args/instrument-id-options';
 import { formatOperations, operationsFormats } from './reporter';
+import { createOperationsRequest } from './request.mapper';
 
 type OperationsSdk = {
   operations: {
@@ -39,16 +37,7 @@ type OperationsSdkFactory = (options: TInvestOptions) => OperationsSdk;
 const operationsCommandPath = ['operation', 'list'] as const;
 const defaultOperationsSdkFactory: OperationsSdkFactory = (options) => new TInvestNodeSDK(options);
 
-const operationStates = {
-  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
-  executed: OperationState.OPERATION_STATE_EXECUTED,
-  canceled: OperationState.OPERATION_STATE_CANCELED,
-  progress: OperationState.OPERATION_STATE_PROGRESS
-} as const;
-
-type OperationStateName = keyof typeof operationStates;
-
-const operationStateNames = Object.keys(operationStates) as OperationStateName[];
+const operationStateNames = ['unspecified', 'executed', 'canceled', 'progress'] as const;
 
 const operationsStateOptionsSchema = {
   state: {
@@ -89,16 +78,6 @@ const operationsOptionsSchema = withSdkOptions(
 );
 
 type OperationsOptions = InferOptions<typeof operationsOptionsSchema>;
-type OperationsRequestOptions = CommandRequestOptions<
-  OperationsOptions,
-  'account-id' |
-  'from' |
-  'to' |
-  'state' |
-  'instrument-id' |
-  'figi'
->;
-
 export function createOperationsCommand(
   createSdk: OperationsSdkFactory = defaultOperationsSdkFactory
 ) {
@@ -119,35 +98,9 @@ async function runOperationsCommand(
 ): Promise<string> {
   const request = createOperationsRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.operations.getOperations(request);
 
     return formatOperations(response.operations, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatOperations };
-
-export function createOperationsRequest(
-  options: OperationsRequestOptions
-): OperationsRequest {
-  const from = parseDateTimeOption(options.from, 'from');
-  const to = parseDateTimeOption(options.to, 'to');
-
-  if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
-  }
-
-  return {
-    accountId: options['account-id'],
-    from,
-    to,
-    state: operationStates[options.state],
-    figi: resolveOptionalInstrumentIdOption(options) ?? ''
-  };
+  });
 }

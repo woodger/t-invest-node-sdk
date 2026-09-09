@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - объявление command path и option schema;
  * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -17,14 +17,14 @@ import {
 } from '../../../generated/marketdata';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { candlesFormats, formatCandles } from './reporter';
 
 type CandlesSdk = {
-  marketdata: {
+  marketData: {
     getCandles(request: GetCandlesRequest): Promise<GetCandlesResponse>;
   };
   close(): void;
@@ -118,19 +118,12 @@ async function runCandlesCommand(
 ): Promise<string> {
   const request = createCandlesRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
-    const response = await sdk.marketdata.getCandles(request);
+  return runSdkCommand(options, createSdk, async (sdk) => {
+    const response = await sdk.marketData.getCandles(request);
 
     return formatCandles(response.candles, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatCandles };
 
 export function createCandlesRequest(
   options: CandlesRequestOptions

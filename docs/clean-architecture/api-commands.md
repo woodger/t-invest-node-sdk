@@ -24,13 +24,13 @@ Technical и legacy paths остаются совместимыми aliases, н�
 - `account info` -> `sdk.users.getInfo` (`account get-info`, `users get-info`);
 - `account margin` -> `sdk.users.getMarginAttributes` (`account get-margin-attributes`, `users get-margin-attributes`);
 - `account tariff` -> `sdk.users.getUserTariff` (`account get-user-tariff`, `users get-user-tariff`);
-- `market candles` -> `sdk.marketdata.getCandles` (`market get-candles`, `marketdata get-candles`);
-- `market close-prices` -> `sdk.marketdata.getClosePrices` (`market get-close-prices`, `marketdata get-close-prices`);
-- `market last-prices` -> `sdk.marketdata.getLastPrices` (`market get-last-prices`, `marketdata get-last-prices`);
-- `market trades` -> `sdk.marketdata.getLastTrades` (`market get-last-trades`, `marketdata get-last-trades`);
-- `market order-book` -> `sdk.marketdata.getOrderBook` (`market get-order-book`, `marketdata get-order-book`);
-- `market status` -> `sdk.marketdata.getTradingStatus` (`market get-trading-status`, `marketdata get-trading-status`);
-- `market statuses` -> `sdk.marketdata.getTradingStatuses` (`market get-trading-statuses`, `marketdata get-trading-statuses`);
+- `market candles` -> `sdk.marketData.getCandles` (`market get-candles`, `marketdata get-candles`);
+- `market close-prices` -> `sdk.marketData.getClosePrices` (`market get-close-prices`, `marketdata get-close-prices`);
+- `market last-prices` -> `sdk.marketData.getLastPrices` (`market get-last-prices`, `marketdata get-last-prices`);
+- `market trades` -> `sdk.marketData.getLastTrades` (`market get-last-trades`, `marketdata get-last-trades`);
+- `market order-book` -> `sdk.marketData.getOrderBook` (`market get-order-book`, `marketdata get-order-book`);
+- `market status` -> `sdk.marketData.getTradingStatus` (`market get-trading-status`, `marketdata get-trading-status`);
+- `market statuses` -> `sdk.marketData.getTradingStatuses` (`market get-trading-statuses`, `marketdata get-trading-statuses`);
 - `instrument search` -> `sdk.instruments.findInstrument` (`instrument find-instrument`, `instruments find-instrument`);
 - `instrument show` -> `sdk.instruments.getInstrumentBy` (`instrument get-instrument-by`, `instruments get-instrument-by`);
 - `instrument dividends` -> `sdk.instruments.getDividends` (`instrument get-dividends`, `instruments get-dividends`);
@@ -69,9 +69,9 @@ Technical и legacy paths остаются совместимыми aliases, н�
 - `operation portfolio` -> `sdk.operations.getPortfolio` (`operation get-portfolio`, `operations get-portfolio`);
 - `operation positions` -> `sdk.operations.getPositions` (`operation get-positions`, `operations get-positions`);
 - `operation withdraw-limits` -> `sdk.operations.getWithdrawLimits` (`operation get-withdraw-limits`, `operations get-withdraw-limits`);
-- `stop-order list` -> `sdk.stoporders.getStopOrders` (`stop-order get-stop-orders`, `stoporders get-stop-orders`);
-- `stop-order place` -> `sdk.stoporders.postStopOrder` (`stop-order post-stop-order`, `stoporders post-stop-order`);
-- `stop-order cancel` -> `sdk.stoporders.cancelStopOrder` (`stop-order cancel-stop-order`, `stoporders cancel-stop-order`);
+- `stop-order list` -> `sdk.stopOrders.getStopOrders` (`stop-order get-stop-orders`, `stoporders get-stop-orders`);
+- `stop-order place` -> `sdk.stopOrders.postStopOrder` (`stop-order post-stop-order`, `stoporders post-stop-order`);
+- `stop-order cancel` -> `sdk.stopOrders.cancelStopOrder` (`stop-order cancel-stop-order`, `stoporders cancel-stop-order`);
 - `sandbox account list` -> `sdk.sandbox.getSandboxAccounts` (`sandbox get-sandbox-accounts`);
 - `sandbox account open` -> `sdk.sandbox.openSandboxAccount` (`sandbox open-sandbox-account`);
 - `sandbox account close` -> `sdk.sandbox.closeSandboxAccount` (`sandbox close-sandbox-account`);
@@ -122,8 +122,8 @@ Deprecated generated methods не вводятся как публичные CLI
 Command flow объединяет несколько разных ответственностей:
 
 1. runner и `icore` разбирают CLI args и валидируют primitive options по schema;
-2. command handler выполняет API-specific validation и request mapping;
-3. command handler создает `TInvestNodeSDK`;
+2. command handler или его command-owned mapper выполняет API-specific validation и request mapping;
+3. общий lifecycle helper создает `TInvestNodeSDK` для короткой команды;
 4. command handler вызывает API method;
 5. reporter преобразует unary response в stable report или stream event в локальный контракт вывода команды;
 6. reporter выбирает command-specific output и использует generic render primitives, когда они подходят;
@@ -144,12 +144,21 @@ src/bootstrap
   cli/
     contract.ts
     error.ts
+    help-catalog.ts
     help.ts
     registry.ts
     runner.ts
   commands/
+    sdk-command-lifecycle.ts
     <command-adapter>/
       cli.ts
+      request.mapper.ts  # когда mapping разделяют production и Sandbox
+      reporter.ts
+    stream-run/
+      cli.ts
+      config.ts
+      request.mapper.ts
+      stream-session.ts
       reporter.ts
 
 src/infrastructure
@@ -167,11 +176,11 @@ external dependency
 `cli.ts` сейчас отвечает за:
 
 - объявление command path, declarative option schema и handler-а через локальный command facade над `icore`;
-- mapping typed command options в generated request DTO;
+- локальный request mapping или делегирование в `request.mapper.ts`, когда mapping разделяет несколько команд;
 - API-specific validation, которая не выражается primitive schema;
-- создание SDK facade;
+- передачу короткого SDK lifecycle в `runSdkCommand()`;
 - вызов API;
-- закрытие SDK.
+- выбор reporter-а для результата.
 
 Логические CLI options используют синтаксис флагов `icore`: `--flag` и, если команда поддерживает отрицательное переопределение, `--no-flag`. Формы со значением `--flag=true` и `--flag=false` не входят в публичный CLI-контракт.
 
@@ -201,14 +210,14 @@ Command-local `parse*` helpers не должны повторно принима
 
 Project CLI layer собирает terminal app, объявляет native short aliases, передает compatible command paths как first-class aliases canonical definitions, обслуживает help/version shortcuts и warnings, а project error policy определяет текст ошибки и exit code.
 
-Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами adapter-модулей. Они не задают публичный CLI path: публичный контракт команды фиксируется в `bootstrap/cli/registry.ts` и `bootstrap/cli/help.ts`.
+Директории внутри `bootstrap/commands/*` сейчас остаются компактными именами adapter-модулей. Они не задают публичный CLI path: публичный контракт команды фиксируется в `bootstrap/cli/registry.ts`, а статические данные справки — в `bootstrap/cli/help-catalog.ts`.
 
 ## Что Уже Хорошо
 
 - primitive option validation выражена `icore` schemas, а reusable project-specific normalizers отделены в `bootstrap/args`;
 - raw CLI parsing отделен от typed generated request mapping;
 - stable unary output shape вынесен в `application/reports`, а stream contract зафиксирован отдельно;
-- команды закрывают SDK в `finally`;
+- общий helper закрывает SDK коротких команд в `finally`, а stream session владеет собственным cleanup;
 - formatting logic вынесена из `cli.ts`;
 - JSON pretty-print, table alignment и CSV escaping не дублируются в command reporter-ах;
 - `stdout`/`stderr` delivery отделен от построения JSON/CSV/table.
@@ -292,7 +301,8 @@ external dependency
 
 Граница:
 
-- `bootstrap/commands/*/cli.ts` - command definition, API-specific mapping и SDK lifecycle;
+- `bootstrap/commands/*/cli.ts` - command definition, API-specific orchestration и вызов общего SDK lifecycle;
+- `bootstrap/commands/*/request.mapper.ts` - shared production/Sandbox request mapping там, где он действительно переиспользуется;
 - `bootstrap/commands/*/reporter.ts` - provider result -> stable report или локальный контракт события -> специализированный вывод CLI-команды;
 - public render primitives `icore` - механика JSON/CSV-row/table rendering;
 - `icore` `TerminalApp`/`Output.write`, собранные в `bootstrap/cli/runner.ts`, - штатная запись готовой строки или stream в stdout;
@@ -323,7 +333,7 @@ Use-case стоит выделять, если появляется хотя б�
 - регистрировать команду в `bootstrap/cli/registry.ts` в canonical форме `<domain> <command>`;
 - добавлять technical/legacy paths только через project alias inventory; registry передаст их в `aliases` canonical definition;
 - не добавлять short option aliases для API-команд;
-- добавлять help metadata в `bootstrap/cli/help.ts`;
+- добавлять help metadata в `bootstrap/cli/help-catalog.ts`;
 - добавлять тесты рядом с конкретными файлами команды;
 - не вводить общий command framework до появления реального повторения в нескольких командах;
 - сверять новые output-решения с [Разделением форматирования и вывода в CLI](./cli-output-boundaries.md).
@@ -332,10 +342,11 @@ Use-case стоит выделять, если появляется хотя б�
 
 Обобщение command lifecycle допустимо только после появления повторения с одинаковой ответственностью.
 
-До этого каждая команда остается явной:
+Каждая команда остаётся явной, а повторяемый lifecycle коротких вызовов вынесен отдельно:
 
 ```text
 bootstrap/commands/<command-adapter>/cli.ts
+bootstrap/commands/sdk-command-lifecycle.ts
 bootstrap/commands/<command-adapter>/reporter.ts
 application/reports/<command-adapter>.report.ts
 ```

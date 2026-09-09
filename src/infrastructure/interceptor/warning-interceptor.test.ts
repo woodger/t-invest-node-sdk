@@ -1,8 +1,8 @@
 import { describe, test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { warningInterceptor } from './warning-interceptor';
+import { installWarningInterceptor } from './warning-interceptor';
 
-describe('warningInterceptor', () => {
+describe('installWarningInterceptor', () => {
   let originalEmitWarning: typeof process.emitWarning;
   let calls: Array<{
     warning: string | Error;
@@ -23,7 +23,7 @@ describe('warningInterceptor', () => {
   });
 
   test('suppresses warning when message matches rule', () => {
-    warningInterceptor({
+    installWarningInterceptor({
       rules: [{ messageIncludes: 'IGNORE_ME' }],
       enabled: true
     });
@@ -34,7 +34,7 @@ describe('warningInterceptor', () => {
   });
 
   test('passes warning through when message does not match rule', () => {
-    warningInterceptor({
+    installWarningInterceptor({
       rules: [{ messageIncludes: 'IGNORE_ME' }],
       enabled: true
     });
@@ -46,7 +46,7 @@ describe('warningInterceptor', () => {
   });
 
   test('suppresses Error warning when message matches rule', () => {
-    warningInterceptor({
+    installWarningInterceptor({
       rules: [{ messageIncludes: 'IGNORE_ME' }],
       enabled: true
     });
@@ -57,7 +57,7 @@ describe('warningInterceptor', () => {
   });
 
   test('passes warning through when interceptor is disabled', () => {
-    const restore = warningInterceptor({
+    const restore = installWarningInterceptor({
       rules: [{ messageIncludes: 'IGNORE_ME' }],
       enabled: false
     });
@@ -69,7 +69,7 @@ describe('warningInterceptor', () => {
   });
 
   test('suppresses warning when at least one rule matches', () => {
-    warningInterceptor({
+    installWarningInterceptor({
       rules: [
         { messageIncludes: 'FOO' },
         { messageIncludes: 'BAR' }
@@ -83,7 +83,7 @@ describe('warningInterceptor', () => {
   });
 
   test('restores original emitWarning handler when restore is called', () => {
-    const restore = warningInterceptor({
+    const restore = installWarningInterceptor({
       rules: [{ messageIncludes: 'IGNORE_ME' }],
       enabled: true
     });

@@ -1,16 +1,12 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
-  MarketDataServerSideStreamRequest,
   OrderBookType,
   SubscriptionAction,
   SubscriptionInterval,
   TradeSourceType
 } from '../../../generated/marketdata';
 import {
-  createMarketDataStreamRequests,
-  createMarketDataServerSideStreamRequest,
-  createPortfolioStreamRequest,
   parseStreamRunConfig
 } from './config';
 
@@ -32,10 +28,7 @@ describe('stream run config', () => {
       }));
 
       assert.equal(config.stream, 'operations.portfolioStream');
-      assert.deepEqual(createPortfolioStreamRequest(config), {
-        accounts: ['account-id'],
-        pingSettings: undefined
-      });
+      assert.deepEqual(config.accounts, ['account-id']);
       assert.equal(config.runtime.maxEvents, 2);
       assert.equal(config.runtime.includePings, true);
       assert.equal(config.runtime.includeSubscriptionEvents, true);
@@ -98,7 +91,7 @@ describe('stream run config', () => {
       }));
 
       assert.equal(config.stream, 'marketdata.marketDataStream');
-      assert.deepEqual(createMarketDataStreamRequests(config), [
+      assert.deepEqual(config.requests, [
         {
           subscribeCandlesRequest: {
             subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
@@ -188,92 +181,7 @@ describe('stream run config', () => {
     });
   });
 
-  describe('createMarketDataServerSideStreamRequest', () => {
-    test('returns generated request shape for market data subscriptions', () => {
-      const config = parseStreamRunConfig(configJson({
-        stream: 'marketdata.marketDataServerSideStream',
-        subscriptions: {
-          candles: [
-            {
-              instrumentId: 'instrument-id',
-              interval: '1min',
-              waitingClose: true
-            }
-          ],
-          orderBooks: [
-            {
-              instrumentId: 'order-book-id',
-              depth: 10
-            }
-          ],
-          trades: [
-            {
-              instrumentId: 'trade-id'
-            }
-          ],
-          info: [
-            {
-              instrumentId: 'info-id'
-            }
-          ],
-          lastPrices: [
-            {
-              instrumentId: 'last-price-id'
-            }
-          ]
-        }
-      }));
-
-      const request = createMarketDataServerSideStreamRequest(config);
-
-      assert.deepEqual(request.subscribeCandlesRequest, {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: [
-          {
-            figi: '',
-            interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
-            instrumentId: 'instrument-id'
-          }
-        ],
-        waitingClose: true
-      });
-      assert.deepEqual(request.subscribeOrderBookRequest?.instruments, [
-        {
-          figi: '',
-          depth: 10,
-          instrumentId: 'order-book-id',
-          orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-        }
-      ]);
-      assert.deepEqual(request.subscribeTradesRequest?.instruments, [
-        {
-          figi: '',
-          instrumentId: 'trade-id'
-        }
-      ]);
-      assert.equal(
-        request.subscribeTradesRequest?.tradeSource,
-        TradeSourceType.TRADE_SOURCE_UNSPECIFIED
-      );
-      assert.equal(request.subscribeTradesRequest?.withOpenInterest, false);
-      assert.deepEqual(request.subscribeInfoRequest?.instruments, [
-        {
-          figi: '',
-          instrumentId: 'info-id'
-        }
-      ]);
-      assert.deepEqual(request.subscribeLastPriceRequest?.instruments, [
-        {
-          figi: '',
-          instrumentId: 'last-price-id'
-        }
-      ]);
-      assert.doesNotMatch(
-        JSON.stringify(MarketDataServerSideStreamRequest.toJSON(request)),
-        /"figi":/
-      );
-    });
-
+  describe('market data config validation', () => {
     test('rejects unsupported stream candle interval aliases', () => {
       assert.throws(
         () => parseStreamRunConfig(configJson({

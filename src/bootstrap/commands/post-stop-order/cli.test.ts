@@ -122,7 +122,7 @@ describe('post-stop-order command', () => {
         receivedOptions = options;
 
         return {
-          stoporders: {
+    stopOrders: {
             async postStopOrder(request) {
               receivedRequest = request;
 

@@ -3,25 +3,21 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - делегирование request mapping в command-owned mapper;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  PortfolioRequest_CurrencyRequest as PortfolioCurrency,
-  type PortfolioRequest,
-  type PortfolioResponse
-} from '../../../generated/operations';
+import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import type { CommandRequestOptions } from '../../args/command-options';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatPortfolio, portfolioFormats } from './reporter';
+import { createPortfolioRequest } from './request.mapper';
 
 type PortfolioSdk = {
   operations: {
@@ -35,15 +31,7 @@ type PortfolioSdkFactory = (options: TInvestOptions) => PortfolioSdk;
 const portfolioCommandPath = ['operation', 'portfolio'] as const;
 const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) => new TInvestNodeSDK(options);
 
-const portfolioCurrencies = {
-  rub: PortfolioCurrency.RUB,
-  usd: PortfolioCurrency.USD,
-  eur: PortfolioCurrency.EUR
-} as const;
-
-type PortfolioCurrencyName = keyof typeof portfolioCurrencies;
-
-const portfolioCurrencyNames = Object.keys(portfolioCurrencies) as PortfolioCurrencyName[];
+const portfolioCurrencyNames = ['rub', 'usd', 'eur'] as const;
 
 const portfolioRequestOptionsSchema = {
   'account-id': {
@@ -71,8 +59,6 @@ const portfolioOptionsSchema = withSdkOptions(
 );
 
 type PortfolioOptions = InferOptions<typeof portfolioOptionsSchema>;
-type PortfolioRequestOptions = CommandRequestOptions<PortfolioOptions, 'account-id' | 'currency'>;
-
 export function createPortfolioCommand(
   createSdk: PortfolioSdkFactory = defaultPortfolioSdkFactory
 ) {
@@ -93,23 +79,9 @@ async function runPortfolioCommand(
 ): Promise<string> {
   const request = createPortfolioRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.operations.getPortfolio(request);
 
     return formatPortfolio(response, format);
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-export { formatPortfolio };
-
-export function createPortfolioRequest(options: PortfolioRequestOptions): PortfolioRequest {
-  return {
-    accountId: options['account-id'],
-    currency: portfolioCurrencies[options.currency]
-  };
+  });
 }

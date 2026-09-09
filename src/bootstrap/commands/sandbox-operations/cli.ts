@@ -3,8 +3,8 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - переиспользование общего production/Sandbox request mapper-а;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -13,12 +13,12 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { OperationsRequest, OperationsResponse } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
-import { createOperationsRequest } from '../operations/cli';
+import { createOperationsRequest } from '../operations/request.mapper';
 import { formatOperations, operationsFormats } from '../operations/reporter';
 
 type SandboxOperationsSdk = {
@@ -93,19 +93,12 @@ async function runSandboxOperationsCommand(
 ): Promise<string> {
   const request = createSandboxOperationsRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.sandbox.getSandboxOperations(request);
 
     return formatOperations(response.operations, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatOperations };
 
 export function createSandboxOperationsRequest(
   options: SandboxOperationsRequestOptions

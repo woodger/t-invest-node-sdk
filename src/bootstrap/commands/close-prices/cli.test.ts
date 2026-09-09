@@ -61,7 +61,7 @@ describe('close-prices command', () => {
         receivedOptions = options;
 
         return {
-          marketdata: {
+    marketData: {
             async getClosePrices(request) {
               receivedRequest = request;
 
@@ -102,7 +102,7 @@ describe('close-prices command', () => {
     test('closes sdk when getClosePrices rejects', async () => {
       let closeCalls = 0;
       const command = createClosePricesCommand(() => ({
-        marketdata: {
+    marketData: {
           async getClosePrices() {
             throw new Error('api failed');
           }

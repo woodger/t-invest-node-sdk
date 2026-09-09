@@ -22,7 +22,7 @@ type InstallOptions = {
 /**
  * Устанавливает временный `process.emitWarning` hook и возвращает restore-функцию.
  */
-export function warningInterceptor(options: InstallOptions) {
+export function installWarningInterceptor(options: InstallOptions) {
   const {
     rules,
     enabled = process.env['NODE_ENV'] !== 'production'

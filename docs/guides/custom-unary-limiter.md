@@ -177,8 +177,8 @@ const secondSdk = new TInvestNodeSDK({
 
 try {
   await Promise.all([
-    firstSdk.marketdata.getCandles(firstRequest),
-    secondSdk.marketdata.getCandles(secondRequest)
+    firstSdk.marketData.getCandles(firstRequest),
+    secondSdk.marketData.getCandles(secondRequest)
   ]);
 }
 finally {

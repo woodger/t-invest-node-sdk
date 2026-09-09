@@ -3,8 +3,8 @@
  *
  * Здесь допустимы:
  * - объявление command path и option schema;
- * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - переиспользование общего production/Sandbox request mapper-а;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -16,11 +16,11 @@ import type {
 } from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { createOperationsByCursorRequest } from '../operations-by-cursor/cli';
+import { createOperationsByCursorRequest } from '../operations-by-cursor/request.mapper';
 import {
   formatOperationsByCursor,
   operationsByCursorFormats
@@ -135,19 +135,12 @@ async function runSandboxOperationsByCursorCommand(
 ): Promise<string> {
   const request = createSandboxOperationsByCursorRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
+  return runSdkCommand(options, createSdk, async (sdk) => {
     const response = await sdk.sandbox.getSandboxOperationsByCursor(request);
 
     return formatOperationsByCursor(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatOperationsByCursor };
 
 export function createSandboxOperationsByCursorRequest(
   options: SandboxOperationsByCursorRequestOptions

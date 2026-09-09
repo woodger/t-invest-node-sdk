@@ -4,7 +4,7 @@
  * Здесь допустимы:
  * - объявление command path и option schema;
  * - преобразование CLI options в generated request;
- * - создание SDK через bootstrap factory и закрытие SDK resource;
+ * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
  * Здесь не должно быть ручного table/json rendering или application report contracts.
  */
@@ -17,14 +17,14 @@ import {
 } from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
-import { resolveSdkOptionsFromCommandOptions } from '../../args';
+import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatStopOrders, stopOrdersFormats } from './reporter';
 
 type StopOrdersSdk = {
-  stoporders: {
+  stopOrders: {
     getStopOrders(request: GetStopOrdersRequest): Promise<GetStopOrdersResponse>;
   };
   close(): void;
@@ -78,19 +78,12 @@ async function runStopOrdersCommand(
 ): Promise<string> {
   const request = createStopOrdersRequest(options);
   const { format } = options;
-  const sdk = createSdk(resolveSdkOptionsFromCommandOptions(options));
-
-  try {
-    const response = await sdk.stoporders.getStopOrders(request);
+  return runSdkCommand(options, createSdk, async (sdk) => {
+    const response = await sdk.stopOrders.getStopOrders(request);
 
     return formatStopOrders(response, format);
-  }
-  finally {
-    sdk.close();
-  }
+  });
 }
-
-export { formatStopOrders };
 
 export function createStopOrdersRequest(
   options: StopOrdersRequestOptions
