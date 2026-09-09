@@ -204,4 +204,4 @@ T-Invest proto-файлы копируются без изменения пло�
 4. при изменении вспомогательных contracts получить их из точного выпуска и обновить соответствующую запись `supportingSources`;
 5. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и `npm test`.
 
-Proto generation использует только vendored snapshot и не выполняет network IO. Compiler `protoc` и plugin `ts-proto` закреплены в dev-зависимостях, а команда запускает их из локального `node_modules`; системный `protoc` не используется. Текущий generated snapshot создан с `protoc 32.1`.
+Proto generation использует только vendored snapshot и не выполняет network IO. Compiler `protoc` и plugin `ts-proto` закреплены в dev-зависимостях, а команда запускает их из локального `node_modules`; системный `protoc` не используется. Текущий generated snapshot создан с `protoc 36.0`.

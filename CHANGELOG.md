@@ -23,7 +23,7 @@
   RPC: точный method path и service fallback читаются напрямую с прежним
   приоритетом.
 - Генерация proto переведена с незакреплённого системного `protoc` на локальную
-  dev-зависимость `protoc@32.1.0`. Команда `dev compile-proto` не требует
+  dev-зависимость `protoc@36.0.0`. Команда `dev compile-proto` не требует
   compiler в `PATH`, не скачивает инструменты во время запуска и воспроизводит
   прежний generated API; в generated-заголовках обновлена только версия
   compiler.

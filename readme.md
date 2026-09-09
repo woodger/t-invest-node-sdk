@@ -48,7 +48,7 @@ npm run cli -- dev compile-proto
 
 Proto compiler берется из закреплённой dev-зависимости `protoc`; устанавливать его в систему не требуется. TypeScript plugin берется из dev-зависимости `ts-proto`. Официальный upstream — активный репозиторий [`invest-contracts`](https://opensource.tbank.ru/invest/invest-contracts). Зафиксированные tag и commit описаны в [manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json). Vendored T-Invest контракты хранятся в плоской структуре `contracts/*.proto`, а generated TypeScript — в `src/generated/*.ts`. Команда генерации не скачивает upstream. Контракты и производный generated-код распространяются на условиях Apache License 2.0; лицензионный источник и уведомления приведены в [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
-Вспомогательные `google/protobuf/descriptor.proto` и `google/protobuf/timestamp.proto` соответствуют официальному выпуску protobuf `v32.1`; их источник зафиксирован в том же manifest. Версия compiler закреплена в `package.json`; текущая генерация выполнена с `protoc 32.1`.
+Вспомогательные `google/protobuf/descriptor.proto` и `google/protobuf/timestamp.proto` соответствуют официальному выпуску protobuf `v32.1`; их источник зафиксирован в том же manifest. Версия compiler закреплена в `package.json`; текущая генерация выполнена с `protoc 36.0`.
 
 CLI использует собранные файлы из `dist`, поэтому перед первым запуском после изменений в bootstrap TypeScript-коде нужно выполнить:
 
