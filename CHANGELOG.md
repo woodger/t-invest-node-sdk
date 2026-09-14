@@ -15,7 +15,7 @@
 
 ### Добавлено
 
-- `createInMemoryUnaryLimiter()` принимает `quotaShare` в диапазоне `(0, 1]` для статического выделения limiter instance части исходных unary-квот. Эффективное число permits округляется вниз; доля, не оставляющая ни одного целого permit, отклоняется явно. Исходная квота в `TInvestUnaryLimitContext` и контракт custom limiter-ов не изменены.
+- `createInMemoryUnaryLimiter()` принимает `quotaShare` в диапазоне `[0.2, 1]` для статического выделения limiter instance части исходных unary-квот. Результат от одного permit округляется вниз, а меньший результат применяется как дробная скорость с более длинным интервалом без поздней ошибки во время RPC. Исходная квота в `TInvestUnaryLimitContext` и контракт custom limiter-ов не изменены.
 
 ### Изменено
 

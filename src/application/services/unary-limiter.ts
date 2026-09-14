@@ -49,7 +49,7 @@ export interface TInvestUnaryLimiter {
 /** Настройки встроенного process-local unary limiter-а. */
 export interface TInvestInMemoryUnaryLimiterOptions {
   /**
-   * Доля исходной квоты T-Invest в диапазоне `(0, 1]`.
+   * Доля исходной квоты T-Invest в диапазоне `[0.2, 1]`.
    * По умолчанию limiter использует всю квоту.
    */
   readonly quotaShare?: number;
@@ -105,15 +105,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
       throw abortReason(context.signal);
     }
 
-    const effectiveMaxRequests = this.quotaShare === 1
-      ? context.quota.maxRequests
-      : Math.floor(context.quota.maxRequests * this.quotaShare);
-
-    if (this.quotaShare < 1 && effectiveMaxRequests < 1) {
-      throw new RangeError(
-        `quotaShare ${this.quotaShare} leaves no permits for bucket ${context.quota.bucket}`
-      );
-    }
+    const effectiveMaxRequests = resolveEffectiveMaxRequests(
+      context.quota.maxRequests,
+      this.quotaShare
+    );
 
     const intervalMs = Math.ceil(
       context.quota.windowMs / effectiveMaxRequests
@@ -259,9 +254,24 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
 }
 
 function assertQuotaShare(quotaShare: number): void {
-  if (!Number.isFinite(quotaShare) || quotaShare <= 0 || quotaShare > 1) {
-    throw new RangeError('quotaShare must be a finite number greater than 0 and less than or equal to 1');
+  if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
+    throw new RangeError('quotaShare must be a finite number between 0.2 and 1');
   }
+}
+
+function resolveEffectiveMaxRequests(
+  maxRequests: number,
+  quotaShare: number
+): number {
+  if (quotaShare === 1) {
+    return maxRequests;
+  }
+
+  const scaledMaxRequests = maxRequests * quotaShare;
+
+  return scaledMaxRequests >= 1
+    ? Math.floor(scaledMaxRequests)
+    : scaledMaxRequests;
 }
 
 function abortReason(signal: AbortSignal): unknown {

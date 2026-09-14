@@ -92,25 +92,29 @@ describe('createInMemoryUnaryLimiter', () => {
   });
 
   test('rejects an invalid quota share', () => {
-    for (const quotaShare of [Number.NaN, Number.POSITIVE_INFINITY, -0.5, 0, 1.1]) {
+    for (const quotaShare of [Number.NaN, Number.POSITIVE_INFINITY, -0.5, 0, 0.1, 1.1]) {
       assert.throws(
         () => createInMemoryUnaryLimiter({ quotaShare }),
-        /quotaShare must be a finite number greater than 0 and less than or equal to 1/
+        /quotaShare must be a finite number between 0.2 and 1/
       );
     }
   });
 
-  test('rejects a quota share that leaves no whole permit', async () => {
-    const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.5 });
+  test('paces a scaled quota below one permit over a longer interval', async () => {
+    const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.2 });
 
-    await assert.rejects(
-      limiter.acquire(createContext({
+    const delays = await captureDelays(async () => {
+      const quota: TInvestUnaryQuota = {
         bucket: 'rule:VeryLowLimitService',
         maxRequests: 1,
         windowMs: 60_000
-      })),
-      /quotaShare 0.5 leaves no permits for bucket rule:VeryLowLimitService/
-    );
+      };
+
+      await limiter.acquire(createContext(quota));
+      await limiter.acquire(createContext(quota));
+    });
+
+    assert.deepEqual(delays, [300_000]);
   });
 
   test('does not delay independent buckets', async () => {
