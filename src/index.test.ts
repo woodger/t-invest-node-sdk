@@ -24,6 +24,7 @@ import type {
   SdkErrorSource,
   SignalServiceImplementation,
   StopOrdersServiceImplementation,
+  TInvestInMemoryUnaryLimiterOptions,
   TInvestUnaryLimit,
   TInvestUnaryLimitContext,
   TInvestUnaryLimiter,
@@ -53,6 +54,7 @@ type RootSdkErrorContracts = [
 ];
 
 type RootUnaryLimiterContracts = [
+  TInvestInMemoryUnaryLimiterOptions,
   TInvestUnaryLimit,
   TInvestUnaryLimitContext,
   TInvestUnaryLimiter,
@@ -62,7 +64,7 @@ type RootUnaryLimiterContracts = [
 
 const expectedServerSideImplementationContractCount: RootServerSideImplementationContracts['length'] = 11;
 const expectedSdkErrorContractCount: RootSdkErrorContracts['length'] = 3;
-const expectedUnaryLimiterContractCount: RootUnaryLimiterContracts['length'] = 5;
+const expectedUnaryLimiterContractCount: RootUnaryLimiterContracts['length'] = 6;
 
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
@@ -200,7 +202,7 @@ describe('package entrypoint', () => {
     assert.equal(hasPackageExport('SdkErrorCode'), true);
     assert.equal(hasPackageExport('isSdkError'), true);
     assert.equal(expectedSdkErrorContractCount, 3);
-    assert.equal(expectedUnaryLimiterContractCount, 5);
+    assert.equal(expectedUnaryLimiterContractCount, 6);
   });
 });
 

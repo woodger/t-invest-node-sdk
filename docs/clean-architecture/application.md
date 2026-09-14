@@ -87,7 +87,7 @@ Error code классифицирует ошибку, но не делает о�
 
 `TInvestUnaryLimiter` получает готовые `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Сопоставление gRPC method path с service/method rule остаётся в transport adapter-е. Consumer может реализовать port без deep imports; SDK не владеет lifecycle переданного объекта.
 
-`createInMemoryUnaryLimiter()` создаёт необязательную реализацию с отменяемой bucket queue. Она не знает, какой transport выполняет вызов, и не координирует другие процессы.
+`createInMemoryUnaryLimiter()` создаёт необязательную реализацию с отменяемой bucket queue. Её `quotaShare` задаёт статическую долю исходных квот, не меняя контекст публичного port-а. Реализация не знает, какой transport выполняет вызов, и не координирует другие процессы.
 
 Если helper нужен один раз и не выражает отдельное правило, оставьте его рядом с consumer-ом.
 

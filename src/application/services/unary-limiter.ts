@@ -46,6 +46,15 @@ export interface TInvestUnaryLimiter {
   acquire(context: TInvestUnaryLimitContext): Promise<void>;
 }
 
+/** Настройки встроенного process-local unary limiter-а. */
+export interface TInvestInMemoryUnaryLimiterOptions {
+  /**
+   * Доля исходной квоты T-Invest в диапазоне `[0.2, 1]`.
+   * По умолчанию limiter использует всю квоту.
+   */
+  readonly quotaShare?: number;
+}
+
 interface UnaryLimitRequest {
   intervalMs: number;
   signal: AbortSignal;
@@ -72,21 +81,37 @@ const maxTimerDelayMs = 2_147_483_647;
 /**
  * Создаёт необязательный process-local limiter с равномерной выдачей permits.
  * Один объект можно передать нескольким SDK instances для общего состояния.
+ * `quotaShare` статически резервирует часть исходной квоты для других владельцев.
  */
-export function createInMemoryUnaryLimiter(): TInvestUnaryLimiter {
-  return new InMemoryUnaryLimiter();
+export function createInMemoryUnaryLimiter(
+  options: TInvestInMemoryUnaryLimiterOptions = {}
+): TInvestUnaryLimiter {
+  const quotaShare = options.quotaShare === undefined
+    ? 1
+    : options.quotaShare;
+
+  assertQuotaShare(quotaShare);
+
+  return new InMemoryUnaryLimiter(quotaShare);
 }
 
 class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   private readonly schedules: Map<string, UnaryLimitSchedule> = new Map();
+
+  constructor(private readonly quotaShare: number) {}
 
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     if (context.signal.aborted) {
       throw abortReason(context.signal);
     }
 
+    const effectiveMaxRequests = resolveEffectiveMaxRequests(
+      context.quota.maxRequests,
+      this.quotaShare
+    );
+
     const intervalMs = Math.ceil(
-      context.quota.windowMs / context.quota.maxRequests
+      context.quota.windowMs / effectiveMaxRequests
     );
     const schedule = this.getSchedule(context.quota);
 
@@ -226,6 +251,27 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
 
     schedule.timer = undefined;
   }
+}
+
+function assertQuotaShare(quotaShare: number): void {
+  if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
+    throw new RangeError('quotaShare must be a finite number between 0.2 and 1');
+  }
+}
+
+function resolveEffectiveMaxRequests(
+  maxRequests: number,
+  quotaShare: number
+): number {
+  if (quotaShare === 1) {
+    return maxRequests;
+  }
+
+  const scaledMaxRequests = maxRequests * quotaShare;
+
+  return scaledMaxRequests >= 1
+    ? Math.floor(scaledMaxRequests)
+    : scaledMaxRequests;
 }
 
 function abortReason(signal: AbortSignal): unknown {
