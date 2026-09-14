@@ -4,7 +4,7 @@
 
 ## Начать отсюда
 
-- Пользовательская установка, быстрый старт, SDK options и release workflow: [README](../readme.md).
+- Пользовательская установка, быстрый старт и SDK options: [README](../readme.md).
 - Законченные сценарии работы с SDK, потоками, ошибками и Consumer-тестами: [Руководства для Consumer-ов](./guides/index.md).
 - История версий и инструкции по миграции: [CHANGELOG](../CHANGELOG.md).
 - Текущая карта слоев и ownership: [Архитектура SDK](./architecture.md).
@@ -40,9 +40,13 @@
 - Граница project adapters и внешнего API `icore`: [Адаптеры](./clean-architecture/adapters.md).
 - Неутверждённые варианты будущих изменений: [Roadmap и рабочие идеи](./roadmap.md).
 
+## Разработка SDK
+
+Генерация proto-контрактов и выпуск новой версии описаны в [руководстве по разработке SDK](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/development/index.md).
+
 ## Proto и generated contracts
 
-Процесс генерации описан в разделе [«Генерация proto»](../readme.md#генерация-proto). [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит официальный upstream и закреплённые tag и commit. Актуальные wire-контракты находятся в `contracts/*.proto`, а generated sources — в `src/generated/**`; Markdown не дублирует их как отдельный справочник.
+Процесс генерации описан в [руководстве по разработке SDK](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/development/index.md#генерация-proto). [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит официальный upstream и закреплённые tag и commit. Актуальные wire-контракты находятся в `contracts/*.proto`, а generated sources — в `src/generated/**`; Markdown не дублирует их как отдельный справочник.
 
 ## Источники истины
 
