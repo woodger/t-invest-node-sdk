@@ -176,7 +176,7 @@ Per-instance `useSsl` имеет приоритет над package default, а `
 - `src/bootstrap/sdk-config.ts` владеет public `defaultConfig`, merge overrides, quota group reconciliation и вызовом проверки итогового runtime snapshot;
 - `src/infrastructure/transport/grpc/sdk-channel.ts` владеет mapping готовой package transport policy в channel options, но не default value;
 - `src/infrastructure/transport/grpc/tls-root-certificates.ts` владеет только разрешением package asset и ленивым чтением bundled trust material;
-- `src/application/services/unary-limiter.ts` владеет публичным limiter port и необязательной process-local реализацией, не интерпретируя source config или gRPC paths;
+- `src/application/services/unary-limiter.ts` владеет публичным limiter port и необязательной process-local реализацией со статической `quotaShare`, не интерпретируя source config или gRPC paths;
 - `src/infrastructure/transport/grpc/unary-method-path.ts` владеет только transport-specific построением gRPC method path;
 - `src/infrastructure/transport/grpc/unary-limit-resolver.ts` владеет сопоставлением path с method/service rule и выбором runtime bucket, но не compilation package policy или состоянием limiter-а;
 - `src/infrastructure/transport/grpc/sdk-call-error.ts` владеет классификацией gRPC, TLS, codec, receive-limit и cancellation errors, но не выполнением middleware или retry policy;

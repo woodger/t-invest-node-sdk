@@ -45,6 +45,74 @@ describe('createInMemoryUnaryLimiter', () => {
     assert.deepEqual(delays, [600, 67]);
   });
 
+  test('preserves a fractional source quota without a reduced share', async () => {
+    const limiter = createInMemoryUnaryLimiter();
+
+    const delays = await captureDelays(async () => {
+      const quota: TInvestUnaryQuota = {
+        bucket: 'rule:FractionalLimitService',
+        maxRequests: 0.5,
+        windowMs: 1_000
+      };
+
+      await limiter.acquire(createContext(quota));
+      await limiter.acquire(createContext(quota));
+    });
+
+    assert.deepEqual(delays, [2_000]);
+  });
+
+  test('limits permits to the configured quota share', async () => {
+    const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.5 });
+
+    const delays = await captureDelays(async () => {
+      await limiter.acquire(createContext({
+        bucket: 'rule:MarketDataService',
+        maxRequests: 600,
+        windowMs: 60_000
+      }));
+      await limiter.acquire(createContext({
+        bucket: 'rule:MarketDataService',
+        maxRequests: 600,
+        windowMs: 60_000
+      }));
+      await limiter.acquire(createContext({
+        bucket: 'quota:OperationsService:reports',
+        maxRequests: 5,
+        windowMs: 60_000
+      }));
+      await limiter.acquire(createContext({
+        bucket: 'quota:OperationsService:reports',
+        maxRequests: 5,
+        windowMs: 60_000
+      }));
+    });
+
+    assert.deepEqual(delays, [200, 30_000]);
+  });
+
+  test('rejects an invalid quota share', () => {
+    for (const quotaShare of [Number.NaN, Number.POSITIVE_INFINITY, -0.5, 0, 1.1]) {
+      assert.throws(
+        () => createInMemoryUnaryLimiter({ quotaShare }),
+        /quotaShare must be a finite number greater than 0 and less than or equal to 1/
+      );
+    }
+  });
+
+  test('rejects a quota share that leaves no whole permit', async () => {
+    const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.5 });
+
+    await assert.rejects(
+      limiter.acquire(createContext({
+        bucket: 'rule:VeryLowLimitService',
+        maxRequests: 1,
+        windowMs: 60_000
+      })),
+      /quotaShare 0.5 leaves no permits for bucket rule:VeryLowLimitService/
+    );
+  });
+
   test('does not delay independent buckets', async () => {
     const limiter = createInMemoryUnaryLimiter();
 

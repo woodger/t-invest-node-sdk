@@ -113,7 +113,7 @@ SDK подключает bundled CA только к channel текущего ins
 
 Используйте `defineUnaryLimits()`, чтобы сгруппировать overrides по сервисам и методам. Тип вложенного аргумента экспортирован как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Отдельное [руководство по unary limiter-у](docs/guides/custom-unary-limiter.md) подробно разбирает `TInvestUnaryLimiter`, семантику `acquire()`, cancellation, ownership, ошибки и законченную собственную реализацию.
 
-Пакет также экспортирует `createInMemoryUnaryLimiter()` как необязательную process-local реализацию с равномерной выдачей permits. Это один из возможных вариантов, а не требование к Consumer-архитектуре.
+Пакет также экспортирует `createInMemoryUnaryLimiter()` как необязательную process-local реализацию с равномерной выдачей permits. Фабрика принимает `quotaShare` в диапазоне `(0, 1]`, если этому limiter instance нужно статически выделить только часть исходных квот. Это один из возможных вариантов, а не требование к Consumer-архитектуре.
 
 Исходный package config хранит эти defaults в одной типизированной вложенной декларации. Для публичного `defaultConfig.unaryLimits` SDK компилирует её в плоскую runtime-таблицу.
 

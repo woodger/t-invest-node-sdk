@@ -43,18 +43,18 @@
     "cli": "node dist/bootstrap/index.js"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^2.14.1",
+    "@bufbuild/protobuf": "^2.15.0",
     "icore": "^2.2.3",
     "nice-grpc": "^2.1.17",
     "pwd-fs": "^3.5.10"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.5.1",
     "fwa": "^2.1.4",
-    "oxlint": "1.81.0",
+    "oxlint": "1.83.0",
     "oxlint-tsgolint": "^7.0.2001",
     "protoc": "36.0.0",
-    "ts-proto": "^2.12.2",
+    "ts-proto": "^2.12.3",
     "typescript": "^7.0.2"
   },
   "allowScripts": {

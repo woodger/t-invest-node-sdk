@@ -74,7 +74,7 @@ SDK предоставляет необязательный `TInvestUnaryLimiter
 
 Для каждого вызова gRPC resolver выбирает самое специфичное совпавшее правило. Method override заменяет service fallback и не становится вторым одновременным ограничением. Поэтому один resolved context не описывает все service aggregate и IP policies provider-а. Package policy дополнительно связывает некоторые method rules общей quota group. Если per-instance override меняет квоту одного метода, этот метод отделяется от package default group; согласованный override всех методов группы сохраняет общий bucket.
 
-[Отдельное руководство](./guides/custom-unary-limiter.md) подробно описывает собственную реализацию, cancellation и ownership. Пакет также экспортирует необязательную process-local фабрику `createInMemoryUnaryLimiter()`. Она равномерно распределяет permits, использует монотонное время и отменяемую очередь, но не координирует разные процессы и не моделирует все ограничения provider-а.
+[Отдельное руководство](./guides/custom-unary-limiter.md) подробно описывает собственную реализацию, cancellation и ownership. Пакет также экспортирует необязательную process-local фабрику `createInMemoryUnaryLimiter()`. Она равномерно распределяет permits, использует монотонное время и отменяемую очередь. Опция `quotaShare` позволяет статически выделить одному limiter instance долю исходных квот, но не обнаруживает и не координирует другие процессы и не моделирует все ограничения provider-а.
 
 ## Декларативный package config
 
