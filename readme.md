@@ -44,8 +44,8 @@ npm install @woodger/t-invest-node-sdk
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
-const token = process.env.T_INVEST_TOKEN?.trim();
-const endpoint = process.env.T_INVEST_ENDPOINT?.trim();
+const token = process.env['T_INVEST_TOKEN']?.trim();
+const endpoint = process.env['T_INVEST_ENDPOINT']?.trim();
 
 if (!token || !endpoint) {
   throw new Error('T_INVEST_TOKEN and T_INVEST_ENDPOINT are required');

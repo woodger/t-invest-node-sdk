@@ -244,13 +244,17 @@ async function* formatStreamRunResponses(
     }
   }
   finally {
-    cancelStream();
-
     if (pendingRead !== undefined) {
+      cancelStream();
       await settleCancelledRead(pendingRead);
     }
 
-    await iterator.return?.();
+    try {
+      await iterator.return?.();
+    }
+    finally {
+      cancelStream();
+    }
   }
 }
 

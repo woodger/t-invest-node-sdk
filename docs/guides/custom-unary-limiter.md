@@ -191,7 +191,7 @@ finally {
 
 ## Полный process-local пример
 
-Ниже — самостоятельная rolling-window реализация. Это пример Consumer-кода, а не универсальный алгоритм. Он допускает burst в пределах окна и хранит состояние только в текущем процессе.
+Ниже — самостоятельная rolling-window реализация. Это пример Consumer-кода, а не универсальный алгоритм. Он допускает burst в пределах окна и хранит состояние только в текущем процессе. При `maxRequests >= 1` размер burst консервативно округляется вниз. При `maxRequests < 1` один permit выдаётся за увеличенное окно `windowMs / maxRequests`: квота `0.5` за `100` мс допускает один permit каждые `200` мс.
 
 ```ts
 import type {
@@ -213,15 +213,19 @@ export class RollingWindowUnaryLimiter implements TInvestUnaryLimiter {
 
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     const state = this.getBucket(context.quota);
+    const maxRequests = Math.max(1, Math.floor(state.maxRequests));
+    const windowMs = state.maxRequests < 1
+      ? state.windowMs / state.maxRequests
+      : state.windowMs;
 
     while (true) {
       throwIfAborted(context.signal);
 
       const now = performance.now();
 
-      this.removeExpired(state, now);
+      this.removeExpired(state, now, windowMs);
 
-      if (state.issuedAt.length < state.maxRequests) {
+      if (state.issuedAt.length < maxRequests) {
         state.issuedAt.push(now);
 
         return;
@@ -234,7 +238,7 @@ export class RollingWindowUnaryLimiter implements TInvestUnaryLimiter {
       }
 
       await wait(
-        Math.max(0, oldestPermit + state.windowMs - now),
+        Math.max(0, oldestPermit + windowMs - now),
         context.signal
       );
     }
@@ -265,8 +269,8 @@ export class RollingWindowUnaryLimiter implements TInvestUnaryLimiter {
     return created;
   }
 
-  private removeExpired(state: BucketState, now: number): void {
-    const threshold = now - state.windowMs;
+  private removeExpired(state: BucketState, now: number, windowMs: number): void {
+    const threshold = now - windowMs;
     let expired = 0;
 
     while (

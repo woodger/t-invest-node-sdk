@@ -56,6 +56,8 @@ t-invest-node-sdk stream run --config=PATH [runtime options]
 
 Когда срабатывает `durationMs` или `idleTimeoutMs`, команда сначала отменяет pending transport read через session `AbortSignal`, затем завершает iterator и закрывает SDK. Runtime timeout остаётся штатным завершением, а возникшая до него provider error не маскируется.
 
+При достижении `maxEvents` pending read отсутствует: команда сначала завершает iterator, затем отменяет session signal и закрывает SDK. Это сохраняет штатное завершение без ошибки локальной отмены.
+
 ## Контракт вывода
 
 Базовый формат stream output - `jsonl`. Каждое событие печатается отдельной строкой JSON:
@@ -72,7 +74,7 @@ t-invest-node-sdk stream run --config=PATH [runtime options]
 - `type` - нормализованный тип события;
 - `payload` - event payload.
 
-CLI пишет в `stdout` только события. Сообщения о старте, завершении, ошибках provider-а, rejected subscriptions и retry-политике направляются в `stderr`.
+CLI пишет в `stdout` только события. Ошибки чтения config, transport/provider и вывода направляются в `stderr`. Статусы подписок, включая rejected subscriptions, выводятся как subscription events в `stdout`; при `runtime.includeSubscriptionEvents: false` эти события не выводятся.
 
 ## Типы событий
 

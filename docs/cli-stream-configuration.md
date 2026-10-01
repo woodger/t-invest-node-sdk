@@ -119,11 +119,13 @@ Stream config следует generated gRPC contracts и не скрывает �
 
 Значения подписок по умолчанию:
 
-- `action` имеет значение `subscribe`;
+- CLI всегда подписывается через `SUBSCRIPTION_ACTION_SUBSCRIBE`; поле `action` в config не принимается;
 - устаревшие поля `figi` сгенерированных контрактов сохраняют значения по умолчанию protobuf и не сериализуются;
 - `instrumentId` обязателен для каждого инструмента;
 - `waitingClose` имеет значение `false`;
 - `orderBooks[].depth` обязателен и должен быть положительным целым числом.
+
+Значения `waitingClose` должны совпадать у всех свечных подписок одного запроса. Для server-side stream это весь массив `subscriptions.candles`; для bidirectional stream — `instruments` внутри одного `subscribeCandles` request. Отсутствующее поле считается `false`.
 
 Поддерживаемые алиасы интервала свечей:
 
