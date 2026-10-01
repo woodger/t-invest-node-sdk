@@ -13,10 +13,19 @@
 
 ## [Не выпущено]
 
+### Изменено
+
+- `@bufbuild/protobuf` обновлён до 2.16.0, `@types/node` — до 26.6.4, `oxlint` — до 1.86.0, `oxlint-tsgolint` — до 7.0.2003, `protoc` — до 36.2.0, `ts-proto` — до 2.12.4. После перегенерации 12 proto-модулей изменились только заголовки с версиями инструментов; generated API остался прежним.
+
 ### Исправлено
 
 - `stream run` штатно завершает реальный gRPC stream по `maxEvents`: iterator закрывается до отмены session signal, поэтому достижение лимита не превращается в ошибку с кодом завершения `1`. Для pending read при таймауте сохранена отмена перед закрытием iterator.
 - Пример собственного rolling-window limiter-а консервативно обрабатывает дробные квоты. Справочники stream CLI уточняют вывод статусов подписок, отсутствие поля `action` и общее значение `waitingClose` в одном запросе. Быстрый старт README компилируется с текущими TypeScript-настройками проекта.
+- `nice-grpc-common` объявлен прямой runtime-зависимостью, поскольку публичные generated declarations импортируют его types. TypeScript Consumer-а больше не зависит от hoisting транзитивного пакета из `nice-grpc`.
+
+### Безопасность
+
+- В lockfile `@grpc/grpc-js` обновлён до 1.14.5 с исправлениями [GHSA-m9gg-hp2v-232j](https://github.com/grpc/grpc-node/security/advisories/GHSA-m9gg-hp2v-232j) и [GHSA-f596-whhp-79r4](https://github.com/grpc/grpc-node/security/advisories/GHSA-f596-whhp-79r4).
 
 ## [0.5.4] - 2026-09-14
 
