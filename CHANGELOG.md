@@ -13,6 +13,13 @@
 
 ## [Не выпущено]
 
+## [0.5.6] - 2026-10-02
+
+### Изменено
+
+- T-Invest proto-контракты обновлены с 1.49 до 1.51 (`798f880d8010ef4fffe74d0f63d7e5a0d57f23f7`), generated TypeScript перегенерирован. Добавлены рейтинги облигаций, валюта цен и статистика рыночных данных, вариационная маржа портфеля и четыре типа счетов. Новые сообщения `Rating` и `MarketValueStatistic` доступны через корневые exports SDK. Новые поля доступны в SDK DTO; вариационная маржа также передаётся в `portfolioStream` как в raw-выводе, так и в payload JSONL envelope. Схемы нормализованных unary-отчётов CLI и RPC сохранены.
+- В `GetTechAnalysisRequest` добавлен optional `instrumentId`; `instrumentUid` стал optional и имеет тип `string | undefined`. Новые поля generated DTO имеют defaults, заданные proto-контрактами; Consumer-ам, которые создают полные DTO вручную, нужно обновить object literals или использовать `fromPartial()`.
+
 ## [0.5.5] - 2026-10-02
 
 ### Изменено

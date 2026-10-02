@@ -1528,7 +1528,27 @@ export interface Bond {
     | Quotation
     | undefined;
   /** Ставка риска в шорт с учетом текущего уровня риска портфеля клиента. [Подробнее про ставки риска](https://www.tbank.ru/invest/help/brokerage/account/margin/about/#q5). */
-  dshortClient: Quotation | undefined;
+  dshortClient:
+    | Quotation
+    | undefined;
+  /** Массив рейтингов. */
+  ratings: Rating[];
+}
+
+/** Объект передачи информации о рейтинге. */
+export interface Rating {
+  /** Название рейтингового агентства. */
+  agencyName: string;
+  /** Рейтинг. */
+  ratingLevel: string;
+  /** Дата выставления рейтинга. */
+  ratingDate:
+    | Date
+    | undefined;
+  /** Прогноз. */
+  forecast: string;
+  /** Признак нахождения под наблюдением. */
+  isUnderWatch: boolean;
 }
 
 /** Объект передачи информации о валюте. */
@@ -8690,6 +8710,7 @@ function createBaseBond(): Bond {
     callDate: undefined,
     dlongClient: undefined,
     dshortClient: undefined,
+    ratings: [],
   };
 }
 
@@ -8865,6 +8886,9 @@ export const Bond: MessageFns<Bond> = {
     }
     if (message.dshortClient !== undefined) {
       Quotation.encode(message.dshortClient, writer.uint32(730).fork()).join();
+    }
+    for (const v of message.ratings) {
+      Rating.encode(v!, writer.uint32(738).fork()).join();
     }
     return writer;
   },
@@ -9338,6 +9362,14 @@ export const Bond: MessageFns<Bond> = {
             message.dshortClient = Quotation.decode(reader, reader.uint32());
             continue;
           }
+          case 92: {
+            if (tag !== 738) {
+              break;
+            }
+
+            message.ratings.push(Rating.decode(reader, reader.uint32()));
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -9577,6 +9609,9 @@ export const Bond: MessageFns<Bond> = {
         : isSet(object.dshort_client)
         ? Quotation.fromJSON(object.dshort_client)
         : undefined,
+      ratings: globalThis.Array.isArray(object?.ratings)
+        ? object.ratings.map((e: any) => Rating.fromJSON(e))
+        : [],
     };
   },
 
@@ -9753,6 +9788,9 @@ export const Bond: MessageFns<Bond> = {
     if (message.dshortClient !== undefined) {
       obj.dshortClient = Quotation.toJSON(message.dshortClient);
     }
+    if (message.ratings?.length) {
+      obj.ratings = message.ratings.map((e) => Rating.toJSON(e));
+    }
     return obj;
   },
 
@@ -9846,6 +9884,156 @@ export const Bond: MessageFns<Bond> = {
     message.dshortClient = (object.dshortClient !== undefined && object.dshortClient !== null)
       ? Quotation.fromPartial(object.dshortClient)
       : undefined;
+    message.ratings = object.ratings?.map((e) => Rating.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseRating(): Rating {
+  return { agencyName: "", ratingLevel: "", ratingDate: undefined, forecast: "", isUnderWatch: false };
+}
+
+export const Rating: MessageFns<Rating> = {
+  encode(message: Rating, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.agencyName !== "") {
+      writer.uint32(10).string(message.agencyName);
+    }
+    if (message.ratingLevel !== "") {
+      writer.uint32(18).string(message.ratingLevel);
+    }
+    if (message.ratingDate !== undefined) {
+      Timestamp.encode(toTimestamp(message.ratingDate), writer.uint32(26).fork()).join();
+    }
+    if (message.forecast !== "") {
+      writer.uint32(34).string(message.forecast);
+    }
+    if (message.isUnderWatch !== false) {
+      writer.uint32(40).bool(message.isUnderWatch);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Rating {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+    if (previousRecursionDepth >= 100) {
+      throw new globalThis.Error("protobuf decode recursion limit exceeded");
+    }
+    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+    try {
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseRating();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
+
+            message.agencyName = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
+
+            message.ratingLevel = reader.string();
+            continue;
+          }
+          case 3: {
+            if (tag !== 26) {
+              break;
+            }
+
+            message.ratingDate = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+            continue;
+          }
+          case 4: {
+            if (tag !== 34) {
+              break;
+            }
+
+            message.forecast = reader.string();
+            continue;
+          }
+          case 5: {
+            if (tag !== 40) {
+              break;
+            }
+
+            message.isUnderWatch = reader.bool();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    } finally {
+      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+    }
+  },
+
+  fromJSON(object: any): Rating {
+    return {
+      agencyName: isSet(object.agencyName)
+        ? globalThis.String(object.agencyName)
+        : isSet(object.agency_name)
+        ? globalThis.String(object.agency_name)
+        : "",
+      ratingLevel: isSet(object.ratingLevel)
+        ? globalThis.String(object.ratingLevel)
+        : isSet(object.rating_level)
+        ? globalThis.String(object.rating_level)
+        : "",
+      ratingDate: isSet(object.ratingDate)
+        ? fromJsonTimestamp(object.ratingDate)
+        : isSet(object.rating_date)
+        ? fromJsonTimestamp(object.rating_date)
+        : undefined,
+      forecast: isSet(object.forecast) ? globalThis.String(object.forecast) : "",
+      isUnderWatch: isSet(object.isUnderWatch)
+        ? globalThis.Boolean(object.isUnderWatch)
+        : isSet(object.is_under_watch)
+        ? globalThis.Boolean(object.is_under_watch)
+        : false,
+    };
+  },
+
+  toJSON(message: Rating): unknown {
+    const obj: any = {};
+    if (message.agencyName !== "") {
+      obj.agencyName = message.agencyName;
+    }
+    if (message.ratingLevel !== "") {
+      obj.ratingLevel = message.ratingLevel;
+    }
+    if (message.ratingDate !== undefined) {
+      obj.ratingDate = message.ratingDate.toISOString();
+    }
+    if (message.forecast !== "") {
+      obj.forecast = message.forecast;
+    }
+    if (message.isUnderWatch !== false) {
+      obj.isUnderWatch = message.isUnderWatch;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Rating>): Rating {
+    return Rating.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Rating>): Rating {
+    const message = createBaseRating();
+    message.agencyName = object.agencyName ?? "";
+    message.ratingLevel = object.ratingLevel ?? "";
+    message.ratingDate = object.ratingDate ?? undefined;
+    message.forecast = object.forecast ?? "";
+    message.isUnderWatch = object.isUnderWatch ?? false;
     return message;
   },
 };

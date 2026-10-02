@@ -87,7 +87,8 @@ describe('candles command', () => {
               receivedRequest = request;
 
               return {
-                candles: [candle()]
+                candles: [candle()],
+                priceCurrency: 'rub'
               };
             }
           },

@@ -30,6 +30,14 @@ export enum AccountType {
   ACCOUNT_TYPE_SAVING = 6,
   /** ACCOUNT_TYPE_DFA - Смарт-счет. */
   ACCOUNT_TYPE_DFA = 7,
+  /** ACCOUNT_TYPE_SHARED_SAVING - Совместный накопительный счет. */
+  ACCOUNT_TYPE_SHARED_SAVING = 8,
+  /** ACCOUNT_TYPE_DEPOSIT - Вклад. */
+  ACCOUNT_TYPE_DEPOSIT = 9,
+  /** ACCOUNT_TYPE_OMS - ОМС. */
+  ACCOUNT_TYPE_OMS = 10,
+  /** ACCOUNT_TYPE_OFP_DEPOSIT - ОФП вклад. */
+  ACCOUNT_TYPE_OFP_DEPOSIT = 11,
   UNRECOGNIZED = -1,
 }
 
@@ -59,6 +67,18 @@ export function accountTypeFromJSON(object: any): AccountType {
     case 7:
     case "ACCOUNT_TYPE_DFA":
       return AccountType.ACCOUNT_TYPE_DFA;
+    case 8:
+    case "ACCOUNT_TYPE_SHARED_SAVING":
+      return AccountType.ACCOUNT_TYPE_SHARED_SAVING;
+    case 9:
+    case "ACCOUNT_TYPE_DEPOSIT":
+      return AccountType.ACCOUNT_TYPE_DEPOSIT;
+    case 10:
+    case "ACCOUNT_TYPE_OMS":
+      return AccountType.ACCOUNT_TYPE_OMS;
+    case 11:
+    case "ACCOUNT_TYPE_OFP_DEPOSIT":
+      return AccountType.ACCOUNT_TYPE_OFP_DEPOSIT;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -84,6 +104,14 @@ export function accountTypeToJSON(object: AccountType): string {
       return "ACCOUNT_TYPE_SAVING";
     case AccountType.ACCOUNT_TYPE_DFA:
       return "ACCOUNT_TYPE_DFA";
+    case AccountType.ACCOUNT_TYPE_SHARED_SAVING:
+      return "ACCOUNT_TYPE_SHARED_SAVING";
+    case AccountType.ACCOUNT_TYPE_DEPOSIT:
+      return "ACCOUNT_TYPE_DEPOSIT";
+    case AccountType.ACCOUNT_TYPE_OMS:
+      return "ACCOUNT_TYPE_OMS";
+    case AccountType.ACCOUNT_TYPE_OFP_DEPOSIT:
+      return "ACCOUNT_TYPE_OFP_DEPOSIT";
     case AccountType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

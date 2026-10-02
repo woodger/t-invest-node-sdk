@@ -165,6 +165,12 @@ describe('package entrypoint', () => {
     }
   });
 
+  for (const exportName of ['Rating', 'MarketValueStatistic'] as const) {
+    test(`exposes ${exportName} message contract`, () => {
+      assert.equal(hasPackageExport(exportName), true);
+    });
+  }
+
   test('exposes generated enum contracts used by public DTOs', () => {
     for (const [enumName, converterName] of generatedEnumRuntimeContractNames) {
       assert.equal(hasPackageExport(enumName), true);
