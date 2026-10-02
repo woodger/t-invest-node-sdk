@@ -48,6 +48,8 @@ src/generated
 
 Здесь допустимы imports из `nice-grpc`, generated service definitions и application services. Application не должен импортировать concrete infrastructure modules.
 
+Фабрика `createSdkClient()` выводит тип клиента из переданного service definition. SDK facade сохраняет package-owned public service interfaces; единственное приведение типа для heterogeneous cache локализовано при чтении клиента по его definition.
+
 ## `bootstrap`
 
 Runtime entrypoints разделены на публичные package entrypoints и внутреннюю bootstrap-механику.
@@ -62,7 +64,7 @@ Runtime entrypoints разделены на публичные package entrypoin
 - `bootstrap/cli` - CLI contract, registry, rendering help, декларативный `help-catalog.ts`, version, terminal error policy и runner layer;
 - `bootstrap/commands` - handlers CLI-команд и общий `sdk-command-lifecycle.ts` для коротких SDK-вызовов;
 - `bootstrap/commands/*/request.mapper.ts` - request mapping, который разделяют production и Sandbox варианты одной операции;
-- `bootstrap/commands/stream-run` - отдельно config parser, generated request mapper, stream session lifecycle и reporter;
+- `bootstrap/commands/stream-run` - config parser возвращает проверенную конфигурацию с вариантами по `stream`; request mapper создаёт initial bidirectional и server-side generated requests через общие subscription builders. Stream session lifecycle и reporter выделены отдельно;
 - `bootstrap/commands/*/reporter.ts` - command-specific mapping и presentation formatting. Unary reporter-ы обычно строят `application/reports`, а специализированный stream reporter может владеть локальным event contract.
 
 Внешняя зависимость `icore` предоставляет общую механику options и commands, примитивы JSON/CSV-row/table и default terminal output facade. Это не отдельный слой проекта: integration wiring остаётся в `bootstrap`, а project-specific adapters и policies — в своих файлах-владельцах.

@@ -58,6 +58,8 @@ export interface TInvestInMemoryUnaryLimiterOptions {
 interface UnaryLimitRequest {
   intervalMs: number;
   signal: AbortSignal;
+  previous: UnaryLimitRequest | undefined;
+  next: UnaryLimitRequest | undefined;
   resolve(): void;
   reject(reason: unknown): void;
   onAbort(): void;
@@ -72,7 +74,8 @@ interface UnaryLimitSchedule {
   readonly maxRequests: number;
   readonly windowMs: number;
   nextAvailableAt: number;
-  pendingRequests: UnaryLimitRequest[];
+  head: UnaryLimitRequest | undefined;
+  tail: UnaryLimitRequest | undefined;
   timer: UnaryLimitTimer | undefined;
 }
 
@@ -119,6 +122,8 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
       const request: UnaryLimitRequest = {
         intervalMs,
         signal: context.signal,
+        previous: schedule.tail,
+        next: undefined,
         resolve,
         reject,
         onAbort: () => {
@@ -127,7 +132,15 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
       };
 
       context.signal.addEventListener('abort', request.onAbort, { once: true });
-      schedule.pendingRequests.push(request);
+
+      if (schedule.tail === undefined) {
+        schedule.head = request;
+      }
+      else {
+        schedule.tail.next = request;
+      }
+
+      schedule.tail = request;
       this.start(schedule);
     });
   }
@@ -140,7 +153,8 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
         maxRequests: quota.maxRequests,
         windowMs: quota.windowMs,
         nextAvailableAt: 0,
-        pendingRequests: [],
+        head: undefined,
+        tail: undefined,
         timer: undefined
       };
 
@@ -157,7 +171,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   }
 
   private start(schedule: UnaryLimitSchedule): void {
-    if (schedule.timer !== undefined || schedule.pendingRequests.length === 0) {
+    if (schedule.timer !== undefined || schedule.head === undefined) {
       return;
     }
 
@@ -196,12 +210,13 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     schedule: UnaryLimitSchedule,
     scheduledAt: number
   ): void {
-    const request = schedule.pendingRequests.shift();
+    const request = schedule.head;
 
     if (request === undefined) {
       return;
     }
 
+    this.removeRequest(schedule, request);
     request.signal.removeEventListener('abort', request.onAbort);
     const dispatchedAt = Math.max(scheduledAt, performance.now());
 
@@ -214,15 +229,17 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     schedule: UnaryLimitSchedule,
     request: UnaryLimitRequest
   ): void {
-    const requestIndex = schedule.pendingRequests.indexOf(request);
-
-    if (requestIndex < 0) {
+    if (
+      schedule.head !== request
+      && request.previous === undefined
+      && request.next === undefined
+    ) {
       return;
     }
 
-    const isHead = requestIndex === 0;
+    const isHead = schedule.head === request;
 
-    schedule.pendingRequests.splice(requestIndex, 1);
+    this.removeRequest(schedule, request);
     request.signal.removeEventListener('abort', request.onAbort);
 
     if (isHead) {
@@ -234,6 +251,28 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     if (isHead) {
       this.start(schedule);
     }
+  }
+
+  private removeRequest(
+    schedule: UnaryLimitSchedule,
+    request: UnaryLimitRequest
+  ): void {
+    if (request.previous === undefined) {
+      schedule.head = request.next;
+    }
+    else {
+      request.previous.next = request.next;
+    }
+
+    if (request.next === undefined) {
+      schedule.tail = request.previous;
+    }
+    else {
+      request.next.previous = request.previous;
+    }
+
+    request.previous = undefined;
+    request.next = undefined;
   }
 
   private clearTimer(schedule: UnaryLimitSchedule): void {

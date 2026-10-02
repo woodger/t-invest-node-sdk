@@ -33,6 +33,19 @@ const tableFormatOption = '--format=json|table    Output format (default: table)
 const csvFormatOption = '--format=json|csv      Output format (default: json)';
 const jsonlFormatOption = '--format=jsonl         Output format (default: jsonl)';
 
+const operationPageOptions = [
+  '--instrument-id=ID    Optional FIGI or instrument UID filter',
+  '--from=ISO             Optional start timestamp, inclusive',
+  '--to=ISO               Optional end timestamp, inclusive',
+  '--cursor=CURSOR        Cursor returned as nextCursor by the previous page',
+  '--limit=N              Page size from 1 to 1000; provider default is used when omitted',
+  '--operation-type=TYPE  Generated OperationType name; comma-separated list is allowed',
+  '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
+  '--without-commissions  Exclude commissions (default: false)',
+  '--without-trades       Exclude trades (default: false)',
+  '--without-overnights   Exclude overnight operations (default: false)'
+] as const;
+
 export const commandHelp = {
   'account list': {
     description: 'Print user accounts',
@@ -115,7 +128,7 @@ export const commandHelp = {
       '--instrument-id=ID     FIGI or instrument UID',
       '--from=ISO             Start timestamp, inclusive',
       '--to=ISO               End timestamp, inclusive',
-      '--interval=INTERVAL    1min|2min|3min|5min|10min|15min|30min|hour|2hour|4hour|day|week|month'
+      '--interval=INTERVAL    1min|2min|3min|5min|10min|15min|30min|hour|1hour|2hour|4hour|day|week|month'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -162,8 +175,8 @@ export const commandHelp = {
       '--query=TEXT          Search query'
     ],
     optional: [
-      '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate',
-      '--api-trade-available Only instrument available for API trading',
+      '--instrument-kind=KIND unspecified|bond|share|currency|etf|futures|sp|option|clearing-certificate (default: unspecified)',
+      '--api-trade-available Only instrument available for API trading (default: false)',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
@@ -1026,16 +1039,7 @@ export const commandHelp = {
       '--account-id=ID       Account identifier from account list'
     ],
     optional: [
-      '--instrument-id=ID    Optional FIGI or instrument UID filter',
-      '--from=ISO             Optional start timestamp, inclusive',
-      '--to=ISO               Optional end timestamp, inclusive',
-      '--cursor=CURSOR        Cursor returned as nextCursor by the previous page',
-      '--limit=N              Page size from 1 to 1000; provider default is used when omitted',
-      '--operation-type=TYPE  Generated OperationType name; comma-separated list is allowed',
-      '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
-      '--without-commissions  Exclude commissions',
-      '--without-trades       Exclude trades',
-      '--without-overnights   Exclude overnight operations',
+      ...operationPageOptions,
       ...sdkConnectionOptions,
       tableFormatOption
     ],
@@ -1538,16 +1542,7 @@ export const commandHelp = {
       '--account-id=ID       Sandbox account identifier from sandbox account list'
     ],
     optional: [
-      '--instrument-id=ID    Optional FIGI or instrument UID filter',
-      '--from=ISO             Optional start timestamp, inclusive',
-      '--to=ISO               Optional end timestamp, inclusive',
-      '--cursor=CURSOR        Cursor returned as nextCursor by the previous page',
-      '--limit=N              Page size from 1 to 1000; provider default is used when omitted',
-      '--operation-type=TYPE  Generated OperationType name; comma-separated list is allowed',
-      '--state=STATE          unspecified|executed|canceled|progress (default: unspecified)',
-      '--without-commissions  Exclude commissions',
-      '--without-trades       Exclude trades',
-      '--without-overnights   Exclude overnight operations',
+      ...operationPageOptions,
       ...sdkConnectionOptions,
       tableFormatOption
     ],

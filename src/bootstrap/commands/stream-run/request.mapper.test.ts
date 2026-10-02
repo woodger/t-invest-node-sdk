@@ -24,11 +24,81 @@ describe('stream request mapper', () => {
   test('возвращает initial requests bidirectional market data stream', () => {
     const config = parseStreamRunConfig(configJson({
       stream: 'marketdata.marketDataStream',
-      requests: [{ type: 'getMySubscriptions' }]
+      requests: [
+        { type: 'subscribeCandles', instruments: [{ instrumentId: 'candle-id', interval: '1min' }] },
+        { type: 'subscribeOrderBook', instruments: [{ instrumentId: 'order-book-id', depth: 10 }] },
+        { type: 'subscribeTrades', instruments: [{ instrumentId: 'trade-id' }] },
+        { type: 'subscribeInfo', instruments: [{ instrumentId: 'info-id' }] },
+        { type: 'subscribeLastPrice', instruments: [{ instrumentId: 'last-price-id' }] },
+        { type: 'getMySubscriptions' }
+      ]
     }));
 
     assert.deepEqual(createMarketDataStreamRequests(config), [
-      { getMySubscriptions: {} }
+      {
+        subscribeCandlesRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: [
+            {
+              figi: '',
+              interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
+              instrumentId: 'candle-id'
+            }
+          ],
+          waitingClose: false
+        }
+      },
+      {
+        subscribeOrderBookRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: [
+            {
+              figi: '',
+              depth: 10,
+              instrumentId: 'order-book-id',
+              orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
+            }
+          ]
+        }
+      },
+      {
+        subscribeTradesRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: [
+            {
+              figi: '',
+              instrumentId: 'trade-id'
+            }
+          ],
+          tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+          withOpenInterest: false
+        }
+      },
+      {
+        subscribeInfoRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: [
+            {
+              figi: '',
+              instrumentId: 'info-id'
+            }
+          ]
+        }
+      },
+      {
+        subscribeLastPriceRequest: {
+          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+          instruments: [
+            {
+              figi: '',
+              instrumentId: 'last-price-id'
+            }
+          ]
+        }
+      },
+      {
+        getMySubscriptions: {}
+      }
     ]);
   });
 

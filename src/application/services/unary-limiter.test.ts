@@ -268,6 +268,79 @@ describe('createInMemoryUnaryLimiter', () => {
     });
   });
 
+  test('preserves FIFO when queued waits are cancelled in reverse order', async () => {
+    const limiter = createInMemoryUnaryLimiter();
+    const cancellationReason = new Error('cancelled');
+    const granted: number[] = [];
+
+    await withControlledTimers(async ({ runNext }) => {
+      await limiter.acquire(createContext(ordersQuota));
+
+      const waiting = Array.from({ length: 8 }, (_, index) => {
+        const controller = new AbortController();
+        const acquired = limiter.acquire(createContext(ordersQuota, controller.signal))
+          .then(
+            () => {
+              granted.push(index);
+            },
+            (error: unknown) => {
+              assert.equal(error, cancellationReason);
+            }
+          );
+
+        return { index, controller, acquired };
+      });
+      const cancelled = waiting.filter(({ index }) => index % 2 === 1).reverse();
+
+      for (const wait of cancelled) {
+        wait.controller.abort(cancellationReason);
+      }
+
+      await Promise.all(cancelled.map(({ acquired }) => acquired));
+
+      for (const wait of waiting.filter(({ index }) => index % 2 === 0)) {
+        runNext();
+        await wait.acquired;
+      }
+
+      assert.deepEqual(granted, [0, 2, 4, 6]);
+    });
+  });
+
+  test('preserves bucket pacing after every queued wait is cancelled', async () => {
+    const limiter = createInMemoryUnaryLimiter();
+    const cancellationReason = new Error('cancelled');
+
+    await withControlledTimers(async ({ delays, runNext, setCurrentTime }) => {
+      await limiter.acquire(createContext(ordersQuota));
+
+      const controllers = Array.from({ length: 3 }, () => new AbortController());
+      const cancelled = controllers.map((controller) => assert.rejects(
+        limiter.acquire(createContext(ordersQuota, controller.signal)),
+        (error: unknown) => error === cancellationReason
+      ));
+
+      for (const controller of controllers.reverse()) {
+        controller.abort(cancellationReason);
+      }
+
+      await Promise.all(cancelled);
+      setCurrentTime(10_100);
+
+      const replacement = limiter.acquire(createContext(ordersQuota));
+
+      assert.deepEqual(delays, [600, 500]);
+      runNext();
+      await replacement;
+
+      const following = limiter.acquire(createContext(ordersQuota));
+
+      assert.deepEqual(delays, [600, 500, 600]);
+      runNext();
+      await following;
+    });
+  });
+
   test('splits a wait beyond the Node.js timer range', async () => {
     const limiter = createInMemoryUnaryLimiter();
     const maxTimerDelayMs = 2_147_483_647;

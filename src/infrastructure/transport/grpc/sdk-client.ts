@@ -12,7 +12,8 @@
 import type {
   CallOptions,
   Channel,
-  ClientMiddlewareCall
+  ClientMiddlewareCall,
+  CompatServiceDefinition
 } from 'nice-grpc';
 import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
 import {
@@ -23,8 +24,8 @@ import { createSdkMiddleware } from './sdk-middleware';
 import type { SdkCallRuntime } from './sdk-middleware';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
-export function createSdkClient<T>(
-  serviceDefinition: unknown,
+export function createSdkClient<Service extends CompatServiceDefinition>(
+  serviceDefinition: Service,
   channel: Channel,
   metadata: Metadata,
   unaryLimiter: TInvestUnaryLimiter | undefined,
@@ -38,7 +39,7 @@ export function createSdkClient<T>(
       runtime
     ))
     .use(createSdkMetadataMiddleware(metadata))
-    .create(serviceDefinition as never, channel) as T;
+    .create(serviceDefinition, channel);
 }
 
 function createSdkMetadataMiddleware(metadata: Metadata) {

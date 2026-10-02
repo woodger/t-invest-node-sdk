@@ -15,11 +15,15 @@
 
 ### Изменено
 
+- Тип gRPC-клиента выводится из service definition; публичные service interfaces SDK сохранены. Внутренний stream config описан вариантами по `stream`, а построение bidirectional и server-side requests объединено в request mapper.
+- Очередь встроенного unary limiter-а удаляет отменённые requests за O(1), сохраняя FIFO, pacing и cancellation semantics.
+- Общие описания CLI-параметров cursor pagination разделяются production и Sandbox командами. Справка проверяется на согласованность со schemas по именам опций, обязательности, choices и defaults.
 - Пользовательский список CLI-команд и compatibility aliases вынесен в `docs/cli-reference.md`. Заметки о DTO объединены с application-слоем, а адаптеры — с границами вывода CLI; прежние страницы DTO и адаптеров сохранены как навигация к перенесённым разделам. README, roadmap и тестовые политики сокращены за счёт повторов и однотипных примеров. Запреты на добавление и удаление поведения уточнены для изменений вне требований задачи.
 - `@bufbuild/protobuf` обновлён до 2.16.0, `@types/node` — до 26.6.4, `oxlint` — до 1.86.0, `oxlint-tsgolint` — до 7.0.2003, `protoc` — до 36.2.0, `ts-proto` — до 2.12.4. После перегенерации 12 proto-модулей изменились только заголовки с версиями инструментов; generated API остался прежним.
 
 ### Исправлено
 
+- CLI-справка показывает поддерживаемый alias `1hour` для свечей и defaults фильтров поиска инструментов и cursor pagination. Принимаемые опции и поведение команд не изменены.
 - `stream run` распознаёт `subscription` в `orders.tradesStream` и фильтрует подтверждения подписки через `includeSubscriptionEvents` до подсчёта `maxEvents`, включая raw-вывод.
 - Коды ошибок сертификатов внутри provider gRPC `UNAVAILABLE` больше не меняют `SdkError.source` на `tls`; распознавание локальных TLS diagnostics сохранено.
 - CLI проверяет границы protobuf `int32` для глубины стакана и страниц отчётов. Значения выше `2147483647` отклоняются как usage errors до создания SDK; проверки остальных безопасных целых и public SDK DTO не изменены.

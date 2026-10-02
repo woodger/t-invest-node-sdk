@@ -1,13 +1,13 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import {
-  OrderBookType,
-  SubscriptionAction,
-  SubscriptionInterval,
-  TradeSourceType
+  SubscriptionInterval
 } from '../../../generated/marketdata';
 import {
-  parseStreamRunConfig
+  parseStreamRunConfig,
+  type MarketDataStreamRequestConfig,
+  type StreamRunConfig,
+  type StreamRunRuntime
 } from './config';
 
 function configJson(value: unknown): string {
@@ -16,6 +16,43 @@ function configJson(value: unknown): string {
 
 describe('stream run config', () => {
   describe('parseStreamRunConfig', () => {
+    test('matches typed payload fields to the selected stream', () => {
+      const requiredPayloads = {
+        requests: true satisfies (
+          { stream: 'marketdata.marketDataStream'; runtime: StreamRunRuntime } extends StreamRunConfig
+            ? false
+            : true
+        ),
+        subscriptions: true satisfies (
+          { stream: 'marketdata.marketDataServerSideStream'; runtime: StreamRunRuntime } extends StreamRunConfig
+            ? false
+            : true
+        ),
+        accounts: true satisfies (
+          { stream: 'orders.tradesStream'; runtime: StreamRunRuntime } extends StreamRunConfig
+            ? false
+            : true
+        ),
+        incompatibleFields: true satisfies (
+          {
+            stream: 'marketdata.marketDataStream';
+            requests: MarketDataStreamRequestConfig[];
+            accounts: string[];
+            runtime: StreamRunRuntime;
+          } extends StreamRunConfig
+            ? false
+            : true
+        )
+      };
+
+      assert.deepEqual(requiredPayloads, {
+        requests: true,
+        subscriptions: true,
+        accounts: true,
+        incompatibleFields: true
+      });
+    });
+
     test('returns account stream config', () => {
       const config = parseStreamRunConfig(configJson({
         stream: 'operations.portfolioStream',
@@ -27,7 +64,7 @@ describe('stream run config', () => {
         }
       }));
 
-      assert.equal(config.stream, 'operations.portfolioStream');
+      assert.ok(config.stream === 'operations.portfolioStream');
       assert.deepEqual(config.accounts, ['account-id']);
       assert.equal(config.runtime.maxEvents, 2);
       assert.equal(config.runtime.includePings, true);
@@ -90,71 +127,34 @@ describe('stream run config', () => {
         }
       }));
 
-      assert.equal(config.stream, 'marketdata.marketDataStream');
+      assert.ok(config.stream === 'marketdata.marketDataStream');
       assert.deepEqual(config.requests, [
         {
-          subscribeCandlesRequest: {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: [
-              {
-                figi: '',
-                interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
-                instrumentId: 'candle-id'
-              }
-            ],
+          type: 'subscribeCandles',
+          instruments: [{
+            instrumentId: 'candle-id',
+            interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
             waitingClose: false
-          }
+          }]
         },
         {
-          subscribeOrderBookRequest: {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: [
-              {
-                figi: '',
-                depth: 10,
-                instrumentId: 'order-book-id',
-                orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-              }
-            ]
-          }
+          type: 'subscribeOrderBook',
+          instruments: [{ instrumentId: 'order-book-id', depth: 10 }]
         },
         {
-          subscribeTradesRequest: {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: [
-              {
-                figi: '',
-                instrumentId: 'trade-id'
-              }
-            ],
-            tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
-            withOpenInterest: false
-          }
+          type: 'subscribeTrades',
+          instruments: [{ instrumentId: 'trade-id' }]
         },
         {
-          subscribeInfoRequest: {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: [
-              {
-                figi: '',
-                instrumentId: 'info-id'
-              }
-            ]
-          }
+          type: 'subscribeInfo',
+          instruments: [{ instrumentId: 'info-id' }]
         },
         {
-          subscribeLastPriceRequest: {
-            subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: [
-              {
-                figi: '',
-                instrumentId: 'last-price-id'
-              }
-            ]
-          }
+          type: 'subscribeLastPrice',
+          instruments: [{ instrumentId: 'last-price-id' }]
         },
         {
-          getMySubscriptions: {}
+          type: 'getMySubscriptions'
         }
       ]);
     });
@@ -204,11 +204,17 @@ describe('stream run config', () => {
         });
 
         const config = parseStreamRunConfig(configJson(createConfig(2_147_483_647)));
-        const depth = stream === 'marketdata.marketDataStream'
-          ? config.requests?.[0]?.subscribeOrderBookRequest?.instruments[0]?.depth
-          : config.subscriptions?.orderBooks?.[0]?.depth;
+        if (config.stream === 'marketdata.marketDataStream') {
+          const request = config.requests[0];
 
-        assert.equal(depth, 2_147_483_647);
+          assert.ok(request?.type === 'subscribeOrderBook');
+          assert.equal(request.instruments[0]?.depth, 2_147_483_647);
+        }
+        else {
+          assert.ok(config.stream === 'marketdata.marketDataServerSideStream');
+          assert.equal(config.subscriptions.orderBooks?.[0]?.depth, 2_147_483_647);
+        }
+
         assert.throws(
           () => parseStreamRunConfig(configJson(createConfig(2_147_483_648))),
           /depth' to be less than or equal to 2147483647/
