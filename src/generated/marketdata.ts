@@ -1325,6 +1325,8 @@ export function getCandlesRequest_CandleSourceToJSON(object: GetCandlesRequest_C
 export interface GetCandlesResponse {
   /** Массив свечей. */
   candles: HistoricCandle[];
+  /** Валюта цены. */
+  priceCurrency: string;
 }
 
 /** Информация о свече. */
@@ -1477,7 +1479,11 @@ export interface GetOrderBookResponse {
     | Date
     | undefined;
   /** Время формирования стакана на бирже. */
-  orderbookTs: Date | undefined;
+  orderbookTs:
+    | Date
+    | undefined;
+  /** Валюта цены. */
+  priceCurrency: string;
 }
 
 /** Запрос получения торгового статуса. */
@@ -1560,6 +1566,8 @@ export interface GetLastTradesRequest {
 export interface GetLastTradesResponse {
   /** Массив сделок. */
   trades: Trade[];
+  /** Валюта цены. */
+  priceCurrency: string;
 }
 
 /** Запрос активных подписок. Возвращает по одному сообщению на каждый тип активных подписок — `SubscribeLastPriceResponse`, `SubscribeInfoResponse`, `SubscribeTradesResponse`, `SubscribeOrderBookResponse`, `SubscribeCandlesResponse`. */
@@ -1616,7 +1624,9 @@ export interface GetTechAnalysisRequest {
   /** Тип технического индикатора. */
   indicatorType: GetTechAnalysisRequest_IndicatorType;
   /** UID инструмента. */
-  instrumentUid: string;
+  instrumentUid?:
+    | string
+    | undefined;
   /** Начало запрашиваемого периода по UTC. */
   from:
     | Date
@@ -1636,7 +1646,11 @@ export interface GetTechAnalysisRequest {
     | GetTechAnalysisRequest_Deviation
     | undefined;
   /** Параметры сглаживания. */
-  smoothing: GetTechAnalysisRequest_Smoothing | undefined;
+  smoothing:
+    | GetTechAnalysisRequest_Smoothing
+    | undefined;
+  /** Идентификатор инструмента. Принимает значение `figi`, `instrument_uid` или `ticker + '_' + class_code`. */
+  instrumentId?: string | undefined;
 }
 
 /** Интервал свечи. */
@@ -1954,6 +1968,25 @@ export interface MarketValueInstrument {
   ticker: string;
   /** Класс-код (секция торгов). */
   classCode: string;
+  /** Дополнительная информация. */
+  statistic:
+    | MarketValueStatistic
+    | undefined;
+  /** Валюта цены. */
+  priceCurrency: string;
+}
+
+export interface MarketValueStatistic {
+  /** Количество человек, просматривающих инструмент. */
+  interestedCount?:
+    | number
+    | undefined;
+  /** Количество человек, торгующих инструментом. */
+  tradedCount?:
+    | number
+    | undefined;
+  /** Дата и время актуализации данных. */
+  time: Date | undefined;
 }
 
 export interface MarketValue {
@@ -6746,13 +6779,16 @@ export const GetCandlesRequest: MessageFns<GetCandlesRequest> = {
 };
 
 function createBaseGetCandlesResponse(): GetCandlesResponse {
-  return { candles: [] };
+  return { candles: [], priceCurrency: "" };
 }
 
 export const GetCandlesResponse: MessageFns<GetCandlesResponse> = {
   encode(message: GetCandlesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.candles) {
       HistoricCandle.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.priceCurrency !== "") {
+      writer.uint32(18).string(message.priceCurrency);
     }
     return writer;
   },
@@ -6778,6 +6814,14 @@ export const GetCandlesResponse: MessageFns<GetCandlesResponse> = {
             message.candles.push(HistoricCandle.decode(reader, reader.uint32()));
             continue;
           }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
+
+            message.priceCurrency = reader.string();
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -6795,6 +6839,11 @@ export const GetCandlesResponse: MessageFns<GetCandlesResponse> = {
       candles: globalThis.Array.isArray(object?.candles)
         ? object.candles.map((e: any) => HistoricCandle.fromJSON(e))
         : [],
+      priceCurrency: isSet(object.priceCurrency)
+        ? globalThis.String(object.priceCurrency)
+        : isSet(object.price_currency)
+        ? globalThis.String(object.price_currency)
+        : "",
     };
   },
 
@@ -6802,6 +6851,9 @@ export const GetCandlesResponse: MessageFns<GetCandlesResponse> = {
     const obj: any = {};
     if (message.candles?.length) {
       obj.candles = message.candles.map((e) => HistoricCandle.toJSON(e));
+    }
+    if (message.priceCurrency !== "") {
+      obj.priceCurrency = message.priceCurrency;
     }
     return obj;
   },
@@ -6812,6 +6864,7 @@ export const GetCandlesResponse: MessageFns<GetCandlesResponse> = {
   fromPartial(object: DeepPartial<GetCandlesResponse>): GetCandlesResponse {
     const message = createBaseGetCandlesResponse();
     message.candles = object.candles?.map((e) => HistoricCandle.fromPartial(e)) || [];
+    message.priceCurrency = object.priceCurrency ?? "";
     return message;
   },
 };
@@ -7713,6 +7766,7 @@ function createBaseGetOrderBookResponse(): GetOrderBookResponse {
     lastPriceTs: undefined,
     closePriceTs: undefined,
     orderbookTs: undefined,
+    priceCurrency: "",
   };
 }
 
@@ -7759,6 +7813,9 @@ export const GetOrderBookResponse: MessageFns<GetOrderBookResponse> = {
     }
     if (message.orderbookTs !== undefined) {
       Timestamp.encode(toTimestamp(message.orderbookTs), writer.uint32(186).fork()).join();
+    }
+    if (message.priceCurrency !== "") {
+      writer.uint32(194).string(message.priceCurrency);
     }
     return writer;
   },
@@ -7888,6 +7945,14 @@ export const GetOrderBookResponse: MessageFns<GetOrderBookResponse> = {
             message.orderbookTs = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
             continue;
           }
+          case 24: {
+            if (tag !== 194) {
+              break;
+            }
+
+            message.priceCurrency = reader.string();
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -7952,6 +8017,11 @@ export const GetOrderBookResponse: MessageFns<GetOrderBookResponse> = {
         : isSet(object.orderbook_ts)
         ? fromJsonTimestamp(object.orderbook_ts)
         : undefined,
+      priceCurrency: isSet(object.priceCurrency)
+        ? globalThis.String(object.priceCurrency)
+        : isSet(object.price_currency)
+        ? globalThis.String(object.price_currency)
+        : "",
     };
   },
 
@@ -7999,6 +8069,9 @@ export const GetOrderBookResponse: MessageFns<GetOrderBookResponse> = {
     if (message.orderbookTs !== undefined) {
       obj.orderbookTs = message.orderbookTs.toISOString();
     }
+    if (message.priceCurrency !== "") {
+      obj.priceCurrency = message.priceCurrency;
+    }
     return obj;
   },
 
@@ -8029,6 +8102,7 @@ export const GetOrderBookResponse: MessageFns<GetOrderBookResponse> = {
     message.lastPriceTs = object.lastPriceTs ?? undefined;
     message.closePriceTs = object.closePriceTs ?? undefined;
     message.orderbookTs = object.orderbookTs ?? undefined;
+    message.priceCurrency = object.priceCurrency ?? "";
     return message;
   },
 };
@@ -8666,13 +8740,16 @@ export const GetLastTradesRequest: MessageFns<GetLastTradesRequest> = {
 };
 
 function createBaseGetLastTradesResponse(): GetLastTradesResponse {
-  return { trades: [] };
+  return { trades: [], priceCurrency: "" };
 }
 
 export const GetLastTradesResponse: MessageFns<GetLastTradesResponse> = {
   encode(message: GetLastTradesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.trades) {
       Trade.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.priceCurrency !== "") {
+      writer.uint32(18).string(message.priceCurrency);
     }
     return writer;
   },
@@ -8698,6 +8775,14 @@ export const GetLastTradesResponse: MessageFns<GetLastTradesResponse> = {
             message.trades.push(Trade.decode(reader, reader.uint32()));
             continue;
           }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
+
+            message.priceCurrency = reader.string();
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -8711,13 +8796,23 @@ export const GetLastTradesResponse: MessageFns<GetLastTradesResponse> = {
   },
 
   fromJSON(object: any): GetLastTradesResponse {
-    return { trades: globalThis.Array.isArray(object?.trades) ? object.trades.map((e: any) => Trade.fromJSON(e)) : [] };
+    return {
+      trades: globalThis.Array.isArray(object?.trades) ? object.trades.map((e: any) => Trade.fromJSON(e)) : [],
+      priceCurrency: isSet(object.priceCurrency)
+        ? globalThis.String(object.priceCurrency)
+        : isSet(object.price_currency)
+        ? globalThis.String(object.price_currency)
+        : "",
+    };
   },
 
   toJSON(message: GetLastTradesResponse): unknown {
     const obj: any = {};
     if (message.trades?.length) {
       obj.trades = message.trades.map((e) => Trade.toJSON(e));
+    }
+    if (message.priceCurrency !== "") {
+      obj.priceCurrency = message.priceCurrency;
     }
     return obj;
   },
@@ -8728,6 +8823,7 @@ export const GetLastTradesResponse: MessageFns<GetLastTradesResponse> = {
   fromPartial(object: DeepPartial<GetLastTradesResponse>): GetLastTradesResponse {
     const message = createBaseGetLastTradesResponse();
     message.trades = object.trades?.map((e) => Trade.fromPartial(e)) || [];
+    message.priceCurrency = object.priceCurrency ?? "";
     return message;
   },
 };
@@ -9234,7 +9330,7 @@ export const InstrumentClosePriceResponse: MessageFns<InstrumentClosePriceRespon
 function createBaseGetTechAnalysisRequest(): GetTechAnalysisRequest {
   return {
     indicatorType: 0,
-    instrumentUid: "",
+    instrumentUid: undefined,
     from: undefined,
     to: undefined,
     interval: 0,
@@ -9242,6 +9338,7 @@ function createBaseGetTechAnalysisRequest(): GetTechAnalysisRequest {
     length: 0,
     deviation: undefined,
     smoothing: undefined,
+    instrumentId: undefined,
   };
 }
 
@@ -9250,7 +9347,7 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
     if (message.indicatorType !== 0) {
       writer.uint32(8).int32(message.indicatorType);
     }
-    if (message.instrumentUid !== "") {
+    if (message.instrumentUid !== undefined) {
       writer.uint32(18).string(message.instrumentUid);
     }
     if (message.from !== undefined) {
@@ -9273,6 +9370,9 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
     }
     if (message.smoothing !== undefined) {
       GetTechAnalysisRequest_Smoothing.encode(message.smoothing, writer.uint32(74).fork()).join();
+    }
+    if (message.instrumentId !== undefined) {
+      writer.uint32(82).string(message.instrumentId);
     }
     return writer;
   },
@@ -9362,6 +9462,14 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
             message.smoothing = GetTechAnalysisRequest_Smoothing.decode(reader, reader.uint32());
             continue;
           }
+          case 10: {
+            if (tag !== 82) {
+              break;
+            }
+
+            message.instrumentId = reader.string();
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -9385,7 +9493,7 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
         ? globalThis.String(object.instrumentUid)
         : isSet(object.instrument_uid)
         ? globalThis.String(object.instrument_uid)
-        : "",
+        : undefined,
       from: isSet(object.from) ? fromJsonTimestamp(object.from) : undefined,
       to: isSet(object.to) ? fromJsonTimestamp(object.to) : undefined,
       interval: isSet(object.interval) ? getTechAnalysisRequest_IndicatorIntervalFromJSON(object.interval) : 0,
@@ -9397,6 +9505,11 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
       length: isSet(object.length) ? globalThis.Number(object.length) : 0,
       deviation: isSet(object.deviation) ? GetTechAnalysisRequest_Deviation.fromJSON(object.deviation) : undefined,
       smoothing: isSet(object.smoothing) ? GetTechAnalysisRequest_Smoothing.fromJSON(object.smoothing) : undefined,
+      instrumentId: isSet(object.instrumentId)
+        ? globalThis.String(object.instrumentId)
+        : isSet(object.instrument_id)
+        ? globalThis.String(object.instrument_id)
+        : undefined,
     };
   },
 
@@ -9405,7 +9518,7 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
     if (message.indicatorType !== 0) {
       obj.indicatorType = getTechAnalysisRequest_IndicatorTypeToJSON(message.indicatorType);
     }
-    if (message.instrumentUid !== "") {
+    if (message.instrumentUid !== undefined) {
       obj.instrumentUid = message.instrumentUid;
     }
     if (message.from !== undefined) {
@@ -9429,6 +9542,9 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
     if (message.smoothing !== undefined) {
       obj.smoothing = GetTechAnalysisRequest_Smoothing.toJSON(message.smoothing);
     }
+    if (message.instrumentId !== undefined) {
+      obj.instrumentId = message.instrumentId;
+    }
     return obj;
   },
 
@@ -9438,7 +9554,7 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
   fromPartial(object: DeepPartial<GetTechAnalysisRequest>): GetTechAnalysisRequest {
     const message = createBaseGetTechAnalysisRequest();
     message.indicatorType = object.indicatorType ?? 0;
-    message.instrumentUid = object.instrumentUid ?? "";
+    message.instrumentUid = object.instrumentUid ?? undefined;
     message.from = object.from ?? undefined;
     message.to = object.to ?? undefined;
     message.interval = object.interval ?? 0;
@@ -9450,6 +9566,7 @@ export const GetTechAnalysisRequest: MessageFns<GetTechAnalysisRequest> = {
     message.smoothing = (object.smoothing !== undefined && object.smoothing !== null)
       ? GetTechAnalysisRequest_Smoothing.fromPartial(object.smoothing)
       : undefined;
+    message.instrumentId = object.instrumentId ?? undefined;
     return message;
   },
 };
@@ -10067,7 +10184,7 @@ export const GetMarketValuesResponse: MessageFns<GetMarketValuesResponse> = {
 };
 
 function createBaseMarketValueInstrument(): MarketValueInstrument {
-  return { instrumentUid: "", values: [], ticker: "", classCode: "" };
+  return { instrumentUid: "", values: [], ticker: "", classCode: "", statistic: undefined, priceCurrency: "" };
 }
 
 export const MarketValueInstrument: MessageFns<MarketValueInstrument> = {
@@ -10083,6 +10200,12 @@ export const MarketValueInstrument: MessageFns<MarketValueInstrument> = {
     }
     if (message.classCode !== "") {
       writer.uint32(34).string(message.classCode);
+    }
+    if (message.statistic !== undefined) {
+      MarketValueStatistic.encode(message.statistic, writer.uint32(42).fork()).join();
+    }
+    if (message.priceCurrency !== "") {
+      writer.uint32(50).string(message.priceCurrency);
     }
     return writer;
   },
@@ -10132,6 +10255,22 @@ export const MarketValueInstrument: MessageFns<MarketValueInstrument> = {
             message.classCode = reader.string();
             continue;
           }
+          case 5: {
+            if (tag !== 42) {
+              break;
+            }
+
+            message.statistic = MarketValueStatistic.decode(reader, reader.uint32());
+            continue;
+          }
+          case 6: {
+            if (tag !== 50) {
+              break;
+            }
+
+            message.priceCurrency = reader.string();
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -10158,6 +10297,12 @@ export const MarketValueInstrument: MessageFns<MarketValueInstrument> = {
         : isSet(object.class_code)
         ? globalThis.String(object.class_code)
         : "",
+      statistic: isSet(object.statistic) ? MarketValueStatistic.fromJSON(object.statistic) : undefined,
+      priceCurrency: isSet(object.priceCurrency)
+        ? globalThis.String(object.priceCurrency)
+        : isSet(object.price_currency)
+        ? globalThis.String(object.price_currency)
+        : "",
     };
   },
 
@@ -10175,6 +10320,12 @@ export const MarketValueInstrument: MessageFns<MarketValueInstrument> = {
     if (message.classCode !== "") {
       obj.classCode = message.classCode;
     }
+    if (message.statistic !== undefined) {
+      obj.statistic = MarketValueStatistic.toJSON(message.statistic);
+    }
+    if (message.priceCurrency !== "") {
+      obj.priceCurrency = message.priceCurrency;
+    }
     return obj;
   },
 
@@ -10187,6 +10338,119 @@ export const MarketValueInstrument: MessageFns<MarketValueInstrument> = {
     message.values = object.values?.map((e) => MarketValue.fromPartial(e)) || [];
     message.ticker = object.ticker ?? "";
     message.classCode = object.classCode ?? "";
+    message.statistic = (object.statistic !== undefined && object.statistic !== null)
+      ? MarketValueStatistic.fromPartial(object.statistic)
+      : undefined;
+    message.priceCurrency = object.priceCurrency ?? "";
+    return message;
+  },
+};
+
+function createBaseMarketValueStatistic(): MarketValueStatistic {
+  return { interestedCount: undefined, tradedCount: undefined, time: undefined };
+}
+
+export const MarketValueStatistic: MessageFns<MarketValueStatistic> = {
+  encode(message: MarketValueStatistic, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.interestedCount !== undefined) {
+      writer.uint32(8).int32(message.interestedCount);
+    }
+    if (message.tradedCount !== undefined) {
+      writer.uint32(16).int32(message.tradedCount);
+    }
+    if (message.time !== undefined) {
+      Timestamp.encode(toTimestamp(message.time), writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): MarketValueStatistic {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+    if (previousRecursionDepth >= 100) {
+      throw new globalThis.Error("protobuf decode recursion limit exceeded");
+    }
+    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+    try {
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseMarketValueStatistic();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 8) {
+              break;
+            }
+
+            message.interestedCount = reader.int32();
+            continue;
+          }
+          case 2: {
+            if (tag !== 16) {
+              break;
+            }
+
+            message.tradedCount = reader.int32();
+            continue;
+          }
+          case 3: {
+            if (tag !== 26) {
+              break;
+            }
+
+            message.time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    } finally {
+      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+    }
+  },
+
+  fromJSON(object: any): MarketValueStatistic {
+    return {
+      interestedCount: isSet(object.interestedCount)
+        ? globalThis.Number(object.interestedCount)
+        : isSet(object.interested_count)
+        ? globalThis.Number(object.interested_count)
+        : undefined,
+      tradedCount: isSet(object.tradedCount)
+        ? globalThis.Number(object.tradedCount)
+        : isSet(object.traded_count)
+        ? globalThis.Number(object.traded_count)
+        : undefined,
+      time: isSet(object.time) ? fromJsonTimestamp(object.time) : undefined,
+    };
+  },
+
+  toJSON(message: MarketValueStatistic): unknown {
+    const obj: any = {};
+    if (message.interestedCount !== undefined) {
+      obj.interestedCount = Math.round(message.interestedCount);
+    }
+    if (message.tradedCount !== undefined) {
+      obj.tradedCount = Math.round(message.tradedCount);
+    }
+    if (message.time !== undefined) {
+      obj.time = message.time.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<MarketValueStatistic>): MarketValueStatistic {
+    return MarketValueStatistic.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<MarketValueStatistic>): MarketValueStatistic {
+    const message = createBaseMarketValueStatistic();
+    message.interestedCount = object.interestedCount ?? undefined;
+    message.tradedCount = object.tradedCount ?? undefined;
+    message.time = object.time ?? undefined;
     return message;
   },
 };

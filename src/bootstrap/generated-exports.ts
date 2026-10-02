@@ -212,6 +212,7 @@ export {
   ShareResponse,
   SharesResponse,
   Bond,
+  Rating,
   Currency,
   Etf,
   Future,
@@ -377,6 +378,7 @@ export {
   GetTechAnalysisResponse,
   GetMarketValuesRequest,
   GetMarketValuesResponse,
+  MarketValueStatistic,
   MarketDataServiceDefinition,
   MarketDataStreamServiceDefinition
 } from '../generated/marketdata';

@@ -907,7 +907,15 @@ export interface PortfolioResponse {
     | Quotation
     | undefined;
   /** Общая стоимость смарт-активов в портфеле в рублях. */
-  totalAmountDfa: MoneyValue | undefined;
+  totalAmountDfa:
+    | MoneyValue
+    | undefined;
+  /** Общая вариационная маржа. */
+  totalVarMargin:
+    | MoneyValue
+    | undefined;
+  /** Общая вариационная маржа от расчетной цены или от цены закрытия позиции. */
+  totalVarMarginSettled: MoneyValue | undefined;
 }
 
 /** Запрос позиций портфеля по счету. */
@@ -2538,6 +2546,8 @@ function createBasePortfolioResponse(): PortfolioResponse {
     dailyYield: undefined,
     dailyYieldRelative: undefined,
     totalAmountDfa: undefined,
+    totalVarMargin: undefined,
+    totalVarMarginSettled: undefined,
   };
 }
 
@@ -2587,6 +2597,12 @@ export const PortfolioResponse: MessageFns<PortfolioResponse> = {
     }
     if (message.totalAmountDfa !== undefined) {
       MoneyValue.encode(message.totalAmountDfa, writer.uint32(138).fork()).join();
+    }
+    if (message.totalVarMargin !== undefined) {
+      MoneyValue.encode(message.totalVarMargin, writer.uint32(146).fork()).join();
+    }
+    if (message.totalVarMarginSettled !== undefined) {
+      MoneyValue.encode(message.totalVarMarginSettled, writer.uint32(154).fork()).join();
     }
     return writer;
   },
@@ -2724,6 +2740,22 @@ export const PortfolioResponse: MessageFns<PortfolioResponse> = {
             message.totalAmountDfa = MoneyValue.decode(reader, reader.uint32());
             continue;
           }
+          case 18: {
+            if (tag !== 146) {
+              break;
+            }
+
+            message.totalVarMargin = MoneyValue.decode(reader, reader.uint32());
+            continue;
+          }
+          case 19: {
+            if (tag !== 154) {
+              break;
+            }
+
+            message.totalVarMarginSettled = MoneyValue.decode(reader, reader.uint32());
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -2811,6 +2843,16 @@ export const PortfolioResponse: MessageFns<PortfolioResponse> = {
         : isSet(object.total_amount_dfa)
         ? MoneyValue.fromJSON(object.total_amount_dfa)
         : undefined,
+      totalVarMargin: isSet(object.totalVarMargin)
+        ? MoneyValue.fromJSON(object.totalVarMargin)
+        : isSet(object.total_var_margin)
+        ? MoneyValue.fromJSON(object.total_var_margin)
+        : undefined,
+      totalVarMarginSettled: isSet(object.totalVarMarginSettled)
+        ? MoneyValue.fromJSON(object.totalVarMarginSettled)
+        : isSet(object.total_var_margin_settled)
+        ? MoneyValue.fromJSON(object.total_var_margin_settled)
+        : undefined,
     };
   },
 
@@ -2861,6 +2903,12 @@ export const PortfolioResponse: MessageFns<PortfolioResponse> = {
     if (message.totalAmountDfa !== undefined) {
       obj.totalAmountDfa = MoneyValue.toJSON(message.totalAmountDfa);
     }
+    if (message.totalVarMargin !== undefined) {
+      obj.totalVarMargin = MoneyValue.toJSON(message.totalVarMargin);
+    }
+    if (message.totalVarMarginSettled !== undefined) {
+      obj.totalVarMarginSettled = MoneyValue.toJSON(message.totalVarMarginSettled);
+    }
     return obj;
   },
 
@@ -2909,6 +2957,13 @@ export const PortfolioResponse: MessageFns<PortfolioResponse> = {
     message.totalAmountDfa = (object.totalAmountDfa !== undefined && object.totalAmountDfa !== null)
       ? MoneyValue.fromPartial(object.totalAmountDfa)
       : undefined;
+    message.totalVarMargin = (object.totalVarMargin !== undefined && object.totalVarMargin !== null)
+      ? MoneyValue.fromPartial(object.totalVarMargin)
+      : undefined;
+    message.totalVarMarginSettled =
+      (object.totalVarMarginSettled !== undefined && object.totalVarMarginSettled !== null)
+        ? MoneyValue.fromPartial(object.totalVarMarginSettled)
+        : undefined;
     return message;
   },
 };

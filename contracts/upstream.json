@@ -2,16 +2,16 @@
   "source": {
     "name": "T-Invest API proto contracts",
     "repository": "https://opensource.tbank.ru/invest/invest-contracts",
-    "commit": "ef3337c71b7d6dffe61dfdef814fc4e603004f8b",
-    "release": "1.49",
+    "commit": "798f880d8010ef4fffe74d0f63d7e5a0d57f23f7",
+    "release": "1.51",
     "path": "src/docs/contracts"
   },
   "licensing": {
     "spdx": "Apache-2.0",
     "evidence": {
       "name": "Official T-Invest Java gRPC contract artifact",
-      "coordinates": "ru.tinkoff.piapi:java-sdk-grpc-contract:1.49",
-      "url": "https://central.sonatype.com/artifact/ru.tinkoff.piapi/java-sdk-grpc-contract/1.49"
+      "coordinates": "ru.tinkoff.piapi:java-sdk-grpc-contract:1.51",
+      "url": "https://central.sonatype.com/artifact/ru.tinkoff.piapi/java-sdk-grpc-contract/1.51"
     }
   },
   "supportingSources": [

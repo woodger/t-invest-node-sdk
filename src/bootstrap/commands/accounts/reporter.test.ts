@@ -53,5 +53,20 @@ describe('accounts reporter', () => {
 
       assert.equal(output, `${JSON.stringify(report, null, 2)}\n`);
     });
+
+    const accountTypes = [
+      [AccountType.ACCOUNT_TYPE_SHARED_SAVING, 'ACCOUNT_TYPE_SHARED_SAVING'],
+      [AccountType.ACCOUNT_TYPE_DEPOSIT, 'ACCOUNT_TYPE_DEPOSIT'],
+      [AccountType.ACCOUNT_TYPE_OMS, 'ACCOUNT_TYPE_OMS'],
+      [AccountType.ACCOUNT_TYPE_OFP_DEPOSIT, 'ACCOUNT_TYPE_OFP_DEPOSIT']
+    ] as const;
+
+    for (const [type, expected] of accountTypes) {
+      test(`formats ${expected} account type as json`, () => {
+        const output = formatAccountsReport(createAccountsReport([account({ type })]), 'json');
+
+        assert.equal(JSON.parse(output)[0].type, expected);
+      });
+    }
   });
 });
