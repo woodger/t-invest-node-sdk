@@ -497,6 +497,35 @@ describe('createSdkClient', () => {
       await close(server);
     }
   });
+
+  test('keeps provider certificate diagnostics in the gRPC source after a valid TLS handshake', async () => {
+    const details = 'provider backend certificate rotation failed: CERT_HAS_EXPIRED';
+    const server = createPayloadTlsServer(Status.UNAVAILABLE, details);
+    const port = await listen(server);
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `localhost:${port}`,
+      useSsl: true,
+      tls: {
+        rootCertificates: readTlsFixture('tls-root.cert.pem')
+      }
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(channel, true);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+          && error.source === 'grpc'
+          && error.path === payloadPath
+          && error.details === details
+      );
+    }
+    finally {
+      channel.close();
+      await close(server);
+    }
+  });
 });
 
 function createPayloadClient(

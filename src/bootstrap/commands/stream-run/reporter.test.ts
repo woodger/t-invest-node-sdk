@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
+import { ResultSubscriptionStatus } from '../../../generated/common';
 import {
   formatStreamRunResponse,
   type StreamRunResponse
@@ -50,6 +51,48 @@ describe('stream run reporter', () => {
       );
 
       assert.equal(output, undefined);
+    });
+
+    test('reports a trades stream subscription acknowledgement', () => {
+      const subscription = {
+        trackingId: 'tracking-id',
+        status: ResultSubscriptionStatus.RESULT_SUBSCRIPTION_STATUS_OK,
+        streamId: 'stream-id',
+        accounts: ['account-id']
+      };
+      const output = formatStreamRunResponse({ subscription }, {
+        ...baseOptions,
+        stream: 'orders.tradesStream'
+      });
+
+      assert.ok(output);
+      assert.deepEqual(JSON.parse(output), {
+        stream: 'orders.tradesStream',
+        sequence: 1,
+        receivedAt: baseOptions.receivedAt,
+        type: 'subscription',
+        payload: subscription
+      });
+    });
+
+    test('filters trades stream subscriptions in normalized and raw output', () => {
+      for (const raw of [false, true]) {
+        const output = formatStreamRunResponse({
+          subscription: {
+            trackingId: 'tracking-id',
+            status: ResultSubscriptionStatus.RESULT_SUBSCRIPTION_STATUS_OK,
+            streamId: 'stream-id',
+            accounts: ['account-id']
+          }
+        }, {
+          ...baseOptions,
+          stream: 'orders.tradesStream',
+          includeSubscriptionEvents: false,
+          raw
+        });
+
+        assert.equal(output, undefined);
+      }
     });
 
     test('returns raw JSONL response when raw mode is enabled', () => {

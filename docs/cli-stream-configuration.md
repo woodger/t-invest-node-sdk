@@ -123,7 +123,7 @@ Stream config следует generated gRPC contracts и не скрывает �
 - устаревшие поля `figi` сгенерированных контрактов сохраняют значения по умолчанию protobuf и не сериализуются;
 - `instrumentId` обязателен для каждого инструмента;
 - `waitingClose` имеет значение `false`;
-- `orderBooks[].depth` обязателен и должен быть положительным целым числом.
+- `orderBooks[].depth` обязателен и должен быть целым числом от `1` до `2147483647` (диапазон protobuf `int32`).
 
 Значения `waitingClose` должны совпадать у всех свечных подписок одного запроса. Для server-side stream это весь массив `subscriptions.candles`; для bidirectional stream — `instruments` внутри одного `subscribeCandles` request. Отсутствующее поле считается `false`.
 

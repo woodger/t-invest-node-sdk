@@ -18,7 +18,7 @@ import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
+import { positiveInt32Option, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrderBook, orderBookFormats } from './reporter';
 
@@ -36,7 +36,7 @@ const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TInvest
 
 const orderBookDepthOptionsSchema = {
   depth: {
-    ...positiveSafeIntegerOption,
+    ...positiveInt32Option,
     required: true
   }
 } as const;

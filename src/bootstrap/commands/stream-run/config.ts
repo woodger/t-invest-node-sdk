@@ -399,9 +399,16 @@ function parseOrderBookSubscription(
     path
   );
 
+  const instrumentId = parseInstrumentId(orderBook['instrumentId'], `${path}.instrumentId`);
+  const depth = parsePositiveInteger(orderBook['depth'], `${path}.depth`);
+
+  if (depth > 2_147_483_647) {
+    throw new CliUsageError(`Expected '${path}.depth' to be less than or equal to 2147483647`);
+  }
+
   return {
-    instrumentId: parseInstrumentId(orderBook['instrumentId'], `${path}.instrumentId`),
-    depth: parsePositiveInteger(orderBook['depth'], `${path}.depth`)
+    instrumentId,
+    depth
   };
 }
 

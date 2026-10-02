@@ -182,6 +182,40 @@ describe('stream run config', () => {
   });
 
   describe('market data config validation', () => {
+    for (const stream of [
+      'marketdata.marketDataStream',
+      'marketdata.marketDataServerSideStream'
+    ]) {
+      test(`validates int32 order book depth for ${stream}`, () => {
+        const createConfig = (depth: number) => ({
+          stream,
+          ...(stream === 'marketdata.marketDataStream'
+            ? {
+              requests: [{
+                type: 'subscribeOrderBook',
+                instruments: [{ instrumentId: 'instrument-id', depth }]
+              }]
+            }
+            : {
+              subscriptions: {
+                orderBooks: [{ instrumentId: 'instrument-id', depth }]
+              }
+            })
+        });
+
+        const config = parseStreamRunConfig(configJson(createConfig(2_147_483_647)));
+        const depth = stream === 'marketdata.marketDataStream'
+          ? config.requests?.[0]?.subscribeOrderBookRequest?.instruments[0]?.depth
+          : config.subscriptions?.orderBooks?.[0]?.depth;
+
+        assert.equal(depth, 2_147_483_647);
+        assert.throws(
+          () => parseStreamRunConfig(configJson(createConfig(2_147_483_648))),
+          /depth' to be less than or equal to 2147483647/
+        );
+      });
+    }
+
     test('rejects unsupported stream candle interval aliases', () => {
       assert.throws(
         () => parseStreamRunConfig(configJson({

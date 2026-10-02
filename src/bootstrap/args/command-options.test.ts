@@ -4,9 +4,10 @@ import { parseOptions } from 'icore';
 import {
   parseCommaSeparatedStringListOption,
   parseDateTimeOption,
-  parseOptionalNonNegativeIntegerOption,
+  parseOptionalNonNegativeInt32Option,
   parseRequiredDateTimeOption,
   positiveSafeIntegerOption,
+  positiveInt32Option,
   requireStringOption,
   withSdkOptions
 } from './command-options';
@@ -86,6 +87,22 @@ describe('command options', () => {
           { quantity: '9007199254740993' }
         ),
         /Expected '--quantity' to be less than or equal to 9007199254740991/
+      );
+    });
+  });
+
+  describe('positiveInt32Option', () => {
+    test('accepts the maximum positive int32', () => {
+      assert.deepEqual(
+        parseOptions({ depth: positiveInt32Option }, { depth: '2147483647' }),
+        { depth: 2_147_483_647 }
+      );
+    });
+
+    test('rejects the first integer outside int32', () => {
+      assert.throws(
+        () => parseOptions({ depth: positiveInt32Option }, { depth: '2147483648' }),
+        /Expected '--depth' to be less than or equal to 2147483647/
       );
     });
   });
@@ -179,19 +196,30 @@ describe('command options', () => {
     });
   });
 
-  describe('parseOptionalNonNegativeIntegerOption', () => {
+  describe('parseOptionalNonNegativeInt32Option', () => {
     test('returns zero when option is absent', () => {
-      assert.equal(parseOptionalNonNegativeIntegerOption(undefined, 'page'), 0);
+      assert.equal(parseOptionalNonNegativeInt32Option(undefined, 'page'), 0);
     });
 
     test('returns parsed non-negative integer', () => {
-      assert.equal(parseOptionalNonNegativeIntegerOption('2', 'page'), 2);
+      assert.equal(parseOptionalNonNegativeInt32Option('2', 'page'), 2);
     });
 
     test('rejects negative integer values', () => {
       assert.throws(
-        () => parseOptionalNonNegativeIntegerOption('-1', 'page'),
+        () => parseOptionalNonNegativeInt32Option('-1', 'page'),
         /Expected '--page' as integer greater than or equal to 0/
+      );
+    });
+
+    test('accepts the maximum int32 page', () => {
+      assert.equal(parseOptionalNonNegativeInt32Option('2147483647', 'page'), 2_147_483_647);
+    });
+
+    test('rejects pages outside int32', () => {
+      assert.throws(
+        () => parseOptionalNonNegativeInt32Option('2147483648', 'page'),
+        /Expected '--page' to be less than or equal to 2147483647/
       );
     });
   });

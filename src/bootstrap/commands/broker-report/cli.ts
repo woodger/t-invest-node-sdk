@@ -19,7 +19,7 @@ import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import {
-  parseOptionalNonNegativeIntegerOption,
+  parseOptionalNonNegativeInt32Option,
   parseRequiredDateTimeOption,
   requireStringOption,
   withSdkOptions
@@ -96,7 +96,7 @@ export function createBrokerReportRequest(
     return {
       getBrokerReportRequest: {
         taskId,
-        page: parseOptionalNonNegativeIntegerOption(options.page, 'page')
+        page: parseOptionalNonNegativeInt32Option(options.page, 'page')
       },
       generateBrokerReportRequest: undefined
     };

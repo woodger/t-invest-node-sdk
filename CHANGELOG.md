@@ -19,6 +19,9 @@
 
 ### Исправлено
 
+- `stream run` распознаёт `subscription` в `orders.tradesStream` и фильтрует подтверждения подписки через `includeSubscriptionEvents` до подсчёта `maxEvents`, включая raw-вывод.
+- Коды ошибок сертификатов внутри provider gRPC `UNAVAILABLE` больше не меняют `SdkError.source` на `tls`; распознавание локальных TLS diagnostics сохранено.
+- CLI проверяет границы protobuf `int32` для глубины стакана и страниц отчётов. Значения выше `2147483647` отклоняются как usage errors до создания SDK; проверки остальных безопасных целых и public SDK DTO не изменены.
 - `stream run` штатно завершает реальный gRPC stream по `maxEvents`: iterator закрывается до отмены session signal, поэтому достижение лимита не превращается в ошибку с кодом завершения `1`. Для pending read при таймауте сохранена отмена перед закрытием iterator.
 - Пример собственного rolling-window limiter-а консервативно обрабатывает дробные квоты. Справочники stream CLI уточняют вывод статусов подписок, отсутствие поля `action` и общее значение `waitingClose` в одном запросе. Быстрый старт README компилируется с текущими TypeScript-настройками проекта.
 - `nice-grpc-common` объявлен прямой runtime-зависимостью, поскольку публичные generated declarations импортируют его types. TypeScript Consumer-а больше не зависит от hoisting транзитивного пакета из `nice-grpc`.

@@ -53,6 +53,11 @@ export const positiveSafeIntegerOption = {
   max: Number.MAX_SAFE_INTEGER
 } as const;
 
+export const positiveInt32Option = {
+  ...positiveSafeIntegerOption,
+  max: 2_147_483_647
+} as const;
+
 export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
   ...schemas: TSchemas
 ): MergeOptionsSchemas<readonly [typeof sdkOptionsSchema, ...TSchemas]> {
@@ -107,7 +112,7 @@ export function parseRequiredDateTimeOption(
   return parseDateTimeOption(requireStringOption(value, name), name);
 }
 
-export function parseOptionalNonNegativeIntegerOption(
+export function parseOptionalNonNegativeInt32Option(
   value: string | undefined,
   name: string
 ): number {
@@ -123,6 +128,10 @@ export function parseOptionalNonNegativeIntegerOption(
 
   if (!Number.isSafeInteger(parsed)) {
     throw new CliUsageError(`Expected '--${name}' as integer greater than or equal to 0`);
+  }
+
+  if (parsed > 2_147_483_647) {
+    throw new CliUsageError(`Expected '--${name}' to be less than or equal to 2147483647`);
   }
 
   return parsed;

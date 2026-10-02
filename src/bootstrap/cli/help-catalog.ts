@@ -803,7 +803,7 @@ export const commandHelp = {
     ],
     required: [
       '--instrument-id=ID     FIGI or instrument UID',
-      '--depth=DEPTH          Order book depth as positive integer'
+      '--depth=DEPTH          Order book depth as integer from 1 to 2147483647'
     ],
     optional: [
       ...sdkConnectionOptions,
@@ -1064,7 +1064,7 @@ export const commandHelp = {
       'Page mode:     --task-id=ID'
     ],
     optional: [
-      '--page=N              Report page number, only with --task-id (default: 0)',
+      '--page=N              Report page number from 0 to 2147483647, only with --task-id (default: 0)',
       ...sdkConnectionOptions,
       tableFormatOption
     ],
@@ -1093,7 +1093,7 @@ export const commandHelp = {
       'Page mode:     --task-id=ID'
     ],
     optional: [
-      '--page=N              Report page number, only with --task-id (default: 0)',
+      '--page=N              Report page number from 0 to 2147483647, only with --task-id (default: 0)',
       ...sdkConnectionOptions,
       tableFormatOption
     ],

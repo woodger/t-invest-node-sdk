@@ -106,6 +106,7 @@ CLI пишет в `stdout` только события. Ошибки чтени�
 
 `orders.tradesStream` events:
 
+- `subscription`;
 - `orderTrades`;
 - `ping`.
 

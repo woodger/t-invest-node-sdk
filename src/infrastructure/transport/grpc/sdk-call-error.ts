@@ -231,19 +231,19 @@ function isTlsCertificateError(
 
   const normalizedDetails = error.details.toLowerCase();
 
-  if (tlsCertificateErrorCodes.some((code) => error.details.includes(code))) {
-    return true;
-  }
-
+  const hasCertificateErrorCode = tlsCertificateErrorCodes.some(
+    (code) => error.details.includes(code)
+  );
   const hasCertificateErrorMessage = tlsCertificateErrorMessages.some(
     (message) => normalizedDetails.includes(message)
   );
 
-  return hasCertificateErrorMessage
-    && (
-      normalizedDetails.includes(grpcConnectionErrorMarker)
-      || standaloneTlsCertificateErrorMessages.has(normalizedDetails.trim())
-    );
+  return (
+    normalizedDetails.includes(grpcConnectionErrorMarker)
+    && (hasCertificateErrorCode || hasCertificateErrorMessage)
+  )
+    || tlsCertificateErrorCodes.includes(error.details.trim())
+    || standaloneTlsCertificateErrorMessages.has(normalizedDetails.trim());
 }
 
 function errorName(error: unknown): string | undefined {
