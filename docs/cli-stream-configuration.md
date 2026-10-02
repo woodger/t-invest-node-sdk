@@ -282,4 +282,4 @@ Raw-событие при `runtime.raw: true`:
 ## Связанная документация
 
 - [Справочник потокового CLI](./cli-stream-reference.md)
-- [API-команды](./clean-architecture/api-commands.md)
+- [Справочник CLI](./cli-reference.md)

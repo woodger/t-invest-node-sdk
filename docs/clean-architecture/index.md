@@ -8,7 +8,7 @@
 
 ## Зачем этот раздел
 
-Текущий SDK меньше Inventory: здесь пока нет `domain`, `use-cases`, `ports`, HTTP transport и dataset pipeline. Но уже появились `application`, `infrastructure`, `bootstrap` и первые API-команды CLI.
+Текущий SDK меньше Inventory: здесь нет отдельного `domain`, `application/use-cases`, HTTP transport и dataset pipeline. Слои `application`, `infrastructure` и `bootstrap` обслуживают SDK facade и CLI-команды. Публичный port `TInvestUnaryLimiter` находится в `application/services`; отдельного каталога `ports` нет.
 
 Этот раздел решает две задачи:
 
@@ -17,53 +17,15 @@
 
 ## Документы
 
-- [Application-слой](./application.md) - роль `application` в текущем SDK.
-- [DTO и Reports](./dto.md) - где живут boundary contracts.
-- [API-команды](./api-commands.md) - текущий CLI flow и границы command layer.
-- [Adapters](./adapters.md) - место project adapters и граница с `icore`.
-- [Разделение форматирования и вывода в CLI](./cli-output-boundaries.md) - границы command-specific formatting, generic primitives и terminal output.
-- [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт `stream run` и будущие stream-расширения.
+- [Application-слой, DTO и отчёты](./application.md) - contracts, reusable правила и mapping между boundaries.
+- [API-команды](./api-commands.md) - текущий CLI flow и границы command layer; пользовательский список команд находится в [справочнике CLI](../cli-reference.md).
+- [Адаптеры, форматирование и вывод в CLI](./cli-output-boundaries.md) - project adapters, направление зависимостей, command-specific formatting, generic primitives и terminal output.
+- [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт `stream run`.
 - [Справочник конфигурации потокового CLI](../cli-stream-configuration.md) - JSON config для stream CLI.
 
 ## Текущая карта
 
-```text
-src/application
-  dto/
-  errors/
-  reports/
-  services/
-
-src/infrastructure
-  interceptor/
-  report-values.ts
-  transport/
-    grpc/
-
-src/bootstrap
-  index.ts
-  args/
-  cli/
-    contract.ts
-    error.ts
-    help-catalog.ts
-    help.ts
-    registry.ts
-    runner.ts
-    version.ts
-  commands/
-  proto/
-    compile-proto.ts
-  t-invest-node-sdk.ts
-
-external dependency
-  icore
-    option/command mechanics
-    JSON/CSV-row/table primitives
-    TerminalApp/Output
-```
-
-Отдельного `domain` пока нет: SDK в основном оборачивает generated gRPC contracts и не содержит самостоятельной provider-neutral доменной модели.
+Актуальная карта слоёв и ownership поддерживается в [архитектуре SDK](../architecture.md#карта-слоев). SDK оборачивает generated gRPC contracts и не содержит самостоятельной provider-neutral доменной модели.
 
 ## Главная идея
 

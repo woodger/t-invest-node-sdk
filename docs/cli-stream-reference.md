@@ -167,4 +167,4 @@ t-invest-node-sdk stream run \
 ## Связанная документация
 
 - [Справочник конфигурации потокового CLI](./cli-stream-configuration.md)
-- [API-команды](./clean-architecture/api-commands.md)
+- [Справочник CLI](./cli-reference.md)

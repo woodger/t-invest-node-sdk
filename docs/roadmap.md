@@ -75,34 +75,7 @@ CLI / scheduler
 
 ### Реализованная граница: injectable limiter contract
 
-SDK предоставляет capability-based port без зависимости от конкретного backend-а:
-
-```ts
-interface TInvestUnaryLimitContext {
-  readonly path: string;
-  readonly quota: {
-    readonly bucket: string;
-    readonly maxRequests: number;
-    readonly windowMs: number;
-  };
-  readonly signal: AbortSignal;
-}
-
-interface TInvestUnaryLimiter {
-  acquire(context: TInvestUnaryLimitContext): Promise<void>;
-}
-```
-
-Текущая семантика:
-
-- SDK сам разрешает gRPC method в `path`, `bucket`, `maxRequests` и `windowMs`;
-- Consumer передаёт реализацию limiter-а, но не формирует buckets вручную;
-- без injection SDK не создаёт скрытого scheduler-а;
-- injected limiter принадлежит Consumer-у и не закрывается через `sdk.close()`;
-- backend failure не переключает SDK на локальные counters;
-- streams через этот port не проходят.
-
-Полный публичный контракт и примеры описаны в [Consumer guide](./guides/custom-unary-limiter.md).
+SDK уже предоставляет capability-based port без зависимости от конкретного backend-а. Публичные типы, разрешение quota buckets, отмена, ownership, ошибки и исключение streams из unary-контракта описаны в [руководстве по собственной реализации limiter-а](./guides/custom-unary-limiter.md).
 
 Один только port не решает межпроцессную координацию. Встроенный limiter поддерживает `quotaShare` как явное статическое выделение доли при заранее известном числе owners, но не обнаруживает изменение их состава и не перераспределяет свободную квоту. Для динамической координации по-прежнему нужен реальный coordinator и его integration tests. Ниже сохранены рассмотренные варианты такой реализации.
 

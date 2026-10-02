@@ -113,6 +113,21 @@ void main().catch((error: unknown) => {
 });
 ```
 
+## Коды ошибок
+
+SDK преобразует gRPC statuses в одноимённые стабильные `SdkErrorCode`.
+
+Для ошибки с `source: 'grpc'` поле `code` содержит символьное имя стандартного non-OK gRPC status. Например:
+
+```ts
+SdkErrorCode.InvalidArgument;    // 'INVALID_ARGUMENT'
+SdkErrorCode.NotFound;           // 'NOT_FOUND'
+SdkErrorCode.Unauthenticated;    // 'UNAUTHENTICATED'
+SdkErrorCode.ResourceExhausted;  // 'RESOURCE_EXHAUSTED'
+```
+
+Error contract не включает `OK`; полный набор значений задаёт экспортируемый enum `SdkErrorCode`. `SdkErrorCode.SdkClosed` и `SdkErrorCode.UnknownUnaryLimit` относятся к SDK, а не к gRPC. Поле `code` само по себе не указывает источник ошибки, поэтому при необходимости проверяйте его вместе с `source`.
+
 ## Интерпретация источника
 
 | `source` | Значение |
@@ -126,6 +141,12 @@ void main().catch((error: unknown) => {
 `SdkErrorCode.InvalidArgument` получает `source: 'grpc'` при provider validation и `source: 'sdk'` при локальной ошибке конфигурации. Поэтому определяйте источник не только по code.
 
 Не каждая unknown runtime error — это `SdkError`. Сначала вызовите `isSdkError()`, а неизвестную ошибку сохраните или передайте дальше без принудительного приведения типа. Например, SDK не оборачивает в `SdkError` синхронное исключение application callback-а `onHeader` или `onTrailer`.
+
+SDK помечает однозначные ошибки проверки цепочки сертификатов и hostname как `SdkErrorCode.Unavailable` с `source: 'tls'`. Обычный provider или network `UNAVAILABLE` сохраняет `source: 'grpc'`. Поля `path`, `details` и `cause` остаются доступными для диагностики, а для надёжной классификации используйте `source`.
+
+Если входящее gRPC-сообщение превышает внутренний лимит SDK, ошибка получает `SdkErrorCode.ResourceExhausted` и `source: 'sdk'`. Исчерпанная квота провайдера возвращает тот же code с `source: 'grpc'`. В обоих случаях SDK сохраняет исходные `path`, `details` и `cause`; различайте причины по `source`, а не по диагностическому тексту.
+
+Локальные ошибки сериализации request и разбора response получают `SdkErrorCode.Internal` с `source: 'sdk'`, а provider-side `INTERNAL` сохраняет `source: 'grpc'`. SDK оставляет `path`, `details` и `cause` для диагностики; для классификации достаточно `source`.
 
 ## Диагностические поля
 
