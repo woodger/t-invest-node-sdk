@@ -12,10 +12,10 @@
 
 ## CLI
 
-- Поддерживаемые команды, preferred paths и compatibility aliases: [API-команды](./clean-architecture/api-commands.md).
+- Поддерживаемые команды, preferred paths и compatibility aliases: [Справочник CLI](./cli-reference.md).
 - Контракт `stream run`: [Справочник потокового CLI](./cli-stream-reference.md).
 - JSON-конфигурация streaming-команд: [Справочник конфигурации потокового CLI](./cli-stream-configuration.md).
-- Границы command-specific formatting, render primitives и terminal output: [Разделение форматирования и вывода в CLI](./clean-architecture/cli-output-boundaries.md).
+- Project adapters, направление зависимостей и границы command-specific formatting, render primitives и terminal output: [Адаптеры, форматирование и вывод в CLI](./clean-architecture/cli-output-boundaries.md).
 
 Актуальные команды и опции также показывает встроенный `--help`. Runtime-контракт CLI задают `src/bootstrap/cli/**`, `src/bootstrap/commands/**` и соответствующие tests.
 
@@ -37,7 +37,6 @@
 - Bundled CA, per-instance trust override и границы TLS policy: [TLS-доверие](./tls-policy.md).
 - Происхождение, границы распространения и техническое подключение bundled CA: [Встроенный Russian Trusted Root CA](./bundled-ca.md).
 - Архитектурные заметки по application, DTO, отчётам и адаптерам: [Заметки по Clean Architecture](./clean-architecture/index.md).
-- Граница project adapters и внешнего API `icore`: [Адаптеры](./clean-architecture/adapters.md).
 - Неутверждённые варианты будущих изменений: [Roadmap и рабочие идеи](./roadmap.md).
 
 ## Разработка SDK

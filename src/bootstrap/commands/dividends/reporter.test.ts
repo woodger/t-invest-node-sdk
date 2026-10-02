@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { Dividend } from '../../../generated/instruments';
 import { createDividendsReport, formatDividendsReport } from './reporter';

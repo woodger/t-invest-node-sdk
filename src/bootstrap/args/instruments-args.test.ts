@@ -1,5 +1,5 @@
 import { InstrumentStatus } from '../../generated/common';
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { InstrumentIdType } from '../../generated/instruments';
 import {

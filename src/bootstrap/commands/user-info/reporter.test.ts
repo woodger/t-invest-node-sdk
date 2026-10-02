@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { GetInfoResponse } from '../../../generated/users';
 import { createUserInfoReport, formatUserInfoReport } from './reporter';

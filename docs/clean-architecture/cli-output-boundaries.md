@@ -1,6 +1,6 @@
 # Разделение форматирования и вывода в CLI
 
-> Type: Design Note. Здесь описана граница между command-specific CLI formatting, общей механикой JSON/CSV/table из `icore` и доставкой готового результата через `Output`.
+> Type: Design Note. Здесь описаны project adapters, направление зависимостей и граница между command-specific CLI formatting, общей механикой JSON/CSV/table из `icore` и доставкой готового результата через `Output`.
 
 ## Контекст
 
@@ -8,35 +8,29 @@ CLI-команды живут в `bootstrap`, но не вся логика во
 
 `icore` предоставляет общую механику как внешняя зависимость. Это не слой проекта: application reports и output contract конкретной команды остаются в SDK.
 
-Текущая структура:
+Актуальная карта слоёв находится в [архитектуре SDK](../architecture.md#карта-слоев). Адаптеры переводят внутренние contracts во внешний интерфейс и обратно; command-specific CLI adapters находятся рядом с командами в `bootstrap`.
 
-```text
-src/application
-  reports/
+## Адаптеры проекта
 
-src/infrastructure
-  report-values.ts
+`infrastructure/transport/grpc` - технический adapter к `nice-grpc`:
 
-src/bootstrap
-  index.ts
-  cli/
-    contract.ts
-    error.ts
-    runner.ts
-  commands/
-    <command>/
-      cli.ts
-      reporter.ts
+- channel;
+- metadata;
+- middleware;
+- typed clients;
+- mapping gRPC method path в transport-neutral `TInvestUnaryQuota`;
+- mapping `nice-grpc` client failures в transport-neutral `SdkError`.
 
-external dependency
-  icore
-    renderJson
-    renderCsv
-    renderCsvRow
-    renderTextTable
-    TerminalApp
-    Output
-```
+`unary-limit-resolver.ts` выбирает method rule или service fallback и разрешает quota bucket. Middleware передаёт Consumer-owned limiter-у полный `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Application port не разбирает gRPC path и не владеет transport lifecycle.
+
+`infrastructure/interceptor` содержит технический process hook для известных warnings. Обычный вывод команд проходит через terminal app.
+
+`infrastructure/report-values.ts` - принадлежащий проекту адаптер скалярных значений:
+
+- преобразует повторяющиеся provider scalar DTO values в reusable report values;
+- сохраняет `MoneyValue` в JSON как структурный `ReportMoney`;
+- предоставляет text helper для table cells вида `"amount currency"`;
+- не знает command names, report shapes, columns, generic renderers или output delivery.
 
 ## Основная граница
 
@@ -93,6 +87,8 @@ icore TerminalApp -> Output.write
         ↓
 stdout
 ```
+
+Runner создаёт default `Output` или принимает injected `Output`, собирает lightweight terminal app для shortcuts и external errors и лениво загружает command registry.
 
 Runner отдельно управляет публичными short aliases, help/version shortcuts и command warnings. Он направляет help/version через lightweight terminal app, warnings — через command terminal app, а normal command result передаёт в `runPrepared`. Оба экземпляра используют один `Output` и одну error policy.
 
@@ -198,6 +194,53 @@ Technical mechanics необоснованно дублируется в reporte
 - повторяет generic pretty JSON;
 - повторяет расчет ширины таблицы;
 - пишет normal result напрямую в `process.stdout`, хотя достаточно вернуть его terminal app.
+
+## Направление зависимостей
+
+Допустимо:
+
+```text
+bootstrap/commands/*/reporter.ts -> application/reports
+bootstrap/commands/*/reporter.ts -> infrastructure/report-values.ts
+bootstrap/commands/*/reporter.ts -> icore presentation primitives
+bootstrap/cli/runner.ts          -> icore TerminalApp/Output
+infrastructure/report-values.ts  -> application/reports
+infrastructure/transport/grpc    -> application services/contracts
+infrastructure/unary resolver    -> application TInvestUnaryQuota
+infrastructure/grpc middleware   -> application TInvestUnaryLimiter
+```
+
+Недопустимо:
+
+```text
+application -> bootstrap/commands/*/reporter.ts
+application -> icore CLI/presentation mechanics
+infrastructure/report-values.ts -> command-specific report formatting
+generic output facade -> выбор полей или JSON contract команды
+```
+
+Прямой import `icore` из `bootstrap` не меняет направление project layers: bootstrap остаётся внешним composition/presentation слоем и связывает external mechanics с локальными contracts.
+
+## История перехода
+
+Текущая модель сложилась после переноса общей механики presentation/output в `icore`:
+
+1. Project-owned generic renderers и stdout/stderr writers удалены.
+2. Reporter-ы вызывают публичные `icore` render primitives напрямую, без локальных forwarding wrappers.
+3. Bootstrap CLI собирает `TerminalApp` и `Output`, но сохраняет project-owned alias inventory, help/version shortcuts, warnings и error policy; command aliases передаются в canonical definitions и разрешаются самим `icore`.
+4. `application/reports`, command-specific presentation и `infrastructure/report-values.ts` остались project-owned contracts.
+
+Отдельный use-case слой понадобится, только если command перестанет быть простой обёрткой над одним SDK call.
+
+## Короткое правило
+
+Если код отвечает на вопрос "что и как показать для конкретной команды", это command reporter.
+
+Если код отвечает на вопрос "как механически сериализовать выбранные значения", используйте подходящий public primitive `icore`.
+
+Если код отвечает на вопрос "как доставить готовый результат", это `TerminalApp`/`Output`, собранные в CLI runner-е.
+
+Если код отвечает на вопрос "какой сценарий выполнить", это application use-case.
 
 ## Итог
 

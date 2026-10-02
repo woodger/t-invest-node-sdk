@@ -13,6 +13,32 @@
 
 ## [Не выпущено]
 
+## [0.5.5] - 2026-10-02
+
+### Изменено
+
+- `icore` обновлён до 2.2.4 с исправлениями разрешения и типизации команд, потокового вывода и рендеринга таблиц и CSV.
+- Тип gRPC-клиента выводится из service definition; публичные service interfaces SDK сохранены. Внутренний stream config описан вариантами по `stream`, а построение bidirectional и server-side requests объединено в request mapper.
+- Очередь встроенного unary limiter-а удаляет отменённые requests за O(1), сохраняя FIFO, pacing и cancellation semantics.
+- Общие описания CLI-параметров cursor pagination разделяются production и Sandbox командами. Справка проверяется на согласованность со schemas по именам опций, обязательности, choices и defaults.
+- Все тесты используют строгие assertions. Добавлены проверки границ денежных значений и валидации stream config; тесты unary limiter-а проверяют время выдачи permits, FIFO и отмену без привязки к разбиению ожидания на таймеры.
+- Пользовательский список CLI-команд и compatibility aliases вынесен в `docs/cli-reference.md`. Заметки о DTO объединены с application-слоем, а адаптеры — с границами вывода CLI; прежние страницы DTO и адаптеров сохранены как навигация к перенесённым разделам. README, roadmap и тестовые политики сокращены за счёт повторов и однотипных примеров. Запреты на добавление и удаление поведения уточнены для изменений вне требований задачи.
+- `@bufbuild/protobuf` обновлён до 2.16.0, `@types/node` — до 26.6.4, `oxlint` — до 1.86.0, `oxlint-tsgolint` — до 7.0.2003, `protoc` — до 36.2.0, `ts-proto` — до 2.12.4. После перегенерации 12 proto-модулей изменились только заголовки с версиями инструментов; generated API остался прежним.
+
+### Исправлено
+
+- CLI-справка показывает поддерживаемый alias `1hour` для свечей и defaults фильтров поиска инструментов и cursor pagination. Принимаемые опции и поведение команд не изменены.
+- `stream run` распознаёт `subscription` в `orders.tradesStream` и фильтрует подтверждения подписки через `includeSubscriptionEvents` до подсчёта `maxEvents`, включая raw-вывод.
+- Коды ошибок сертификатов внутри provider gRPC `UNAVAILABLE` больше не меняют `SdkError.source` на `tls`; распознавание локальных TLS diagnostics сохранено.
+- CLI проверяет границы protobuf `int32` для глубины стакана и страниц отчётов. Значения выше `2147483647` отклоняются как usage errors до создания SDK; проверки остальных безопасных целых и public SDK DTO не изменены.
+- `stream run` штатно завершает реальный gRPC stream по `maxEvents`: iterator закрывается до отмены session signal, поэтому достижение лимита не превращается в ошибку с кодом завершения `1`. Для pending read при таймауте сохранена отмена перед закрытием iterator.
+- Пример собственного rolling-window limiter-а консервативно обрабатывает дробные квоты. Справочники stream CLI уточняют вывод статусов подписок, отсутствие поля `action` и общее значение `waitingClose` в одном запросе. Быстрый старт README компилируется с текущими TypeScript-настройками проекта.
+- `nice-grpc-common` объявлен прямой runtime-зависимостью, поскольку публичные generated declarations импортируют его types. TypeScript Consumer-а больше не зависит от hoisting транзитивного пакета из `nice-grpc`.
+
+### Безопасность
+
+- В lockfile `@grpc/grpc-js` обновлён до 1.14.5 с исправлениями [GHSA-m9gg-hp2v-232j](https://github.com/grpc/grpc-node/security/advisories/GHSA-m9gg-hp2v-232j) и [GHSA-f596-whhp-79r4](https://github.com/grpc/grpc-node/security/advisories/GHSA-f596-whhp-79r4).
+
 ## [0.5.4] - 2026-09-14
 
 ### Добавлено

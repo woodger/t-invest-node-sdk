@@ -44,8 +44,8 @@ npm install @woodger/t-invest-node-sdk
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
-const token = process.env.T_INVEST_TOKEN?.trim();
-const endpoint = process.env.T_INVEST_ENDPOINT?.trim();
+const token = process.env['T_INVEST_TOKEN']?.trim();
+const endpoint = process.env['T_INVEST_ENDPOINT']?.trim();
 
 if (!token || !endpoint) {
   throw new Error('T_INVEST_TOKEN and T_INVEST_ENDPOINT are required');
@@ -166,7 +166,7 @@ npm run cli -- operation portfolio --account-id=2000000000 --format=json
 
 Application validators используют публичный `CliUsageError` из `icore`, а terminal policy распознаёт application и framework usage errors через общий `isUsageError()`. Оба случая получают одинаковый формат ошибки и приведённые выше exit codes.
 
-Полный список команд и совместимых псевдонимов описан в [API-команды](docs/clean-architecture/api-commands.md). Для потоковых команд есть отдельные [справочник CLI](docs/cli-stream-reference.md) и [справочник по конфигурации](docs/cli-stream-configuration.md). Изменения форматов вывода и инструкции по миграции фиксируются в [CHANGELOG](CHANGELOG.md).
+Полный список команд и совместимых псевдонимов описан в [справочнике CLI](docs/cli-reference.md). Для потоковых команд есть отдельные [справочник CLI](docs/cli-stream-reference.md) и [справочник по конфигурации](docs/cli-stream-configuration.md). Изменения форматов вывода и инструкции по миграции фиксируются в [CHANGELOG](CHANGELOG.md).
 
 ## Доступные сервисы
 
@@ -201,45 +201,9 @@ Application validators используют публичный `CliUsageError` �
 
 ### Ошибки SDK
 
-Корень пакета экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. SDK преобразует gRPC statuses в одноимённые стабильные `SdkErrorCode`, сохраняет исходный transport error в `cause` и оставляет `path`, `details` и `source` для диагностики.
+Корень пакета экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. Сначала проверьте неизвестную ошибку через `isSdkError()`, затем используйте сочетание `code` и `source` для классификации. `path`, `details` и `cause` доступны для диагностики.
 
-Для ошибки с `source: 'grpc'` поле `code` содержит символьное имя стандартного non-OK gRPC status. Например:
-
-```ts
-SdkErrorCode.InvalidArgument;    // 'INVALID_ARGUMENT'
-SdkErrorCode.NotFound;           // 'NOT_FOUND'
-SdkErrorCode.Unauthenticated;    // 'UNAUTHENTICATED'
-SdkErrorCode.ResourceExhausted;  // 'RESOURCE_EXHAUSTED'
-```
-
-Error contract не включает `OK`; полный набор значений задаёт экспортируемый enum `SdkErrorCode`. `SdkErrorCode.SdkClosed` и `SdkErrorCode.UnknownUnaryLimit` относятся к SDK, а не к gRPC. Поле `code` само по себе не указывает источник ошибки, поэтому при необходимости проверяйте его вместе с `source`.
-
-SDK помечает однозначные ошибки проверки цепочки сертификатов и hostname как `SdkErrorCode.Unavailable` с `source: 'tls'`. Обычный provider или network `UNAVAILABLE` сохраняет `source: 'grpc'`. Поля `path`, `details` и `cause` остаются доступными для диагностики, а для надёжной классификации используйте `source`.
-
-Если входящее gRPC-сообщение превышает внутренний лимит SDK, ошибка получает `SdkErrorCode.ResourceExhausted` и `source: 'sdk'`. Исчерпанная квота провайдера возвращает тот же code с `source: 'grpc'`. В обоих случаях SDK сохраняет исходные `path`, `details` и `cause`; различайте причины по `source`, а не по диагностическому тексту.
-
-Локальные ошибки сериализации request и разбора response получают `SdkErrorCode.Internal` с `source: 'sdk'`, а provider-side `INTERNAL` сохраняет `source: 'grpc'`. SDK оставляет `path`, `details` и `cause` для диагностики; для классификации достаточно `source`.
-
-```ts
-import {
-  isSdkError,
-  SdkErrorCode
-} from '@woodger/t-invest-node-sdk';
-
-try {
-  await sdk.users.getAccounts({});
-}
-catch (error: unknown) {
-  if (isSdkError(error, SdkErrorCode.Unauthenticated)) {
-    // Обновить credentials или запросить повторную авторизацию.
-  }
-  else {
-    throw error;
-  }
-}
-```
-
-Локальная отмена получает `SdkErrorCode.Cancelled` с `source: 'abort'`, а provider-side `CANCELLED` — тот же code с `source: 'grpc'`. Не считайте любую unknown runtime error экземпляром `SdkError`: сначала вызовите guard, затем читайте поля. Brand guard распознаёт совместимые ошибки из другой физической копии пакета в том же JavaScript realm; после JSON, IPC или worker serialization нужен отдельный application protocol. Status code не задаёт retry policy. Не повторяйте автоматически `ResourceExhausted`, `Unavailable` или `DeadlineExceeded` без учёта idempotency операции, provider metadata и backoff.
+Коды gRPC и локальных ошибок SDK, различение TLS, cancellation, receive-limit и codec failures, cross-copy narrowing и граница retry policy описаны в руководстве [Ошибки и lifecycle](docs/guides/errors-and-lifecycle.md).
 
 ## Подробные примеры
 

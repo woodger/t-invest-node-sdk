@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import type { GetMarginAttributesResponse } from '../../../generated/users';

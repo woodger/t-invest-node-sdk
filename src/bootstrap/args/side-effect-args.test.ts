@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { defaultConfig } from '../sdk-config';
 import {
@@ -54,6 +54,22 @@ describe('side-effect command args', () => {
         units: 0,
         nano: 1
       });
+    });
+
+    test('preserves the maximum safe units with nine fractional digits', () => {
+      assert.deepEqual(parsePositiveQuotationOption('9007199254740991.999999999', 'price'), {
+        units: 9_007_199_254_740_991,
+        nano: 999_999_999
+      });
+    });
+
+    test('rejects units outside the safe integer range', () => {
+      for (const value of ['9007199254740992', '9007199254740993.000000001']) {
+        assert.throws(
+          () => parsePositiveQuotationOption(value, 'price'),
+          /Expected '--price' as decimal greater than 0 with up to 9 fractional digits/
+        );
+      }
     });
 
     test('rejects zero, negative and unsupported decimal forms', () => {

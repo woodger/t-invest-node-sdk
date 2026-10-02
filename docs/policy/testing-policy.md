@@ -175,50 +175,6 @@ Integration-тест может идти через публичный entrypoin
 
 Не нужно создавать realistic dataset, если для проверки достаточно одного объекта с тремя полями.
 
-Хорошо:
-
-```ts
-test('returns undefined for an unknown path', () => {
-  const perMinute = (maxRequests: number) => ({
-    maxRequests,
-    windowMs: 60_000
-  });
-  const resolver = new UnaryLimitResolver({
-    KnownService: perMinute(100)
-  });
-
-  assert.equal(
-    resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
-    undefined
-  );
-});
-```
-
-Плохо:
-
-```ts
-test('validates unary quotas', () => {
-  const perMinute = (maxRequests: number) => ({
-    maxRequests,
-    windowMs: 60_000
-  });
-  const resolver = new UnaryLimitResolver({
-    InstrumentsService: perMinute(200),
-    MarketDataService: perMinute(300),
-    OperationsService: perMinute(200),
-    OrdersService: perMinute(100),
-    SandboxService: perMinute(200),
-    StopOrdersService: perMinute(50),
-    UsersService: perMinute(100)
-  });
-
-  assert.equal(
-    resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
-    undefined
-  );
-});
-```
-
 Лишние поля скрывают причину теста и увеличивают стоимость сопровождения.
 
 ## Именование test suite
@@ -231,34 +187,6 @@ Top-level `describe()` называет unit under test:
 - `functionName` для standalone exported functions;
 - `objectName` для exported objects или namespaces;
 - `module-name` только когда тестируется несколько тесно связанных exports и нет одного основного subject.
-
-Хорошо:
-
-```ts
-describe('createInMemoryUnaryLimiter', () => {
-  // ...
-});
-
-describe('createSdkMetadata', () => {
-  // ...
-});
-
-describe('command options', () => {
-  // ...
-});
-```
-
-Плохо:
-
-```ts
-describe('utils', () => {
-  // ...
-});
-
-describe('tests for sdk', () => {
-  // ...
-});
-```
 
 ## Именование nested suite
 
@@ -298,30 +226,6 @@ describe('command options', () => {
 
 Имя теста не должно повторять subject или method name, если они уже указаны в `describe()`.
 
-Хорошо:
-
-```ts
-describe('UnaryLimitResolver', () => {
-  describe('#resolve', () => {
-    test('returns undefined for an unknown path', () => {
-      // ...
-    });
-  });
-});
-```
-
-Плохо:
-
-```ts
-describe('UnaryLimitResolver', () => {
-  describe('#resolve', () => {
-    test('UnaryLimitResolver resolve returns undefined for an unknown path', () => {
-      // ...
-    });
-  });
-});
-```
-
 Повтор subject делает имя шумным и ухудшает читаемость test output.
 
 ## Предпочтительные behavior verbs
@@ -345,30 +249,6 @@ describe('UnaryLimitResolver', () => {
 - `maps ...`;
 - `normalizes ...`;
 - `ignores ...`.
-
-Хорошо:
-
-```ts
-test('throws for unknown unary limit path', async () => {
-  // ...
-});
-
-test('does not invoke the unary limiter for response streams', async () => {
-  // ...
-});
-```
-
-Плохо:
-
-```ts
-test('works correctly', () => {
-  // ...
-});
-
-test('should process data', () => {
-  // ...
-});
-```
 
 `should` технически допустим, но прямое описание наблюдаемого поведения без лишнего модального слова читается лучше.
 
@@ -407,22 +287,6 @@ Reusable-код должен иметь тесты не только на happy 
 Добавляйте regression test, если поведение уже ломалось или риск повторного дефекта высок.
 
 Regression test должен фиксировать production contract, а не конкретную старую ошибочную реализацию.
-
-Хорошо:
-
-```ts
-test('does not rewrite runnable compiled tests', async () => {
-  // ...
-});
-```
-
-Плохо:
-
-```ts
-test('fixes old suite bug', async () => {
-  // ...
-});
-```
 
 Контекст regression case можно раскрыть комментарием, если без него причина теста неочевидна.
 

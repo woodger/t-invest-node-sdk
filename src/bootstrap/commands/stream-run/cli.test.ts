@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import {
   describe,
   test } from 'node:test';
@@ -331,6 +331,25 @@ describe('stream run command', () => {
         /Expected 'requests' to contain at least one market data stream request/
       );
       assert.equal(createSdkCalls, 0);
+    });
+
+    test('rejects order book depth outside int32 before sdk creation', async () => {
+      const command = createStreamRunCommand({
+        readConfig: async () => JSON.stringify({
+          stream: 'marketdata.marketDataServerSideStream',
+          subscriptions: {
+            orderBooks: [{ instrumentId: 'instrument-id', depth: 2_147_483_648 }]
+          }
+        }),
+        createSdk() {
+          throw new Error('sdk should not be created');
+        }
+      });
+
+      await assert.rejects(
+        () => commandFacade.run(command, ['stream', 'run', '--config=stream.json'], undefined),
+        /Expected 'subscriptions\.orderBooks\[\]\.depth' to be less than or equal to 2147483647/
+      );
     });
 
     test('runs market data bidirectional stream with initial requests', async () => {

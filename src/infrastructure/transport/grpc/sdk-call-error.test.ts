@@ -116,6 +116,44 @@ describe('mapSdkCallError', () => {
     assert.equal(error.source, 'grpc');
   });
 
+  test('keeps certificate codes inside provider errors in the gRPC source', () => {
+    const providerError = new ClientError(
+      path,
+      Status.UNAVAILABLE,
+      'provider backend certificate rotation failed: CERT_HAS_EXPIRED'
+    );
+    const error = mapSdkCallError(
+      providerError,
+      path,
+      undefined,
+      true,
+      maxReceiveMessageLength
+    );
+
+    assert.ok(isSdkError(error, SdkErrorCode.Unavailable));
+    assert.equal(error.source, 'grpc');
+    assert.equal(error.details, providerError.details);
+    assert.equal(error.cause, providerError);
+  });
+
+  test('recognizes certificate codes in local connection diagnostics', () => {
+    for (const details of [
+      'No connection established. Last error: CERT_HAS_EXPIRED',
+      'CERT_HAS_EXPIRED'
+    ]) {
+      const error = mapSdkCallError(
+        new ClientError(path, Status.UNAVAILABLE, details),
+        path,
+        undefined,
+        true,
+        maxReceiveMessageLength
+      );
+
+      assert.ok(isSdkError(error, SdkErrorCode.Unavailable));
+      assert.equal(error.source, 'tls');
+    }
+  });
+
   test('преобразует отмену вызова и сохраняет её причину', () => {
     const controller = new AbortController();
     const cause = new Error('cancelled');

@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
 import packageJson from '../../../package.json';
@@ -310,6 +310,38 @@ describe('bootstrap cli runner', () => {
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Expected '--format' as one of: json, table/);
     });
+
+    for (const { args, option } of [
+      {
+        args: ['market', 'order-book', '--instrument-id=instrument-id', '--depth=2147483648'],
+        option: 'depth'
+      },
+      {
+        args: ['operation', 'broker-report', '--task-id=task-id', '--page=2147483648'],
+        option: 'page'
+      },
+      {
+        args: ['operation', 'foreign-dividends-report', '--task-id=task-id', '--page=2147483648'],
+        option: 'page'
+      }
+    ]) {
+      test(`returns a usage failure for int32 overflow in ${args.slice(0, 2).join(' ')}`, async () => {
+        const { io, read } = createIo();
+        const exitCode = await runCli([
+          ...args,
+          '--token=token',
+          '--endpoint=127.0.0.1:1',
+          '--insecure'
+        ], io);
+
+        assert.equal(exitCode, 2);
+        assert.equal(read().stdout, '');
+        assert.match(
+          read().stderr,
+          new RegExp(`Expected '--${option}' to be less than or equal to 2147483647`)
+        );
+      });
+    }
 
     test('rejects extra command positionals during prepare', async () => {
       const { io, read } = createIo();

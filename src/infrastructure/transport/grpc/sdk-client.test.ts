@@ -16,7 +16,7 @@ import {
   Status
 } from 'nice-grpc';
 import type {
-  CallOptions,
+  Client,
   Channel,
   ServiceDefinition
 } from 'nice-grpc';
@@ -80,14 +80,23 @@ const responseParsingServiceDefinition = {
   }
 } as const satisfies ServiceDefinition;
 
-interface PayloadServiceClient {
-  getPayload(
-    request: Record<string, never>,
-    options?: CallOptions
-  ): Promise<Uint8Array>;
-}
+type PayloadServiceClient = Client<typeof payloadServiceDefinition>;
 
 describe('createSdkClient', () => {
+  test('infers client methods and signatures from the service definition', () => {
+    type InferredClient = ReturnType<typeof createSdkClient<typeof payloadServiceDefinition>>;
+
+    const matchesDefinition = true satisfies (
+      [InferredClient] extends [PayloadServiceClient]
+        ? [keyof InferredClient] extends [keyof PayloadServiceClient]
+          ? true
+          : false
+        : false
+    );
+
+    assert.equal(matchesDefinition, true);
+  });
+
   test('merges SDK-owned and per-call metadata around limited calls', async () => {
     const server = createServer();
     let receivedAuthorization: string | undefined;
@@ -120,7 +129,7 @@ describe('createSdkClient', () => {
     };
 
     const lifecycleController = new AbortController();
-    const client = createSdkClient<PayloadServiceClient>(
+    const client = createSdkClient(
       payloadServiceDefinition,
       channel,
       new Metadata({
@@ -497,17 +506,48 @@ describe('createSdkClient', () => {
       await close(server);
     }
   });
+
+  test('keeps provider certificate diagnostics in the gRPC source after a valid TLS handshake', async () => {
+    const details = 'provider backend certificate rotation failed: CERT_HAS_EXPIRED';
+    const server = createPayloadTlsServer(Status.UNAVAILABLE, details);
+    const port = await listen(server);
+    const channel = createSdkChannel({
+      token: 'token',
+      endpoint: `localhost:${port}`,
+      useSsl: true,
+      tls: {
+        rootCertificates: readTlsFixture('tls-root.cert.pem')
+      }
+    }, maxReceiveMessageLength);
+    const client = createPayloadClient(channel, true);
+
+    try {
+      await assert.rejects(
+        client.getPayload({}),
+        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+          && error.source === 'grpc'
+          && error.path === payloadPath
+          && error.details === details
+      );
+    }
+    finally {
+      channel.close();
+      await close(server);
+    }
+  });
 });
 
 function createPayloadClient(
   channel: Channel,
   useSsl: boolean,
   receiveMessageLength: number = maxReceiveMessageLength,
-  service: ServiceDefinition = payloadServiceDefinition
+  service: typeof payloadServiceDefinition
+    | typeof requestSerializationServiceDefinition
+    | typeof responseParsingServiceDefinition = payloadServiceDefinition
 ): PayloadServiceClient {
   const signal = new AbortController().signal;
 
-  return createSdkClient<PayloadServiceClient>(
+  return createSdkClient(
     service,
     channel,
     new Metadata(),

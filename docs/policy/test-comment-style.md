@@ -58,44 +58,6 @@
 - expected value очевиден из входных данных;
 - поведение уже ясно из имени теста и assertion.
 
-Плохо:
-
-```ts
-test('returns undefined for an unknown path', () => {
-  // Arrange
-  const resolver = new UnaryLimitResolver({
-    KnownService: {
-      maxRequests: 100,
-      windowMs: 60_000
-    }
-  });
-
-  // Act
-  const quota = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
-
-  // Assert
-  assert.equal(quota, undefined);
-});
-```
-
-Лучше:
-
-```ts
-test('returns undefined for an unknown path', () => {
-  const resolver = new UnaryLimitResolver({
-    KnownService: {
-      maxRequests: 100,
-      windowMs: 60_000
-    }
-  });
-
-  assert.equal(
-    resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get'),
-    undefined
-  );
-});
-```
-
 ## Блок тестового сценария
 
 Перед группой тестов, которая защищает важный production contract, можно добавить отдельный сценарный блок.
@@ -115,107 +77,15 @@ test('returns undefined for an unknown path', () => {
  */
 ```
 
-Хорошо:
-
-```ts
-/**
- * Сценарий: CLI reporter формирует стабильный output contract.
- *
- * Защищает:
- * - отсутствие generated DTO в stdout-формате;
- * - одинаковую структуру table и JSON вывода;
- * - предсказуемые empty values для optional API fields.
- *
- * Не проверяет:
- * - gRPC transport behavior;
- * - механическое выравнивание table renderer-а.
- */
-describe('accounts reporter', () => {
-  // ...
-});
-```
-
-Плохо:
-
-```ts
-/**
- * Тесты accounts reporter.
- */
-describe('accounts reporter', () => {
-  // ...
-});
-```
-
-Такой комментарий не добавляет смысла: subject уже виден из имени `describe()`.
+Комментарий, повторяющий subject из имени `describe()`, не добавляет смысла.
 
 ## Комментарий внутри теста
 
 Добавляйте локальный комментарий внутри теста, только если без него теряется причина конкретной подготовки, expectation или необычной проверки.
 
-Хорошо:
-
-```ts
-test('throws for mixed broker report modes', () => {
-  // Режимы запуска и получения отчёта используют разные API request contracts.
-  // Команда должна отклонить неоднозначный ввод до вызова SDK.
-  const options = {
-    accountId: 'account-id',
-    from: '2024-01-01T00:00:00Z',
-    to: '2024-01-02T00:00:00Z',
-    taskId: 'task-id'
-  };
-
-  assert.throws(() => createBrokerReportRequest(options));
-});
-```
-
-Плохо:
-
-```ts
-test('throws for mixed broker report modes', () => {
-  // Prepare options
-  const options = {
-    accountId: 'account-id',
-    from: '2024-01-01T00:00:00Z',
-    to: '2024-01-02T00:00:00Z',
-    taskId: 'task-id'
-  };
-
-  // Check error
-  assert.throws(() => createBrokerReportRequest(options));
-});
-```
-
 ## Regression-комментарии
 
 Добавляйте regression-комментарий, если без него непонятно, почему тест проверяет именно такой scenario.
-
-Хорошо:
-
-```ts
-test('renders pretty JSON with the trailing newline used by CLI output', () => {
-  // Regression: CLI выводит данные построчно.
-  // Без завершающего перевода строки shell prompt склеивается с JSON.
-  const output = renderJson({
-    id: 'account-id'
-  });
-
-  assert.strictEqual(output, '{\n  "id": "account-id"\n}\n');
-});
-```
-
-Плохо:
-
-```ts
-test('renders pretty JSON with the trailing newline used by CLI output', () => {
-  // Bugfix test
-  const output = renderJson({
-    id: 'account-id'
-  });
-
-  assert.strictEqual(output, '{\n  "id": "account-id"\n}\n');
-});
-```
 
 Regression-комментарий должен объяснять production-риск, а не просто ссылаться на старый bugfix.
 
@@ -223,93 +93,17 @@ Regression-комментарий должен объяснять production-р�
 
 Поясняйте expected value, если оно выглядит как magic number, но входит в contract.
 
-Хорошо:
-
-```ts
-test('waits according to the configured limit between requests', async () => {
-  const limiter = createInMemoryUnaryLimiter();
-  const context = {
-    path: '/test.OrdersService/GetOrders',
-    quota: {
-      bucket: 'rule:OrdersService',
-      maxRequests: 100,
-      windowMs: 60_000
-    },
-    signal: new AbortController().signal
-  };
-
-  await limiter.acquire(context);
-  await limiter.acquire(context);
-
-  // 600 мс = 60 000 мс / 100 запросов в минуту.
-  assert.deepEqual(delays, [600]);
-});
-```
-
-Плохо:
-
-```ts
-test('waits according to the configured limit between requests', async () => {
-  const limiter = createInMemoryUnaryLimiter();
-  const context = {
-    path: '/test.OrdersService/GetOrders',
-    quota: {
-      bucket: 'rule:OrdersService',
-      maxRequests: 100,
-      windowMs: 60_000
-    },
-    signal: new AbortController().signal
-  };
-
-  await limiter.acquire(context);
-  await limiter.acquire(context);
-
-  // Check delay
-  assert.deepEqual(delays, [600]);
-});
-```
-
 Если expected value очевиден из входных данных, комментарий не нужен.
 
 ## Комментарии к test fixtures
 
 Поясняйте fixture, если тестовые данные выглядят странно, но выбраны намеренно.
 
-Хорошо:
-
-```ts
-// Пустой объект запроса намеренный: users.getAccounts принимает empty request,
-// а тест проверяет metadata/middleware behavior, а не request payload.
-const request = {};
-```
-
-Плохо:
-
-```ts
-// Test request
-const request = {};
-```
-
 Комментарий должен объяснять причину fixture, а не его тип.
 
 ## Комментарии к mock/stub/fake
 
 Комментируйте mock, stub или fake, только если его поведение намеренно отличается от реального и это важно для границ теста.
-
-Хорошо:
-
-```ts
-// Stub не эмулирует real gRPC channel намеренно:
-// этот тест проверяет unary limiter middleware, а не behavior nice-grpc.
-const call = createUnaryCall(path);
-```
-
-Плохо:
-
-```ts
-// Create mock
-const call = createUnaryCall(path);
-```
 
 Если fake полностью очевиден из имени функции и setup, комментарий не нужен.
 
@@ -319,89 +113,17 @@ const call = createUnaryCall(path);
 
 Это не обязательный стиль. Не добавляйте такие комментарии в короткие тесты.
 
-Не нужно:
-
-```ts
-test('returns undefined for an unknown path', () => {
-  // Given
-  const resolver = new UnaryLimitResolver({
-    KnownService: {
-      maxRequests: 100,
-      windowMs: 60_000
-    }
-  });
-
-  // When
-  const quota = resolver.resolve('/tinkoff.public.invest.api.contract.v1.UnknownService/Get');
-
-  // Then
-  assert.equal(quota, undefined);
-});
-```
-
 Для коротких тестов структура должна быть очевидна из самого кода.
 
 ## Комментарии к intentional omissions
 
 Если тест намеренно не проверяет соседнюю ответственность, укажите это на уровне scenario или рядом с setup.
 
-Хорошо:
-
-```ts
-/**
- * Сценарий: SDK middleware вызывает limiter только для unary calls.
- *
- * Защищает:
- * - unary limiter contract;
- * - отсутствие вызова limiter-а для response streams.
- *
- * Не проверяет:
- * - сетевое поведение gRPC channel;
- * - корректность сгенерированных service definition.
- */
-describe('createSdkMiddleware', () => {
-  // ...
-});
-```
-
-Плохо:
-
-```ts
-/**
- * Проверяем middleware.
- */
-describe('createSdkMiddleware', () => {
-  // ...
-});
-```
-
 Intentional omission полезен там, где граница теста может быть неправильно расширена будущими изменениями.
 
 ## Комментарии и имена тестов
 
 Комментарий не должен компенсировать плохое имя теста.
-
-Плохо:
-
-```ts
-test('works correctly', async () => {
-  // Проверяем, что response streams не проходят через unary limiter.
-});
-```
-
-Хорошо:
-
-```ts
-test('does not invoke the unary limiter for response streams', async () => {
-  const responses = [];
-
-  for await (const response of iterator) {
-    responses.push(response);
-  }
-
-  assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
-});
-```
 
 ## Язык комментариев
 
@@ -434,22 +156,6 @@ test('does not invoke the unary limiter for response streams', async () => {
 - содержат TODO без привязки к issue, decision или owner decision;
 - оправдывают хрупкий тест вместо исправления структуры теста;
 - маскируют слишком большой test case.
-
-Плохо:
-
-```ts
-// Call function
-const result = parseArgs(argv);
-
-// Check result
-assert.deepEqual(result, expected);
-```
-
-Плохо:
-
-```ts
-// TODO: improve test later
-```
 
 Если тест требует такого комментария, сначала упростите test setup или разделите test case.
 

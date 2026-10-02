@@ -3,24 +3,13 @@
  *
  * Здесь допустимы:
  * - валидация stream config до создания SDK;
- * - mapping typed config в generated stream requests;
+ * - нормализация полей проверенной конфигурации;
  * - runtime defaults для долгоживущих stream-команд;
  *
  * Здесь не должно быть SDK calls или stdout/stderr output logic.
  */
 
-import {
-  CandleInstrument,
-  InfoInstrument,
-  LastPriceInstrument,
-  type MarketDataRequest,
-  OrderBookType,
-  OrderBookInstrument,
-  SubscriptionAction,
-  SubscriptionInterval,
-  TradeSourceType,
-  TradeInstrument
-} from '../../../generated/marketdata';
+import { SubscriptionInterval } from '../../../generated/marketdata';
 import { CliUsageError } from 'icore';
 
 export const streamRunStreamNames = [
@@ -44,12 +33,44 @@ export type StreamRunRuntime = {
 };
 
 export type StreamRunConfig = {
-  stream: StreamRunStreamName;
-  accounts?: string[];
-  requests?: MarketDataRequest[];
-  subscriptions?: MarketDataSubscriptions;
   runtime: StreamRunRuntime;
-};
+} & (
+  | {
+    stream: 'marketdata.marketDataStream';
+    requests: MarketDataStreamRequestConfig[];
+    accounts?: never;
+    subscriptions?: never;
+  }
+  | {
+    stream: 'marketdata.marketDataServerSideStream';
+    subscriptions: MarketDataSubscriptions;
+    accounts?: never;
+    requests?: never;
+  }
+  | {
+    stream: 'operations.portfolioStream' | 'operations.positionsStream' | 'orders.tradesStream';
+    accounts: string[];
+    requests?: never;
+    subscriptions?: never;
+  }
+);
+
+export type MarketDataStreamRequestConfig =
+  | {
+    type: 'subscribeCandles';
+    instruments: CandleSubscriptionConfig[];
+  }
+  | {
+    type: 'subscribeOrderBook';
+    instruments: OrderBookSubscriptionConfig[];
+  }
+  | {
+    type: 'subscribeTrades' | 'subscribeInfo' | 'subscribeLastPrice';
+    instruments: InstrumentSubscriptionConfig[];
+  }
+  | {
+    type: 'getMySubscriptions';
+  };
 
 export type MarketDataSubscriptions = {
   candles?: CandleSubscriptionConfig[] | undefined;
@@ -221,7 +242,7 @@ function parseRuntimeFormat(value: unknown): 'jsonl' {
   throw new CliUsageError("Expected 'runtime.format' as one of: jsonl");
 }
 
-function parseMarketDataStreamRequests(value: unknown): MarketDataRequest[] {
+function parseMarketDataStreamRequests(value: unknown): MarketDataStreamRequestConfig[] {
   const requests = parseArray(value, 'requests').map(parseMarketDataStreamRequest);
 
   if (requests.length === 0) {
@@ -231,7 +252,7 @@ function parseMarketDataStreamRequests(value: unknown): MarketDataRequest[] {
   return requests;
 }
 
-function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
+function parseMarketDataStreamRequest(value: unknown): MarketDataStreamRequestConfig {
   const request = requireObject(value, 'requests[]');
   const requestType = parseMarketDataStreamRequestType(request['type']);
 
@@ -245,14 +266,8 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
       validateCandlesWaitingClose(instruments);
 
       return {
-        subscribeCandlesRequest: {
-          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: instruments.map((item) => CandleInstrument.create({
-            interval: item.interval,
-            instrumentId: item.instrumentId
-          })),
-          waitingClose: resolveCandlesWaitingClose(instruments)
-        }
+        type: requestType,
+        instruments
       };
     }
 
@@ -260,67 +275,27 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataRequest {
       rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
 
       return {
-        subscribeOrderBookRequest: {
-          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: parseArray(request['instruments'], 'requests[].instruments')
-            .map((item) => parseOrderBookSubscription(item, 'requests[].instruments[]'))
-            .map((item) => OrderBookInstrument.create({
-              depth: item.depth,
-              instrumentId: item.instrumentId,
-              orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-            }))
-        }
+        type: requestType,
+        instruments: parseArray(request['instruments'], 'requests[].instruments')
+          .map((item) => parseOrderBookSubscription(item, 'requests[].instruments[]'))
       };
 
     case 'subscribeTrades':
-      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
-
-      return {
-        subscribeTradesRequest: {
-          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: parseArray(request['instruments'], 'requests[].instruments')
-            .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map((item) => TradeInstrument.create({
-              instrumentId: item.instrumentId
-            })),
-          tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
-          withOpenInterest: false
-        }
-      };
-
     case 'subscribeInfo':
-      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
-
-      return {
-        subscribeInfoRequest: {
-          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: parseArray(request['instruments'], 'requests[].instruments')
-            .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map((item) => InfoInstrument.create({
-              instrumentId: item.instrumentId
-            }))
-        }
-      };
-
     case 'subscribeLastPrice':
       rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
 
       return {
-        subscribeLastPriceRequest: {
-          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: parseArray(request['instruments'], 'requests[].instruments')
-            .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
-            .map((item) => LastPriceInstrument.create({
-              instrumentId: item.instrumentId
-            }))
-        }
+        type: requestType,
+        instruments: parseArray(request['instruments'], 'requests[].instruments')
+          .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
       };
 
     case 'getMySubscriptions':
       rejectUnknownFields(request, new Set(['type']), 'requests[]');
 
       return {
-        getMySubscriptions: {}
+        type: requestType
       };
   }
 }
@@ -399,9 +374,16 @@ function parseOrderBookSubscription(
     path
   );
 
+  const instrumentId = parseInstrumentId(orderBook['instrumentId'], `${path}.instrumentId`);
+  const depth = parsePositiveInteger(orderBook['depth'], `${path}.depth`);
+
+  if (depth > 2_147_483_647) {
+    throw new CliUsageError(`Expected '${path}.depth' to be less than or equal to 2147483647`);
+  }
+
   return {
-    instrumentId: parseInstrumentId(orderBook['instrumentId'], `${path}.instrumentId`),
-    depth: parsePositiveInteger(orderBook['depth'], `${path}.depth`)
+    instrumentId,
+    depth
   };
 }
 

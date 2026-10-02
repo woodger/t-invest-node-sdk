@@ -49,6 +49,7 @@ const streamEventFields = [
   'orderbook',
   'tradingStatus',
   'lastPrice',
+  'subscription',
   'subscriptions',
   'portfolio',
   'position',
@@ -62,6 +63,7 @@ const subscriptionEventTypes = new Set([
   'subscribeTradesResponse',
   'subscribeInfoResponse',
   'subscribeLastPriceResponse',
+  'subscription',
   'subscriptions'
 ]);
 

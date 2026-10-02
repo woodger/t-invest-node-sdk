@@ -10,35 +10,28 @@
  */
 
 import {
+  type Client,
   Channel,
   Metadata
 } from 'nice-grpc';
 import { packageConfig } from '../config';
-import { InstrumentsServiceDefinition,
-  InstrumentsServiceClient
-} from '../generated/instruments';
+import { InstrumentsServiceDefinition } from '../generated/instruments';
 import {
   MarketDataServiceDefinition,
-  MarketDataServiceClient,
-  MarketDataStreamServiceDefinition,
-  MarketDataStreamServiceClient
+  MarketDataStreamServiceDefinition
 } from '../generated/marketdata';
 import {
   OperationsServiceDefinition,
-  OperationsServiceClient,
-  OperationsStreamServiceDefinition,
-  OperationsStreamServiceClient
+  OperationsStreamServiceDefinition
 } from '../generated/operations';
 import {
   OrdersServiceDefinition,
-  OrdersServiceClient,
-  OrdersStreamServiceDefinition,
-  OrdersStreamServiceClient
+  OrdersStreamServiceDefinition
 } from '../generated/orders';
-import { SandboxServiceDefinition, SandboxServiceClient } from '../generated/sandbox';
-import { SignalServiceDefinition, SignalServiceClient } from '../generated/signals';
-import { StopOrdersServiceDefinition, StopOrdersServiceClient } from '../generated/stoporders';
-import { UsersServiceDefinition, UsersServiceClient } from '../generated/users';
+import { SandboxServiceDefinition } from '../generated/sandbox';
+import { SignalServiceDefinition } from '../generated/signals';
+import { StopOrdersServiceDefinition } from '../generated/stoporders';
+import { UsersServiceDefinition } from '../generated/users';
 import type { TInvestOptions } from '../application/dto/t-invest-options';
 import type {
   InstrumentsService,
@@ -81,21 +74,9 @@ type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof StopOrdersServiceDefinition
   | typeof UsersServiceDefinition;
 
-type ServiceClient = InstrumentsServiceClient
-  | MarketDataServiceClient
-  | MarketDataStreamServiceClient
-  | OperationsServiceClient
-  | OperationsStreamServiceClient
-  | OrdersServiceClient
-  | OrdersStreamServiceClient
-  | SandboxServiceClient
-  | SignalServiceClient
-  | StopOrdersServiceClient
-  | UsersServiceClient;
-
 export class TInvestNodeSDK {
   private readonly options: ResolvedTInvestOptions;
-  private readonly clientsByServiceDefinition: Map<ServiceDefinition, ServiceClient> = new Map();
+  private readonly clientsByServiceDefinition: Map<ServiceDefinition, unknown> = new Map();
   private readonly channel: Channel;
   private readonly metadata: Metadata;
   private readonly unaryLimitResolver: UnaryLimitResolver;
@@ -122,52 +103,52 @@ export class TInvestNodeSDK {
     this.metadata = createSdkMetadata(this.options);
   }
 
-  get instruments() {
-    return this.getOrCreateServiceClient<InstrumentsServiceClient>(InstrumentsServiceDefinition) as InstrumentsService;
+  get instruments(): InstrumentsService {
+    return this.getOrCreateServiceClient(InstrumentsServiceDefinition);
   }
   
-  get marketData() {
-    return this.getOrCreateServiceClient<MarketDataServiceClient>(MarketDataServiceDefinition) as MarketDataService;
+  get marketData(): MarketDataService {
+    return this.getOrCreateServiceClient(MarketDataServiceDefinition);
   }
 
-  get marketdataStream() {
-    return this.getOrCreateServiceClient<MarketDataStreamServiceClient>(
+  get marketdataStream(): MarketDataStreamService {
+    return this.getOrCreateServiceClient(
       MarketDataStreamServiceDefinition
-    ) as MarketDataStreamService;
+    );
   }
 
-  get operations() {
-    return this.getOrCreateServiceClient<OperationsServiceClient>(OperationsServiceDefinition) as OperationsService;
+  get operations(): OperationsService {
+    return this.getOrCreateServiceClient(OperationsServiceDefinition);
   }
 
-  get operationsStream() {
-    return this.getOrCreateServiceClient<OperationsStreamServiceClient>(
+  get operationsStream(): OperationsStreamService {
+    return this.getOrCreateServiceClient(
       OperationsStreamServiceDefinition
-    ) as OperationsStreamService;
+    );
   }
   
-  get orders() {
-    return this.getOrCreateServiceClient<OrdersServiceClient>(OrdersServiceDefinition) as OrdersService;
+  get orders(): OrdersService {
+    return this.getOrCreateServiceClient(OrdersServiceDefinition);
   }
 
-  get ordersStream() {
-    return this.getOrCreateServiceClient<OrdersStreamServiceClient>(OrdersStreamServiceDefinition) as OrdersStreamService;
+  get ordersStream(): OrdersStreamService {
+    return this.getOrCreateServiceClient(OrdersStreamServiceDefinition);
   }
 
-  get sandbox() {
-    return this.getOrCreateServiceClient<SandboxServiceClient>(SandboxServiceDefinition) as SandboxService;
+  get sandbox(): SandboxService {
+    return this.getOrCreateServiceClient(SandboxServiceDefinition);
   }
 
-  get signals() {
-    return this.getOrCreateServiceClient<SignalServiceClient>(SignalServiceDefinition) as SignalService;
+  get signals(): SignalService {
+    return this.getOrCreateServiceClient(SignalServiceDefinition);
   }
 
-  get stopOrders() {
-    return this.getOrCreateServiceClient<StopOrdersServiceClient>(StopOrdersServiceDefinition) as StopOrdersService;
+  get stopOrders(): StopOrdersService {
+    return this.getOrCreateServiceClient(StopOrdersServiceDefinition);
   }
   
-  get users() {
-    return this.getOrCreateServiceClient<UsersServiceClient>(UsersServiceDefinition) as UsersService;
+  get users(): UsersService {
+    return this.getOrCreateServiceClient(UsersServiceDefinition);
   }
 
   /**
@@ -184,34 +165,37 @@ export class TInvestNodeSDK {
     this.channel.close();
   }
 
-  private getOrCreateServiceClient<T extends ServiceClient>(
-    serviceDefinition: ServiceDefinition
-  ) {
+  private getOrCreateServiceClient<Service extends ServiceDefinition>(
+    serviceDefinition: Service
+  ): Client<Service> {
     this.assertOpen();
 
-    let client = this.clientsByServiceDefinition.get(serviceDefinition);
+    const cachedClient = this.clientsByServiceDefinition.get(serviceDefinition);
 
-    if (!client) {
-      client = createSdkClient<ServiceClient>(
-        serviceDefinition,
-        this.channel,
-        this.metadata,
-        this.options.unaryLimiter,
-        this.unaryLimitResolver,
-        {
-          useSsl: this.options.useSsl,
-          maxReceiveMessageLength: this.maxReceiveMessageLength,
-          signal: this.lifecycleController.signal,
-          assertOpen: () => {
-            this.assertOpen();
-          }
-        }
-      );
-
-      this.clientsByServiceDefinition.set(serviceDefinition, client);
+    if (cachedClient !== undefined) {
+      // Кэш заполняется только клиентами, созданными для этого definition.
+      return cachedClient as Client<Service>;
     }
 
-    return client as T;
+    const client = createSdkClient(
+      serviceDefinition,
+      this.channel,
+      this.metadata,
+      this.options.unaryLimiter,
+      this.unaryLimitResolver,
+      {
+        useSsl: this.options.useSsl,
+        maxReceiveMessageLength: this.maxReceiveMessageLength,
+        signal: this.lifecycleController.signal,
+        assertOpen: () => {
+          this.assertOpen();
+        }
+      }
+    );
+
+    this.clientsByServiceDefinition.set(serviceDefinition, client);
+
+    return client;
   }
 
   private assertOpen(): void {

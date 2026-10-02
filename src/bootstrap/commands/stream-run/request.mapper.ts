@@ -14,7 +14,12 @@ import {
   TradeSourceType,
   TradeInstrument,
   type MarketDataRequest,
-  type MarketDataServerSideStreamRequest
+  type MarketDataServerSideStreamRequest,
+  type SubscribeCandlesRequest,
+  type SubscribeInfoRequest,
+  type SubscribeLastPriceRequest,
+  type SubscribeOrderBookRequest,
+  type SubscribeTradesRequest
 } from '../../../generated/marketdata';
 import type {
   PortfolioStreamRequest,
@@ -24,6 +29,9 @@ import type { TradesStreamRequest } from '../../../generated/orders';
 import { CliUsageError } from 'icore';
 import {
   resolveCandlesWaitingClose,
+  type CandleSubscriptionConfig,
+  type InstrumentSubscriptionConfig,
+  type OrderBookSubscriptionConfig,
   type StreamRunConfig
 } from './config';
 
@@ -34,7 +42,27 @@ export function createMarketDataStreamRequests(
     throw new CliUsageError(`Expected marketdata bidirectional stream config, got '${config.stream}'`);
   }
 
-  return config.requests ?? [];
+  return config.requests.map((request) => {
+    switch (request.type) {
+      case 'subscribeCandles':
+        return { subscribeCandlesRequest: createSubscribeCandlesRequest(request.instruments) };
+
+      case 'subscribeOrderBook':
+        return { subscribeOrderBookRequest: createSubscribeOrderBookRequest(request.instruments) };
+
+      case 'subscribeTrades':
+        return { subscribeTradesRequest: createSubscribeTradesRequest(request.instruments) };
+
+      case 'subscribeInfo':
+        return { subscribeInfoRequest: createSubscribeInfoRequest(request.instruments) };
+
+      case 'subscribeLastPrice':
+        return { subscribeLastPriceRequest: createSubscribeLastPriceRequest(request.instruments) };
+
+      case 'getMySubscriptions':
+        return { getMySubscriptions: {} };
+    }
+  });
 }
 
 export function createMarketDataServerSideStreamRequest(
@@ -58,50 +86,19 @@ export function createMarketDataServerSideStreamRequest(
 
   return {
     subscribeCandlesRequest: candles.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: candles.map((item) => CandleInstrument.create({
-          interval: item.interval,
-          instrumentId: item.instrumentId
-        })),
-        waitingClose: resolveCandlesWaitingClose(candles)
-      }
+      ? createSubscribeCandlesRequest(candles)
       : undefined,
     subscribeOrderBookRequest: orderBooks.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: orderBooks.map((item) => OrderBookInstrument.create({
-          depth: item.depth,
-          instrumentId: item.instrumentId,
-          orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-        }))
-      }
+      ? createSubscribeOrderBookRequest(orderBooks)
       : undefined,
     subscribeTradesRequest: trades.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: trades.map((item) => TradeInstrument.create({
-          instrumentId: item.instrumentId
-        })),
-        tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
-        withOpenInterest: false
-      }
+      ? createSubscribeTradesRequest(trades)
       : undefined,
     subscribeInfoRequest: info.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: info.map((item) => InfoInstrument.create({
-          instrumentId: item.instrumentId
-        }))
-      }
+      ? createSubscribeInfoRequest(info)
       : undefined,
     subscribeLastPriceRequest: lastPrices.length > 0
-      ? {
-        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-        instruments: lastPrices.map((item) => LastPriceInstrument.create({
-          instrumentId: item.instrumentId
-        }))
-      }
+      ? createSubscribeLastPriceRequest(lastPrices)
       : undefined,
     pingSettings: undefined
   };
@@ -115,7 +112,7 @@ export function createPortfolioStreamRequest(
   }
 
   return {
-    accounts: config.accounts ?? [],
+    accounts: config.accounts,
     pingSettings: undefined
   };
 }
@@ -128,7 +125,7 @@ export function createPositionsStreamRequest(
   }
 
   return {
-    accounts: config.accounts ?? [],
+    accounts: config.accounts,
     withInitialPositions: false,
     pingSettings: undefined
   };
@@ -142,6 +139,67 @@ export function createTradesStreamRequest(
   }
 
   return {
-    accounts: config.accounts ?? []
+    accounts: config.accounts
+  };
+}
+
+function createSubscribeCandlesRequest(
+  instruments: CandleSubscriptionConfig[]
+): SubscribeCandlesRequest {
+  return {
+    subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+    instruments: instruments.map((item) => CandleInstrument.create({
+      interval: item.interval,
+      instrumentId: item.instrumentId
+    })),
+    waitingClose: resolveCandlesWaitingClose(instruments)
+  };
+}
+
+function createSubscribeOrderBookRequest(
+  instruments: OrderBookSubscriptionConfig[]
+): SubscribeOrderBookRequest {
+  return {
+    subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+    instruments: instruments.map((item) => OrderBookInstrument.create({
+      depth: item.depth,
+      instrumentId: item.instrumentId,
+      orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
+    }))
+  };
+}
+
+function createSubscribeTradesRequest(
+  instruments: InstrumentSubscriptionConfig[]
+): SubscribeTradesRequest {
+  return {
+    subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+    instruments: instruments.map((item) => TradeInstrument.create({
+      instrumentId: item.instrumentId
+    })),
+    tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
+    withOpenInterest: false
+  };
+}
+
+function createSubscribeInfoRequest(
+  instruments: InstrumentSubscriptionConfig[]
+): SubscribeInfoRequest {
+  return {
+    subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+    instruments: instruments.map((item) => InfoInstrument.create({
+      instrumentId: item.instrumentId
+    }))
+  };
+}
+
+function createSubscribeLastPriceRequest(
+  instruments: InstrumentSubscriptionConfig[]
+): SubscribeLastPriceRequest {
+  return {
+    subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+    instruments: instruments.map((item) => LastPriceInstrument.create({
+      instrumentId: item.instrumentId
+    }))
   };
 }

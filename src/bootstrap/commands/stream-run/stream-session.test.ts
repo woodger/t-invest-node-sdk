@@ -1,9 +1,16 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import type {
-  PortfolioStreamResponse
+import { createServer } from 'nice-grpc';
+import { ResultSubscriptionStatus } from '../../../generated/common';
+import {
+  OperationsStreamServiceDefinition,
+  type PortfolioStreamResponse
 } from '../../../generated/operations';
-import type { TradesStreamResponse } from '../../../generated/orders';
+import {
+  OrdersStreamServiceDefinition,
+  type TradesStreamResponse
+} from '../../../generated/orders';
+import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import type { StreamRunConfig, StreamRunRuntime } from './config';
 import {
   runStreamRunSession,
@@ -130,6 +137,105 @@ const defaultRuntime: StreamRunRuntime = {
 };
 
 describe('runStreamRunSession', () => {
+  test('counts trade events after filtering a real gRPC subscription acknowledgement', async () => {
+    const server = createServer();
+
+    server.add(OrdersStreamServiceDefinition, {
+      async *tradesStream() {
+        yield {
+          subscription: {
+            trackingId: 'tracking-id',
+            status: ResultSubscriptionStatus.RESULT_SUBSCRIPTION_STATUS_OK,
+            streamId: 'stream-id',
+            accounts: ['account-id']
+          }
+        };
+        yield { orderTrades: { orderId: 'first-order' } };
+        yield { orderTrades: { orderId: 'second-order' } };
+      },
+      orderStateStream: createUnusedStream('orderStateStream')
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const options = {
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    };
+    const sdk = new TInvestNodeSDK(options);
+    const runtime = {
+      ...defaultRuntime,
+      includeSubscriptionEvents: false,
+      maxEvents: 1
+    };
+    const config: StreamRunConfig = {
+      stream: 'orders.tradesStream',
+      accounts: ['account-id'],
+      runtime
+    };
+
+    try {
+      const output = runStreamRunSession(config, runtime, options, {
+        createSdk: () => sdk,
+        now: () => new Date(),
+        elapsedNow: () => performance.now()
+      });
+      const rendered = await withDeadline(collectOutput(output), 5_000);
+
+      assert.equal(rendered.trim().split('\n').length, 1);
+      assert.equal(JSON.parse(rendered).type, 'orderTrades');
+      assert.equal(JSON.parse(rendered).sequence, 1);
+      assert.equal(JSON.parse(rendered).payload.orderId, 'first-order');
+    }
+    finally {
+      sdk.close();
+      await server.shutdown();
+    }
+  });
+
+  test('completes a real gRPC stream after maxEvents without a cancellation error', async () => {
+    const server = createServer();
+
+    server.add(OperationsStreamServiceDefinition, {
+      async *portfolioStream() {
+        yield { portfolio: { accountId: 'first-account' } };
+        yield { portfolio: { accountId: 'second-account' } };
+      },
+      positionsStream: createUnusedStream('positionsStream'),
+      operationsStream: createUnusedStream('operationsStream')
+    });
+
+    const port = await server.listen('127.0.0.1:0');
+    const options = {
+      token: 'token',
+      endpoint: `127.0.0.1:${port}`,
+      useSsl: false
+    };
+    const sdk = new TInvestNodeSDK(options);
+    const runtime = { ...defaultRuntime, maxEvents: 1 };
+    const config: StreamRunConfig = {
+      stream: 'operations.portfolioStream',
+      accounts: ['first-account'],
+      runtime
+    };
+
+    try {
+      const output = runStreamRunSession(config, runtime, options, {
+        createSdk: () => sdk,
+        now: () => new Date(),
+        elapsedNow: () => performance.now()
+      });
+      const rendered = await withDeadline(collectOutput(output), 5_000);
+
+      assert.equal(rendered.trim().split('\n').length, 1);
+      assert.match(rendered, /"accountId":"first-account"/);
+    }
+    finally {
+      sdk.close();
+      await server.shutdown();
+    }
+  });
+
   test('отменяет silent stream по duration и закрывает SDK', async () => {
     const config: StreamRunConfig = {
       stream: 'orders.tradesStream',
