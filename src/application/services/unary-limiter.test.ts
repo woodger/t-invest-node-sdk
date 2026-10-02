@@ -1,7 +1,8 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type {
   TInvestUnaryLimitContext,
+  TInvestUnaryLimiter,
   TInvestUnaryQuota
 } from './unary-limiter';
 import { createInMemoryUnaryLimiter } from './unary-limiter';
@@ -16,79 +17,112 @@ const ordersQuota: TInvestUnaryQuota = {
 describe('createInMemoryUnaryLimiter', () => {
   test('grants the first permit without waiting', async () => {
     const limiter = createInMemoryUnaryLimiter();
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      await limiter.acquire(createContext(ordersQuota));
+    await withControlledTimers(async (clock) => {
+      const acquired = recordPermit(limiter, ordersQuota, clock, granted);
+
+      await clock.advanceTo(0);
+      assert.deepEqual(granted, [0]);
+      await acquired;
     });
-
-    assert.deepEqual(delays, []);
   });
 
   test('spaces permits evenly within the original quota window', async () => {
     const limiter = createInMemoryUnaryLimiter();
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      await limiter.acquire(createContext(ordersQuota));
-      await limiter.acquire(createContext(ordersQuota));
-      await limiter.acquire(createContext({
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, ordersQuota, clock, granted);
+
+      const second = recordPermit(limiter, ordersQuota, clock, granted);
+
+      await clock.advanceTo(599);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
+      await second;
+
+      const methodQuota: TInvestUnaryQuota = {
         bucket: 'rule:OrdersService/PostOrder',
         maxRequests: 15,
         windowMs: 1_000
-      }));
-      await limiter.acquire(createContext({
-        bucket: 'rule:OrdersService/PostOrder',
-        maxRequests: 15,
-        windowMs: 1_000
-      }));
+      };
+
+      await recordPermit(limiter, methodQuota, clock, granted);
+
+      const fourth = recordPermit(limiter, methodQuota, clock, granted);
+
+      await clock.advanceTo(666);
+      assert.deepEqual(granted, [0, 600, 600]);
+
+      await clock.advanceTo(667);
+      assert.deepEqual(granted, [0, 600, 600, 667]);
+      await fourth;
     });
-
-    assert.deepEqual(delays, [600, 67]);
   });
 
   test('preserves a fractional source quota without a reduced share', async () => {
     const limiter = createInMemoryUnaryLimiter();
+    const quota: TInvestUnaryQuota = {
+      bucket: 'rule:FractionalLimitService',
+      maxRequests: 0.5,
+      windowMs: 1_000
+    };
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      const quota: TInvestUnaryQuota = {
-        bucket: 'rule:FractionalLimitService',
-        maxRequests: 0.5,
-        windowMs: 1_000
-      };
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, quota, clock, granted);
 
-      await limiter.acquire(createContext(quota));
-      await limiter.acquire(createContext(quota));
+      const following = recordPermit(limiter, quota, clock, granted);
+
+      await clock.advanceTo(1_999);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(2_000);
+      assert.deepEqual(granted, [0, 2_000]);
+      await following;
     });
-
-    assert.deepEqual(delays, [2_000]);
   });
 
   test('limits permits to the configured quota share', async () => {
     const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.5 });
+    const marketQuota: TInvestUnaryQuota = {
+      bucket: 'rule:MarketDataService',
+      maxRequests: 600,
+      windowMs: 60_000
+    };
+    const reportQuota: TInvestUnaryQuota = {
+      bucket: 'quota:OperationsService:reports',
+      maxRequests: 5,
+      windowMs: 60_000
+    };
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      await limiter.acquire(createContext({
-        bucket: 'rule:MarketDataService',
-        maxRequests: 600,
-        windowMs: 60_000
-      }));
-      await limiter.acquire(createContext({
-        bucket: 'rule:MarketDataService',
-        maxRequests: 600,
-        windowMs: 60_000
-      }));
-      await limiter.acquire(createContext({
-        bucket: 'quota:OperationsService:reports',
-        maxRequests: 5,
-        windowMs: 60_000
-      }));
-      await limiter.acquire(createContext({
-        bucket: 'quota:OperationsService:reports',
-        maxRequests: 5,
-        windowMs: 60_000
-      }));
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, marketQuota, clock, granted);
+
+      const marketCall = recordPermit(limiter, marketQuota, clock, granted);
+
+      await clock.advanceTo(199);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(200);
+      assert.deepEqual(granted, [0, 200]);
+      await marketCall;
+
+      await recordPermit(limiter, reportQuota, clock, granted);
+
+      const reportCall = recordPermit(limiter, reportQuota, clock, granted);
+
+      await clock.advanceTo(30_199);
+      assert.deepEqual(granted, [0, 200, 200]);
+
+      await clock.advanceTo(30_200);
+      assert.deepEqual(granted, [0, 200, 200, 30_200]);
+      await reportCall;
     });
-
-    assert.deepEqual(delays, [200, 30_000]);
   });
 
   test('rejects an invalid quota share', () => {
@@ -102,38 +136,48 @@ describe('createInMemoryUnaryLimiter', () => {
 
   test('paces a scaled quota below one permit over a longer interval', async () => {
     const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.2 });
+    const quota: TInvestUnaryQuota = {
+      bucket: 'rule:VeryLowLimitService',
+      maxRequests: 1,
+      windowMs: 60_000
+    };
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      const quota: TInvestUnaryQuota = {
-        bucket: 'rule:VeryLowLimitService',
-        maxRequests: 1,
-        windowMs: 60_000
-      };
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, quota, clock, granted);
 
-      await limiter.acquire(createContext(quota));
-      await limiter.acquire(createContext(quota));
+      const following = recordPermit(limiter, quota, clock, granted);
+
+      await clock.advanceTo(299_999);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(300_000);
+      assert.deepEqual(granted, [0, 300_000]);
+      await following;
     });
-
-    assert.deepEqual(delays, [300_000]);
   });
 
   test('does not delay independent buckets', async () => {
     const limiter = createInMemoryUnaryLimiter();
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      await limiter.acquire(createContext({
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, {
         bucket: 'quota:OperationsService:reports',
         maxRequests: 5,
         windowMs: 60_000
-      }));
-      await limiter.acquire(createContext({
+      }, clock, granted);
+
+      const independent = recordPermit(limiter, {
         bucket: 'rule:MarketDataService',
         maxRequests: 600,
         windowMs: 60_000
-      }));
-    });
+      }, clock, granted);
 
-    assert.deepEqual(delays, []);
+      await clock.advanceTo(0);
+      assert.deepEqual(granted, [0, 0]);
+      await independent;
+    });
   });
 
   test('rejects conflicting quotas for one bucket', async () => {
@@ -152,43 +196,50 @@ describe('createInMemoryUnaryLimiter', () => {
 
   test('reserves sequential permits for concurrent calls', async () => {
     const limiter = createInMemoryUnaryLimiter();
+    const granted: number[] = [];
 
-    const delays = await captureDelays(async () => {
-      await Promise.all([
-        limiter.acquire(createContext(ordersQuota)),
-        limiter.acquire(createContext(ordersQuota)),
-        limiter.acquire(createContext(ordersQuota))
+    await withControlledTimers(async (clock) => {
+      const acquired = Promise.all([
+        recordPermit(limiter, ordersQuota, clock, granted),
+        recordPermit(limiter, ordersQuota, clock, granted),
+        recordPermit(limiter, ordersQuota, clock, granted)
       ]);
-    });
 
-    assert.deepEqual(delays, [600, 600]);
+      await clock.advanceTo(599);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
+
+      await clock.advanceTo(1_199);
+      assert.deepEqual(granted, [0, 600]);
+
+      await clock.advanceTo(1_200);
+      assert.deepEqual(granted, [0, 600, 1_200]);
+      await acquired;
+    });
   });
 
   test('starts the next interval when a permit is actually granted', async () => {
     const limiter = createInMemoryUnaryLimiter();
+    const granted: number[] = [];
 
-    await withControlledTimers(async ({ delays, runNext, setCurrentTime }) => {
-      await limiter.acquire(createContext(ordersQuota));
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, ordersQuota, clock, granted);
 
-      const delayedCall = limiter.acquire(createContext(ordersQuota));
-      let followingCallSettled = false;
-      const followingCall = limiter.acquire(createContext(ordersQuota))
-        .finally(() => {
-          followingCallSettled = true;
-        });
+      const delayedCall = recordPermit(limiter, ordersQuota, clock, granted);
+      const followingCall = recordPermit(limiter, ordersQuota, clock, granted);
 
-      assert.deepEqual(delays, [600]);
-
-      setCurrentTime(12_000);
-      runNext();
+      clock.setCurrentTime(2_000);
+      await clock.advanceTo(2_000);
+      assert.deepEqual(granted, [0, 2_000]);
       await delayedCall;
-      await Promise.resolve();
 
-      assert.equal(followingCallSettled, false);
-      assert.deepEqual(delays, [600, 600]);
+      await clock.advanceTo(2_599);
+      assert.deepEqual(granted, [0, 2_000]);
 
-      setCurrentTime(12_600);
-      runNext();
+      await clock.advanceTo(2_600);
+      assert.deepEqual(granted, [0, 2_000, 2_600]);
       await followingCall;
     });
   });
@@ -196,25 +247,26 @@ describe('createInMemoryUnaryLimiter', () => {
   test('removes a cancelled wait from the queue', async () => {
     const limiter = createInMemoryUnaryLimiter();
     const cancellationReason = new Error('cancelled');
+    const granted: number[] = [];
 
-    await withControlledTimers(async ({ delays, runNext }) => {
-      await limiter.acquire(createContext(ordersQuota));
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, ordersQuota, clock, granted);
 
       const controller = new AbortController();
-      const cancelledCall = limiter.acquire(
-        createContext(ordersQuota, controller.signal)
-      );
-      const followingCall = limiter.acquire(createContext(ordersQuota));
-
-      controller.abort(cancellationReason);
-
-      await assert.rejects(
-        cancelledCall,
+      const cancelled = assert.rejects(
+        limiter.acquire(createContext(ordersQuota, controller.signal)),
         (error: unknown) => error === cancellationReason
       );
-      assert.deepEqual(delays, [600, 600]);
+      const followingCall = recordPermit(limiter, ordersQuota, clock, granted);
 
-      runNext();
+      controller.abort(cancellationReason);
+      await cancelled;
+
+      await clock.advanceTo(599);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
       await followingCall;
     });
   });
@@ -223,47 +275,52 @@ describe('createInMemoryUnaryLimiter', () => {
     const limiter = createInMemoryUnaryLimiter();
     const controller = new AbortController();
     const cancellationReason = new Error('cancelled');
+    const granted: number[] = [];
 
     controller.abort(cancellationReason);
 
-    const delays = await captureDelays(async () => {
+    await withControlledTimers(async (clock) => {
       await assert.rejects(
         limiter.acquire(createContext(ordersQuota, controller.signal)),
         (error: unknown) => error === cancellationReason
       );
-      await limiter.acquire(createContext(ordersQuota));
-    });
 
-    assert.deepEqual(delays, []);
+      const following = recordPermit(limiter, ordersQuota, clock, granted);
+
+      await clock.advanceTo(0);
+      assert.deepEqual(granted, [0]);
+      await following;
+    });
   });
 
   test('compacts queued permits after a later call is aborted', async () => {
     const limiter = createInMemoryUnaryLimiter();
     const controller = new AbortController();
     const cancellationReason = new Error('cancelled');
+    const granted: number[] = [];
 
-    await withControlledTimers(async ({ delays, runNext }) => {
-      await limiter.acquire(createContext(ordersQuota));
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, ordersQuota, clock, granted);
 
-      const waitingCall = limiter.acquire(createContext(ordersQuota));
-      const cancelledCall = limiter.acquire(
-        createContext(ordersQuota, controller.signal)
-      );
-      const followingCall = limiter.acquire(createContext(ordersQuota));
-
-      controller.abort(cancellationReason);
-
-      await assert.rejects(
-        cancelledCall,
+      const waitingCall = recordPermit(limiter, ordersQuota, clock, granted);
+      const cancelled = assert.rejects(
+        limiter.acquire(createContext(ordersQuota, controller.signal)),
         (error: unknown) => error === cancellationReason
       );
-      assert.deepEqual(delays, [600]);
+      const followingCall = recordPermit(limiter, ordersQuota, clock, granted);
 
-      runNext();
+      controller.abort(cancellationReason);
+      await cancelled;
+
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
       await waitingCall;
-      assert.deepEqual(delays, [600, 600]);
 
-      runNext();
+      await clock.advanceTo(1_199);
+      assert.deepEqual(granted, [0, 600]);
+
+      await clock.advanceTo(1_200);
+      assert.deepEqual(granted, [0, 600, 1_200]);
       await followingCall;
     });
   });
@@ -273,7 +330,7 @@ describe('createInMemoryUnaryLimiter', () => {
     const cancellationReason = new Error('cancelled');
     const granted: number[] = [];
 
-    await withControlledTimers(async ({ runNext }) => {
+    await withControlledTimers(async (clock) => {
       await limiter.acquire(createContext(ordersQuota));
 
       const waiting = Array.from({ length: 8 }, (_, index) => {
@@ -297,22 +354,19 @@ describe('createInMemoryUnaryLimiter', () => {
       }
 
       await Promise.all(cancelled.map(({ acquired }) => acquired));
-
-      for (const wait of waiting.filter(({ index }) => index % 2 === 0)) {
-        runNext();
-        await wait.acquired;
-      }
-
+      await clock.advanceTo(2_400);
       assert.deepEqual(granted, [0, 2, 4, 6]);
+      await Promise.all(waiting.map(({ acquired }) => acquired));
     });
   });
 
   test('preserves bucket pacing after every queued wait is cancelled', async () => {
     const limiter = createInMemoryUnaryLimiter();
     const cancellationReason = new Error('cancelled');
+    const granted: number[] = [];
 
-    await withControlledTimers(async ({ delays, runNext, setCurrentTime }) => {
-      await limiter.acquire(createContext(ordersQuota));
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, ordersQuota, clock, granted);
 
       const controllers = Array.from({ length: 3 }, () => new AbortController());
       const cancelled = controllers.map((controller) => assert.rejects(
@@ -325,23 +379,29 @@ describe('createInMemoryUnaryLimiter', () => {
       }
 
       await Promise.all(cancelled);
-      setCurrentTime(10_100);
+      clock.setCurrentTime(100);
 
-      const replacement = limiter.acquire(createContext(ordersQuota));
+      const replacement = recordPermit(limiter, ordersQuota, clock, granted);
 
-      assert.deepEqual(delays, [600, 500]);
-      runNext();
+      await clock.advanceTo(599);
+      assert.deepEqual(granted, [0]);
+
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
       await replacement;
 
-      const following = limiter.acquire(createContext(ordersQuota));
+      const following = recordPermit(limiter, ordersQuota, clock, granted);
 
-      assert.deepEqual(delays, [600, 500, 600]);
-      runNext();
+      await clock.advanceTo(1_199);
+      assert.deepEqual(granted, [0, 600]);
+
+      await clock.advanceTo(1_200);
+      assert.deepEqual(granted, [0, 600, 1_200]);
       await following;
     });
   });
 
-  test('splits a wait beyond the Node.js timer range', async () => {
+  test('keeps waits beyond the Node.js timer range pending for the full interval', async () => {
     const limiter = createInMemoryUnaryLimiter();
     const maxTimerDelayMs = 2_147_483_647;
     const interval = maxTimerDelayMs + 10;
@@ -350,24 +410,22 @@ describe('createInMemoryUnaryLimiter', () => {
       maxRequests: 1,
       windowMs: interval
     };
+    const granted: number[] = [];
 
-    await withControlledTimers(async ({
-      delays,
-      runNext,
-      setCurrentTime
-    }) => {
-      await limiter.acquire(createContext(quota));
+    await withControlledTimers(async (clock) => {
+      await recordPermit(limiter, quota, clock, granted);
 
-      const waitingCall = limiter.acquire(createContext(quota));
+      const waitingCall = recordPermit(limiter, quota, clock, granted);
 
-      assert.deepEqual(delays, [maxTimerDelayMs]);
+      assert.ok(clock.delays.length > 0);
+      assert.ok(clock.delays.every((delay) => delay > 0 && delay <= maxTimerDelayMs));
 
-      setCurrentTime(10_000 + maxTimerDelayMs);
-      runNext();
-      assert.deepEqual(delays, [maxTimerDelayMs, 10]);
+      await clock.advanceTo(interval - 1);
+      assert.deepEqual(granted, [0]);
+      assert.ok(clock.delays.every((delay) => delay > 0 && delay <= maxTimerDelayMs));
 
-      setCurrentTime(10_000 + interval);
-      runNext();
+      await clock.advanceTo(interval);
+      assert.deepEqual(granted, [0, interval]);
       await waitingCall;
     });
   });
@@ -384,37 +442,21 @@ function createContext(
   };
 }
 
-async function captureDelays(run: () => Promise<void>): Promise<number[]> {
-  const originalPerformance = global.performance;
-  const originalSetTimeout = global.setTimeout;
-  let now = 10_000;
-  const delays: number[] = [];
-
-  global.performance = { now: () => now } as Performance;
-  global.setTimeout = ((callback: (...args: unknown[]) => void, delay?: number) => {
-    const resolvedDelay = delay ?? 0;
-
-    delays.push(resolvedDelay);
-    now += resolvedDelay;
-    callback();
-
-    return 0 as never;
-  }) as unknown as typeof setTimeout;
-
-  try {
-    await run();
-
-    return delays;
-  }
-  finally {
-    global.performance = originalPerformance;
-    global.setTimeout = originalSetTimeout;
-  }
+function recordPermit(
+  limiter: TInvestUnaryLimiter,
+  quota: TInvestUnaryQuota,
+  clock: ControlledTimers,
+  granted: number[]
+): Promise<void> {
+  return limiter.acquire(createContext(quota)).then(() => {
+    granted.push(clock.now());
+  });
 }
 
 interface ControlledTimers {
   delays: number[];
-  runNext(): void;
+  now(): number;
+  advanceTo(value: number): Promise<void>;
   setCurrentTime(value: number): void;
 }
 
@@ -424,7 +466,7 @@ async function withControlledTimers(
   const originalPerformance = global.performance;
   const originalSetTimeout = global.setTimeout;
   const originalClearTimeout = global.clearTimeout;
-  let now = 10_000;
+  let now = 0;
   const delays: number[] = [];
   const callbacks = new Map<number, {
     callback: () => void;
@@ -452,21 +494,39 @@ async function withControlledTimers(
   try {
     await run({
       delays,
-      runNext() {
-        const entry = callbacks.entries().next().value;
+      now: () => now,
+      async advanceTo(value) {
+        assert.ok(value >= now);
+        await flushPromises();
 
-        assert.notEqual(entry, undefined);
+        while (true) {
+          let next: {
+            timer: number;
+            callback: () => void;
+            dueAt: number;
+          } | undefined;
 
-        const [timer, scheduled] = entry as [
-          number,
-          { callback: () => void; dueAt: number }
-        ];
+          for (const [timer, scheduled] of callbacks) {
+            if (scheduled.dueAt <= value && (next === undefined || scheduled.dueAt < next.dueAt)) {
+              next = { timer, ...scheduled };
+            }
+          }
 
-        callbacks.delete(timer);
-        now = Math.max(now, scheduled.dueAt);
-        scheduled.callback();
+          if (next === undefined) {
+            break;
+          }
+
+          callbacks.delete(next.timer);
+          now = Math.max(now, next.dueAt);
+          next.callback();
+          await flushPromises();
+        }
+
+        now = value;
+        await flushPromises();
       },
       setCurrentTime(value) {
+        assert.ok(value >= now);
         now = value;
       }
     });
@@ -476,4 +536,8 @@ async function withControlledTimers(
     global.setTimeout = originalSetTimeout;
     global.clearTimeout = originalClearTimeout;
   }
+}
+
+async function flushPromises(): Promise<void> {
+  await new Promise<void>((resolve) => setImmediate(resolve));
 }

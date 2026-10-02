@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { TInvestOptions } from '../../application/dto/t-invest-options';
 import { runSdkCommand } from './sdk-command-lifecycle';

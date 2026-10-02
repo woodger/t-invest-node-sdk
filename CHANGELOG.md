@@ -15,6 +15,7 @@
 
 ### Изменено
 
+- `icore` обновлён до 2.2.4 с исправлениями разрешения и типизации команд, потокового вывода и рендеринга таблиц и CSV.
 - Тип gRPC-клиента выводится из service definition; публичные service interfaces SDK сохранены. Внутренний stream config описан вариантами по `stream`, а построение bidirectional и server-side requests объединено в request mapper.
 - Очередь встроенного unary limiter-а удаляет отменённые requests за O(1), сохраняя FIFO, pacing и cancellation semantics.
 - Общие описания CLI-параметров cursor pagination разделяются production и Sandbox командами. Справка проверяется на согласованность со schemas по именам опций, обязательности, choices и defaults.

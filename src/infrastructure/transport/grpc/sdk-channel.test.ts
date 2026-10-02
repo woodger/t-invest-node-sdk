@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   createSecureServer,
@@ -78,7 +78,8 @@ describe('createSdkChannel', () => {
       const client = createClient(payloadServiceDefinition, channel);
       const response = await client.getPayload({});
 
-      assert.deepEqual(response, new Uint8Array([1, 2, 3]));
+      assert.ok(response instanceof Uint8Array);
+      assert.deepEqual([...response], [1, 2, 3]);
     }
     finally {
       channel?.close();

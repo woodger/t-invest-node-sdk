@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   SubscriptionInterval
@@ -179,6 +179,243 @@ describe('stream run config', () => {
         /Unexpected 'stream config\.output'/
       );
     });
+
+    test('rejects malformed JSON', () => {
+      assert.throws(
+        () => parseStreamRunConfig('{'),
+        /Expected stream config as JSON object/
+      );
+    });
+
+    test('rejects JSON values that are not objects', () => {
+      for (const value of [null, [], 'stream', 1]) {
+        assert.throws(
+          () => parseStreamRunConfig(configJson(value)),
+          /Expected 'stream config' as object/
+        );
+      }
+    });
+
+    test('rejects a missing stream name', () => {
+      assert.throws(
+        () => parseStreamRunConfig(configJson({})),
+        /Expected 'stream' as string/
+      );
+    });
+
+    test('rejects an unsupported stream name', () => {
+      assert.throws(
+        () => parseStreamRunConfig(configJson({ stream: 'unknown.stream' })),
+        /Expected 'stream' as one of:/
+      );
+    });
+
+    const streamConfigs = [
+      {
+        input: {
+          stream: 'marketdata.marketDataStream',
+          requests: [{ type: 'getMySubscriptions' }]
+        },
+        forbidden: ['accounts', 'subscriptions', 'rawRequests']
+      },
+      {
+        input: {
+          stream: 'marketdata.marketDataServerSideStream',
+          subscriptions: { trades: [{ instrumentId: 'instrument-id' }] }
+        },
+        forbidden: ['accounts', 'requests', 'rawRequests']
+      },
+      ...['operations.portfolioStream', 'operations.positionsStream', 'orders.tradesStream'].map((stream) => ({
+        input: { stream, accounts: ['account-id'] },
+        forbidden: ['requests', 'subscriptions', 'rawRequests']
+      }))
+    ];
+
+    for (const { input, forbidden } of streamConfigs) {
+      for (const field of forbidden) {
+        test(`rejects '${field}' in ${input.stream} config`, () => {
+          for (const value of [null, []]) {
+            assert.throws(
+              () => parseStreamRunConfig(configJson({ ...input, [field]: value })),
+              new RegExp(`Expected '${field}' to be omitted`)
+            );
+          }
+        });
+      }
+    }
+
+    for (const stream of ['operations.portfolioStream', 'operations.positionsStream', 'orders.tradesStream']) {
+      test(`rejects missing or non-array accounts for ${stream}`, () => {
+        for (const accounts of [undefined, null, 'account-id']) {
+          assert.throws(
+            () => parseStreamRunConfig(configJson({ stream, accounts })),
+            /Expected 'accounts' as array/
+          );
+        }
+      });
+
+      test(`rejects empty accounts for ${stream}`, () => {
+        assert.throws(
+          () => parseStreamRunConfig(configJson({ stream, accounts: [] })),
+          /Expected 'accounts' to contain at least one account id/
+        );
+      });
+
+      test(`rejects blank or non-string account ids for ${stream}`, () => {
+        for (const accountId of ['', ' ', 1]) {
+          assert.throws(
+            () => parseStreamRunConfig(configJson({ stream, accounts: [accountId] })),
+            /Expected 'accounts\[\]' as non-empty string/
+          );
+        }
+      });
+    }
+
+    test('rejects missing or non-object server-side subscriptions', () => {
+      for (const subscriptions of [undefined, null, []]) {
+        assert.throws(
+          () => parseStreamRunConfig(configJson({
+            stream: 'marketdata.marketDataServerSideStream',
+            subscriptions
+          })),
+          /Expected 'subscriptions' as object/
+        );
+      }
+    });
+
+    test('rejects server-side config without any subscriptions', () => {
+      for (const subscriptions of [{}, { trades: [] }]) {
+        assert.throws(
+          () => parseStreamRunConfig(configJson({
+            stream: 'marketdata.marketDataServerSideStream',
+            subscriptions
+          })),
+          /Expected 'subscriptions' to contain at least one market data subscription/
+        );
+      }
+    });
+
+    test('rejects missing or non-array bidirectional requests', () => {
+      for (const requests of [undefined, null, {}]) {
+        assert.throws(
+          () => parseStreamRunConfig(configJson({
+            stream: 'marketdata.marketDataStream',
+            requests
+          })),
+          /Expected 'requests' as array/
+        );
+      }
+    });
+  });
+
+  describe('runtime config validation', () => {
+    test('uses runtime defaults when runtime is omitted or empty', () => {
+      for (const runtime of [undefined, {}]) {
+        const config = parseStreamRunConfig(configJson({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime
+        }));
+
+        assert.equal(config.runtime.format, 'jsonl');
+        assert.equal(config.runtime.includePings, false);
+        assert.equal(config.runtime.includeSubscriptionEvents, true);
+        assert.equal(config.runtime.raw, false);
+        assert.equal(config.runtime.maxEvents, undefined);
+        assert.equal(config.runtime.durationMs, undefined);
+        assert.equal(config.runtime.idleTimeoutMs, undefined);
+      }
+    });
+
+    test('rejects non-object runtime values', () => {
+      for (const runtime of [null, [], 'runtime']) {
+        assert.throws(
+          () => parseStreamRunConfig(configJson({
+            stream: 'orders.tradesStream',
+            accounts: ['account-id'],
+            runtime
+          })),
+          /Expected 'runtime' as object/
+        );
+      }
+    });
+
+    test('rejects unknown runtime fields', () => {
+      assert.throws(
+        () => parseStreamRunConfig(configJson({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime: { timeout: 1 }
+        })),
+        /Unexpected 'runtime\.timeout'/
+      );
+    });
+
+    test('rejects unsupported runtime output formats', () => {
+      assert.throws(
+        () => parseStreamRunConfig(configJson({
+          stream: 'orders.tradesStream',
+          accounts: ['account-id'],
+          runtime: { format: 'csv' }
+        })),
+        /Expected 'runtime\.format' as one of: jsonl/
+      );
+    });
+
+    for (const field of ['maxEvents', 'durationMs', 'idleTimeoutMs'] as const) {
+      test(`accepts positive safe integer boundaries for '${field}'`, () => {
+        for (const value of [1, 9_007_199_254_740_991]) {
+          const config = parseStreamRunConfig(configJson({
+            stream: 'orders.tradesStream',
+            accounts: ['account-id'],
+            runtime: { [field]: value }
+          }));
+
+          assert.equal(config.runtime[field], value);
+        }
+      });
+
+      test(`rejects invalid positive safe integers for '${field}'`, () => {
+        for (const value of [0, -1, 1.5, 9_007_199_254_740_992, '1', null]) {
+          assert.throws(
+            () => parseStreamRunConfig(configJson({
+              stream: 'orders.tradesStream',
+              accounts: ['account-id'],
+              runtime: { [field]: value }
+            })),
+            { message: `Expected 'runtime.${field}' as positive integer` },
+            String(value)
+          );
+        }
+      });
+    }
+
+    test('preserves explicit runtime booleans', () => {
+      const config = parseStreamRunConfig(configJson({
+        stream: 'orders.tradesStream',
+        accounts: ['account-id'],
+        runtime: { includePings: true, includeSubscriptionEvents: false, raw: true }
+      }));
+
+      assert.equal(config.runtime.includePings, true);
+      assert.equal(config.runtime.includeSubscriptionEvents, false);
+      assert.equal(config.runtime.raw, true);
+    });
+
+    for (const field of ['includePings', 'includeSubscriptionEvents', 'raw']) {
+      test(`rejects non-boolean values for '${field}'`, () => {
+        for (const value of ['false', 0, null]) {
+          assert.throws(
+            () => parseStreamRunConfig(configJson({
+              stream: 'orders.tradesStream',
+              accounts: ['account-id'],
+              runtime: { [field]: value }
+            })),
+            { message: `Expected 'runtime.${field}' as boolean` }
+          );
+        }
+      });
+    }
   });
 
   describe('market data config validation', () => {

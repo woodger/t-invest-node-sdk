@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { X509Certificate } from 'node:crypto';
 import { describe, test } from 'node:test';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
