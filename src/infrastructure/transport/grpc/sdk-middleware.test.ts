@@ -15,7 +15,9 @@ import type {
   TInvestUnaryLimitContext,
   TInvestUnaryLimiter
 } from '../../../application/services/unary-limiter';
-import { createInMemoryUnaryLimiter } from '../../../application/services/unary-limiter';
+import {
+  createInMemoryUnaryLimiter
+} from '../../../application/services/unary-limiter';
 import {
   createSdkMiddleware,
   type SdkCallRuntime
@@ -25,7 +27,8 @@ import { UnaryLimitResolver } from './unary-limit-resolver';
 type TestRequest = Record<string, never>;
 
 const defaultUnaryResponse = { ok: true };
-const usersPath = '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
+const usersPath =
+  '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
 const maxReceiveMessageLength = 4 * 1024 * 1024;
 const usersLimit = {
   maxRequests: 100,
@@ -90,7 +93,7 @@ function createResponseStreamCall<Response>(
       responseStream: true,
       options: {}
     },
-    next: async function*() {
+    next: async function* () {
       for (const response of responses) {
         yield response;
       }
@@ -126,33 +129,36 @@ function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
 }
 
 describe('createSdkMiddleware', () => {
-  test('passes a resolved quota to the unary limiter before transport', async () => {
-    const resolver = new UnaryLimitResolver({
-      UsersService: usersLimit
-    });
-    let receivedContext: TInvestUnaryLimitContext | undefined;
-    const limiter: TInvestUnaryLimiter = {
-      async acquire(context) {
-        receivedContext = context;
-      }
-    };
+  test(
+    'passes a resolved quota to the unary limiter before transport',
+    async () => {
+      const resolver = new UnaryLimitResolver({
+        UsersService: usersLimit
+      });
+      let receivedContext: TInvestUnaryLimitContext | undefined;
+      const limiter: TInvestUnaryLimiter = {
+        async acquire(context) {
+          receivedContext = context;
+        }
+      };
 
-    const middleware = createSdkMiddleware(limiter, resolver);
-    const iterator = middleware(createUnaryCall(usersPath), {});
+      const middleware = createSdkMiddleware(limiter, resolver);
+      const iterator = middleware(createUnaryCall(usersPath), {});
 
-    const result = await iterator.next();
+      const result = await iterator.next();
 
-    assert.equal(receivedContext?.path, usersPath);
-    assert.deepEqual(receivedContext?.quota, {
-      bucket: 'rule:UsersService',
-      ...usersLimit
-    });
-    assert.equal(receivedContext?.signal.aborted, false);
-    assert.deepEqual(result, {
-      done: true,
-      value: { ok: true }
-    });
-  });
+      assert.equal(receivedContext?.path, usersPath);
+      assert.deepEqual(receivedContext?.quota, {
+        bucket: 'rule:UsersService',
+        ...usersLimit
+      });
+      assert.equal(receivedContext?.signal.aborted, false);
+      assert.deepEqual(result, {
+        done: true,
+        value: { ok: true }
+      });
+    }
+  );
 
   test('uses dependencies from the current middleware instance', async () => {
     const resolverA = new UnaryLimitResolver({ UsersService: usersLimit });
@@ -194,18 +200,21 @@ describe('createSdkMiddleware', () => {
     assert.deepEqual(resultB, resultA);
   });
 
-  test('dispatches unary calls immediately when no limiter is supplied', async () => {
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({})
-    );
-    const result = await middleware(createUnaryCall(usersPath), {}).next();
+  test(
+    'dispatches unary calls immediately when no limiter is supplied',
+    async () => {
+      const middleware = createSdkMiddleware(
+        undefined,
+        new UnaryLimitResolver({})
+      );
+      const result = await middleware(createUnaryCall(usersPath), {}).next();
 
-    assert.deepEqual(result, {
-      done: true,
-      value: { ok: true }
-    });
-  });
+      assert.deepEqual(result, {
+        done: true,
+        value: { ok: true }
+      });
+    }
+  );
 
   test('rejects a unary call without a configured limit rule', async () => {
     const middleware = createSdkMiddleware(
@@ -216,7 +225,8 @@ describe('createSdkMiddleware', () => {
 
     await assert.rejects(
       iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.UnknownUnaryLimit)
+      (error: unknown) =>
+        isSdkError(error, SdkErrorCode.UnknownUnaryLimit)
         && error.source === 'sdk'
         && error.path === usersPath
     );
@@ -249,7 +259,8 @@ describe('createSdkMiddleware', () => {
 
     await assert.rejects(
       result,
-      (error: unknown) => isSdkError(error, SdkErrorCode.Cancelled)
+      (error: unknown) =>
+        isSdkError(error, SdkErrorCode.Cancelled)
         && error.source === 'abort'
     );
   });
@@ -344,7 +355,8 @@ describe('createSdkMiddleware', () => {
 
     await assert.rejects(
       iterator.next(),
-      (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+      (error: unknown) =>
+        isSdkError(error, SdkErrorCode.Unavailable)
         && error.source === 'grpc'
         && error.path === path
     );
@@ -377,41 +389,44 @@ describe('createSdkMiddleware', () => {
     assert.deepEqual(responses, [{ seq: 1 }, { seq: 2 }]);
   });
 
-  test('rejects a response stream when a metadata callback throws', async () => {
-    const path = '/test.StreamService/Watch';
-    const callbackError = new Error('stream header callback failed');
-    const call: ClientMiddlewareCall<
-      TestRequest,
-      typeof defaultUnaryResponse,
-      CallOptions
-    > = {
-      requestStream: false,
-      request: {},
-      responseStream: true,
-      method: {
-        path,
+  test(
+    'rejects a response stream when a metadata callback throws',
+    async () => {
+      const path = '/test.StreamService/Watch';
+      const callbackError = new Error('stream header callback failed');
+      const call: ClientMiddlewareCall<
+        TestRequest,
+        typeof defaultUnaryResponse,
+        CallOptions
+      > = {
         requestStream: false,
+        request: {},
         responseStream: true,
-        options: {}
-      },
-      next: async function*(_request, options) {
-        options.onHeader?.(new Metadata());
-        yield defaultUnaryResponse;
-      }
-    };
-    const middleware = createSdkMiddleware(
-      undefined,
-      new UnaryLimitResolver({})
-    );
-    const iterator = middleware(call, {
-      onHeader() {
-        throw callbackError;
-      }
-    });
+        method: {
+          path,
+          requestStream: false,
+          responseStream: true,
+          options: {}
+        },
+        next: async function* (_request, options) {
+          options.onHeader?.(new Metadata());
+          yield defaultUnaryResponse;
+        }
+      };
+      const middleware = createSdkMiddleware(
+        undefined,
+        new UnaryLimitResolver({})
+      );
+      const iterator = middleware(call, {
+        onHeader() {
+          throw callbackError;
+        }
+      });
 
-    await assert.rejects(
-      iterator.next(),
-      (error: unknown) => error === callbackError
-    );
-  });
+      await assert.rejects(
+        iterator.next(),
+        (error: unknown) => error === callbackError
+      );
+    }
+  );
 });

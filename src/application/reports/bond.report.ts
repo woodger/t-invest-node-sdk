@@ -10,7 +10,9 @@
 
 import type { ReportMoney } from './money.report';
 
-/** Одна облигация в отчете команд `instruments bond-by` и `instruments bonds`. */
+/**
+ * Одна облигация в отчете команд `instruments bond-by` и `instruments bonds`.
+ */
 export interface BondReportInstrument {
   figi: string;
   ticker: string;

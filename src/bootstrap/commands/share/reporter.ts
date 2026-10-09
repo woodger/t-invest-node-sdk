@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument share show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   ShareReport,
   ShareReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type {
   Share,
   ShareResponse
@@ -26,7 +30,9 @@ export const shareFormats = ['json', 'table'] as const;
 
 export type ShareFormat = typeof shareFormats[number];
 
-export function createShareReportInstrument(instrument: Share): ShareReportInstrument {
+export function createShareReportInstrument(
+  instrument: Share
+): ShareReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -70,7 +76,9 @@ export function createShareReportInstrument(instrument: Share): ShareReportInstr
 }
 
 export function createShareReport(response: ShareResponse): ShareReport {
-  return response.instrument === undefined ? null : createShareReportInstrument(response.instrument);
+  return response.instrument === undefined
+    ? null
+    : createShareReportInstrument(response.instrument);
 }
 
 export function renderShareRows(report: ShareReportInstrument[]): string {
@@ -112,7 +120,10 @@ export function renderShareRows(report: ShareReportInstrument[]): string {
   ]);
 }
 
-export function formatShareReport(report: ShareReport, format: ShareFormat): string {
+export function formatShareReport(
+  report: ShareReport,
+  format: ShareFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -120,6 +131,9 @@ export function formatShareReport(report: ShareReport, format: ShareFormat): str
   return renderShareRows(report === null ? [] : [report]);
 }
 
-export function formatShare(response: ShareResponse, format: ShareFormat): string {
+export function formatShare(
+  response: ShareResponse,
+  format: ShareFormat
+): string {
   return formatShareReport(createShareReport(response), format);
 }

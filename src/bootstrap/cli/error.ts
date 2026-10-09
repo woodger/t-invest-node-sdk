@@ -1,5 +1,6 @@
 /**
- * Модуль CLI error policy нормализует terminal errors и process-style exit code.
+ * Модуль CLI error policy нормализует terminal errors и process-style exit
+ * code.
  *
  * Здесь допустимы:
  * - narrowing `IcoreError` по стабильному code/details contract;

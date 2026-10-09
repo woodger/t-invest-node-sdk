@@ -5,11 +5,13 @@
  * - чтение stream config и применение runtime overrides;
  * - передача validated config и runtime policy в stream session;
  *
- * Здесь не должно быть JSONL event formatting rules или transport adapter logic.
+ * Здесь не должно быть JSONL event formatting rules или transport adapter
+ * logic.
  */
 
 import {
-  readFile } from 'node:fs/promises';
+  readFile
+} from 'node:fs/promises';
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
@@ -40,38 +42,44 @@ type StreamRunDependencies = {
 };
 
 const streamRunCommandPath = ['stream', 'run'] as const;
-const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) => new TInvestNodeSDK(options);
-const defaultStreamRunConfigReader: StreamRunConfigReader = (path) => readFile(path, 'utf8');
+const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
+const defaultStreamRunConfigReader: StreamRunConfigReader = (path) =>
+  readFile(path, 'utf8');
 
-const streamRunOptionsSchema = withSdkOptions({
-  config: {
-    type: 'string',
-    required: true
-  },
-  'max-events': {
-    ...positiveSafeIntegerOption
-  },
-  'duration-ms': {
-    ...positiveSafeIntegerOption
-  },
-  'idle-timeout-ms': {
-    ...positiveSafeIntegerOption
-  },
-  'include-pings': {
-    type: 'boolean'
-  },
-  raw: {
-    type: 'boolean'
-  },
-  format: {
-    type: 'string',
-    choices: streamRunFormats,
-    default: 'jsonl'
-  }
-} as const);
+const streamRunOptionsSchema = withSdkOptions(
+  {
+    config: {
+      type: 'string',
+      required: true
+    },
+    'max-events': {
+      ...positiveSafeIntegerOption
+    },
+    'duration-ms': {
+      ...positiveSafeIntegerOption
+    },
+    'idle-timeout-ms': {
+      ...positiveSafeIntegerOption
+    },
+    'include-pings': {
+      type: 'boolean'
+    },
+    raw: {
+      type: 'boolean'
+    },
+    format: {
+      type: 'string',
+      choices: streamRunFormats,
+      default: 'jsonl'
+    }
+  } as const
+);
 
 type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
-type StreamRunProvidedOptions = InferProvidedOptions<typeof streamRunOptionsSchema>;
+type StreamRunProvidedOptions = InferProvidedOptions<
+  typeof streamRunOptionsSchema
+>;
 
 export function createStreamRunCommand(
   dependencies: StreamRunDependencies = {}
@@ -102,7 +110,9 @@ async function createStreamRunOutput(
   provided: StreamRunProvidedOptions,
   dependencies: Required<StreamRunDependencies>
 ): Promise<AsyncIterable<string>> {
-  const config = parseStreamRunConfig(await dependencies.readConfig(options.config));
+  const config = parseStreamRunConfig(
+    await dependencies.readConfig(options.config)
+  );
   const runtime = resolveStreamRunRuntime(config.runtime, options, provided);
   const sdkOptions = resolveSdkOptionsFromCommandOptions(options);
 
@@ -127,8 +137,6 @@ function resolveStreamRunRuntime(
     includePings: provided['include-pings']
       ? options['include-pings'] === true
       : runtime.includePings,
-    raw: provided.raw
-      ? options.raw === true
-      : runtime.raw
+    raw: provided.raw ? options.raw === true : runtime.raw
   };
 }

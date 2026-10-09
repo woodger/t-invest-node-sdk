@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
@@ -63,11 +64,18 @@ describe('edit-favorites command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          ['instrument', 'favorite', 'edit', '--instrument-id=figi-1', '--action=add'],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'favorite',
+              'edit',
+              '--instrument-id=figi-1',
+              '--action=add'
+            ],
+            undefined
+          ),
         /Expected '--confirm' to execute side-effect command/
       );
       assert.equal(sdkCreated, false);

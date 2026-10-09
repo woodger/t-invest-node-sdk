@@ -62,7 +62,8 @@ import {
   type ResolvedTInvestOptions
 } from './sdk-config';
 
-type ServiceDefinition = typeof InstrumentsServiceDefinition
+type ServiceDefinition =
+  | typeof InstrumentsServiceDefinition
   | typeof MarketDataServiceDefinition
   | typeof MarketDataStreamServiceDefinition
   | typeof OperationsServiceDefinition
@@ -76,14 +77,15 @@ type ServiceDefinition = typeof InstrumentsServiceDefinition
 
 export class TInvestNodeSDK {
   private readonly options: ResolvedTInvestOptions;
-  private readonly clientsByServiceDefinition: Map<ServiceDefinition, unknown> = new Map();
+  private readonly clientsByServiceDefinition: Map<ServiceDefinition, unknown> =
+    new Map();
   private readonly channel: Channel;
   private readonly metadata: Metadata;
   private readonly unaryLimitResolver: UnaryLimitResolver;
   private readonly maxReceiveMessageLength: number;
   private closed = false;
   private readonly lifecycleController = new AbortController();
-  
+
   constructor(options: TInvestOptions) {
     this.options = resolveSdkInstanceOptions(options);
     this.maxReceiveMessageLength = packageConfig.grpc.maxReceiveMessageLength;
@@ -106,7 +108,7 @@ export class TInvestNodeSDK {
   get instruments(): InstrumentsService {
     return this.getOrCreateServiceClient(InstrumentsServiceDefinition);
   }
-  
+
   get marketData(): MarketDataService {
     return this.getOrCreateServiceClient(MarketDataServiceDefinition);
   }
@@ -126,7 +128,7 @@ export class TInvestNodeSDK {
       OperationsStreamServiceDefinition
     );
   }
-  
+
   get orders(): OrdersService {
     return this.getOrCreateServiceClient(OrdersServiceDefinition);
   }
@@ -146,14 +148,15 @@ export class TInvestNodeSDK {
   get stopOrders(): StopOrdersService {
     return this.getOrCreateServiceClient(StopOrdersServiceDefinition);
   }
-  
+
   get users(): UsersService {
     return this.getOrCreateServiceClient(UsersServiceDefinition);
   }
 
   /**
    * Идемпотентно закрывает shared channel и запрещает новые SDK-вызовы.
-   * Уже переданные transport-у операции нужно завершать их собственным AbortSignal.
+   * Уже переданные transport-у операции нужно завершать их собственным
+   * AbortSignal.
    */
   close(): void {
     if (this.closed) {
@@ -166,8 +169,10 @@ export class TInvestNodeSDK {
   }
 
   /**
-   * Лениво создаёт и кеширует клиент service definition с общим channel и middleware SDK.
-   * Доступ после закрытия SDK отклоняется, включая возврат ранее созданного клиента.
+   * Лениво создаёт и кеширует клиент service definition с общим channel и
+   * middleware SDK.
+   * Доступ после закрытия SDK отклоняется, включая возврат ранее созданного
+   * клиента.
    */
   private getOrCreateServiceClient<Service extends ServiceDefinition>(
     serviceDefinition: Service
@@ -202,14 +207,20 @@ export class TInvestNodeSDK {
     return client;
   }
 
-  /** Останавливает доступ к сервисам и новые RPC с SDK_CLOSED после закрытия SDK. */
+  /**
+   * Останавливает доступ к сервисам и новые RPC с SDK_CLOSED после закрытия
+   * SDK.
+   */
   private assertOpen(): void {
     if (this.closed) {
       throw this.createClosedError();
     }
   }
 
-  /** Задаёт lifecycle-ошибку для отказа в новом вызове и причины отмены ожиданий limiter-а. */
+  /**
+   * Задаёт lifecycle-ошибку для отказа в новом вызове и причины отмены ожиданий
+   * limiter-а.
+   */
   private createClosedError(): SdkError<SdkErrorCode.SdkClosed> {
     return new SdkError(
       SdkErrorCode.SdkClosed,
@@ -220,7 +231,10 @@ export class TInvestNodeSDK {
     );
   }
 
-  /** Отклоняет доступ через прежние имена сервисов с ошибкой и подсказкой для миграции. */
+  /**
+   * Отклоняет доступ через прежние имена сервисов с ошибкой и подсказкой для
+   * миграции.
+   */
   private static throwDeprecatedServiceGetter(): never {
     throw new SdkError(
       SdkErrorCode.InvalidArgument,
@@ -232,7 +246,8 @@ export class TInvestNodeSDK {
   }
 
   // Прежние имена регистрируются при загрузке класса только в runtime,
-  // чтобы сохранить диагностику без включения этих getters в публичные TypeScript-типы.
+  // чтобы сохранить диагностику без включения этих getters в публичные
+  // TypeScript-типы.
   static {
     Object.defineProperties(this.prototype, {
       marketdata: {

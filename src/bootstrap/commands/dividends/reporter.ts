@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `instrument dividends`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { DividendsReport, DividendsReportItem } from '../../../application/reports';
+import type {
+  DividendsReport,
+  DividendsReportItem
+} from '../../../application/reports';
 import type { Dividend } from '../../../generated/instruments';
 import {
   formatReportDate,
@@ -70,6 +74,9 @@ export function formatDividendsReport(
   ]);
 }
 
-export function formatDividends(dividends: Dividend[], format: DividendsFormat): string {
+export function formatDividends(
+  dividends: Dividend[],
+  format: DividendsFormat
+): string {
   return formatDividendsReport(createDividendsReport(dividends), format);
 }

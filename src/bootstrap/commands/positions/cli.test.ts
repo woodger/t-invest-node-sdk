@@ -3,7 +3,10 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue } from '../../../generated/common';
-import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
+import type {
+  PositionsRequest,
+  PositionsResponse
+} from '../../../generated/operations';
 import { createPositionsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -14,7 +17,9 @@ function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   };
 }
 
-function positionsResponse(overrides: Partial<PositionsResponse> = {}): PositionsResponse {
+function positionsResponse(
+  overrides: Partial<PositionsResponse> = {}
+): PositionsResponse {
   return {
     money: [money(100, 0)],
     blocked: [],
@@ -85,17 +90,18 @@ describe('positions command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'operation',
-            'positions',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=account-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'operation',
+              'positions',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--account-id=account-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

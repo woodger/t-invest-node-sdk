@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { Quotation } from '../../../generated/common';
-import type { InstrumentClosePriceResponse } from '../../../generated/marketdata';
+import type {
+  InstrumentClosePriceResponse
+} from '../../../generated/marketdata';
 import { createClosePricesReport, formatClosePricesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -51,10 +53,16 @@ describe('close-prices reporter', () => {
 
   describe('formatClosePricesReport', () => {
     test('formats report as table', () => {
-      const output = formatClosePricesReport(createClosePricesReport([closePrice()]), 'table');
+      const output = formatClosePricesReport(
+        createClosePricesReport([closePrice()]),
+        'table'
+      );
 
       assert.match(output, /^figi\s+instrumentUid\s+price\s+time/m);
-      assert.match(output, /BBG00QPYJ5H0\s+instrument-uid\s+123.45\s+2026-06-19T00:00:00.000Z/);
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+instrument-uid\s+123.45\s+2026-06-19T00:00:00.000Z/
+      );
     });
 
     test('formats report as json', () => {

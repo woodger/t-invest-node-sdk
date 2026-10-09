@@ -6,11 +6,15 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
+import type {
+  PortfolioRequest,
+  PortfolioResponse
+} from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -27,10 +31,13 @@ type SandboxPortfolioSdk = {
   close(): void;
 };
 
-type SandboxPortfolioSdkFactory = (options: TInvestOptions) => SandboxPortfolioSdk;
+type SandboxPortfolioSdkFactory = (
+  options: TInvestOptions
+) => SandboxPortfolioSdk;
 
 const sandboxPortfolioCommandPath = ['sandbox', 'portfolio'] as const;
-const defaultSandboxPortfolioSdkFactory: SandboxPortfolioSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxPortfolioSdkFactory: SandboxPortfolioSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxPortfolioRequestOptionsSchema = {
   'account-id': {
@@ -57,7 +64,9 @@ const sandboxPortfolioOptionsSchema = withSdkOptions(
   sandboxPortfolioFormatOptionsSchema
 );
 
-type SandboxPortfolioOptions = InferOptions<typeof sandboxPortfolioOptionsSchema>;
+type SandboxPortfolioOptions = InferOptions<
+  typeof sandboxPortfolioOptionsSchema
+>;
 type SandboxPortfolioRequestOptions = CommandRequestOptions<
   SandboxPortfolioOptions,
   'account-id' | 'currency'

@@ -6,7 +6,8 @@
  * - делегирование request mapping в command-owned mapper;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -17,7 +18,10 @@ import {
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
+import {
+  positiveSafeIntegerOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
@@ -36,7 +40,8 @@ type PostOrderSdk = {
 type PostOrderSdkFactory = (options: TInvestOptions) => PostOrderSdk;
 
 const postOrderCommandPath = ['order', 'place'] as const;
-const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultPostOrderSdkFactory: PostOrderSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const postOrderDirectionNames = ['buy', 'sell'] as const;
 const postOrderTypeNames = ['limit', 'market', 'bestprice'] as const;

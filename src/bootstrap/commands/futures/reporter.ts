@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument future list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { FuturesReport } from '../../../application/reports';
@@ -23,7 +24,10 @@ export function createFuturesReport(instruments: Future[]): FuturesReport {
   return instruments.map(createFutureReportInstrument);
 }
 
-export function formatFuturesReport(report: FuturesReport, format: FuturesFormat): string {
+export function formatFuturesReport(
+  report: FuturesReport,
+  format: FuturesFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -31,6 +35,9 @@ export function formatFuturesReport(report: FuturesReport, format: FuturesFormat
   return renderFutureRows(report);
 }
 
-export function formatFutures(instruments: Future[], format: FuturesFormat): string {
+export function formatFutures(
+  instruments: Future[],
+  format: FuturesFormat
+): string {
   return formatFuturesReport(createFuturesReport(instruments), format);
 }

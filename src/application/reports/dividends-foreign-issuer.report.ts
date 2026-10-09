@@ -53,7 +53,10 @@ export interface DividendsForeignIssuerEmptyReport {
   type: 'empty';
 }
 
-/** Отчет команды `operations get-dividends-foreign-issuer` на application/output boundary. */
+/**
+ * Отчет команды `operations get-dividends-foreign-issuer` на application/output
+ * boundary.
+ */
 export type DividendsForeignIssuerReport =
   | DividendsForeignIssuerTaskReport
   | DividendsForeignIssuerPageReport

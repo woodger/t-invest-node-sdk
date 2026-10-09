@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `operation positions`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -26,7 +27,9 @@ export const positionsFormats = ['json', 'table'] as const;
 
 export type PositionsFormat = typeof positionsFormats[number];
 
-function toReportSecurity(position: PositionsSecurities): PositionsReportSecurity {
+function toReportSecurity(
+  position: PositionsSecurities
+): PositionsReportSecurity {
   return {
     figi: position.figi,
     instrumentUid: position.instrumentUid,
@@ -57,7 +60,9 @@ function toReportOption(position: PositionsOptions): PositionsReportOption {
   };
 }
 
-export function createPositionsReport(response: PositionsResponse): PositionsReport {
+export function createPositionsReport(
+  response: PositionsResponse
+): PositionsReport {
   return {
     limitsLoadingInProgress: response.limitsLoadingInProgress,
     money: response.money.map((value) => toReportMoney(value)),
@@ -68,14 +73,20 @@ export function createPositionsReport(response: PositionsResponse): PositionsRep
   };
 }
 
-function renderSection(title: string, rows: readonly (readonly string[])[]): string {
+function renderSection(
+  title: string,
+  rows: readonly (readonly string[])[]
+): string {
   return [
     `${title}:`,
     renderTextTable(rows)
   ].join('\n');
 }
 
-export function formatPositionsReport(report: PositionsReport, format: PositionsFormat): string {
+export function formatPositionsReport(
+  report: PositionsReport,
+  format: PositionsFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -98,7 +109,15 @@ export function formatPositionsReport(report: PositionsReport, format: Positions
       ])
     ]),
     renderSection('securities', [
-      ['figi', 'instrumentUid', 'positionUid', 'instrumentType', 'balance', 'blocked', 'exchangeBlocked'],
+      [
+        'figi',
+        'instrumentUid',
+        'positionUid',
+        'instrumentType',
+        'balance',
+        'blocked',
+        'exchangeBlocked'
+      ],
       ...report.securities.map((position) => [
         position.figi,
         position.instrumentUid,
@@ -131,6 +150,9 @@ export function formatPositionsReport(report: PositionsReport, format: Positions
   ].join('\n');
 }
 
-export function formatPositions(response: PositionsResponse, format: PositionsFormat): string {
+export function formatPositions(
+  response: PositionsResponse,
+  format: PositionsFormat
+): string {
   return formatPositionsReport(createPositionsReport(response), format);
 }

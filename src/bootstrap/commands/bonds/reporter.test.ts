@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import {
   RealExchange,
   SecurityTradingStatus,
@@ -149,9 +150,15 @@ describe('bonds reporter', () => {
     test('formats report as table', () => {
       const output = formatBondsReport(createBondsReport([bond()]), 'table');
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG00B9XRY4J\s+SU26238RMFS4\s+TQOB\s+bond-uid/);
-      assert.match(output, /OFZ 26238\s+rub\s+1\s+MOEX\s+Government\s+2041-05-15T00:00:00.000Z/);
+      assert.match(
+        output,
+        /OFZ 26238\s+rub\s+1\s+MOEX\s+Government\s+2041-05-15T00:00:00.000Z/
+      );
       assert.doesNotMatch(output, /99\.5/);
     });
 

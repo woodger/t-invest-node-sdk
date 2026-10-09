@@ -3,7 +3,9 @@ import { describe, test } from 'node:test';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffReport, formatUserTariffReport } from './reporter';
 
-function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariffResponse {
+function response(
+  overrides: Partial<GetUserTariffResponse> = {}
+): GetUserTariffResponse {
   return {
     unaryLimits: [
       {
@@ -47,11 +49,23 @@ describe('user-tariff reporter', () => {
 
   describe('formatUserTariffReport', () => {
     test('formats report as table', () => {
-      const output = formatUserTariffReport(createUserTariffReport(response()), 'table');
+      const output = formatUserTariffReport(
+        createUserTariffReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^type\s+limit\/min\s+limit\/sec\s+connections\s+open\s+methods\/streams/m);
-      assert.match(output, /unary\s+100\s+UsersService\/GetAccounts, UsersService\/GetInfo/);
-      assert.match(output, /stream\s+10\s+2\s+MarketDataStreamService\/MarketDataStream/);
+      assert.match(
+        output,
+        /^type\s+limit\/min\s+limit\/sec\s+connections\s+open\s+methods\/streams/m
+      );
+      assert.match(
+        output,
+        /unary\s+100\s+UsersService\/GetAccounts, UsersService\/GetInfo/
+      );
+      assert.match(
+        output,
+        /stream\s+10\s+2\s+MarketDataStreamService\/MarketDataStream/
+      );
     });
 
     test('omits absent per-second limits from json', () => {
@@ -99,7 +113,13 @@ describe('user-tariff reporter', () => {
         }));
         const output = formatUserTariffReport(report, 'table');
 
-        assert.match(output, new RegExp(`^unary\\s+900\\s+${limitPerSecond}\\s+OrdersService/PostOrder$`, 'm'));
+        assert.match(
+          output,
+          new RegExp(
+            `^unary\\s+900\\s+${limitPerSecond}\\s+OrdersService/PostOrder$`,
+            'm'
+          )
+        );
       });
     }
   });

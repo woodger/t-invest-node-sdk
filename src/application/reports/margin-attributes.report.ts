@@ -10,9 +10,13 @@
 
 import type { ReportMoney } from './money.report';
 
-/** Отчет команды `users get-margin-attributes` на application/output boundary. */
+/**
+ * Отчет команды `users get-margin-attributes` на application/output boundary.
+ */
 export interface MarginAttributesReport {
-  /** Ликвидная стоимость портфеля или `null`, если provider не вернул значение. */
+  /**
+   * Ликвидная стоимость портфеля или `null`, если provider не вернул значение.
+   */
   liquidPortfolio: ReportMoney | null;
   /** Начальная маржа или `null`, если provider не вернул значение. */
   startingMargin: ReportMoney | null;

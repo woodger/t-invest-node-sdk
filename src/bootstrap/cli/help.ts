@@ -5,7 +5,8 @@
  * - распознавание help-флагов;
  * - сборка общего и command-specific help текста.
  *
- * Здесь не должно быть исполнения команд, разбора raw CLI input или SDK runtime wiring.
+ * Здесь не должно быть исполнения команд, разбора raw CLI input или SDK runtime
+ * wiring.
  */
 
 import packageJson from '../../../package.json';
@@ -29,7 +30,9 @@ export function isCommandHelpName(value: unknown): value is CommandHelpName {
   return typeof value === 'string' && Object.hasOwn(commandHelp, value);
 }
 
-export function resolveCommandHelpName(positionals: readonly unknown[]): CommandHelpName | undefined {
+export function resolveCommandHelpName(
+  positionals: readonly unknown[]
+): CommandHelpName | undefined {
   const commandName = normalizeHelpCommandName(positionals);
 
   if (commandName === undefined) {
@@ -39,7 +42,9 @@ export function resolveCommandHelpName(positionals: readonly unknown[]): Command
   return isCommandHelpName(commandName) ? commandName : undefined;
 }
 
-export function resolveDomainHelpName(positionals: readonly unknown[]): CliDomainName | undefined {
+export function resolveDomainHelpName(
+  positionals: readonly unknown[]
+): CliDomainName | undefined {
   if (positionals.length !== 1) {
     return undefined;
   }
@@ -73,7 +78,10 @@ export function renderHelp(positionals: readonly unknown[]): string {
   return renderCommandHelp(commandName);
 }
 
-function renderSection(title: string, rows: readonly string[] | undefined): string[] {
+function renderSection(
+  title: string,
+  rows: readonly string[] | undefined
+): string[] {
   if (rows === undefined || rows.length === 0) {
     return [];
   }
@@ -87,21 +95,33 @@ function renderSection(title: string, rows: readonly string[] | undefined): stri
 
 function renderCommandContract(command: CommandHelp): string[] {
   return [
-    ...renderSection('SDK call', command.sdkCall === undefined ? undefined : [command.sdkCall]),
-    ...renderSection('gRPC method', command.grpcMethod === undefined ? undefined : [command.grpcMethod])
+    ...renderSection(
+      'SDK call',
+      command.sdkCall === undefined ? undefined : [command.sdkCall]
+    ),
+    ...renderSection(
+      'gRPC method',
+      command.grpcMethod === undefined ? undefined : [command.grpcMethod]
+    )
   ];
 }
 
-function normalizeHelpCommandName(positionals: readonly unknown[]): string | undefined {
+function normalizeHelpCommandName(
+  positionals: readonly unknown[]
+): string | undefined {
   if (positionals.length === 0) {
     return undefined;
   }
 
-  return canonicalizeCommandName(positionals.map((value) => String(value)).join(' '));
+  return canonicalizeCommandName(
+    positionals.map((value) => String(value)).join(' ')
+  );
 }
 
 export function renderCliHelp(): string {
-  const domainNameWidth = Math.max(...cliDomainNames.map((name) => name.length));
+  const domainNameWidth = Math.max(
+    ...cliDomainNames.map((name) => name.length)
+  );
 
   return [
     `${cliName} ${packageJson.version}`,
@@ -116,7 +136,10 @@ export function renderCliHelp(): string {
     '',
     'Domains:',
     ...cliDomainNames.map(
-      (domainName) => `  ${domainName.padEnd(domainNameWidth)}   ${cliDomains[domainName].description}`
+      (domainName) =>
+        `  ${domainName.padEnd(domainNameWidth)}   ${
+          cliDomains[domainName].description
+        }`
     ),
     '',
     'Global options:',
@@ -137,7 +160,9 @@ export function renderDomainHelp(domainName: CliDomainName): string {
       action: commandActionName(name),
       command
     }));
-  const commandNameWidth = Math.max(...commands.map(({ action }) => action.length));
+  const commandNameWidth = Math.max(
+    ...commands.map(({ action }) => action.length)
+  );
 
   return [
     `${cliName} ${packageJson.version}`,
@@ -149,7 +174,8 @@ export function renderDomainHelp(domainName: CliDomainName): string {
     '',
     'Commands:',
     ...commands.map(
-      ({ action, command }) => `  ${action.padEnd(commandNameWidth)}   ${command.description}`
+      ({ action, command }) =>
+        `  ${action.padEnd(commandNameWidth)}   ${command.description}`
     ),
     '',
     'Command details:',

@@ -40,9 +40,15 @@ describe('accounts reporter', () => {
 
   describe('formatAccountsReport', () => {
     test('formats report as table', () => {
-      const output = formatAccountsReport(createAccountsReport([account()]), 'table');
+      const output = formatAccountsReport(
+        createAccountsReport([account()]),
+        'table'
+      );
 
-      assert.match(output, /^id\s+name\s+type\s+status\s+accessLevel\s+openedDate\s+closedDate/);
+      assert.match(
+        output,
+        /^id\s+name\s+type\s+status\s+accessLevel\s+openedDate\s+closedDate/
+      );
       assert.match(output, /account-id\s+Main account\s+ACCOUNT_TYPE_TINKOFF/);
       assert.match(output, /ACCOUNT_ACCESS_LEVEL_FULL_ACCESS/);
     });
@@ -63,7 +69,10 @@ describe('accounts reporter', () => {
 
     for (const [type, expected] of accountTypes) {
       test(`formats ${expected} account type as json`, () => {
-        const output = formatAccountsReport(createAccountsReport([account({ type })]), 'json');
+        const output = formatAccountsReport(
+          createAccountsReport([account({ type })]),
+          'json'
+        );
 
         assert.equal(JSON.parse(output)[0].type, expected);
       });

@@ -6,7 +6,10 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import { createDividendsForeignIssuerCommand, createDividendsForeignIssuerRequest } from './cli';
+import {
+  createDividendsForeignIssuerCommand,
+  createDividendsForeignIssuerRequest
+} from './cli';
 
 function response(
   overrides: Partial<GetDividendsForeignIssuerResponse> = {}
@@ -65,12 +68,13 @@ describe('dividends-foreign-issuer command', () => {
 
     test('rejects mixed generate and get modes', () => {
       assert.throws(
-        () => createDividendsForeignIssuerRequest({
-          'account-id': '2000000000',
-          from: '2026-01-01T00:00:00.000Z',
-          to: '2026-12-31T00:00:00.000Z',
-          'task-id': 'task-id'
-        }),
+        () =>
+          createDividendsForeignIssuerRequest({
+            'account-id': '2000000000',
+            from: '2026-01-01T00:00:00.000Z',
+            to: '2026-12-31T00:00:00.000Z',
+            'task-id': 'task-id'
+          }),
         /Expected either '--task-id' or '--account-id' with '--from' and '--to'/
       );
     });
@@ -84,21 +88,23 @@ describe('dividends-foreign-issuer command', () => {
 
     test('rejects invalid page', () => {
       assert.throws(
-        () => createDividendsForeignIssuerRequest({
-          'task-id': 'task-id',
-          page: '-1'
-        }),
+        () =>
+          createDividendsForeignIssuerRequest({
+            'task-id': 'task-id',
+            page: '-1'
+          }),
         /Expected '--page' as integer greater than or equal to 0/
       );
     });
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => createDividendsForeignIssuerRequest({
-          'account-id': '2000000000',
-          from: '2026-12-31T00:00:00.000Z',
-          to: '2026-01-01T00:00:00.000Z'
-        }),
+        () =>
+          createDividendsForeignIssuerRequest({
+            'account-id': '2000000000',
+            from: '2026-12-31T00:00:00.000Z',
+            to: '2026-01-01T00:00:00.000Z'
+          }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });
@@ -175,17 +181,18 @@ describe('dividends-foreign-issuer command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'operation',
-            'foreign-dividends-report',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--task-id=task-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'operation',
+              'foreign-dividends-report',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--task-id=task-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

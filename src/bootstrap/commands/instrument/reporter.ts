@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -28,7 +29,9 @@ export const instrumentFormats = ['json', 'table'] as const;
 
 export type InstrumentFormat = typeof instrumentFormats[number];
 
-function toReportInstrument(instrument: Instrument): InstrumentReportInstrument {
+function toReportInstrument(
+  instrument: Instrument
+): InstrumentReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -60,11 +63,18 @@ function toReportInstrument(instrument: Instrument): InstrumentReportInstrument 
   };
 }
 
-export function createInstrumentReport(response: InstrumentResponse): InstrumentReport {
-  return response.instrument === undefined ? null : toReportInstrument(response.instrument);
+export function createInstrumentReport(
+  response: InstrumentResponse
+): InstrumentReport {
+  return response.instrument === undefined
+    ? null
+    : toReportInstrument(response.instrument);
 }
 
-export function formatInstrumentReport(report: InstrumentReport, format: InstrumentFormat): string {
+export function formatInstrumentReport(
+  report: InstrumentReport,
+  format: InstrumentFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -105,6 +115,9 @@ export function formatInstrumentReport(report: InstrumentReport, format: Instrum
   ]);
 }
 
-export function formatInstrument(response: InstrumentResponse, format: InstrumentFormat): string {
+export function formatInstrument(
+  response: InstrumentResponse,
+  format: InstrumentFormat
+): string {
   return formatInstrumentReport(createInstrumentReport(response), format);
 }

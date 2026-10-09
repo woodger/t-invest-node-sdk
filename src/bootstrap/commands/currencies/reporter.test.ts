@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import {
   RealExchange,
   SecurityTradingStatus,
@@ -106,9 +107,15 @@ describe('currencies reporter', () => {
 
   describe('formatCurrenciesReport', () => {
     test('formats report as table', () => {
-      const output = formatCurrenciesReport(createCurrenciesReport([currency()]), 'table');
+      const output = formatCurrenciesReport(
+        createCurrenciesReport([currency()]),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG0013HGFT4\s+USD000UTSTOM\s+CETS\s+currency-uid/);
       assert.match(output, /US Dollar\s+rub\s+USD\s+1000\s+MOEX/);
       assert.doesNotMatch(output, /0\.0025/);

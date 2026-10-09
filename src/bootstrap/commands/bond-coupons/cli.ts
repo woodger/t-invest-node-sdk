@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -18,7 +19,10 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -28,7 +32,9 @@ import { bondCouponsFormats, formatBondCoupons } from './reporter';
 
 type BondCouponsSdk = {
   instruments: {
-    getBondCoupons(request: GetBondCouponsRequest): Promise<GetBondCouponsResponse>;
+    getBondCoupons(
+      request: GetBondCouponsRequest
+    ): Promise<GetBondCouponsResponse>;
   };
   close(): void;
 };
@@ -36,7 +42,8 @@ type BondCouponsSdk = {
 type BondCouponsSdkFactory = (options: TInvestOptions) => BondCouponsSdk;
 
 const bondCouponsCommandPath = ['instrument', 'bond', 'coupons'] as const;
-const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const bondCouponsRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -103,7 +110,9 @@ export function createBondCouponsRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   const instrumentId = resolveInstrumentIdOption(options);

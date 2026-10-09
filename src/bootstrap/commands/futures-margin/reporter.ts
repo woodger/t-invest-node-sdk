@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument future margin`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { FuturesMarginReport } from '../../../application/reports';
@@ -18,12 +19,16 @@ export const futuresMarginFormats = ['json', 'table'] as const;
 
 export type FuturesMarginFormat = typeof futuresMarginFormats[number];
 
-export function createFuturesMarginReport(response: GetFuturesMarginResponse): FuturesMarginReport {
+export function createFuturesMarginReport(
+  response: GetFuturesMarginResponse
+): FuturesMarginReport {
   return {
     initialMarginOnBuy: toReportMoney(response.initialMarginOnBuy),
     initialMarginOnSell: toReportMoney(response.initialMarginOnSell),
     minPriceIncrement: formatReportDecimal(response.minPriceIncrement),
-    minPriceIncrementAmount: formatReportDecimal(response.minPriceIncrementAmount)
+    minPriceIncrementAmount: formatReportDecimal(
+      response.minPriceIncrementAmount
+    )
   };
 }
 
@@ -36,7 +41,12 @@ export function formatFuturesMarginReport(
   }
 
   return renderTextTable([
-    ['initialMarginOnBuy', 'initialMarginOnSell', 'minPriceIncrement', 'minPriceIncrementAmount'],
+    [
+      'initialMarginOnBuy',
+      'initialMarginOnSell',
+      'minPriceIncrement',
+      'minPriceIncrementAmount'
+    ],
     [
       formatReportMoneyText(report.initialMarginOnBuy),
       formatReportMoneyText(report.initialMarginOnSell),

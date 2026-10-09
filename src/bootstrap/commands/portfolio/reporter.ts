@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `operation portfolio`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -10,7 +11,10 @@ import type {
   PortfolioReportPosition,
   PortfolioReportSummary
 } from '../../../application/reports';
-import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
+import type {
+  PortfolioPosition,
+  PortfolioResponse
+} from '../../../generated/operations';
 import {
   formatReportDecimal,
   formatReportMoneyText,
@@ -37,7 +41,9 @@ function toSummary(response: PortfolioResponse): PortfolioReportSummary {
   };
 }
 
-function toReportPosition(position: PortfolioPosition): PortfolioReportPosition {
+function toReportPosition(
+  position: PortfolioPosition
+): PortfolioReportPosition {
   return {
     figi: position.figi,
     instrumentUid: position.instrumentUid,
@@ -51,7 +57,9 @@ function toReportPosition(position: PortfolioPosition): PortfolioReportPosition 
   };
 }
 
-export function createPortfolioReport(response: PortfolioResponse): PortfolioReport {
+export function createPortfolioReport(
+  response: PortfolioResponse
+): PortfolioReport {
   return {
     summary: toSummary(response),
     positions: response.positions.map(toReportPosition)
@@ -61,11 +69,15 @@ export function createPortfolioReport(response: PortfolioResponse): PortfolioRep
 function renderPortfolioSummary(summary: PortfolioReportSummary): string {
   return [
     `accountId: ${summary.accountId}`,
-    `totalAmountPortfolio: ${formatReportMoneyText(summary.totalAmountPortfolio)}`,
+    `totalAmountPortfolio: ${
+      formatReportMoneyText(summary.totalAmountPortfolio)
+    }`,
     `totalAmountShares: ${formatReportMoneyText(summary.totalAmountShares)}`,
     `totalAmountBonds: ${formatReportMoneyText(summary.totalAmountBonds)}`,
     `totalAmountEtf: ${formatReportMoneyText(summary.totalAmountEtf)}`,
-    `totalAmountCurrencies: ${formatReportMoneyText(summary.totalAmountCurrencies)}`,
+    `totalAmountCurrencies: ${
+      formatReportMoneyText(summary.totalAmountCurrencies)
+    }`,
     `totalAmountFutures: ${formatReportMoneyText(summary.totalAmountFutures)}`,
     `totalAmountOptions: ${formatReportMoneyText(summary.totalAmountOptions)}`,
     `totalAmountSp: ${formatReportMoneyText(summary.totalAmountSp)}`,
@@ -73,7 +85,10 @@ function renderPortfolioSummary(summary: PortfolioReportSummary): string {
   ].join('\n');
 }
 
-export function formatPortfolioReport(report: PortfolioReport, format: PortfolioFormat): string {
+export function formatPortfolioReport(
+  report: PortfolioReport,
+  format: PortfolioFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -106,6 +121,9 @@ export function formatPortfolioReport(report: PortfolioReport, format: Portfolio
   return `${renderPortfolioSummary(report.summary)}\n\n${positionsTable}`;
 }
 
-export function formatPortfolio(response: PortfolioResponse, format: PortfolioFormat): string {
+export function formatPortfolio(
+  response: PortfolioResponse,
+  format: PortfolioFormat
+): string {
   return formatPortfolioReport(createPortfolioReport(response), format);
 }

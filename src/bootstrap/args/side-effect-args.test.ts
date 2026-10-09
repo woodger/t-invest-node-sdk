@@ -57,10 +57,13 @@ describe('side-effect command args', () => {
     });
 
     test('preserves the maximum safe units with nine fractional digits', () => {
-      assert.deepEqual(parsePositiveQuotationOption('9007199254740991.999999999', 'price'), {
-        units: 9_007_199_254_740_991,
-        nano: 999_999_999
-      });
+      assert.deepEqual(
+        parsePositiveQuotationOption('9007199254740991.999999999', 'price'),
+        {
+          units: 9_007_199_254_740_991,
+          nano: 999_999_999
+        }
+      );
     });
 
     test('rejects units outside the safe integer range', () => {
@@ -94,7 +97,10 @@ describe('side-effect command args', () => {
 
   describe('parseOptionalPositiveQuotationOption', () => {
     test('keeps missing values undefined', () => {
-      assert.equal(parseOptionalPositiveQuotationOption(undefined, 'price'), undefined);
+      assert.equal(
+        parseOptionalPositiveQuotationOption(undefined, 'price'),
+        undefined
+      );
     });
   });
 });

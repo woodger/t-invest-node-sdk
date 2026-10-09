@@ -87,7 +87,8 @@ const standaloneTlsCertificateErrorMessages: ReadonlySet<string> = new Set([
 ]);
 
 const grpcConnectionErrorMarker = 'no connection established. last error:';
-const requestSerializationFailurePrefix = 'Request message serialization failure:';
+const requestSerializationFailurePrefix =
+  'Request message serialization failure:';
 const responseParsingFailurePrefix = 'Response message parsing error:';
 const receivedMessageLargerThanMaxPattern =
   /^Received message larger than max \((\d+) vs (\d+)\)$/;
@@ -206,7 +207,9 @@ function isLocalReceiveMessageLimitError(
     return false;
   }
 
-  const rawMessageMatch = receivedMessageLargerThanMaxPattern.exec(error.details);
+  const rawMessageMatch = receivedMessageLargerThanMaxPattern.exec(
+    error.details
+  );
 
   if (rawMessageMatch !== null) {
     const receivedMessageLength = rawMessageMatch[1];
@@ -217,8 +220,8 @@ function isLocalReceiveMessageLimitError(
       && Number(receivedMessageLength) > maxReceiveMessageLength;
   }
 
-  return error.details ===
-    `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`;
+  return error.details
+    === `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`;
 }
 
 function isTlsCertificateError(

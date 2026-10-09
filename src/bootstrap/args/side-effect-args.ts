@@ -25,11 +25,16 @@ export function assertSideEffectConfirmed(
   requireConfirmation: boolean = defaultConfig.requireSideEffectConfirmation
 ): void {
   if (requireConfirmation && confirm !== true) {
-    throw new CliUsageError("Expected '--confirm' to execute side-effect command");
+    throw new CliUsageError(
+      "Expected '--confirm' to execute side-effect command"
+    );
   }
 }
 
-export function parsePositiveQuotationOption(value: string, name: string): Quotation {
+export function parsePositiveQuotationOption(
+  value: string,
+  name: string
+): Quotation {
   if (!/^(?:0|[1-9]\d*)(?:\.\d{1,9})?$/.test(value)) {
     throw new CliUsageError(decimalErrorMessage(name));
   }
@@ -52,7 +57,9 @@ export function parseOptionalPositiveQuotationOption(
   value: string | undefined,
   name: string
 ): Quotation | undefined {
-  return value === undefined ? undefined : parsePositiveQuotationOption(value, name);
+  return value === undefined
+    ? undefined
+    : parsePositiveQuotationOption(value, name);
 }
 
 function decimalErrorMessage(name: string): string {

@@ -18,7 +18,9 @@ import type {
   UnaryLimitsConfig,
   UnaryLimitsDefinition
 } from '../config.types';
-import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-method-path';
+import {
+  unaryMethodPath
+} from '../infrastructure/transport/grpc/unary-method-path';
 
 /** Path-keyed runtime policy, которую принимает transport resolver. */
 export interface UnaryLimitConfig {
@@ -77,7 +79,9 @@ export function compileUnaryLimits(
       limits[unaryMethodPath(service, method)] = cloneUnaryLimit(limit);
     }
 
-    for (const [groupName, group] of Object.entries(serviceLimits.groups ?? {})) {
+    for (
+      const [groupName, group] of Object.entries(serviceLimits.groups ?? {})
+    ) {
       const bucket = `${service}:${groupName}`;
 
       assertUnaryLimit(group.limit, bucket);

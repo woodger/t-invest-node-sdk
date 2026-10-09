@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `market trades`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { LastTradesReport, LastTradesReportTrade } from '../../../application/reports';
+import type {
+  LastTradesReport,
+  LastTradesReportTrade
+} from '../../../application/reports';
 import {
   tradeDirectionToJSON,
   type Trade
@@ -56,6 +60,9 @@ export function formatLastTradesReport(
   ]);
 }
 
-export function formatLastTrades(trades: Trade[], format: LastTradesFormat): string {
+export function formatLastTrades(
+  trades: Trade[],
+  format: LastTradesFormat
+): string {
   return formatLastTradesReport(createLastTradesReport(trades), format);
 }

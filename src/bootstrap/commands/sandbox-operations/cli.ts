@@ -6,32 +6,43 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { OperationsRequest, OperationsResponse } from '../../../generated/operations';
+import type {
+  OperationsRequest,
+  OperationsResponse
+} from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
+import {
+  instrumentIdWithDeprecatedFigiOptionsSchema
+} from '../../args/instrument-id-options';
 import { createOperationsRequest } from '../operations/request.mapper';
 import { formatOperations, operationsFormats } from '../operations/reporter';
 
 type SandboxOperationsSdk = {
   sandbox: {
-    getSandboxOperations(request: OperationsRequest): Promise<OperationsResponse>;
+    getSandboxOperations(
+      request: OperationsRequest
+    ): Promise<OperationsResponse>;
   };
   close(): void;
 };
 
-type SandboxOperationsSdkFactory = (options: TInvestOptions) => SandboxOperationsSdk;
+type SandboxOperationsSdkFactory = (
+  options: TInvestOptions
+) => SandboxOperationsSdk;
 
 const sandboxOperationsCommandPath = ['sandbox', 'operation', 'list'] as const;
-const defaultSandboxOperationsSdkFactory: SandboxOperationsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxOperationsSdkFactory: SandboxOperationsSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxOperationsRequestOptionsSchema = {
   'account-id': {
@@ -67,7 +78,9 @@ const sandboxOperationsOptionsSchema = withSdkOptions(
   sandboxOperationsFormatOptionsSchema
 );
 
-type SandboxOperationsOptions = InferOptions<typeof sandboxOperationsOptionsSchema>;
+type SandboxOperationsOptions = InferOptions<
+  typeof sandboxOperationsOptionsSchema
+>;
 type SandboxOperationsRequestOptions = CommandRequestOptions<
   SandboxOperationsOptions,
   'account-id' | 'from' | 'to' | 'instrument-id' | 'figi' | 'state'

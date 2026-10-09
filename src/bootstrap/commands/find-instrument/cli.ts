@@ -6,13 +6,16 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
-  InstrumentType } from '../../../generated/common';
-import type { FindInstrumentRequest,
+  InstrumentType
+} from '../../../generated/common';
+import type {
+  FindInstrumentRequest,
   FindInstrumentResponse
 } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
@@ -25,7 +28,9 @@ import { findInstrumentFormats, formatFindInstrument } from './reporter';
 
 type FindInstrumentSdk = {
   instruments: {
-    findInstrument(request: FindInstrumentRequest): Promise<FindInstrumentResponse>;
+    findInstrument(
+      request: FindInstrumentRequest
+    ): Promise<FindInstrumentResponse>;
   };
   close(): void;
 };
@@ -33,7 +38,8 @@ type FindInstrumentSdk = {
 type FindInstrumentSdkFactory = (options: TInvestOptions) => FindInstrumentSdk;
 
 const findInstrumentCommandPath = ['instrument', 'search'] as const;
-const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const instrumentKinds = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -47,7 +53,9 @@ const instrumentKinds = {
   'clearing-certificate': InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
 } as const;
 
-const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<keyof typeof instrumentKinds>;
+const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<
+  keyof typeof instrumentKinds
+>;
 
 type InstrumentKindName = typeof findInstrumentKindNames[number];
 
@@ -81,7 +89,10 @@ const findInstrumentOptionsSchema = withSdkOptions(
 );
 
 type FindInstrumentOptions = InferOptions<typeof findInstrumentOptionsSchema>;
-type FindInstrumentRequestOptions = CommandRequestOptions<FindInstrumentOptions, 'instrument-kind' | 'api-trade-available' | 'query'>;
+type FindInstrumentRequestOptions = CommandRequestOptions<
+  FindInstrumentOptions,
+  'instrument-kind' | 'api-trade-available' | 'query'
+>;
 
 export function createFindInstrumentCommand(
   createSdk: FindInstrumentSdkFactory = defaultFindInstrumentSdkFactory
@@ -115,7 +126,8 @@ export function createFindInstrumentRequest(
 ): FindInstrumentRequest {
   return {
     query: options.query,
-    instrumentKind: instrumentKinds[options['instrument-kind'] as InstrumentKindName],
+    instrumentKind:
+      instrumentKinds[options['instrument-kind'] as InstrumentKindName],
     apiTradeAvailableFlag: options['api-trade-available']
   };
 }

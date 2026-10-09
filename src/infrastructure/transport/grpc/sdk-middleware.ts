@@ -1,5 +1,6 @@
 /**
- * Модуль gRPC middleware adapter связывает transport calls с unary limiter port.
+ * Модуль gRPC middleware adapter связывает transport calls с unary limiter
+ * port.
  *
  * Здесь допустимы:
  * - разрешение gRPC path в transport-neutral quota;
@@ -20,7 +21,9 @@ import {
   SdkError,
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
-import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
+import type {
+  TInvestUnaryLimiter
+} from '../../../application/services/unary-limiter';
 import {
   createAbortError,
   errorMessage,
@@ -41,7 +44,7 @@ export function createSdkMiddleware(
   unaryLimitResolver: UnaryLimitResolver,
   runtime?: SdkCallRuntime
 ) {
-  return async function*<Request, Response>(
+  return async function* <Request, Response>(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
@@ -77,10 +80,12 @@ export function createSdkMiddleware(
 
       throwIfAborted(options.signal);
 
-      for await (const response of call.next(
-        call.request,
-        callbackBoundary?.options ?? options
-      )) {
+      for await (
+        const response of call.next(
+          call.request,
+          callbackBoundary?.options ?? options
+        )
+      ) {
         throwCallCallbackFailure(callbackBoundary);
         yield response;
       }

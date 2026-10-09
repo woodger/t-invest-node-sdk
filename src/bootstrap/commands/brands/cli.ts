@@ -6,11 +6,15 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetBrandsRequest, GetBrandsResponse } from '../../../generated/instruments';
+import type {
+  GetBrandsRequest,
+  GetBrandsResponse
+} from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -28,15 +32,18 @@ type BrandsSdk = {
 type BrandsSdkFactory = (options: TInvestOptions) => BrandsSdk;
 
 const brandsCommandPath = ['instrument', 'brand', 'list'] as const;
-const defaultBrandsSdkFactory: BrandsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultBrandsSdkFactory: BrandsSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
-const brandsOptionsSchema = withSdkOptions({
-  format: {
-    type: 'string',
-    choices: brandsFormats,
-    default: 'table'
-  }
-} as const);
+const brandsOptionsSchema = withSdkOptions(
+  {
+    format: {
+      type: 'string',
+      choices: brandsFormats,
+      default: 'table'
+    }
+  } as const
+);
 
 type BrandsOptions = InferOptions<typeof brandsOptionsSchema>;
 

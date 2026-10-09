@@ -6,11 +6,15 @@
  * - делегирование request mapping в command-owned mapper;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
+import type {
+  PortfolioRequest,
+  PortfolioResponse
+} from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -29,7 +33,8 @@ type PortfolioSdk = {
 type PortfolioSdkFactory = (options: TInvestOptions) => PortfolioSdk;
 
 const portfolioCommandPath = ['operation', 'portfolio'] as const;
-const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultPortfolioSdkFactory: PortfolioSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const portfolioCurrencyNames = ['rub', 'usd', 'eur'] as const;
 

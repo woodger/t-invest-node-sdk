@@ -49,72 +49,75 @@ describe('renderHelp', () => {
     );
   });
 
-  test('returns friendly command-specific help for technical command name', () => {
-    assert.equal(
-      renderHelp(['account', 'get-accounts']),
-      renderCommandHelp('account list')
-    );
-    assert.equal(
-      renderHelp(['market', 'get-candles']),
-      renderCommandHelp('market candles')
-    );
-    assert.equal(
-      renderHelp(['order', 'post-order']),
-      renderCommandHelp('order place')
-    );
-    assert.equal(
-      renderHelp(['stop-order', 'get-stop-orders']),
-      renderCommandHelp('stop-order list')
-    );
-    assert.equal(
-      renderHelp(['operation', 'get-portfolio']),
-      renderCommandHelp('operation portfolio')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'shares']),
-      renderCommandHelp('instrument share list')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'share-by']),
-      renderCommandHelp('instrument share show')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'bonds']),
-      renderCommandHelp('instrument bond list')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'bond-by']),
-      renderCommandHelp('instrument bond show')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'get-bond-coupons']),
-      renderCommandHelp('instrument bond coupons')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'find-instrument']),
-      renderCommandHelp('instrument search')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'get-favorites']),
-      renderCommandHelp('instrument favorite list')
-    );
-    assert.equal(
-      renderHelp(['instrument', 'edit-favorites']),
-      renderCommandHelp('instrument favorite edit')
-    );
-    assert.equal(
-      renderHelp(['sandbox', 'get-sandbox-accounts']),
-      renderCommandHelp('sandbox account list')
-    );
-    assert.equal(
-      renderHelp(['sandbox', 'post-sandbox-order']),
-      renderCommandHelp('sandbox order place')
-    );
-    assert.equal(
-      renderHelp(['sandbox', 'sandbox-pay-in']),
-      renderCommandHelp('sandbox pay-in')
-    );
-  });
+  test(
+    'returns friendly command-specific help for technical command name',
+    () => {
+      assert.equal(
+        renderHelp(['account', 'get-accounts']),
+        renderCommandHelp('account list')
+      );
+      assert.equal(
+        renderHelp(['market', 'get-candles']),
+        renderCommandHelp('market candles')
+      );
+      assert.equal(
+        renderHelp(['order', 'post-order']),
+        renderCommandHelp('order place')
+      );
+      assert.equal(
+        renderHelp(['stop-order', 'get-stop-orders']),
+        renderCommandHelp('stop-order list')
+      );
+      assert.equal(
+        renderHelp(['operation', 'get-portfolio']),
+        renderCommandHelp('operation portfolio')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'shares']),
+        renderCommandHelp('instrument share list')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'share-by']),
+        renderCommandHelp('instrument share show')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'bonds']),
+        renderCommandHelp('instrument bond list')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'bond-by']),
+        renderCommandHelp('instrument bond show')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'get-bond-coupons']),
+        renderCommandHelp('instrument bond coupons')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'find-instrument']),
+        renderCommandHelp('instrument search')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'get-favorites']),
+        renderCommandHelp('instrument favorite list')
+      );
+      assert.equal(
+        renderHelp(['instrument', 'edit-favorites']),
+        renderCommandHelp('instrument favorite edit')
+      );
+      assert.equal(
+        renderHelp(['sandbox', 'get-sandbox-accounts']),
+        renderCommandHelp('sandbox account list')
+      );
+      assert.equal(
+        renderHelp(['sandbox', 'post-sandbox-order']),
+        renderCommandHelp('sandbox order place')
+      );
+      assert.equal(
+        renderHelp(['sandbox', 'sandbox-pay-in']),
+        renderCommandHelp('sandbox pay-in')
+      );
+    }
+  );
 
   test('returns command-specific help for legacy command name', () => {
     assert.equal(
@@ -191,7 +194,10 @@ describe('renderCliHelp', () => {
     assert.match(help, /Domains:/);
     assert.match(help, /Global options:/);
     assert.match(help, /account\s+Accounts, user info, tariff and limits/);
-    assert.match(help, /instrument\s+Shares, bonds, ETFs, currencies, futures, options and dictionaries/);
+    assert.match(
+      help,
+      /instrument\s+Shares, bonds, ETFs, currencies, futures, options and dictionaries/
+    );
     assert.match(help, /market\s+Historical and live market data/);
     assert.match(help, /order\s+Real account orders/);
     assert.match(help, /stop-order\s+Real account stop orders/);
@@ -212,7 +218,10 @@ describe('renderDomainHelp', () => {
     for (const domainName of cliDomainNames) {
       const help = renderDomainHelp(domainName);
 
-      assert.match(help, new RegExp(`^t-invest-node-sdk \\d+\\.\\d+\\.\\d+\\n${domainName} - `));
+      assert.match(
+        help,
+        new RegExp(`^t-invest-node-sdk \\d+\\.\\d+\\.\\d+\\n${domainName} - `)
+      );
       assert.match(help, /Commands:/);
 
       for (const commandName of Object.keys(commandHelp)) {
@@ -220,60 +229,69 @@ describe('renderDomainHelp', () => {
           continue;
         }
 
-        assert.match(help, new RegExp(commandName.split(' ').slice(1).join(' ')));
+        assert.match(
+          help,
+          new RegExp(commandName.split(' ').slice(1).join(' '))
+        );
       }
     }
   });
 
-  test('renders friendly instrument domain commands in navigation order', () => {
-    const help = renderDomainHelp('instrument');
-    const expectedOrder = [
-      'search',
-      'show',
-      'dividends',
-      'schedules',
-      'favorite list',
-      'favorite edit',
-      'share list',
-      'share show',
-      'bond list',
-      'bond show',
-      'bond coupons',
-      'bond accrued',
-      'etf list',
-      'etf show',
-      'currency list',
-      'currency show',
-      'future list',
-      'future show',
-      'future margin',
-      'option list',
-      'option show',
-      'asset list',
-      'asset show',
-      'brand list',
-      'brand show',
-      'country list'
-    ];
+  test(
+    'renders friendly instrument domain commands in navigation order',
+    () => {
+      const help = renderDomainHelp('instrument');
+      const expectedOrder = [
+        'search',
+        'show',
+        'dividends',
+        'schedules',
+        'favorite list',
+        'favorite edit',
+        'share list',
+        'share show',
+        'bond list',
+        'bond show',
+        'bond coupons',
+        'bond accrued',
+        'etf list',
+        'etf show',
+        'currency list',
+        'currency show',
+        'future list',
+        'future show',
+        'future margin',
+        'option list',
+        'option show',
+        'asset list',
+        'asset show',
+        'brand list',
+        'brand show',
+        'country list'
+      ];
 
-    assert.match(help, /search\s+Search instruments/);
-    assert.match(help, /show\s+Print instrument details/);
-    assert.match(help, /share list\s+Print shares/);
-    assert.match(help, /bond coupons\s+Print bond coupons/);
-    assert.match(help, /favorite edit\s+Add or remove favorite instruments/);
-    assert.match(help, /country list\s+Print countries dictionary/);
-    assert.doesNotMatch(help, /\n {2}find-instrument\s+Search instruments/);
-    assert.doesNotMatch(help, /\n {2}shares\s+Print shares/);
-    assert.doesNotMatch(help, /\n {2}get-favorites\s+Print favorite instruments/);
+      assert.match(help, /search\s+Search instruments/);
+      assert.match(help, /show\s+Print instrument details/);
+      assert.match(help, /share list\s+Print shares/);
+      assert.match(help, /bond coupons\s+Print bond coupons/);
+      assert.match(help, /favorite edit\s+Add or remove favorite instruments/);
+      assert.match(help, /country list\s+Print countries dictionary/);
+      assert.doesNotMatch(help, /\n {2}find-instrument\s+Search instruments/);
+      assert.doesNotMatch(help, /\n {2}shares\s+Print shares/);
+      assert.doesNotMatch(
+        help,
+        /\n {2}get-favorites\s+Print favorite instruments/
+      );
 
-    let previousIndex = help.indexOf('Commands:');
-    for (const commandName of expectedOrder) {
-      const index = help.indexOf(`\n  ${commandName}`);
+      let previousIndex = help.indexOf('Commands:');
+      for (const commandName of expectedOrder) {
+        const index = help.indexOf(`\n  ${commandName}`);
 
-      assert.equal(index > previousIndex, true);
-      previousIndex = index;
+        assert.equal(index > previousIndex, true);
+        previousIndex = index;
+      }
     }
-  });
+  );
 
   test('renders friendly stop-order and operation domain commands', () => {
     const stopOrderHelp = renderDomainHelp('stop-order');
@@ -282,21 +300,39 @@ describe('renderDomainHelp', () => {
     assert.match(stopOrderHelp, /list\s+Print active stop orders/);
     assert.match(stopOrderHelp, /place\s+Post a stop order/);
     assert.match(stopOrderHelp, /cancel\s+Cancel a stop order/);
-    assert.doesNotMatch(stopOrderHelp, /get-stop-orders\s+Print active stop orders/);
+    assert.doesNotMatch(
+      stopOrderHelp,
+      /get-stop-orders\s+Print active stop orders/
+    );
     assert.doesNotMatch(stopOrderHelp, /post-stop-order\s+Post a stop order/);
 
     assert.match(operationHelp, /list\s+Print account operations/);
-    assert.match(operationHelp, /page\s+Print one cursor page of account operations/);
-    assert.match(operationHelp, /broker-report\s+Generate or print a broker report page/);
+    assert.match(
+      operationHelp,
+      /page\s+Print one cursor page of account operations/
+    );
+    assert.match(
+      operationHelp,
+      /broker-report\s+Generate or print a broker report page/
+    );
     assert.match(
       operationHelp,
       /foreign-dividends-report\s+Generate or print a foreign issuer dividends report page/
     );
     assert.match(operationHelp, /portfolio\s+Print account portfolio/);
     assert.match(operationHelp, /positions\s+Print account positions/);
-    assert.match(operationHelp, /withdraw-limits\s+Print account withdraw limits/);
-    assert.doesNotMatch(operationHelp, /get-portfolio\s+Print account portfolio/);
-    assert.doesNotMatch(operationHelp, /get-broker-report\s+Generate or print a broker report page/);
+    assert.match(
+      operationHelp,
+      /withdraw-limits\s+Print account withdraw limits/
+    );
+    assert.doesNotMatch(
+      operationHelp,
+      /get-portfolio\s+Print account portfolio/
+    );
+    assert.doesNotMatch(
+      operationHelp,
+      /get-broker-report\s+Generate or print a broker report page/
+    );
   });
 
   test('renders friendly sandbox domain commands', () => {
@@ -328,7 +364,10 @@ describe('renderDomainHelp', () => {
     assert.match(help, /order cancel\s+Cancel a sandbox order/);
     assert.match(help, /position list\s+Print sandbox positions/);
     assert.match(help, /operation list\s+Print sandbox operations/);
-    assert.match(help, /operation page\s+Print one cursor page of sandbox operations/);
+    assert.match(
+      help,
+      /operation page\s+Print one cursor page of sandbox operations/
+    );
     assert.match(help, /portfolio\s+Print sandbox portfolio/);
     assert.match(help, /withdraw-limits\s+Print sandbox withdraw limits/);
     assert.match(help, /pay-in\s+Pay in to a sandbox account/);
@@ -374,23 +413,29 @@ describe('renderCommandHelp', () => {
 
     assert.match(help, /stream run - Run a configured stream/);
     assert.match(help, /t-invest-node-sdk stream run --config=PATH/);
-    assert.match(help, /static initial requests for marketdata\.marketDataStream/);
+    assert.match(
+      help,
+      /static initial requests for marketdata\.marketDataStream/
+    );
   });
 
-  test('renders extended command notes where short descriptions are not enough', () => {
-    assert.match(
-      renderCommandHelp('order place'),
-      /--confirm is an SDK CLI safety guard; it is not a gRPC request field/
-    );
-    assert.match(
-      renderCommandHelp('operation broker-report'),
-      /Generate mode starts a report task; page mode reads an existing report task page/
-    );
-    assert.match(
-      renderCommandHelp('stream run'),
-      /Output is JSONL so each provider event can be processed as an independent line/
-    );
-  });
+  test(
+    'renders extended command notes where short descriptions are not enough',
+    () => {
+      assert.match(
+        renderCommandHelp('order place'),
+        /--confirm is an SDK CLI safety guard; it is not a gRPC request field/
+      );
+      assert.match(
+        renderCommandHelp('operation broker-report'),
+        /Generate mode starts a report task; page mode reads an existing report task page/
+      );
+      assert.match(
+        renderCommandHelp('stream run'),
+        /Output is JSONL so each provider event can be processed as an independent line/
+      );
+    }
+  );
 
   test('renders compile-proto command page', () => {
     const help = renderCommandHelp('dev compile-proto');

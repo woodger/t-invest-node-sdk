@@ -62,30 +62,33 @@ describe('command options', () => {
 
     test('rejects zero', () => {
       assert.throws(
-        () => parseOptions(
-          { quantity: positiveSafeIntegerOption },
-          { quantity: '0' }
-        ),
+        () =>
+          parseOptions(
+            { quantity: positiveSafeIntegerOption },
+            { quantity: '0' }
+          ),
         /Expected '--quantity' to be greater than or equal to 1/
       );
     });
 
     test('rejects fractional values', () => {
       assert.throws(
-        () => parseOptions(
-          { quantity: positiveSafeIntegerOption },
-          { quantity: '1.5' }
-        ),
+        () =>
+          parseOptions(
+            { quantity: positiveSafeIntegerOption },
+            { quantity: '1.5' }
+          ),
         /Expected '--quantity' as integer/
       );
     });
 
     test('rejects positive integers outside the safe number range', () => {
       assert.throws(
-        () => parseOptions(
-          { quantity: positiveSafeIntegerOption },
-          { quantity: '9007199254740993' }
-        ),
+        () =>
+          parseOptions(
+            { quantity: positiveSafeIntegerOption },
+            { quantity: '9007199254740993' }
+          ),
         /Expected '--quantity' to be less than or equal to 9007199254740991/
       );
     });
@@ -101,7 +104,8 @@ describe('command options', () => {
 
     test('rejects the first integer outside int32', () => {
       assert.throws(
-        () => parseOptions({ depth: positiveInt32Option }, { depth: '2147483648' }),
+        () =>
+          parseOptions({ depth: positiveInt32Option }, { depth: '2147483648' }),
         /Expected '--depth' to be less than or equal to 2147483647/
       );
     });
@@ -117,7 +121,8 @@ describe('command options', () => {
 
     test('rejects empty comma-separated values', () => {
       assert.throws(
-        () => parseCommaSeparatedStringListOption('first,,second', 'instrument-id'),
+        () =>
+          parseCommaSeparatedStringListOption('first,,second', 'instrument-id'),
         /Expected '--instrument-id' as comma-separated list/
       );
     });
@@ -213,7 +218,10 @@ describe('command options', () => {
     });
 
     test('accepts the maximum int32 page', () => {
-      assert.equal(parseOptionalNonNegativeInt32Option('2147483647', 'page'), 2_147_483_647);
+      assert.equal(
+        parseOptionalNonNegativeInt32Option('2147483647', 'page'),
+        2_147_483_647
+      );
     });
 
     test('rejects pages outside int32', () => {

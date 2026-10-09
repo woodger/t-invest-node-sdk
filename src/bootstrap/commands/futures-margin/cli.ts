@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -28,7 +29,9 @@ import { formatFuturesMargin, futuresMarginFormats } from './reporter';
 
 type FuturesMarginSdk = {
   instruments: {
-    getFuturesMargin(request: GetFuturesMarginRequest): Promise<GetFuturesMarginResponse>;
+    getFuturesMargin(
+      request: GetFuturesMarginRequest
+    ): Promise<GetFuturesMarginResponse>;
   };
   close(): void;
 };
@@ -36,7 +39,8 @@ type FuturesMarginSdk = {
 type FuturesMarginSdkFactory = (options: TInvestOptions) => FuturesMarginSdk;
 
 const futuresMarginCommandPath = ['instrument', 'future', 'margin'] as const;
-const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const futuresMarginRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema

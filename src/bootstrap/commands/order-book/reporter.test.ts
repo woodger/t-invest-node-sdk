@@ -22,7 +22,9 @@ function order(overrides: Partial<Order> = {}): Order {
   } as Order;
 }
 
-function response(overrides: Partial<GetOrderBookResponse> = {}): GetOrderBookResponse {
+function response(
+  overrides: Partial<GetOrderBookResponse> = {}
+): GetOrderBookResponse {
   return {
     figi: 'BBG00QPYJ5H0',
     depth: 2,
@@ -97,11 +99,23 @@ describe('order-book reporter', () => {
 
   describe('formatOrderBookReport', () => {
     test('formats report as table', () => {
-      const output = formatOrderBookReport(createOrderBookReport(response()), 'table');
+      const output = formatOrderBookReport(
+        createOrderBookReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+instrumentUid\s+depth\s+orderBookTime\s+side\s+price\s+quantity/m);
-      assert.match(output, /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+bid\s+100.25\s+10/);
-      assert.match(output, /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+ask\s+101\s+4/);
+      assert.match(
+        output,
+        /^figi\s+instrumentUid\s+depth\s+orderBookTime\s+side\s+price\s+quantity/m
+      );
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+bid\s+100.25\s+10/
+      );
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+ask\s+101\s+4/
+      );
     });
 
     test('formats report as json', () => {

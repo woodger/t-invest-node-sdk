@@ -5,7 +5,10 @@ import type {
   GetTradingStatusResponse,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import { createTradingStatusesReport, formatTradingStatusesReport } from './reporter';
+import {
+  createTradingStatusesReport,
+  formatTradingStatusesReport
+} from './reporter';
 
 function tradingStatus(
   overrides: Partial<GetTradingStatusResponse> = {}
@@ -30,7 +33,8 @@ function response(
       tradingStatus({
         figi: 'BBG004730N88',
         instrumentUid: 'second-instrument-uid',
-        tradingStatus: SecurityTradingStatus.SECURITY_TRADING_STATUS_BREAK_IN_TRADING,
+        tradingStatus:
+          SecurityTradingStatus.SECURITY_TRADING_STATUS_BREAK_IN_TRADING,
         limitOrderAvailableFlag: false,
         marketOrderAvailableFlag: false,
         apiTradeAvailableFlag: false
@@ -68,7 +72,10 @@ describe('trading-statuses reporter', () => {
 
   describe('formatTradingStatusesReport', () => {
     test('formats report as table', () => {
-      const output = formatTradingStatusesReport(createTradingStatusesReport(response()), 'table');
+      const output = formatTradingStatusesReport(
+        createTradingStatusesReport(response()),
+        'table'
+      );
 
       assert.match(
         output,

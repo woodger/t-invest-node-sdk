@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `stop-order place`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { PostStopOrderReport } from '../../../application/reports';

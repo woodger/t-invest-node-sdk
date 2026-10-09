@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
@@ -10,7 +11,10 @@ import type {
   FindInstrumentResponse,
   InstrumentShort
 } from '../../../generated/instruments';
-import { createFindInstrumentCommand, createFindInstrumentRequest } from './cli';
+import {
+  createFindInstrumentCommand,
+  createFindInstrumentRequest
+} from './cli';
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
   return {
@@ -34,7 +38,9 @@ function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
   } as InstrumentShort;
 }
 
-function response(overrides: Partial<FindInstrumentResponse> = {}): FindInstrumentResponse {
+function response(
+  overrides: Partial<FindInstrumentResponse> = {}
+): FindInstrumentResponse {
   return {
     instruments: [instrument()],
     ...overrides
@@ -61,19 +67,25 @@ describe('find-instrument command', () => {
       const cases = [
         ['unspecified', InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED],
         ['bond', InstrumentType.INSTRUMENT_TYPE_BOND],
-        ['clearing-certificate', InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE]
+        [
+          'clearing-certificate',
+          InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
+        ]
       ] as const;
 
       for (const [instrumentKind, expected] of cases) {
-        assert.deepEqual(createFindInstrumentRequest({
-          query: 'instrument',
-          'instrument-kind': instrumentKind,
-          'api-trade-available': false
-        }), {
-          query: 'instrument',
-          instrumentKind: expected,
-          apiTradeAvailableFlag: false
-        });
+        assert.deepEqual(
+          createFindInstrumentRequest({
+            query: 'instrument',
+            'instrument-kind': instrumentKind,
+            'api-trade-available': false
+          }),
+          {
+            query: 'instrument',
+            instrumentKind: expected,
+            apiTradeAvailableFlag: false
+          }
+        );
       }
     });
   });
@@ -145,17 +157,18 @@ describe('find-instrument command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'search',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--query=TCSG'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'search',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--query=TCSG'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

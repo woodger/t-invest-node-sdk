@@ -29,9 +29,15 @@ describe('user-info reporter', () => {
 
   describe('formatUserInfoReport', () => {
     test('formats report as table', () => {
-      const output = formatUserInfoReport(createUserInfoReport(response()), 'table');
+      const output = formatUserInfoReport(
+        createUserInfoReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^premStatus\s+qualStatus\s+qualifiedForWorkWith\s+tariff/m);
+      assert.match(
+        output,
+        /^premStatus\s+qualStatus\s+qualifiedForWorkWith\s+tariff/m
+      );
       assert.match(output, /true\s+false\s+shares, bonds\s+premium/);
     });
 

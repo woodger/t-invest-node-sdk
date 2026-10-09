@@ -6,11 +6,15 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { type InstrumentRequest, type ShareResponse } from '../../../generated/instruments';
+import {
+  type InstrumentRequest,
+  type ShareResponse
+} from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -32,7 +36,8 @@ type ShareSdk = {
 type ShareSdkFactory = (options: TInvestOptions) => ShareSdk;
 
 const shareCommandPath = ['instrument', 'share', 'show'] as const;
-const defaultShareSdkFactory: ShareSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultShareSdkFactory: ShareSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const shareFormatOptionsSchema = {
   format: {

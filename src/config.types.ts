@@ -44,7 +44,7 @@ export type UnaryLimitsDefinition = {
 
     /** Индивидуальные method quotas. */
     methods?: PackageUnaryLimitsConfig[Service]['methods'];
-  }
+  };
 };
 
 /** Одна общая квота provider-а для непустого списка generated RPC names. */
@@ -69,10 +69,12 @@ export interface UnaryServiceLimitsConfig<Method extends string = string> {
 }
 
 /** Человекочитаемая unary policy, сгруппированная по generated services. */
-export type UnaryLimitsConfig = Readonly<Record<
-  string,
-  UnaryServiceLimitsConfig
->>;
+export type UnaryLimitsConfig = Readonly<
+  Record<
+    string,
+    UnaryServiceLimitsConfig
+  >
+>;
 
 /**
  * Package unary policy для всех поддерживаемых unary services.
@@ -80,13 +82,21 @@ export type UnaryLimitsConfig = Readonly<Record<
  * contracts.
  */
 export type PackageUnaryLimitsConfig = {
-  InstrumentsService: UnaryServiceLimitsConfig<GrpcMethodName<InstrumentsService>>;
-  MarketDataService: UnaryServiceLimitsConfig<GrpcMethodName<MarketDataService>>;
-  OperationsService: UnaryServiceLimitsConfig<GrpcMethodName<OperationsService>>;
+  InstrumentsService: UnaryServiceLimitsConfig<
+    GrpcMethodName<InstrumentsService>
+  >;
+  MarketDataService: UnaryServiceLimitsConfig<
+    GrpcMethodName<MarketDataService>
+  >;
+  OperationsService: UnaryServiceLimitsConfig<
+    GrpcMethodName<OperationsService>
+  >;
   OrdersService: UnaryServiceLimitsConfig<GrpcMethodName<OrdersService>>;
   SandboxService: UnaryServiceLimitsConfig<GrpcMethodName<SandboxService>>;
   SignalService: UnaryServiceLimitsConfig<GrpcMethodName<SignalService>>;
-  StopOrdersService: UnaryServiceLimitsConfig<GrpcMethodName<StopOrdersService>>;
+  StopOrdersService: UnaryServiceLimitsConfig<
+    GrpcMethodName<StopOrdersService>
+  >;
   UsersService: UnaryServiceLimitsConfig<GrpcMethodName<UsersService>>;
 };
 

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
@@ -32,15 +33,21 @@ describe('assets command', () => {
       const cases = [
         ['unspecified', InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED],
         ['bond', InstrumentType.INSTRUMENT_TYPE_BOND],
-        ['clearing-certificate', InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE]
+        [
+          'clearing-certificate',
+          InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
+        ]
       ] as const;
 
       for (const [instrumentType, expected] of cases) {
-        assert.deepEqual(createAssetsRequest({
-          'instrument-type': instrumentType
-        }), {
-          instrumentType: expected
-        });
+        assert.deepEqual(
+          createAssetsRequest({
+            'instrument-type': instrumentType
+          }),
+          {
+            instrumentType: expected
+          }
+        );
       }
     });
   });
@@ -106,17 +113,18 @@ describe('assets command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'asset',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'asset',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

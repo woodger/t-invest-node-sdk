@@ -2,11 +2,17 @@
  * Модуль CLI-репортинга команды `market close-prices`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { ClosePricesReport, ClosePricesReportPrice } from '../../../application/reports';
-import type { InstrumentClosePriceResponse } from '../../../generated/marketdata';
+import type {
+  ClosePricesReport,
+  ClosePricesReportPrice
+} from '../../../application/reports';
+import type {
+  InstrumentClosePriceResponse
+} from '../../../generated/marketdata';
 import {
   formatReportDate,
   formatReportQuotation
@@ -17,7 +23,9 @@ export const closePricesFormats = ['json', 'table'] as const;
 
 export type ClosePricesFormat = typeof closePricesFormats[number];
 
-function toReportPrice(price: InstrumentClosePriceResponse): ClosePricesReportPrice {
+function toReportPrice(
+  price: InstrumentClosePriceResponse
+): ClosePricesReportPrice {
   return {
     figi: price.figi,
     instrumentUid: price.instrumentUid,

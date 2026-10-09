@@ -20,7 +20,8 @@ type InstallOptions = {
 };
 
 /**
- * Устанавливает временный `process.emitWarning` hook и возвращает restore-функцию.
+ * Устанавливает временный `process.emitWarning` hook и возвращает
+ * restore-функцию.
  */
 export function installWarningInterceptor(options: InstallOptions) {
   const {
@@ -37,12 +38,11 @@ export function installWarningInterceptor(options: InstallOptions) {
   const originalEmitWarning = process.emitWarning;
 
   process.emitWarning = ((warning: string | Error, ...args: unknown[]) => {
-    const message =
-      typeof warning === 'string' ? warning : warning.message;
+    const message = typeof warning === 'string' ? warning : warning.message;
 
     const shouldSuppress = rules.some((rule) =>
-      rule.messageIncludes != null &&
-      message.includes(rule.messageIncludes)
+      rule.messageIncludes != null
+      && message.includes(rule.messageIncludes)
     );
 
     if (shouldSuppress) {

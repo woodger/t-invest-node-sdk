@@ -25,7 +25,9 @@ function quotation(units: number, nano: number): Quotation {
   };
 }
 
-function portfolioResponse(overrides: Partial<PortfolioResponse> = {}): PortfolioResponse {
+function portfolioResponse(
+  overrides: Partial<PortfolioResponse> = {}
+): PortfolioResponse {
   return {
     totalAmountShares: money(1000, 0),
     totalAmountBonds: undefined,
@@ -104,17 +106,18 @@ describe('sandbox-portfolio command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'portfolio',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=sandbox-account-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'sandbox',
+              'portfolio',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--account-id=sandbox-account-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

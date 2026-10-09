@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { InstrumentType } from '../../../generated/common';
-import type { InstrumentShort
-} from '../../../generated/instruments';
-import { createFindInstrumentReport, formatFindInstrumentReport } from './reporter';
+import type { InstrumentShort } from '../../../generated/instruments';
+import {
+  createFindInstrumentReport,
+  formatFindInstrumentReport
+} from './reporter';
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
   return {
@@ -71,10 +74,19 @@ describe('find-instrument reporter', () => {
 
   describe('formatFindInstrumentReport', () => {
     test('formats report as table', () => {
-      const output = formatFindInstrumentReport(createFindInstrumentReport([instrument()]), 'table');
+      const output = formatFindInstrumentReport(
+        createFindInstrumentReport([instrument()]),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+name\s+uid\s+positionUid/m);
-      assert.match(output, /BBG00QPYJ5H0\s+TCSG\s+TQBR\s+TCS Group\s+instrument-uid/);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+name\s+uid\s+positionUid/m
+      );
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+TCSG\s+TQBR\s+TCS Group\s+instrument-uid/
+      );
     });
 
     test('formats report as json', () => {

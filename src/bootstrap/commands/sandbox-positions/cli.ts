@@ -6,11 +6,15 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
+import type {
+  PositionsRequest,
+  PositionsResponse
+} from '../../../generated/operations';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -27,10 +31,13 @@ type SandboxPositionsSdk = {
   close(): void;
 };
 
-type SandboxPositionsSdkFactory = (options: TInvestOptions) => SandboxPositionsSdk;
+type SandboxPositionsSdkFactory = (
+  options: TInvestOptions
+) => SandboxPositionsSdk;
 
 const sandboxPositionsCommandPath = ['sandbox', 'position', 'list'] as const;
-const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxPositionsRequestOptionsSchema = {
   'account-id': {
@@ -52,8 +59,13 @@ const sandboxPositionsOptionsSchema = withSdkOptions(
   sandboxPositionsFormatOptionsSchema
 );
 
-type SandboxPositionsOptions = InferOptions<typeof sandboxPositionsOptionsSchema>;
-type SandboxPositionsRequestOptions = CommandRequestOptions<SandboxPositionsOptions, 'account-id'>;
+type SandboxPositionsOptions = InferOptions<
+  typeof sandboxPositionsOptionsSchema
+>;
+type SandboxPositionsRequestOptions = CommandRequestOptions<
+  SandboxPositionsOptions,
+  'account-id'
+>;
 
 export function createSandboxPositionsCommand(
   createSdk: SandboxPositionsSdkFactory = defaultSandboxPositionsSdkFactory

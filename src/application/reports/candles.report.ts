@@ -10,7 +10,10 @@
 
 /** Одна историческая свеча в отчете команды `marketdata get-candles`. */
 export interface CandlesReportCandle {
-  /** Время свечи в ISO-формате или пустая строка, если дата не пришла от provider-а. */
+  /**
+   * Время свечи в ISO-формате или пустая строка, если дата не пришла от
+   * provider-а.
+   */
   time: string;
   /** Цена открытия в строковом формате quotation. */
   open: string;

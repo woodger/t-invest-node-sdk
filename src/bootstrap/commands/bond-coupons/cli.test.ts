@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -31,7 +32,9 @@ function coupon(overrides: Partial<Coupon> = {}): Coupon {
   } as Coupon;
 }
 
-function response(overrides: Partial<GetBondCouponsResponse> = {}): GetBondCouponsResponse {
+function response(
+  overrides: Partial<GetBondCouponsResponse> = {}
+): GetBondCouponsResponse {
   return {
     events: [coupon()],
     ...overrides
@@ -57,11 +60,12 @@ describe('bond-coupons command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => createBondCouponsRequest({
-          figi: 'BOND-FIGI',
-          from: '2026-02-01T00:00:00Z',
-          to: '2026-01-01T00:00:00Z'
-        }),
+        () =>
+          createBondCouponsRequest({
+            figi: 'BOND-FIGI',
+            from: '2026-02-01T00:00:00Z',
+            to: '2026-01-01T00:00:00Z'
+          }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });
@@ -136,20 +140,21 @@ describe('bond-coupons command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'bond',
-            'coupons',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BOND-FIGI',
-            '--from=2026-01-01T00:00:00Z',
-            '--to=2026-01-31T00:00:00Z'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'bond',
+              'coupons',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=BOND-FIGI',
+              '--from=2026-01-01T00:00:00Z',
+              '--to=2026-01-31T00:00:00Z'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

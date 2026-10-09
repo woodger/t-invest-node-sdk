@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
-import type { MoneyValue,
-  Quotation } from '../../../generated/common';
+  test
+} from 'node:test';
+import type { MoneyValue, Quotation } from '../../../generated/common';
 import { RealExchange, SecurityTradingStatus } from '../../../generated/common';
 import {
   ShareType,
@@ -122,7 +122,10 @@ describe('share reporter', () => {
     });
 
     test('returns null when response has no instrument', () => {
-      assert.equal(createShareReport(response({ instrument: undefined })), null);
+      assert.equal(
+        createShareReport(response({ instrument: undefined })),
+        null
+      );
     });
   });
 
@@ -130,9 +133,15 @@ describe('share reporter', () => {
     test('formats report as table', () => {
       const output = formatShareReport(createShareReport(response()), 'table');
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG004730N88\s+SBER\s+TQBR\s+share-uid/);
-      assert.match(output, /Sber\s+rub\s+10\s+MOEX\s+Financials\s+SHARE_TYPE_COMMON/);
+      assert.match(
+        output,
+        /Sber\s+rub\s+10\s+MOEX\s+Financials\s+SHARE_TYPE_COMMON/
+      );
       assert.doesNotMatch(output, /2007-07-20/);
     });
 
@@ -145,7 +154,10 @@ describe('share reporter', () => {
 
     test('formats missing share as json null and table header', () => {
       assert.equal(formatShareReport(null, 'json'), 'null\n');
-      assert.match(formatShareReport(null, 'table'), /^figi\s+ticker\s+classCode/);
+      assert.match(
+        formatShareReport(null, 'table'),
+        /^figi\s+ticker\s+classCode/
+      );
     });
   });
 });

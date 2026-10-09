@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { InstrumentType } from '../../../generated/common';
 import {
   AssetType,
@@ -150,8 +151,14 @@ describe('asset reporter', () => {
       const output = formatAssetReport(createAssetReport(response()), 'table');
 
       assert.match(output, /^uid\s+type\s+name\s+instrumentsCount/m);
-      assert.match(output, /asset-uid\s+ASSET_TYPE_SECURITY\s+T-Bank Share Asset\s+1/);
-      assert.match(output, /instrument-uid\s+TCSG\s+TQBR\s+INSTRUMENT_TYPE_SHARE/);
+      assert.match(
+        output,
+        /asset-uid\s+ASSET_TYPE_SECURITY\s+T-Bank Share Asset\s+1/
+      );
+      assert.match(
+        output,
+        /instrument-uid\s+TCSG\s+TQBR\s+INSTRUMENT_TYPE_SHARE/
+      );
       assert.doesNotMatch(output, /Banking services/);
     });
 

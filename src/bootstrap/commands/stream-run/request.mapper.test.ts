@@ -25,11 +25,23 @@ describe('stream request mapper', () => {
     const config = parseStreamRunConfig(configJson({
       stream: 'marketdata.marketDataStream',
       requests: [
-        { type: 'subscribeCandles', instruments: [{ instrumentId: 'candle-id', interval: '1min' }] },
-        { type: 'subscribeOrderBook', instruments: [{ instrumentId: 'order-book-id', depth: 10 }] },
-        { type: 'subscribeTrades', instruments: [{ instrumentId: 'trade-id' }] },
+        {
+          type: 'subscribeCandles',
+          instruments: [{ instrumentId: 'candle-id', interval: '1min' }]
+        },
+        {
+          type: 'subscribeOrderBook',
+          instruments: [{ instrumentId: 'order-book-id', depth: 10 }]
+        },
+        {
+          type: 'subscribeTrades',
+          instruments: [{ instrumentId: 'trade-id' }]
+        },
         { type: 'subscribeInfo', instruments: [{ instrumentId: 'info-id' }] },
-        { type: 'subscribeLastPrice', instruments: [{ instrumentId: 'last-price-id' }] },
+        {
+          type: 'subscribeLastPrice',
+          instruments: [{ instrumentId: 'last-price-id' }]
+        },
         { type: 'getMySubscriptions' }
       ]
     }));

@@ -2,13 +2,19 @@ import { InstrumentStatus } from '../../../generated/common';
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { type CurrenciesResponse, type InstrumentsRequest } from '../../../generated/instruments';
+import {
+  type CurrenciesResponse,
+  type InstrumentsRequest
+} from '../../../generated/instruments';
 import { createCurrenciesCommand } from './cli';
 
-function response(overrides: Partial<CurrenciesResponse> = {}): CurrenciesResponse {
+function response(
+  overrides: Partial<CurrenciesResponse> = {}
+): CurrenciesResponse {
   return {
     instruments: [],
     ...overrides
@@ -77,17 +83,18 @@ describe('currencies command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'currency',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'currency',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

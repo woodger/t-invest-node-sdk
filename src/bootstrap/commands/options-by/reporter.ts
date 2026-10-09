@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument option list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { OptionsByReport } from '../../../application/reports';
@@ -34,6 +35,9 @@ export function formatOptionsByReport(
   return renderOptionRows(report);
 }
 
-export function formatOptionsBy(instruments: Option[], format: OptionsByFormat): string {
+export function formatOptionsBy(
+  instruments: Option[],
+  format: OptionsByFormat
+): string {
   return formatOptionsByReport(createOptionsByReport(instruments), format);
 }

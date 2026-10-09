@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument bond show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   BondReport,
   BondReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type {
   Bond,
   BondResponse
@@ -26,7 +30,9 @@ export const bondFormats = ['json', 'table'] as const;
 
 export type BondFormat = typeof bondFormats[number];
 
-export function createBondReportInstrument(instrument: Bond): BondReportInstrument {
+export function createBondReportInstrument(
+  instrument: Bond
+): BondReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -80,7 +86,9 @@ export function createBondReportInstrument(instrument: Bond): BondReportInstrume
 }
 
 export function createBondReport(response: BondResponse): BondReport {
-  return response.instrument === undefined ? null : createBondReportInstrument(response.instrument);
+  return response.instrument === undefined
+    ? null
+    : createBondReportInstrument(response.instrument);
 }
 
 export function renderBondRows(report: BondReportInstrument[]): string {
@@ -124,7 +132,10 @@ export function renderBondRows(report: BondReportInstrument[]): string {
   ]);
 }
 
-export function formatBondReport(report: BondReport, format: BondFormat): string {
+export function formatBondReport(
+  report: BondReport,
+  format: BondFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }

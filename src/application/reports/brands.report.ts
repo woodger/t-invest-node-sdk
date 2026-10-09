@@ -8,7 +8,10 @@
  * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
  */
 
-/** Один бренд в отчете команд `instruments get-brands` и `instruments get-brand-by`. */
+/**
+ * Один бренд в отчете команд `instruments get-brands` и `instruments
+ * get-brand-by`.
+ */
 export interface BrandsReportBrand {
   uid: string;
   name: string;

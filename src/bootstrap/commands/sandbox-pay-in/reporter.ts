@@ -1,7 +1,8 @@
 /**
  * Модуль CLI-репортинга команды `sandbox pay-in`.
  *
- * Здесь допустимы mapping generated DTO в application report contract и presentation formatting.
+ * Здесь допустимы mapping generated DTO в application report contract и
+ * presentation formatting.
  * Разбор command options и запуск SDK остаются в `cli.ts`.
  */
 
@@ -17,7 +18,9 @@ export const sandboxPayInFormats = ['json', 'table'] as const;
 
 export type SandboxPayInFormat = typeof sandboxPayInFormats[number];
 
-export function createSandboxPayInReport(response: SandboxPayInResponse): SandboxPayInReport {
+export function createSandboxPayInReport(
+  response: SandboxPayInResponse
+): SandboxPayInReport {
   return {
     balance: toReportMoney(response.balance)
   };

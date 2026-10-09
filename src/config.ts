@@ -16,7 +16,9 @@ import type { PackageConfigDefinition } from './config.types';
 
 export const packageConfig = {
   sdk: {
-    /** TLS включен для каждого SDK instance, если consumer не переопределил его. */
+    /**
+     * TLS включен для каждого SDK instance, если consumer не переопределил его.
+     */
     useSsl: true
   },
 
@@ -30,7 +32,8 @@ export const packageConfig = {
 
   unaryLimits: {
     /**
-     * Fallback 200 запросов в минуту применяется к RPC без более специфичного rule.
+     * Fallback 200 запросов в минуту применяется к RPC без более специфичного
+     * rule.
      * Шесть list RPC расходуют одну общую квоту 15 запросов в минуту, поэтому
      * перечислены в одной group с единственным значением limit.
      */

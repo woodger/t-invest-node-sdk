@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `account margin`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { MarginAttributesReport } from '../../../application/reports';
@@ -63,5 +64,8 @@ export function formatMarginAttributes(
   response: GetMarginAttributesResponse,
   format: MarginAttributesFormat
 ): string {
-  return formatMarginAttributesReport(createMarginAttributesReport(response), format);
+  return formatMarginAttributesReport(
+    createMarginAttributesReport(response),
+    format
+  );
 }

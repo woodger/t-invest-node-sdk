@@ -8,7 +8,9 @@
  * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
  */
 
-/** Один фьючерс в отчете команд `instruments future-by` и `instruments futures`. */
+/**
+ * Один фьючерс в отчете команд `instruments future-by` и `instruments futures`.
+ */
 export interface FutureReportInstrument {
   figi: string;
   ticker: string;

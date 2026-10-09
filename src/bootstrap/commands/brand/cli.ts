@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -29,7 +30,8 @@ type BrandSdk = {
 type BrandSdkFactory = (options: TInvestOptions) => BrandSdk;
 
 const brandCommandPath = ['instrument', 'brand', 'show'] as const;
-const defaultBrandSdkFactory: BrandSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultBrandSdkFactory: BrandSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const brandRequestOptionsSchema = {
   id: {

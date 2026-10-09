@@ -10,7 +10,9 @@
 
 import type { ReportMoney } from './money.report';
 
-/** Метаданные страницы в отчете команды `operations get-operations-by-cursor`. */
+/**
+ * Метаданные страницы в отчете команды `operations get-operations-by-cursor`.
+ */
 export interface OperationsByCursorReportPage {
   hasNext: boolean;
   /** Cursor следующей страницы или пустая строка. */
@@ -62,7 +64,10 @@ export interface OperationsByCursorReportItem {
   tradesCount: number;
 }
 
-/** Отчет команды `operations get-operations-by-cursor` на application/output boundary. */
+/**
+ * Отчет команды `operations get-operations-by-cursor` на application/output
+ * boundary.
+ */
 export interface OperationsByCursorReport {
   page: OperationsByCursorReportPage;
   items: OperationsByCursorReportItem[];

@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { SecurityTradingStatus } from '../../../generated/common';
 import type { GetTradingStatusResponse } from '../../../generated/marketdata';
-import { createTradingStatusReport, formatTradingStatusReport } from './reporter';
+import {
+  createTradingStatusReport,
+  formatTradingStatusReport
+} from './reporter';
 
 function response(
   overrides: Partial<GetTradingStatusResponse> = {}
@@ -36,7 +39,10 @@ describe('trading-status reporter', () => {
 
   describe('formatTradingStatusReport', () => {
     test('formats report as table', () => {
-      const output = formatTradingStatusReport(createTradingStatusReport(response()), 'table');
+      const output = formatTradingStatusReport(
+        createTradingStatusReport(response()),
+        'table'
+      );
 
       assert.match(
         output,

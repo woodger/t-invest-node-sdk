@@ -20,10 +20,19 @@ function brand(overrides: Partial<Brand> = {}): Brand {
 describe('brand reporter', () => {
   describe('formatBrandReport', () => {
     test('formats report as table', () => {
-      const output = formatBrandReport(createSingleBrandReport(brand()), 'table');
+      const output = formatBrandReport(
+        createSingleBrandReport(brand()),
+        'table'
+      );
 
-      assert.match(output, /^uid\s+name\s+company\s+sector\s+countryOfRisk\s+countryOfRiskName/m);
-      assert.match(output, /brand-uid\s+T-Bank\s+T-Bank PJSC\s+Financials\s+RU\s+Russia/);
+      assert.match(
+        output,
+        /^uid\s+name\s+company\s+sector\s+countryOfRisk\s+countryOfRiskName/m
+      );
+      assert.match(
+        output,
+        /brand-uid\s+T-Bank\s+T-Bank PJSC\s+Financials\s+RU\s+Russia/
+      );
     });
 
     test('formats report as json', () => {

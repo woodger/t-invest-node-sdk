@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument favorite list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -10,16 +11,18 @@ import type {
   FavoritesReportInstrument
 } from '../../../application/reports';
 import {
-  instrumentTypeToJSON } from '../../../generated/common';
-import type { FavoriteInstrument
-} from '../../../generated/instruments';
+  instrumentTypeToJSON
+} from '../../../generated/common';
+import type { FavoriteInstrument } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
 export const favoritesFormats = ['json', 'table'] as const;
 
 export type FavoritesFormat = typeof favoritesFormats[number];
 
-function toReportInstrument(instrument: FavoriteInstrument): FavoritesReportInstrument {
+function toReportInstrument(
+  instrument: FavoriteInstrument
+): FavoritesReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -32,7 +35,9 @@ function toReportInstrument(instrument: FavoriteInstrument): FavoritesReportInst
   };
 }
 
-export function createFavoritesReport(instruments: FavoriteInstrument[]): FavoritesReport {
+export function createFavoritesReport(
+  instruments: FavoriteInstrument[]
+): FavoritesReport {
   return instruments.map(toReportInstrument);
 }
 

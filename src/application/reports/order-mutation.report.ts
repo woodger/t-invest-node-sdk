@@ -10,7 +10,9 @@
 
 import type { ReportMoney } from './money.report';
 
-/** Результат успешного вызова `orders post-order` или `orders replace-order`. */
+/**
+ * Результат успешного вызова `orders post-order` или `orders replace-order`.
+ */
 export interface OrderMutationReport {
   /** Биржевой идентификатор заявки, который вернул provider. */
   orderId: string;
@@ -34,7 +36,9 @@ export interface OrderMutationReport {
   figi: string;
   /** Направление заявки в формате generated enum JSON name. */
   direction: string;
-  /** Начальная цена инструмента или `null`, если provider не вернул значение. */
+  /**
+   * Начальная цена инструмента или `null`, если provider не вернул значение.
+   */
   initialSecurityPrice: ReportMoney | null;
   /** Тип заявки в формате generated enum JSON name. */
   orderType: string;

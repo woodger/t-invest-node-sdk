@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -11,7 +12,9 @@ import {
 } from '../../../generated/instruments';
 import { createOptionCommand } from './cli';
 
-function optionResponse(overrides: Partial<OptionResponse> = {}): OptionResponse {
+function optionResponse(
+  overrides: Partial<OptionResponse> = {}
+): OptionResponse {
   return {
     instrument: undefined,
     ...overrides
@@ -84,19 +87,20 @@ describe('option command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'option',
-            'show',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--id=OPTIONUID',
-            '--id-type=uid'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'option',
+              'show',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--id=OPTIONUID',
+              '--id-type=uid'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

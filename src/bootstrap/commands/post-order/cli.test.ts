@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -13,10 +14,13 @@ import {
 } from '../../../generated/orders';
 import { createPostOrderCommand } from './cli';
 
-function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
+function postOrderResponse(
+  overrides: Partial<PostOrderResponse> = {}
+): PostOrderResponse {
   return {
     orderId: 'created-order-id',
-    executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+    executionReportStatus:
+      OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
     lotsRequested: 10,
     lotsExecuted: 0,
     initialOrderPrice: undefined,
@@ -46,20 +50,21 @@ describe('post-order command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'order',
-            'place',
-            '--account-id=account-id',
-            '--instrument-id=instrument-id',
-            '--quantity=10',
-            '--direction=buy',
-            '--order-type=market',
-            '--order-id=idempotency-key'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'order',
+              'place',
+              '--account-id=account-id',
+              '--instrument-id=instrument-id',
+              '--quantity=10',
+              '--direction=buy',
+              '--order-type=market',
+              '--order-id=idempotency-key'
+            ],
+            undefined
+          ),
         /Expected '--confirm' to execute side-effect command/
       );
       assert.equal(sdkCreated, false);
@@ -73,21 +78,22 @@ describe('post-order command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'order',
-            'place',
-            '--account-id=account-id',
-            '--instrument-id=instrument-id',
-            '--quantity=9007199254740993',
-            '--direction=buy',
-            '--order-type=market',
-            '--order-id=idempotency-key',
-            '--confirm'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'order',
+              'place',
+              '--account-id=account-id',
+              '--instrument-id=instrument-id',
+              '--quantity=9007199254740993',
+              '--direction=buy',
+              '--order-type=market',
+              '--order-id=idempotency-key',
+              '--confirm'
+            ],
+            undefined
+          ),
         /Expected '--quantity' to be less than or equal to 9007199254740991/
       );
       assert.equal(sdkCreated, false);

@@ -43,7 +43,10 @@ describe('last-prices command', () => {
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
       });
 
-      assert.deepEqual(request.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
+      assert.deepEqual(request.instrumentId, [
+        'BBG00QPYJ5H0',
+        'instrument-uid'
+      ]);
       assert.doesNotMatch(
         JSON.stringify(GetLastPricesRequest.toJSON(request)),
         /"figi":/
@@ -60,7 +63,7 @@ describe('last-prices command', () => {
         receivedOptions = options;
 
         return {
-    marketData: {
+          marketData: {
             async getLastPrices(request) {
               receivedRequest = request;
 
@@ -90,7 +93,10 @@ describe('last-prices command', () => {
         token: 'token',
         endpoint: 'localhost:50051'
       });
-      assert.deepEqual(receivedRequest?.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
+      assert.deepEqual(receivedRequest?.instrumentId, [
+        'BBG00QPYJ5H0',
+        'instrument-uid'
+      ]);
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].figi, 'BBG00QPYJ5H0');
     });
@@ -98,7 +104,7 @@ describe('last-prices command', () => {
     test('closes sdk when getLastPrices rejects', async () => {
       let closeCalls = 0;
       const command = createLastPricesCommand(() => ({
-    marketData: {
+        marketData: {
           async getLastPrices() {
             throw new Error('api failed');
           }
@@ -109,17 +115,18 @@ describe('last-prices command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'market',
-            'last-prices',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BBG00QPYJ5H0'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'market',
+              'last-prices',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=BBG00QPYJ5H0'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `market candles`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { CandlesReport, CandlesReportCandle } from '../../../application/reports';
+import type {
+  CandlesReport,
+  CandlesReportCandle
+} from '../../../application/reports';
 import type { HistoricCandle } from '../../../generated/marketdata';
 import {
   formatReportDate,
@@ -33,7 +37,10 @@ export function createCandlesReport(candles: HistoricCandle[]): CandlesReport {
   return candles.map(toReportCandle);
 }
 
-export function formatCandlesReport(report: CandlesReport, format: CandlesFormat): string {
+export function formatCandlesReport(
+  report: CandlesReport,
+  format: CandlesFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -52,6 +59,9 @@ export function formatCandlesReport(report: CandlesReport, format: CandlesFormat
   ]);
 }
 
-export function formatCandles(candles: HistoricCandle[], format: CandlesFormat): string {
+export function formatCandles(
+  candles: HistoricCandle[],
+  format: CandlesFormat
+): string {
   return formatCandlesReport(createCandlesReport(candles), format);
 }

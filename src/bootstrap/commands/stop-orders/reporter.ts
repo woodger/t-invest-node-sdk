@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `stop-order list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { StopOrdersReport, StopOrdersReportOrder } from '../../../application/reports';
+import type {
+  StopOrdersReport,
+  StopOrdersReportOrder
+} from '../../../application/reports';
 import {
   stopOrderDirectionToJSON,
   stopOrderTypeToJSON,
@@ -40,7 +44,9 @@ function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
   };
 }
 
-export function createStopOrdersReport(response: GetStopOrdersResponse): StopOrdersReport {
+export function createStopOrdersReport(
+  response: GetStopOrdersResponse
+): StopOrdersReport {
   return response.stopOrders.map(toReportStopOrder);
 }
 

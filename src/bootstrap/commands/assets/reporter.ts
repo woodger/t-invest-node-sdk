@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument asset list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { AssetsReport } from '../../../application/reports';
@@ -23,7 +24,10 @@ export function createAssetsReport(assets: Asset[]): AssetsReport {
   return assets.map(createAssetReportSummary);
 }
 
-export function formatAssetsReport(report: AssetsReport, format: AssetsFormat): string {
+export function formatAssetsReport(
+  report: AssetsReport,
+  format: AssetsFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }

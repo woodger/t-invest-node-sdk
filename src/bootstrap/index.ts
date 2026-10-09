@@ -6,7 +6,9 @@
  */
 
 import { runCli } from './cli/runner';
-import { installWarningInterceptor } from '../infrastructure/interceptor/warning-interceptor';
+import {
+  installWarningInterceptor
+} from '../infrastructure/interceptor/warning-interceptor';
 
 installWarningInterceptor({
   rules: [

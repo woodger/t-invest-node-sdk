@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument bond list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { BondsReport } from '../../../application/reports';
@@ -23,7 +24,10 @@ export function createBondsReport(instruments: Bond[]): BondsReport {
   return instruments.map(createBondReportInstrument);
 }
 
-export function formatBondsReport(report: BondsReport, format: BondsFormat): string {
+export function formatBondsReport(
+  report: BondsReport,
+  format: BondsFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }

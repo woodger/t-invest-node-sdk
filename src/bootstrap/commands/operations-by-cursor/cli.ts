@@ -6,7 +6,8 @@
  * - делегирование request mapping в command-owned mapper;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -19,7 +20,10 @@ import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { formatOperationsByCursor, operationsByCursorFormats } from './reporter';
+import {
+  formatOperationsByCursor,
+  operationsByCursorFormats
+} from './reporter';
 import { createOperationsByCursorRequest } from './request.mapper';
 
 type OperationsByCursorSdk = {
@@ -31,12 +35,20 @@ type OperationsByCursorSdk = {
   close(): void;
 };
 
-type OperationsByCursorSdkFactory = (options: TInvestOptions) => OperationsByCursorSdk;
+type OperationsByCursorSdkFactory = (
+  options: TInvestOptions
+) => OperationsByCursorSdk;
 
 const operationsByCursorCommandPath = ['operation', 'page'] as const;
-const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
-const operationStateNames = ['unspecified', 'executed', 'canceled', 'progress'] as const;
+const operationStateNames = [
+  'unspecified',
+  'executed',
+  'canceled',
+  'progress'
+] as const;
 
 const operationsByCursorStateOptionsSchema = {
   state: {
@@ -105,7 +117,9 @@ const operationsByCursorOptionsSchema = withSdkOptions(
   operationsByCursorFormatOptionsSchema
 );
 
-type OperationsByCursorOptions = InferOptions<typeof operationsByCursorOptionsSchema>;
+type OperationsByCursorOptions = InferOptions<
+  typeof operationsByCursorOptionsSchema
+>;
 export function createOperationsByCursorCommand(
   createSdk: OperationsByCursorSdkFactory = defaultOperationsByCursorSdkFactory
 ) {

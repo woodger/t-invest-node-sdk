@@ -50,7 +50,9 @@ export function parseCliInput(argv: readonly string[]) {
   return parsedArgv;
 }
 
-function rejectUndocumentedLongAliases(options: Record<string, RawOptionValue>): void {
+function rejectUndocumentedLongAliases(
+  options: Record<string, RawOptionValue>
+): void {
   const replacements: Readonly<Record<string, string>> = {
     h: "'--help' or '-h'",
     'no-h': "'--help' or '-h'",
@@ -60,12 +62,16 @@ function rejectUndocumentedLongAliases(options: Record<string, RawOptionValue>):
 
   for (const [name, replacement] of Object.entries(replacements)) {
     if (Object.hasOwn(options, name)) {
-      throw new CliUsageError(`Unexpected option '--${name}'; use ${replacement}`);
+      throw new CliUsageError(
+        `Unexpected option '--${name}'; use ${replacement}`
+      );
     }
   }
 }
 
-function validateBootstrapOptions(options: Record<string, RawOptionValue>): void {
+function validateBootstrapOptions(
+  options: Record<string, RawOptionValue>
+): void {
   const bootstrapOptions: Record<string, RawOptionValue> = {};
 
   for (const name of bootstrapOptionNames) {
@@ -162,7 +168,9 @@ export async function runCli(
   }
 
   try {
-    for (const warning of registry.resolveCommandWarnings(prepared.name, argv)) {
+    for (
+      const warning of registry.resolveCommandWarnings(prepared.name, argv)
+    ) {
       await app.output.error(warning);
     }
   }

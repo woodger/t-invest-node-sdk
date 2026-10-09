@@ -22,5 +22,7 @@ export interface LastTradesReportTrade {
   time: string;
 }
 
-/** Отчет команды `marketdata get-last-trades` на application/output boundary. */
+/**
+ * Отчет команды `marketdata get-last-trades` на application/output boundary.
+ */
 export type LastTradesReport = LastTradesReportTrade[];

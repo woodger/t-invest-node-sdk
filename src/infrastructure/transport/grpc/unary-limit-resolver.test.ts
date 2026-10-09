@@ -6,20 +6,23 @@ const ordersPath =
   '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders';
 
 describe('UnaryLimitResolver', () => {
-  test('resolves a service fallback from the final qualified service segment', () => {
-    const resolver = new UnaryLimitResolver({
-      OrdersService: perMinute(100)
-    });
-    const getOrdersQuota = resolveRequiredQuota(resolver, ordersPath);
-    const getOrderStateQuota = resolveRequiredQuota(
-      resolver,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
-    );
+  test(
+    'resolves a service fallback from the final qualified service segment',
+    () => {
+      const resolver = new UnaryLimitResolver({
+        OrdersService: perMinute(100)
+      });
+      const getOrdersQuota = resolveRequiredQuota(resolver, ordersPath);
+      const getOrderStateQuota = resolveRequiredQuota(
+        resolver,
+        '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
+      );
 
-    assert.equal(getOrdersQuota.maxRequests, 100);
-    assert.equal(getOrderStateQuota.maxRequests, 100);
-    assert.equal(getOrdersQuota.bucket, getOrderStateQuota.bucket);
-  });
+      assert.equal(getOrdersQuota.maxRequests, 100);
+      assert.equal(getOrderStateQuota.maxRequests, 100);
+      assert.equal(getOrdersQuota.bucket, getOrderStateQuota.bucket);
+    }
+  );
 
   test('prefers an exact method rule regardless of declaration order', () => {
     const methodFirst = new UnaryLimitResolver({
@@ -48,9 +51,12 @@ describe('UnaryLimitResolver', () => {
       OrdersService: perMinute(100)
     });
 
-    assert.equal(resolver.resolve(
-      '/tinkoff.public.invest.api.contract.v1.StopOrdersService/GetStopOrders'
-    ), undefined);
+    assert.equal(
+      resolver.resolve(
+        '/tinkoff.public.invest.api.contract.v1.StopOrdersService/GetStopOrders'
+      ),
+      undefined
+    );
   });
 
   test('does not resolve inherited limit rules', () => {
@@ -76,7 +82,10 @@ describe('UnaryLimitResolver', () => {
       [dividendsReportPath]: 'reports'
     });
     const brokerReportQuota = resolveRequiredQuota(resolver, brokerReportPath);
-    const dividendsReportQuota = resolveRequiredQuota(resolver, dividendsReportPath);
+    const dividendsReportQuota = resolveRequiredQuota(
+      resolver,
+      dividendsReportPath
+    );
 
     assert.equal(brokerReportQuota.maxRequests, 5);
     assert.equal(dividendsReportQuota.maxRequests, 5);
@@ -88,9 +97,12 @@ describe('UnaryLimitResolver', () => {
       OrdersService: perMinute(100)
     });
 
-    assert.equal(resolver.resolve(
-      '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'
-    ), undefined);
+    assert.equal(
+      resolver.resolve(
+        '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts'
+      ),
+      undefined
+    );
   });
 });
 

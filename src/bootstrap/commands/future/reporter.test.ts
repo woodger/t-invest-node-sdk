@@ -1,13 +1,17 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import {
   RealExchange,
   SecurityTradingStatus,
   type Quotation
 } from '../../../generated/common';
-import { type Future, type FutureResponse } from '../../../generated/instruments';
+import {
+  type Future,
+  type FutureResponse
+} from '../../../generated/instruments';
 import { createFutureReport, formatFutureReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -113,17 +117,29 @@ describe('future reporter', () => {
     });
 
     test('returns null when response has no instrument', () => {
-      assert.equal(createFutureReport(response({ instrument: undefined })), null);
+      assert.equal(
+        createFutureReport(response({ instrument: undefined })),
+        null
+      );
     });
   });
 
   describe('formatFutureReport', () => {
     test('formats report as table', () => {
-      const output = formatFutureReport(createFutureReport(response()), 'table');
+      const output = formatFutureReport(
+        createFutureReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /FUTFIGI\s+SiM6\s+SPBFUT\s+future-uid/);
-      assert.match(output, /USD\/RUB Futures\s+rub\s+1\s+MOEX\s+Currencies\s+cash_settlement/);
+      assert.match(
+        output,
+        /USD\/RUB Futures\s+rub\s+1\s+MOEX\s+Currencies\s+cash_settlement/
+      );
       assert.doesNotMatch(output, /basic-position-uid/);
     });
 
@@ -136,7 +152,10 @@ describe('future reporter', () => {
 
     test('formats missing future as json null and table header', () => {
       assert.equal(formatFutureReport(null, 'json'), 'null\n');
-      assert.match(formatFutureReport(null, 'table'), /^figi\s+ticker\s+classCode/);
+      assert.match(
+        formatFutureReport(null, 'table'),
+        /^figi\s+ticker\s+classCode/
+      );
     });
   });
 });

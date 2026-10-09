@@ -70,7 +70,14 @@ describe('bootstrap cli runner', () => {
 
     test('does not consume values after known boolean flags', () => {
       assert.deepEqual(
-        parseCliInput(['--help', 'users', 'get-accounts', '--version', 'marketdata', 'get-candles']),
+        parseCliInput([
+          '--help',
+          'users',
+          'get-accounts',
+          '--version',
+          'marketdata',
+          'get-candles'
+        ]),
         {
           positionals: ['users', 'get-accounts', 'marketdata', 'get-candles'],
           options: {
@@ -82,12 +89,14 @@ describe('bootstrap cli runner', () => {
     });
 
     test('rejects undocumented long forms of short aliases', () => {
-      for (const [argument, replacement] of [
-        ['--h', /use '--help' or '-h'/],
-        ['--no-h', /use '--help' or '-h'/],
-        ['--v', /use '--version' or '-v'/],
-        ['--no-v', /use '--version' or '-v'/]
-      ] as const) {
+      for (
+        const [argument, replacement] of [
+          ['--h', /use '--help' or '-h'/],
+          ['--no-h', /use '--help' or '-h'/],
+          ['--v', /use '--version' or '-v'/],
+          ['--no-v', /use '--version' or '-v'/]
+        ] as const
+      ) {
         assert.throws(
           () => parseCliInput([argument]),
           replacement
@@ -118,113 +127,176 @@ describe('bootstrap cli runner', () => {
     });
 
     test('rejects unsupported options in global shortcut paths', async () => {
-      for (const argv of [
-        ['--unknown-option'],
-        ['--format=json'],
-        ['--version', '--unknown-option']
-      ] as const) {
+      for (
+        const argv of [
+          ['--unknown-option'],
+          ['--format=json'],
+          ['--version', '--unknown-option']
+        ] as const
+      ) {
         const { io, read } = createIo();
         const exitCode = await runCli(argv, io);
 
         assert.equal(exitCode, 2);
         assert.equal(read().stdout, '');
-        assert.match(read().stderr, /Unexpected option '--(?:unknown-option|format)'/);
+        assert.match(
+          read().stderr,
+          /Unexpected option '--(?:unknown-option|format)'/
+        );
       }
     });
 
-    test('prints top-level help from help command and global flags', async () => {
-      for (const command of ['--help', '-h', 'help']) {
-        const { io, read } = createIo();
-        const exitCode = await runCli([command], io);
+    test(
+      'prints top-level help from help command and global flags',
+      async () => {
+        for (const command of ['--help', '-h', 'help']) {
+          const { io, read } = createIo();
+          const exitCode = await runCli([command], io);
 
-        assert.equal(exitCode, 0);
-        assert.match(read().stdout, /Domains:/);
-        assert.match(read().stdout, /account\s+Accounts, user info, tariff and limits/);
-        assert.doesNotMatch(read().stdout, /users get-accounts/);
-        assert.equal(read().stderr, '');
+          assert.equal(exitCode, 0);
+          assert.match(read().stdout, /Domains:/);
+          assert.match(
+            read().stdout,
+            /account\s+Accounts, user info, tariff and limits/
+          );
+          assert.doesNotMatch(read().stdout, /users get-accounts/);
+          assert.equal(read().stderr, '');
+        }
       }
-    });
+    );
 
     test('prints command-specific help from a command help flag', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['operation', 'portfolio', '--help'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /operation portfolio - Print account portfolio/);
-      assert.match(read().stdout, /SDK call:\n {2}sdk\.operations\.getPortfolio/);
-      assert.match(read().stdout, /t-invest-node-sdk operation portfolio --account-id=ID/);
+      assert.match(
+        read().stdout,
+        /operation portfolio - Print account portfolio/
+      );
+      assert.match(
+        read().stdout,
+        /SDK call:\n {2}sdk\.operations\.getPortfolio/
+      );
+      assert.match(
+        read().stdout,
+        /t-invest-node-sdk operation portfolio --account-id=ID/
+      );
       assert.equal(read().stderr, '');
     });
 
-    test('prints sandbox preferred command help from technical command help flags', async () => {
-      for (const { path, title, usage } of [
-        {
-          path: ['sandbox', 'get-sandbox-accounts'],
-          title: /sandbox account list - Print sandbox accounts/,
-          usage: /t-invest-node-sdk sandbox account list/
-        },
-        {
-          path: ['sandbox', 'post-sandbox-order'],
-          title: /sandbox order place - Post a sandbox order/,
-          usage: /t-invest-node-sdk sandbox order place --account-id=ID/
-        },
-        {
-          path: ['sandbox', 'sandbox-pay-in'],
-          title: /sandbox pay-in - Pay in to a sandbox account/,
-          usage: /t-invest-node-sdk sandbox pay-in --account-id=ID/
+    test(
+      'prints sandbox preferred command help from technical command help flags',
+      async () => {
+        for (
+          const { path, title, usage } of [
+            {
+              path: ['sandbox', 'get-sandbox-accounts'],
+              title: /sandbox account list - Print sandbox accounts/,
+              usage: /t-invest-node-sdk sandbox account list/
+            },
+            {
+              path: ['sandbox', 'post-sandbox-order'],
+              title: /sandbox order place - Post a sandbox order/,
+              usage: /t-invest-node-sdk sandbox order place --account-id=ID/
+            },
+            {
+              path: ['sandbox', 'sandbox-pay-in'],
+              title: /sandbox pay-in - Pay in to a sandbox account/,
+              usage: /t-invest-node-sdk sandbox pay-in --account-id=ID/
+            }
+          ] as const
+        ) {
+          const { io, read } = createIo();
+          const exitCode = await runCli([...path, '--help'], io);
+
+          assert.equal(exitCode, 0);
+          assert.match(read().stdout, title);
+          assert.match(read().stdout, usage);
+          assert.equal(read().stderr, '');
         }
-      ] as const) {
+      }
+    );
+
+    test(
+      'prints preferred command help from a legacy command help flag',
+      async () => {
         const { io, read } = createIo();
-        const exitCode = await runCli([...path, '--help'], io);
+        const exitCode = await runCli(
+          ['operations', 'get-portfolio', '--help'],
+          io
+        );
 
         assert.equal(exitCode, 0);
-        assert.match(read().stdout, title);
-        assert.match(read().stdout, usage);
+        assert.match(
+          read().stdout,
+          /operation portfolio - Print account portfolio/
+        );
+        assert.match(
+          read().stdout,
+          /t-invest-node-sdk operation portfolio --account-id=ID/
+        );
+        assert.doesNotMatch(
+          read().stdout,
+          /t-invest-node-sdk operation get-portfolio --account-id=ID/
+        );
+        assert.doesNotMatch(
+          read().stdout,
+          /t-invest-node-sdk operations get-portfolio --account-id=ID/
+        );
         assert.equal(read().stderr, '');
       }
-    });
-
-    test('prints preferred command help from a legacy command help flag', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['operations', 'get-portfolio', '--help'], io);
-
-      assert.equal(exitCode, 0);
-      assert.match(read().stdout, /operation portfolio - Print account portfolio/);
-      assert.match(read().stdout, /t-invest-node-sdk operation portfolio --account-id=ID/);
-      assert.doesNotMatch(read().stdout, /t-invest-node-sdk operation get-portfolio --account-id=ID/);
-      assert.doesNotMatch(read().stdout, /t-invest-node-sdk operations get-portfolio --account-id=ID/);
-      assert.equal(read().stderr, '');
-    });
+    );
 
     test('prints domain-level help from domain help flag', async () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['account', '--help'], io);
 
       assert.equal(exitCode, 0);
-      assert.match(read().stdout, /account - Accounts, user info, tariff and limits/);
+      assert.match(
+        read().stdout,
+        /account - Accounts, user info, tariff and limits/
+      );
       assert.match(read().stdout, /list\s+Print user accounts/);
       assert.doesNotMatch(read().stdout, /users get-accounts/);
       assert.doesNotMatch(read().stdout, /get-accounts\s+Print user accounts/);
       assert.equal(read().stderr, '');
     });
 
-    test('prints command-specific help from help command argument', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['help', 'market', 'get-candles'], io);
+    test(
+      'prints command-specific help from help command argument',
+      async () => {
+        const { io, read } = createIo();
+        const exitCode = await runCli(['help', 'market', 'get-candles'], io);
 
-      assert.equal(exitCode, 0);
-      assert.match(read().stdout, /market candles - Print historical candles/);
-      assert.match(read().stdout, /gRPC method:\n {2}MarketDataService\/GetCandles/);
-      assert.match(read().stdout, /t-invest-node-sdk market candles --instrument-id=ID/);
-      assert.doesNotMatch(read().stdout, /t-invest-node-sdk market get-candles --instrument-id=ID/);
-      assert.equal(read().stderr, '');
-    });
+        assert.equal(exitCode, 0);
+        assert.match(
+          read().stdout,
+          /market candles - Print historical candles/
+        );
+        assert.match(
+          read().stdout,
+          /gRPC method:\n {2}MarketDataService\/GetCandles/
+        );
+        assert.match(
+          read().stdout,
+          /t-invest-node-sdk market candles --instrument-id=ID/
+        );
+        assert.doesNotMatch(
+          read().stdout,
+          /t-invest-node-sdk market get-candles --instrument-id=ID/
+        );
+        assert.equal(read().stderr, '');
+      }
+    );
 
     test('prints utility help from help command argument', async () => {
-      for (const [command, output] of [
-        ['version', /version - Show package version/],
-        ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
-      ] as const) {
+      for (
+        const [command, output] of [
+          ['version', /version - Show package version/],
+          ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
+        ] as const
+      ) {
         const { io, read } = createIo();
         const exitCode = await runCli(['help', command], io);
 
@@ -260,71 +332,111 @@ describe('bootstrap cli runner', () => {
       );
     });
 
-    test('returns a usage failure for undocumented long forms of short aliases', async () => {
-      for (const [argument, replacement] of [
-        ['--h', /use '--help' or '-h'/],
-        ['--v', /use '--version' or '-v'/]
-      ] as const) {
+    test(
+      'returns a usage failure for undocumented long forms of short aliases',
+      async () => {
+        for (
+          const [argument, replacement] of [
+            ['--h', /use '--help' or '-h'/],
+            ['--v', /use '--version' or '-v'/]
+          ] as const
+        ) {
+          const { io, read } = createIo();
+          const exitCode = await runCli([argument], io);
+
+          assert.equal(exitCode, 2);
+          assert.equal(read().stdout, '');
+          assert.match(read().stderr, replacement);
+        }
+      }
+    );
+
+    test(
+      'returns a failure for assigned global boolean flag values',
+      async () => {
         const { io, read } = createIo();
-        const exitCode = await runCli([argument], io);
+        const exitCode = await runCli(['--help=false'], io);
 
         assert.equal(exitCode, 2);
         assert.equal(read().stdout, '');
-        assert.match(read().stderr, replacement);
+        assert.match(read().stderr, /Expected '--help' as boolean flag/);
       }
-    });
+    );
 
-    test('returns a failure for assigned global boolean flag values', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['--help=false'], io);
+    test(
+      'reports bootstrap output write failures through terminal error policy',
+      async () => {
+        let stderr = '';
+        const exitCode = await runCli(
+          ['--version'],
+          createOutput({
+            stdout: {
+              write() {
+                throw new Error('stdout failed');
+              }
+            },
+            stderr: {
+              write(chunk: string) {
+                stderr += chunk;
+              }
+            }
+          })
+        );
 
-      assert.equal(exitCode, 2);
-      assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Expected '--help' as boolean flag/);
-    });
+        assert.equal(exitCode, 1);
+        assert.equal(stderr, 'stdout failed\n');
+      }
+    );
 
-    test('reports bootstrap output write failures through terminal error policy', async () => {
-      let stderr = '';
-      const exitCode = await runCli(['--version'], createOutput({
-        stdout: {
-          write() {
-            throw new Error('stdout failed');
-          }
+    test(
+      'keeps legacy command paths executable through the runner',
+      async () => {
+        const { io, read } = createIo();
+        const exitCode = await runCli(
+          ['users', 'get-accounts', '--format=xml'],
+          io
+        );
+
+        assert.equal(exitCode, 2);
+        assert.equal(read().stdout, '');
+        assert.match(
+          read().stderr,
+          /Expected '--format' as one of: json, table/
+        );
+      }
+    );
+
+    for (
+      const { args, option } of [
+        {
+          args: [
+            'market',
+            'order-book',
+            '--instrument-id=instrument-id',
+            '--depth=2147483648'
+          ],
+          option: 'depth'
         },
-        stderr: {
-          write(chunk: string) {
-            stderr += chunk;
-          }
+        {
+          args: [
+            'operation',
+            'broker-report',
+            '--task-id=task-id',
+            '--page=2147483648'
+          ],
+          option: 'page'
+        },
+        {
+          args: [
+            'operation',
+            'foreign-dividends-report',
+            '--task-id=task-id',
+            '--page=2147483648'
+          ],
+          option: 'page'
         }
-      }));
-
-      assert.equal(exitCode, 1);
-      assert.equal(stderr, 'stdout failed\n');
-    });
-
-    test('keeps legacy command paths executable through the runner', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['users', 'get-accounts', '--format=xml'], io);
-
-      assert.equal(exitCode, 2);
-      assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Expected '--format' as one of: json, table/);
-    });
-
-    for (const { args, option } of [
-      {
-        args: ['market', 'order-book', '--instrument-id=instrument-id', '--depth=2147483648'],
-        option: 'depth'
-      },
-      {
-        args: ['operation', 'broker-report', '--task-id=task-id', '--page=2147483648'],
-        option: 'page'
-      },
-      {
-        args: ['operation', 'foreign-dividends-report', '--task-id=task-id', '--page=2147483648'],
-        option: 'page'
-      }
-    ]) {
+      ]
+    ) {
       test(`returns a usage failure for int32 overflow in ${args.slice(0, 2).join(' ')}`, async () => {
         const { io, read } = createIo();
         const exitCode = await runCli([
@@ -338,7 +450,9 @@ describe('bootstrap cli runner', () => {
         assert.equal(read().stdout, '');
         assert.match(
           read().stderr,
-          new RegExp(`Expected '--${option}' to be less than or equal to 2147483647`)
+          new RegExp(
+            `Expected '--${option}' to be less than or equal to 2147483647`
+          )
         );
       });
     }
@@ -362,22 +476,25 @@ describe('bootstrap cli runner', () => {
         notifyWriteStarted = resolve;
       });
       let commandFinished = false;
-      const exitCode = runCli(['version'], createOutput({
-        stdout: {
-          write() {
-            notifyWriteStarted?.();
+      const exitCode = runCli(
+        ['version'],
+        createOutput({
+          stdout: {
+            write() {
+              notifyWriteStarted?.();
 
-            return new Promise<void>((resolve) => {
-              finishWrite = resolve;
-            });
+              return new Promise<void>((resolve) => {
+                finishWrite = resolve;
+              });
+            }
+          },
+          stderr: {
+            // Этот сценарий не проверяет вывод в stderr.
+            // oxlint-disable-next-line no-empty-function
+            write() {}
           }
-        },
-        stderr: {
-          // Этот сценарий не проверяет вывод в stderr.
-          // oxlint-disable-next-line no-empty-function
-          write() {}
-        }
-      })).then((code) => {
+        })
+      ).then((code) => {
         commandFinished = true;
 
         return code;
@@ -444,28 +561,31 @@ describe('bootstrap cli runner', () => {
       });
       let commandFinished = false;
       let stderrWrites = 0;
-      const exitCode = runCli(['unknown-command'], createOutput({
-        stdout: {
-          // Этот сценарий не проверяет вывод в stdout.
-          // oxlint-disable-next-line no-empty-function
-          write() {}
-        },
-        stderr: {
-          write() {
-            stderrWrites += 1;
+      const exitCode = runCli(
+        ['unknown-command'],
+        createOutput({
+          stdout: {
+            // Этот сценарий не проверяет вывод в stdout.
+            // oxlint-disable-next-line no-empty-function
+            write() {}
+          },
+          stderr: {
+            write() {
+              stderrWrites += 1;
 
-            if (stderrWrites === 1) {
-              notifyWriteStarted?.();
+              if (stderrWrites === 1) {
+                notifyWriteStarted?.();
 
-              return new Promise<void>((resolve) => {
-                finishWrite = resolve;
-              });
+                return new Promise<void>((resolve) => {
+                  finishWrite = resolve;
+                });
+              }
+
+              return undefined;
             }
-
-            return undefined;
           }
-        }
-      })).then((code) => {
+        })
+      ).then((code) => {
         commandFinished = true;
 
         return code;

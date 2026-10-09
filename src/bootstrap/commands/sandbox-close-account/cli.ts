@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -24,19 +25,27 @@ import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import { closeSandboxAccountFormats, formatCloseSandboxAccount } from './reporter';
+import {
+  closeSandboxAccountFormats,
+  formatCloseSandboxAccount
+} from './reporter';
 
 type SandboxCloseAccountSdk = {
   sandbox: {
-    closeSandboxAccount(request: CloseSandboxAccountRequest): Promise<CloseSandboxAccountResponse>;
+    closeSandboxAccount(
+      request: CloseSandboxAccountRequest
+    ): Promise<CloseSandboxAccountResponse>;
   };
   close(): void;
 };
 
-type SandboxCloseAccountSdkFactory = (options: TInvestOptions) => SandboxCloseAccountSdk;
+type SandboxCloseAccountSdkFactory = (
+  options: TInvestOptions
+) => SandboxCloseAccountSdk;
 
 const sandboxCloseAccountCommandPath = ['sandbox', 'account', 'close'] as const;
-const defaultSandboxCloseAccountSdkFactory: SandboxCloseAccountSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxCloseAccountSdkFactory: SandboxCloseAccountSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxCloseAccountRequestOptionsSchema = {
   'account-id': {
@@ -59,14 +68,17 @@ const sandboxCloseAccountOptionsSchema = withSdkOptions(
   sandboxCloseAccountFormatOptionsSchema
 );
 
-type SandboxCloseAccountOptions = InferOptions<typeof sandboxCloseAccountOptionsSchema>;
+type SandboxCloseAccountOptions = InferOptions<
+  typeof sandboxCloseAccountOptionsSchema
+>;
 type SandboxCloseAccountRequestOptions = CommandRequestOptions<
   SandboxCloseAccountOptions,
   'account-id'
 >;
 
 export function createSandboxCloseAccountCommand(
-  createSdk: SandboxCloseAccountSdkFactory = defaultSandboxCloseAccountSdkFactory
+  createSdk: SandboxCloseAccountSdkFactory =
+    defaultSandboxCloseAccountSdkFactory
 ) {
   return command.define({
     path: sandboxCloseAccountCommandPath,

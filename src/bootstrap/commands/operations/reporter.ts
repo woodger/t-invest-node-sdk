@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `operation list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { OperationsReport, OperationsReportOperation } from '../../../application/reports';
+import type {
+  OperationsReport,
+  OperationsReportOperation
+} from '../../../application/reports';
 import {
   operationStateToJSON,
   operationTypeToJSON,
@@ -44,7 +48,9 @@ function toReportOperation(operation: Operation): OperationsReportOperation {
   };
 }
 
-export function createOperationsReport(operations: Operation[]): OperationsReport {
+export function createOperationsReport(
+  operations: Operation[]
+): OperationsReport {
   return operations.map(toReportOperation);
 }
 
@@ -88,6 +94,9 @@ export function formatOperationsReport(
   ]);
 }
 
-export function formatOperations(operations: Operation[], format: OperationsFormat): string {
+export function formatOperations(
+  operations: Operation[],
+  format: OperationsFormat
+): string {
   return formatOperationsReport(createOperationsReport(operations), format);
 }

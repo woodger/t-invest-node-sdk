@@ -25,7 +25,9 @@ export type TInvestUnaryLimits = Record<string, TInvestUnaryLimit>;
 
 /** Разрешённая SDK квота и её непрозрачный общий bucket. */
 export interface TInvestUnaryQuota extends TInvestUnaryLimit {
-  /** Идентификатор общей квоты; Consumer должен сравнивать, но не разбирать его. */
+  /**
+   * Идентификатор общей квоты; Consumer должен сравнивать, но не разбирать его.
+   */
   readonly bucket: string;
 }
 
@@ -84,14 +86,13 @@ const maxTimerDelayMs = 2_147_483_647;
 /**
  * Создаёт необязательный process-local limiter с равномерной выдачей permits.
  * Один объект можно передать нескольким SDK instances для общего состояния.
- * `quotaShare` статически резервирует часть исходной квоты для других владельцев.
+ * `quotaShare` статически резервирует часть исходной квоты для других
+ * владельцев.
  */
 export function createInMemoryUnaryLimiter(
   options: TInvestInMemoryUnaryLimiterOptions = {}
 ): TInvestUnaryLimiter {
-  const quotaShare = options.quotaShare === undefined
-    ? 1
-    : options.quotaShare;
+  const quotaShare = options.quotaShare === undefined ? 1 : options.quotaShare;
 
   return new InMemoryUnaryLimiter(quotaShare);
 }
@@ -105,7 +106,8 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
 
   /**
    * Ожидает разрешения на unary-вызов в FIFO-очереди общего bucket-а.
-   * Интервал выдачи учитывает quotaShare; отмена отклоняет ожидание с причиной AbortSignal.
+   * Интервал выдачи учитывает quotaShare; отмена отклоняет ожидание с причиной
+   * AbortSignal.
    */
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     if (context.signal.aborted) {
@@ -149,8 +151,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   }
 
   /**
-   * Возвращает или создаёт общее состояние очереди и выдачи permits для bucket-а.
-   * Сохраняет время следующего допуска при пустой очереди и отклоняет разные квоты одного bucket-а.
+   * Возвращает или создаёт общее состояние очереди и выдачи permits для
+   * bucket-а.
+   * Сохраняет время следующего допуска при пустой очереди и отклоняет разные
+   * квоты одного bucket-а.
    */
   private getSchedule(quota: TInvestUnaryQuota): UnaryLimitSchedule {
     let schedule = this.schedules.get(quota.bucket);
@@ -242,8 +246,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   }
 
   /**
-   * Отменяет ожидающий запрос, сохраняя интервал после последнего выданного permit.
-   * Удаление головы очереди перепланирует ожидание; отмена сама по себе не расходует квоту.
+   * Отменяет ожидающий запрос, сохраняя интервал после последнего выданного
+   * permit.
+   * Удаление головы очереди перепланирует ожидание; отмена сама по себе не
+   * расходует квоту.
    */
   private cancel(
     schedule: UnaryLimitSchedule,
@@ -274,8 +280,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   }
 
   /**
-   * Исключает запрос из связанной очереди за O(1), сохраняя порядок остальных ожиданий.
-   * Таймером, abort listener-ом и завершением Promise управляет вызывающий метод.
+   * Исключает запрос из связанной очереди за O(1), сохраняя порядок остальных
+   * ожиданий.
+   * Таймером, abort listener-ом и завершением Promise управляет вызывающий
+   * метод.
    */
   private removeRequest(
     schedule: UnaryLimitSchedule,
@@ -325,14 +333,18 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    */
   private static assertQuotaShare(quotaShare: number): void {
     if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
-      throw new RangeError('quotaShare must be a finite number between 0.2 and 1');
+      throw new RangeError(
+        'quotaShare must be a finite number between 0.2 and 1'
+      );
     }
   }
 
   /**
    * Рассчитывает число permits в окне с учётом quotaShare этого limiter-а.
-   * Полную квоту сохраняет; уменьшенную округляет вниз только при значении от единицы.
-   * Значение меньше единицы задаёт интервал длиннее окна; округление до нуля сделало бы его бесконечным.
+   * Полную квоту сохраняет; уменьшенную округляет вниз только при значении от
+   * единицы.
+   * Значение меньше единицы задаёт интервал длиннее окна; округление до нуля
+   * сделало бы его бесконечным.
    */
   private resolveEffectiveMaxRequests(maxRequests: number): number {
     if (this.quotaShare === 1) {

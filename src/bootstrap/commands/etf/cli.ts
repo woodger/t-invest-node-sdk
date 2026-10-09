@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -35,7 +36,8 @@ type EtfSdk = {
 type EtfSdkFactory = (options: TInvestOptions) => EtfSdk;
 
 const etfCommandPath = ['instrument', 'etf', 'show'] as const;
-const defaultEtfSdkFactory: EtfSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultEtfSdkFactory: EtfSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const etfFormatOptionsSchema = {
   format: {

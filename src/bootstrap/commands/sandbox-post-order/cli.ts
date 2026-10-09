@@ -6,16 +6,23 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { PostOrderRequest, PostOrderResponse } from '../../../generated/orders';
+import type {
+  PostOrderRequest,
+  PostOrderResponse
+} from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
+import {
+  positiveSafeIntegerOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPostOrderRequest } from '../post-order/request.mapper';
 import { formatPostOrder, postOrderFormats } from '../post-order/reporter';
@@ -31,10 +38,13 @@ type SandboxPostOrderSdk = {
   close(): void;
 };
 
-type SandboxPostOrderSdkFactory = (options: TInvestOptions) => SandboxPostOrderSdk;
+type SandboxPostOrderSdkFactory = (
+  options: TInvestOptions
+) => SandboxPostOrderSdk;
 
 const sandboxPostOrderCommandPath = ['sandbox', 'order', 'place'] as const;
-const defaultSandboxPostOrderSdkFactory: SandboxPostOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxPostOrderSdkFactory: SandboxPostOrderSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxPostOrderRequestOptionsSchema = {
   'account-id': {
@@ -82,16 +92,18 @@ const sandboxPostOrderOptionsSchema = withSdkOptions(
   sandboxPostOrderFormatOptionsSchema
 );
 
-type SandboxPostOrderOptions = InferOptions<typeof sandboxPostOrderOptionsSchema>;
+type SandboxPostOrderOptions = InferOptions<
+  typeof sandboxPostOrderOptionsSchema
+>;
 type SandboxPostOrderRequestOptions = CommandRequestOptions<
   SandboxPostOrderOptions,
-  'account-id' |
-  'instrument-id' |
-  'quantity' |
-  'price' |
-  'direction' |
-  'order-type' |
-  'order-id'
+  | 'account-id'
+  | 'instrument-id'
+  | 'quantity'
+  | 'price'
+  | 'direction'
+  | 'order-type'
+  | 'order-id'
 >;
 
 export function createSandboxPostOrderCommand(

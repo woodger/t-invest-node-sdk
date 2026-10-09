@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
-import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
+import type {
+  PortfolioPosition,
+  PortfolioResponse
+} from '../../../generated/operations';
 import { createPortfolioReport, formatPortfolioReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
@@ -19,7 +22,9 @@ function quotation(units: number, nano: number): Quotation {
   };
 }
 
-function position(overrides: Partial<PortfolioPosition> = {}): PortfolioPosition {
+function position(
+  overrides: Partial<PortfolioPosition> = {}
+): PortfolioPosition {
   return {
     figi: 'BBG00QPYJ5H0',
     instrumentType: 'share',
@@ -39,7 +44,9 @@ function position(overrides: Partial<PortfolioPosition> = {}): PortfolioPosition
   } as PortfolioPosition;
 }
 
-function portfolio(overrides: Partial<PortfolioResponse> = {}): PortfolioResponse {
+function portfolio(
+  overrides: Partial<PortfolioResponse> = {}
+): PortfolioResponse {
   return {
     totalAmountShares: money(1000, 0),
     totalAmountBonds: money(200, 0),
@@ -120,12 +127,21 @@ describe('portfolio reporter', () => {
 
   describe('formatPortfolioReport', () => {
     test('formats report as table', () => {
-      const output = formatPortfolioReport(createPortfolioReport(portfolio()), 'table');
+      const output = formatPortfolioReport(
+        createPortfolioReport(portfolio()),
+        'table'
+      );
 
       assert.match(output, /accountId: account-id/);
       assert.match(output, /totalAmountPortfolio: 3700.5 rub/);
-      assert.match(output, /^figi\s+instrumentUid\s+positionUid\s+instrumentType/m);
-      assert.match(output, /BBG00QPYJ5H0\s+instrument-uid\s+position-uid\s+share/);
+      assert.match(
+        output,
+        /^figi\s+instrumentUid\s+positionUid\s+instrumentType/m
+      );
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+instrument-uid\s+position-uid\s+share/
+      );
     });
 
     test('formats report as json', () => {

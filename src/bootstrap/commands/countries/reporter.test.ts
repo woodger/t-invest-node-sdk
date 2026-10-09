@@ -31,7 +31,10 @@ describe('countries reporter', () => {
 
   describe('formatCountriesReport', () => {
     test('formats report as table', () => {
-      const output = formatCountriesReport(createCountriesReport([country()]), 'table');
+      const output = formatCountriesReport(
+        createCountriesReport([country()]),
+        'table'
+      );
 
       assert.match(output, /^alfaTwo\s+alfaThree\s+name\s+nameBrief/m);
       assert.match(output, /RU\s+RUS\s+Russian Federation\s+Russia/);

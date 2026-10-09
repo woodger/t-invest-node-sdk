@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -24,15 +25,20 @@ import { formatMarginAttributes, marginAttributesFormats } from './reporter';
 
 type MarginAttributesSdk = {
   users: {
-    getMarginAttributes(request: GetMarginAttributesRequest): Promise<GetMarginAttributesResponse>;
+    getMarginAttributes(
+      request: GetMarginAttributesRequest
+    ): Promise<GetMarginAttributesResponse>;
   };
   close(): void;
 };
 
-type MarginAttributesSdkFactory = (options: TInvestOptions) => MarginAttributesSdk;
+type MarginAttributesSdkFactory = (
+  options: TInvestOptions
+) => MarginAttributesSdk;
 
 const marginAttributesCommandPath = ['account', 'margin'] as const;
-const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const marginAttributesRequestOptionsSchema = {
   'account-id': {
@@ -54,8 +60,13 @@ const marginAttributesOptionsSchema = withSdkOptions(
   marginAttributesFormatOptionsSchema
 );
 
-type MarginAttributesOptions = InferOptions<typeof marginAttributesOptionsSchema>;
-type MarginAttributesRequestOptions = CommandRequestOptions<MarginAttributesOptions, 'account-id'>;
+type MarginAttributesOptions = InferOptions<
+  typeof marginAttributesOptionsSchema
+>;
+type MarginAttributesRequestOptions = CommandRequestOptions<
+  MarginAttributesOptions,
+  'account-id'
+>;
 
 export function createMarginAttributesCommand(
   createSdk: MarginAttributesSdkFactory = defaultMarginAttributesSdkFactory

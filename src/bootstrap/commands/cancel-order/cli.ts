@@ -6,7 +6,8 @@
  * - делегирование request mapping в command-owned mapper;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -36,7 +37,8 @@ type CancelOrderSdk = {
 type CancelOrderSdkFactory = (options: TInvestOptions) => CancelOrderSdk;
 
 const cancelOrderCommandPath = ['order', 'cancel'] as const;
-const defaultCancelOrderSdkFactory: CancelOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultCancelOrderSdkFactory: CancelOrderSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const cancelOrderRequestOptionsSchema = {
   'account-id': {

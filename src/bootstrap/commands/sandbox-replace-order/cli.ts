@@ -6,19 +6,29 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { PostOrderResponse, ReplaceOrderRequest } from '../../../generated/orders';
+import type {
+  PostOrderResponse,
+  ReplaceOrderRequest
+} from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
+import {
+  positiveSafeIntegerOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createReplaceOrderRequest } from '../replace-order/request.mapper';
-import { formatReplaceOrder, replaceOrderFormats } from '../replace-order/reporter';
+import {
+  formatReplaceOrder,
+  replaceOrderFormats
+} from '../replace-order/reporter';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
@@ -26,15 +36,20 @@ import {
 
 type SandboxReplaceOrderSdk = {
   sandbox: {
-    replaceSandboxOrder(request: ReplaceOrderRequest): Promise<PostOrderResponse>;
+    replaceSandboxOrder(
+      request: ReplaceOrderRequest
+    ): Promise<PostOrderResponse>;
   };
   close(): void;
 };
 
-type SandboxReplaceOrderSdkFactory = (options: TInvestOptions) => SandboxReplaceOrderSdk;
+type SandboxReplaceOrderSdkFactory = (
+  options: TInvestOptions
+) => SandboxReplaceOrderSdk;
 
 const sandboxReplaceOrderCommandPath = ['sandbox', 'order', 'replace'] as const;
-const defaultSandboxReplaceOrderSdkFactory: SandboxReplaceOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxReplaceOrderSdkFactory: SandboxReplaceOrderSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxReplaceOrderRequestOptionsSchema = {
   'account-id': {
@@ -78,19 +93,22 @@ const sandboxReplaceOrderOptionsSchema = withSdkOptions(
   sandboxReplaceOrderFormatOptionsSchema
 );
 
-type SandboxReplaceOrderOptions = InferOptions<typeof sandboxReplaceOrderOptionsSchema>;
+type SandboxReplaceOrderOptions = InferOptions<
+  typeof sandboxReplaceOrderOptionsSchema
+>;
 type SandboxReplaceOrderRequestOptions = CommandRequestOptions<
   SandboxReplaceOrderOptions,
-  'account-id' |
-  'order-id' |
-  'idempotency-key' |
-  'quantity' |
-  'price' |
-  'price-type'
+  | 'account-id'
+  | 'order-id'
+  | 'idempotency-key'
+  | 'quantity'
+  | 'price'
+  | 'price-type'
 >;
 
 export function createSandboxReplaceOrderCommand(
-  createSdk: SandboxReplaceOrderSdkFactory = defaultSandboxReplaceOrderSdkFactory
+  createSdk: SandboxReplaceOrderSdkFactory =
+    defaultSandboxReplaceOrderSdkFactory
 ) {
   return command.define({
     path: sandboxReplaceOrderCommandPath,

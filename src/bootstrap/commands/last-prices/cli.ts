@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -19,13 +20,18 @@ import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseCommaSeparatedStringListOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatLastPrices, lastPricesFormats } from './reporter';
 
 type LastPricesSdk = {
   marketData: {
-    getLastPrices(request: GetLastPricesRequest): Promise<GetLastPricesResponse>;
+    getLastPrices(
+      request: GetLastPricesRequest
+    ): Promise<GetLastPricesResponse>;
   };
   close(): void;
 };
@@ -33,7 +39,8 @@ type LastPricesSdk = {
 type LastPricesSdkFactory = (options: TInvestOptions) => LastPricesSdk;
 
 const lastPricesCommandPath = ['market', 'last-prices'] as const;
-const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const lastPricesInstrumentIdsOptionsSchema = {
   'instrument-id': {
@@ -56,7 +63,10 @@ const lastPricesOptionsSchema = withSdkOptions(
 );
 
 type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
-type LastPricesRequestOptions = CommandRequestOptions<LastPricesOptions, 'instrument-id'>;
+type LastPricesRequestOptions = CommandRequestOptions<
+  LastPricesOptions,
+  'instrument-id'
+>;
 
 export function createLastPricesCommand(
   createSdk: LastPricesSdkFactory = defaultLastPricesSdkFactory

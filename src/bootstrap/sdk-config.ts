@@ -49,11 +49,13 @@ const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
 interface UnaryServiceDefinitionContract {
   readonly name: string;
   readonly fullName: string;
-  readonly methods: Readonly<Record<string, {
-    readonly name: string;
-    readonly requestStream: boolean;
-    readonly responseStream: boolean;
-  }>>;
+  readonly methods: Readonly<
+    Record<string, {
+      readonly name: string;
+      readonly requestStream: boolean;
+      readonly responseStream: boolean;
+    }>
+  >;
 }
 
 const unaryServiceDefinitions: readonly UnaryServiceDefinitionContract[] = [
@@ -131,8 +133,8 @@ export function resolveUnaryLimitConfig(
       const firstLimit = bucketLimits?.[0];
       const hasOneDefinedLimit = firstLimit !== undefined
         && bucketLimits?.every(
-          (limit) => sameUnaryLimit(firstLimit, limit)
-        ) === true;
+            (limit) => sameUnaryLimit(firstLimit, limit)
+          ) === true;
 
       if (
         !hasOneDefinedLimit

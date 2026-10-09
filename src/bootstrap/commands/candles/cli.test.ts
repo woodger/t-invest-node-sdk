@@ -62,12 +62,13 @@ describe('candles command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => createCandlesRequest({
-          'instrument-id': 'BBG00QPYJ5H0',
-          from: '2026-06-20T00:00:00.000Z',
-          to: '2026-06-19T00:00:00.000Z',
-          interval: 'day'
-        }),
+        () =>
+          createCandlesRequest({
+            'instrument-id': 'BBG00QPYJ5H0',
+            from: '2026-06-20T00:00:00.000Z',
+            to: '2026-06-19T00:00:00.000Z',
+            interval: 'day'
+          }),
         /Expected '--from' to be earlier/
       );
     });
@@ -82,7 +83,7 @@ describe('candles command', () => {
         receivedOptions = options;
 
         return {
-    marketData: {
+          marketData: {
             async getCandles(request) {
               receivedRequest = request;
 
@@ -119,7 +120,10 @@ describe('candles command', () => {
         endpoint: 'localhost:50051'
       });
       assert.equal(receivedRequest?.instrumentId, 'BBG00QPYJ5H0');
-      assert.equal(receivedRequest?.interval, CandleInterval.CANDLE_INTERVAL_1_MIN);
+      assert.equal(
+        receivedRequest?.interval,
+        CandleInterval.CANDLE_INTERVAL_1_MIN
+      );
       assert.equal(closeCalls, 1);
       assert.match(output, /10.5/);
     });

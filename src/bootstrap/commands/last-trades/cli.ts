@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -19,13 +20,18 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatLastTrades, lastTradesFormats } from './reporter';
 
 type LastTradesSdk = {
   marketData: {
-    getLastTrades(request: GetLastTradesRequest): Promise<GetLastTradesResponse>;
+    getLastTrades(
+      request: GetLastTradesRequest
+    ): Promise<GetLastTradesResponse>;
   };
   close(): void;
 };
@@ -33,7 +39,8 @@ type LastTradesSdk = {
 type LastTradesSdkFactory = (options: TInvestOptions) => LastTradesSdk;
 
 const lastTradesCommandPath = ['market', 'trades'] as const;
-const defaultLastTradesSdkFactory: LastTradesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultLastTradesSdkFactory: LastTradesSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const lastTradesRequestOptionsSchema = {
   'instrument-id': {
@@ -64,7 +71,10 @@ const lastTradesOptionsSchema = withSdkOptions(
 );
 
 type LastTradesOptions = InferOptions<typeof lastTradesOptionsSchema>;
-type LastTradesRequestOptions = CommandRequestOptions<LastTradesOptions, 'instrument-id' | 'from' | 'to'>;
+type LastTradesRequestOptions = CommandRequestOptions<
+  LastTradesOptions,
+  'instrument-id' | 'from' | 'to'
+>;
 
 export function createLastTradesCommand(
   createSdk: LastTradesSdkFactory = defaultLastTradesSdkFactory
@@ -100,7 +110,9 @@ export function createLastTradesRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return GetLastTradesRequest.create({

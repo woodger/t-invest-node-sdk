@@ -3,7 +3,10 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { OpenSandboxAccountRequest } from '../../../generated/sandbox';
-import { createSandboxOpenAccountCommand, createSandboxOpenAccountRequest } from './cli';
+import {
+  createSandboxOpenAccountCommand,
+  createSandboxOpenAccountRequest
+} from './cli';
 
 describe('sandbox-open-account command', () => {
   describe('createSandboxOpenAccountRequest', () => {
@@ -21,11 +24,12 @@ describe('sandbox-open-account command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          ['sandbox', 'account', 'open'],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            ['sandbox', 'account', 'open'],
+            undefined
+          ),
         /Expected '--confirm' to execute side-effect command/
       );
       assert.equal(sdkCreated, false);

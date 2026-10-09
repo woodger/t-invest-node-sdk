@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument option show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   OptionReport,
   OptionReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type {
   Option,
   OptionResponse
@@ -32,7 +36,9 @@ export const optionFormats = ['json', 'table'] as const;
 
 export type OptionFormat = typeof optionFormats[number];
 
-export function createOptionReportInstrument(instrument: Option): OptionReportInstrument {
+export function createOptionReportInstrument(
+  instrument: Option
+): OptionReportInstrument {
   return {
     uid: instrument.uid,
     positionUid: instrument.positionUid,
@@ -132,7 +138,10 @@ export function renderOptionRows(report: OptionReportInstrument[]): string {
   ]);
 }
 
-export function formatOptionReport(report: OptionReport, format: OptionFormat): string {
+export function formatOptionReport(
+  report: OptionReport,
+  format: OptionFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -140,6 +149,9 @@ export function formatOptionReport(report: OptionReport, format: OptionFormat): 
   return renderOptionRows(report === null ? [] : [report]);
 }
 
-export function formatOption(response: OptionResponse, format: OptionFormat): string {
+export function formatOption(
+  response: OptionResponse,
+  format: OptionFormat
+): string {
   return formatOptionReport(createOptionReport(response), format);
 }

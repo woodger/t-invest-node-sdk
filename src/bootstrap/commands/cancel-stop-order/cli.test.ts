@@ -3,18 +3,24 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelStopOrderRequest } from '../../../generated/stoporders';
-import { createCancelStopOrderCommand, createCancelStopOrderRequest } from './cli';
+import {
+  createCancelStopOrderCommand,
+  createCancelStopOrderRequest
+} from './cli';
 
 describe('cancel-stop-order command', () => {
   describe('createCancelStopOrderRequest', () => {
     test('returns generated cancelStopOrder request', () => {
-      assert.deepEqual(createCancelStopOrderRequest({
-        'account-id': 'account-id',
-        'stop-order-id': 'stop-order-id'
-      }), {
-        accountId: 'account-id',
-        stopOrderId: 'stop-order-id'
-      });
+      assert.deepEqual(
+        createCancelStopOrderRequest({
+          'account-id': 'account-id',
+          'stop-order-id': 'stop-order-id'
+        }),
+        {
+          accountId: 'account-id',
+          stopOrderId: 'stop-order-id'
+        }
+      );
     });
   });
 
@@ -27,16 +33,17 @@ describe('cancel-stop-order command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'stop-order',
-            'cancel',
-            '--account-id=account-id',
-            '--stop-order-id=stop-order-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'stop-order',
+              'cancel',
+              '--account-id=account-id',
+              '--stop-order-id=stop-order-id'
+            ],
+            undefined
+          ),
         /Expected '--confirm' to execute side-effect command/
       );
       assert.equal(sdkCreated, false);
@@ -50,7 +57,7 @@ describe('cancel-stop-order command', () => {
         receivedOptions = options;
 
         return {
-    stopOrders: {
+          stopOrders: {
             async cancelStopOrder(request) {
               receivedRequest = request;
 

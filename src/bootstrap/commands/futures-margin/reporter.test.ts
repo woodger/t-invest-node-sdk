@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { GetFuturesMarginResponse } from '../../../generated/instruments';
-import { createFuturesMarginReport, formatFuturesMarginReport } from './reporter';
+import {
+  createFuturesMarginReport,
+  formatFuturesMarginReport
+} from './reporter';
 
-function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFuturesMarginResponse {
+function response(
+  overrides: Partial<GetFuturesMarginResponse> = {}
+): GetFuturesMarginResponse {
   return {
     initialMarginOnBuy: {
       currency: 'rub',
@@ -65,9 +70,15 @@ describe('futures-margin reporter', () => {
 
   describe('formatFuturesMarginReport', () => {
     test('formats report as table', () => {
-      const output = formatFuturesMarginReport(createFuturesMarginReport(response()), 'table');
+      const output = formatFuturesMarginReport(
+        createFuturesMarginReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^initialMarginOnBuy\s+initialMarginOnSell\s+minPriceIncrement/m);
+      assert.match(
+        output,
+        /^initialMarginOnBuy\s+initialMarginOnSell\s+minPriceIncrement/m
+      );
       assert.match(output, /1000\.25 rub\s+1100 rub\s+1\s+10\.5/);
     });
 

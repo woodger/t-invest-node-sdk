@@ -9,7 +9,10 @@ import {
   type Account,
   type GetAccountsRequest
 } from '../../../generated/users';
-import { createSandboxAccountsCommand, createSandboxAccountsRequest } from './cli';
+import {
+  createSandboxAccountsCommand,
+  createSandboxAccountsRequest
+} from './cli';
 
 function account(overrides: Partial<Account> = {}): Account {
   return {
@@ -91,17 +94,18 @@ describe('sandbox-accounts command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'account',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'sandbox',
+              'account',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

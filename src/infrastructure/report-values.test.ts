@@ -22,25 +22,40 @@ describe('report values', () => {
 
   describe('formatReportDecimal', () => {
     test('formats units and nanos as decimal strings', () => {
-      assert.equal(formatReportDecimal({ units: 10, nano: 250_000_000 }), '10.25');
+      assert.equal(
+        formatReportDecimal({ units: 10, nano: 250_000_000 }),
+        '10.25'
+      );
       assert.equal(formatReportDecimal({ units: 10, nano: 0 }), '10');
     });
 
-    test('preserves nanos when units exceed precise floating-point range', () => {
-      assert.equal(
-        formatReportDecimal({ units: 100_000_000, nano: 1 }),
-        '100000000.000000001'
-      );
-    });
+    test(
+      'preserves nanos when units exceed precise floating-point range',
+      () => {
+        assert.equal(
+          formatReportDecimal({ units: 100_000_000, nano: 1 }),
+          '100000000.000000001'
+        );
+      }
+    );
 
     test('uses fixed decimal notation for sub-unit values', () => {
       assert.equal(formatReportDecimal({ units: 0, nano: 1 }), '0.000000001');
     });
 
-    test('formats negative and mixed-sign values by their exact total nanos', () => {
-      assert.equal(formatReportDecimal({ units: -10, nano: -250_000_000 }), '-10.25');
-      assert.equal(formatReportDecimal({ units: 1, nano: -500_000_000 }), '0.5');
-    });
+    test(
+      'formats negative and mixed-sign values by their exact total nanos',
+      () => {
+        assert.equal(
+          formatReportDecimal({ units: -10, nano: -250_000_000 }),
+          '-10.25'
+        );
+        assert.equal(
+          formatReportDecimal({ units: 1, nano: -500_000_000 }),
+          '0.5'
+        );
+      }
+    );
 
     test('returns an empty string for missing values', () => {
       assert.equal(formatReportDecimal(undefined), '');
@@ -68,10 +83,13 @@ describe('report values', () => {
 
   describe('formatReportMoneyText', () => {
     test('formats money text with currency when currency is present', () => {
-      assert.equal(formatReportMoneyText({
-        currency: 'rub',
-        amount: '100.5'
-      }), '100.5 rub');
+      assert.equal(
+        formatReportMoneyText({
+          currency: 'rub',
+          amount: '100.5'
+        }),
+        '100.5 rub'
+      );
     });
 
     test('formats only amount when currency is empty', () => {

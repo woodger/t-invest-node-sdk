@@ -6,7 +6,8 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -21,7 +22,10 @@ import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createCancelOrderRequest } from '../cancel-order/request.mapper';
-import { cancelOrderFormats, formatCancelOrder } from '../cancel-order/reporter';
+import {
+  cancelOrderFormats,
+  formatCancelOrder
+} from '../cancel-order/reporter';
 import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
@@ -29,15 +33,20 @@ import {
 
 type SandboxCancelOrderSdk = {
   sandbox: {
-    cancelSandboxOrder(request: CancelOrderRequest): Promise<CancelOrderResponse>;
+    cancelSandboxOrder(
+      request: CancelOrderRequest
+    ): Promise<CancelOrderResponse>;
   };
   close(): void;
 };
 
-type SandboxCancelOrderSdkFactory = (options: TInvestOptions) => SandboxCancelOrderSdk;
+type SandboxCancelOrderSdkFactory = (
+  options: TInvestOptions
+) => SandboxCancelOrderSdk;
 
 const sandboxCancelOrderCommandPath = ['sandbox', 'order', 'cancel'] as const;
-const defaultSandboxCancelOrderSdkFactory: SandboxCancelOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxCancelOrderSdkFactory: SandboxCancelOrderSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxCancelOrderRequestOptionsSchema = {
   'account-id': {
@@ -64,7 +73,9 @@ const sandboxCancelOrderOptionsSchema = withSdkOptions(
   sandboxCancelOrderFormatOptionsSchema
 );
 
-type SandboxCancelOrderOptions = InferOptions<typeof sandboxCancelOrderOptionsSchema>;
+type SandboxCancelOrderOptions = InferOptions<
+  typeof sandboxCancelOrderOptionsSchema
+>;
 type SandboxCancelOrderRequestOptions = CommandRequestOptions<
   SandboxCancelOrderOptions,
   'account-id' | 'order-id'

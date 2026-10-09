@@ -6,11 +6,15 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetFavoritesRequest, GetFavoritesResponse } from '../../../generated/instruments';
+import type {
+  GetFavoritesRequest,
+  GetFavoritesResponse
+} from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -28,15 +32,18 @@ type FavoritesSdk = {
 type FavoritesSdkFactory = (options: TInvestOptions) => FavoritesSdk;
 
 const favoritesCommandPath = ['instrument', 'favorite', 'list'] as const;
-const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
-const favoritesOptionsSchema = withSdkOptions({
-  format: {
-    type: 'string',
-    choices: favoritesFormats,
-    default: 'table'
-  }
-} as const);
+const favoritesOptionsSchema = withSdkOptions(
+  {
+    format: {
+      type: 'string',
+      choices: favoritesFormats,
+      default: 'table'
+    }
+  } as const
+);
 
 type FavoritesOptions = InferOptions<typeof favoritesOptionsSchema>;
 

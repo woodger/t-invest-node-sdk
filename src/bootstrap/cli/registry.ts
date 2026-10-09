@@ -6,7 +6,8 @@
  * - валидация имени команды из positionals;
  * - возврат canonical и matched path metadata для bootstrap CLI;
  *
- * Здесь не должно быть исполнения команд, разбора raw argv или форматирования help/version output.
+ * Здесь не должно быть исполнения команд, разбора raw argv или форматирования
+ * help/version output.
  */
 
 import { accountsCommand } from '../commands/accounts/cli';
@@ -27,7 +28,9 @@ import { compileProtoCommand } from '../commands/compile-proto/cli';
 import { countriesCommand } from '../commands/countries/cli';
 import { currenciesCommand } from '../commands/currencies/cli';
 import { currencyCommand } from '../commands/currency/cli';
-import { dividendsForeignIssuerCommand } from '../commands/dividends-foreign-issuer/cli';
+import {
+  dividendsForeignIssuerCommand
+} from '../commands/dividends-foreign-issuer/cli';
 import { dividendsCommand } from '../commands/dividends/cli';
 import { editFavoritesCommand } from '../commands/edit-favorites/cli';
 import { etfCommand } from '../commands/etf/cli';
@@ -47,7 +50,9 @@ import { optionsByCommand } from '../commands/options-by/cli';
 import { orderBookCommand } from '../commands/order-book/cli';
 import { orderStateCommand } from '../commands/order-state/cli';
 import { ordersCommand } from '../commands/orders/cli';
-import { operationsByCursorCommand } from '../commands/operations-by-cursor/cli';
+import {
+  operationsByCursorCommand
+} from '../commands/operations-by-cursor/cli';
 import { operationsCommand } from '../commands/operations/cli';
 import { portfolioCommand } from '../commands/portfolio/cli';
 import { postOrderCommand } from '../commands/post-order/cli';
@@ -55,19 +60,31 @@ import { postStopOrderCommand } from '../commands/post-stop-order/cli';
 import { positionsCommand } from '../commands/positions/cli';
 import { replaceOrderCommand } from '../commands/replace-order/cli';
 import { sandboxAccountsCommand } from '../commands/sandbox-accounts/cli';
-import { sandboxCancelOrderCommand } from '../commands/sandbox-cancel-order/cli';
-import { sandboxCloseAccountCommand } from '../commands/sandbox-close-account/cli';
+import {
+  sandboxCancelOrderCommand
+} from '../commands/sandbox-cancel-order/cli';
+import {
+  sandboxCloseAccountCommand
+} from '../commands/sandbox-close-account/cli';
 import { sandboxOperationsCommand } from '../commands/sandbox-operations/cli';
-import { sandboxOperationsByCursorCommand } from '../commands/sandbox-operations-by-cursor/cli';
-import { sandboxOpenAccountCommand } from '../commands/sandbox-open-account/cli';
+import {
+  sandboxOperationsByCursorCommand
+} from '../commands/sandbox-operations-by-cursor/cli';
+import {
+  sandboxOpenAccountCommand
+} from '../commands/sandbox-open-account/cli';
 import { sandboxOrdersCommand } from '../commands/sandbox-orders/cli';
 import { sandboxOrderStateCommand } from '../commands/sandbox-order-state/cli';
 import { sandboxPayInCommand } from '../commands/sandbox-pay-in/cli';
 import { sandboxPortfolioCommand } from '../commands/sandbox-portfolio/cli';
 import { sandboxPositionsCommand } from '../commands/sandbox-positions/cli';
 import { sandboxPostOrderCommand } from '../commands/sandbox-post-order/cli';
-import { sandboxReplaceOrderCommand } from '../commands/sandbox-replace-order/cli';
-import { sandboxWithdrawLimitsCommand } from '../commands/sandbox-withdraw-limits/cli';
+import {
+  sandboxReplaceOrderCommand
+} from '../commands/sandbox-replace-order/cli';
+import {
+  sandboxWithdrawLimitsCommand
+} from '../commands/sandbox-withdraw-limits/cli';
 import { shareCommand } from '../commands/share/cli';
 import { sharesCommand } from '../commands/shares/cli';
 import { stopOrdersCommand } from '../commands/stop-orders/cli';
@@ -106,7 +123,10 @@ export function resolveCommandWarnings(
   commandName: string,
   args: readonly string[]
 ): string[] {
-  if (!deprecatedFigiOptionCommandNames.has(commandName) || !hasOption(args, 'figi')) {
+  if (
+    !deprecatedFigiOptionCommandNames.has(commandName)
+    || !hasOption(args, 'figi')
+  ) {
     return [];
   }
 
@@ -206,5 +226,7 @@ function defineCommandLineCommand<
 function hasOption(args: readonly string[], name: string): boolean {
   const optionName = `--${name}`;
 
-  return args.some((arg) => arg === optionName || arg.startsWith(`${optionName}=`));
+  return args.some((arg) =>
+    arg === optionName || arg.startsWith(`${optionName}=`)
+  );
 }

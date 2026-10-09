@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import type { GetMarginAttributesResponse } from '../../../generated/users';
-import { createMarginAttributesReport, formatMarginAttributesReport } from './reporter';
+import {
+  createMarginAttributesReport,
+  formatMarginAttributesReport
+} from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -86,13 +89,19 @@ describe('margin-attributes reporter', () => {
 
   describe('formatMarginAttributesReport', () => {
     test('formats report as table', () => {
-      const output = formatMarginAttributesReport(createMarginAttributesReport(response()), 'table');
+      const output = formatMarginAttributesReport(
+        createMarginAttributesReport(response()),
+        'table'
+      );
 
       assert.match(
         output,
         /^liquidPortfolio\s+startingMargin\s+minimalMargin\s+fundsSufficiencyLevel\s+amountOfMissingFunds\s+correctedMargin/m
       );
-      assert.match(output, /1000 rub\s+200 rub\s+100 rub\s+5.5\s+0 rub\s+250.25 rub/);
+      assert.match(
+        output,
+        /1000 rub\s+200 rub\s+100 rub\s+5.5\s+0 rub\s+250.25 rub/
+      );
     });
 
     test('formats report as json', () => {

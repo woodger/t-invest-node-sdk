@@ -5,7 +5,9 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffCommand } from './cli';
 
-function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariffResponse {
+function response(
+  overrides: Partial<GetUserTariffResponse> = {}
+): GetUserTariffResponse {
   return {
     unaryLimits: [
       {
@@ -119,16 +121,17 @@ describe('user-tariff command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'account',
-            'tariff',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'account',
+              'tariff',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

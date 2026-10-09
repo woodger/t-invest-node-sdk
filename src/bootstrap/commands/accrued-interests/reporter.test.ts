@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { AccruedInterest } from '../../../generated/instruments';
-import { createAccruedInterestsReport, formatAccruedInterestsReport } from './reporter';
+import {
+  createAccruedInterestsReport,
+  formatAccruedInterestsReport
+} from './reporter';
 
-function accruedInterest(overrides: Partial<AccruedInterest> = {}): AccruedInterest {
+function accruedInterest(
+  overrides: Partial<AccruedInterest> = {}
+): AccruedInterest {
   return {
     date: new Date('2026-01-02T03:04:05Z'),
     value: {

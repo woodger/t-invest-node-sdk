@@ -6,7 +6,8 @@
  * - generated request/response DTO в method signatures;
  * - transport-neutral call options без экспорта generated nice-grpc clients;
  *
- * Здесь не должно быть service definitions, gRPC client creation или bootstrap wiring.
+ * Здесь не должно быть service definitions, gRPC client creation или bootstrap
+ * wiring.
  */
 
 import type { DeepPartial } from '../../generated/common';
@@ -192,9 +193,8 @@ import type {
 
 export type TInvestMetadataValue<Key extends string> = string extends Key
   ? string | Uint8Array
-  : Lowercase<Key> extends `${string}-bin`
-    ? Uint8Array
-    : string;
+  : Lowercase<Key> extends `${string}-bin` ? Uint8Array
+  : string;
 
 export interface TInvestMetadata {
   set<Key extends string>(

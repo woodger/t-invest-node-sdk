@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument brand show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { BrandReport } from '../../../application/reports';
@@ -22,7 +23,10 @@ export function createSingleBrandReport(brand: Brand): BrandReport {
   return createBrandReport(brand);
 }
 
-export function formatBrandReport(report: BrandReport, format: BrandFormat): string {
+export function formatBrandReport(
+  report: BrandReport,
+  format: BrandFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }

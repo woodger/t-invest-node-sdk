@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `account info`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { UserInfoReport } from '../../../application/reports';
@@ -13,7 +14,9 @@ export const userInfoFormats = ['json', 'table'] as const;
 
 export type UserInfoFormat = typeof userInfoFormats[number];
 
-export function createUserInfoReport(response: GetInfoResponse): UserInfoReport {
+export function createUserInfoReport(
+  response: GetInfoResponse
+): UserInfoReport {
   return {
     premStatus: response.premStatus,
     qualStatus: response.qualStatus,
@@ -41,6 +44,9 @@ export function formatUserInfoReport(
   ]);
 }
 
-export function formatUserInfo(response: GetInfoResponse, format: UserInfoFormat): string {
+export function formatUserInfo(
+  response: GetInfoResponse,
+  format: UserInfoFormat
+): string {
   return formatUserInfoReport(createUserInfoReport(response), format);
 }

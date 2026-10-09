@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `market status`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { TradingStatusReport } from '../../../application/reports';
@@ -14,7 +15,9 @@ export const tradingStatusFormats = ['json', 'table'] as const;
 
 export type TradingStatusFormat = typeof tradingStatusFormats[number];
 
-export function createTradingStatusReport(response: GetTradingStatusResponse): TradingStatusReport {
+export function createTradingStatusReport(
+  response: GetTradingStatusResponse
+): TradingStatusReport {
   return {
     figi: response.figi,
     instrumentUid: response.instrumentUid,

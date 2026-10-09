@@ -6,11 +6,15 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { type CurrencyResponse, type InstrumentRequest } from '../../../generated/instruments';
+import {
+  type CurrencyResponse,
+  type InstrumentRequest
+} from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -32,7 +36,8 @@ type CurrencySdk = {
 type CurrencySdkFactory = (options: TInvestOptions) => CurrencySdk;
 
 const currencyCommandPath = ['instrument', 'currency', 'show'] as const;
-const defaultCurrencySdkFactory: CurrencySdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultCurrencySdkFactory: CurrencySdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const currencyFormatOptionsSchema = {
   format: {

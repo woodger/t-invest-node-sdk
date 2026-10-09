@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
-import { CouponType,
-  type Coupon
-} from '../../../generated/instruments';
+  test
+} from 'node:test';
+import { CouponType, type Coupon } from '../../../generated/instruments';
 import { createBondCouponsReport, formatBondCouponsReport } from './reporter';
 
 function coupon(overrides: Partial<Coupon> = {}): Coupon {
@@ -70,9 +69,15 @@ describe('bond-coupons reporter', () => {
 
   describe('formatBondCouponsReport', () => {
     test('formats report as table', () => {
-      const output = formatBondCouponsReport(createBondCouponsReport([coupon()]), 'table');
+      const output = formatBondCouponsReport(
+        createBondCouponsReport([coupon()]),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+couponDate\s+couponNumber\s+fixDate\s+payOneBond/m);
+      assert.match(
+        output,
+        /^figi\s+couponDate\s+couponNumber\s+fixDate\s+payOneBond/m
+      );
       assert.match(output, /BOND-FIGI\s+2026-02-01T00:00:00\.000Z\s+3/);
       assert.match(output, /25\.5 rub\s+COUPON_TYPE_CONSTANT/);
     });

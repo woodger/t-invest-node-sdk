@@ -6,7 +6,8 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -21,11 +22,16 @@ import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createWithdrawLimitsRequest } from '../withdraw-limits/request.mapper';
-import { formatWithdrawLimits, withdrawLimitsFormats } from '../withdraw-limits/reporter';
+import {
+  formatWithdrawLimits,
+  withdrawLimitsFormats
+} from '../withdraw-limits/reporter';
 
 type SandboxWithdrawLimitsSdk = {
   sandbox: {
-    getSandboxWithdrawLimits(request: WithdrawLimitsRequest): Promise<WithdrawLimitsResponse>;
+    getSandboxWithdrawLimits(
+      request: WithdrawLimitsRequest
+    ): Promise<WithdrawLimitsResponse>;
   };
   close(): void;
 };
@@ -34,8 +40,12 @@ type SandboxWithdrawLimitsSdkFactory = (
   options: TInvestOptions
 ) => SandboxWithdrawLimitsSdk;
 
-const sandboxWithdrawLimitsCommandPath = ['sandbox', 'withdraw-limits'] as const;
-const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory = (options) => new TInvestNodeSDK(options);
+const sandboxWithdrawLimitsCommandPath = [
+  'sandbox',
+  'withdraw-limits'
+] as const;
+const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxWithdrawLimitsRequestOptionsSchema = {
   'account-id': {
@@ -57,14 +67,17 @@ const sandboxWithdrawLimitsOptionsSchema = withSdkOptions(
   sandboxWithdrawLimitsFormatOptionsSchema
 );
 
-type SandboxWithdrawLimitsOptions = InferOptions<typeof sandboxWithdrawLimitsOptionsSchema>;
+type SandboxWithdrawLimitsOptions = InferOptions<
+  typeof sandboxWithdrawLimitsOptionsSchema
+>;
 type SandboxWithdrawLimitsRequestOptions = CommandRequestOptions<
   SandboxWithdrawLimitsOptions,
   'account-id'
 >;
 
 export function createSandboxWithdrawLimitsCommand(
-  createSdk: SandboxWithdrawLimitsSdkFactory = defaultSandboxWithdrawLimitsSdkFactory
+  createSdk: SandboxWithdrawLimitsSdkFactory =
+    defaultSandboxWithdrawLimitsSdkFactory
 ) {
   return command.define({
     path: sandboxWithdrawLimitsCommandPath,
@@ -75,7 +88,8 @@ export function createSandboxWithdrawLimitsCommand(
   });
 }
 
-export const sandboxWithdrawLimitsCommand = createSandboxWithdrawLimitsCommand();
+export const sandboxWithdrawLimitsCommand =
+  createSandboxWithdrawLimitsCommand();
 
 async function runSandboxWithdrawLimitsCommand(
   options: SandboxWithdrawLimitsOptions,

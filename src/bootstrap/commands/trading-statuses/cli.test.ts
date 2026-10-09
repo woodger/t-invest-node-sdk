@@ -8,7 +8,10 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import { createTradingStatusesCommand, createTradingStatusesRequest } from './cli';
+import {
+  createTradingStatusesCommand,
+  createTradingStatusesRequest
+} from './cli';
 
 function tradingStatus(
   overrides: Partial<GetTradingStatusResponse> = {}
@@ -33,7 +36,8 @@ function response(
       tradingStatus({
         figi: 'BBG004730N88',
         instrumentUid: 'second-instrument-uid',
-        tradingStatus: SecurityTradingStatus.SECURITY_TRADING_STATUS_BREAK_IN_TRADING
+        tradingStatus:
+          SecurityTradingStatus.SECURITY_TRADING_STATUS_BREAK_IN_TRADING
       })
     ],
     ...overrides
@@ -47,7 +51,10 @@ describe('trading-statuses command', () => {
         'instrument-id': 'BBG00QPYJ5H0,instrument-uid'
       });
 
-      assert.deepEqual(request.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
+      assert.deepEqual(request.instrumentId, [
+        'BBG00QPYJ5H0',
+        'instrument-uid'
+      ]);
     });
   });
 
@@ -60,7 +67,7 @@ describe('trading-statuses command', () => {
         receivedOptions = options;
 
         return {
-    marketData: {
+          marketData: {
             async getTradingStatuses(request) {
               receivedRequest = request;
 
@@ -90,15 +97,21 @@ describe('trading-statuses command', () => {
         token: 'token',
         endpoint: 'localhost:50051'
       });
-      assert.deepEqual(receivedRequest?.instrumentId, ['BBG00QPYJ5H0', 'instrument-uid']);
+      assert.deepEqual(receivedRequest?.instrumentId, [
+        'BBG00QPYJ5H0',
+        'instrument-uid'
+      ]);
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output)[0].tradingStatus, 'SECURITY_TRADING_STATUS_NORMAL_TRADING');
+      assert.equal(
+        JSON.parse(output)[0].tradingStatus,
+        'SECURITY_TRADING_STATUS_NORMAL_TRADING'
+      );
     });
 
     test('closes sdk when getTradingStatuses rejects', async () => {
       let closeCalls = 0;
       const command = createTradingStatusesCommand(() => ({
-    marketData: {
+        marketData: {
           async getTradingStatuses() {
             throw new Error('api failed');
           }
@@ -109,17 +122,18 @@ describe('trading-statuses command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'market',
-            'statuses',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BBG00QPYJ5H0'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'market',
+              'statuses',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=BBG00QPYJ5H0'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `order place`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { OrderMutationReport } from '../../../application/reports';
@@ -23,7 +24,9 @@ export const postOrderFormats = ['json', 'table'] as const;
 
 export type PostOrderFormat = typeof postOrderFormats[number];
 
-export function createOrderMutationReport(response: PostOrderResponse): OrderMutationReport {
+export function createOrderMutationReport(
+  response: PostOrderResponse
+): OrderMutationReport {
   return {
     orderId: response.orderId,
     status: orderExecutionReportStatusToJSON(response.executionReportStatus),
@@ -87,6 +90,9 @@ export function formatOrderMutationReport(
   ]);
 }
 
-export function formatPostOrder(response: PostOrderResponse, format: PostOrderFormat): string {
+export function formatPostOrder(
+  response: PostOrderResponse,
+  format: PostOrderFormat
+): string {
   return formatOrderMutationReport(createOrderMutationReport(response), format);
 }

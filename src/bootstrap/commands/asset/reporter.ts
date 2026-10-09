@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument asset show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import {
@@ -29,7 +30,9 @@ export const assetFormats = ['json', 'table'] as const;
 
 export type AssetFormat = typeof assetFormats[number];
 
-function createAssetReportBrand(brand: Brand | undefined): AssetReportBrand | null {
+function createAssetReportBrand(
+  brand: Brand | undefined
+): AssetReportBrand | null {
   if (brand === undefined) {
     return null;
   }
@@ -46,7 +49,9 @@ function createAssetReportBrand(brand: Brand | undefined): AssetReportBrand | nu
   };
 }
 
-export function createAssetReportInstrument(instrument: AssetInstrument): AssetReportInstrument {
+export function createAssetReportInstrument(
+  instrument: AssetInstrument
+): AssetReportInstrument {
   return {
     uid: instrument.uid,
     figi: instrument.figi,
@@ -131,7 +136,10 @@ export function renderAssetRows(report: AssetReportSummary[]): string {
   ]);
 }
 
-export function formatAssetReport(report: AssetReport, format: AssetFormat): string {
+export function formatAssetReport(
+  report: AssetReport,
+  format: AssetFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -139,6 +147,9 @@ export function formatAssetReport(report: AssetReport, format: AssetFormat): str
   return renderAssetRows(report === null ? [] : [report]);
 }
 
-export function formatAsset(response: AssetResponse, format: AssetFormat): string {
+export function formatAsset(
+  response: AssetResponse,
+  format: AssetFormat
+): string {
   return formatAssetReport(createAssetReport(response), format);
 }

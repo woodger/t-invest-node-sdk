@@ -19,18 +19,22 @@ describe('stream run config', () => {
     test('matches typed payload fields to the selected stream', () => {
       const requiredPayloads = {
         requests: true satisfies (
-          { stream: 'marketdata.marketDataStream'; runtime: StreamRunRuntime } extends StreamRunConfig
-            ? false
+          {
+            stream: 'marketdata.marketDataStream';
+            runtime: StreamRunRuntime;
+          } extends StreamRunConfig ? false
             : true
         ),
         subscriptions: true satisfies (
-          { stream: 'marketdata.marketDataServerSideStream'; runtime: StreamRunRuntime } extends StreamRunConfig
-            ? false
+          {
+            stream: 'marketdata.marketDataServerSideStream';
+            runtime: StreamRunRuntime;
+          } extends StreamRunConfig ? false
             : true
         ),
         accounts: true satisfies (
-          { stream: 'orders.tradesStream'; runtime: StreamRunRuntime } extends StreamRunConfig
-            ? false
+          { stream: 'orders.tradesStream'; runtime: StreamRunRuntime } extends
+            StreamRunConfig ? false
             : true
         ),
         incompatibleFields: true satisfies (
@@ -39,8 +43,7 @@ describe('stream run config', () => {
             requests: MarketDataStreamRequestConfig[];
             accounts: string[];
             runtime: StreamRunRuntime;
-          } extends StreamRunConfig
-            ? false
+          } extends StreamRunConfig ? false
             : true
         )
       };
@@ -159,23 +162,28 @@ describe('stream run config', () => {
       ]);
     });
 
-    test('rejects bidirectional market data stream without initial requests', () => {
-      assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'marketdata.marketDataStream',
-          requests: []
-        })),
-        /Expected 'requests' to contain at least one market data stream request/
-      );
-    });
+    test(
+      'rejects bidirectional market data stream without initial requests',
+      () => {
+        assert.throws(
+          () =>
+            parseStreamRunConfig(configJson({
+              stream: 'marketdata.marketDataStream',
+              requests: []
+            })),
+          /Expected 'requests' to contain at least one market data stream request/
+        );
+      }
+    );
 
     test('rejects unknown config fields', () => {
       assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'orders.tradesStream',
-          accounts: ['account-id'],
-          output: 'stdout'
-        })),
+        () =>
+          parseStreamRunConfig(configJson({
+            stream: 'orders.tradesStream',
+            accounts: ['account-id'],
+            output: 'stdout'
+          })),
         /Unexpected 'stream config\.output'/
       );
     });
@@ -225,7 +233,11 @@ describe('stream run config', () => {
         },
         forbidden: ['accounts', 'requests', 'rawRequests']
       },
-      ...['operations.portfolioStream', 'operations.positionsStream', 'orders.tradesStream'].map((stream) => ({
+      ...[
+        'operations.portfolioStream',
+        'operations.positionsStream',
+        'orders.tradesStream'
+      ].map((stream) => ({
         input: { stream, accounts: ['account-id'] },
         forbidden: ['requests', 'subscriptions', 'rawRequests']
       }))
@@ -236,7 +248,8 @@ describe('stream run config', () => {
         test(`rejects '${field}' in ${input.stream} config`, () => {
           for (const value of [null, []]) {
             assert.throws(
-              () => parseStreamRunConfig(configJson({ ...input, [field]: value })),
+              () =>
+                parseStreamRunConfig(configJson({ ...input, [field]: value })),
               new RegExp(`Expected '${field}' to be omitted`)
             );
           }
@@ -244,7 +257,13 @@ describe('stream run config', () => {
       }
     }
 
-    for (const stream of ['operations.portfolioStream', 'operations.positionsStream', 'orders.tradesStream']) {
+    for (
+      const stream of [
+        'operations.portfolioStream',
+        'operations.positionsStream',
+        'orders.tradesStream'
+      ]
+    ) {
       test(`rejects missing or non-array accounts for ${stream}`, () => {
         for (const accounts of [undefined, null, 'account-id']) {
           assert.throws(
@@ -264,7 +283,10 @@ describe('stream run config', () => {
       test(`rejects blank or non-string account ids for ${stream}`, () => {
         for (const accountId of ['', ' ', 1]) {
           assert.throws(
-            () => parseStreamRunConfig(configJson({ stream, accounts: [accountId] })),
+            () =>
+              parseStreamRunConfig(
+                configJson({ stream, accounts: [accountId] })
+              ),
             /Expected 'accounts\[\]' as non-empty string/
           );
         }
@@ -274,10 +296,11 @@ describe('stream run config', () => {
     test('rejects missing or non-object server-side subscriptions', () => {
       for (const subscriptions of [undefined, null, []]) {
         assert.throws(
-          () => parseStreamRunConfig(configJson({
-            stream: 'marketdata.marketDataServerSideStream',
-            subscriptions
-          })),
+          () =>
+            parseStreamRunConfig(configJson({
+              stream: 'marketdata.marketDataServerSideStream',
+              subscriptions
+            })),
           /Expected 'subscriptions' as object/
         );
       }
@@ -286,10 +309,11 @@ describe('stream run config', () => {
     test('rejects server-side config without any subscriptions', () => {
       for (const subscriptions of [{}, { trades: [] }]) {
         assert.throws(
-          () => parseStreamRunConfig(configJson({
-            stream: 'marketdata.marketDataServerSideStream',
-            subscriptions
-          })),
+          () =>
+            parseStreamRunConfig(configJson({
+              stream: 'marketdata.marketDataServerSideStream',
+              subscriptions
+            })),
           /Expected 'subscriptions' to contain at least one market data subscription/
         );
       }
@@ -298,10 +322,11 @@ describe('stream run config', () => {
     test('rejects missing or non-array bidirectional requests', () => {
       for (const requests of [undefined, null, {}]) {
         assert.throws(
-          () => parseStreamRunConfig(configJson({
-            stream: 'marketdata.marketDataStream',
-            requests
-          })),
+          () =>
+            parseStreamRunConfig(configJson({
+              stream: 'marketdata.marketDataStream',
+              requests
+            })),
           /Expected 'requests' as array/
         );
       }
@@ -330,11 +355,12 @@ describe('stream run config', () => {
     test('rejects non-object runtime values', () => {
       for (const runtime of [null, [], 'runtime']) {
         assert.throws(
-          () => parseStreamRunConfig(configJson({
-            stream: 'orders.tradesStream',
-            accounts: ['account-id'],
-            runtime
-          })),
+          () =>
+            parseStreamRunConfig(configJson({
+              stream: 'orders.tradesStream',
+              accounts: ['account-id'],
+              runtime
+            })),
           /Expected 'runtime' as object/
         );
       }
@@ -342,22 +368,24 @@ describe('stream run config', () => {
 
     test('rejects unknown runtime fields', () => {
       assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'orders.tradesStream',
-          accounts: ['account-id'],
-          runtime: { timeout: 1 }
-        })),
+        () =>
+          parseStreamRunConfig(configJson({
+            stream: 'orders.tradesStream',
+            accounts: ['account-id'],
+            runtime: { timeout: 1 }
+          })),
         /Unexpected 'runtime\.timeout'/
       );
     });
 
     test('rejects unsupported runtime output formats', () => {
       assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'orders.tradesStream',
-          accounts: ['account-id'],
-          runtime: { format: 'csv' }
-        })),
+        () =>
+          parseStreamRunConfig(configJson({
+            stream: 'orders.tradesStream',
+            accounts: ['account-id'],
+            runtime: { format: 'csv' }
+          })),
         /Expected 'runtime\.format' as one of: jsonl/
       );
     });
@@ -378,11 +406,12 @@ describe('stream run config', () => {
       test(`rejects invalid positive safe integers for '${field}'`, () => {
         for (const value of [0, -1, 1.5, 9_007_199_254_740_992, '1', null]) {
           assert.throws(
-            () => parseStreamRunConfig(configJson({
-              stream: 'orders.tradesStream',
-              accounts: ['account-id'],
-              runtime: { [field]: value }
-            })),
+            () =>
+              parseStreamRunConfig(configJson({
+                stream: 'orders.tradesStream',
+                accounts: ['account-id'],
+                runtime: { [field]: value }
+              })),
             { message: `Expected 'runtime.${field}' as positive integer` },
             String(value)
           );
@@ -394,7 +423,11 @@ describe('stream run config', () => {
       const config = parseStreamRunConfig(configJson({
         stream: 'orders.tradesStream',
         accounts: ['account-id'],
-        runtime: { includePings: true, includeSubscriptionEvents: false, raw: true }
+        runtime: {
+          includePings: true,
+          includeSubscriptionEvents: false,
+          raw: true
+        }
       }));
 
       assert.equal(config.runtime.includePings, true);
@@ -406,11 +439,12 @@ describe('stream run config', () => {
       test(`rejects non-boolean values for '${field}'`, () => {
         for (const value of ['false', 0, null]) {
           assert.throws(
-            () => parseStreamRunConfig(configJson({
-              stream: 'orders.tradesStream',
-              accounts: ['account-id'],
-              runtime: { [field]: value }
-            })),
+            () =>
+              parseStreamRunConfig(configJson({
+                stream: 'orders.tradesStream',
+                accounts: ['account-id'],
+                runtime: { [field]: value }
+              })),
             { message: `Expected 'runtime.${field}' as boolean` }
           );
         }
@@ -419,10 +453,12 @@ describe('stream run config', () => {
   });
 
   describe('market data config validation', () => {
-    for (const stream of [
-      'marketdata.marketDataStream',
-      'marketdata.marketDataServerSideStream'
-    ]) {
+    for (
+      const stream of [
+        'marketdata.marketDataStream',
+        'marketdata.marketDataServerSideStream'
+      ]
+    ) {
       test(`validates int32 order book depth for ${stream}`, () => {
         const createConfig = (depth: number) => ({
           stream,
@@ -440,7 +476,9 @@ describe('stream run config', () => {
             })
         });
 
-        const config = parseStreamRunConfig(configJson(createConfig(2_147_483_647)));
+        const config = parseStreamRunConfig(
+          configJson(createConfig(2_147_483_647))
+        );
         if (config.stream === 'marketdata.marketDataStream') {
           const request = config.requests[0];
 
@@ -449,7 +487,10 @@ describe('stream run config', () => {
         }
         else {
           assert.ok(config.stream === 'marketdata.marketDataServerSideStream');
-          assert.equal(config.subscriptions.orderBooks?.[0]?.depth, 2_147_483_647);
+          assert.equal(
+            config.subscriptions.orderBooks?.[0]?.depth,
+            2_147_483_647
+          );
         }
 
         assert.throws(
@@ -461,59 +502,65 @@ describe('stream run config', () => {
 
     test('rejects unsupported stream candle interval aliases', () => {
       assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'marketdata.marketDataServerSideStream',
-          subscriptions: {
-            candles: [
-              {
-                instrumentId: 'instrument-id',
-                interval: '10min'
-              }
-            ]
-          }
-        })),
+        () =>
+          parseStreamRunConfig(configJson({
+            stream: 'marketdata.marketDataServerSideStream',
+            subscriptions: {
+              candles: [
+                {
+                  instrumentId: 'instrument-id',
+                  interval: '10min'
+                }
+              ]
+            }
+          })),
         /Expected 'subscriptions\.candles\[\]\.interval' as one of: 1min, 5min/
       );
     });
 
     test('rejects inherited object property names as candle intervals', () => {
       assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'marketdata.marketDataServerSideStream',
-          subscriptions: {
-            candles: [
-              {
-                instrumentId: 'instrument-id',
-                interval: 'toString'
-              }
-            ]
-          }
-        })),
+        () =>
+          parseStreamRunConfig(configJson({
+            stream: 'marketdata.marketDataServerSideStream',
+            subscriptions: {
+              candles: [
+                {
+                  instrumentId: 'instrument-id',
+                  interval: 'toString'
+                }
+              ]
+            }
+          })),
         /Expected 'subscriptions\.candles\[\]\.interval' as one of: 1min, 5min/
       );
     });
 
-    test('rejects mixed candle waitingClose values during config parsing', () => {
-      assert.throws(
-        () => parseStreamRunConfig(configJson({
-          stream: 'marketdata.marketDataServerSideStream',
-          subscriptions: {
-            candles: [
-              {
-                instrumentId: 'first-id',
-                interval: '1min',
-                waitingClose: true
-              },
-              {
-                instrumentId: 'second-id',
-                interval: '1min',
-                waitingClose: false
+    test(
+      'rejects mixed candle waitingClose values during config parsing',
+      () => {
+        assert.throws(
+          () =>
+            parseStreamRunConfig(configJson({
+              stream: 'marketdata.marketDataServerSideStream',
+              subscriptions: {
+                candles: [
+                  {
+                    instrumentId: 'first-id',
+                    interval: '1min',
+                    waitingClose: true
+                  },
+                  {
+                    instrumentId: 'second-id',
+                    interval: '1min',
+                    waitingClose: false
+                  }
+                ]
               }
-            ]
-          }
-        })),
-        /Expected 'subscriptions\.candles\[\]\.waitingClose' to be the same/
-      );
-    });
+            })),
+          /Expected 'subscriptions\.candles\[\]\.waitingClose' to be the same/
+        );
+      }
+    );
   });
 });

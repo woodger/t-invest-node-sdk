@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `instrument country list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { CountriesReport, CountriesReportCountry } from '../../../application/reports';
+import type {
+  CountriesReport,
+  CountriesReportCountry
+} from '../../../application/reports';
 import type { CountryResponse } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
@@ -22,7 +26,9 @@ function toReportCountry(country: CountryResponse): CountriesReportCountry {
   };
 }
 
-export function createCountriesReport(countries: CountryResponse[]): CountriesReport {
+export function createCountriesReport(
+  countries: CountryResponse[]
+): CountriesReport {
   return countries.map(toReportCountry);
 }
 
@@ -45,6 +51,9 @@ export function formatCountriesReport(
   ]);
 }
 
-export function formatCountries(countries: CountryResponse[], format: CountriesFormat): string {
+export function formatCountries(
+  countries: CountryResponse[],
+  format: CountriesFormat
+): string {
   return formatCountriesReport(createCountriesReport(countries), format);
 }

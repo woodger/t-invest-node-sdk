@@ -10,7 +10,10 @@
 
 import type { ReportMoney } from './money.report';
 
-/** Один опцион в отчете команд `instruments option-by` и `instruments options-by`. */
+/**
+ * Один опцион в отчете команд `instruments option-by` и `instruments
+ * options-by`.
+ */
 export interface OptionReportInstrument {
   uid: string;
   positionUid: string;

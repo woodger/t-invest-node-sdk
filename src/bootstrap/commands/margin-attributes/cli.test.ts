@@ -7,7 +7,10 @@ import type {
   GetMarginAttributesRequest,
   GetMarginAttributesResponse
 } from '../../../generated/users';
-import { createMarginAttributesCommand, createMarginAttributesRequest } from './cli';
+import {
+  createMarginAttributesCommand,
+  createMarginAttributesRequest
+} from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -114,17 +117,18 @@ describe('margin-attributes command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'account',
-            'margin',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=account-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'account',
+              'margin',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--account-id=account-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

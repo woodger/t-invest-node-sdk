@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `order cancel`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { CancelOrderReport } from '../../../application/reports';
@@ -14,7 +15,9 @@ export const cancelOrderFormats = ['json', 'table'] as const;
 
 export type CancelOrderFormat = typeof cancelOrderFormats[number];
 
-export function createCancelOrderReport(response: CancelOrderResponse): CancelOrderReport {
+export function createCancelOrderReport(
+  response: CancelOrderResponse
+): CancelOrderReport {
   return {
     time: formatReportDate(response.time)
   };

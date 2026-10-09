@@ -1,5 +1,6 @@
 /**
- * Модуль CLI command facade закрепляет единую форму объявления bootstrap-команд.
+ * Модуль CLI command facade закрепляет единую форму объявления
+ * bootstrap-команд.
  *
  * Здесь допустимы:
  * - создание pre-bound фасада command mechanics из icore;

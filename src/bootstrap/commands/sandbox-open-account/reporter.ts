@@ -1,7 +1,8 @@
 /**
  * Модуль CLI-репортинга команды `sandbox account open`.
  *
- * Здесь допустимы mapping generated DTO в application report contract и presentation formatting.
+ * Здесь допустимы mapping generated DTO в application report contract и
+ * presentation formatting.
  * Разбор command options и запуск SDK остаются в `cli.ts`.
  */
 
@@ -39,5 +40,8 @@ export function formatOpenSandboxAccount(
   response: OpenSandboxAccountResponse,
   format: OpenSandboxAccountFormat
 ): string {
-  return formatOpenSandboxAccountReport(createOpenSandboxAccountReport(response), format);
+  return formatOpenSandboxAccountReport(
+    createOpenSandboxAccountReport(response),
+    format
+  );
 }

@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
-import type { MoneyValue,
-  Quotation } from '../../../generated/common';
+  test
+} from 'node:test';
+import type { MoneyValue, Quotation } from '../../../generated/common';
 import { RealExchange, SecurityTradingStatus } from '../../../generated/common';
-import { type Currency, type CurrencyResponse } from '../../../generated/instruments';
+import {
+  type Currency,
+  type CurrencyResponse
+} from '../../../generated/instruments';
 import { createCurrencyReport, formatCurrencyReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -106,15 +109,24 @@ describe('currency reporter', () => {
     });
 
     test('returns null when response has no instrument', () => {
-      assert.equal(createCurrencyReport(response({ instrument: undefined })), null);
+      assert.equal(
+        createCurrencyReport(response({ instrument: undefined })),
+        null
+      );
     });
   });
 
   describe('formatCurrencyReport', () => {
     test('formats report as table', () => {
-      const output = formatCurrencyReport(createCurrencyReport(response()), 'table');
+      const output = formatCurrencyReport(
+        createCurrencyReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG0013HGFT4\s+USD000UTSTOM\s+CETS\s+currency-uid/);
       assert.match(output, /US Dollar\s+rub\s+USD\s+1000\s+MOEX/);
       assert.doesNotMatch(output, /0\.0025/);
@@ -129,7 +141,10 @@ describe('currency reporter', () => {
 
     test('formats missing currency as json null and table header', () => {
       assert.equal(formatCurrencyReport(null, 'json'), 'null\n');
-      assert.match(formatCurrencyReport(null, 'table'), /^figi\s+ticker\s+classCode/);
+      assert.match(
+        formatCurrencyReport(null, 'table'),
+        /^figi\s+ticker\s+classCode/
+      );
     });
   });
 });

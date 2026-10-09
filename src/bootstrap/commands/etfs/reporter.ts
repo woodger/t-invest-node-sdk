@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument etf list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { EtfsReport } from '../../../application/reports';
@@ -23,7 +24,10 @@ export function createEtfsReport(instruments: Etf[]): EtfsReport {
   return instruments.map(createEtfReportInstrument);
 }
 
-export function formatEtfsReport(report: EtfsReport, format: EtfsFormat): string {
+export function formatEtfsReport(
+  report: EtfsReport,
+  format: EtfsFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }

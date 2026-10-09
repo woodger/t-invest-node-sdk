@@ -88,7 +88,8 @@ export class SdkError<Code extends SdkErrorCode = SdkErrorCode> extends Error {
 }
 
 /**
- * Распознаёт SDK-ошибки из разных копий пакета по общему бренду и форме диагностических полей.
+ * Распознаёт SDK-ошибки из разных копий пакета по общему бренду и форме
+ * диагностических полей.
  * При указании code дополнительно проверяет и сужает конкретный код ошибки.
  */
 export function isSdkError(error: unknown): error is SdkError;
@@ -104,7 +105,10 @@ export function isSdkError(
     && (code === undefined || error.code === code);
 }
 
-/** Общая проверка runtime-контракта для instanceof SdkError и публичного isSdkError. */
+/**
+ * Общая проверка runtime-контракта для instanceof SdkError и публичного
+ * isSdkError.
+ */
 function hasSdkErrorContract(value: unknown): value is SdkError {
   if (typeof value !== 'object' || value === null) {
     return false;
@@ -119,6 +123,8 @@ function hasSdkErrorContract(value: unknown): value is SdkError {
     && sdkErrorCodes.has(candidate['code'])
     && typeof candidate['source'] === 'string'
     && sdkErrorSources.has(candidate['source'])
-    && (candidate['path'] === undefined || typeof candidate['path'] === 'string')
-    && (candidate['details'] === undefined || typeof candidate['details'] === 'string');
+    && (candidate['path'] === undefined
+      || typeof candidate['path'] === 'string')
+    && (candidate['details'] === undefined
+      || typeof candidate['details'] === 'string');
 }

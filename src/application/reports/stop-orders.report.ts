@@ -33,5 +33,7 @@ export interface StopOrdersReportOrder {
   stopPrice: ReportMoney | null;
 }
 
-/** Отчет команды `stoporders get-stop-orders` на application/output boundary. */
+/**
+ * Отчет команды `stoporders get-stop-orders` на application/output boundary.
+ */
 export type StopOrdersReport = StopOrdersReportOrder[];
