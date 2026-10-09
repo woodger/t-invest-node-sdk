@@ -4,11 +4,6 @@
 
 Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Invest через `nice-grpc`.
 
-Публичный API включает:
-
-- класса `TInvestNodeSDK` для unary- и streaming-запросов;
-- выборочных реэкспортов сгенерированных типов, enum'ов и service definition из vendored upstream proto contracts в `contracts/*.proto`.
-
 ## Установка
 
 Пакет `@woodger/t-invest-node-sdk` требует Node.js `>=20.19.0`. Установите его из npm:
@@ -219,12 +214,14 @@ Guides показывают workflow, но не повторяют полный 
 
 ## Экспорты
 
-Пакет реэкспортирует:
+Публичный API включает класс `TInvestNodeSDK` для unary- и streaming-запросов. Пакет также выборочно реэкспортирует:
 
 - `Timestamp`;
 - типы, enum'ы и их JSON-конвертеры из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `signals`, `stoporders`, `users`;
 - package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
 - generated server-side `*ServiceDefinition` и `*ServiceImplementation` contracts для nice-grpc server adapters.
+
+Происхождение сгенерированных контрактов описано в разделе [Сгенерированный код](docs/architecture.md#сгенерированный-код).
 
 Generated `*ServiceClient` остаются внутренними transport contracts и не входят в root exports.
 
