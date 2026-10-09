@@ -21,7 +21,7 @@ function response(overrides: Partial<GetUserTariffResponse> = {}): GetUserTariff
       }
     ],
     ...overrides
-  } as GetUserTariffResponse;
+  };
 }
 
 describe('user-tariff command', () => {
@@ -69,6 +69,40 @@ describe('user-tariff command', () => {
       assert.deepEqual(receivedRequest, {});
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).unaryLimits[0].limitPerMinute, 100);
+    });
+
+    test('prints both rate-limit windows in json', async () => {
+      const command = createUserTariffCommand(() => ({
+        users: {
+          async getUserTariff() {
+            return response({
+              unaryLimits: [{
+                limitPerMinute: 900,
+                limitPerSecond: 15,
+                methods: ['OrdersService/PostOrder']
+              }]
+            });
+          }
+        },
+        close: () => undefined
+      }));
+      const output = await commandFacade.run(
+        command,
+        [
+          'account',
+          'tariff',
+          '--token=token',
+          '--endpoint=localhost:50051',
+          '--format=json'
+        ],
+        undefined
+      );
+
+      assert.deepEqual(JSON.parse(output).unaryLimits, [{
+        limitPerMinute: 900,
+        limitPerSecond: 15,
+        methods: ['OrdersService/PostOrder']
+      }]);
     });
 
     test('closes sdk when getUserTariff rejects', async () => {

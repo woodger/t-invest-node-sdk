@@ -17,6 +17,9 @@ export function createUserTariffReport(response: GetUserTariffResponse): UserTar
   return {
     unaryLimits: response.unaryLimits.map((limit) => ({
       limitPerMinute: limit.limitPerMinute,
+      ...(limit.limitPerSecond === undefined
+        ? {}
+        : { limitPerSecond: limit.limitPerSecond }),
       methods: limit.methods
     })),
     streamLimits: response.streamLimits.map((limit) => ({
@@ -36,15 +39,19 @@ export function formatUserTariffReport(
   }
 
   return renderTextTable([
-    ['type', 'limit', 'open', 'methods/streams'],
+    ['type', 'limit/min', 'limit/sec', 'connections', 'open', 'methods/streams'],
     ...report.unaryLimits.map((limit) => [
       'unary',
       String(limit.limitPerMinute),
+      limit.limitPerSecond === undefined ? '' : String(limit.limitPerSecond),
+      '',
       '',
       limit.methods.join(', ')
     ]),
     ...report.streamLimits.map((limit) => [
       'stream',
+      '',
+      '',
       String(limit.limit),
       String(limit.open),
       limit.streams.join(', ')

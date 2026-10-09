@@ -115,6 +115,11 @@ export const commandHelp = {
     examples: [
       't-invest-node-sdk account tariff',
       't-invest-node-sdk account tariff --format=json'
+    ],
+    notes: [
+      'Unary limits are shown per minute and, when provided, per second.',
+      'JSON includes limitPerSecond only when the provider returns it.',
+      'Stream limits count active connections.'
     ]
   },
   'market candles': {
