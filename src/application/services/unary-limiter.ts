@@ -103,6 +103,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
 
   constructor(private readonly quotaShare: number) {}
 
+  /**
+   * Ожидает разрешения на unary-вызов в FIFO-очереди общего bucket-а.
+   * Интервал выдачи учитывает quotaShare; отмена отклоняет ожидание с причиной AbortSignal.
+   */
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     if (context.signal.aborted) {
       throw abortReason(context.signal);
@@ -145,6 +149,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     });
   }
 
+  /**
+   * Возвращает или создаёт общее состояние очереди и выдачи permits для bucket-а.
+   * Сохраняет время следующего допуска при пустой очереди и отклоняет разные квоты одного bucket-а.
+   */
   private getSchedule(quota: TInvestUnaryQuota): UnaryLimitSchedule {
     let schedule = this.schedules.get(quota.bucket);
 
@@ -266,6 +274,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     }
   }
 
+  /**
+   * Исключает запрос из связанной очереди за O(1), сохраняя порядок остальных ожиданий.
+   * Таймером, abort listener-ом и завершением Promise управляет вызывающий метод.
+   */
   private removeRequest(
     schedule: UnaryLimitSchedule,
     request: UnaryLimitRequest
@@ -288,6 +300,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     request.next = undefined;
   }
 
+  /**
+   * Снимает таймер ожидания, сохраняя очередь и время следующего допуска.
+   * Пометка inactive не даёт устаревшему callback-у продолжить выдачу permits.
+   */
   private clearTimer(schedule: UnaryLimitSchedule): void {
     const timer = schedule.timer;
 

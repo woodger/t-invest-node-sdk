@@ -78,6 +78,10 @@ export class SdkError<Code extends SdkErrorCode = SdkErrorCode> extends Error {
     });
   }
 
+  /**
+   * Обеспечивает instanceof SdkError для ошибок из разных копий пакета
+   * по общему бренду и проверяемой форме диагностических полей.
+   */
   static override [Symbol.hasInstance](value: unknown): boolean {
     return hasSdkErrorContract(value);
   }

@@ -24,6 +24,10 @@ export class UnaryLimitResolver {
     private readonly buckets: UnaryLimitBuckets = {}
   ) {}
 
+  /**
+   * Выбирает квоту для RPC: сначала точное правило метода, затем fallback сервиса.
+   * Возвращает undefined, если подходящего правила нет.
+   */
   resolve(path: string): TInvestUnaryQuota | undefined {
     const exactLimit = this.getOwnLimit(path);
 
@@ -44,12 +48,17 @@ export class UnaryLimitResolver {
       : this.createQuota(serviceName, serviceLimit);
   }
 
+  /** Не позволяет унаследованным свойствам объекта правил становиться источником квот. */
   private getOwnLimit(key: string): TInvestUnaryLimit | undefined {
     return Object.hasOwn(this.limits, key)
       ? this.limits[key]
       : undefined;
   }
 
+  /**
+   * Связывает квоту с общим bucket-ом группы или отдельным bucket-ом правила.
+   * Префиксы quota: и rule: разделяют эти пространства идентификаторов.
+   */
   private createQuota(
     matchedKey: string,
     matchedLimit: TInvestUnaryLimit
@@ -65,6 +74,10 @@ export class UnaryLimitResolver {
     };
   }
 
+  /**
+   * Извлекает короткое имя сервиса из gRPC path для поиска service fallback.
+   * В конфигурации fallback задан коротким именем, а transport использует qualified service name.
+   */
   private resolveServiceName(path: string): string | undefined {
     const methodSeparator = path.lastIndexOf('/');
 

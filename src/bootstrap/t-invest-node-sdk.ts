@@ -165,6 +165,10 @@ export class TInvestNodeSDK {
     this.channel.close();
   }
 
+  /**
+   * Лениво создаёт и кеширует клиент service definition с общим channel и middleware SDK.
+   * Доступ после закрытия SDK отклоняется, включая возврат ранее созданного клиента.
+   */
   private getOrCreateServiceClient<Service extends ServiceDefinition>(
     serviceDefinition: Service
   ): Client<Service> {
@@ -198,12 +202,14 @@ export class TInvestNodeSDK {
     return client;
   }
 
+  /** Останавливает доступ к сервисам и новые RPC с SDK_CLOSED после закрытия SDK. */
   private assertOpen(): void {
     if (this.closed) {
       throw this.createClosedError();
     }
   }
 
+  /** Задаёт lifecycle-ошибку для отказа в новом вызове и причины отмены ожиданий limiter-а. */
   private createClosedError(): SdkError<SdkErrorCode.SdkClosed> {
     return new SdkError(
       SdkErrorCode.SdkClosed,
