@@ -10,6 +10,7 @@
 ## Долгоживущие операции
 
 - [Потоки и отмена](./streams-and-cancellation.md) — server-side и bidirectional streams, `AbortSignal` и владение shutdown lifecycle.
+- [Восстановление рыночного стрима](./market-data-recovery.md) — повторная подписка, догрузка закрытых свечей, checkpoint и ограниченный backoff у Consumer-а.
 - [Ошибки и lifecycle](./errors-and-lifecycle.md) — narrowing `SdkError`, различение источников ошибок и граница retry policy.
 
 ## Управление unary-квотами
