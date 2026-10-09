@@ -219,25 +219,30 @@ export class TInvestNodeSDK {
       }
     );
   }
-}
 
-function throwDeprecatedServiceGetter(): never {
-  throw new SdkError(
-    SdkErrorCode.InvalidArgument,
-    'Прежние sdk.marketdata и sdk.stoporders не используйте: они устарели. Используйте вместо них sdk.marketData и sdk.stopOrders.',
-    {
-      source: 'sdk'
-    }
-  );
-}
-
-Object.defineProperties(TInvestNodeSDK.prototype, {
-  marketdata: {
-    configurable: true,
-    get: throwDeprecatedServiceGetter
-  },
-  stoporders: {
-    configurable: true,
-    get: throwDeprecatedServiceGetter
+  /** Отклоняет доступ через прежние имена сервисов с ошибкой и подсказкой для миграции. */
+  private static throwDeprecatedServiceGetter(): never {
+    throw new SdkError(
+      SdkErrorCode.InvalidArgument,
+      'Прежние sdk.marketdata и sdk.stoporders не используйте: они устарели. Используйте вместо них sdk.marketData и sdk.stopOrders.',
+      {
+        source: 'sdk'
+      }
+    );
   }
-});
+
+  // Прежние имена регистрируются при загрузке класса только в runtime,
+  // чтобы сохранить диагностику без включения этих getters в публичные TypeScript-типы.
+  static {
+    Object.defineProperties(this.prototype, {
+      marketdata: {
+        configurable: true,
+        get: this.throwDeprecatedServiceGetter
+      },
+      stoporders: {
+        configurable: true,
+        get: this.throwDeprecatedServiceGetter
+      }
+    });
+  }
+}
