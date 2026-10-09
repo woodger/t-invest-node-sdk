@@ -40,35 +40,23 @@ npm install @woodger/t-invest-node-sdk
 
 ## Быстрый старт
 
+Замените `YOUR_TOKEN` своим токеном доступа.
+
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
-const token = process.env['T_INVEST_TOKEN']?.trim();
-const endpoint = process.env['T_INVEST_ENDPOINT']?.trim();
-
-if (!token || !endpoint) {
-  throw new Error('T_INVEST_TOKEN and T_INVEST_ENDPOINT are required');
-}
-
 const sdk = new TInvestNodeSDK({
-  token,
-  endpoint
+  token: 'YOUR_TOKEN',
+  endpoint: 'invest-public-api.tbank.ru:443'
 });
 
-async function main(): Promise<void> {
-  try {
-    const { accounts } = await sdk.users.getAccounts({});
-    console.log(accounts);
-  }
-  finally {
-    sdk.close();
-  }
+try {
+  const { accounts } = await sdk.users.getAccounts({});
+  console.log(accounts);
 }
-
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+finally {
+  sdk.close();
+}
 ```
 
 Более полный пример с проверкой доступного счёта и обработкой ошибки запуска: [Первый SDK-вызов](docs/guides/getting-started.md).
