@@ -32,7 +32,11 @@ npm install @woodger/t-invest-node-sdk
 - [Политика тестирования](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
 - [Политика комментариев в тестах](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
 
-Отдельного docs-сайта, dev-сервера и сборки статической документации в проекте нет.
+Официальные ресурсы T-Invest:
+
+- [Документация T-Invest API](https://developer.tbank.ru/invest/intro/intro/) — начало работы, получение токена и адреса подключения;
+- [Лимиты API](https://developer.tbank.ru/invest/intro/intro/limits) — квоты unary-запросов и ограничения потоков;
+- [Proto-контракты](https://opensource.tbank.ru/invest/invest-contracts) — исходные контракты gRPC API.
 
 ## Быстрый старт
 
