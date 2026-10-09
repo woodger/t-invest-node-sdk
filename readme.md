@@ -4,6 +4,12 @@
 
 Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Invest через `nice-grpc`.
 
+Официальные ресурсы T-Invest:
+
+- [Документация T-Invest API](https://developer.tbank.ru/invest/intro/intro/) — начало работы, получение токена и адреса подключения;
+- [Лимиты API](https://developer.tbank.ru/invest/intro/intro/limits) — квоты unary-запросов и ограничения потоков;
+- [Proto-контракты](https://opensource.tbank.ru/invest/invest-contracts) — исходные контракты gRPC API.
+
 ## Установка
 
 Пакет `@woodger/t-invest-node-sdk` требует Node.js `>=20.19.0`. Установите его из npm:
@@ -32,12 +38,6 @@ npm install @woodger/t-invest-node-sdk
 - [Политика тестирования](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
 - [Политика комментариев в тестах](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
 
-Официальные ресурсы T-Invest:
-
-- [Документация T-Invest API](https://developer.tbank.ru/invest/intro/intro/) — начало работы, получение токена и адреса подключения;
-- [Лимиты API](https://developer.tbank.ru/invest/intro/intro/limits) — квоты unary-запросов и ограничения потоков;
-- [Proto-контракты](https://opensource.tbank.ru/invest/invest-contracts) — исходные контракты gRPC API.
-
 ## Быстрый старт
 
 Замените `YOUR_TOKEN` своим токеном доступа.
@@ -59,7 +59,7 @@ finally {
 }
 ```
 
-Более полный пример с проверкой доступного счёта и обработкой ошибки запуска: [Первый SDK-вызов](docs/guides/getting-started.md).
+Более подробный пример с выбором доступного счёта и освобождением ресурсов: [Первый SDK-вызов](docs/guides/getting-started.md).
 
 ## Опции `TInvestNodeSDK`
 
@@ -124,36 +124,29 @@ SDK принимает входящие gRPC-сообщения размером
 
 ## CLI
 
-CLI работает из собранного `dist`, поэтому после изменений в исходниках его нужно пересобрать. Встроенный `--help` покажет актуальные домены, команды и опции:
+CLI работает из собранного `dist`, поэтому после изменений в исходниках его нужно пересобрать.
+
+Встроенный `--help` покажет актуальные домены, команды и опции:
 
 ```text
-npm run build
 npm run cli -- --help
 npm run cli -- <domain> --help
 npm run cli -- <domain> <command> --help
 ```
 
-Несколько типовых вызовов:
-
-```sh
-npm run cli -- account list --format=json
-npm run cli -- market last-prices --instrument-id=BBG00QPYJ5H0
-npm run cli -- operation portfolio --account-id=2000000000 --format=json
-```
-
-После установки SDK запускайте CLI через `npm exec -- t-invest-node-sdk`. Передайте параметры подключения через `--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`. Если CLI-значение пустое или состоит только из пробелов, SDK не подменяет его ENV fallback и возвращает usage error с кодом `2`.
+Для некоторых команд требуется передать параметры подключения через `--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`.
 
 Команды с побочными эффектами по умолчанию требуют `--confirm`. Передавайте логические опции как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и `--raw=false`. Положительные целочисленные опции должны помещаться в безопасный диапазон JavaScript. Для дат используйте RFC 3339 с явным `Z` или числовым смещением timezone.
 
-Коды завершения CLI:
+> Команды с побочными эффектами - немного странная, книжная формулировка, но я не придумал ничго получше
+
+Коды завершения:
 
 - `0` — команда завершилась успешно;
 - `2` — ошибка вызова: неизвестная команда, невалидные аргументы, отсутствие обязательного CLI/ENV-значения или невалидная command config;
 - `1` — ошибка выполнения, provider-а, файловой системы, вывода или внутреннего определения команды.
 
-Application validators используют публичный `CliUsageError` из `icore`, а terminal policy распознаёт application и framework usage errors через общий `isUsageError()`. Оба случая получают одинаковый формат ошибки и приведённые выше exit codes.
-
-Полный список команд и совместимых псевдонимов описан в [справочнике CLI](docs/cli-reference.md). Для потоковых команд есть отдельные [справочник CLI](docs/cli-stream-reference.md) и [справочник по конфигурации](docs/cli-stream-configuration.md). Изменения форматов вывода и инструкции по миграции фиксируются в [CHANGELOG](CHANGELOG.md).
+Полный список команд и совместимых псевдонимов описан в [справочнике CLI](docs/cli-reference.md). Для потоковых команд есть отдельные [справочник CLI](docs/cli-stream-reference.md) и [справочник по конфигурации](docs/cli-stream-configuration.md).
 
 ## Доступные сервисы
 
@@ -180,11 +173,11 @@ Application validators используют публичный `CliUsageError` �
 
 ### Lifecycle и отмена
 
-`sdk.close()` идемпотентен. После закрытия обращение к service getters и вызовы через ранее полученные clients завершаются ошибкой с кодом `SdkErrorCode.SdkClosed`; вызовы, которые ещё ждут локальную unary-квоту, отменяются. `sdk.close()` не ждёт уже переданные transport-у unary- и stream-операции. Чтобы завершить их предсказуемо, передайте собственный `AbortSignal` и дождитесь результата.
+`sdk.close()` идемпотентен. После закрытия обращение к service getters и вызовы через ранее полученные clients завершаются ошибкой с кодом `SdkErrorCode.SdkClosed`; вызовы, которые ещё ждут локальную unary-квоту, отменяются. `sdk.close()` не ждёт уже переданные transport-у unary- и stream-операции. Чтобы завершать их предсказуемо, можно передать собственный `AbortSignal`.
 
-`TInvestCallOptions.signal` действует на весь SDK-вызов. Если настроен `unaryLimiter`, SDK сначала передаёт ему signal для отмены ожидания, а затем использует тот же signal в gRPC-вызове. Limiter должен удалить неотправленную операцию из очереди. После выдачи permit и передачи вызова transport-у не возвращайте permit: provider уже мог учесть request.
+`TInvestCallOptions.signal` действует на весь SDK-вызов. Если настроен `unaryLimiter`, SDK сначала передаёт ему signal для отмены ожидания, а затем использует тот же signal в gRPC-вызове.
 
-`onHeader` и `onTrailer` — синхронные callbacks. Если callback бросает исключение, SDK отклоняет той же application error соответствующий unary-вызов или stream iteration и отменяет незавершённый transport call. Запускайте и ожидайте асинхронную работу вне callback-а.
+`onHeader` и `onTrailer` — синхронные callbacks. Если callback бросает исключение, SDK отклоняет той же application error соответствующий unary-вызов или stream iteration и отменяет незавершённый transport call.
 
 ### Ошибки SDK
 
@@ -194,15 +187,13 @@ Application validators используют публичный `CliUsageError` �
 
 ## Подробные примеры
 
-Подробные Consumer-сценарии собраны в отдельных guides:
+Типичные сценарии применения:
 
 - [Первый SDK-вызов](docs/guides/getting-started.md) — конфигурация, выбор счета и освобождение ресурсов;
 - [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, Signals, deadline и response metadata;
 - [Потоки и отмена](docs/guides/streams-and-cancellation.md) — server-side и bidirectional streams с application-owned `AbortSignal`;
 - [Ошибки и lifecycle](docs/guides/errors-and-lifecycle.md) — narrowing по `SdkError.code` и `source`, shutdown и retry boundary;
-- [Mock-сервисы](docs/guides/testing-with-service-definitions.md) — Consumer tests через root-exported service definitions без deep imports.
-
-Guides показывают workflow, но не повторяют полный generated reference. Актуальные request/response DTO, enum-ы и service methods смотрите в публичных types и proto contracts проекта.
+- [Mock-сервисы](docs/guides/testing-with-service-definitions.md) — примеры тестов через root-exported service definitions без deep imports.
 
 ## Экспорты
 

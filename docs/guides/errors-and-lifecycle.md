@@ -6,111 +6,99 @@
 
 Один `code` не всегда определяет причину ошибки. Например, `CANCELLED` может прийти от локального `AbortSignal` или от provider-а. Когда это влияет на решение Consumer-а, проверяйте сочетание `code` и `source`.
 
+Во фрагментах ниже `sdk` — уже созданный экземпляр SDK. Его настройка и освобождение показаны в руководстве [Первый SDK-вызов](./getting-started.md). Каждый пример рассматривает отдельный случай; остальные ошибки передаются вызывающему коду.
+
 ```ts
-import {
-  isSdkError,
-  SdkErrorCode,
-  TInvestNodeSDK
-} from '@woodger/t-invest-node-sdk';
+import { isSdkError, SdkErrorCode } from '@woodger/t-invest-node-sdk';
+```
 
-type RequiredEnvironmentVariable =
-  | 'T_INVEST_TOKEN'
-  | 'T_INVEST_ENDPOINT';
+### Ошибка TLS
 
-function requireEnvironment(name: RequiredEnvironmentVariable): string {
-  const value = process.env[name]?.trim();
-
-  if (!value) {
-    throw new Error(`Environment variable ${name} is required`);
-  }
-
-  return value;
+```ts
+try {
+  await sdk.users.getAccounts({});
 }
-
-async function main(): Promise<void> {
-  const sdk = new TInvestNodeSDK({
-    token: requireEnvironment('T_INVEST_TOKEN'),
-    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
-  });
-  const deadline = AbortSignal.timeout(5_000);
-
-  try {
-    const response = await sdk.users.getAccounts(
-      {},
-      {
-        signal: deadline
-      }
-    );
-
-    console.log(response.accounts);
+catch (error) {
+  if (
+    isSdkError(error, SdkErrorCode.Unavailable)
+    && error.source === 'tls'
+  ) {
+    console.error('Проверьте адрес API и настройки CA-сертификата');
   }
-  catch (error: unknown) {
-    if (
-      isSdkError(error, SdkErrorCode.Unavailable)
-      && error.source === 'tls'
-    ) {
-      console.error(
-        'T-Invest TLS certificate verification failed. '
-        + 'Check the endpoint and the SDK CA configuration.'
-      );
-      process.exitCode = 1;
-      return;
-    }
-
-    if (
-      isSdkError(error, SdkErrorCode.Cancelled)
-      && error.source === 'abort'
-      && deadline.aborted
-    ) {
-      console.error('The local request deadline expired');
-      return;
-    }
-
-    if (
-      isSdkError(error, SdkErrorCode.Unauthenticated)
-      && error.source === 'grpc'
-    ) {
-      console.error('The provider rejected the supplied credentials', {
-        path: error.path
-      });
-      process.exitCode = 1;
-      return;
-    }
-
-    if (
-      isSdkError(error, SdkErrorCode.ResourceExhausted)
-      && error.source === 'sdk'
-    ) {
-      console.error('Ответ превысил локальный лимит размера gRPC-сообщения', {
-        path: error.path
-      });
-
-      throw error;
-    }
-
-    if (
-      isSdkError(error, SdkErrorCode.ResourceExhausted)
-      && error.source === 'grpc'
-    ) {
-      console.error('The provider quota was exhausted', {
-        path: error.path,
-        details: error.details
-      });
-
-      throw error;
-    }
-
+  else {
     throw error;
   }
-  finally {
-    sdk.close();
+}
+```
+
+### Локальный deadline
+
+```ts
+const deadline = AbortSignal.timeout(5_000);
+
+try {
+  await sdk.users.getAccounts({}, { signal: deadline });
+}
+catch (error) {
+  if (
+    deadline.aborted
+    && isSdkError(error, SdkErrorCode.Cancelled)
+    && error.source === 'abort'
+  ) {
+    console.error('Истёк срок ожидания запроса');
+  }
+  else {
+    throw error;
   }
 }
+```
 
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+### Ошибка авторизации
+
+```ts
+try {
+  await sdk.users.getAccounts({});
+}
+catch (error) {
+  if (
+    isSdkError(error, SdkErrorCode.Unauthenticated)
+    && error.source === 'grpc'
+  ) {
+    console.error('Провайдер отклонил токен', { path: error.path });
+  }
+  else {
+    throw error;
+  }
+}
+```
+
+### Лимит сообщения и квота провайдера
+
+Один `ResourceExhausted` может обозначать разные ограничения. Здесь ошибка после диагностики передаётся дальше: решение о повторе вызова остаётся у приложения.
+
+```ts
+try {
+  await sdk.users.getAccounts({});
+}
+catch (error) {
+  if (!isSdkError(error, SdkErrorCode.ResourceExhausted)) {
+    throw error;
+  }
+
+  if (error.source === 'sdk') {
+    console.error('Ответ превысил локальный лимит gRPC-сообщения', {
+      path: error.path
+    });
+  }
+  else if (error.source === 'grpc') {
+    console.error('Исчерпана квота провайдера', {
+      path: error.path,
+      details: error.details
+    });
+  }
+
+  throw error;
+}
 ```
 
 ## Коды ошибок

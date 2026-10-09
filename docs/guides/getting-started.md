@@ -16,64 +16,45 @@ npm install @woodger/t-invest-node-sdk
 
 ## Переменные окружения
 
-Пример использует:
+В приложении конфигурацию можно передавать через переменные окружения:
 
 - `T_INVEST_TOKEN` — OAuth token;
 - `T_INVEST_ENDPOINT` — gRPC endpoint в формате `host:port`.
 
-Не записывайте token в исходный код, логи или committed `.env`. Проверяйте пустые значения до создания SDK, чтобы сразу отличить ошибку конфигурации от ошибки provider-а.
+Не записывайте настоящий token в исходный код, логи или committed `.env`. Проверяйте пустые значения до создания SDK, чтобы сразу отличить ошибку конфигурации от ошибки provider-а.
 
 TLS включён по умолчанию. SDK подключает bundled Russian Trusted Root CA только к своему gRPC channel, поэтому не нужно устанавливать сертификат в систему или задавать `NODE_EXTRA_CA_CERTS`. О custom CA читайте в [TLS policy](../tls-policy.md).
 
 ## Законченный пример
 
+В примере параметры указаны явно: замените `YOUR_TOKEN` своим токеном доступа.
+
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
-type RequiredEnvironmentVariable =
-  | 'T_INVEST_TOKEN'
-  | 'T_INVEST_ENDPOINT';
+const sdk = new TInvestNodeSDK({
+  token: 'YOUR_TOKEN',
+  endpoint: 'invest-public-api.tbank.ru:443'
+});
 
-function requireEnvironment(name: RequiredEnvironmentVariable): string {
-  const value = process.env[name]?.trim();
+try {
+  const { accounts } = await sdk.users.getAccounts({});
+  const account = accounts[0];
 
-  if (!value) {
-    throw new Error(`Environment variable ${name} is required`);
-  }
-
-  return value;
-}
-
-async function main(): Promise<void> {
-  const sdk = new TInvestNodeSDK({
-    token: requireEnvironment('T_INVEST_TOKEN'),
-    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
-  });
-
-  try {
-    const { accounts } = await sdk.users.getAccounts({});
-    const account = accounts[0];
-
-    if (!account) {
-      console.log('No accounts are available for this token');
-      return;
-    }
-
+  if (account) {
     console.log({
       id: account.id,
       name: account.name,
       status: account.status
     });
   }
-  finally {
-    sdk.close();
+  else {
+    console.log('Нет доступных счетов');
   }
 }
-
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+finally {
+  sdk.close();
+}
 ```
 
 ## Почему lifecycle выглядит именно так

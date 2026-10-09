@@ -176,16 +176,24 @@ const secondSdk = new TInvestNodeSDK({
 });
 
 try {
-  await Promise.all([
+  const results = await Promise.allSettled([
     firstSdk.marketData.getCandles(firstRequest),
     secondSdk.marketData.getCandles(secondRequest)
   ]);
+
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      throw result.reason;
+    }
+  }
 }
 finally {
   firstSdk.close();
   secondSdk.close();
 }
 ```
+
+`Promise.allSettled()` дожидается обоих запросов, даже если один завершился ошибкой. После этого пример передаёт ошибку дальше и закрывает оба SDK в `finally`.
 
 Если instances используют разные `unaryLimits`, один bucket может получить разные параметры. Заранее выберите явную policy: отклонять конфликт, использовать наиболее строгую квоту или разделять scopes. Не принимайте молча последнее значение.
 

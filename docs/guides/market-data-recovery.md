@@ -18,7 +18,7 @@
 
 ## Генератор закрытых свечей
 
-Сохраните код как `recover-closed-candles.ts` в Consumer-проекте. `from` задаёт начало первой ещё не обработанной минуты по UTC. История читается окнами не больше суток с `limit: 2400`, что покрывает минутные свечи одного окна.
+`from` задаёт начало первой ещё не обработанной минуты по UTC. История читается окнами не больше суток с `limit: 2400`, что покрывает минутные свечи одного окна. Функцию из примера можно разместить в модуле `recover-closed-candles.ts` своего приложения.
 
 ```ts
 import { setTimeout as delay } from 'node:timers/promises';
@@ -52,6 +52,7 @@ export async function* recoverClosedCandles(
     throw new Error('from must identify a UTC minute boundary');
   }
 
+  // Данные берём из истории; stream используется для уведомлений о догрузке.
   async function* readHistory(
     until: number,
     attemptSignal: AbortSignal
@@ -95,6 +96,8 @@ export async function* recoverClosedCandles(
 
         yield candle;
 
+        // Consumer может сохранить свечу до запроса следующей
+        // и сдвига checkpoint.
         nextMinute = time + minuteMs;
         failures = 0;
       }
@@ -137,6 +140,7 @@ export async function* recoverClosedCandles(
 
           subscribed = true;
 
+          // Активная подписка позволяет получать уведомления за время догрузки.
           yield* readHistory(Math.floor(Date.now() / minuteMs) * minuteMs, attemptSignal);
         }
 
@@ -151,6 +155,7 @@ export async function* recoverClosedCandles(
             throw new Error('Unexpected stream candle');
           }
 
+          // Уведомление запускает чтение истории из того же источника данных.
           yield* readHistory(time + minuteMs, attemptSignal);
         }
       }
@@ -167,6 +172,7 @@ export async function* recoverClosedCandles(
       }
     }
     finally {
+      // Завершаем текущую попытку перед backoff и новой подпиской.
       attempt.abort();
     }
 
@@ -202,7 +208,7 @@ export async function* recoverClosedCandles(
 
 ## Владение записью и shutdown
 
-Сохраните следующий код как `main.ts`. Демонстрация хранит данные и checkpoint в памяти. В приложении замените обновление `Map` и checkpoint одной транзакцией своего хранилища и загружайте checkpoint перед стартом. Ключ записи должен включать инструмент, интервал, источник и время свечи; повторная запись по тому же ключу должна быть безопасной.
+Демонстрация хранит данные и checkpoint в памяти. В приложении замените обновление `Map` и checkpoint одной транзакцией своего хранилища и загружайте checkpoint перед стартом. Ключ записи должен включать инструмент, интервал, источник и время свечи; повторная запись по тому же ключу должна быть безопасной.
 
 ```ts
 import {
@@ -210,67 +216,50 @@ import {
   TInvestNodeSDK,
   type HistoricCandle
 } from '@woodger/t-invest-node-sdk';
-import { recoverClosedCandles } from './recover-closed-candles';
+import { recoverClosedCandles } from './recover-closed-candles.js';
 
-function requireEnvironment(name: string): string {
-  const value = process.env[name]?.trim();
-
-  if (!value) {
-    throw new Error(`Environment variable ${name} is required`);
-  }
-
-  return value;
-}
-
-async function main(): Promise<void> {
-  const instrumentUid = requireEnvironment('T_INVEST_INSTRUMENT_UID');
-  const sdk = new TInvestNodeSDK({
-    token: requireEnvironment('T_INVEST_TOKEN'),
-    endpoint: requireEnvironment('T_INVEST_ENDPOINT'),
-    unaryLimiter: createInMemoryUnaryLimiter()
-  });
-  const shutdown = new AbortController();
-  const requestShutdown = () => shutdown.abort();
-  const stored = new Map<string, HistoricCandle>();
-  let checkpoint = new Date(Math.floor(Date.now() / 60_000) * 60_000 - 3_600_000);
-
-  process.once('SIGINT', requestShutdown);
-  process.once('SIGTERM', requestShutdown);
-
-  try {
-    for await (const candle of recoverClosedCandles(
-      sdk, instrumentUid, checkpoint, shutdown.signal
-    )) {
-      const time = candle.time?.getTime();
-
-      if (time === undefined) {
-        throw new Error('Missing candle time');
-      }
-
-      const key = `${instrumentUid}:1min:exchange:${time}`;
-
-      stored.set(key, candle);
-      checkpoint = new Date(time + 60_000);
-      console.log({ key, candle, nextMinute: checkpoint });
-    }
-  }
-  finally {
-    process.off('SIGINT', requestShutdown);
-    process.off('SIGTERM', requestShutdown);
-
-    shutdown.abort();
-    sdk.close();
-  }
-}
-
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
+const instrumentUid = 'YOUR_INSTRUMENT_UID';
+const sdk = new TInvestNodeSDK({
+  token: 'YOUR_TOKEN',
+  endpoint: 'invest-public-api.tbank.ru:443',
+  unaryLimiter: createInMemoryUnaryLimiter()
 });
+const shutdown = new AbortController();
+const requestShutdown = () => shutdown.abort();
+const stored = new Map<string, HistoricCandle>();
+let checkpoint = new Date(Math.floor(Date.now() / 60_000) * 60_000 - 3_600_000);
+
+process.once('SIGINT', requestShutdown);
+process.once('SIGTERM', requestShutdown);
+
+try {
+  for await (const candle of recoverClosedCandles(
+    sdk, instrumentUid, checkpoint, shutdown.signal
+  )) {
+    const time = candle.time?.getTime();
+
+    if (time === undefined) {
+      throw new Error('Missing candle time');
+    }
+
+    const key = `${instrumentUid}:1min:exchange:${time}`;
+
+    stored.set(key, candle);
+    checkpoint = new Date(time + 60_000);
+    console.log({ key, candle, nextMinute: checkpoint });
+  }
+}
+finally {
+  process.off('SIGINT', requestShutdown);
+  process.off('SIGTERM', requestShutdown);
+
+  shutdown.abort();
+  sdk.close();
+}
 ```
 
 Генератор продвигает свой checkpoint после возобновления из `yield`. В показанном `for await` это происходит после записи. Если запись бросает ошибку, цикл закрывает генератор, текущая попытка отменяется, а ошибка записи остаётся у вызывающего кода и не попадает в transport retry. При повторном запуске используйте только checkpoint успешно сохранённых данных.
 
-Для этого сценария нужен UID, который можно получить через `sdk.instruments`; пример не подменяет его FIGI. Секреты передаются через окружение. Limiter подключён явно и регулирует только unary-догрузку; он не координирует разные процессы и stream-соединения. Эти границы описаны в [лимитной политике](../limits-policy.md).
+Для этого сценария нужен UID, который можно получить через `sdk.instruments`; пример не подменяет его FIGI. Замените `YOUR_TOKEN` и `YOUR_INSTRUMENT_UID` параметрами своего приложения. Limiter подключён явно и регулирует только unary-догрузку; он не координирует разные процессы и stream-соединения. Эти границы описаны в [лимитной политике](../limits-policy.md).
 
 За полным порядком отмены и освобождения ресурсов переходите в [Потоки и отмена](./streams-and-cancellation.md), за правилами классификации ошибок — в [Ошибки и lifecycle](./errors-and-lifecycle.md). Для проверки сценария без брокера используйте [mock-сервисы через public exports](./testing-with-service-definitions.md): разрыв после подтверждения подписки, ошибка догрузки, повторные свечи, отказ подписки, исчерпание retries и отмена во время backoff.

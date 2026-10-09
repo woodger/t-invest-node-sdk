@@ -23,70 +23,45 @@ import {
 } from '@woodger/t-invest-node-sdk';
 
 const signalService: SignalServiceImplementation = {
-  async getStrategies(request) {
-    const strategies = [
-      {
-        strategyId: 'demo-strategy',
-        strategyName: 'Demo strategy',
-        strategyType: StrategyType.STRATEGY_TYPE_TECHNICAL
-      }
-    ];
-
+  async getStrategies() {
     return {
-      strategies: request.strategyId === undefined
-        ? strategies
-        : strategies.filter(
-            (strategy) => strategy.strategyId === request.strategyId
-          )
+      strategies: [
+        {
+          strategyId: 'demo-strategy',
+          strategyName: 'Demo strategy',
+          strategyType: StrategyType.STRATEGY_TYPE_TECHNICAL
+        }
+      ]
     };
   },
 
-  async getSignals(request) {
-    return {
-      signals: [],
-      paging: {
-        limit: request.paging?.limit ?? 0,
-        pageNumber: request.paging?.pageNumber ?? 0,
-        totalCount: 0
-      }
-    };
+  async getSignals() {
+    return { signals: [] };
   }
 };
 
-async function main(): Promise<void> {
-  const server = createServer();
-  server.add(SignalServiceDefinition, signalService);
+const server = createServer();
+server.add(SignalServiceDefinition, signalService);
 
-  const port = await server.listen('127.0.0.1:0');
-  let sdk: TInvestNodeSDK | undefined;
-
-  try {
-    sdk = new TInvestNodeSDK({
-      token: 'test-token',
-      endpoint: `127.0.0.1:${port}`,
-      useSsl: false
-    });
-
-    const response = await sdk.signals.getStrategies({
-      strategyId: 'demo-strategy'
-    });
-
-    assert.equal(response.strategies.length, 1);
-    assert.equal(
-      response.strategies[0]?.strategyId,
-      'demo-strategy'
-    );
-  }
-  finally {
-    sdk?.close();
-    await server.shutdown();
-  }
-}
-
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
+const port = await server.listen('127.0.0.1:0');
+const sdk = new TInvestNodeSDK({
+  token: 'test-token',
+  endpoint: `127.0.0.1:${port}`,
+  useSsl: false
 });
+
+try {
+  const response = await sdk.signals.getStrategies({
+    strategyId: 'demo-strategy'
+  });
+
+  assert.equal(response.strategies.length, 1);
+  assert.equal(response.strategies[0]?.strategyId, 'demo-strategy');
+}
+finally {
+  sdk.close();
+  await server.shutdown();
+}
 ```
 
 ## Граница контракта

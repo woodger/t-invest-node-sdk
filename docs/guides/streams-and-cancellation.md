@@ -15,90 +15,55 @@ import {
   TInvestNodeSDK
 } from '@woodger/t-invest-node-sdk';
 
-type RequiredEnvironmentVariable =
-  | 'T_INVEST_TOKEN'
-  | 'T_INVEST_ENDPOINT';
-
-function requireEnvironment(name: RequiredEnvironmentVariable): string {
-  const value = process.env[name]?.trim();
-
-  if (!value) {
-    throw new Error(`Environment variable ${name} is required`);
-  }
-
-  return value;
-}
-
-function isExpectedCancellation(
-  error: unknown,
-  signal: AbortSignal
-): boolean {
-  return signal.aborted
-    && isSdkError(error, SdkErrorCode.Cancelled)
-    && error.source === 'abort';
-}
-
-async function main(): Promise<void> {
-  const sdk = new TInvestNodeSDK({
-    token: requireEnvironment('T_INVEST_TOKEN'),
-    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
-  });
-  const shutdown = new AbortController();
-  const requestShutdown = () => {
-    shutdown.abort(new Error('Process shutdown requested'));
-  };
-
-  process.once('SIGINT', requestShutdown);
-  process.once('SIGTERM', requestShutdown);
-
-  try {
-    const responses =
-      sdk.marketdataStream.marketDataServerSideStream(
-        {
-          subscribeCandlesRequest: {
-            subscriptionAction:
-              SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-            instruments: [
-              {
-                instrumentId: 'BBG00QPYJ5H0',
-                interval:
-                  SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
-              }
-            ],
-            waitingClose: false
-          }
-        },
-        {
-          signal: shutdown.signal
-        }
-      );
-
-    try {
-      for await (const response of responses) {
-        if (response.candle) {
-          console.log(response.candle);
-        }
-      }
-    }
-    catch (error: unknown) {
-      if (!isExpectedCancellation(error, shutdown.signal)) {
-        throw error;
-      }
-    }
-  }
-  finally {
-    process.off('SIGINT', requestShutdown);
-    process.off('SIGTERM', requestShutdown);
-
-    shutdown.abort(new Error('Stream scope disposed'));
-    sdk.close();
-  }
-}
-
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
+const sdk = new TInvestNodeSDK({
+  token: 'YOUR_TOKEN',
+  endpoint: 'invest-public-api.tbank.ru:443'
 });
+const shutdown = new AbortController();
+const requestShutdown = () => shutdown.abort();
+
+process.once('SIGINT', requestShutdown);
+process.once('SIGTERM', requestShutdown);
+
+try {
+  const responses = sdk.marketdataStream.marketDataServerSideStream(
+    {
+      subscribeCandlesRequest: {
+        subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+        instruments: [
+          {
+            instrumentId: 'BBG00QPYJ5H0',
+            interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
+          }
+        ],
+        waitingClose: false
+      }
+    },
+    { signal: shutdown.signal }
+  );
+
+  for await (const response of responses) {
+    if (response.candle) {
+      console.log(response.candle);
+    }
+  }
+}
+catch (error) {
+  if (
+    !shutdown.signal.aborted
+    || !isSdkError(error, SdkErrorCode.Cancelled)
+    || error.source !== 'abort'
+  ) {
+    throw error;
+  }
+}
+finally {
+  process.off('SIGINT', requestShutdown);
+  process.off('SIGTERM', requestShutdown);
+
+  shutdown.abort();
+  sdk.close();
+}
 ```
 
 ## Bidirectional Market Data поток

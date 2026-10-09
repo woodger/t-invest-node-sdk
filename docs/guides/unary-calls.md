@@ -4,143 +4,94 @@
 
 ## Полный сценарий
 
-Пример получает доступный счет, портфель, последние минутные свечи и активные сигналы первой доступной стратегии. Каждый RPC получает собственный deadline.
+Сценарий разобран на отдельные примеры: получение портфеля, минутных свечей и активных сигналов. Каждый RPC получает собственный deadline. Во всех фрагментах используется один `sdk`; его освобождение показано ниже.
+
+### Создание SDK
 
 ```ts
-import {
-  CandleInterval,
-  PortfolioRequest_CurrencyRequest,
-  SignalState,
-  TInvestNodeSDK,
-  type TInvestCallOptions,
-  type TInvestMetadata
-} from '@woodger/t-invest-node-sdk';
+import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
-type RequiredEnvironmentVariable =
-  | 'T_INVEST_TOKEN'
-  | 'T_INVEST_ENDPOINT';
-
-function requireEnvironment(name: RequiredEnvironmentVariable): string {
-  const value = process.env[name]?.trim();
-
-  if (!value) {
-    throw new Error(`Environment variable ${name} is required`);
-  }
-
-  return value;
-}
-
-function logRateLimit(
-  operation: string,
-  phase: 'header' | 'trailer',
-  metadata: TInvestMetadata
-): void {
-  const limit = metadata.get('x-ratelimit-limit');
-  const remaining = metadata.get('x-ratelimit-remaining');
-  const reset = metadata.get('x-ratelimit-reset');
-
-  if (limit !== undefined || remaining !== undefined || reset !== undefined) {
-    console.log({
-      operation,
-      phase,
-      limit,
-      remaining,
-      reset
-    });
-  }
-}
-
-function callOptions(operation: string): TInvestCallOptions {
-  return {
-    signal: AbortSignal.timeout(5_000),
-    onHeader(metadata) {
-      logRateLimit(operation, 'header', metadata);
-    },
-    onTrailer(metadata) {
-      logRateLimit(operation, 'trailer', metadata);
-    }
-  };
-}
-
-async function main(): Promise<void> {
-  const sdk = new TInvestNodeSDK({
-    token: requireEnvironment('T_INVEST_TOKEN'),
-    endpoint: requireEnvironment('T_INVEST_ENDPOINT')
-  });
-
-  try {
-    const { accounts } = await sdk.users.getAccounts(
-      {},
-      callOptions('users.getAccounts')
-    );
-    const account = accounts[0];
-
-    if (!account) {
-      console.log('No accounts are available for this token');
-      return;
-    }
-
-    const portfolio = await sdk.operations.getPortfolio(
-      {
-        accountId: account.id,
-        currency:
-          PortfolioRequest_CurrencyRequest
-            .RUB
-      },
-      callOptions('operations.getPortfolio')
-    );
-
-    const now = new Date();
-    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-    const candles = await sdk.marketData.getCandles(
-      {
-        instrumentId: 'BBG00QPYJ5H0',
-        interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
-        from: fiveMinutesAgo,
-        to: now
-      },
-      callOptions('marketdata.getCandles')
-    );
-
-    const { strategies } = await sdk.signals.getStrategies(
-      {},
-      callOptions('signals.getStrategies')
-    );
-    const strategy = strategies[0];
-
-    const signals = strategy
-      ? await sdk.signals.getSignals(
-          {
-            strategyId: strategy.strategyId,
-            active: SignalState.SIGNAL_STATE_ACTIVE,
-            from: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-            to: now,
-            paging: {
-              limit: 20,
-              pageNumber: 0
-            }
-          },
-          callOptions('signals.getSignals')
-        )
-      : undefined;
-
-    console.log({
-      accountId: account.id,
-      portfolioPositions: portfolio.positions.length,
-      candles: candles.candles.length,
-      strategies: strategies.length,
-      activeSignals: signals?.signals.length ?? 0
-    });
-  }
-  finally {
-    sdk.close();
-  }
-}
-
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
+const sdk = new TInvestNodeSDK({
+  token: 'YOUR_TOKEN',
+  endpoint: 'invest-public-api.tbank.ru:443'
 });
+```
+
+### Портфель доступного счёта
+
+```ts
+import { PortfolioRequest_CurrencyRequest } from '@woodger/t-invest-node-sdk';
+
+const { accounts } = await sdk.users.getAccounts(
+  {},
+  { signal: AbortSignal.timeout(5_000) }
+);
+const account = accounts[0];
+
+if (account) {
+  const portfolio = await sdk.operations.getPortfolio(
+    {
+      accountId: account.id,
+      currency: PortfolioRequest_CurrencyRequest.RUB
+    },
+    { signal: AbortSignal.timeout(5_000) }
+  );
+
+  console.log(portfolio);
+}
+else {
+  console.log('Нет доступных счетов');
+}
+```
+
+### Минутные свечи
+
+```ts
+import { CandleInterval } from '@woodger/t-invest-node-sdk';
+
+const to = new Date();
+const from = new Date(to.getTime() - 5 * 60 * 1000);
+const { candles } = await sdk.marketData.getCandles(
+  {
+    instrumentId: 'BBG00QPYJ5H0',
+    interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
+    from,
+    to
+  },
+  { signal: AbortSignal.timeout(5_000) }
+);
+
+console.log(candles);
+```
+
+### Активные сигналы
+
+```ts
+import { SignalState } from '@woodger/t-invest-node-sdk';
+
+const { strategies } = await sdk.signals.getStrategies(
+  {},
+  { signal: AbortSignal.timeout(5_000) }
+);
+const strategy = strategies[0];
+
+if (strategy) {
+  const { signals } = await sdk.signals.getSignals(
+    {
+      strategyId: strategy.strategyId,
+      active: SignalState.SIGNAL_STATE_ACTIVE,
+      from: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      to: new Date(),
+      paging: { limit: 20, pageNumber: 0 }
+    },
+    { signal: AbortSignal.timeout(5_000) }
+  );
+
+  console.log(signals);
+}
+else {
+  console.log('Нет доступных стратегий');
+}
 ```
 
 ## Опции отдельного вызова
@@ -151,11 +102,36 @@ void main().catch((error: unknown) => {
 - `onHeader` получает initial response metadata;
 - `onTrailer` получает trailing response metadata.
 
+Например, прочитать лимит и остаток квоты можно прямо в callbacks:
+
+```ts
+await sdk.users.getAccounts({}, {
+  signal: AbortSignal.timeout(5_000),
+  onHeader(metadata) {
+    console.log('Лимит запросов:', metadata.get('x-ratelimit-limit'));
+  },
+  onTrailer(metadata) {
+    console.log('Осталось запросов:', metadata.get('x-ratelimit-remaining'));
+    console.log('Сброс квоты:', metadata.get('x-ratelimit-reset'));
+  }
+});
+```
+
 Metadata callbacks работают синхронно. Если `onHeader` или `onTrailer` бросает исключение, SDK отклоняет той же ошибкой текущий RPC и отменяет незавершённый transport call. Не передавайте сюда `async` functions: обрабатывайте metadata асинхронно после завершения вызова.
 
 `AbortSignal.timeout()` создает независимый deadline для каждого вызова в примере. Если один signal нужно разделить между несколькими RPC, его отмена остановит все вызовы, которым он был передан.
 
 SDK управляет заголовками authorization и instance `x-app-name`. Он добавляет Consumer metadata к instance metadata, но не позволяет подменить эти два заголовка.
+
+## Освобождение ресурсов
+
+После завершения запросов вызовите:
+
+```ts
+sdk.close();
+```
+
+В приложении закрывайте SDK в `finally`, как в руководстве [Первый SDK-вызов](./getting-started.md), чтобы освободить channel и при ошибке запроса.
 
 ## Устаревшие поля провайдера
 
