@@ -93,15 +93,15 @@ export function createInMemoryUnaryLimiter(
     ? 1
     : options.quotaShare;
 
-  assertQuotaShare(quotaShare);
-
   return new InMemoryUnaryLimiter(quotaShare);
 }
 
 class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   private readonly schedules: Map<string, UnaryLimitSchedule> = new Map();
 
-  constructor(private readonly quotaShare: number) {}
+  constructor(private readonly quotaShare: number) {
+    InMemoryUnaryLimiter.assertQuotaShare(quotaShare);
+  }
 
   /**
    * Ожидает разрешения на unary-вызов в FIFO-очереди общего bucket-а.
@@ -109,12 +109,11 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    */
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     if (context.signal.aborted) {
-      throw abortReason(context.signal);
+      throw InMemoryUnaryLimiter.abortReason(context.signal);
     }
 
-    const effectiveMaxRequests = resolveEffectiveMaxRequests(
-      context.quota.maxRequests,
-      this.quotaShare
+    const effectiveMaxRequests = this.resolveEffectiveMaxRequests(
+      context.quota.maxRequests
     );
 
     const intervalMs = Math.ceil(
@@ -267,7 +266,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
       this.clearTimer(schedule);
     }
 
-    request.reject(abortReason(request.signal));
+    request.reject(InMemoryUnaryLimiter.abortReason(request.signal));
 
     if (isHead) {
       this.start(schedule);
@@ -319,39 +318,47 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
 
     schedule.timer = undefined;
   }
-}
 
-function assertQuotaShare(quotaShare: number): void {
-  if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
-    throw new RangeError('quotaShare must be a finite number between 0.2 and 1');
-  }
-}
-
-function resolveEffectiveMaxRequests(
-  maxRequests: number,
-  quotaShare: number
-): number {
-  if (quotaShare === 1) {
-    return maxRequests;
+  /**
+   * Проверяет долю квоты при создании limiter-а.
+   * Отклоняет неконечные значения и значения вне `[0.2, 1]` с RangeError.
+   */
+  private static assertQuotaShare(quotaShare: number): void {
+    if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
+      throw new RangeError('quotaShare must be a finite number between 0.2 and 1');
+    }
   }
 
-  const scaledMaxRequests = maxRequests * quotaShare;
+  /**
+   * Рассчитывает число permits в окне с учётом quotaShare этого limiter-а.
+   * Полную квоту сохраняет; уменьшенную округляет вниз только при значении от единицы.
+   * Значение меньше единицы задаёт интервал длиннее окна; округление до нуля сделало бы его бесконечным.
+   */
+  private resolveEffectiveMaxRequests(maxRequests: number): number {
+    if (this.quotaShare === 1) {
+      return maxRequests;
+    }
 
-  // Значение меньше единицы задаёт интервал между permits длиннее окна.
-  // Округление до нуля сделало бы этот интервал бесконечным.
-  return scaledMaxRequests >= 1
-    ? Math.floor(scaledMaxRequests)
-    : scaledMaxRequests;
-}
+    const scaledMaxRequests = maxRequests * this.quotaShare;
 
-function abortReason(signal: AbortSignal): unknown {
-  if (signal.reason !== undefined) {
-    return signal.reason;
+    return scaledMaxRequests >= 1
+      ? Math.floor(scaledMaxRequests)
+      : scaledMaxRequests;
   }
 
-  const error = new Error('The operation was aborted');
+  /**
+   * Сохраняет исходную причину отмены для отклонения ожидания permit.
+   * Если AbortSignal не содержит причины, создаёт ошибку с именем AbortError.
+   */
+  private static abortReason(signal: AbortSignal): unknown {
+    if (signal.reason !== undefined) {
+      return signal.reason;
+    }
 
-  error.name = 'AbortError';
+    const error = new Error('The operation was aborted');
 
-  return error;
+    error.name = 'AbortError';
+
+    return error;
+  }
 }
