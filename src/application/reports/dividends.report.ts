@@ -12,7 +12,7 @@ import type { ReportMoney } from './money.report';
 
 /** Одна дивидендная выплата в отчете команды `instruments get-dividends`. */
 export interface DividendsReportItem {
-  /** Размер дивиденда после налога или `null`, если provider не вернул значение. */
+  /** Размер дивиденда на одну ценную бумагу или `null`, если provider не вернул значение. */
   dividendNet: ReportMoney | null;
   /** Дата выплаты в ISO-формате или пустая строка. */
   paymentDate: string;

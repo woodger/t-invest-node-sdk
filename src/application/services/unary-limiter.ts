@@ -170,6 +170,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     return schedule;
   }
 
+  /**
+   * Планирует выдачу permit голове очереди с учётом времени следующего допуска.
+   * Для одного bucket-а одновременно активен не более одного таймера.
+   */
   private start(schedule: UnaryLimitSchedule): void {
     if (schedule.timer !== undefined || schedule.head === undefined) {
       return;
@@ -206,6 +210,11 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     }, Math.min(delay, maxTimerDelayMs));
   }
 
+  /**
+   * Выдаёт permit голове FIFO-очереди и планирует следующий допуск.
+   * Интервал отсчитывается от фактической выдачи, чтобы задержка таймера
+   * не позволила выдать несколько permits подряд.
+   */
   private dispatch(
     schedule: UnaryLimitSchedule,
     scheduledAt: number
@@ -225,6 +234,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     this.start(schedule);
   }
 
+  /**
+   * Отменяет ожидающий запрос, сохраняя интервал после последнего выданного permit.
+   * Удаление головы очереди перепланирует ожидание; отмена сама по себе не расходует квоту.
+   */
   private cancel(
     schedule: UnaryLimitSchedule,
     request: UnaryLimitRequest
@@ -308,6 +321,8 @@ function resolveEffectiveMaxRequests(
 
   const scaledMaxRequests = maxRequests * quotaShare;
 
+  // Значение меньше единицы задаёт интервал между permits длиннее окна.
+  // Округление до нуля сделало бы этот интервал бесконечным.
   return scaledMaxRequests >= 1
     ? Math.floor(scaledMaxRequests)
     : scaledMaxRequests;

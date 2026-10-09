@@ -10,7 +10,7 @@
 
 /** Одна запись НКД в отчете команды `instruments get-accrued-interests`. */
 export interface AccruedInterestsReportItem {
-  /** Дата расчета НКД в ISO-формате. */
+  /** Дата расчета НКД в ISO-формате или пустая строка, если дата не пришла от provider-а. */
   date: string;
   /** Значение НКД в денежном строковом формате отчета. */
   value: string;
