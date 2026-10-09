@@ -94,13 +94,11 @@ type UnaryLimits = Record<string, TInvestUnaryLimit>;
 - `unaryLimiter` - необязательная Consumer-owned стратегия ожидания перед unary-вызовами. Без неё SDK сразу передаёт unary-вызов transport-у.
 - `unaryLimits` - per-instance overrides квот. Значения объединяются с `defaultConfig.unaryLimits` и передаются настроенному limiter-у.
 
-Package config задаёт default для `useSsl`; явное boolean value имеет приоритет, а `undefined` сохраняет default. SDK принимает только непустые `token` и `endpoint`. gRPC metadata для `token` и непустого `appName` допускают только печатные ASCII-символы. В `unaryLimits` поля `maxRequests` и `windowMs` должны быть конечными положительными числами, а keys — известными service names или полными paths поддерживаемых unary RPC. При ошибке SDK до создания transport бросает `SdkErrorCode.InvalidArgument` с `source: 'sdk'` и не повторяет token в сообщении.
-
 SDK подключает bundled CA только к channel текущего instance и не меняет system trust store. Явный `tls.rootCertificates` полностью заменяет bundled CA; передавайте содержимое сертификатов в `Buffer`, а не путь к файлу. При `useSsl: false` SDK игнорирует TLS options. Подробнее о runtime-контракте читайте в [TLS policy](docs/tls-policy.md), а об источнике, юридических границах и подключении asset-а — в [отдельном документе](docs/bundled-ca.md).
 
 Используйте `defineUnaryLimits()`, чтобы сгруппировать overrides по сервисам и методам. Тип вложенного аргумента экспортирован как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Отдельное [руководство по unary limiter-у](docs/guides/custom-unary-limiter.md) подробно разбирает `TInvestUnaryLimiter`, семантику `acquire()`, cancellation, ownership, ошибки и законченную собственную реализацию.
 
-Пакет также экспортирует `createInMemoryUnaryLimiter()` как необязательную process-local реализацию с равномерной выдачей permits. Фабрика принимает `quotaShare` в диапазоне `[0.2, 1]`, если этому limiter instance нужно статически выделить только часть исходных квот. Это один из возможных вариантов, а не требование к Consumer-архитектуре.
+`createInMemoryUnaryLimiter()` создаёт ограничитель частоты запросов для одного процесса. Чтобы использовать его в SDK, передайте результат в опцию `unaryLimiter`.
 
 Исходный package config хранит эти defaults в одной типизированной вложенной декларации. Для публичного `defaultConfig.unaryLimits` SDK компилирует её в плоскую runtime-таблицу.
 
