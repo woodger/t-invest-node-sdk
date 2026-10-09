@@ -114,7 +114,7 @@ interface TInvestNodeSDKConfig {
 ```
 
 - `unaryLimits` - плоская runtime-таблица default unary-квот по generated service names и полным gRPC method paths. Каждое значение содержит `maxRequests` и `windowMs`; более специфичный method path имеет приоритет над сервисным fallback. Общие method quota groups описаны в [лимитной политике](docs/limits-policy.md).
-- `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд с side effects, по умолчанию `true`.
+- `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд, которые изменяют заявки, избранное или счета в песочнице; по умолчанию `true`.
 
 Подробнее о лимитах API и их связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
 
@@ -136,9 +136,7 @@ npm run cli -- <domain> <command> --help
 
 Для некоторых команд требуется передать параметры подключения через `--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`.
 
-Команды с побочными эффектами по умолчанию требуют `--confirm`. Передавайте логические опции как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и `--raw=false`. Положительные целочисленные опции должны помещаться в безопасный диапазон JavaScript. Для дат используйте RFC 3339 с явным `Z` или числовым смещением timezone.
-
-> Команды с побочными эффектами - немного странная, книжная формулировка, но я не придумал ничго получше
+Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`. Передавайте логические опции как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и `--raw=false`. Положительные целочисленные опции должны помещаться в безопасный диапазон JavaScript. Для дат используйте RFC 3339 с явным `Z` или числовым смещением timezone.
 
 Коды завершения:
 

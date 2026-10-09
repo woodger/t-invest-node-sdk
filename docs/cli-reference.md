@@ -103,7 +103,7 @@ Technical и legacy paths работают как compatibility aliases. Help п
 
 ## Побочные эффекты и idempotency
 
-Действующие команды с side effects входят в текущий CLI-контракт и по умолчанию требуют явный `--confirm` через `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency keys автоматически: `order place` принимает `--order-id`, а `order replace` — `--idempotency-key`.
+Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`. За это отвечает `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency keys автоматически: `order place` принимает `--order-id`, а `order replace` — `--idempotency-key`.
 
 `sandbox pay-in` принимает `--currency=rub|usd`. CLI parser отклоняет неизвестные currency values, а для явно неподдержанного provider-кейса `--currency=usd` команда возвращает ошибку.
 

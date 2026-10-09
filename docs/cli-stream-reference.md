@@ -69,7 +69,7 @@ t-invest-node-sdk stream run --config=PATH [runtime options]
 Обязательные поля envelope:
 
 - `stream` - имя stream из config;
-- `sequence` - порядковый номер события в рамках процесса;
+- `sequence` - порядковый номер события в текущем процессе;
 - `receivedAt` - время получения события CLI-процессом в ISO-формате;
 - `type` - нормализованный тип события;
 - `payload` - event payload.
