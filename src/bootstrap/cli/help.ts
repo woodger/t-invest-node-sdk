@@ -116,7 +116,7 @@ export function renderCliHelp(): string {
     '',
     'Domains:',
     ...cliDomainNames.map(
-      (domainName) => `  ${domainName.padEnd(domainNameWidth)} ${cliDomains[domainName].description}`
+      (domainName) => `  ${domainName.padEnd(domainNameWidth)}   ${cliDomains[domainName].description}`
     ),
     '',
     'Global options:',
@@ -149,7 +149,7 @@ export function renderDomainHelp(domainName: CliDomainName): string {
     '',
     'Commands:',
     ...commands.map(
-      ({ action, command }) => `  ${action.padEnd(commandNameWidth)} ${command.description}`
+      ({ action, command }) => `  ${action.padEnd(commandNameWidth)}   ${command.description}`
     ),
     '',
     'Command details:',
