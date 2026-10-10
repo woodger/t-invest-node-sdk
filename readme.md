@@ -90,11 +90,11 @@ type UnaryLimits = Record<string, TInvestUnaryLimit>;
 - `endpoint` - gRPC endpoint в формате `host:port`.
 - `appName` - необязательное значение для заголовка `x-app-name`.
 - `useSsl` - использовать TLS, по умолчанию `true`.
-- `tls.rootCertificates` - PEM-содержимое custom root CA bundle для одного channel. Если поле не задано, SDK использует bundled Russian Trusted Root CA.
+- `tls.rootCertificates` - содержимое собственных корневых сертификатов в формате PEM.
 - `unaryLimiter` - необязательный ограничитель частоты unary-запросов, которым управляет приложение. Без него SDK отправляет запросы сразу.
 - `unaryLimits` - переопределения квот для одного экземпляра SDK. Значения объединяются с `defaultConfig.unaryLimits` и передаются настроенному ограничителю.
 
-SDK подключает bundled CA только к channel текущего instance и не меняет system trust store. Явный `tls.rootCertificates` полностью заменяет bundled CA; передавайте содержимое сертификатов в `Buffer`, а не путь к файлу. При `useSsl: false` SDK игнорирует TLS options. Подробнее о runtime-контракте читайте в [TLS policy](docs/tls-policy.md), а об источнике, юридических границах и подключении asset-а — в [отдельном документе](docs/bundled-ca.md).
+Для подключения к T-Invest SDK использует встроенный корневой сертификат. Собственные сертификаты можно передать через `tls.rootCertificates`. Подробнее — в [настройках TLS](docs/tls-policy.md).
 
 Используйте `defineUnaryLimits()`, чтобы сгруппировать переопределения квот по сервисам и методам. Тип вложенного аргумента экспортирован как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Как написать и подключить собственный ограничитель запросов, описано в [руководстве по unary limiter-у](docs/guides/custom-unary-limiter.md).
 
