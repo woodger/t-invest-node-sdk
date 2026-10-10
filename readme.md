@@ -91,16 +91,14 @@ type UnaryLimits = Record<string, TInvestUnaryLimit>;
 - `appName` - необязательное значение для заголовка `x-app-name`.
 - `useSsl` - использовать TLS, по умолчанию `true`.
 - `tls.rootCertificates` - PEM-содержимое custom root CA bundle для одного channel. Если поле не задано, SDK использует bundled Russian Trusted Root CA.
-- `unaryLimiter` - необязательная Consumer-owned стратегия ожидания перед unary-вызовами. Без неё SDK сразу передаёт unary-вызов transport-у.
-- `unaryLimits` - per-instance overrides квот. Значения объединяются с `defaultConfig.unaryLimits` и передаются настроенному limiter-у.
+- `unaryLimiter` - необязательный ограничитель частоты unary-запросов, которым управляет приложение. Без него SDK отправляет запросы сразу.
+- `unaryLimits` - переопределения квот для одного экземпляра SDK. Значения объединяются с `defaultConfig.unaryLimits` и передаются настроенному ограничителю.
 
 SDK подключает bundled CA только к channel текущего instance и не меняет system trust store. Явный `tls.rootCertificates` полностью заменяет bundled CA; передавайте содержимое сертификатов в `Buffer`, а не путь к файлу. При `useSsl: false` SDK игнорирует TLS options. Подробнее о runtime-контракте читайте в [TLS policy](docs/tls-policy.md), а об источнике, юридических границах и подключении asset-а — в [отдельном документе](docs/bundled-ca.md).
 
-Используйте `defineUnaryLimits()`, чтобы сгруппировать overrides по сервисам и методам. Тип вложенного аргумента экспортирован как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Отдельное [руководство по unary limiter-у](docs/guides/custom-unary-limiter.md) подробно разбирает `TInvestUnaryLimiter`, семантику `acquire()`, cancellation, ownership, ошибки и законченную собственную реализацию.
+Используйте `defineUnaryLimits()`, чтобы сгруппировать переопределения квот по сервисам и методам. Тип вложенного аргумента экспортирован как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Как написать и подключить собственный ограничитель запросов, описано в [руководстве по unary limiter-у](docs/guides/custom-unary-limiter.md).
 
 `createInMemoryUnaryLimiter()` создаёт ограничитель частоты запросов для одного процесса. Чтобы использовать его в SDK, передайте результат в опцию `unaryLimiter`.
-
-Исходный package config хранит эти defaults в одной типизированной вложенной декларации. Для публичного `defaultConfig.unaryLimits` SDK компилирует её в плоскую runtime-таблицу.
 
 ## Опции `defaultConfig`
 
@@ -118,7 +116,7 @@ interface TInvestNodeSDKConfig {
 
 ## Политика gRPC-транспорта
 
-SDK принимает входящие gRPC-сообщения размером не более 4 MiB. Этот предел задаёт package-owned transport policy в `src/config.ts`, а не неявный default `grpc-js`. Per-instance override намеренно отсутствует.
+SDK принимает входящие gRPC-сообщения размером не более 4 MiB. Лимит задан самим пакетом; изменить его для отдельного экземпляра SDK нельзя.
 
 ## CLI
 

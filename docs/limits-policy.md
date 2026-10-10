@@ -79,7 +79,7 @@ SDK предоставляет необязательный `TInvestUnaryLimiter
 
 Для каждого вызова gRPC resolver выбирает самое специфичное совпавшее правило. Method override заменяет service fallback и не становится вторым одновременным ограничением. Поэтому один resolved context не описывает все service aggregate и IP policies provider-а. Package policy дополнительно связывает некоторые method rules общей quota group. Если per-instance override меняет квоту одного метода, этот метод отделяется от package default group; согласованный override всех методов группы сохраняет общий bucket.
 
-[Отдельное руководство](./guides/custom-unary-limiter.md) подробно описывает собственную реализацию, cancellation и ownership. Пакет также экспортирует необязательную process-local фабрику `createInMemoryUnaryLimiter()`. Она равномерно распределяет permits, использует монотонное время и отменяемую очередь. Опция `quotaShare` в диапазоне `[0.2, 1]` позволяет статически выделить одному limiter instance долю исходных квот; низкий Consumer override применяется как дробная скорость, а не приводит к поздней ошибке. Настройка не обнаруживает и не координирует другие процессы и не моделирует все ограничения provider-а.
+[Отдельное руководство](./guides/custom-unary-limiter.md) показывает, как написать собственный ограничитель запросов, обрабатывать отмену и управлять его временем жизни. Готовый `createInMemoryUnaryLimiter()` выдаёт разрешения на запросы через равные интервалы внутри одного процесса. Его `quotaShare` позволяет выделить фиксированную долю квоты; расчёт этой доли и ограничения реализации разобраны в руководстве.
 
 ## Декларативный package config
 
@@ -106,7 +106,9 @@ OperationsService: {
 }
 ```
 
-`PackageConfigDefinition` из `src/config.types.ts` проверяет при компиляции значения квот, имена сервисов и RPC. Bootstrap compiler один раз преобразует декларацию в плоские runtime limits и quota buckets, отклоняя неположительные или неконечные `maxRequests` и `windowMs`. Публичный `defaultConfig.unaryLimits` остаётся плоским. После merge public defaults с per-instance overrides bootstrap повторно проверяет итоговый snapshot до создания transport resolver, включая соответствие service names и полных method paths поддерживаемым generated unary definitions.
+`PackageConfigDefinition` из `src/config.types.ts` проверяет значения квот, имена сервисов и RPC при компиляции. Публичный `defaultConfig.unaryLimits` остаётся плоской таблицей.
+
+Значения `maxRequests` и `windowMs` должны быть конечными положительными числами, а ключи — именами известных сервисов или полными путями поддерживаемых unary RPC. SDK проверяет итоговые квоты после объединения значений по умолчанию и переопределений экземпляра, до создания транспортного обработчика квот. Порядок компиляции конфигурации и разделение ответственности описаны в [архитектуре SDK](./architecture.md#конфигурация-терминология-и-ownership).
 
 Пример точечного ограничения для отдельного экземпляра:
 

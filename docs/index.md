@@ -1,23 +1,23 @@
 # Документация проекта
 
-> Type: Navigation. Здесь собраны ссылки на актуальные документы. Пользовательские контракты остаются в README, коде, CLI help и tests.
+> Type: Navigation. Здесь собраны ссылки на актуальные документы. Пользовательские контракты описаны в README, коде, справке CLI и тестах.
 
 ## Начать отсюда
 
-- Пользовательская установка, быстрый старт и SDK options: [README](../readme.md).
-- Законченные сценарии работы с SDK, потоками, ошибками и Consumer-тестами: [Руководства для Consumer-ов](./guides/index.md).
+- Установка, быстрый старт и параметры SDK: [README](../readme.md).
+- Работа с SDK, потоками, ошибками и тестирование приложений: [Руководства по использованию SDK](./guides/index.md).
 - История версий и инструкции по миграции: [CHANGELOG](../CHANGELOG.md).
-- Текущая карта слоев и ownership: [Архитектура SDK](./architecture.md).
+- Слои проекта и их ответственность: [Архитектура SDK](./architecture.md).
 - Правила внесения изменений: [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md).
 
 ## CLI
 
-- Поддерживаемые команды, preferred paths и compatibility aliases: [Справочник CLI](./cli-reference.md).
+- Поддерживаемые команды, основные имена и совместимые псевдонимы: [Справочник CLI](./cli-reference.md).
 - Контракт `stream run`: [Справочник потокового CLI](./cli-stream-reference.md).
-- JSON-конфигурация streaming-команд: [Справочник конфигурации потокового CLI](./cli-stream-configuration.md).
-- Project adapters, направление зависимостей и границы command-specific formatting, render primitives и terminal output: [Адаптеры, форматирование и вывод в CLI](./clean-architecture/cli-output-boundaries.md).
+- Настройка подписок и вывода потоковых команд через JSON: [Справочник конфигурации потокового CLI](./cli-stream-configuration.md).
+- Как команды готовят результат, форматируют его и выводят в терминал: [Адаптеры, форматирование и вывод в CLI](./clean-architecture/cli-output-boundaries.md).
 
-Актуальные команды и опции также показывает встроенный `--help`. Runtime-контракт CLI задают `src/bootstrap/cli/**`, `src/bootstrap/commands/**` и соответствующие tests.
+Актуальные команды и опции также показывает встроенный `--help`. Поведение CLI задают `src/bootstrap/cli/**`, `src/bootstrap/commands/**` и соответствующие тесты.
 
 ## Руководства
 
@@ -28,14 +28,14 @@
 - [Собственная реализация unary limiter-а](./guides/custom-unary-limiter.md).
 - [Mock-сервисы через public exports](./guides/testing-with-service-definitions.md).
 
-В guides разобраны законченные Consumer workflows. Полный список методов, DTO и enum доступен в public types и proto/generated contracts.
+Руководства разбирают законченные сценарии для приложений, использующих SDK. Полный список методов, DTO и перечислений доступен в публичных типах, proto-контрактах и сгенерированном коде.
 
 ## SDK и runtime policies
 
-- Публичный package entrypoint: [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts).
-- Лимиты provider-а, unary limiter port и quota buckets: [Лимитная политика](./limits-policy.md).
-- Bundled CA, per-instance trust override и границы TLS policy: [TLS-доверие](./tls-policy.md).
-- Происхождение, границы распространения и техническое подключение bundled CA: [Встроенный Russian Trusted Root CA](./bundled-ca.md).
+- Публичные экспорты пакета: [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts).
+- Квоты T-Invest и ограничение частоты запросов в SDK: [Лимитная политика](./limits-policy.md).
+- Встроенный корневой сертификат и настройка доверия для отдельного экземпляра SDK: [TLS-доверие](./tls-policy.md).
+- Происхождение, распространение и подключение встроенного сертификата: [Встроенный Russian Trusted Root CA](./bundled-ca.md).
 - Архитектурные заметки по application, DTO, отчётам и адаптерам: [Заметки по Clean Architecture](./clean-architecture/index.md).
 - Неутверждённые варианты будущих изменений: [Roadmap и рабочие идеи](./roadmap.md).
 
@@ -45,7 +45,7 @@
 
 ## Proto и generated contracts
 
-Процесс генерации описан в [руководстве по разработке SDK](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/development/index.md#генерация-proto). [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит официальный upstream и закреплённые tag и commit. Актуальные wire-контракты находятся в `contracts/*.proto`, а generated sources — в `src/generated/**`; Markdown не дублирует их как отдельный справочник.
+Процесс генерации описан в [руководстве по разработке SDK](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/development/index.md#генерация-proto). [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит адрес официального репозитория и закреплённые тег и коммит. Контракты обмена данными находятся в `contracts/*.proto`, а сгенерированный код — в `src/generated/**`; Markdown не дублирует их как отдельный справочник.
 
 ## Источники истины
 
@@ -53,8 +53,8 @@
 
 Кратко:
 
-- public exports задаёт [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts);
-- scripts и версии зависимостей задаёт [`package.json`](../package.json);
-- поведение CLI задают runtime source и tests;
-- wire API задают vendored proto contracts и upstream metadata;
-- Markdown объясняет workflows и границы, а также указывает путь к актуальному контракту.
+- публичные экспорты задаёт [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts);
+- скрипты и версии зависимостей задаёт [`package.json`](../package.json);
+- поведение CLI задают исходный код и тесты;
+- внешний API задают сохранённые proto-контракты и сведения об их источнике;
+- Markdown объясняет сценарии работы и границы ответственности, а также указывает путь к актуальному контракту.

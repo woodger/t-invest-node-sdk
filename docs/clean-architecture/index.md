@@ -17,9 +17,9 @@
 
 ## Документы
 
-- [Application-слой, DTO и отчёты](./application.md) - contracts, reusable правила и mapping между boundaries.
-- [API-команды](./api-commands.md) - текущий CLI flow и границы command layer; пользовательский список команд находится в [справочнике CLI](../cli-reference.md).
-- [Адаптеры, форматирование и вывод в CLI](./cli-output-boundaries.md) - project adapters, направление зависимостей, command-specific formatting, generic primitives и terminal output.
+- [Application-слой, DTO и отчёты](./application.md) - контракты, переиспользуемые правила и преобразование данных между слоями.
+- [API-команды](./api-commands.md) - порядок выполнения команды и ответственность её модулей; пользовательский список команд находится в [справочнике CLI](../cli-reference.md).
+- [Адаптеры, форматирование и вывод в CLI](./cli-output-boundaries.md) - как команда готовит результат, использует форматирование `icore` и выводит данные в терминал.
 - [Справочник потокового CLI](../cli-stream-reference.md) - текущий контракт `stream run`.
 - [Справочник конфигурации потокового CLI](../cli-stream-configuration.md) - JSON config для stream CLI.
 

@@ -1,12 +1,12 @@
 # Application-слой
 
-> Type: Design Note. Здесь описаны роль `application`-слоя, DTO, отчёты и mapping между boundaries текущего SDK. Canonical-границы слоёв приведены в документе [«Архитектура SDK»](../architecture.md).
+> Type: Design Note. Здесь описаны контракты и отчёты слоя `application`, а также преобразование данных на границах слоёв SDK. Основная карта слоёв приведена в документе [«Архитектура SDK»](../architecture.md).
 
 ## Главная идея
 
-`application` не должен зависеть от runtime entrypoints и конкретных деталей transport/infrastructure.
+`application` не должен зависеть от точек запуска приложения и конкретных транспортных или инфраструктурных механизмов.
 
-В Inventory application уже содержит use-case-ы, ports, reports, services и pipeline orchestration. В текущем SDK этот слой меньше: есть только contracts и reusable правила, которые нужны SDK facade и CLI-командам.
+В Inventory слой `application` содержит сценарии, интерфейсы внешних зависимостей, отчёты, сервисы и управление обработкой данных. В текущем SDK этот слой меньше: есть только контракты и переиспользуемые правила, которые нужны фасаду SDK и CLI-командам.
 
 ## Что сейчас есть в `application`
 
@@ -26,65 +26,65 @@ src/application
 
 Текущие зоны:
 
-- `application/dto` - входные SDK options и application-level contracts;
-- `application/errors` - стабильные transport-neutral errors и runtime guards;
-- `application/reports` - стабильные output/report contracts API-команд;
-- `application/services` - application ports и reusable правила, например `TInvestUnaryLimiter` и его необязательная process-local реализация.
+- `application/dto` - входные параметры SDK и контракты приложения;
+- `application/errors` - стабильные ошибки, не зависящие от транспорта, и функции проверки их типа;
+- `application/reports` - стабильные контракты результатов API-команд;
+- `application/services` - интерфейсы внешних зависимостей и переиспользуемые правила, например `TInvestUnaryLimiter` и его необязательная реализация для одного процесса.
 
 ## Что допустимо в `application`
 
 `application` может содержать:
 
-- request/result contracts, которые не завязаны на CLI parser;
-- report contracts для output boundary;
-- application services с переиспользуемыми правилами;
-- будущие use-case-ы и ports, если команды перестанут быть тонкими SDK calls;
-- application-level ошибки, если появятся сценарные решения.
+- контракты запросов и результатов, не зависящие от разбора командной строки;
+- контракты отчётов, передаваемых для вывода;
+- сервисы приложения с переиспользуемыми правилами;
+- будущие сценарии и интерфейсы зависимостей, если команды перестанут быть простыми вызовами SDK;
+- ошибки приложения, если появятся сценарные решения.
 
 `application` не должен знать про:
 
-- `nice-grpc` channel/client creation;
+- создание каналов и клиентов `nice-grpc`;
 - `process.env`;
-- CLI parser details;
+- детали разбора командной строки;
 - stdout/stderr;
-- filesystem paths;
-- concrete infrastructure modules.
+- пути файловой системы;
+- конкретные инфраструктурные модули.
 
 ## Контракты и DTO
 
-В текущем проекте есть несколько разных типов contracts, и их нельзя смешивать:
+В текущем проекте есть несколько разных типов контрактов, и их нельзя смешивать:
 
-- proto-generated DTO из `src/generated/*.ts`;
+- сгенерированные из proto DTO из `src/generated/*.ts`;
 - application DTO из `src/application/dto/**`;
-- application report contracts из `src/application/reports/**`;
-- CLI command option schemas из `src/bootstrap/commands/**` и общие SDK options из `src/bootstrap/args/**`.
+- контракты отчётов из `src/application/reports/**`;
+- схемы опций CLI-команд из `src/bootstrap/commands/**` и общие параметры SDK из `src/bootstrap/args/**`.
 
 ## Сгенерированные DTO
 
-Vendored T-Invest proto-файлы хранятся в плоской структуре `contracts/*.proto`. Генератор зеркально создаёт из этого layout файлы `src/generated/*.ts`. `contracts/upstream.json` указывает официальный upstream snapshot.
+Сохранённые в проекте proto-файлы T-Invest лежат в плоской структуре `contracts/*.proto`. Генератор создаёт соответствующие файлы `src/generated/*.ts`. `contracts/upstream.json` указывает точный снимок официальных контрактов.
 
-Это wire contracts внешнего API. Их нельзя редактировать вручную и нельзя использовать как место для project-specific правил.
+Эти контракты задают обмен данными с внешним API. Их нельзя редактировать вручную или дополнять собственными правилами проекта.
 
 Допустимо:
 
-- импортировать generated types в infrastructure adapters;
-- использовать generated service definitions при создании gRPC clients внутри bootstrap/infrastructure;
-- использовать generated request/response DTO в package-owned public service interfaces SDK facade.
+- импортировать сгенерированные типы в инфраструктурные адаптеры;
+- использовать сгенерированные описания сервисов при создании gRPC-клиентов внутри `bootstrap` и `infrastructure`;
+- использовать сгенерированные DTO запросов и ответов в публичных интерфейсах сервисов фасада SDK.
 
 Нежелательно:
 
-- делать generated DTO основой новых application reports;
-- добавлять handwritten mapping или helpers в generated файлы;
-- завязывать CLI output format на нестабильный generated JSON shape.
-- экспортировать generated service clients как root public API.
+- делать сгенерированные DTO основой новых отчётов приложения;
+- добавлять написанные вручную преобразования или вспомогательные функции в сгенерированные файлы;
+- связывать формат вывода CLI с нестабильной JSON-структурой сгенерированных DTO.
+- экспортировать сгенерированные клиенты сервисов через корневой публичный API.
 
-Исключение — server-side generated `*ServiceDefinition` и `*ServiceImplementation`. Они входят в root public API, потому что пакет поддерживает nice-grpc server adapters у Consumers.
+Исключение — сгенерированные серверные `*ServiceDefinition` и `*ServiceImplementation`. Они входят в корневой публичный API, чтобы приложения могли создавать серверные адаптеры `nice-grpc`.
 
 ## DTO уровня application
 
-`src/application/dto/t-invest-options.ts` описывает options SDK facade.
+`src/application/dto/t-invest-options.ts` описывает параметры фасада SDK.
 
-Это не CLI DTO и не gRPC DTO. Один и тот же contract может использоваться из bootstrap, tests и публичного SDK facade.
+Эти параметры не принадлежат CLI или gRPC. Один и тот же контракт может использоваться в `bootstrap`, тестах и публичном фасаде SDK.
 
 Правило:
 
@@ -92,9 +92,9 @@ Vendored T-Invest proto-файлы хранятся в плоской струк
 CLI/env parsing -> TInvestOptions -> SDK facade/infrastructure
 ```
 
-`application/dto` не должен читать env и не должен знать про CLI flags.
+`application/dto` не должен читать переменные окружения или знать о флагах CLI.
 
-`src/application/dto/t-invest-services.ts` описывает публичные service interfaces SDK facade: `UsersService`, `OrdersService`, `MarketDataStreamService` и другие. Эти interfaces сохраняют upstream method names и generated request/response DTO, но не раскрывают `nice-grpc` `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
+`src/application/dto/t-invest-services.ts` описывает публичные интерфейсы сервисов фасада SDK: `UsersService`, `OrdersService`, `MarketDataStreamService` и другие. Эти интерфейсы сохраняют имена методов внешнего API и сгенерированные DTO запросов и ответов, но не раскрывают `nice-grpc` `*ServiceClient`, `*ServiceDefinition`, `CallOptions` или `CallContext`.
 
 ## Отчёты
 
@@ -114,28 +114,30 @@ icore TerminalApp/Output
   warnings/errors -> Output.error -> stderr
 ```
 
-Report contract не должен импортировать `bootstrap` или concrete infrastructure. Его можно без изменения семантики использовать в CLI, тестах, будущем HTTP transport или file writer.
+Контракт отчёта не должен импортировать `bootstrap` или конкретные инфраструктурные модули. Его можно без изменения смысла использовать в CLI, тестах, будущем HTTP-транспорте или при записи в файл.
 
 ## Ошибки
 
-`application/errors/sdk-error.ts` задаёт публичные `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()` без импорта `nice-grpc`. Infrastructure преобразует известные gRPC failures в этот contract, а bootstrap facade создаёт lifecycle error после `close()`. Поле `cause` сохраняет исходную ошибку. Однозначные ошибки проверки TLS certificate chain и hostname получают source `tls` с прежним code `Unavailable`; обычные provider и network failures сохраняют source `grpc`.
+`application/errors/sdk-error.ts` задаёт публичные `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()` без импорта `nice-grpc`. Инфраструктурный слой преобразует известные gRPC-ошибки в этот контракт, а фасад в `bootstrap` создаёт ошибку обращения к закрытому SDK после `close()`. Поле `cause` сохраняет исходную ошибку.
 
-Error code классифицирует ошибку, но не делает операцию retryable. Принимая решение о повторе, Consumer должен также учитывать idempotency, provider metadata и backoff policy.
+Однозначные ошибки проверки цепочки TLS-сертификатов и имени сервера получают `source: 'tls'` с прежним кодом `Unavailable`; обычные ошибки провайдера и сети сохраняют `source: 'grpc'`.
+
+Код классифицирует ошибку. Решая, можно ли повторить операцию, приложение должно также учитывать её идемпотентность, метаданные провайдера и задержки между попытками.
 
 ## Сервисы
 
 `application/services` подходит для небольших правил, которые:
 
 - используются runtime-кодом;
-- не являются transport/infrastructure detail;
-- не требуют конкретного SDK adapter-а;
+- не относятся к деталям транспорта или инфраструктуры;
+- не требуют конкретного адаптера SDK;
 - имеют самостоятельное поведение и тесты.
 
-`TInvestUnaryLimiter` получает готовые `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Сопоставление gRPC method path с service/method rule остаётся в transport adapter-е. Consumer может реализовать port без deep imports; SDK не владеет lifecycle переданного объекта.
+`TInvestUnaryLimiter` получает готовые `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Сопоставление пути gRPC-метода с правилом сервиса или метода остаётся в транспортном адаптере. Приложение может реализовать этот интерфейс через публичные импорты; временем жизни переданного объекта управляет само приложение.
 
-`createInMemoryUnaryLimiter()` создаёт необязательную реализацию с отменяемой bucket queue. Её `quotaShare` задаёт статическую долю исходных квот, не меняя контекст публичного port-а. Реализация не знает, какой transport выполняет вызов, и не координирует другие процессы.
+`createInMemoryUnaryLimiter()` создаёт необязательный ограничитель запросов с отдельной очередью для каждой общей квоты и поддержкой отмены. Опция `quotaShare` задаёт статическую долю исходных квот, не меняя контекст публичного интерфейса. Реализация не зависит от транспорта и не координирует другие процессы.
 
-Если helper нужен один раз и не выражает отдельное правило, оставьте его рядом с consumer-ом.
+Если вспомогательная функция нужна один раз и не выражает отдельное правило, оставьте её рядом с вызывающим кодом.
 
 ## Чего сейчас нет
 
@@ -146,22 +148,22 @@ Error code классифицирует ошибку, но не делает о�
 
 Не создавайте эти директории заранее. Они нужны только вместе с реальной ответственностью:
 
-- use-case - если команда начинает координировать сценарий, а не просто вызывает один SDK method;
-- domain - если появляются provider-neutral правила или модели.
+- use-case - если команда начинает координировать сценарий, а не просто вызывает один метод SDK;
+- domain - если появляются правила или модели, не зависящие от провайдера.
 
 ## Входные данные CLI
 
-Raw `process.argv` остаётся на executable-границе `src/bootstrap/index.ts`. Затем `bootstrap/cli/runner.ts` передаёт argv в terminal app и command registry из `icore`:
+Исходный `process.argv` остаётся на границе запуска в `src/bootstrap/index.ts`. Затем `bootstrap/cli/runner.ts` передаёт аргументы приложению CLI и реестру команд из `icore`:
 
 ```text
 process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
 ```
 
-Runner использует двухфазный flow `prepare -> runPrepared`, чтобы вывести warnings после command resolution без повторного разбора argv. Policy из `bootstrap/cli/error.ts` обрабатывает ошибки всех terminal-фаз. `isUsageError()` из `icore` распознаёт framework usage errors и публичный `CliUsageError` от project validators; для них exit code равен `2`. Runtime и command-definition errors получают exit code `1`.
+Runner использует два этапа, `prepare -> runPrepared`, чтобы вывести предупреждения после выбора команды без повторного разбора аргументов. Правила из `bootstrap/cli/error.ts` обрабатывают ошибки всех этапов CLI. `isUsageError()` из `icore` распознаёт ошибки использования фреймворка и публичный `CliUsageError` от проверок проекта; для них код завершения равен `2`. Ошибки выполнения и определения команды получают код `1`.
 
-Command-specific primitive options описываются декларативными `icore` schemas в `src/bootstrap/commands/**`. Общие SDK options нормализуются в `src/bootstrap/args/**`. Эти модули не должны создавать SDK clients, вызывать API или форматировать reports.
+Базовые опции конкретных команд описываются декларативными схемами `icore` в `src/bootstrap/commands/**`. Общие параметры SDK нормализуются в `src/bootstrap/args/**`. Схемы и нормализаторы не должны создавать клиенты SDK, вызывать API или форматировать отчёты.
 
-После `icore` validation command handler работает с typed command options. Raw CLI option maps не должны передаваться ни в command-local parser helpers, ни в request builders. Project-specific `parse*` helper может преобразовывать отдельное уже типизированное значение, например RFC 3339 date-time или comma-separated список. Mapping typed options в generated request DTO должен жить в `create*Request` helper-е.
+После проверки в `icore` обработчик команды получает типизированные опции. Исходные таблицы опций CLI нельзя передавать ни в локальные функции разбора команды, ни в функции построения запроса. Функция `parse*` проекта может преобразовывать отдельное уже типизированное значение, например дату RFC 3339 или список через запятую. Преобразование типизированных опций в сгенерированный DTO запроса должно находиться в функции `create*Request`.
 
 ## Mapping
 
@@ -194,18 +196,18 @@ process.argv
 
 ## Типичные ошибки
 
-- передавать raw CLI args глубже bootstrap boundary;
-- смешивать raw CLI parsing и generated request DTO mapping в одной функции;
-- форматировать пользовательский output внутри application report contract;
-- класть JSON/CSV/table logic в stdout sink;
-- считать generated DTO стабильным CLI output contract;
-- создавать generic DTO только ради красивой структуры.
+- передавать исходные аргументы CLI за границу `bootstrap`;
+- смешивать разбор исходных аргументов CLI и построение сгенерированного DTO запроса в одной функции;
+- форматировать пользовательский вывод внутри контракта отчёта приложения;
+- помещать форматирование JSON/CSV/таблиц в компонент записи stdout;
+- считать сгенерированный DTO стабильным контрактом вывода CLI;
+- создавать универсальный DTO только ради красивой структуры.
 
 ## Короткие правила
 
-- DTO и reports - это boundary contracts, а не domain models.
-- Application reports стабильны и transport-neutral.
-- `application` описывает application-level контракт, а не формат пользовательского вывода.
-- Provider/gRPC mapping не должен протекать в чистые application contracts.
-- Bootstrap может вызывать application, но application не импортирует bootstrap.
-- Если output formatting содержит бизнес-семантику, нужно решить, это report contract, application service или adapter logic.
+- DTO и отчёты задают контракты на границах компонентов, а не модели предметной области.
+- Отчёты приложения стабильны и не зависят от транспорта.
+- `application` описывает контракт приложения, а не формат пользовательского вывода.
+- Преобразование данных провайдера или gRPC не должно попадать в чистые контракты приложения.
+- `bootstrap` может вызывать `application`, но `application` не импортирует `bootstrap`.
+- Если форматирование вывода содержит бизнес-смысл, нужно определить его владельца: контракт отчёта, сервис приложения или адаптер.

@@ -1,29 +1,29 @@
 # Руководства для Consumer-ов
 
-> Type: Navigation. Здесь собраны законченные сценарии для публичного API. За точными generated contracts и CLI reference переходите к исходным справочникам.
+> Type: Navigation. Здесь собраны законченные сценарии работы с публичным API. Точные типы и методы смотрите в сгенерированных контрактах, а команды — в справочнике CLI.
 
 ## Начало работы
 
 - [Первый SDK-вызов](./getting-started.md) — установка из npm, настройка окружения, выбор счета и корректное закрытие SDK.
-- [Unary-вызовы](./unary-calls.md) — портфель, свечи, сигналы, deadline и response metadata.
+- [Unary-вызовы](./unary-calls.md) — получение портфеля, свечей и сигналов, ограничение времени запроса и чтение метаданных ответа.
 
 ## Долгоживущие операции
 
-- [Потоки и отмена](./streams-and-cancellation.md) — server-side и bidirectional streams, `AbortSignal` и владение shutdown lifecycle.
-- [Восстановление рыночного стрима](./market-data-recovery.md) — повторная подписка, догрузка закрытых свечей, checkpoint и ограниченный backoff у Consumer-а.
-- [Ошибки и lifecycle](./errors-and-lifecycle.md) — narrowing `SdkError`, различение источников ошибок и граница retry policy.
+- [Потоки и отмена](./streams-and-cancellation.md) — подписка на события, двусторонние потоки, отмена через `AbortSignal` и порядок завершения работы.
+- [Восстановление рыночного стрима](./market-data-recovery.md) — повторная подписка, догрузка закрытых свечей, сохранение прогресса и задержки между попытками подключения.
+- [Ошибки и lifecycle](./errors-and-lifecycle.md) — проверка `SdkError`, различение причин ошибок, закрытие SDK и условия повторного запроса.
 
 ## Управление unary-квотами
 
-- [Собственная реализация unary limiter-а](./custom-unary-limiter.md) — публичный port, точный lifecycle `acquire()`, cancellation, ownership, process-local и межпроцессные варианты.
+- [Собственная реализация unary limiter-а](./custom-unary-limiter.md) — как написать и подключить ограничитель запросов, обрабатывать отмену и делить квоты внутри процесса или между процессами.
 
 ## Consumer-тесты
 
-- [Mock-сервисы через public exports](./testing-with-service-definitions.md) — регистрация `*ServiceDefinition` и типизированной implementation без deep imports.
+- [Mock-сервисы через public exports](./testing-with-service-definitions.md) — как проверить приложение без брокера, используя публичные `*ServiceDefinition` и типы реализаций сервисов.
 
 ## Справочные материалы
 
-Актуальные public exports смотрите в корневом entrypoint пакета, а generated DTO, enum-ы и service methods — в proto contracts проекта.
+Актуальные публичные экспорты смотрите в корневом модуле пакета, а DTO, перечисления и методы сервисов — в proto-контрактах проекта.
 
 Дополнительные справочники:
 

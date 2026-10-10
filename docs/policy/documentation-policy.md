@@ -1,16 +1,22 @@
 # Политика документации
 
-> Type: Policy. Здесь описано, как выбирать source of truth для документации и не дублировать кодовые контракты в постоянных reference-страницах.
+> Type: Policy. Здесь описано, как выбирать актуальные источники для документации и не дублировать контракты кода в справочных страницах.
 
 ## Назначение
 
 Документация должна вести к актуальному контракту, а не создавать рядом с кодом второй источник истины.
 
-Если контракт уже задан runtime-механизмом, source file, proto contract или tests, Markdown должен ссылаться на него и объяснять работу с ним, а не копировать полный reference.
+Если контракт уже задан механизмом выполнения, исходным файлом, proto-контрактом или тестами, Markdown должен ссылаться на него и объяснять работу с ним, а не копировать полный справочник.
 
 ## Язык
 
 Основной язык документации и новых записей в `CHANGELOG.md` — русский. Имена API, идентификаторы, команды, значения параметров и устойчивые технические термины сохраняются в исходном написании, если перевод снижает точность.
+
+## Подача материала
+
+Сначала объясняйте назначение описываемой возможности и её применение. Выбирайте подробности по назначению документа: README и навигация помогают начать работу, а руководства, справочники и архитектурные заметки раскрывают нужные для своей темы детали. Каждый абзац должен развивать одну тему.
+
+Используйте понятные русские формулировки для обычных понятий. Термины должны помогать объяснению, а не заменять его. Убирайте повторы и оговорки, которые не помогают понять возможность, принять решение или правильно использовать API; сохраняйте условия, ограничения и обязательные требования.
 
 ## Форматирование строк
 
@@ -24,46 +30,46 @@
 
 Источники истины SDK:
 
-- public package entrypoint: `src/index.ts`;
-- SDK client API: `src/bootstrap/t-invest-node-sdk.ts`;
-- application report contracts: `src/application/reports/**`;
-- Clean Architecture design notes: `docs/clean-architecture/**`;
-- runtime gRPC internals: `src/infrastructure/transport/grpc/**`;
-- bundled TLS trust material: `certificates/russian-trusted-root-ca.pem`;
-- unary quota source policy: `src/config.ts`;
-- authoring и public runtime type contracts: `src/config.types.ts`;
-- per-instance SDK config input: `src/application/dto/t-invest-options.ts`;
-- public SDK error contract: `src/application/errors/sdk-error.ts`;
-- unary config compilation и readable override shape adapter: `src/bootstrap/unary-limit-config.ts`;
-- public `defaultConfig` и override resolution: `src/bootstrap/sdk-config.ts`;
-- public unary limiter port и необязательная process-local реализация: `src/application/services/unary-limiter.ts`;
-- transport-specific unary rule paths и resolution: `src/infrastructure/transport/grpc/unary-method-path.ts`, `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
-- CLI entrypoint: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
-- proto generation entrypoint: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
-- CLI presentation/output mechanics: command-specific presentation в `src/bootstrap/commands/*/reporter.ts`, integration wiring в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;
-- proto wire contracts: `contracts/*.proto`;
-- proto upstream metadata: `contracts/upstream.json`;
-- generated exports: `src/bootstrap/generated-exports.ts` и `src/generated/**`;
-- test runner contract: `package.json` `test` script and `fwa` package behavior;
-- package scripts: `package.json`.
+- публичные экспорты пакета: `src/index.ts`;
+- API клиента SDK: `src/bootstrap/t-invest-node-sdk.ts`;
+- контракты отчётов приложения: `src/application/reports/**`;
+- заметки по Clean Architecture: `docs/clean-architecture/**`;
+- внутренние механизмы gRPC: `src/infrastructure/transport/grpc/**`;
+- встроенный корневой TLS-сертификат: `certificates/russian-trusted-root-ca.pem`;
+- исходные правила unary-квот: `src/config.ts`;
+- типы исходной и публичной конфигурации: `src/config.types.ts`;
+- входные параметры экземпляра SDK: `src/application/dto/t-invest-options.ts`;
+- публичный контракт ошибок SDK: `src/application/errors/sdk-error.ts`;
+- компиляция unary-конфигурации и преобразование удобной формы переопределений: `src/bootstrap/unary-limit-config.ts`;
+- публичный `defaultConfig` и применение переопределений: `src/bootstrap/sdk-config.ts`;
+- публичный интерфейс ограничителя unary-запросов и необязательная реализация для одного процесса: `src/application/services/unary-limiter.ts`;
+- пути unary-правил и их сопоставление в транспорте: `src/infrastructure/transport/grpc/unary-method-path.ts`, `src/infrastructure/transport/grpc/unary-limit-resolver.ts`;
+- точки входа CLI: `src/bootstrap/index.ts`, `src/bootstrap/cli/**`, `src/bootstrap/args/**`, `src/bootstrap/commands/**`;
+- точка входа генерации proto: `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`;
+- подготовка и вывод результатов CLI: представление конкретной команды в `src/bootstrap/commands/*/reporter.ts`, связывание компонентов в `src/bootstrap/cli/runner.ts` и публичный API `icore` версии из `package.json`;
+- контракты обмена данными в proto: `contracts/*.proto`;
+- сведения об источнике proto: `contracts/upstream.json`;
+- сгенерированные экспорты: `src/bootstrap/generated-exports.ts` и `src/generated/**`;
+- правила запуска тестов: скрипт `test` из `package.json` и поведение пакета `fwa`;
+- скрипты пакета: `package.json`.
 
 Markdown должен указывать, где находится актуальный контракт и как с ним работать.
 
 ## Сгенерированный код и proto
 
-Официальный контракт внешнего API находится в upstream, указанном в `contracts/upstream.json`. Его воспроизводимый локальный snapshot хранится в `contracts/*.proto`.
+Официальный контракт внешнего API находится в исходном репозитории, указанном в `contracts/upstream.json`. Его воспроизводимый локальный снимок хранится в `contracts/*.proto`.
 
-При изменении proto workflow документация должна объяснять:
+При изменении процесса работы с proto документация должна объяснять:
 
-- какой script запускать;
-- какой generated code обновляется;
-- где зафиксирован upstream source commit/release;
-- где зафиксированы источники и выпуски вспомогательных proto contracts;
-- как плоский upstream layout отображается в локальную структуру;
-- какие файлы являются source contracts;
+- какой скрипт запускать;
+- какой сгенерированный код обновляется;
+- где зафиксирован коммит или выпуск исходного репозитория;
+- где зафиксированы источники и выпуски вспомогательных proto-контрактов;
+- как плоская структура исходного репозитория отображается в локальную структуру;
+- какие файлы задают исходные контракты;
 - какие файлы нельзя редактировать вручную.
 
-Нельзя вручную документировать полный список generated methods, enum'ов и DTO, если они уже живут в proto/generated source.
+Нельзя вручную документировать полный список сгенерированных методов, перечислений и DTO, если они уже описаны в proto или сгенерированном исходном коде.
 
 ## Тесты
 
@@ -72,32 +78,32 @@ Markdown должен указывать, где находится актуал
 - [Политика тестирования](./testing-policy.md);
 - [Политика комментариев в тестах](./test-comment-style.md).
 
-При изменении test runner, stale artifact behavior или порядка запуска тестов обновите:
+При изменении инструмента тестирования, обработки устаревших результатов сборки или порядка запуска тестов обновите:
 
-- `package.json` `test` script;
+- скрипт `test` в `package.json`;
 - [Политика тестирования](./testing-policy.md);
-- README summary, если меняется пользовательская команда.
+- краткое описание в README, если меняется пользовательская команда.
 
-Нельзя обновлять только Markdown reference, оставляя runner behavior устаревшим.
+Нельзя обновлять только справочник Markdown, оставляя поведение инструмента тестирования устаревшим.
 
 ## Когда нужен отдельный Markdown-документ
 
 Отдельный документ уместен, если он объясняет:
 
-- workflow;
-- architecture boundary;
-- operational practice;
-- policy;
-- external API assumptions;
-- связь runtime behavior с внешней документацией.
+- порядок работы;
+- архитектурную границу;
+- практику эксплуатации;
+- правила проекта;
+- предположения о внешнем API;
+- связь поведения программы с внешней документацией.
 
 Не создавайте отдельный документ, если он просто переписывает:
 
-- полный public API из `src/index.ts`;
-- generated DTO и enum'ы;
-- package scripts без дополнительных правил;
+- полный публичный API из `src/index.ts`;
+- сгенерированные DTO и перечисления;
+- скрипты пакета без дополнительных правил;
 - тестовые команды без контекста;
-- кодовые comments.
+- комментарии к коду.
 
 ## README и docs
 
@@ -106,7 +112,7 @@ README должен оставаться кратким входом в прое
 - установка;
 - быстрый старт;
 - основные ссылки;
-- важные workflow.
+- важные сценарии работы.
 
 Подробные правила и политики должны жить в `docs/`.
 
@@ -116,4 +122,4 @@ README должен оставаться кратким входом в прое
 
 Markdown должен отвечать на вопрос "где актуальный контракт и как с ним работать".
 
-Сам контракт должен жить там, где его проверяет runtime, types, proto или tests.
+Сам контракт должен жить там, где его проверяют исполняемый код, типы, proto или тесты.

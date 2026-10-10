@@ -4,9 +4,9 @@
 
 ## Контекст
 
-Поддерживаемые команды, preferred paths, compatibility aliases, действующие stream-возможности и ограничения описаны в [справочнике CLI](../cli-reference.md). Здесь приведены правила устройства command layer.
+Поддерживаемые команды, основные имена, совместимые псевдонимы и возможности потоков описаны в [справочнике CLI](../cli-reference.md). Здесь объясняется, как устроены модули команды и за что отвечает каждый из них.
 
-Registry хранит один canonical definition на команду и передаёт остальные пути через first-class aliases `icore`. В resolved command поля `name` и `path` содержат preferred identity, а `matchedPath` — введённый путь.
+Реестр хранит одно основное определение команды и передаёт остальные пути как псевдонимы `icore`. После выбора команды поля `name` и `path` содержат её основное имя и путь, а `matchedPath` — путь, введённый пользователем.
 
 Добавляйте API-команды по одной, когда выбран конкретный SDK method и понятен CLI-контракт. Preferred path должен попасть в command definition и help, а technical/legacy aliases — только в единый alias layer, который передаёт их в native command definition `icore`.
 
@@ -16,15 +16,15 @@ Registry хранит один canonical definition на команду и пе�
 
 ## Command flow
 
-В command flow участвуют несколько ответственностей:
+Выполнение команды проходит следующие шаги:
 
-1. runner и `icore` разбирают CLI args и валидируют primitive options по schema;
-2. command handler или его command-owned mapper выполняет API-specific validation и request mapping;
-3. общий lifecycle helper создает `TInvestNodeSDK` для короткой команды;
-4. command handler вызывает API method;
-5. reporter преобразует unary response в stable report или stream event в локальный контракт вывода команды;
-6. reporter выбирает command-specific output и использует generic render primitives, когда они подходят;
-7. terminal app получает готовую строку или stream для вывода.
+1. runner и `icore` разбирают аргументы CLI и проверяют базовые опции по схеме;
+2. обработчик команды или её преобразователь проверяет условия конкретного API и собирает запрос;
+3. общая функция управления временем жизни создаёт `TInvestNodeSDK` для короткой команды;
+4. обработчик команды вызывает метод API;
+5. reporter преобразует unary-ответ в стабильный отчёт или событие потока в локальный контракт вывода команды;
+6. reporter выбирает представление результата и использует общие функции форматирования, когда они подходят;
+7. приложение CLI получает готовую строку или поток для вывода.
 
 Если снова собрать эти обязанности в одном command handler, command layer быстро начнёт принимать любую логику вокруг CLI.
 

@@ -44,7 +44,7 @@ Stream config следует generated gRPC contracts и не скрывает �
 
 `marketdata.marketDataStream` использует отдельное поле `requests`, потому что это bidirectional stream: CLI сначала отправляет заданный в config набор request-ов, а затем читает события provider-а.
 
-Имя `rawRequests` оставлено для возможного будущего расширения. Сейчас оно не входит в публичный config contract, поэтому parser отклоняет его для любого stream.
+Поле `rawRequests` не поддерживается: проверка конфигурации отклоняет его для любого потока.
 
 ## Настройки runtime
 

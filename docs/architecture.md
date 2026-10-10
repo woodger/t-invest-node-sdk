@@ -81,7 +81,13 @@ API-команды остаются тонкими bootstrap handlers. Runner о
 
 Runner один раз вызывает `prepare`, пишет command warnings и передаёт prepared command в `runPrepared`. Общая error policy направляет ошибки фаз `prepare`, `execute`, `render`, `write` и внешних bootstrap-операций в единый stderr.
 
-Тип ошибки, а не фаза, определяет exit code. Публичный `isUsageError()` из `icore` распознаёт framework errors категории `usage` и публичный `CliUsageError` от application validators; такие ошибки завершаются с кодом `2`. Runtime, provider, output и `icore` definition errors завершаются с кодом `1`. Validators используют `CliUsageError` для command-specific аргументов, обязательных CLI/ENV-значений и уже прочитанного JSON config; ошибки чтения файла остаются runtime. Command `cli.ts` получает generated request из command-owned mapper или создаёт его локально, а общий `runSdkCommand()` создаёт и гарантированно закрывает facade для короткого вызова. Stream session владеет отдельным lifecycle до завершения async iterator. Unary reporter-ы обычно преобразуют generated DTO в `application/reports` contracts; stream reporter может формировать command-local event contract. Reporter выбирает поля, порядок и command-specific представление, а общую механику формата при необходимости делегирует публичным `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`. Terminal app направляет готовую строку или stream через `Output.write` в stdout. Help/version используют тот же канал, а warnings и errors проходят через `Output.error` в stderr. Runner принимает injected `Output` или создаёт default facade.
+Код завершения определяется типом ошибки. Публичный `isUsageError()` из `icore` распознаёт ошибки фреймворка категории `usage` и публичный `CliUsageError` от проверок приложения; для них код равен `2`. Ошибки выполнения, провайдера, вывода и определения команды в `icore` получают код `1`. Проверки используют `CliUsageError` для аргументов конкретной команды, обязательных значений CLI/ENV и содержимого уже прочитанного JSON-файла конфигурации. Ошибки чтения файла относятся к ошибкам выполнения.
+
+Файл команды `cli.ts` получает сгенерированный запрос из принадлежащего команде преобразователя или создаёт его локально. Общий `runSdkCommand()` создаёт и гарантированно закрывает SDK для короткого вызова. Потоковая сессия управляет собственным временем жизни до завершения асинхронного итератора.
+
+Reporter unary-команды обычно преобразует сгенерированные DTO в контракты `application/reports`; reporter потока может формировать локальный контракт события команды. Он выбирает поля, их порядок и представление для конкретной команды. Общую механику формата при необходимости выполняют публичные `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`.
+
+`TerminalApp` направляет готовую строку или поток через `Output.write` в stdout. Справка и версия используют тот же канал, а предупреждения и ошибки проходят через `Output.error` в stderr. Runner принимает переданный `Output` или создаёт его по умолчанию.
 
 `bootstrap/args` не вызывает SDK и не создаёт gRPC-клиенты. Здесь находятся общие option schemas, проверки project-specific значений уже типизированных опций и нормализация `TInvestOptions` из CLI/ENV. Raw argv разбирает `icore`; ему же принадлежит schema-level validation.
 
@@ -103,14 +109,14 @@ Package policy хранится отдельно и не создаёт допо
 
 ## Конфигурация: терминология и ownership
 
-Для package defaults и runtime policies используются следующие термины:
+Для настроек пакета и правил его работы используются следующие термины:
 
-- `source config` - единственная authoring-форма package policy;
-- `authoring contract` - TypeScript-типы, которые проверяют source config при компиляции;
-- `compiled package baseline` - нормализованные limits и quota buckets, один раз собранные из source config;
-- `public runtime config` - совместимое публичное представление скомпилированных defaults;
-- `per-instance overrides` - вход от consumer-а для одного SDK instance, а не второй source package policy;
-- `resolved runtime snapshot` - изолированный итог для одного SDK instance, который не изменяет baseline или `defaultConfig`.
+- `source config` - единственное исходное описание настроек и правил пакета;
+- `authoring contract` - TypeScript-типы, которые проверяют исходную конфигурацию при компиляции;
+- `compiled package baseline` - нормализованные квоты и группы общих квот, один раз собранные из исходной конфигурации;
+- `public runtime config` - совместимое публичное представление подготовленных настроек по умолчанию;
+- `per-instance overrides` - переопределения от пользователя для одного экземпляра SDK, а не второе описание настроек пакета;
+- `resolved runtime snapshot` - отдельная итоговая конфигурация экземпляра SDK, которая не изменяет подготовленные настройки пакета или `defaultConfig`.
 
 Декларативный package config содержит только неисполняемые данные (inert data): значения записаны прямо в object literal и проверяются через `as const satisfies`. Вызов builder-а или mapper-а над object literal, например `defineConfig({...})`, превращает его в executable DSL, а не package source config. Source config не допускает runtime imports, function calls, spreads, merge/resolver logic и параллельные декларации одной policy.
 
@@ -165,7 +171,11 @@ packageConfig.sdk -- defaults --.
 per-instance options -----------'
 ```
 
-Per-instance `useSsl` имеет приоритет над package default, а `undefined` не отключает package policy. Для `unaryLimiter` нет package default: без него SDK не задерживает вызовы для соблюдения квоты. Обязательные `token` и `endpoint` проверяются до создания transport channel. SDK также проверяет `token` и непустой `appName` как строковые gRPC metadata, а ошибки итоговых `unaryLimits` преобразует в публичный `InvalidArgument` с `source: 'sdk'`. Список допустимых service names и полных method paths строится из generated unary service definitions, поэтому опечатка не превращается в неиспользуемое правило. `packageConfig.sdk` остаётся внутренней authoring-формой и не расширяет публичный `defaultConfig`.
+Явный `useSsl` для экземпляра имеет приоритет над настройкой пакета; `undefined` сохраняет значение по умолчанию. Для `unaryLimiter` значения по умолчанию нет: без него SDK не задерживает вызовы для соблюдения квоты.
+
+Обязательные `token` и `endpoint` проверяются до создания транспортного канала. SDK также проверяет `token` и непустой `appName` на соответствие формату строковых gRPC metadata. Ошибки итоговых `unaryLimits` преобразуются в публичный `InvalidArgument` с `source: 'sdk'`. Допустимые имена сервисов и полные пути методов берутся из сгенерированных описаний unary-сервисов, поэтому опечатка не превращается в неиспользуемое правило.
+
+`packageConfig.sdk` остаётся внутренним исходным описанием настроек и не расширяет публичный `defaultConfig`.
 
 `defaultConfig.unaryLimits` остаётся изменяемым public facade. При создании SDK instance функция `resolveUnaryLimitConfig()` читает его текущие values, накладывает per-instance overrides и возвращает отдельный snapshot.
 
