@@ -18,25 +18,7 @@
 npm install @woodger/t-invest-node-sdk
 ```
 
-## Документация
-
-Документация хранится в Markdown-файлах каталога `docs`:
-
-- [Навигация по документации](docs/index.md)
-- [Руководства для пользователей SDK](docs/guides/index.md)
-- [Архитектура SDK](docs/architecture.md)
-- [Заметки по Clean Architecture](docs/clean-architecture/index.md)
-- [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
-- [Справочник потокового CLI](docs/cli-stream-reference.md)
-- [Справочник конфигурации потокового CLI](docs/cli-stream-configuration.md)
-- [Лимитная политика API](docs/limits-policy.md)
-- [Собственная реализация unary limiter-а](docs/guides/custom-unary-limiter.md)
-- [TLS-доверие](docs/tls-policy.md)
-- [Происхождение и подключение встроенного CA](docs/bundled-ca.md)
-- [Разработка SDK](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/development/index.md)
-- [Политики проекта](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/index.md)
-- [Политика тестирования](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/testing-policy.md)
-- [Политика комментариев в тестах](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/policy/test-comment-style.md)
+Архив npm содержит готовый JavaScript и объявления типов из `dist`. Установка по ссылке на Git-репозиторий не поддерживается: при ней npm запускает `prepack` и собирает исходный код.
 
 ## Быстрый старт
 
@@ -60,6 +42,14 @@ finally {
 ```
 
 Более подробный пример с выбором доступного счёта и освобождением ресурсов: [Первый SDK-вызов](docs/guides/getting-started.md).
+
+<a id="подробные-примеры"></a>
+
+## Документация
+
+- [Руководства](docs/guides/index.md) — запросы, потоки, ошибки и тестирование приложения.
+- [Справочник CLI](docs/cli-reference.md) — команды, опции и коды завершения.
+- [Все документы](docs/index.md) — настройки SDK, архитектура, разработка и политики проекта.
 
 ## Опции `TInvestNodeSDK`
 
@@ -96,9 +86,7 @@ type UnaryLimits = Record<string, TInvestUnaryLimit>;
 
 Для подключения к T-Invest SDK использует встроенный корневой сертификат. Собственные сертификаты можно передать через `tls.rootCertificates`. Подробнее — в [настройках TLS](docs/tls-policy.md).
 
-Используйте `defineUnaryLimits()`, чтобы сгруппировать переопределения квот по сервисам и методам. Тип вложенного аргумента экспортирован как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Как написать и подключить собственный ограничитель запросов, описано в [руководстве по unary limiter-у](docs/guides/custom-unary-limiter.md).
-
-`createInMemoryUnaryLimiter()` создаёт ограничитель частоты запросов для одного процесса. Чтобы использовать его в SDK, передайте результат в опцию `unaryLimiter`.
+`createInMemoryUnaryLimiter()` создаёт ограничитель для одного процесса, а `defineUnaryLimits()` помогает сгруппировать переопределения квот по сервисам и методам. Примеры подключения и настройки — в [руководстве по ограничению частоты запросов](docs/guides/unary-limits.md).
 
 ## Опции `defaultConfig`
 
@@ -120,29 +108,13 @@ SDK принимает входящие gRPC-сообщения размером
 
 ## CLI
 
-CLI работает из собранного `dist`, поэтому после изменений в исходниках его нужно пересобрать.
-
 Встроенный `--help` покажет актуальные домены, команды и опции:
 
-```text
-npm run cli -- --help
-npm run cli -- <domain> --help
-npm run cli -- <domain> <command> --help
+```sh
+npm exec -- t-invest-node-sdk --help
 ```
 
-Для некоторых команд требуется передать параметры подключения через `--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`.
-
-Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`.
-
-Передавайте логические опции как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и `--raw=false`. Положительные целочисленные опции должны помещаться в безопасный диапазон JavaScript. Для дат используйте RFC 3339 с явным `Z` или числовым смещением часового пояса.
-
-Коды завершения:
-
-- `0` — команда завершилась успешно;
-- `2` — ошибка вызова: неизвестная команда, неверные аргументы, отсутствие обязательного значения из CLI или окружения либо неверная конфигурация команды;
-- `1` — ошибка выполнения, провайдера, файловой системы, вывода или внутреннего определения команды.
-
-Полный список команд и совместимых псевдонимов описан в [справочнике CLI](docs/cli-reference.md). Для потоковых команд есть отдельные [справочник CLI](docs/cli-stream-reference.md) и [справочник по конфигурации](docs/cli-stream-configuration.md).
+Подключение, правила передачи аргументов, список команд и коды завершения описаны в [справочнике CLI](docs/cli-reference.md).
 
 ## Доступные сервисы
 
@@ -180,16 +152,6 @@ npm run cli -- <domain> <command> --help
 Корень модуля экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. Сначала проверьте неизвестную ошибку через `isSdkError()`, затем используйте сочетание `code` и `source` для классификации. `path`, `details` и `cause` доступны для диагностики.
 
 Коды ошибок, их источники и условия повторного запроса описаны в руководстве [Ошибки и завершение работы SDK](docs/guides/errors-and-lifecycle.md).
-
-## Подробные примеры
-
-Типичные сценарии применения:
-
-- [Первый SDK-вызов](docs/guides/getting-started.md) — конфигурация, выбор счета и освобождение ресурсов;
-- [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, сигналы, ограничение времени запроса и метаданные ответа;
-- [Потоки и отмена](docs/guides/streams-and-cancellation.md) — серверные и двусторонние потоки с `AbortSignal` приложения;
-- [Ошибки и завершение работы](docs/guides/errors-and-lifecycle.md) — проверка `SdkError.code` и `source`, закрытие SDK и условия повтора;
-- [Тестовые сервисы](docs/guides/testing-with-service-definitions.md) — тесты через публичные описания сервисов из корня модуля.
 
 ## Экспорты
 
