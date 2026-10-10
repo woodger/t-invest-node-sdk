@@ -109,10 +109,10 @@ interface TInvestNodeSDKConfig {
 }
 ```
 
-- `unaryLimits` - плоская runtime-таблица default unary-квот по generated service names и полным gRPC method paths. Каждое значение содержит `maxRequests` и `windowMs`; более специфичный method path имеет приоритет над сервисным fallback. Общие method quota groups описаны в [лимитной политике](docs/limits-policy.md).
+- `unaryLimits` - квоты unary-запросов по умолчанию, заданные по именам сервисов или полным путям gRPC-методов. Ограничение метода имеет приоритет над ограничением сервиса.
 - `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд, которые изменяют заявки, избранное или счета в песочнице; по умолчанию `true`.
 
-Подробнее о лимитах API и их связи с SDK: [docs/limits-policy.md](docs/limits-policy.md).
+Подробнее о квотах API и их настройке в SDK — в [лимитной политике](docs/limits-policy.md).
 
 ## Политика gRPC-транспорта
 
@@ -132,13 +132,15 @@ npm run cli -- <domain> <command> --help
 
 Для некоторых команд требуется передать параметры подключения через `--token` / `T_INVEST_TOKEN` и `--endpoint` / `T_INVEST_ENDPOINT`.
 
-Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`. Передавайте логические опции как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и `--raw=false`. Положительные целочисленные опции должны помещаться в безопасный диапазон JavaScript. Для дат используйте RFC 3339 с явным `Z` или числовым смещением timezone.
+Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`.
+
+Передавайте логические опции как флаги (`--raw`, `--no-raw`), без форм `--raw=true` и `--raw=false`. Положительные целочисленные опции должны помещаться в безопасный диапазон JavaScript. Для дат используйте RFC 3339 с явным `Z` или числовым смещением часового пояса.
 
 Коды завершения:
 
 - `0` — команда завершилась успешно;
-- `2` — ошибка вызова: неизвестная команда, невалидные аргументы, отсутствие обязательного CLI/ENV-значения или невалидная command config;
-- `1` — ошибка выполнения, provider-а, файловой системы, вывода или внутреннего определения команды.
+- `2` — ошибка вызова: неизвестная команда, неверные аргументы, отсутствие обязательного значения из CLI или окружения либо неверная конфигурация команды;
+- `1` — ошибка выполнения, провайдера, файловой системы, вывода или внутреннего определения команды.
 
 Полный список команд и совместимых псевдонимов описан в [справочнике CLI](docs/cli-reference.md). Для потоковых команд есть отдельные [справочник CLI](docs/cli-stream-reference.md) и [справочник по конфигурации](docs/cli-stream-configuration.md).
 
@@ -157,50 +159,50 @@ npm run cli -- <domain> <command> --help
 
 Клиенты повторяют методы из сгенерированных gRPC-описаний.
 
-Для streaming RPC доступны клиенты:
+Для потоковых RPC доступны клиенты:
 
 - `sdk.marketdataStream`
 - `sdk.operationsStream`
 - `sdk.ordersStream`
 
-Все клиенты используют общий gRPC channel и metadata. SDK объединяет per-call metadata с instance metadata: сохраняет собственные `authorization` и `x-app-name`, а остальные заголовки Consumer-а добавляет к запросу. Вызов `sdk.close()` закрывает channel.
+Все клиенты используют общий gRPC-канал. SDK добавляет заголовки отдельного вызова к заголовкам экземпляра, сохраняя собственные `authorization` и `x-app-name`. Вызов `sdk.close()` закрывает канал.
 
 ### Lifecycle и отмена
 
-`sdk.close()` идемпотентен. После закрытия обращение к service getters и вызовы через ранее полученные clients завершаются ошибкой с кодом `SdkErrorCode.SdkClosed`; вызовы, которые ещё ждут локальную unary-квоту, отменяются. `sdk.close()` не ждёт уже переданные transport-у unary- и stream-операции. Чтобы завершать их предсказуемо, можно передать собственный `AbortSignal`.
+`sdk.close()` можно вызывать повторно. После закрытия новые обращения к сервисам и вызовы через ранее полученные клиенты завершаются с `SdkErrorCode.SdkClosed`; ожидание локальной unary-квоты отменяется. Уже выполняющиеся unary-запросы и потоки можно отменить собственным `AbortSignal`: `close()` не ждёт их завершения.
 
-`TInvestCallOptions.signal` действует на весь SDK-вызов. Если настроен `unaryLimiter`, SDK сначала передаёт ему signal для отмены ожидания, а затем использует тот же signal в gRPC-вызове.
+`TInvestCallOptions.signal` действует на весь SDK-вызов. Если настроен `unaryLimiter`, SDK сначала передаёт ему сигнал для отмены ожидания, а затем использует тот же сигнал в gRPC-вызове.
 
-`onHeader` и `onTrailer` — синхронные callbacks. Если callback бросает исключение, SDK отклоняет той же application error соответствующий unary-вызов или stream iteration и отменяет незавершённый transport call.
+`onHeader` и `onTrailer` — синхронные обработчики. Если обработчик выбрасывает исключение, SDK возвращает ту же ошибку из unary-вызова или при чтении следующего события потока и отменяет незавершённый gRPC-вызов.
 
 ### Ошибки SDK
 
 Корень пакета экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. Сначала проверьте неизвестную ошибку через `isSdkError()`, затем используйте сочетание `code` и `source` для классификации. `path`, `details` и `cause` доступны для диагностики.
 
-Коды gRPC и локальных ошибок SDK, различение TLS, cancellation, receive-limit и codec failures, cross-copy narrowing и граница retry policy описаны в руководстве [Ошибки и lifecycle](docs/guides/errors-and-lifecycle.md).
+Коды ошибок, их источники и условия повторного запроса описаны в руководстве [Ошибки и завершение работы SDK](docs/guides/errors-and-lifecycle.md).
 
 ## Подробные примеры
 
 Типичные сценарии применения:
 
 - [Первый SDK-вызов](docs/guides/getting-started.md) — конфигурация, выбор счета и освобождение ресурсов;
-- [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, Signals, deadline и response metadata;
-- [Потоки и отмена](docs/guides/streams-and-cancellation.md) — server-side и bidirectional streams с application-owned `AbortSignal`;
-- [Ошибки и lifecycle](docs/guides/errors-and-lifecycle.md) — narrowing по `SdkError.code` и `source`, shutdown и retry boundary;
-- [Mock-сервисы](docs/guides/testing-with-service-definitions.md) — примеры тестов через root-exported service definitions без deep imports.
+- [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, сигналы, ограничение времени запроса и метаданные ответа;
+- [Потоки и отмена](docs/guides/streams-and-cancellation.md) — серверные и двусторонние потоки с `AbortSignal` приложения;
+- [Ошибки и завершение работы](docs/guides/errors-and-lifecycle.md) — проверка `SdkError.code` и `source`, закрытие SDK и условия повтора;
+- [Тестовые сервисы](docs/guides/testing-with-service-definitions.md) — тесты через публичные описания сервисов из корня пакета.
 
 ## Экспорты
 
-Публичный API включает класс `TInvestNodeSDK` для unary- и streaming-запросов. Пакет также выборочно реэкспортирует:
+Публичный API включает класс `TInvestNodeSDK` для unary- и потоковых запросов. Пакет также выборочно реэкспортирует:
 
 - `Timestamp`;
-- типы, enum'ы и их JSON-конвертеры из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `signals`, `stoporders`, `users`;
-- package-owned service interfaces `UsersService`, `OrdersService`, `MarketDataService` и т.п.
-- generated server-side `*ServiceDefinition` и `*ServiceImplementation` contracts для nice-grpc server adapters.
+- типы, перечисления и их JSON-конвертеры из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `signals`, `stoporders`, `users`;
+- интерфейсы сервисов пакета `UsersService`, `OrdersService`, `MarketDataService` и т.п.
+- сгенерированные серверные контракты `*ServiceDefinition` и `*ServiceImplementation` для адаптеров `nice-grpc`.
 
 Происхождение сгенерированных контрактов описано в разделе [Сгенерированный код](docs/architecture.md#сгенерированный-код).
 
-Generated `*ServiceClient` остаются внутренними transport contracts и не входят в root exports.
+Сгенерированные `*ServiceClient` остаются внутренними транспортными контрактами и не входят в экспорты корня пакета.
 
 Основная точка входа:
 

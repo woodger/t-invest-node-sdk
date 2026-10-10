@@ -1,10 +1,10 @@
 # Mock-сервисы через public exports
 
-> Type: Guide. Здесь показан Consumer-тест с generated service definition и implementation type из корня SDK.
+> Type: Guide. Здесь показано, как проверить приложение с тестовым gRPC-сервером, используя публичные описания сервисов и типы их реализаций из SDK.
 
 ## Зависимость server adapter
 
-SDK экспортирует service contracts, а mock server runtime остаётся у Consumer-а. Добавьте `nice-grpc` как прямую dev-зависимость тестируемого проекта и не полагайтесь на transitive hoisting:
+SDK экспортирует контракты сервисов, а тестовый сервер создаёт приложение. Добавьте `nice-grpc` как прямую зависимость разработки тестируемого проекта; наличие пакета среди косвенных зависимостей недостаточно:
 
 ```sh
 npm install --save-dev nice-grpc@^2.1.17
@@ -66,12 +66,12 @@ finally {
 
 ## Граница контракта
 
-Используйте только root imports:
+Импортируйте только из корня пакета:
 
-- `SignalServiceDefinition` — runtime definition для `server.add()`;
+- `SignalServiceDefinition` — описание сервиса для `server.add()`;
 - `SignalServiceImplementation` — типовой контракт mock-реализации;
-- request, response, enum contracts и их JSON-конвертеры — из того же package entrypoint.
+- типы запросов, ответов, перечисления и их JSON-конвертеры — из корня того же пакета.
 
-Generated `*ServiceClient` намеренно не входят в public exports: SDK facade создаёт настоящий client сам. Package `exports` блокирует нестабильные deep imports из `dist/generated/**`.
+Сгенерированные `*ServiceClient` не входят в публичные экспорты: фасад SDK создаёт клиент сам. Поле `exports` пакета блокирует нестабильные импорты внутренних файлов из `dist/generated/**`.
 
-Для других сервисов используйте соответствующие `*ServiceDefinition` и `*ServiceImplementation`. Полный список смотрите в корневом entrypoint пакета.
+Для других сервисов используйте соответствующие `*ServiceDefinition` и `*ServiceImplementation`. Полный список смотрите в публичных экспортах пакета.

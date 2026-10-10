@@ -1,12 +1,12 @@
 # Справочник CLI
 
-> Type: Reference. Здесь собраны поддерживаемые команды, preferred paths, compatibility aliases и ограничения текущего CLI. Актуальные опции показывает встроенный `--help`; runtime-контракт задают registry, handlers и tests.
+> Type: Reference. Здесь собраны поддерживаемые команды, их основные имена, совместимые псевдонимы и ограничения CLI. Актуальные опции показывает встроенный `--help`; поведение задают реестр команд, обработчики и тесты.
 
 ## Домены и справка
 
 SDK публикует команды в форме `<domain> <resource/action>`.
 
-Публичные domains:
+Публичные домены:
 
 - `account`;
 - `instrument`;
@@ -26,7 +26,7 @@ npm exec -- t-invest-node-sdk market --help
 npm exec -- t-invest-node-sdk market order-book --help
 ```
 
-Technical и legacy paths работают как compatibility aliases. Help показывает preferred paths; совместимые пути перечислены в скобках рядом с каждой командой.
+Технические и прежние имена команд работают как совместимые псевдонимы. Справка показывает основные имена; совместимые пути перечислены в скобках рядом с каждой командой.
 
 ## Команды и совместимые пути
 
@@ -96,22 +96,24 @@ Technical и legacy paths работают как compatibility aliases. Help п
 - `sandbox portfolio` -> `sdk.sandbox.getSandboxPortfolio` (`sandbox get-sandbox-portfolio`);
 - `sandbox withdraw-limits` -> `sdk.sandbox.getSandboxWithdrawLimits` (`sandbox get-sandbox-withdraw-limits`);
 - `sandbox pay-in` -> `sdk.sandbox.sandboxPayIn` (`sandbox sandbox-pay-in`);
-- `stream run` -> поток выбирается в JSON config;
-- `dev compile-proto` -> TypeScript contract generation (`compile-proto`).
+- `stream run` -> поток выбирается в JSON-конфигурации;
+- `dev compile-proto` -> генерация TypeScript-контрактов (`compile-proto`).
 - `help` -> встроенная справка по CLI, домену или команде;
 - `version` -> версия пакета.
 
 ## Побочные эффекты и idempotency
 
-Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`. За это отвечает `defaultConfig.requireSideEffectConfirmation`. CLI не генерирует idempotency keys автоматически: `order place` принимает `--order-id`, а `order replace` — `--idempotency-key`.
+Команды, которые изменяют заявки, избранное или счета в песочнице, по умолчанию требуют `--confirm`. За это отвечает `defaultConfig.requireSideEffectConfirmation`.
 
-`sandbox pay-in` принимает `--currency=rub|usd`. CLI parser отклоняет неизвестные currency values, а для явно неподдержанного provider-кейса `--currency=usd` команда возвращает ошибку.
+CLI не генерирует ключи идемпотентности автоматически: `order place` принимает `--order-id`, а `order replace` — `--idempotency-key`.
+
+`sandbox pay-in` принимает `--currency=rub|usd`. CLI отклоняет неизвестные значения валюты, а для неподдерживаемого провайдером `--currency=usd` команда возвращает ошибку.
 
 ## Потоковые команды и ограничения
 
-Для Stream API есть отдельная utility-команда `stream run --config=PATH`. Контракт долгоживущих подписок, завершения процесса и формата событий описан в [справочнике потокового CLI](./cli-stream-reference.md) и [справочнике его конфигурации](./cli-stream-configuration.md).
+Для потокового API есть отдельная команда `stream run --config=PATH`. Долгоживущие подписки, завершение процесса и формат событий описаны в [справочнике потокового CLI](./cli-stream-reference.md) и [справочнике его конфигурации](./cli-stream-configuration.md).
 
-Сейчас CLI поддерживает server-side streams и статический initial request contract для bidirectional market data stream:
+CLI поддерживает серверные потоки и статический набор начальных запросов двустороннего потока рыночных данных:
 
 - `sdk.marketdataStream.marketDataStream`;
 - `sdk.marketdataStream.marketDataServerSideStream`;
@@ -119,11 +121,11 @@ Technical и legacy paths работают как compatibility aliases. Help п
 - `sdk.operationsStream.positionsStream`;
 - `sdk.ordersStream.tradesStream`.
 
-Динамические bidirectional request sources остаются отложенным API-контрактом.
+Динамические источники запросов двустороннего потока не поддерживаются.
 
-Публичный CLI не добавляет команды для deprecated generated methods:
+Публичный CLI не добавляет команды для устаревших сгенерированных методов:
 
-- `sdk.instruments.options` - deprecated в generated contract; вместо него используется `instrument option list` / `sdk.instruments.optionsBy`.
+- `sdk.instruments.options` - устарел в сгенерированном контракте; вместо него используется `instrument option list` / `sdk.instruments.optionsBy`.
 
 ## Связанные документы
 
