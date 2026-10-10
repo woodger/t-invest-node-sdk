@@ -1,12 +1,12 @@
 # Политика жизненности кода
 
-> Type: Policy. Здесь описана классификация кода для refactoring audit, deletion audit и cleanup pass.
+> Type: Policy. Здесь описано, как определить роль кода перед рефакторингом, удалением или очисткой проекта.
 
 ## Назначение
 
-Компиляция, export или наличие тестов сами по себе не делают код живым. Для этого нужна подтверждённая роль в текущем production graph, поддерживаемом public/internal contract или runtime binding.
+Компиляция, экспорт или наличие тестов сами по себе не делают код живым. Нужно подтвердить его роль в текущем графе рабочего кода, поддерживаемом публичном или внутреннем контракте либо связывании компонентов во время выполнения.
 
-Эта policy различает:
+Политика различает:
 
 - активный runtime-код;
 - полностью неиспользуемые файлы;
@@ -30,7 +30,7 @@ Production graph начинается от runtime entrypoints и рабочих
 - proto generation entrypoint в `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`, если он связан через CLI registry;
 - unary quota configuration и limiter runtime;
 - `contracts/*.proto`;
-- `src/bootstrap/generated-exports.ts` и generated modules, если они экспортируются пакетом;
+- `src/bootstrap/generated-exports.ts` и generated modules, если они экспортируются модулем;
 - dynamic runtime bindings, если они подтверждены кодом или конфигурацией.
 
 Код, достижимый из production graph, нельзя удалять как dead code.
@@ -52,7 +52,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 Признаки:
 
 - импортируется runtime-кодом;
-- участвует в package entrypoint или public exports;
+- участвует в точке входа модуля или public exports;
 - используется SDK client, middleware, generated exports или runtime config;
 - нужен сборке или запуску как declaration/config/entrypoint-файл;
 - явно поддерживается как public/internal API.
@@ -83,7 +83,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 - нет barrel exports;
 - нет test references;
 - нет docs references;
-- нет package script / entrypoint references;
+- нет ссылок из скриптов или точки входа модуля;
 - нет dynamic string references;
 - файл не нужен как declaration/config/entrypoint.
 
@@ -102,7 +102,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 
 Решение: `move to roadmap` или `delete candidate`.
 
-Практическое правило: пока нет consumer-а, это документация, а не source code.
+Практическое правило: пока эту возможность не использует другой код или приложение, это документация, а не исходный код.
 
 ### Test-only Implementation
 
@@ -128,7 +128,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 - есть `export * from ...` или named re-export;
 - symbols не импортируются active runtime code;
 - tests могут существовать или отсутствовать;
-- package public API может быть шире внутреннего runtime graph.
+- публичный API модуля может быть шире внутреннего runtime graph.
 
 Решение: `needs owner decision`.
 
@@ -151,7 +151,7 @@ Barrel export сам по себе не доказывает жизненнос�
 
 ### Код из roadmap
 
-Код выражает будущее намерение, но не имеет текущего consumer-а.
+Код выражает будущее намерение, но ещё не используется другим кодом или приложением.
 
 Признаки:
 
@@ -172,7 +172,7 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 
 - достижим из production graph;
 - нужен сборке, типам, declarations или runtime config;
-- служит package entrypoint;
+- служит точкой входа модуля;
 - поддерживается как public/internal API;
 - имеет действующий documented contract.
 
@@ -186,14 +186,14 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 - не нужен как declaration/config/entrypoint;
 - не содержит важного архитектурного намерения.
 
-Удаляйте такой код только small batch-ами.
+Удаляйте такой код только небольшими группами.
 
 ### Move To Roadmap
 
 Выберите `move to roadmap`, если код:
 
 - описывает будущую возможность;
-- не имеет текущего consumer-а;
+- не используется другим кодом или приложением;
 - существует как placeholder;
 - лучше выражается документом, чем source file.
 
@@ -207,37 +207,37 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 - выглядит архитектурно значимым;
 - но не достижим из production graph.
 
-Такой код нельзя удалять в автоматическом cleanup pass.
+Такой код нельзя удалять при автоматической очистке.
 
 ## Чеклист аудита
 
-Перед deletion pass проверьте:
+Перед удалением кода проверьте:
 
-- imports по имени файла;
-- imports по exported symbols;
-- barrel exports;
-- test references;
-- docs references;
-- package `main`, `types`, `exports` и scripts;
-- tsconfig include/exclude;
-- generated exports;
-- proto workflow;
-- runtime config;
-- dynamic string references;
-- не входит ли файл в orphaned island.
+- импорты по имени файла;
+- импорты экспортируемых сущностей;
+- реэкспорты через промежуточные модули;
+- ссылки из тестов;
+- ссылки из документации;
+- `main`, `types`, `exports` и скрипты модуля;
+- `include` и `exclude` в tsconfig;
+- сгенерированные экспорты;
+- процесс работы с proto;
+- конфигурацию времени выполнения;
+- динамические ссылки через строки;
+- не входит ли файл в группу взаимозависимых файлов без входящих ссылок из рабочего кода.
 
 ## Минимальное правило удаления
 
-Deletion pass должен быть ограничен заранее перечисленными файлами.
+При удалении кода работайте только с файлами, перечисленными заранее.
 
 Обязательные условия:
 
-- не менять behavior runtime flow;
-- не делать unrelated cleanup;
-- не переносить архитектуру по пути;
+- не менять поведение рабочего кода;
+- не делать несвязанную с задачей очистку;
+- не менять архитектуру попутно;
 - не обновлять зависимости;
-- не удалять owner-decision candidates без подтверждения;
-- запускать build, tests, lint и diff checks;
-- показывать diff summary.
+- не удалять код, требующий решения владельца, без подтверждения;
+- запускать сборку, тесты, линтер и проверку diff;
+- показывать краткое описание изменений.
 
 Если по файлу есть сомнение, оставьте его в `needs owner decision`.

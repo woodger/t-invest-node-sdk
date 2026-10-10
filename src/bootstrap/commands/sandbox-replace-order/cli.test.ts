@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -13,10 +14,13 @@ import {
 } from '../../../generated/orders';
 import { createSandboxReplaceOrderCommand } from './cli';
 
-function replaceOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
+function replaceOrderResponse(
+  overrides: Partial<PostOrderResponse> = {}
+): PostOrderResponse {
   return {
     orderId: 'sandbox-replaced-order-id',
-    executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+    executionReportStatus:
+      OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
     lotsRequested: 5,
     lotsExecuted: 0,
     initialOrderPrice: undefined,
@@ -46,21 +50,22 @@ describe('sandbox-replace-order command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'order',
-            'replace',
-            '--account-id=sandbox-account-id',
-            '--order-id=order-id',
-            '--idempotency-key=new-idempotency-key',
-            '--quantity=5',
-            '--price=101.5',
-            '--price-type=currency'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'sandbox',
+              'order',
+              'replace',
+              '--account-id=sandbox-account-id',
+              '--order-id=order-id',
+              '--idempotency-key=new-idempotency-key',
+              '--quantity=5',
+              '--price=101.5',
+              '--price-type=currency'
+            ],
+            undefined
+          ),
         /Expected '--confirm' to execute side-effect command/
       );
       assert.equal(sdkCreated, false);

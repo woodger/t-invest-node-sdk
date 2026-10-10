@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `operation withdraw-limits`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -24,11 +25,16 @@ export function createWithdrawLimitsReport(
   return {
     money: response.money.map((value) => toReportMoney(value)),
     blocked: response.blocked.map((value) => toReportMoney(value)),
-    blockedGuarantee: response.blockedGuarantee.map((value) => toReportMoney(value))
+    blockedGuarantee: response.blockedGuarantee.map((value) =>
+      toReportMoney(value)
+    )
   };
 }
 
-function renderSection(title: string, rows: readonly (readonly string[])[]): string {
+function renderSection(
+  title: string,
+  rows: readonly (readonly string[])[]
+): string {
   return [
     `${title}:`,
     renderTextTable(rows)
@@ -72,5 +78,8 @@ export function formatWithdrawLimits(
   response: WithdrawLimitsResponse,
   format: WithdrawLimitsFormat
 ): string {
-  return formatWithdrawLimitsReport(createWithdrawLimitsReport(response), format);
+  return formatWithdrawLimitsReport(
+    createWithdrawLimitsReport(response),
+    format
+  );
 }

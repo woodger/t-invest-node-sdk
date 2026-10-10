@@ -3,7 +3,9 @@ export type {
   TInvestOptions,
   TInvestTlsOptions
 } from './application/dto/t-invest-options';
-export { createInMemoryUnaryLimiter } from './application/services/unary-limiter';
+export {
+  createInMemoryUnaryLimiter
+} from './application/services/unary-limiter';
 export type {
   TInvestInMemoryUnaryLimiterOptions,
   TInvestUnaryLimit,

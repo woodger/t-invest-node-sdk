@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `operation broker-report`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -59,7 +60,9 @@ function toReportItem(item: BrokerReport): BrokerReportItemReport {
   };
 }
 
-function createBrokerReportPage(report: GetBrokerReportResponse): BrokerReportPageReport {
+function createBrokerReportPage(
+  report: GetBrokerReportResponse
+): BrokerReportPageReport {
   return {
     type: 'page',
     page: {
@@ -71,7 +74,9 @@ function createBrokerReportPage(report: GetBrokerReportResponse): BrokerReportPa
   };
 }
 
-export function createBrokerReportReport(response: BrokerReportResponse): BrokerReportReport {
+export function createBrokerReportReport(
+  response: BrokerReportResponse
+): BrokerReportReport {
   if (response.generateBrokerReportResponse !== undefined) {
     return {
       type: 'generate',

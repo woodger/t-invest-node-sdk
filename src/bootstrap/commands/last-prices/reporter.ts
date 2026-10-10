@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `market last-prices`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { LastPricesReport, LastPricesReportPrice } from '../../../application/reports';
+import type {
+  LastPricesReport,
+  LastPricesReportPrice
+} from '../../../application/reports';
 import type { LastPrice } from '../../../generated/marketdata';
 import {
   formatReportDate,
@@ -49,6 +53,9 @@ export function formatLastPricesReport(
   ]);
 }
 
-export function formatLastPrices(prices: LastPrice[], format: LastPricesFormat): string {
+export function formatLastPrices(
+  prices: LastPrice[],
+  format: LastPricesFormat
+): string {
   return formatLastPricesReport(createLastPricesReport(prices), format);
 }

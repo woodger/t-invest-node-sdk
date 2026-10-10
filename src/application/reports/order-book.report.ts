@@ -13,7 +13,7 @@ export interface OrderBookReportLevel {
   side: 'bid' | 'ask';
   /** Цена уровня в денежном строковом формате отчета. */
   price: string;
-  /** Количество инструментов на уровне. */
+  /** Количество лотов на уровне стакана. */
   quantity: number;
 }
 

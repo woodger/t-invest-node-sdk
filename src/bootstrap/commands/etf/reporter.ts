@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument etf show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   EtfReport,
   EtfReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type {
   Etf,
   EtfResponse
@@ -25,7 +29,9 @@ export const etfFormats = ['json', 'table'] as const;
 
 export type EtfFormat = typeof etfFormats[number];
 
-export function createEtfReportInstrument(instrument: Etf): EtfReportInstrument {
+export function createEtfReportInstrument(
+  instrument: Etf
+): EtfReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -68,7 +74,9 @@ export function createEtfReportInstrument(instrument: Etf): EtfReportInstrument 
 }
 
 export function createEtfReport(response: EtfResponse): EtfReport {
-  return response.instrument === undefined ? null : createEtfReportInstrument(response.instrument);
+  return response.instrument === undefined
+    ? null
+    : createEtfReportInstrument(response.instrument);
 }
 
 export function renderEtfRows(report: EtfReportInstrument[]): string {

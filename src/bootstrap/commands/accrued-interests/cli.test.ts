@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -9,9 +10,14 @@ import {
   GetAccruedInterestsRequest,
   type GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import { createAccruedInterestsCommand, createAccruedInterestsRequest } from './cli';
+import {
+  createAccruedInterestsCommand,
+  createAccruedInterestsRequest
+} from './cli';
 
-function accruedInterest(overrides: Partial<AccruedInterest> = {}): AccruedInterest {
+function accruedInterest(
+  overrides: Partial<AccruedInterest> = {}
+): AccruedInterest {
   return {
     date: new Date('2026-01-02T03:04:05Z'),
     value: {
@@ -62,11 +68,12 @@ describe('accrued-interests command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => createAccruedInterestsRequest({
-          figi: 'BOND-FIGI',
-          from: '2026-02-01T00:00:00Z',
-          to: '2026-01-01T00:00:00Z'
-        }),
+        () =>
+          createAccruedInterestsRequest({
+            figi: 'BOND-FIGI',
+            from: '2026-02-01T00:00:00Z',
+            to: '2026-01-01T00:00:00Z'
+          }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });
@@ -141,20 +148,21 @@ describe('accrued-interests command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'bond',
-            'accrued',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BOND-FIGI',
-            '--from=2026-01-01T00:00:00Z',
-            '--to=2026-01-31T00:00:00Z'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'bond',
+              'accrued',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=BOND-FIGI',
+              '--from=2026-01-01T00:00:00Z',
+              '--to=2026-01-31T00:00:00Z'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

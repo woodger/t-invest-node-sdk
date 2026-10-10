@@ -27,7 +27,10 @@ export interface PortfolioReportSummary {
   totalAmountFutures: ReportMoney | null;
   /** Стоимость опционов или `null`, если provider не вернул значение. */
   totalAmountOptions: ReportMoney | null;
-  /** Стоимость структурных продуктов или `null`, если provider не вернул значение. */
+  /**
+   * Стоимость структурных продуктов или `null`, если provider не вернул
+   * значение.
+   */
   totalAmountSp: ReportMoney | null;
   /** Ожидаемая доходность в строковом формате quotation. */
   expectedYield: string;

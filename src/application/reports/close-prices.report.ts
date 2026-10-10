@@ -8,7 +8,10 @@
  * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
  */
 
-/** Одна цена закрытия торговой сессии в отчете команды `marketdata get-close-prices`. */
+/**
+ * Одна цена закрытия торговой сессии в отчете команды `marketdata
+ * get-close-prices`.
+ */
 export interface ClosePricesReportPrice {
   figi: string;
   instrumentUid: string;
@@ -18,5 +21,7 @@ export interface ClosePricesReportPrice {
   time: string;
 }
 
-/** Отчет команды `marketdata get-close-prices` на application/output boundary. */
+/**
+ * Отчет команды `marketdata get-close-prices` на application/output boundary.
+ */
 export type ClosePricesReport = ClosePricesReportPrice[];

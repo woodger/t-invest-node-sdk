@@ -28,8 +28,11 @@ type RequiredCommandOptionKeys<TOptions> = Exclude<
 export type CommandRequestOptions<
   TOptions,
   TKeys extends keyof TOptions
-> = Pick<TOptions, Extract<TKeys, RequiredCommandOptionKeys<TOptions>>>
-  & Partial<Pick<TOptions, Extract<TKeys, OptionalCommandOptionKeys<TOptions>>>>;
+> =
+  & Pick<TOptions, Extract<TKeys, RequiredCommandOptionKeys<TOptions>>>
+  & Partial<
+    Pick<TOptions, Extract<TKeys, OptionalCommandOptionKeys<TOptions>>>
+  >;
 
 export const sdkOptionsSchema = {
   token: {
@@ -81,7 +84,9 @@ export function parseDateTimeOption(value: string, name: string): Date {
   const match = rfc3339DateTimePattern.exec(value);
 
   if (match === null || !hasValidDateTimeParts(match)) {
-    throw new CliUsageError(`Expected '--${name}' as date-time with explicit timezone`);
+    throw new CliUsageError(
+      `Expected '--${name}' as date-time with explicit timezone`
+    );
   }
 
   const date = new Date(value);
@@ -91,13 +96,18 @@ export function parseDateTimeOption(value: string, name: string): Date {
     || date.getUTCFullYear() < 1
     || date.getUTCFullYear() > 9999
   ) {
-    throw new CliUsageError(`Expected '--${name}' as date-time with explicit timezone`);
+    throw new CliUsageError(
+      `Expected '--${name}' as date-time with explicit timezone`
+    );
   }
 
   return date;
 }
 
-export function requireStringOption(value: string | undefined, name: string): string {
+export function requireStringOption(
+  value: string | undefined,
+  name: string
+): string {
   if (value === undefined) {
     throw new CliUsageError(`Expected required argument '--${name}'`);
   }
@@ -121,17 +131,23 @@ export function parseOptionalNonNegativeInt32Option(
   }
 
   if (!/^\d+$/.test(value)) {
-    throw new CliUsageError(`Expected '--${name}' as integer greater than or equal to 0`);
+    throw new CliUsageError(
+      `Expected '--${name}' as integer greater than or equal to 0`
+    );
   }
 
   const parsed = Number(value);
 
   if (!Number.isSafeInteger(parsed)) {
-    throw new CliUsageError(`Expected '--${name}' as integer greater than or equal to 0`);
+    throw new CliUsageError(
+      `Expected '--${name}' as integer greater than or equal to 0`
+    );
   }
 
   if (parsed > 2_147_483_647) {
-    throw new CliUsageError(`Expected '--${name}' to be less than or equal to 2147483647`);
+    throw new CliUsageError(
+      `Expected '--${name}' to be less than or equal to 2147483647`
+    );
   }
 
   return parsed;

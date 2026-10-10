@@ -1,7 +1,8 @@
 /**
  * Модуль хранит request mapping, общий для production и Sandbox portfolio.
  *
- * Здесь допустимы generated enum mapping и преобразование typed command options.
+ * Здесь допустимы generated enum mapping и преобразование typed command
+ * options.
  * Здесь не должно быть command schema, SDK calls или rendering.
  */
 

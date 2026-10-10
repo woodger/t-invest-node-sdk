@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -25,7 +26,9 @@ import { formatStopOrders, stopOrdersFormats } from './reporter';
 
 type StopOrdersSdk = {
   stopOrders: {
-    getStopOrders(request: GetStopOrdersRequest): Promise<GetStopOrdersResponse>;
+    getStopOrders(
+      request: GetStopOrdersRequest
+    ): Promise<GetStopOrdersResponse>;
   };
   close(): void;
 };
@@ -33,7 +36,8 @@ type StopOrdersSdk = {
 type StopOrdersSdkFactory = (options: TInvestOptions) => StopOrdersSdk;
 
 const stopOrdersCommandPath = ['stop-order', 'list'] as const;
-const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const stopOrdersRequestOptionsSchema = {
   'account-id': {
@@ -56,7 +60,10 @@ const stopOrdersOptionsSchema = withSdkOptions(
 );
 
 type StopOrdersOptions = InferOptions<typeof stopOrdersOptionsSchema>;
-type StopOrdersRequestOptions = CommandRequestOptions<StopOrdersOptions, 'account-id'>;
+type StopOrdersRequestOptions = CommandRequestOptions<
+  StopOrdersOptions,
+  'account-id'
+>;
 
 export function createStopOrdersCommand(
   createSdk: StopOrdersSdkFactory = defaultStopOrdersSdkFactory

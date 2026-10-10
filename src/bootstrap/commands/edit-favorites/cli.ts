@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -19,7 +20,10 @@ import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseCommaSeparatedStringListOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
@@ -33,7 +37,9 @@ import { editFavoritesFormats, formatEditFavorites } from './reporter';
 
 type EditFavoritesSdk = {
   instruments: {
-    editFavorites(request: EditFavoritesRequest): Promise<EditFavoritesResponse>;
+    editFavorites(
+      request: EditFavoritesRequest
+    ): Promise<EditFavoritesResponse>;
   };
   close(): void;
 };
@@ -41,7 +47,8 @@ type EditFavoritesSdk = {
 type EditFavoritesSdkFactory = (options: TInvestOptions) => EditFavoritesSdk;
 
 const editFavoritesCommandPath = ['instrument', 'favorite', 'edit'] as const;
-const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const editFavoriteActions = {
   add: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD,
@@ -50,7 +57,9 @@ const editFavoriteActions = {
 
 type EditFavoritesActionName = keyof typeof editFavoriteActions;
 
-const editFavoriteActionNames = Object.keys(editFavoriteActions) as EditFavoritesActionName[];
+const editFavoriteActionNames = Object.keys(
+  editFavoriteActions
+) as EditFavoritesActionName[];
 
 const editFavoritesRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema,

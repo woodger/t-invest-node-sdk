@@ -130,8 +130,14 @@ describe('dividends-foreign-issuer reporter', () => {
       assert.match(output, /page: 2/);
       assert.match(output, /pagesCount: 3/);
       assert.match(output, /^recordDate\s+paymentDate\s+securityName\s+isin/m);
-      assert.match(output, /2026-05-01T00:00:00.000Z\s+2026-05-15T00:00:00.000Z/);
-      assert.match(output, /US Dividend Stock\s+US0000000001\s+US\s+10\s+1.5\s+15\s+2.25\s+12.75\s+usd/);
+      assert.match(
+        output,
+        /2026-05-01T00:00:00.000Z\s+2026-05-15T00:00:00.000Z/
+      );
+      assert.match(
+        output,
+        /US Dividend Stock\s+US0000000001\s+US\s+10\s+1.5\s+15\s+2.25\s+12.75\s+usd/
+      );
       assert.doesNotMatch(output, /externalCommission/);
     });
 

@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -19,7 +20,10 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { candlesFormats, formatCandles } from './reporter';
 
@@ -33,7 +37,8 @@ type CandlesSdk = {
 type CandlesSdkFactory = (options: TInvestOptions) => CandlesSdk;
 
 const candlesCommandPath = ['market', 'candles'] as const;
-const defaultCandlesSdkFactory: CandlesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultCandlesSdkFactory: CandlesSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const candleIntervals = {
   '1min': CandleInterval.CANDLE_INTERVAL_1_MIN,
@@ -52,7 +57,9 @@ const candleIntervals = {
   month: CandleInterval.CANDLE_INTERVAL_MONTH
 } as const;
 
-const candleIntervalNames = Object.keys(candleIntervals) as Array<keyof typeof candleIntervals>;
+const candleIntervalNames = Object.keys(candleIntervals) as Array<
+  keyof typeof candleIntervals
+>;
 
 type CandleIntervalName = keyof typeof candleIntervals;
 
@@ -92,10 +99,10 @@ const candlesOptionsSchema = withSdkOptions(
 type CandlesOptions = InferOptions<typeof candlesOptionsSchema>;
 type CandlesRequestOptions = CommandRequestOptions<
   CandlesOptions,
-  'instrument-id' |
-  'from' |
-  'to' |
-  'interval'
+  | 'instrument-id'
+  | 'from'
+  | 'to'
+  | 'interval'
 >;
 
 export function createCandlesCommand(
@@ -132,7 +139,9 @@ export function createCandlesRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return GetCandlesRequest.create({

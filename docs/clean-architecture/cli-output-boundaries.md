@@ -1,36 +1,36 @@
 # Разделение форматирования и вывода в CLI
 
-> Type: Design Note. Здесь описаны project adapters, направление зависимостей и граница между command-specific CLI formatting, общей механикой JSON/CSV/table из `icore` и доставкой готового результата через `Output`.
+> Type: Design Note. Здесь объясняется, как команды выбирают данные для вывода, используют форматирование JSON/CSV/таблиц из `icore` и передают готовый результат через `Output`. Описаны также адаптеры проекта и направление зависимостей.
 
 ## Контекст
 
-CLI-команды живут в `bootstrap`, но не вся логика вокруг вывода имеет одну ответственность. Команда определяет смысл пользовательского представления; generic primitives сериализуют уже выбранные значения; terminal output доставляет готовую строку или stream.
+Подготовка результата CLI разделена на три операции: команда выбирает данные и их представление, общие функции форматируют выбранные значения, а компонент вывода доставляет готовую строку или поток. CLI-команды находятся в `bootstrap`.
 
-`icore` предоставляет общую механику как внешняя зависимость. Это не слой проекта: application reports и output contract конкретной команды остаются в SDK.
+`icore` предоставляет общие функции как внешняя зависимость. Контракты отчётов приложения и вывода конкретных команд остаются в SDK; сама зависимость не является слоем проекта.
 
-Актуальная карта слоёв находится в [архитектуре SDK](../architecture.md#карта-слоев). Адаптеры переводят внутренние contracts во внешний интерфейс и обратно; command-specific CLI adapters находятся рядом с командами в `bootstrap`.
+Актуальная карта слоёв находится в [архитектуре SDK](../architecture.md#карта-слоев). Адаптеры преобразуют данные внутренних контрактов во внешний интерфейс и обратно. Адаптеры CLI для конкретных команд находятся рядом с ними в `bootstrap`.
 
 ## Адаптеры проекта
 
-`infrastructure/transport/grpc` - технический adapter к `nice-grpc`:
+`infrastructure/transport/grpc` - технический адаптер к `nice-grpc`:
 
-- channel;
-- metadata;
+- канал;
+- метаданные;
 - middleware;
-- typed clients;
-- mapping gRPC method path в transport-neutral `TInvestUnaryQuota`;
-- mapping `nice-grpc` client failures в transport-neutral `SdkError`.
+- типизированные клиенты;
+- преобразование пути gRPC-метода в независимый от транспорта `TInvestUnaryQuota`;
+- преобразование ошибок клиента `nice-grpc` в независимый от транспорта `SdkError`.
 
-`unary-limit-resolver.ts` выбирает method rule или service fallback и разрешает quota bucket. Middleware передаёт Consumer-owned limiter-у полный `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Application port не разбирает gRPC path и не владеет transport lifecycle.
+`unary-limit-resolver.ts` выбирает правило метода или сервиса и определяет общий `bucket` квоты. Middleware передаёт ограничителю приложения полный `path`, `bucket`, `maxRequests`, `windowMs` и `AbortSignal`. Интерфейс слоя `application` не разбирает путь gRPC и не управляет временем жизни транспорта.
 
-`infrastructure/interceptor` содержит технический process hook для известных warnings. Обычный вывод команд проходит через terminal app.
+`infrastructure/interceptor` содержит технический обработчик известных предупреждений процесса. Обычный вывод команд проходит через приложение терминала.
 
 `infrastructure/report-values.ts` - принадлежащий проекту адаптер скалярных значений:
 
-- преобразует повторяющиеся provider scalar DTO values в reusable report values;
+- преобразует повторяющиеся скалярные значения DTO провайдера в общие значения отчётов;
 - сохраняет `MoneyValue` в JSON как структурный `ReportMoney`;
-- предоставляет text helper для table cells вида `"amount currency"`;
-- не знает command names, report shapes, columns, generic renderers или output delivery.
+- предоставляет функцию для текстовых ячеек таблицы вида `"amount currency"`;
+- не знает имён команд, структур отчётов, колонок, общих функций форматирования или механизмов вывода.
 
 ## Основная граница
 
@@ -46,154 +46,138 @@ application report/command-local event -> command-specific output values
 output values -> JSON / CSV document or row / table string
 ```
 
-Для общей механики reporter использует публичные render primitives `icore`. Структура документа, headers и порядок rows остаются command-specific policy. Generic primitives добавляют trailing newline в JSON, CSV document и text table.
+Для общей механики reporter использует публичные функции форматирования `icore`. Структуру документа, заголовки и порядок строк определяет конкретная команда. Общие функции добавляют завершающий перевод строки в JSON, CSV-документ и текстовую таблицу.
 
 ```text
 string/AsyncIterable -> TerminalApp -> Output.write -> stdout
 ```
 
-В штатном CLI flow готовый результат выводят `TerminalApp` и `Output` из `icore`, собранные в `bootstrap/cli/runner.ts`.
+При штатном выполнении CLI готовый результат выводят `TerminalApp` и `Output` из `icore`, собранные в `bootstrap/cli/runner.ts`.
 
 ```text
 warnings/errors -> Output.error -> stderr
 ```
 
-Текст warnings определяет project CLI layer; текст errors и exit code - политика ошибок проекта.
+Текст предупреждений определяет CLI проекта; текст ошибок и код завершения — политика ошибок проекта.
 
 ## Поток команды
 
+Порядок выполнения команды описан в [API-командах](./api-commands.md#command-flow). Результат проходит через границу форматирования и записи:
+
 ```text
-src/bootstrap/index.ts
-        ↓
-bootstrap/cli/runner.ts
-        ↓
-icore command resolution + typed options
-        ↓
-bootstrap/commands/<command>/cli.ts
-        ↓
-SDK call
-        ↓
-bootstrap/commands/<command>/reporter.ts
-        ↓
-application report или command-local event contract
-        ↓
-command-specific output values
-        ↓
-icore render primitive или project-specific formatter
-        ↓
-string/AsyncIterable
-        ↓
-icore TerminalApp -> Output.write
-        ↓
-stdout
+reporter команды
+  -> контракт отчёта или события
+  -> значения для выбранного формата
+  -> форматирование через icore или функцию проекта
+  -> string/AsyncIterable
+  -> TerminalApp -> Output.write
+  -> stdout
 ```
 
-Runner создаёт default `Output` или принимает injected `Output`, собирает lightweight terminal app для shortcuts и external errors и лениво загружает command registry.
+Runner управляет короткими псевдонимами, быстрыми вызовами справки и версии и предупреждениями команд. Справка и версия проходят через вспомогательное приложение терминала, предупреждения — через приложение команд, а штатный результат передаётся в `runPrepared`. Оба приложения используют один `Output` и одну политику ошибок.
 
-Runner отдельно управляет публичными short aliases, help/version shortcuts и command warnings. Он направляет help/version через lightweight terminal app, warnings — через command terminal app, а normal command result передаёт в `runPrepared`. Оба экземпляра используют один `Output` и одну error policy.
-
-Штатный terminal flow идёт через `Output` из `icore`. Только крайний аварийный fallback в executable entrypoint пишет через `console.error`.
+Штатный вывод идёт через `Output` из `icore`. Только аварийный обработчик в точке запуска пишет через `console.error`.
 
 ## Что остаётся в reporter команды
 
 `bootstrap/commands/<command>/reporter.ts` отвечает за смысл пользовательского вывода:
 
-- mapping unary response в `application/reports` или stream event в локальный контракт события команды;
+- преобразование unary-ответа в `application/reports` или события потока в локальный контракт события команды;
 - выбор полей;
 - порядок и имена колонок;
-- представление enum/date/nullable values;
-- stable JSON contract конкретной команды;
-- CSV headers и порядок rows;
-- redaction или normalization, если они зависят от команды;
-- project-specific formats, например JSONL event shape.
+- представление перечислений, дат и значений, допускающих `null`;
+- стабильный JSON-контракт конкретной команды;
+- заголовки CSV и порядок строк;
+- маскирование или нормализацию данных, если они зависят от команды;
+- форматы проекта, например структуру события JSONL.
 
-Reporter может импортировать `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`, но generic primitive не должен определять поля или contract команды.
+Reporter может импортировать `renderJson`, `renderCsv`, `renderCsvRow` и `renderTextTable` из `icore`, но общая функция не должна определять поля или контракт команды.
 
 ## Что предоставляют render primitives `icore`
 
-Generic primitives отвечают только за механику текстового формата:
+Общие функции отвечают только за механику текстового формата:
 
-- JSON serialization и trailing newline;
-- CSV escaping, joining строк и terminal trailing newline для документа;
-- расчет ширины, выравнивание и trailing newline plain-text таблицы.
+- сериализацию JSON и завершающий перевод строки;
+- экранирование CSV, объединение строк и завершающий перевод строки документа;
+- расчёт ширины, выравнивание и завершающий перевод строки текстовой таблицы.
 
 Они не должны получать ответственность за:
 
 - названия CLI-команд;
-- `AccountsReport`, `CandlesReport` или другие project reports;
-- generated provider DTO;
-- SDK clients;
+- `AccountsReport`, `CandlesReport` или другие отчёты проекта;
+- сгенерированные DTO провайдера;
+- клиенты SDK;
 - выбор пользовательских полей;
-- command-specific redaction или normalization;
+- маскирование или нормализацию данных по правилам команды;
 - сборку CSV-документа конкретной команды.
 
-Если общей primitive недостаточно, оставьте project-specific formatter рядом с reporter-ом. Не создавайте forwarding wrapper, который только повторяет public API `icore`.
+Если общей функции недостаточно, оставьте форматирование проекта рядом с reporter-ом. Не создавайте делегирующую обёртку, которая только повторяет публичный API `icore`.
 
 ## Что предоставляют `TerminalApp` и `Output`
 
-`bootstrap/cli/runner.ts` создаёт default output через `createOutput` или принимает injected `Output`. Lightweight terminal app обслуживает shortcuts и external errors без загрузки command definitions; command terminal app создаётся после lazy import registry. Оба получают один `Output`.
+`bootstrap/cli/runner.ts` создаёт вывод по умолчанию через `createOutput` или принимает переданный `Output`. Вспомогательное приложение терминала обслуживает быстрые вызовы справки и версии и внешние ошибки без загрузки определений команд. Приложение команд создаётся после отложенного импорта реестра. Оба получают один `Output`.
 
-Output boundary отвечает за:
+Компонент вывода отвечает за:
 
-- запись готового normal result через `Output.write` в stdout;
-- запись warnings/errors через `Output.error` в stderr;
-- ожидание asynchronous writes и backpressure;
-- единый terminal error delivery через project-owned error policy.
+- запись готового штатного результата через `Output.write` в stdout;
+- запись предупреждений и ошибок через `Output.error` в stderr;
+- ожидание асинхронной записи и обработку обратного давления;
+- единый вывод ошибок в терминал по политике проекта.
 
-Output boundary не должен знать:
+Компонент вывода не должен знать:
 
 - JSON, CSV или таблицы;
-- application reports;
-- command names;
+- отчёты приложения;
+- имена команд;
 - правила отображения значений;
 - какие поля нужно скрыть или показать.
 
-Project `terminalErrorPolicy` задаёт текст ошибки и exit code, а terminal app из `icore` применяет policy и доставляет результат. Таким образом, error ownership остаётся разделённым и не переходит целиком внешней зависимости.
+`terminalErrorPolicy` проекта задаёт текст ошибки и код завершения, а приложение терминала из `icore` применяет эти правила и выводит результат. Ответственность за ошибки остаётся разделённой между проектом и зависимостью.
 
-Command registry типизирует результаты публичным `TerminalCommandOutput` из `icore`. SDK commands возвращают строки, async string streams или `undefined`. `TerminalApp.runPrepared()` сам выполняет runtime narrowing через публичный guard, поэтому локальная повторная проверка не нужна.
+Реестр команд типизирует результаты публичным `TerminalCommandOutput` из `icore`. Команды SDK возвращают строки, асинхронные потоки строк или `undefined`. `TerminalApp.runPrepared()` сам проверяет тип результата при выполнении через публичную функцию проверки, поэтому локальная повторная проверка не нужна.
 
 ## Почему не нужны локальные generic wrappers
 
-Удалённые project-owned renderers и writers больше не служат архитектурными точками расширения. Wrapper без собственного контракта добавит второй source of truth, и документация снова сможет разойтись с runtime.
+Удалённые функции форматирования и записи проекта больше не служат архитектурными точками расширения. Обёртка без собственного контракта добавит второй источник истины, и документация сможет разойтись с поведением программы.
 
-Локальный adapter оправдан, только если он добавляет самостоятельное project-specific поведение:
+Локальный адаптер оправдан, только если он добавляет самостоятельное поведение проекта:
 
-- новый stable contract;
-- reuse нескольких команд поверх generic primitives;
-- policy, которой нет в `icore`;
+- новый стабильный контракт;
+- повторное использование общих функций несколькими командами;
+- правила, которых нет в `icore`;
 - изоляцию внешней зависимости, необходимую для наблюдаемого поведения.
 
-Одного более короткого import или предположения о будущей замене зависимости недостаточно.
+Одного более короткого импорта или предположения о будущей замене зависимости недостаточно.
 
 ## Правило для новых команд
 
 При добавлении новой API-команды:
 
-- declarative option schema передается command mechanics `icore`;
-- `cli.ts` получает typed options, выполняет API-specific validation, строит generated request, вызывает SDK и закрывает его;
-- `reporter.ts` строит stable report и command-specific output;
-- generic JSON/CSV-row/table mechanics переиспользуется из public API `icore`;
-- повторяющиеся scalar value conversions переиспользуются из `infrastructure/report-values.ts`;
-- handler возвращает готовую строку или stream terminal app и не пишет normal result напрямую в `process.stdout`;
-- generated DTO не становится стабильным CLI output contract;
-- output contract выбирается для конкретной команды, а не для будущего неизвестного списка команд.
+- декларативная схема опций передаётся механизму команд `icore`;
+- `cli.ts` получает типизированные опции, выполняет проверки конкретного API, строит сгенерированный запрос, вызывает SDK и закрывает его;
+- `reporter.ts` строит стабильный отчёт и вывод конкретной команды;
+- общая механика JSON/CSV-строк/таблиц переиспользуется из публичного API `icore`;
+- повторяющиеся преобразования скалярных значений переиспользуются из `infrastructure/report-values.ts`;
+- обработчик возвращает готовую строку или поток приложению терминала и не пишет штатный результат напрямую в `process.stdout`;
+- сгенерированный DTO не становится стабильным контрактом вывода CLI;
+- контракт вывода выбирается для конкретной команды, а не для будущего неизвестного списка команд.
 
 ## Признаки неверной границы
 
-Command-specific policy утекла в generic mechanics, если код:
+Правила конкретной команды попали в общую механику, если код:
 
 - знает имя команды;
 - импортирует `application/reports` ради выбора пользовательских полей;
-- форматирует enum/date по правилам конкретной команды;
-- скрывает или нормализует данные конкретного output contract;
-- меняется при изменении CLI JSON contract.
+- форматирует перечисления или даты по правилам конкретной команды;
+- скрывает или нормализует данные конкретного контракта вывода;
+- меняется при изменении JSON-контракта CLI.
 
-Technical mechanics необоснованно дублируется в reporter-е, если код:
+Техническая механика необоснованно дублируется в reporter-е, если код:
 
-- повторяет CSV escaping;
-- повторяет generic pretty JSON;
+- повторяет экранирование CSV;
+- повторяет общее форматирование JSON;
 - повторяет расчет ширины таблицы;
-- пишет normal result напрямую в `process.stdout`, хотя достаточно вернуть его terminal app.
+- пишет штатный результат напрямую в `process.stdout`, хотя достаточно вернуть его приложению терминала.
 
 ## Направление зависимостей
 
@@ -219,26 +203,26 @@ infrastructure/report-values.ts -> command-specific report formatting
 generic output facade -> выбор полей или JSON contract команды
 ```
 
-Прямой import `icore` из `bootstrap` не меняет направление project layers: bootstrap остаётся внешним composition/presentation слоем и связывает external mechanics с локальными contracts.
+Прямой импорт `icore` из `bootstrap` не меняет направление зависимостей между слоями проекта: `bootstrap` остаётся внешним слоем сборки и представления и связывает внешнюю механику с локальными контрактами.
 
 ## История перехода
 
-Текущая модель сложилась после переноса общей механики presentation/output в `icore`:
+Текущая модель сложилась после переноса общей механики представления и вывода в `icore`:
 
-1. Project-owned generic renderers и stdout/stderr writers удалены.
-2. Reporter-ы вызывают публичные `icore` render primitives напрямую, без локальных forwarding wrappers.
-3. Bootstrap CLI собирает `TerminalApp` и `Output`, но сохраняет project-owned alias inventory, help/version shortcuts, warnings и error policy; command aliases передаются в canonical definitions и разрешаются самим `icore`.
-4. `application/reports`, command-specific presentation и `infrastructure/report-values.ts` остались project-owned contracts.
+1. Общие функции форматирования и записи stdout/stderr проекта удалены.
+2. Reporter-ы вызывают публичные функции форматирования `icore` напрямую, без локальных делегирующих обёрток.
+3. CLI в `bootstrap` собирает `TerminalApp` и `Output`, но сохраняет список псевдонимов, быстрые вызовы справки и версии, предупреждения и политику ошибок проекта; псевдонимы команд передаются в основные определения и разрешаются самим `icore`.
+4. `application/reports`, представление конкретных команд и `infrastructure/report-values.ts` остались контрактами проекта.
 
-Отдельный use-case слой понадобится, только если command перестанет быть простой обёрткой над одним SDK call.
+Отдельный слой сценариев понадобится, только если команда перестанет быть простой обёрткой над одним вызовом SDK.
 
 ## Короткое правило
 
-Если код отвечает на вопрос "что и как показать для конкретной команды", это command reporter.
+Если код отвечает на вопрос "что и как показать для конкретной команды", это reporter команды.
 
-Если код отвечает на вопрос "как механически сериализовать выбранные значения", используйте подходящий public primitive `icore`.
+Если код отвечает на вопрос "как механически сериализовать выбранные значения", используйте подходящую публичную функцию `icore`.
 
-Если код отвечает на вопрос "как доставить готовый результат", это `TerminalApp`/`Output`, собранные в CLI runner-е.
+Если код отвечает на вопрос "как доставить готовый результат", это `TerminalApp`/`Output`, собранные в runner-е CLI.
 
 Если код отвечает на вопрос "какой сценарий выполнить", это application use-case.
 

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -13,10 +14,13 @@ import {
 } from '../../../generated/orders';
 import { createSandboxPostOrderCommand } from './cli';
 
-function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
+function postOrderResponse(
+  overrides: Partial<PostOrderResponse> = {}
+): PostOrderResponse {
   return {
     orderId: 'sandbox-created-order-id',
-    executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+    executionReportStatus:
+      OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
     lotsRequested: 10,
     lotsExecuted: 0,
     initialOrderPrice: undefined,
@@ -46,21 +50,22 @@ describe('sandbox-post-order command', () => {
       });
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'order',
-            'place',
-            '--account-id=sandbox-account-id',
-            '--instrument-id=instrument-id',
-            '--quantity=10',
-            '--direction=buy',
-            '--order-type=market',
-            '--order-id=idempotency-key'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'sandbox',
+              'order',
+              'place',
+              '--account-id=sandbox-account-id',
+              '--instrument-id=instrument-id',
+              '--quantity=10',
+              '--direction=buy',
+              '--order-type=market',
+              '--order-id=idempotency-key'
+            ],
+            undefined
+          ),
         /Expected '--confirm' to execute side-effect command/
       );
       assert.equal(sdkCreated, false);

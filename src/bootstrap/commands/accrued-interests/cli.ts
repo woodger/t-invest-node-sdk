@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -18,7 +19,10 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -28,15 +32,20 @@ import { accruedInterestsFormats, formatAccruedInterests } from './reporter';
 
 type AccruedInterestsSdk = {
   instruments: {
-    getAccruedInterests(request: GetAccruedInterestsRequest): Promise<GetAccruedInterestsResponse>;
+    getAccruedInterests(
+      request: GetAccruedInterestsRequest
+    ): Promise<GetAccruedInterestsResponse>;
   };
   close(): void;
 };
 
-type AccruedInterestsSdkFactory = (options: TInvestOptions) => AccruedInterestsSdk;
+type AccruedInterestsSdkFactory = (
+  options: TInvestOptions
+) => AccruedInterestsSdk;
 
 const accruedInterestsCommandPath = ['instrument', 'bond', 'accrued'] as const;
-const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const accruedInterestsRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -63,7 +72,9 @@ const accruedInterestsOptionsSchema = withSdkOptions(
   accruedInterestsFormatOptionsSchema
 );
 
-type AccruedInterestsOptions = InferOptions<typeof accruedInterestsOptionsSchema>;
+type AccruedInterestsOptions = InferOptions<
+  typeof accruedInterestsOptionsSchema
+>;
 type AccruedInterestsRequestOptions = CommandRequestOptions<
   AccruedInterestsOptions,
   'from' | 'to' | 'instrument-id' | 'figi'
@@ -103,7 +114,9 @@ export function createAccruedInterestsRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   const instrumentId = resolveInstrumentIdOption(options);

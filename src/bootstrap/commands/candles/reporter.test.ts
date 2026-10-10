@@ -42,7 +42,10 @@ describe('candles reporter', () => {
     });
 
     test('formats report as csv', () => {
-      const output = formatCandlesReport(createCandlesReport([candle()]), 'csv');
+      const output = formatCandlesReport(
+        createCandlesReport([candle()]),
+        'csv'
+      );
 
       assert.equal(
         output,

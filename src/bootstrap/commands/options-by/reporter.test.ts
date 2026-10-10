@@ -130,11 +130,20 @@ describe('options-by reporter', () => {
 
   describe('formatOptionsByReport', () => {
     test('formats report as table', () => {
-      const output = formatOptionsByReport(createOptionsByReport([option()]), 'table');
+      const output = formatOptionsByReport(
+        createOptionsByReport([option()]),
+        'table'
+      );
 
       assert.match(output, /^uid\s+positionUid\s+ticker\s+classCode\s+name/m);
-      assert.match(output, /option-uid\s+option-position-uid\s+SiM6C125000\s+SPBOPT/);
-      assert.match(output, /USD\/RUB Call Option\s+rub\s+1\s+MOEX\s+Currencies\s+OPTION_DIRECTION_CALL/);
+      assert.match(
+        output,
+        /option-uid\s+option-position-uid\s+SiM6C125000\s+SPBOPT/
+      );
+      assert.match(
+        output,
+        /USD\/RUB Call Option\s+rub\s+1\s+MOEX\s+Currencies\s+OPTION_DIRECTION_CALL/
+      );
       assert.match(output, /12500\.5 rub\s+2026-06-19T00:00:00\.000Z/);
       assert.doesNotMatch(output, /asset-position-uid/);
     });

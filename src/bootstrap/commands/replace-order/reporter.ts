@@ -1,7 +1,8 @@
 /**
  * Модуль CLI-репортинга команды `order replace`.
  *
- * `replaceOrder` возвращает тот же generated response, что и `postOrder`, поэтому
+ * `replaceOrder` возвращает тот же generated response, что и `postOrder`,
+ * поэтому
  * команда переиспользует общий order mutation report.
  */
 

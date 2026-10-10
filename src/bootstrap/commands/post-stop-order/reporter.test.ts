@@ -1,18 +1,27 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createPostStopOrderReport, formatPostStopOrderReport } from './reporter';
+import {
+  createPostStopOrderReport,
+  formatPostStopOrderReport
+} from './reporter';
 
 describe('post-stop-order reporter', () => {
   describe('createPostStopOrderReport', () => {
-    test('maps generated post stop order response to stable report values', () => {
-      assert.deepEqual(createPostStopOrderReport({
-        stopOrderId: 'stop-order-id',
-        orderRequestId: '',
-        responseMetadata: undefined
-      }), {
-        stopOrderId: 'stop-order-id'
-      });
-    });
+    test(
+      'maps generated post stop order response to stable report values',
+      () => {
+        assert.deepEqual(
+          createPostStopOrderReport({
+            stopOrderId: 'stop-order-id',
+            orderRequestId: '',
+            responseMetadata: undefined
+          }),
+          {
+            stopOrderId: 'stop-order-id'
+          }
+        );
+      }
+    );
   });
 
   describe('formatPostStopOrderReport', () => {

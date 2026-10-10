@@ -1,5 +1,6 @@
 /**
- * Модуль хранит request mapping, общий для постраничных production и Sandbox operations.
+ * Модуль хранит request mapping, общий для постраничных production и Sandbox
+ * operations.
  *
  * Здесь допустимы generated enum mapping, pagination и проверка диапазона.
  * Здесь не должно быть command schema, SDK calls или rendering.
@@ -45,7 +46,9 @@ export function createOperationsByCursorRequest(
   const to = parseOptionalDateTimeOption(options.to, 'to');
 
   if (from !== undefined && to !== undefined && from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return {
@@ -55,7 +58,9 @@ export function createOperationsByCursorRequest(
     to,
     cursor: options.cursor ?? '',
     limit: parseOperationsByCursorLimitOption(options.limit),
-    operationTypes: parseOperationsByCursorOperationTypesOption(options['operation-type']),
+    operationTypes: parseOperationsByCursorOperationTypesOption(
+      options['operation-type']
+    ),
     state: operationStates[options.state],
     withoutCommissions: options['without-commissions'],
     withoutTrades: options['without-trades'],
@@ -63,7 +68,9 @@ export function createOperationsByCursorRequest(
   };
 }
 
-function parseOperationsByCursorLimitOption(rawValue: string | undefined): number {
+function parseOperationsByCursorLimitOption(
+  rawValue: string | undefined
+): number {
   if (rawValue === undefined) {
     return 0;
   }
@@ -88,13 +95,18 @@ function parseOperationsByCursorOperationTypesOption(
     return [];
   }
 
-  const operationTypes = parseCommaSeparatedStringListOption(rawValue, 'operation-type');
+  const operationTypes = parseCommaSeparatedStringListOption(
+    rawValue,
+    'operation-type'
+  );
 
   return operationTypes.map((value) => {
     const operationType = operationTypeFromJSON(value);
 
     if (operationType === OperationType.UNRECOGNIZED) {
-      throw new CliUsageError("Expected '--operation-type' as generated OperationType name");
+      throw new CliUsageError(
+        "Expected '--operation-type' as generated OperationType name"
+      );
     }
 
     return operationType;

@@ -12,7 +12,9 @@ import {
   PostOrderRequest,
   TimeInForceType
 } from '../../../generated/orders';
-import { parseOptionalPositiveQuotationOption } from '../../args/side-effect-args';
+import {
+  parseOptionalPositiveQuotationOption
+} from '../../args/side-effect-args';
 
 const postOrderDirections = {
   buy: OrderDirection.ORDER_DIRECTION_BUY,

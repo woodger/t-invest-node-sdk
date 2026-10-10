@@ -59,11 +59,12 @@ describe('last-trades command', () => {
 
     test('throws when from is later than to', () => {
       assert.throws(
-        () => createLastTradesRequest({
-          'instrument-id': 'BBG00QPYJ5H0',
-          from: '2026-06-19T11:00:00.000Z',
-          to: '2026-06-19T10:00:00.000Z'
-        }),
+        () =>
+          createLastTradesRequest({
+            'instrument-id': 'BBG00QPYJ5H0',
+            from: '2026-06-19T11:00:00.000Z',
+            to: '2026-06-19T10:00:00.000Z'
+          }),
         /Expected '--from' to be earlier/
       );
     });
@@ -78,7 +79,7 @@ describe('last-trades command', () => {
         receivedOptions = options;
 
         return {
-    marketData: {
+          marketData: {
             async getLastTrades(request) {
               receivedRequest = request;
 
@@ -111,8 +112,14 @@ describe('last-trades command', () => {
         endpoint: 'localhost:50051'
       });
       assert.equal(receivedRequest?.instrumentId, 'BBG00QPYJ5H0');
-      assert.equal(receivedRequest?.from?.toISOString(), '2026-06-19T10:00:00.000Z');
-      assert.equal(receivedRequest?.to?.toISOString(), '2026-06-19T11:00:00.000Z');
+      assert.equal(
+        receivedRequest?.from?.toISOString(),
+        '2026-06-19T10:00:00.000Z'
+      );
+      assert.equal(
+        receivedRequest?.to?.toISOString(),
+        '2026-06-19T11:00:00.000Z'
+      );
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].figi, 'BBG00QPYJ5H0');
     });
@@ -120,7 +127,7 @@ describe('last-trades command', () => {
     test('closes sdk when getLastTrades rejects', async () => {
       let closeCalls = 0;
       const command = createLastTradesCommand(() => ({
-    marketData: {
+        marketData: {
           async getLastTrades() {
             throw new Error('api failed');
           }
@@ -131,19 +138,20 @@ describe('last-trades command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'market',
-            'trades',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BBG00QPYJ5H0',
-            '--from=2026-06-19T10:00:00.000Z',
-            '--to=2026-06-19T11:00:00.000Z'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'market',
+              'trades',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=BBG00QPYJ5H0',
+              '--from=2026-06-19T10:00:00.000Z',
+              '--to=2026-06-19T11:00:00.000Z'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `market order-book`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -23,7 +24,10 @@ export const orderBookFormats = ['json', 'table'] as const;
 
 export type OrderBookFormat = typeof orderBookFormats[number];
 
-function toReportLevel(side: OrderBookReportLevel['side'], order: Order): OrderBookReportLevel {
+function toReportLevel(
+  side: OrderBookReportLevel['side'],
+  order: Order
+): OrderBookReportLevel {
   return {
     side,
     price: formatReportQuotation(order.price),
@@ -31,7 +35,9 @@ function toReportLevel(side: OrderBookReportLevel['side'], order: Order): OrderB
   };
 }
 
-export function createOrderBookReport(response: GetOrderBookResponse): OrderBookReport {
+export function createOrderBookReport(
+  response: GetOrderBookResponse
+): OrderBookReport {
   return {
     figi: response.figi,
     instrumentUid: response.instrumentUid,
@@ -59,7 +65,15 @@ export function formatOrderBookReport(
   }
 
   return renderTextTable([
-    ['figi', 'instrumentUid', 'depth', 'orderBookTime', 'side', 'price', 'quantity'],
+    [
+      'figi',
+      'instrumentUid',
+      'depth',
+      'orderBookTime',
+      'side',
+      'price',
+      'quantity'
+    ],
     ...report.levels.map((level) => [
       report.figi,
       report.instrumentUid,
@@ -72,6 +86,9 @@ export function formatOrderBookReport(
   ]);
 }
 
-export function formatOrderBook(response: GetOrderBookResponse, format: OrderBookFormat): string {
+export function formatOrderBook(
+  response: GetOrderBookResponse,
+  format: OrderBookFormat
+): string {
   return formatOrderBookReport(createOrderBookReport(response), format);
 }

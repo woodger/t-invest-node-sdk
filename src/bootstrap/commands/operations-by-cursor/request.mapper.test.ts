@@ -36,7 +36,9 @@ describe('createOperationsByCursorRequest', () => {
     assert.equal(request.to?.toISOString(), '2026-06-19T00:00:00.000Z');
     assert.equal(request.cursor, 'cursor');
     assert.equal(request.limit, 1000);
-    assert.deepEqual(request.operationTypes, [OperationType.OPERATION_TYPE_BUY]);
+    assert.deepEqual(request.operationTypes, [
+      OperationType.OPERATION_TYPE_BUY
+    ]);
     assert.equal(request.state, OperationState.OPERATION_STATE_EXECUTED);
     assert.equal(request.withoutCommissions, true);
     assert.equal(request.withoutTrades, true);
@@ -82,10 +84,11 @@ describe('createOperationsByCursorRequest', () => {
   test('отклоняет limit вне provider range', () => {
     for (const limit of ['0', '1001']) {
       assert.throws(
-        () => createOperationsByCursorRequest({
-          ...defaultOptions,
-          limit
-        }),
+        () =>
+          createOperationsByCursorRequest({
+            ...defaultOptions,
+            limit
+          }),
         /Expected '--limit' as integer from 1 to 1000/
       );
     }
@@ -93,21 +96,23 @@ describe('createOperationsByCursorRequest', () => {
 
   test('отклоняет неизвестный generated operation type', () => {
     assert.throws(
-      () => createOperationsByCursorRequest({
-        ...defaultOptions,
-        'operation-type': 'buy'
-      }),
+      () =>
+        createOperationsByCursorRequest({
+          ...defaultOptions,
+          'operation-type': 'buy'
+        }),
       /Expected '--operation-type' as generated OperationType name/
     );
   });
 
   test('отклоняет обратный диапазон дат', () => {
     assert.throws(
-      () => createOperationsByCursorRequest({
-        ...defaultOptions,
-        from: '2026-06-20T00:00:00.000Z',
-        to: '2026-06-19T00:00:00.000Z'
-      }),
+      () =>
+        createOperationsByCursorRequest({
+          ...defaultOptions,
+          from: '2026-06-20T00:00:00.000Z',
+          to: '2026-06-19T00:00:00.000Z'
+        }),
       /Expected '--from' to be earlier/
     );
   });

@@ -11,7 +11,9 @@ import {
 } from '../../../generated/operations';
 import { CliUsageError } from 'icore';
 import { parseDateTimeOption } from '../../args/command-options';
-import { resolveOptionalInstrumentIdOption } from '../../args/instrument-id-options';
+import {
+  resolveOptionalInstrumentIdOption
+} from '../../args/instrument-id-options';
 
 const operationStates = {
   unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
@@ -36,7 +38,9 @@ export function createOperationsRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return {

@@ -6,13 +6,16 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
-  InstrumentType } from '../../../generated/common';
-import type { AssetsRequest,
+  InstrumentType
+} from '../../../generated/common';
+import type {
+  AssetsRequest,
   AssetsResponse
 } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
@@ -33,7 +36,8 @@ type AssetsSdk = {
 type AssetsSdkFactory = (options: TInvestOptions) => AssetsSdk;
 
 const assetsCommandPath = ['instrument', 'asset', 'list'] as const;
-const defaultAssetsSdkFactory: AssetsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultAssetsSdkFactory: AssetsSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const assetInstrumentTypes = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -47,7 +51,9 @@ const assetInstrumentTypes = {
   'clearing-certificate': InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE
 } as const;
 
-const assetInstrumentTypeNames = Object.keys(assetInstrumentTypes) as Array<keyof typeof assetInstrumentTypes>;
+const assetInstrumentTypeNames = Object.keys(assetInstrumentTypes) as Array<
+  keyof typeof assetInstrumentTypes
+>;
 
 type AssetInstrumentTypeName = typeof assetInstrumentTypeNames[number];
 
@@ -73,7 +79,10 @@ const assetsOptionsSchema = withSdkOptions(
 );
 
 type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
-type AssetsRequestOptions = CommandRequestOptions<AssetsOptions, 'instrument-type'>;
+type AssetsRequestOptions = CommandRequestOptions<
+  AssetsOptions,
+  'instrument-type'
+>;
 
 export function createAssetsCommand(
   createSdk: AssetsSdkFactory = defaultAssetsSdkFactory
@@ -106,6 +115,8 @@ export function createAssetsRequest(
   options: AssetsRequestOptions
 ): AssetsRequest {
   return {
-    instrumentType: assetInstrumentTypes[options['instrument-type'] as AssetInstrumentTypeName]
+    instrumentType: assetInstrumentTypes[
+      options['instrument-type'] as AssetInstrumentTypeName
+    ]
   };
 }

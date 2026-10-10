@@ -18,9 +18,14 @@ export interface AccountsReportAccount {
   status: string;
   /** Уровень доступа к счету в формате generated enum JSON name. */
   accessLevel: string;
-  /** Дата открытия счета в ISO-формате или пустая строка, если дата не пришла от provider-а. */
+  /**
+   * Дата открытия счета в ISO-формате или пустая строка, если дата не пришла от
+   * provider-а.
+   */
   openedDate: string;
-  /** Дата закрытия счета в ISO-формате или пустая строка для открытого счета. */
+  /**
+   * Дата закрытия счета в ISO-формате или пустая строка для открытого счета.
+   */
   closedDate: string;
 }
 

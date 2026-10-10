@@ -48,7 +48,9 @@ export interface BrokerReportItemReport {
   brokerCommission: ReportMoney | null;
   /** Комиссия биржи или `null`, если provider не вернул значение. */
   exchangeCommission: ReportMoney | null;
-  /** Клиринговая комиссия биржи или `null`, если provider не вернул значение. */
+  /**
+   * Клиринговая комиссия биржи или `null`, если provider не вернул значение.
+   */
   exchangeClearingCommission: ReportMoney | null;
   /** Ставка РЕПО в строковом формате quotation. */
   repoRate: string;
@@ -77,7 +79,9 @@ export interface BrokerReportEmptyReport {
   type: 'empty';
 }
 
-/** Отчет команды `operations get-broker-report` на application/output boundary. */
+/**
+ * Отчет команды `operations get-broker-report` на application/output boundary.
+ */
 export type BrokerReportReport =
   | BrokerReportTaskReport
   | BrokerReportPageReport

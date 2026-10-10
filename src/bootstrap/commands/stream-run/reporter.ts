@@ -77,7 +77,9 @@ export function formatStreamRunResponse(
     return undefined;
   }
 
-  if (subscriptionEventTypes.has(event.type) && !options.includeSubscriptionEvents) {
+  if (
+    subscriptionEventTypes.has(event.type) && !options.includeSubscriptionEvents
+  ) {
     return undefined;
   }
 
@@ -85,16 +87,20 @@ export function formatStreamRunResponse(
     return `${JSON.stringify(response)}\n`;
   }
 
-  return `${JSON.stringify({
-    stream: options.stream,
-    sequence: options.sequence,
-    receivedAt: options.receivedAt,
-    type: event.type,
-    payload: event.payload
-  })}\n`;
+  return `${
+    JSON.stringify({
+      stream: options.stream,
+      sequence: options.sequence,
+      receivedAt: options.receivedAt,
+      type: event.type,
+      payload: event.payload
+    })
+  }\n`;
 }
 
-export function resolveStreamRunEvent(response: StreamRunResponse): StreamRunEvent {
+export function resolveStreamRunEvent(
+  response: StreamRunResponse
+): StreamRunEvent {
   const record = response as Record<string, unknown>;
 
   for (const field of streamEventFields) {

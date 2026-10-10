@@ -1,16 +1,19 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
-import type { MoneyValue,
-  Quotation } from '../../../generated/common';
+  test
+} from 'node:test';
+import type { MoneyValue, Quotation } from '../../../generated/common';
 import {
   OrderDirection,
   OrderExecutionReportStatus,
   OrderType,
   type PostOrderResponse
 } from '../../../generated/orders';
-import { createOrderMutationReport, formatOrderMutationReport } from './reporter';
+import {
+  createOrderMutationReport,
+  formatOrderMutationReport
+} from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -27,10 +30,13 @@ function quotation(units: number, nano: number): Quotation {
   };
 }
 
-function postOrderResponse(overrides: Partial<PostOrderResponse> = {}): PostOrderResponse {
+function postOrderResponse(
+  overrides: Partial<PostOrderResponse> = {}
+): PostOrderResponse {
   return {
     orderId: 'order-id',
-    executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+    executionReportStatus:
+      OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
     lotsRequested: 10,
     lotsExecuted: 2,
     initialOrderPrice: money(100, 0),
@@ -106,7 +112,10 @@ describe('post-order reporter', () => {
       );
 
       assert.match(output, /^orderId\s+status\s+direction\s+orderType/m);
-      assert.match(output, /order-id\s+EXECUTION_REPORT_STATUS_NEW\s+ORDER_DIRECTION_BUY/);
+      assert.match(
+        output,
+        /order-id\s+EXECUTION_REPORT_STATUS_NEW\s+ORDER_DIRECTION_BUY/
+      );
       assert.match(output, /100 rub\s+20.25 rub\s+200 rub/);
     });
 

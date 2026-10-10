@@ -36,29 +36,33 @@ const payloadServiceDefinition = {
 } as const satisfies ServiceDefinition;
 
 describe('createSdkChannel', () => {
-  test('rejects a custom TLS endpoint with the bundled trust policy', async () => {
-    const server = createPayloadTlsServer();
-    const port = await listen(server);
-    const channel = createSdkChannel({
-      token: 'token',
-      endpoint: `localhost:${port}`,
-      useSsl: true
-    }, twoMiB);
+  test(
+    'rejects a custom TLS endpoint with the bundled trust policy',
+    async () => {
+      const server = createPayloadTlsServer();
+      const port = await listen(server);
+      const channel = createSdkChannel({
+        token: 'token',
+        endpoint: `localhost:${port}`,
+        useSsl: true
+      }, twoMiB);
 
-    try {
-      const client = createClient(payloadServiceDefinition, channel);
+      try {
+        const client = createClient(payloadServiceDefinition, channel);
 
-      await assert.rejects(
-        client.getPayload({}),
-        (error: unknown) => error instanceof ClientError
-          && error.code === Status.UNAVAILABLE
-      );
+        await assert.rejects(
+          client.getPayload({}),
+          (error: unknown) =>
+            error instanceof ClientError
+            && error.code === Status.UNAVAILABLE
+        );
+      }
+      finally {
+        channel.close();
+        await close(server);
+      }
     }
-    finally {
-      channel.close();
-      await close(server);
-    }
-  });
+  );
 
   test('uses a per-instance root certificate for a TLS call', async () => {
     const server = createPayloadTlsServer();
@@ -108,7 +112,8 @@ describe('createSdkChannel', () => {
 
       await assert.rejects(
         client.getPayload({}),
-        (error: unknown) => error instanceof ClientError
+        (error: unknown) =>
+          error instanceof ClientError
           && error.code === Status.RESOURCE_EXHAUSTED
       );
     }

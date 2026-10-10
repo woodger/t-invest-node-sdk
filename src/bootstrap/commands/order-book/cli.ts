@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -18,7 +19,10 @@ import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { positiveInt32Option, withSdkOptions } from '../../args/command-options';
+import {
+  positiveInt32Option,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrderBook, orderBookFormats } from './reporter';
 
@@ -32,7 +36,8 @@ type OrderBookSdk = {
 type OrderBookSdkFactory = (options: TInvestOptions) => OrderBookSdk;
 
 const orderBookCommandPath = ['market', 'order-book'] as const;
-const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const orderBookDepthOptionsSchema = {
   depth: {
@@ -63,7 +68,10 @@ const orderBookOptionsSchema = withSdkOptions(
 );
 
 type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
-type OrderBookRequestOptions = CommandRequestOptions<OrderBookOptions, 'instrument-id' | 'depth'>;
+type OrderBookRequestOptions = CommandRequestOptions<
+  OrderBookOptions,
+  'instrument-id' | 'depth'
+>;
 
 export function createOrderBookCommand(
   createSdk: OrderBookSdkFactory = defaultOrderBookSdkFactory

@@ -1,12 +1,14 @@
 /**
- * Модуль instrument id CLI options хранит compatibility contract для instrument filters.
+ * Модуль instrument id CLI options хранит compatibility contract для instrument
+ * filters.
  *
  * Здесь допустимы:
  * - канонический `--instrument-id` option schema;
  * - deprecated `--figi` alias для старых CLI-контрактов;
  * - единая проверка конфликта между новым и старым option names;
  *
- * Здесь не должно быть generated request mapping или command-specific option parsing.
+ * Здесь не должно быть generated request mapping или command-specific option
+ * parsing.
  */
 
 import { CliUsageError } from 'icore';
@@ -25,7 +27,9 @@ export type InstrumentIdAliasOptions = {
   figi?: string | undefined;
 };
 
-export function resolveInstrumentIdOption(options: InstrumentIdAliasOptions): string {
+export function resolveInstrumentIdOption(
+  options: InstrumentIdAliasOptions
+): string {
   return resolveInstrumentId(options, true) ?? '';
 }
 
@@ -43,7 +47,9 @@ function resolveInstrumentId(
   const figi = options.figi;
 
   if (instrumentId !== undefined && figi !== undefined) {
-    throw new CliUsageError("Use either '--instrument-id' or deprecated '--figi', not both");
+    throw new CliUsageError(
+      "Use either '--instrument-id' or deprecated '--figi', not both"
+    );
   }
 
   if (instrumentId !== undefined) {

@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -18,7 +19,10 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -36,7 +40,8 @@ type DividendsSdk = {
 type DividendsSdkFactory = (options: TInvestOptions) => DividendsSdk;
 
 const dividendsCommandPath = ['instrument', 'dividends'] as const;
-const defaultDividendsSdkFactory: DividendsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultDividendsSdkFactory: DividendsSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const dividendsRequestOptionsSchema = {
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -103,7 +108,9 @@ export function createDividendsRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   const instrumentId = resolveInstrumentIdOption(options);

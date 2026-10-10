@@ -1,15 +1,19 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetCountriesRequest,
+import type {
+  GetCountriesRequest,
   GetCountriesResponse
 } from '../../../generated/instruments';
 import { createCountriesCommand } from './cli';
 
-function response(overrides: Partial<GetCountriesResponse> = {}): GetCountriesResponse {
+function response(
+  overrides: Partial<GetCountriesResponse> = {}
+): GetCountriesResponse {
   return {
     countries: [
       {
@@ -85,17 +89,18 @@ describe('countries command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'country',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'country',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

@@ -46,7 +46,7 @@ describe('trading-status command', () => {
         receivedOptions = options;
 
         return {
-    marketData: {
+          marketData: {
             async getTradingStatus(request) {
               receivedRequest = request;
 
@@ -81,13 +81,16 @@ describe('trading-status command', () => {
         instrumentId: 'BBG00QPYJ5H0'
       });
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output).tradingStatus, 'SECURITY_TRADING_STATUS_NORMAL_TRADING');
+      assert.equal(
+        JSON.parse(output).tradingStatus,
+        'SECURITY_TRADING_STATUS_NORMAL_TRADING'
+      );
     });
 
     test('closes sdk when getTradingStatus rejects', async () => {
       let closeCalls = 0;
       const command = createTradingStatusCommand(() => ({
-    marketData: {
+        marketData: {
           async getTradingStatus() {
             throw new Error('api failed');
           }
@@ -98,17 +101,18 @@ describe('trading-status command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'market',
-            'status',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BBG00QPYJ5H0'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'market',
+              'status',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=BBG00QPYJ5H0'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument currency show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   CurrencyReport,
   CurrencyReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type {
   Currency,
   CurrencyResponse
@@ -65,7 +69,9 @@ export function createCurrencyReportInstrument(
   };
 }
 
-export function createCurrencyReport(response: CurrencyResponse): CurrencyReport {
+export function createCurrencyReport(
+  response: CurrencyResponse
+): CurrencyReport {
   return response.instrument === undefined
     ? null
     : createCurrencyReportInstrument(response.instrument);
@@ -119,6 +125,9 @@ export function formatCurrencyReport(
   return renderCurrencyRows(report === null ? [] : [report]);
 }
 
-export function formatCurrency(response: CurrencyResponse, format: CurrencyFormat): string {
+export function formatCurrency(
+  response: CurrencyResponse,
+  format: CurrencyFormat
+): string {
   return formatCurrencyReport(createCurrencyReport(response), format);
 }

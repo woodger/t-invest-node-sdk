@@ -6,15 +6,22 @@
  * - делегирование request mapping в command-owned mapper;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { type PostOrderResponse, type ReplaceOrderRequest } from '../../../generated/orders';
+import {
+  type PostOrderResponse,
+  type ReplaceOrderRequest
+} from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
+import {
+  positiveSafeIntegerOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
@@ -33,7 +40,8 @@ type ReplaceOrderSdk = {
 type ReplaceOrderSdkFactory = (options: TInvestOptions) => ReplaceOrderSdk;
 
 const replaceOrderCommandPath = ['order', 'replace'] as const;
-const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultReplaceOrderSdkFactory: ReplaceOrderSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const replaceOrderPriceTypeNames = ['point', 'currency'] as const;
 

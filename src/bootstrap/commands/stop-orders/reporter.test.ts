@@ -35,7 +35,9 @@ function stopOrder(overrides: Partial<StopOrder> = {}): StopOrder {
   } as StopOrder;
 }
 
-function response(overrides: Partial<GetStopOrdersResponse> = {}): GetStopOrdersResponse {
+function response(
+  overrides: Partial<GetStopOrdersResponse> = {}
+): GetStopOrdersResponse {
   return {
     stopOrders: [stopOrder()],
     ...overrides
@@ -92,9 +94,15 @@ describe('stop-orders reporter', () => {
 
   describe('formatStopOrdersReport', () => {
     test('formats report as table', () => {
-      const output = formatStopOrdersReport(createStopOrdersReport(response()), 'table');
+      const output = formatStopOrdersReport(
+        createStopOrdersReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^stopOrderId\s+figi\s+instrumentUid\s+direction\s+orderType/m);
+      assert.match(
+        output,
+        /^stopOrderId\s+figi\s+instrumentUid\s+direction\s+orderType/m
+      );
       assert.match(
         output,
         /stop-order-id\s+BBG00QPYJ5H0\s+instrument-uid\s+STOP_ORDER_DIRECTION_BUY\s+STOP_ORDER_TYPE_STOP_LOSS/

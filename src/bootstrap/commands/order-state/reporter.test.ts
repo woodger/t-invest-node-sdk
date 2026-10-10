@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import type { MoneyValue } from '../../../generated/common';
 import {
   OrderDirection,
@@ -9,7 +10,10 @@ import {
   OrderType,
   type OrderState
 } from '../../../generated/orders';
-import { createSingleOrderStateReport, formatOrderStateReport } from './reporter';
+import {
+  createSingleOrderStateReport,
+  formatOrderStateReport
+} from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -25,7 +29,8 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
     orderRequestId: 'request-id',
     figi: 'BBG00QPYJ5H0',
     instrumentUid: 'instrument-uid',
-    executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+    executionReportStatus:
+      OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
     direction: OrderDirection.ORDER_DIRECTION_BUY,
     orderType: OrderType.ORDER_TYPE_LIMIT,
     lotsRequested: 10,
@@ -54,12 +59,21 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
 describe('order-state reporter', () => {
   describe('formatOrderStateReport', () => {
     test('formats report as table', () => {
-      const output = formatOrderStateReport(createSingleOrderStateReport(orderState()), 'table');
+      const output = formatOrderStateReport(
+        createSingleOrderStateReport(orderState()),
+        'table'
+      );
 
       assert.match(output, /^orderId\s+figi\s+instrumentUid\s+status/m);
-      assert.match(output, /order-id\s+BBG00QPYJ5H0\s+instrument-uid\s+EXECUTION_REPORT_STATUS_NEW/);
+      assert.match(
+        output,
+        /order-id\s+BBG00QPYJ5H0\s+instrument-uid\s+EXECUTION_REPORT_STATUS_NEW/
+      );
       assert.match(output, /ORDER_DIRECTION_BUY\s+ORDER_TYPE_LIMIT\s+10\s+2/);
-      assert.match(output, /100.5 rub\s+20.25 rub\s+200 rub\s+2026-06-19T10:00:00.000Z/);
+      assert.match(
+        output,
+        /100.5 rub\s+20.25 rub\s+200 rub\s+2026-06-19T10:00:00.000Z/
+      );
     });
 
     test('formats report as json', () => {

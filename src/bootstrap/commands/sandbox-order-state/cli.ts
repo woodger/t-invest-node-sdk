@@ -6,11 +6,15 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetOrderStateRequest, OrderState } from '../../../generated/orders';
+import type {
+  GetOrderStateRequest,
+  OrderState
+} from '../../../generated/orders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -27,10 +31,13 @@ type SandboxOrderStateSdk = {
   close(): void;
 };
 
-type SandboxOrderStateSdkFactory = (options: TInvestOptions) => SandboxOrderStateSdk;
+type SandboxOrderStateSdkFactory = (
+  options: TInvestOptions
+) => SandboxOrderStateSdk;
 
 const sandboxOrderStateCommandPath = ['sandbox', 'order', 'show'] as const;
-const defaultSandboxOrderStateSdkFactory: SandboxOrderStateSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxOrderStateSdkFactory: SandboxOrderStateSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxOrderStateRequestOptionsSchema = {
   'account-id': {
@@ -56,7 +63,9 @@ const sandboxOrderStateOptionsSchema = withSdkOptions(
   sandboxOrderStateFormatOptionsSchema
 );
 
-type SandboxOrderStateOptions = InferOptions<typeof sandboxOrderStateOptionsSchema>;
+type SandboxOrderStateOptions = InferOptions<
+  typeof sandboxOrderStateOptionsSchema
+>;
 type SandboxOrderStateRequestOptions = CommandRequestOptions<
   SandboxOrderStateOptions,
   'account-id' | 'order-id'

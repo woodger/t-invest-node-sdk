@@ -8,7 +8,9 @@
  * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
  */
 
-/** Один день торговой площадки в отчете команды `instruments trading-schedules`. */
+/**
+ * Один день торговой площадки в отчете команды `instruments trading-schedules`.
+ */
 export interface TradingSchedulesReportDay {
   exchange: string;
   /** Дата торгового дня в ISO-формате или пустая строка. */
@@ -16,7 +18,9 @@ export interface TradingSchedulesReportDay {
   isTradingDay: boolean;
   /** Время начала основной торговой сессии в ISO-формате или пустая строка. */
   startTime: string;
-  /** Время окончания основной торговой сессии в ISO-формате или пустая строка. */
+  /**
+   * Время окончания основной торговой сессии в ISO-формате или пустая строка.
+   */
   endTime: string;
   /** Время начала аукциона открытия в ISO-формате или пустая строка. */
   openingAuctionStartTime: string;
@@ -26,7 +30,9 @@ export interface TradingSchedulesReportDay {
   closingAuctionStartTime: string;
   /** Время окончания аукциона закрытия в ISO-формате или пустая строка. */
   closingAuctionEndTime: string;
-  /** Время начала вечернего аукциона открытия в ISO-формате или пустая строка. */
+  /**
+   * Время начала вечернего аукциона открытия в ISO-формате или пустая строка.
+   */
   eveningOpeningAuctionStartTime: string;
   /** Время начала вечерней сессии в ISO-формате или пустая строка. */
   eveningStartTime: string;
@@ -42,5 +48,7 @@ export interface TradingSchedulesReportDay {
   premarketEndTime: string;
 }
 
-/** Отчет команды `instruments trading-schedules` на application/output boundary. */
+/**
+ * Отчет команды `instruments trading-schedules` на application/output boundary.
+ */
 export type TradingSchedulesReport = TradingSchedulesReportDay[];

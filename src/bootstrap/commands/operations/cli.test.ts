@@ -43,7 +43,9 @@ function operation(overrides: Partial<Operation> = {}): Operation {
   } as Operation;
 }
 
-function operationsResponse(overrides: Partial<OperationsResponse> = {}): OperationsResponse {
+function operationsResponse(
+  overrides: Partial<OperationsResponse> = {}
+): OperationsResponse {
   return {
     operations: [operation()],
     ...overrides
@@ -94,7 +96,10 @@ describe('operations command', () => {
         endpoint: 'localhost:50051'
       });
       assert.equal(receivedRequest?.accountId, 'account-id');
-      assert.equal(receivedRequest?.state, OperationState.OPERATION_STATE_EXECUTED);
+      assert.equal(
+        receivedRequest?.state,
+        OperationState.OPERATION_STATE_EXECUTED
+      );
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].id, 'operation-id');
     });
@@ -113,19 +118,20 @@ describe('operations command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'operation',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=account-id',
-            '--from=2026-06-01T00:00:00.000Z',
-            '--to=2026-06-19T00:00:00.000Z'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'operation',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--account-id=account-id',
+              '--from=2026-06-01T00:00:00.000Z',
+              '--to=2026-06-19T00:00:00.000Z'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

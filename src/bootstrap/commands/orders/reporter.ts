@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `order list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -65,7 +66,10 @@ export function createOrdersReport(response: GetOrdersResponse): OrdersReport {
   return response.orders.map(createOrderStateReport);
 }
 
-export function formatOrdersReport(report: OrdersReport, format: OrdersFormat): string {
+export function formatOrdersReport(
+  report: OrdersReport,
+  format: OrdersFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -102,6 +106,9 @@ export function formatOrdersReport(report: OrdersReport, format: OrdersFormat): 
   ]);
 }
 
-export function formatOrders(response: GetOrdersResponse, format: OrdersFormat): string {
+export function formatOrders(
+  response: GetOrdersResponse,
+  format: OrdersFormat
+): string {
   return formatOrdersReport(createOrdersReport(response), format);
 }

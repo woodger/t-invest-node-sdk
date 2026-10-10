@@ -7,7 +7,9 @@
  * Здесь не должно быть чтения config, CLI option schema или JSONL mapping.
  */
 
-import type { TInvestCallOptions } from '../../../application/dto/t-invest-services';
+import type {
+  TInvestCallOptions
+} from '../../../application/dto/t-invest-services';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   MarketDataRequest,
@@ -131,7 +133,9 @@ function createStreamResponses(
   switch (config.stream) {
     case 'marketdata.marketDataStream':
       return sdk.marketdataStream.marketDataStream(
-        createInitialMarketDataRequestStream(createMarketDataStreamRequests(config)),
+        createInitialMarketDataRequestStream(
+          createMarketDataStreamRequests(config)
+        ),
         callOptions
       );
 
@@ -238,7 +242,9 @@ async function* formatStreamRunResponses(
       sequence += 1;
       emittedEvents += 1;
 
-      if (runtime.maxEvents !== undefined && emittedEvents >= runtime.maxEvents) {
+      if (
+        runtime.maxEvents !== undefined && emittedEvents >= runtime.maxEvents
+      ) {
         break;
       }
     }
@@ -266,8 +272,12 @@ function resolveNextTimeoutMs(
 ): number | undefined {
   const now = elapsedNow();
   const remainingTimeouts = [
-    runtime.durationMs === undefined ? undefined : runtime.durationMs - (now - startedAt),
-    runtime.idleTimeoutMs === undefined ? undefined : runtime.idleTimeoutMs - (now - lastResponseAt)
+    runtime.durationMs === undefined
+      ? undefined
+      : runtime.durationMs - (now - startedAt),
+    runtime.idleTimeoutMs === undefined
+      ? undefined
+      : runtime.idleTimeoutMs - (now - lastResponseAt)
   ].filter((value): value is number => value !== undefined);
 
   if (remainingTimeouts.length === 0) {

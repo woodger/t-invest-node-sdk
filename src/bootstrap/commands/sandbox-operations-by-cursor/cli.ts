@@ -6,7 +6,8 @@
  * - переиспользование общего production/Sandbox request mapper-а;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -20,7 +21,9 @@ import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { createOperationsByCursorRequest } from '../operations-by-cursor/request.mapper';
+import {
+  createOperationsByCursorRequest
+} from '../operations-by-cursor/request.mapper';
 import {
   formatOperationsByCursor,
   operationsByCursorFormats
@@ -39,8 +42,14 @@ type SandboxOperationsByCursorSdkFactory = (
   options: TInvestOptions
 ) => SandboxOperationsByCursorSdk;
 
-const sandboxOperationsByCursorCommandPath = ['sandbox', 'operation', 'page'] as const;
-const defaultSandboxOperationsByCursorSdkFactory: SandboxOperationsByCursorSdkFactory = (options) => new TInvestNodeSDK(options);
+const sandboxOperationsByCursorCommandPath = [
+  'sandbox',
+  'operation',
+  'page'
+] as const;
+const defaultSandboxOperationsByCursorSdkFactory:
+  SandboxOperationsByCursorSdkFactory = (options) =>
+    new TInvestNodeSDK(options);
 
 const sandboxOperationsByCursorRequestOptionsSchema = {
   'account-id': {
@@ -102,21 +111,22 @@ type SandboxOperationsByCursorOptions = InferOptions<
 >;
 type SandboxOperationsByCursorRequestOptions = CommandRequestOptions<
   SandboxOperationsByCursorOptions,
-  'account-id' |
-  'instrument-id' |
-  'operation-type' |
-  'without-commissions' |
-  'without-trades' |
-  'without-overnights' |
-  'from' |
-  'to' |
-  'cursor' |
-  'limit' |
-  'state'
+  | 'account-id'
+  | 'instrument-id'
+  | 'operation-type'
+  | 'without-commissions'
+  | 'without-trades'
+  | 'without-overnights'
+  | 'from'
+  | 'to'
+  | 'cursor'
+  | 'limit'
+  | 'state'
 >;
 
 export function createSandboxOperationsByCursorCommand(
-  createSdk: SandboxOperationsByCursorSdkFactory = defaultSandboxOperationsByCursorSdkFactory
+  createSdk: SandboxOperationsByCursorSdkFactory =
+    defaultSandboxOperationsByCursorSdkFactory
 ) {
   return command.define({
     path: sandboxOperationsByCursorCommandPath,
@@ -127,7 +137,8 @@ export function createSandboxOperationsByCursorCommand(
   });
 }
 
-export const sandboxOperationsByCursorCommand = createSandboxOperationsByCursorCommand();
+export const sandboxOperationsByCursorCommand =
+  createSandboxOperationsByCursorCommand();
 
 async function runSandboxOperationsByCursorCommand(
   options: SandboxOperationsByCursorOptions,

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
-import type { MoneyValue,
-  Quotation } from '../../../generated/common';
+  test
+} from 'node:test';
+import type { MoneyValue, Quotation } from '../../../generated/common';
 import { RealExchange, SecurityTradingStatus } from '../../../generated/common';
 import {
   RiskLevel,
@@ -159,9 +159,15 @@ describe('bond reporter', () => {
     test('formats report as table', () => {
       const output = formatBondReport(createBondReport(response()), 'table');
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG00B9XRY4J\s+SU26238RMFS4\s+TQOB\s+bond-uid/);
-      assert.match(output, /OFZ 26238\s+rub\s+1\s+MOEX\s+Government\s+2041-05-15T00:00:00.000Z/);
+      assert.match(
+        output,
+        /OFZ 26238\s+rub\s+1\s+MOEX\s+Government\s+2041-05-15T00:00:00.000Z/
+      );
       assert.doesNotMatch(output, /99\.5/);
     });
 
@@ -174,7 +180,10 @@ describe('bond reporter', () => {
 
     test('formats missing bond as json null and table header', () => {
       assert.equal(formatBondReport(null, 'json'), 'null\n');
-      assert.match(formatBondReport(null, 'table'), /^figi\s+ticker\s+classCode/);
+      assert.match(
+        formatBondReport(null, 'table'),
+        /^figi\s+ticker\s+classCode/
+      );
     });
   });
 });

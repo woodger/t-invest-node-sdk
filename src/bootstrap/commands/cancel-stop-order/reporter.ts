@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `stop-order cancel`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { CancelStopOrderReport } from '../../../application/reports';
@@ -40,5 +41,8 @@ export function formatCancelStopOrder(
   response: CancelStopOrderResponse,
   format: CancelStopOrderFormat
 ): string {
-  return formatCancelStopOrderReport(createCancelStopOrderReport(response), format);
+  return formatCancelStopOrderReport(
+    createCancelStopOrderReport(response),
+    format
+  );
 }

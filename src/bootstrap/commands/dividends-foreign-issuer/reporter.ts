@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `operation foreign-dividends-report`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -23,7 +24,8 @@ import { renderJson, renderTextTable } from 'icore';
 
 export const dividendsForeignIssuerFormats = ['json', 'table'] as const;
 
-export type DividendsForeignIssuerFormat = typeof dividendsForeignIssuerFormats[number];
+export type DividendsForeignIssuerFormat =
+  typeof dividendsForeignIssuerFormats[number];
 
 function toReportItem(
   item: GeneratedDividendsForeignIssuerReport

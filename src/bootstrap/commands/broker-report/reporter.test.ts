@@ -51,7 +51,9 @@ function item(overrides: Partial<BrokerReport> = {}): BrokerReport {
   } as BrokerReport;
 }
 
-function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportResponse {
+function response(
+  overrides: Partial<BrokerReportResponse> = {}
+): BrokerReportResponse {
   return {
     generateBrokerReportResponse: undefined,
     getBrokerReportResponse: undefined,
@@ -178,7 +180,10 @@ describe('broker-report reporter', () => {
       assert.match(output, /pagesCount: 3/);
       assert.match(output, /^tradeId\s+orderId\s+tradeDatetime\s+figi/m);
       assert.match(output, /trade-id\s+order-id\s+2026-06-10T10:00:00.000Z/);
-      assert.match(output, /TCSG\s+Buy\s+100.5 rub\s+2\s+201 rub\s+201.1 rub\s+1 rub/);
+      assert.match(
+        output,
+        /TCSG\s+Buy\s+100.5 rub\s+2\s+201 rub\s+201.1 rub\s+1 rub/
+      );
       assert.doesNotMatch(output, /exchangeClearingCommission/);
     });
 
@@ -199,7 +204,10 @@ describe('broker-report reporter', () => {
     });
 
     test('formats empty report as table', () => {
-      assert.equal(formatBrokerReportReport({ type: 'empty' }, 'table'), 'type: empty\n');
+      assert.equal(
+        formatBrokerReportReport({ type: 'empty' }, 'table'),
+        'type: empty\n'
+      );
     });
   });
 });

@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -24,7 +25,9 @@ import { formatTradingStatus, tradingStatusFormats } from './reporter';
 
 type TradingStatusSdk = {
   marketData: {
-    getTradingStatus(request: GetTradingStatusRequest): Promise<GetTradingStatusResponse>;
+    getTradingStatus(
+      request: GetTradingStatusRequest
+    ): Promise<GetTradingStatusResponse>;
   };
   close(): void;
 };
@@ -32,7 +35,8 @@ type TradingStatusSdk = {
 type TradingStatusSdkFactory = (options: TInvestOptions) => TradingStatusSdk;
 
 const tradingStatusCommandPath = ['market', 'status'] as const;
-const defaultTradingStatusSdkFactory: TradingStatusSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultTradingStatusSdkFactory: TradingStatusSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const tradingStatusRequestOptionsSchema = {
   'instrument-id': {
@@ -55,7 +59,10 @@ const tradingStatusOptionsSchema = withSdkOptions(
 );
 
 type TradingStatusOptions = InferOptions<typeof tradingStatusOptionsSchema>;
-type TradingStatusRequestOptions = CommandRequestOptions<TradingStatusOptions, 'instrument-id'>;
+type TradingStatusRequestOptions = CommandRequestOptions<
+  TradingStatusOptions,
+  'instrument-id'
+>;
 
 export function createTradingStatusCommand(
   createSdk: TradingStatusSdkFactory = defaultTradingStatusSdkFactory

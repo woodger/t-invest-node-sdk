@@ -41,8 +41,14 @@ describe('brands reporter', () => {
     test('formats report as table', () => {
       const output = formatBrandsReport(createBrandsReport([brand()]), 'table');
 
-      assert.match(output, /^uid\s+name\s+company\s+sector\s+countryOfRisk\s+countryOfRiskName/m);
-      assert.match(output, /brand-uid\s+T-Bank\s+T-Bank PJSC\s+Financials\s+RU\s+Russia/);
+      assert.match(
+        output,
+        /^uid\s+name\s+company\s+sector\s+countryOfRisk\s+countryOfRiskName/m
+      );
+      assert.match(
+        output,
+        /brand-uid\s+T-Bank\s+T-Bank PJSC\s+Financials\s+RU\s+Russia/
+      );
       assert.doesNotMatch(output, /Banking services/);
     });
 

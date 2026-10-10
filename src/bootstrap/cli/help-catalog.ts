@@ -29,9 +29,11 @@ const sdkEnvironment = [
   'T_INVEST_ENDPOINT'
 ] as const;
 
-const tableFormatOption = '--format=json|table    Output format (default: table)';
+const tableFormatOption =
+  '--format=json|table    Output format (default: table)';
 const csvFormatOption = '--format=json|csv      Output format (default: json)';
-const jsonlFormatOption = '--format=jsonl         Output format (default: jsonl)';
+const jsonlFormatOption =
+  '--format=jsonl         Output format (default: jsonl)';
 
 const operationPageOptions = [
   '--instrument-id=ID    Optional FIGI or instrument UID filter',
@@ -115,6 +117,11 @@ export const commandHelp = {
     examples: [
       't-invest-node-sdk account tariff',
       't-invest-node-sdk account tariff --format=json'
+    ],
+    notes: [
+      'Unary limits are shown per minute and, when provided, per second.',
+      'JSON includes limitPerSecond only when the provider returns it.',
+      'Stream limits count active connections.'
     ]
   },
   'market candles': {
@@ -1657,4 +1664,3 @@ export const commandHelp = {
 } as const satisfies Record<string, CommandHelp>;
 
 export type CommandHelpName = keyof typeof commandHelp;
-

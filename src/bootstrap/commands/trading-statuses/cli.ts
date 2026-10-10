@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -18,21 +19,29 @@ import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseCommaSeparatedStringListOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatTradingStatuses, tradingStatusesFormats } from './reporter';
 
 type TradingStatusesSdk = {
   marketData: {
-    getTradingStatuses(request: GetTradingStatusesRequest): Promise<GetTradingStatusesResponse>;
+    getTradingStatuses(
+      request: GetTradingStatusesRequest
+    ): Promise<GetTradingStatusesResponse>;
   };
   close(): void;
 };
 
-type TradingStatusesSdkFactory = (options: TInvestOptions) => TradingStatusesSdk;
+type TradingStatusesSdkFactory = (
+  options: TInvestOptions
+) => TradingStatusesSdk;
 
 const tradingStatusesCommandPath = ['market', 'statuses'] as const;
-const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const tradingStatusesInstrumentIdsOptionsSchema = {
   'instrument-id': {
@@ -55,7 +64,10 @@ const tradingStatusesOptionsSchema = withSdkOptions(
 );
 
 type TradingStatusesOptions = InferOptions<typeof tradingStatusesOptionsSchema>;
-type TradingStatusesRequestOptions = CommandRequestOptions<TradingStatusesOptions, 'instrument-id'>;
+type TradingStatusesRequestOptions = CommandRequestOptions<
+  TradingStatusesOptions,
+  'instrument-id'
+>;
 
 export function createTradingStatusesCommand(
   createSdk: TradingStatusesSdkFactory = defaultTradingStatusesSdkFactory

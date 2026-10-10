@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { PortfolioRequest_CurrencyRequest as PortfolioCurrency } from '../../../generated/operations';
+import {
+  PortfolioRequest_CurrencyRequest as PortfolioCurrency
+} from '../../../generated/operations';
 import { createPortfolioRequest } from './request.mapper';
 
 describe('createPortfolioRequest', () => {
@@ -12,13 +14,16 @@ describe('createPortfolioRequest', () => {
     ] as const;
 
     for (const [currency, expectedCurrency] of cases) {
-      assert.deepEqual(createPortfolioRequest({
-        'account-id': 'account-id',
-        currency
-      }), {
-        accountId: 'account-id',
-        currency: expectedCurrency
-      });
+      assert.deepEqual(
+        createPortfolioRequest({
+          'account-id': 'account-id',
+          currency
+        }),
+        {
+          accountId: 'account-id',
+          currency: expectedCurrency
+        }
+      );
     }
   });
 });

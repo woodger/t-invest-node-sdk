@@ -12,6 +12,8 @@
 export interface UserTariffUnaryLimitReport {
   /** Лимит запросов в минуту. */
   limitPerMinute: number;
+  /** Лимит запросов в секунду, если он передан provider-ом. */
+  limitPerSecond?: number;
   methods: string[];
 }
 

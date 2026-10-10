@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import {
   RealExchange,
   SecurityTradingStatus,
@@ -110,9 +111,15 @@ describe('etfs reporter', () => {
     test('formats report as table', () => {
       const output = formatEtfsReport(createEtfsReport([etf()]), 'table');
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG333333333\s+TMOS\s+TQTF\s+etf-uid/);
-      assert.match(output, /T-Bank MOEX ETF\s+rub\s+1\s+MOEX\s+Financials\s+equity/);
+      assert.match(
+        output,
+        /T-Bank MOEX ETF\s+rub\s+1\s+MOEX\s+Financials\s+equity/
+      );
       assert.doesNotMatch(output, /0\.79/);
     });
 

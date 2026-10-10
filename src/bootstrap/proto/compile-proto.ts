@@ -1,5 +1,6 @@
 /**
- * Модуль proto compiler запускает генерацию TypeScript contracts из локальных proto-файлов.
+ * Модуль proto compiler запускает генерацию TypeScript contracts из локальных
+ * proto-файлов.
  *
  * Здесь допустимы:
  * - чтение локальных generation paths из proto upstream manifest;
@@ -7,7 +8,8 @@
  * - вызов закреплённого локального `protoc` с текущими ts-proto options;
  * - проверка обязательных tool/runtime prerequisites перед генерацией;
  *
- * Здесь не должно быть post-processing generated sources или SDK runtime wiring.
+ * Здесь не должно быть post-processing generated sources или SDK runtime
+ * wiring.
  */
 
 import path from 'node:path';
@@ -57,7 +59,10 @@ export function loadProtoGenerationPaths(
     });
   }
   catch (error) {
-    throw new Error(`Unable to read proto upstream manifest at ${manifestPath}`, { cause: error });
+    throw new Error(
+      `Unable to read proto upstream manifest at ${manifestPath}`,
+      { cause: error }
+    );
   }
 
   let manifest: unknown;
@@ -66,11 +71,16 @@ export function loadProtoGenerationPaths(
     manifest = JSON.parse(manifestSource);
   }
   catch (error) {
-    throw new Error(`Invalid JSON in proto upstream manifest at ${manifestPath}`, { cause: error });
+    throw new Error(
+      `Invalid JSON in proto upstream manifest at ${manifestPath}`,
+      { cause: error }
+    );
   }
 
   if (!isRecord(manifest) || !isRecord(manifest['local'])) {
-    throw new Error(`Expected 'local' object in proto upstream manifest at ${manifestPath}`);
+    throw new Error(
+      `Expected 'local' object in proto upstream manifest at ${manifestPath}`
+    );
   }
 
   return {
@@ -113,10 +123,11 @@ function assertProtoCompilerReady(contractsDir: string): void {
   }
 
   // npm-пакет предоставляет Node.js launcher над локальным native binary;
-  // process.execPath позволяет не искать compiler через shell или системный PATH.
+  // process.execPath позволяет не искать compiler через shell или системный
+  // PATH.
   execFileSync(process.execPath, [compilerLauncherPath, '--version'], {
     cwd: pfs.pwd,
-    stdio: ['ignore', 'ignore', 'inherit'],
+    stdio: ['ignore', 'ignore', 'inherit']
   });
 }
 
@@ -132,10 +143,10 @@ function runProtoCompiler(
     '--ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false',
     '--ts_proto_opt=env=node',
     '--ts_proto_opt=esModuleInterop=true',
-    ...protoFiles,
+    ...protoFiles
   ], {
     cwd: pfs.pwd,
-    stdio: 'inherit',
+    stdio: 'inherit'
   });
 }
 
@@ -147,7 +158,9 @@ function requireManifestPath(
   const value = local[name];
 
   if (typeof value !== 'string' || value.trim() === '') {
-    throw new Error(`Expected 'local.${name}' as non-empty string in ${manifestPath}`);
+    throw new Error(
+      `Expected 'local.${name}' as non-empty string in ${manifestPath}`
+    );
   }
 
   return value.trim();

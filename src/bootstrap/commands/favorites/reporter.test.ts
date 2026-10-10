@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { InstrumentType } from '../../../generated/common';
-import type { FavoriteInstrument
-} from '../../../generated/instruments';
+import type { FavoriteInstrument } from '../../../generated/instruments';
 import { createFavoritesReport, formatFavoritesReport } from './reporter';
 
-function favoriteInstrument(overrides: Partial<FavoriteInstrument> = {}): FavoriteInstrument {
+function favoriteInstrument(
+  overrides: Partial<FavoriteInstrument> = {}
+): FavoriteInstrument {
   return {
     figi: 'BBG00QPYJ5H0',
     ticker: 'TCSG',
@@ -48,7 +50,10 @@ describe('favorites reporter', () => {
         'table'
       );
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+isin\s+instrumentType/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+isin\s+instrumentType/m
+      );
       assert.match(output, /BBG00QPYJ5H0\s+TCSG\s+TQBR\s+RU000A107UL4\s+share/);
     });
 

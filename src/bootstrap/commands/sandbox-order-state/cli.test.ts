@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { PriceType, type MoneyValue } from '../../../generated/common';
@@ -28,7 +29,8 @@ function orderState(overrides: Partial<OrderState> = {}): OrderState {
     orderRequestId: 'request-id',
     figi: 'BBG00QPYJ5H0',
     instrumentUid: 'instrument-uid',
-    executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+    executionReportStatus:
+      OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
     direction: OrderDirection.ORDER_DIRECTION_BUY,
     orderType: OrderType.ORDER_TYPE_LIMIT,
     lotsRequested: 10,
@@ -113,19 +115,20 @@ describe('sandbox-order-state command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'order',
-            'show',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=sandbox-account-id',
-            '--order-id=sandbox-order-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'sandbox',
+              'order',
+              'show',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--account-id=sandbox-account-id',
+              '--order-id=sandbox-order-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

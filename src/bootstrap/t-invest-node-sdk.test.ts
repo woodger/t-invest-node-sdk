@@ -9,7 +9,9 @@ import {
   isSdkError,
   SdkErrorCode
 } from '../application/errors/sdk-error';
-import type { TInvestUnaryLimitContext } from '../application/services/unary-limiter';
+import type {
+  TInvestUnaryLimitContext
+} from '../application/services/unary-limiter';
 import { SignalServiceDefinition } from '../generated/signals';
 import { TInvestNodeSDK } from './t-invest-node-sdk';
 
@@ -25,7 +27,10 @@ describe('TInvestNodeSDK', () => {
       assert.equal(typeof sdk.marketData.getCandles, 'function');
       assert.equal(typeof sdk.stopOrders.getStopOrders, 'function');
       assert.equal(typeof sdk.marketdataStream.marketDataStream, 'function');
-      assert.equal(typeof sdk.marketdataStream.marketDataServerSideStream, 'function');
+      assert.equal(
+        typeof sdk.marketdataStream.marketDataServerSideStream,
+        'function'
+      );
       assert.equal(typeof sdk.operationsStream.portfolioStream, 'function');
       assert.equal(typeof sdk.operationsStream.positionsStream, 'function');
       assert.equal(typeof sdk.ordersStream.tradesStream, 'function');
@@ -35,27 +40,32 @@ describe('TInvestNodeSDK', () => {
     }
   });
 
-  test('rejects deprecated facade service names with migration guidance', () => {
-    const sdk = new TInvestNodeSDK({
-      token: 'token',
-      endpoint: 'localhost:50051',
-      useSsl: false
-    });
+  test(
+    'rejects deprecated facade service names with migration guidance',
+    () => {
+      const sdk = new TInvestNodeSDK({
+        token: 'token',
+        endpoint: 'localhost:50051',
+        useSsl: false
+      });
 
-    try {
-      for (const serviceName of ['marketdata', 'stoporders'] as const) {
-        assert.throws(
-          () => Reflect.get(sdk, serviceName),
-          (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
-            && error.source === 'sdk'
-            && error.message === 'Прежние sdk.marketdata и sdk.stoporders не используйте: они устарели. Используйте вместо них sdk.marketData и sdk.stopOrders.'
-        );
+      try {
+        for (const serviceName of ['marketdata', 'stoporders'] as const) {
+          assert.throws(
+            () => Reflect.get(sdk, serviceName),
+            (error: unknown) =>
+              isSdkError(error, SdkErrorCode.InvalidArgument)
+              && error.source === 'sdk'
+              && error.message
+                === 'Прежние sdk.marketdata и sdk.stoporders не используйте: они устарели. Используйте вместо них sdk.marketData и sdk.stopOrders.'
+          );
+        }
+      }
+      finally {
+        sdk.close();
       }
     }
-    finally {
-      sdk.close();
-    }
-  });
+  );
 
   test('calls both SignalService methods through the facade', async () => {
     const server = createServer();
@@ -136,7 +146,8 @@ describe('TInvestNodeSDK', () => {
     try {
       await assert.rejects(
         sdk.signals.getStrategies({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.Unauthenticated)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.Unauthenticated)
           && error.source === 'grpc'
           && error.details === 'invalid token'
       );
@@ -195,27 +206,31 @@ describe('TInvestNodeSDK', () => {
   });
 
   test('rejects blank required options before transport initialization', () => {
-    for (const [name, options] of [
-      [
-        'token',
-        {
-          token: ' ',
-          endpoint: 'localhost:50051'
-        }
-      ],
-      [
-        'endpoint',
-        {
-          token: 'token',
-          endpoint: ''
-        }
-      ]
-    ] as const) {
+    for (
+      const [name, options] of [
+        [
+          'token',
+          {
+            token: ' ',
+            endpoint: 'localhost:50051'
+          }
+        ],
+        [
+          'endpoint',
+          {
+            token: 'token',
+            endpoint: ''
+          }
+        ]
+      ] as const
+    ) {
       assert.throws(
         () => new TInvestNodeSDK(options),
-        (error: unknown) => isSdkError(error, SdkErrorCode.InvalidArgument)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.InvalidArgument)
           && error.source === 'sdk'
-          && error.message === `TInvestOptions.${name} must be a non-empty string`
+          && error.message
+            === `TInvestOptions.${name} must be a non-empty string`
       );
     }
   });
@@ -245,7 +260,8 @@ describe('TInvestNodeSDK', () => {
 
       assert.throws(
         () => sdk.users,
-        (error: unknown) => isSdkError(error, SdkErrorCode.SdkClosed)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.SdkClosed)
           && error.source === 'lifecycle'
       );
     });
@@ -262,7 +278,8 @@ describe('TInvestNodeSDK', () => {
 
       await assert.rejects(
         users.getAccounts({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.SdkClosed)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.SdkClosed)
           && error.source === 'lifecycle'
       );
     });

@@ -10,7 +10,10 @@
 
 import type { ReportMoney } from './money.report';
 
-/** Одна валюта в отчете команд `instruments currency-by` и `instruments currencies`. */
+/**
+ * Одна валюта в отчете команд `instruments currency-by` и `instruments
+ * currencies`.
+ */
 export interface CurrencyReportInstrument {
   figi: string;
   ticker: string;

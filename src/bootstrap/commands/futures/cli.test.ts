@@ -2,10 +2,14 @@ import { InstrumentStatus } from '../../../generated/common';
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { type FuturesResponse, type InstrumentsRequest } from '../../../generated/instruments';
+import {
+  type FuturesResponse,
+  type InstrumentsRequest
+} from '../../../generated/instruments';
 import { createFuturesCommand } from './cli';
 
 function response(overrides: Partial<FuturesResponse> = {}): FuturesResponse {
@@ -77,17 +81,18 @@ describe('futures command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'future',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'future',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

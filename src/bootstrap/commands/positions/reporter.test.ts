@@ -17,7 +17,9 @@ function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   };
 }
 
-function security(overrides: Partial<PositionsSecurities> = {}): PositionsSecurities {
+function security(
+  overrides: Partial<PositionsSecurities> = {}
+): PositionsSecurities {
   return {
     figi: 'BBG00QPYJ5H0',
     blocked: 1,
@@ -51,7 +53,9 @@ function option(overrides: Partial<PositionsOptions> = {}): PositionsOptions {
   } as PositionsOptions;
 }
 
-function positions(overrides: Partial<PositionsResponse> = {}): PositionsResponse {
+function positions(
+  overrides: Partial<PositionsResponse> = {}
+): PositionsResponse {
   return {
     money: [money(100, 500000000)],
     blocked: [money(10, 250000000, 'usd')],
@@ -103,15 +107,24 @@ describe('positions reporter', () => {
 
   describe('formatPositionsReport', () => {
     test('formats report as table sections', () => {
-      const output = formatPositionsReport(createPositionsReport(positions()), 'table');
+      const output = formatPositionsReport(
+        createPositionsReport(positions()),
+        'table'
+      );
 
       assert.match(output, /limitsLoadingInProgress: false/);
       assert.match(output, /money:\ncurrency\s+amount\nrub\s+100.5/);
       assert.match(output, /blocked:\ncurrency\s+amount\nusd\s+10.25/);
       assert.match(output, /securities:\nfigi\s+instrumentUid\s+positionUid/);
-      assert.match(output, /BBG00QPYJ5H0\s+security-instrument-uid\s+security-position-uid/);
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+security-instrument-uid\s+security-position-uid/
+      );
       assert.match(output, /futures:\nfigi\s+instrumentUid\s+positionUid/);
-      assert.match(output, /options:\ninstrumentUid\s+positionUid\s+balance\s+blocked/);
+      assert.match(
+        output,
+        /options:\ninstrumentUid\s+positionUid\s+balance\s+blocked/
+      );
     });
 
     test('formats report as json', () => {

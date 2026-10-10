@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
@@ -9,7 +10,10 @@ import type {
   TradingSchedulesRequest,
   TradingSchedulesResponse
 } from '../../../generated/instruments';
-import { createTradingSchedulesCommand, createTradingSchedulesRequest } from './cli';
+import {
+  createTradingSchedulesCommand,
+  createTradingSchedulesRequest
+} from './cli';
 
 function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
   return {
@@ -32,7 +36,9 @@ function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
   } as TradingDay;
 }
 
-function response(overrides: Partial<TradingSchedulesResponse> = {}): TradingSchedulesResponse {
+function response(
+  overrides: Partial<TradingSchedulesResponse> = {}
+): TradingSchedulesResponse {
   return {
     exchanges: [
       {
@@ -71,10 +77,11 @@ describe('trading-schedules command', () => {
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => createTradingSchedulesRequest({
-          from: '2026-02-01T00:00:00Z',
-          to: '2026-01-01T00:00:00Z'
-        }),
+        () =>
+          createTradingSchedulesRequest({
+            from: '2026-02-01T00:00:00Z',
+            to: '2026-01-01T00:00:00Z'
+          }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });
@@ -147,18 +154,19 @@ describe('trading-schedules command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'schedules',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--from=2026-01-01T00:00:00Z',
-            '--to=2026-01-31T00:00:00Z'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'schedules',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--from=2026-01-01T00:00:00Z',
+              '--to=2026-01-31T00:00:00Z'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

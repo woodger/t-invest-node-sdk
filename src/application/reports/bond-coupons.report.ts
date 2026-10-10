@@ -30,5 +30,7 @@ export interface BondCouponsReportCoupon {
   couponPeriod: number;
 }
 
-/** Отчет команды `instruments get-bond-coupons` на application/output boundary. */
+/**
+ * Отчет команды `instruments get-bond-coupons` на application/output boundary.
+ */
 export type BondCouponsReport = BondCouponsReportCoupon[];

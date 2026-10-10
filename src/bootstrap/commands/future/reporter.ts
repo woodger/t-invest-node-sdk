@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument future show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   FutureReport,
   FutureReportInstrument
 } from '../../../application/reports';
-import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type {
   Future,
   FutureResponse
@@ -25,7 +29,9 @@ export const futureFormats = ['json', 'table'] as const;
 
 export type FutureFormat = typeof futureFormats[number];
 
-export function createFutureReportInstrument(instrument: Future): FutureReportInstrument {
+export function createFutureReportInstrument(
+  instrument: Future
+): FutureReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -117,7 +123,10 @@ export function renderFutureRows(report: FutureReportInstrument[]): string {
   ]);
 }
 
-export function formatFutureReport(report: FutureReport, format: FutureFormat): string {
+export function formatFutureReport(
+  report: FutureReport,
+  format: FutureFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -125,6 +134,9 @@ export function formatFutureReport(report: FutureReport, format: FutureFormat): 
   return renderFutureRows(report === null ? [] : [report]);
 }
 
-export function formatFuture(response: FutureResponse, format: FutureFormat): string {
+export function formatFuture(
+  response: FutureResponse,
+  format: FutureFormat
+): string {
   return formatFutureReport(createFutureReport(response), format);
 }

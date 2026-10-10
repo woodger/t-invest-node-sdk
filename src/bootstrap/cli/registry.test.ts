@@ -242,24 +242,30 @@ describe('commandLineCommands', () => {
     }
   });
 
-  test('prepares an alias with canonical identity and the matched path', async () => {
-    const prepared = await commandLineCommands.prepare([
-      'users',
-      'get-accounts',
-      '--format=json'
-    ]);
+  test(
+    'prepares an alias with canonical identity and the matched path',
+    async () => {
+      const prepared = await commandLineCommands.prepare([
+        'users',
+        'get-accounts',
+        '--format=json'
+      ]);
 
-    if (!isPreparedCommandName(prepared, 'account list')) {
-      assert.fail(`Expected 'account list', received '${prepared.name}'`);
+      if (!isPreparedCommandName(prepared, 'account list')) {
+        assert.fail(`Expected 'account list', received '${prepared.name}'`);
+      }
+
+      assert.deepEqual(prepared.path, ['account', 'list']);
+      assert.deepEqual(prepared.matchedPath, ['users', 'get-accounts']);
+      assert.equal(prepared.options['format'], 'json');
     }
-
-    assert.deepEqual(prepared.path, ['account', 'list']);
-    assert.deepEqual(prepared.matchedPath, ['users', 'get-accounts']);
-    assert.equal(prepared.options['format'], 'json');
-  });
+  );
 
   test('runs a command through the native registry', async () => {
-    const output = await commandLineCommands.runFromArgs(['version'], undefined);
+    const output = await commandLineCommands.runFromArgs(
+      ['version'],
+      undefined
+    );
 
     if (typeof output !== 'string') {
       throw new Error('Expected version command output as string');
@@ -269,7 +275,10 @@ describe('commandLineCommands', () => {
   });
 
   test('runs a help command through the native registry', async () => {
-    const output = await commandLineCommands.runFromArgs(['help', 'version'], undefined);
+    const output = await commandLineCommands.runFromArgs(
+      ['help', 'version'],
+      undefined
+    );
 
     if (typeof output !== 'string') {
       throw new Error('Expected help command output as string');
@@ -291,10 +300,12 @@ describe('commandLineCommands', () => {
   });
 
   test('keeps compatibility command paths executable', async () => {
-    for (const path of [
-      ['account', 'get-accounts'],
-      ['users', 'get-accounts']
-    ]) {
+    for (
+      const path of [
+        ['account', 'get-accounts'],
+        ['users', 'get-accounts']
+      ]
+    ) {
       await assert.rejects(
         async () => {
           await commandLineCommands.runFromArgs(

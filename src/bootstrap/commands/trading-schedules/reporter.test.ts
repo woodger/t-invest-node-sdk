@@ -1,11 +1,16 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
-import type { TradingDay,
+  test
+} from 'node:test';
+import type {
+  TradingDay,
   TradingSchedule
 } from '../../../generated/instruments';
-import { createTradingSchedulesReport, formatTradingSchedulesReport } from './reporter';
+import {
+  createTradingSchedulesReport,
+  formatTradingSchedulesReport
+} from './reporter';
 
 function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
   return {
@@ -88,11 +93,20 @@ describe('trading-schedules reporter', () => {
 
   describe('formatTradingSchedulesReport', () => {
     test('formats report as table', () => {
-      const output = formatTradingSchedulesReport(createTradingSchedulesReport([schedule()]), 'table');
+      const output = formatTradingSchedulesReport(
+        createTradingSchedulesReport([schedule()]),
+        'table'
+      );
 
-      assert.match(output, /^exchange\s+date\s+isTradingDay\s+startTime\s+endTime/m);
+      assert.match(
+        output,
+        /^exchange\s+date\s+isTradingDay\s+startTime\s+endTime/m
+      );
       assert.match(output, /MOEX\s+2026-01-02T00:00:00\.000Z\s+true/);
-      assert.match(output, /2026-01-02T17:00:00\.000Z\s+2026-01-02T20:00:00\.000Z/);
+      assert.match(
+        output,
+        /2026-01-02T17:00:00\.000Z\s+2026-01-02T20:00:00\.000Z/
+      );
     });
 
     test('formats report as json', () => {

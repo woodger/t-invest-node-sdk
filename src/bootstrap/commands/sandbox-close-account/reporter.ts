@@ -1,7 +1,8 @@
 /**
  * Модуль CLI-репортинга команды `sandbox account close`.
  *
- * Здесь допустимы mapping generated DTO в application report contract и presentation formatting.
+ * Здесь допустимы mapping generated DTO в application report contract и
+ * presentation formatting.
  * Разбор command options и запуск SDK остаются в `cli.ts`.
  */
 
@@ -10,9 +11,12 @@ import { renderJson, renderTextTable } from 'icore';
 
 export const closeSandboxAccountFormats = ['json', 'table'] as const;
 
-export type CloseSandboxAccountFormat = typeof closeSandboxAccountFormats[number];
+export type CloseSandboxAccountFormat =
+  typeof closeSandboxAccountFormats[number];
 
-export function createCloseSandboxAccountReport(accountId: string): CloseSandboxAccountReport {
+export function createCloseSandboxAccountReport(
+  accountId: string
+): CloseSandboxAccountReport {
   return {
     accountId,
     status: 'closed'
@@ -37,5 +41,8 @@ export function formatCloseSandboxAccount(
   accountId: string,
   format: CloseSandboxAccountFormat
 ): string {
-  return formatCloseSandboxAccountReport(createCloseSandboxAccountReport(accountId), format);
+  return formatCloseSandboxAccountReport(
+    createCloseSandboxAccountReport(accountId),
+    format
+  );
 }

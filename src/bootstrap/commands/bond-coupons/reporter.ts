@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `instrument bond coupons`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { BondCouponsReport, BondCouponsReportCoupon } from '../../../application/reports';
+import type {
+  BondCouponsReport,
+  BondCouponsReportCoupon
+} from '../../../application/reports';
 import { couponTypeToJSON, type Coupon } from '../../../generated/instruments';
 import {
   formatReportDate,
@@ -70,6 +74,9 @@ export function formatBondCouponsReport(
   ]);
 }
 
-export function formatBondCoupons(coupons: Coupon[], format: BondCouponsFormat): string {
+export function formatBondCoupons(
+  coupons: Coupon[],
+  format: BondCouponsFormat
+): string {
   return formatBondCouponsReport(createBondCouponsReport(coupons), format);
 }

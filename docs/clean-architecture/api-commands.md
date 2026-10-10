@@ -4,29 +4,69 @@
 
 ## Контекст
 
-Поддерживаемые команды, preferred paths, compatibility aliases, действующие stream-возможности и ограничения описаны в [справочнике CLI](../cli-reference.md). Здесь приведены правила устройства command layer.
+Поддерживаемые команды, основные имена, совместимые псевдонимы и возможности потоков описаны в [справочнике CLI](../cli-reference.md). Здесь объясняется, как устроены модули команды и за что отвечает каждый из них.
 
-Registry хранит один canonical definition на команду и передаёт остальные пути через first-class aliases `icore`. В resolved command поля `name` и `path` содержат preferred identity, а `matchedPath` — введённый путь.
+Реестр хранит одно основное определение команды и передаёт остальные пути как псевдонимы `icore`. После выбора команды поля `name` и `path` содержат её основное имя и путь, а `matchedPath` — путь, введённый пользователем.
 
-Добавляйте API-команды по одной, когда выбран конкретный SDK method и понятен CLI-контракт. Preferred path должен попасть в command definition и help, а technical/legacy aliases — только в единый alias layer, который передаёт их в native command definition `icore`.
+Добавляйте API-команды по одной, когда выбран конкретный метод SDK и понятен CLI-контракт. Основной путь должен попасть в определение команды и справку. Технические и прежние псевдонимы должны находиться только в общем механизме псевдонимов, который передаёт их в определение команды `icore`.
 
 ## Отложенные расширения
 
-Динамические bidirectional request sources остаются отложенным API-контрактом. Перед расширением stream command сверьте поведение со [справочником потокового CLI](../cli-stream-reference.md) и [справочником конфигурации](../cli-stream-configuration.md); любое изменение контракта нужно описать отдельно.
+Динамические источники запросов двустороннего потока не поддерживаются. Перед расширением потоковой команды сверьте поведение со [справочником потокового CLI](../cli-stream-reference.md) и [справочником конфигурации](../cli-stream-configuration.md); любое изменение контракта нужно описать отдельно.
+
+## Runner
+
+Исходный `process.argv` поступает в `bootstrap/index.ts`; `bootstrap/cli/runner.ts` передаёт его приложению терминала и реестру `icore`:
+
+```text
+process.argv -> src/bootstrap/index.ts -> bootstrap/cli/runner.ts -> icore terminal app -> command registry -> typed command options -> command handler
+```
+
+Runner объявляет короткие `-h`/`-v` через встроенные псевдонимы опций `icore`.
+
+Быстрые вызовы справки и версии используют вспомогательный `TerminalApp` без определений команд. Полный реестр загружается через динамический импорт только перед `prepare`, поэтому быстрый вызов не инициализирует API-команды, фасад SDK и сгенерированные контракты. Оба экземпляра `TerminalApp` разделяют один переданный `Output` и одну политику ошибок проекта.
+
+`bootstrap/cli/contract.ts` один раз связывает общие типы команд приложения через `createCommand.withTypes()` и сохраняет конкретные схему, путь, данные и результат каждого определения. Реестр добавляет вычисленные совместимые псевдонимы декоратором, которому достаточно поля `path`. Исходное определение не расширяется, а псевдонимы имеют тип `readonly CommandPath[]`.
+
+Runner один раз вызывает `prepare`, пишет предупреждения команды и передаёт подготовленную команду в `runPrepared`. Общая политика ошибок направляет ошибки этапов `prepare`, `execute`, `render`, `write` и внешних операций `bootstrap` в единый stderr. Предупреждения выводятся после выбора команды без повторного разбора аргументов.
+
+Код завершения определяется типом ошибки. Публичный `isUsageError()` из `icore` распознаёт ошибки фреймворка категории `usage` и публичный `CliUsageError` от проверок приложения; для них код равен `2`. Ошибки выполнения, провайдера, вывода и определения команды в `icore` получают код `1`. Проверки используют `CliUsageError` для аргументов конкретной команды, обязательных значений CLI/ENV и содержимого уже прочитанного JSON-файла конфигурации. Ошибки чтения файла относятся к ошибкам выполнения. Правила находятся в `bootstrap/cli/error.ts`; пользовательские коды описаны в [справочнике CLI](../cli-reference.md#коды-завершения).
 
 ## Command flow
 
-В command flow участвуют несколько ответственностей:
+Выполнение команды проходит следующие шаги:
 
-1. runner и `icore` разбирают CLI args и валидируют primitive options по schema;
-2. command handler или его command-owned mapper выполняет API-specific validation и request mapping;
-3. общий lifecycle helper создает `TInvestNodeSDK` для короткой команды;
-4. command handler вызывает API method;
-5. reporter преобразует unary response в stable report или stream event в локальный контракт вывода команды;
-6. reporter выбирает command-specific output и использует generic render primitives, когда они подходят;
-7. terminal app получает готовую строку или stream для вывода.
+1. runner и `icore` разбирают аргументы CLI и проверяют базовые опции по схеме;
+2. обработчик команды или её преобразователь проверяет условия конкретного API и собирает запрос;
+3. `runSdkCommand()` создаёт `TInvestNodeSDK` для короткой команды;
+4. обработчик команды вызывает метод API;
+5. reporter преобразует unary-ответ в стабильный отчёт или событие потока в локальный контракт вывода команды;
+6. reporter выбирает представление результата и использует общие функции форматирования, когда они подходят;
+7. приложение CLI получает готовую строку или поток для вывода.
 
-Если снова собрать эти обязанности в одном command handler, command layer быстро начнёт принимать любую логику вокруг CLI.
+`runSdkCommand()` закрывает SDK в `finally`. Если снова собрать перечисленные обязанности в одном обработчике, слой команд начнёт накапливать любую логику вокруг CLI.
+
+## Потоковая сессия
+
+Управление сессией находится в `bootstrap/commands/stream-run/stream-session.ts`.
+
+`stream run` открывает одну потоковую сессию:
+
+1. прочитать и проверить конфигурацию;
+2. применить переопределения настроек `runtime` из CLI;
+3. создать `TInvestNodeSDK`;
+4. создать начальный запрос серверного потока или конечный итератор начальных запросов для `marketdata.marketDataStream`;
+5. открыть поток;
+6. писать события в `stdout`;
+7. писать диагностику, ошибки и сообщения о состоянии в `stderr`;
+8. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию потока или ошибке провайдера;
+9. закрыть канал SDK в `finally`.
+
+Когда срабатывает `durationMs` или `idleTimeoutMs`, команда сначала отменяет текущее чтение через `AbortSignal` сессии, затем завершает итератор и закрывает SDK. Таймаут считается штатным завершением, а возникшая до него ошибка провайдера не маскируется.
+
+При достижении `maxEvents` текущее чтение уже завершено: команда сначала завершает итератор, затем отменяет сигнал сессии и закрывает SDK. Это сохраняет штатное завершение без ошибки локальной отмены.
+
+CLI измеряет время сессии и простоя по монотонным часам, а ожидания длиннее диапазона одного таймера Node.js разбивает на несколько последовательных таймеров.
 
 ## Текущая структура
 
@@ -72,16 +112,14 @@ external dependency
 
 `cli.ts` отвечает за:
 
-- объявление command path, declarative option schema и handler-а через локальный command facade над `icore`;
-- локальный request mapping или делегирование в `request.mapper.ts`, когда mapping разделяет несколько команд;
-- API-specific validation, которая не выражается primitive schema;
-- передачу короткого SDK lifecycle в `runSdkCommand()`;
+- объявление пути команды, декларативной схемы опций и обработчика через локальный фасад команд над `icore`;
+- локальное построение запроса или делегирование в `request.mapper.ts`, если преобразование нужно нескольким командам;
+- проверки конкретного API, которые не выражаются схемой базовых опций;
+- управление временем жизни SDK короткой команды через `runSdkCommand()`;
 - вызов API;
 - выбор reporter-а для результата.
 
-Логические CLI options используют синтаксис флагов `icore`: `--flag` и, если команда поддерживает отрицательное переопределение, `--no-flag`. Публичный CLI-контракт не принимает формы `--flag=true` и `--flag=false`.
-
-Внутри command module нужно различать parsing и request mapping:
+Внутри модуля команды нужно различать разбор значений и построение запроса:
 
 ```text
 icore schema    -> raw argv -> typed command options
@@ -89,45 +127,27 @@ parse*          -> typed primitive value -> project-specific value
 create*Request  -> typed command options -> generated request DTO
 ```
 
-Command-local `parse*` helpers не должны повторно принимать raw option map: `icore` отвечает за format, enum и primitive schema validation. Project-specific helper может преобразовать отдельное typed значение, например comma-separated список. `create*Request` получает не raw CLI args, а typed options после `icore`; он отвечает за форму generated request DTO и request-level validation, например date range или mutually exclusive modes.
+Локальные функции `parse*` не должны повторно принимать исходную таблицу опций: `icore` отвечает за проверку формата, перечислений и схемы базовых опций. Функция проекта может преобразовать отдельное уже типизированное значение, например дату RFC 3339 или список через запятую.
 
-`reporter.ts` отвечает за:
+`create*Request` получает типизированные опции после проверки в `icore`. Функция отвечает за форму сгенерированного DTO запроса и проверки запроса, например диапазона дат или взаимоисключающих режимов.
 
-- mapping unary response в application report или stream event в command-local output contract;
-- выбор command-specific output contract;
-- выбор полей, headers, порядка и подготовку значений для JSON/CSV/table output;
-- вызов generic render primitives `icore`, когда они подходят формату.
+`request.mapper.ts` выделяется, когда построение запроса разделяют команды рабочей среды и песочницы. Иначе преобразование остаётся локальным в `cli.ts`.
 
-`icore` предоставляет:
+`reporter.ts` преобразует unary-ответ в контракт `application/reports` или событие потока в локальный контракт команды. Правила выбора полей, форматирования и записи результата описаны в [границах вывода CLI](./cli-output-boundaries.md).
 
-- primitive option parsing, typed schema validation и command mechanics;
-- технические детали JSON, plain-text table и CSV rendering;
-- `TerminalApp`/`Output.write` для штатной записи готовой строки или stream в stdout;
-- `Output.error` для warnings/errors в stderr.
+Директории внутри `bootstrap/commands/*` носят компактные имена модулей-адаптеров и не задают публичный путь команды CLI. Контракт команды находится в `bootstrap/cli/registry.ts`, а статические данные справки — в `bootstrap/cli/help-catalog.ts`.
 
-Project CLI layer собирает terminal app, объявляет native short aliases, передаёт compatibility paths как first-class aliases canonical definitions и обслуживает help/version shortcuts и warnings. Project error policy задаёт текст ошибки и exit code.
-
-Директории внутри `bootstrap/commands/*` носят компактные имена adapter-модулей и не задают публичный CLI path. Контракт команды находится в `bootstrap/cli/registry.ts`, а статические данные справки — в `bootstrap/cli/help-catalog.ts`.
-
-## Что уже хорошо
-
-- primitive option validation выражена `icore` schemas, а reusable project-specific normalizers отделены в `bootstrap/args`;
-- raw CLI parsing отделен от typed generated request mapping;
-- stable unary output shape вынесен в `application/reports`, а stream contract зафиксирован отдельно;
-- общий helper закрывает SDK коротких команд в `finally`, а stream session владеет собственным cleanup;
-- formatting logic вынесена из `cli.ts`;
-- JSON pretty-print, table alignment и CSV escaping не дублируются в command reporter-ах;
-- `stdout`/`stderr` delivery отделен от построения JSON/CSV/table.
+<a id="что-уже-хорошо"></a>
 
 ## Текущая проблема
 
-`bootstrap` по смыслу должен быть composition/entrypoint layer:
+`bootstrap` должен собирать зависимости и предоставлять точки входа:
 
 ```text
 parse entrypoint -> assemble dependencies -> call command -> return status/output
 ```
 
-В `bootstrap` остаётся command-specific presentation/adaptation logic:
+В `bootstrap` остаются подготовка представления и преобразования данных конкретных команд:
 
 ```text
 unary response -> stable report
@@ -135,60 +155,47 @@ stream event -> command-local output contract
 report/event contract -> command-specific output values
 ```
 
-Это осознанный компактный вариант, близкий к Inventory. Проблема возникнет, если generic primitives начнут выбирать поля, выполнять redaction или normalization либо версионировать output конкретной команды. Другая крайность — дублировать механику JSON/CSV/table в reporter-ах или создавать forwarding wrappers над `icore` без собственного контракта.
+Это осознанный компактный вариант, близкий к Inventory. Проблема возникнет, если общие функции начнут выбирать поля, скрывать или нормализовать данные либо версионировать вывод конкретной команды. Другая крайность — дублировать механику JSON/CSV/таблиц в reporter-ах или создавать делегирующие обёртки над `icore` без собственного контракта.
 
-Подробные правила разделения command-specific formatting, generic render primitives и stdout delivery приведены в документе [«Разделение форматирования и вывода в CLI»](./cli-output-boundaries.md).
+<a id="важное-разделение"></a>
+<a id="принятое-разделение"></a>
 
-## Важное разделение
-
-Reporter выбирает смысл и структуру пользовательского вывода, render primitives выполняют общую механику формата, а terminal output доставляет готовый результат. Потоки stdout и stderr и ограничения output boundary описаны в [основной границе форматирования и вывода](./cli-output-boundaries.md#основная-граница).
-
-## Принятое разделение
-
-Граница:
-
-- `bootstrap/commands/*/cli.ts` - command definition, API-specific orchestration и вызов общего SDK lifecycle;
-- `bootstrap/commands/*/request.mapper.ts` - shared production/Sandbox request mapping там, где он действительно переиспользуется;
-- `bootstrap/commands/*/reporter.ts` - provider result -> stable report или локальный контракт события -> специализированный вывод CLI-команды;
-- public render primitives `icore` - механика JSON/CSV-row/table rendering;
-- `icore` `TerminalApp`/`Output.write`, собранные в `bootstrap/cli/runner.ts`, - штатная запись готовой строки или stream в stdout;
-- `icore` `Output.error` - warnings/errors в stderr;
-- `application/reports/**` - стабильные контракты вывода unary-команд.
+Правила разделения reporter-а, функций форматирования и записи в stdout приведены в [границах вывода CLI](./cli-output-boundaries.md#основная-граница).
 
 ## Когда нужен use-case
 
-Текущие API-команды тонкие: они вызывают один SDK method и форматируют результат. Отдельный use-case им не нужен.
+Текущие API-команды просты: они вызывают один метод SDK и форматируют результат. Отдельный сценарий приложения им не нужен.
 
-Use-case стоит выделять, если появляется хотя бы одно:
+Сценарий приложения стоит выделять, если появляется хотя бы одно:
 
-- несколько API calls в одном сценарии;
-- решение о retry/fallback/cache;
-- сценарные ошибки и partial success;
-- provider-neutral contract;
-- reuse того же сценария вне CLI;
+- несколько вызовов API в одном сценарии;
+- решение о повторе, резервном варианте или кеше;
+- сценарные ошибки и частичный успех;
+- контракт, не зависящий от провайдера;
+- повторное использование того же сценария вне CLI;
 - тесты начинают мокать слишком много деталей SDK.
 
 ## Правило для новых команд
 
-- не добавлять новую formatting logic в `cli.ts`;
-- держать command handler тонким;
-- описывать stable unary output в `application/reports`, а специализированный stream contract фиксировать отдельно;
-- держать command-specific output policy в `bootstrap/commands/*/reporter.ts`;
-- использовать public render primitives `icore` только для общей механики формата;
-- возвращать normal result terminal app и не переносить JSON/CSV/table policy в output facade;
-- регистрировать команду в `bootstrap/cli/registry.ts` в canonical форме `<domain> <command>`;
-- добавлять technical/legacy paths только через project alias inventory; registry передаст их в `aliases` canonical definition;
-- не добавлять short option aliases для API-команд;
-- добавлять help metadata в `bootstrap/cli/help-catalog.ts`;
+- не добавлять новую логику форматирования в `cli.ts`;
+- сохранять обработчик команды простым;
+- описывать стабильный unary-вывод в `application/reports`, а специализированный контракт потока фиксировать отдельно;
+- держать правила вывода конкретной команды в `bootstrap/commands/*/reporter.ts`;
+- использовать публичные функции форматирования `icore` только для общей механики формата;
+- возвращать штатный результат приложению терминала и не переносить правила JSON/CSV/таблиц в компонент вывода;
+- регистрировать команду в `bootstrap/cli/registry.ts` в основной форме `<domain> <command>`;
+- добавлять технические и прежние пути только через список псевдонимов проекта; реестр передаст их в `aliases` основного определения;
+- не добавлять короткие псевдонимы опций для API-команд;
+- добавлять данные справки в `bootstrap/cli/help-catalog.ts`;
 - добавлять тесты рядом с конкретными файлами команды;
-- не вводить общий command framework до появления реального повторения в нескольких командах;
-- сверять новые output-решения с [Разделением форматирования и вывода в CLI](./cli-output-boundaries.md).
+- не вводить общий фреймворк команд до появления реального повторения в нескольких командах;
+- сверять новые решения вывода с [Разделением форматирования и вывода в CLI](./cli-output-boundaries.md).
 
 ## Когда обобщать commands
 
-Обобщайте command lifecycle только после появления повторения с одинаковой ответственностью.
+Обобщайте управление временем жизни команды только после появления повторения с одинаковой ответственностью.
 
-Каждая команда остаётся явной, а общий lifecycle коротких вызовов вынесен отдельно:
+Каждая команда остаётся явной, а общее управление временем жизни коротких вызовов вынесено отдельно:
 
 ```text
 bootstrap/commands/<command-adapter>/cli.ts
@@ -197,15 +204,15 @@ bootstrap/commands/<command-adapter>/reporter.ts
 application/reports/<command-adapter>.report.ts
 ```
 
-Допустимые причины для extract-а:
+Допустимые причины для выделения общего кода:
 
-- один и тот же SDK lifecycle повторяется в 3+ API-командах;
-- одинаковый parsing/validation pattern больше не выражается существующими `icore` option schemas;
-- tests начинают дублировать setup без изменения сценария;
-- общий код получает понятную ответственность и не скрывает command-specific различия.
+- одно и то же управление временем жизни SDK повторяется в 3 или более API-командах;
+- одинаковые разбор и проверка данных больше не выражаются существующими схемами опций `icore`;
+- тесты начинают дублировать подготовку без изменения сценария;
+- общий код получает понятную ответственность и не скрывает различия конкретных команд.
 
 Недопустимые причины:
 
-- будущий список команд неизвестен, поэтому хочется подготовить framework;
-- две команды выглядят похожими внешне, но имеют разные request/report/output правила;
+- будущий список команд неизвестен, поэтому хочется подготовить фреймворк;
+- две команды выглядят похожими внешне, но имеют разные правила запроса, отчёта и вывода;
 - хочется сократить количество строк в `commands/*/cli.ts`.

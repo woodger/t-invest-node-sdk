@@ -8,7 +8,9 @@ import type {
 } from '../../../generated/operations';
 import { createBrokerReportCommand, createBrokerReportRequest } from './cli';
 
-function response(overrides: Partial<BrokerReportResponse> = {}): BrokerReportResponse {
+function response(
+  overrides: Partial<BrokerReportResponse> = {}
+): BrokerReportResponse {
   return {
     generateBrokerReportResponse: undefined,
     getBrokerReportResponse: undefined,
@@ -63,12 +65,13 @@ describe('broker-report command', () => {
 
     test('rejects mixed generate and get modes', () => {
       assert.throws(
-        () => createBrokerReportRequest({
-          'account-id': '2000000000',
-          from: '2026-06-01T00:00:00.000Z',
-          to: '2026-06-19T00:00:00.000Z',
-          'task-id': 'task-id'
-        }),
+        () =>
+          createBrokerReportRequest({
+            'account-id': '2000000000',
+            from: '2026-06-01T00:00:00.000Z',
+            to: '2026-06-19T00:00:00.000Z',
+            'task-id': 'task-id'
+          }),
         /Expected either '--task-id' or '--account-id' with '--from' and '--to'/
       );
     });
@@ -82,21 +85,23 @@ describe('broker-report command', () => {
 
     test('rejects invalid page', () => {
       assert.throws(
-        () => createBrokerReportRequest({
-          'task-id': 'task-id',
-          page: '-1'
-        }),
+        () =>
+          createBrokerReportRequest({
+            'task-id': 'task-id',
+            page: '-1'
+          }),
         /Expected '--page' as integer greater than or equal to 0/
       );
     });
 
     test('rejects inverted date range', () => {
       assert.throws(
-        () => createBrokerReportRequest({
-          'account-id': '2000000000',
-          from: '2026-06-19T00:00:00.000Z',
-          to: '2026-06-01T00:00:00.000Z'
-        }),
+        () =>
+          createBrokerReportRequest({
+            'account-id': '2000000000',
+            from: '2026-06-19T00:00:00.000Z',
+            to: '2026-06-01T00:00:00.000Z'
+          }),
         /Expected '--from' to be earlier than or equal to '--to'/
       );
     });
@@ -173,17 +178,18 @@ describe('broker-report command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'operation',
-            'broker-report',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--task-id=task-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'operation',
+              'broker-report',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--task-id=task-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

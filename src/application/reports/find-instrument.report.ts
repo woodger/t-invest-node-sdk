@@ -32,5 +32,7 @@ export interface FindInstrumentReportInstrument {
   first1dayCandleDate: string;
 }
 
-/** Отчет команды `instruments find-instrument` на application/output boundary. */
+/**
+ * Отчет команды `instruments find-instrument` на application/output boundary.
+ */
 export type FindInstrumentReport = FindInstrumentReportInstrument[];

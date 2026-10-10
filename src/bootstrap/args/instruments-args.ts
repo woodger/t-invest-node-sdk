@@ -22,7 +22,9 @@ const instrumentIdTypes = {
 
 type InstrumentIdTypeName = keyof typeof instrumentIdTypes;
 
-const instrumentIdTypeNames = Object.keys(instrumentIdTypes) as InstrumentIdTypeName[];
+const instrumentIdTypeNames = Object.keys(
+  instrumentIdTypes
+) as InstrumentIdTypeName[];
 
 const instrumentLookupIdOptionsSchema = {
   id: {
@@ -64,7 +66,9 @@ const instrumentStatuses = {
 
 type InstrumentStatusName = keyof typeof instrumentStatuses;
 
-const instrumentStatusNames = Object.keys(instrumentStatuses) as InstrumentStatusName[];
+const instrumentStatusNames = Object.keys(
+  instrumentStatuses
+) as InstrumentStatusName[];
 
 export const instrumentStatusOptionsSchema = {
   'instrument-status': {
@@ -87,8 +91,13 @@ export function createInstrumentLookupRequestFromOptions(
   )['id-type'];
   const classCode = options['class-code'] ?? '';
 
-  if (instrumentIdTypes[idType] === InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER && classCode === '') {
-    throw new CliUsageError("Expected required argument '--class-code' when '--id-type=ticker'");
+  if (
+    instrumentIdTypes[idType] === InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER
+    && classCode === ''
+  ) {
+    throw new CliUsageError(
+      "Expected required argument '--class-code' when '--id-type=ticker'"
+    );
   }
 
   const id = parseOptions(

@@ -39,8 +39,12 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
 }
 
 export function toReportMoney(value: MoneyValue): ReportMoney;
-export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null;
-export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null {
+export function toReportMoney(
+  value: MoneyValue | undefined
+): ReportMoney | null;
+export function toReportMoney(
+  value: MoneyValue | undefined
+): ReportMoney | null {
   if (value === undefined) {
     return null;
   }
@@ -51,12 +55,16 @@ export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null
   };
 }
 
-export function formatReportMoneyText(value: ReportMoney | null | undefined): string {
+export function formatReportMoneyText(
+  value: ReportMoney | null | undefined
+): string {
   if (value == null) {
     return '';
   }
 
-  return value.currency === '' ? value.amount : `${value.amount} ${value.currency}`;
+  return value.currency === ''
+    ? value.amount
+    : `${value.amount} ${value.currency}`;
 }
 
 export function formatReportQuotation(value: Quotation | undefined): string {

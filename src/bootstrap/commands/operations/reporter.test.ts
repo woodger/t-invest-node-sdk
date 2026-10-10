@@ -99,7 +99,10 @@ describe('operations reporter', () => {
 
   describe('formatOperationsReport', () => {
     test('formats report as table', () => {
-      const output = formatOperationsReport(createOperationsReport([operation()]), 'table');
+      const output = formatOperationsReport(
+        createOperationsReport([operation()]),
+        'table'
+      );
 
       assert.match(output, /^id\s+date\s+type\s+operationType\s+state/m);
       assert.match(

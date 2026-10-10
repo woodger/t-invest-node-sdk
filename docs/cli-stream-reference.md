@@ -1,84 +1,54 @@
 # Справочник потокового CLI
 
-> Type: Reference. Здесь описан текущий CLI-контракт `stream run` для server-side streams и статических bidirectional market data requests. Возможные будущие расширения перечислены отдельно.
+> Type: Reference. Здесь описана команда `stream run`: поддерживаемые потоки, формат событий и условия завершения работы. Она поддерживает серверные потоки и статический набор начальных запросов двустороннего потока рыночных данных.
 
 ## Статус
 
-CLI использует canonical-форму команд:
-
-```text
-t-invest-node-sdk <domain> <command> [options]
-```
-
-Для Stream API нужен отдельный контракт: команда не возвращает один response и не завершается сразу. Она открывает долгоживущий stream, печатает события и завершает работу по лимиту, таймауту, сигналу или ошибке provider-а.
-
-Текущая точка входа:
+Команда `stream run` открывает долгоживущий поток, печатает события и завершает работу по лимиту, таймауту, сигналу или ошибке провайдера:
 
 ```bash
 t-invest-node-sdk stream run --config=PATH [runtime options]
 ```
 
-`stream run` служит общей точкой входа для stream-сценариев, а конкретный generated stream method выбирается в config-файле. Так пользователю не приходится подбирать десятки specialized flags для разных сценариев.
-
-Текущая реализация поддерживает:
-
-- `marketdata.marketDataStream` со статическими initial requests из config;
-- `marketdata.marketDataServerSideStream`;
-- `operations.portfolioStream`;
-- `operations.positionsStream`;
-- `orders.tradesStream`.
-
-Команда не поддерживает динамические источники bidirectional requests и не читает дополнительные request-ы из stdin, файлов, таймеров или interactive input.
+Метод и начальные запросы выбираются в [файле конфигурации](./cli-stream-configuration.md). Поддерживаемые методы перечислены в таблице ниже.
 
 ## Доступные stream methods
 
-| Значение `stream` в config | SDK method | gRPC method | Тип stream |
+| Значение `stream` в конфигурации | Метод SDK | Метод gRPC | Тип потока |
 | --- | --- | --- | --- |
-| `marketdata.marketDataStream` | `sdk.marketdataStream.marketDataStream` | `MarketDataStreamService/MarketDataStream` | bidirectional, статические начальные запросы |
-| `marketdata.marketDataServerSideStream` | `sdk.marketdataStream.marketDataServerSideStream` | `MarketDataStreamService/MarketDataServerSideStream` | server-side |
-| `operations.portfolioStream` | `sdk.operationsStream.portfolioStream` | `OperationsStreamService/PortfolioStream` | server-side |
-| `operations.positionsStream` | `sdk.operationsStream.positionsStream` | `OperationsStreamService/PositionsStream` | server-side |
-| `orders.tradesStream` | `sdk.ordersStream.tradesStream` | `OrdersStreamService/TradesStream` | server-side |
+| `marketdata.marketDataStream` | `sdk.marketdataStream.marketDataStream` | `MarketDataStreamService/MarketDataStream` | двусторонний, статические начальные запросы |
+| `marketdata.marketDataServerSideStream` | `sdk.marketdataStream.marketDataServerSideStream` | `MarketDataStreamService/MarketDataServerSideStream` | серверный |
+| `operations.portfolioStream` | `sdk.operationsStream.portfolioStream` | `OperationsStreamService/PortfolioStream` | серверный |
+| `operations.positionsStream` | `sdk.operationsStream.positionsStream` | `OperationsStreamService/PositionsStream` | серверный |
+| `orders.tradesStream` | `sdk.ordersStream.tradesStream` | `OrdersStreamService/TradesStream` | серверный |
 
 ## Runtime-модель
 
-`stream run` выполняет один stream session:
+За один запуск `stream run` открывает одну сессию с настройками из конфигурации и переопределениями CLI. Лимиты `maxEvents`, `durationMs` и `idleTimeoutMs` приводят к штатному завершению; ошибка провайдера, возникшая до таймаута, не маскируется.
 
-1. прочитать и провалидировать config;
-2. применить CLI runtime overrides;
-3. создать `TInvestNodeSDK`;
-4. создать initial request для server-side stream или конечный initial request iterator для `marketdata.marketDataStream`;
-5. открыть stream;
-6. писать события в `stdout`;
-7. писать diagnostics/errors/status в `stderr`;
-8. завершиться по `maxEvents`, `durationMs`, `idleTimeoutMs`, закрытию stream или provider error;
-9. закрыть SDK channel в `finally`.
-
-Когда срабатывает `durationMs` или `idleTimeoutMs`, команда сначала отменяет pending transport read через session `AbortSignal`, затем завершает iterator и закрывает SDK. Runtime timeout остаётся штатным завершением, а возникшая до него provider error не маскируется.
-
-При достижении `maxEvents` pending read отсутствует: команда сначала завершает iterator, затем отменяет session signal и закрывает SDK. Это сохраняет штатное завершение без ошибки локальной отмены.
+Порядок отмены чтения, завершения итератора и закрытия SDK описан в [архитектуре потоковой сессии](./clean-architecture/api-commands.md#потоковая-сессия).
 
 ## Контракт вывода
 
-Базовый формат stream output - `jsonl`. Каждое событие печатается отдельной строкой JSON:
+Базовый формат вывода потока — `jsonl`. Каждое событие печатается отдельной строкой JSON:
 
 ```json
 {"stream":"marketdata.marketDataServerSideStream","sequence":1,"receivedAt":"2026-06-29T12:00:00.000Z","type":"candle","payload":{"instrumentUid":"..."}}
 ```
 
-Обязательные поля envelope:
+Обязательные поля структуры события:
 
-- `stream` - имя stream из config;
-- `sequence` - порядковый номер события в рамках процесса;
+- `stream` - имя потока из конфигурации;
+- `sequence` - порядковый номер события в текущем процессе;
 - `receivedAt` - время получения события CLI-процессом в ISO-формате;
 - `type` - нормализованный тип события;
-- `payload` - event payload.
+- `payload` - данные события.
 
-CLI пишет в `stdout` только события. Ошибки чтения config, transport/provider и вывода направляются в `stderr`. Статусы подписок, включая rejected subscriptions, выводятся как subscription events в `stdout`; при `runtime.includeSubscriptionEvents: false` эти события не выводятся.
+CLI пишет в `stdout` только события. Ошибки чтения конфигурации, транспорта, провайдера и вывода направляются в `stderr`. Статусы подписок, включая отклонённые подписки, выводятся как события в `stdout`; при `runtime.includeSubscriptionEvents: false` эти события не выводятся.
 
 ## Типы событий
 
-`marketdata.*` events:
+События `marketdata.*`:
 
 - `subscribeCandlesResponse`;
 - `subscribeOrderBookResponse`;
@@ -92,19 +62,19 @@ CLI пишет в `stdout` только события. Ошибки чтени�
 - `lastPrice`;
 - `ping`.
 
-`operations.portfolioStream` events:
+События `operations.portfolioStream`:
 
 - `subscriptions`;
 - `portfolio`;
 - `ping`.
 
-`operations.positionsStream` events:
+События `operations.positionsStream`:
 
 - `subscriptions`;
 - `position`;
 - `ping`.
 
-`orders.tradesStream` events:
+События `orders.tradesStream`:
 
 - `subscription`;
 - `orderTrades`;
@@ -114,7 +84,7 @@ CLI пишет в `stdout` только события. Ошибки чтени�
 
 ## Настройки runtime
 
-Config задаёт runtime defaults. CLI-флаги могут переопределить только runtime, но не subscription contract:
+Файл конфигурации задаёт настройки вывода и завершения работы по умолчанию в поле `runtime`. CLI-флаги могут переопределить эти настройки; подписки задаются только в файле:
 
 ```bash
 t-invest-node-sdk stream run \
@@ -124,45 +94,43 @@ t-invest-node-sdk stream run \
   --include-pings
 ```
 
-Настройки runtime:
+Настройки запуска:
 
-- `--config=PATH` — обязательный путь к JSON config;
+- `--config=PATH` — обязательный путь к JSON-файлу конфигурации;
 - `--max-events=N` — завершиться после N выведенных событий;
 - `--duration-ms=N` — завершиться через N миллисекунд;
 - `--idle-timeout-ms=N` — завершиться, если события отсутствуют N миллисекунд;
 - `--include-pings` — печатать события `ping` в `stdout`;
-- `--raw` — печатать generated response без нормализованного envelope;
+- `--raw` — печатать сгенерированный ответ без общей структуры нормализованного события;
 - `--format=jsonl` — формат вывода; поддерживается только `jsonl`.
 
-Логические runtime-флаги поддерживают синтаксис `--flag` / `--no-flag`. Используйте `--no-include-pings` или `--no-raw`, чтобы переопределить значение `true` из config; формы `--flag=true` и `--flag=false` не поддерживаются.
+Логические флаги настроек `runtime` поддерживают синтаксис `--flag` / `--no-flag`. Используйте `--no-include-pings` или `--no-raw`, чтобы переопределить значение `true` из конфигурации; формы `--flag=true` и `--flag=false` не поддерживаются.
 
-Числовые runtime-значения должны быть положительными безопасными целыми JavaScript. CLI измеряет время сессии и простоя по монотонным часам, а ожидания длиннее диапазона одного Node.js timer разбивает на несколько последовательных таймеров.
+Числовые значения в `runtime` должны быть положительными безопасными целыми числами JavaScript.
 
 ## Коды завершения
 
-- `0` - stream завершился по лимиту, таймауту или нормальному закрытию;
-- `2` - содержимое config не прошло синтаксическую или семантическую проверку;
-- `1` - ошибка чтения config-файла, provider error или runtime error;
+- `0` - поток завершился по лимиту, таймауту или нормальному закрытию;
+- `2` - содержимое конфигурации не прошло синтаксическую или семантическую проверку;
+- `1` - ошибка чтения файла конфигурации, провайдера или выполнения;
 - `130` - процесс остановлен через `SIGINT`;
 - `143` - процесс остановлен через `SIGTERM`.
 
-При штатном завершении, runtime timeout или обработанной ошибке команда закрывает SDK в `finally`. При `SIGINT` и `SIGTERM` встроенный CLI завершается по стандартным правилам Node.js, поэтому graceful cancellation и выполнение `finally` не гарантируются.
+При штатном завершении, таймауте или обработанной ошибке команда закрывает SDK в `finally`. При `SIGINT` и `SIGTERM` встроенный CLI завершается по стандартным правилам Node.js, поэтому корректная отмена и выполнение `finally` не гарантируются.
 
 ## Обратное давление
 
-`stream run` отдаёт output последовательностью chunks и не собирает бесконечный stream в одну строку. При записи в `stdout` и `stderr` CLI учитывает writable backpressure: если stream buffer заполнен, он ждёт событие `drain` или ошибку записи.
+`stream run` отдаёт результат последовательностью фрагментов и не собирает бесконечный поток в одну строку. При записи в `stdout` и `stderr` CLI учитывает обратное давление: если буфер потока заполнен, он ждёт событие `drain` или ошибку записи.
 
 ## Что не входит в текущую реализацию
 
-- table/csv output для stream events;
-- automatic reconnect;
-- durable checkpoints;
+- вывод событий потока в таблицы или CSV;
+- автоматическое переподключение;
+- сохранение позиции чтения в постоянном хранилище;
 - интерактивная смена подписок после старта;
-- stdin/file/timer request sources для bidirectional stream;
-- агрегация событий в application report;
-- file output вместо stdout.
-
-Эти возможности можно добавить позднее отдельными изменениями контракта.
+- источники запросов двустороннего потока из stdin, файлов или таймеров;
+- агрегация событий в отчёт приложения;
+- запись в файл вместо stdout.
 
 ## Связанная документация
 

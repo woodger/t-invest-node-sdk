@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -25,7 +26,10 @@ import {
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { dividendsForeignIssuerFormats, formatDividendsForeignIssuer } from './reporter';
+import {
+  dividendsForeignIssuerFormats,
+  formatDividendsForeignIssuer
+} from './reporter';
 
 type DividendsForeignIssuerSdk = {
   operations: {
@@ -40,10 +44,12 @@ type DividendsForeignIssuerSdkFactory = (
   options: TInvestOptions
 ) => DividendsForeignIssuerSdk;
 
-const dividendsForeignIssuerCommandPath = ['operation', 'foreign-dividends-report'] as const;
-const defaultDividendsForeignIssuerSdkFactory: DividendsForeignIssuerSdkFactory = (
-  options
-) => new TInvestNodeSDK(options);
+const dividendsForeignIssuerCommandPath = [
+  'operation',
+  'foreign-dividends-report'
+] as const;
+const defaultDividendsForeignIssuerSdkFactory:
+  DividendsForeignIssuerSdkFactory = (options) => new TInvestNodeSDK(options);
 
 const dividendsForeignIssuerRequestOptionsSchema = {
   'account-id': {
@@ -76,14 +82,16 @@ const dividendsForeignIssuerOptionsSchema = withSdkOptions(
   dividendsForeignIssuerFormatOptionsSchema
 );
 
-type DividendsForeignIssuerOptions = InferOptions<typeof dividendsForeignIssuerOptionsSchema>;
+type DividendsForeignIssuerOptions = InferOptions<
+  typeof dividendsForeignIssuerOptionsSchema
+>;
 type DividendsForeignIssuerRequestOptions = CommandRequestOptions<
   DividendsForeignIssuerOptions,
-  'task-id' |
-  'account-id' |
-  'from' |
-  'to' |
-  'page'
+  | 'task-id'
+  | 'account-id'
+  | 'from'
+  | 'to'
+  | 'page'
 >;
 
 export function createDividendsForeignIssuerRequest(
@@ -95,7 +103,9 @@ export function createDividendsForeignIssuerRequest(
     || options.to !== undefined;
 
   if (taskId !== undefined && hasGenerateArgs) {
-    throw new CliUsageError("Expected either '--task-id' or '--account-id' with '--from' and '--to'");
+    throw new CliUsageError(
+      "Expected either '--task-id' or '--account-id' with '--from' and '--to'"
+    );
   }
 
   if (taskId !== undefined) {
@@ -116,7 +126,9 @@ export function createDividendsForeignIssuerRequest(
   const to = parseRequiredDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return {
@@ -130,7 +142,8 @@ export function createDividendsForeignIssuerRequest(
 }
 
 export function createDividendsForeignIssuerCommand(
-  createSdk: DividendsForeignIssuerSdkFactory = defaultDividendsForeignIssuerSdkFactory
+  createSdk: DividendsForeignIssuerSdkFactory =
+    defaultDividendsForeignIssuerSdkFactory
 ) {
   return command.define({
     path: dividendsForeignIssuerCommandPath,
@@ -141,7 +154,8 @@ export function createDividendsForeignIssuerCommand(
   });
 }
 
-export const dividendsForeignIssuerCommand = createDividendsForeignIssuerCommand();
+export const dividendsForeignIssuerCommand =
+  createDividendsForeignIssuerCommand();
 
 async function runDividendsForeignIssuerCommand(
   options: DividendsForeignIssuerOptions,

@@ -16,11 +16,13 @@ export interface LastTradesReportTrade {
   direction: string;
   /** Цена сделки в денежном строковом формате отчета. */
   price: string;
-  /** Количество инструментов в сделке. */
+  /** Количество лотов в сделке. */
   quantity: number;
   /** Время сделки в ISO-формате или пустая строка. */
   time: string;
 }
 
-/** Отчет команды `marketdata get-last-trades` на application/output boundary. */
+/**
+ * Отчет команды `marketdata get-last-trades` на application/output boundary.
+ */
 export type LastTradesReport = LastTradesReportTrade[];

@@ -25,7 +25,9 @@ export type TInvestUnaryLimits = Record<string, TInvestUnaryLimit>;
 
 /** Разрешённая SDK квота и её непрозрачный общий bucket. */
 export interface TInvestUnaryQuota extends TInvestUnaryLimit {
-  /** Идентификатор общей квоты; Consumer должен сравнивать, но не разбирать его. */
+  /**
+   * Идентификатор общей квоты; Consumer должен сравнивать, но не разбирать его.
+   */
   readonly bucket: string;
 }
 
@@ -84,16 +86,13 @@ const maxTimerDelayMs = 2_147_483_647;
 /**
  * Создаёт необязательный process-local limiter с равномерной выдачей permits.
  * Один объект можно передать нескольким SDK instances для общего состояния.
- * `quotaShare` статически резервирует часть исходной квоты для других владельцев.
+ * `quotaShare` статически резервирует часть исходной квоты для других
+ * владельцев.
  */
 export function createInMemoryUnaryLimiter(
   options: TInvestInMemoryUnaryLimiterOptions = {}
 ): TInvestUnaryLimiter {
-  const quotaShare = options.quotaShare === undefined
-    ? 1
-    : options.quotaShare;
-
-  assertQuotaShare(quotaShare);
+  const quotaShare = options.quotaShare === undefined ? 1 : options.quotaShare;
 
   return new InMemoryUnaryLimiter(quotaShare);
 }
@@ -101,16 +100,22 @@ export function createInMemoryUnaryLimiter(
 class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
   private readonly schedules: Map<string, UnaryLimitSchedule> = new Map();
 
-  constructor(private readonly quotaShare: number) {}
+  constructor(private readonly quotaShare: number) {
+    InMemoryUnaryLimiter.assertQuotaShare(quotaShare);
+  }
 
+  /**
+   * Ожидает разрешения на unary-вызов в FIFO-очереди общего bucket-а.
+   * Интервал выдачи учитывает quotaShare; отмена отклоняет ожидание с причиной
+   * AbortSignal.
+   */
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     if (context.signal.aborted) {
-      throw abortReason(context.signal);
+      throw InMemoryUnaryLimiter.abortReason(context.signal);
     }
 
-    const effectiveMaxRequests = resolveEffectiveMaxRequests(
-      context.quota.maxRequests,
-      this.quotaShare
+    const effectiveMaxRequests = this.resolveEffectiveMaxRequests(
+      context.quota.maxRequests
     );
 
     const intervalMs = Math.ceil(
@@ -145,6 +150,12 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     });
   }
 
+  /**
+   * Возвращает или создаёт общее состояние очереди и выдачи permits для
+   * bucket-а.
+   * Сохраняет время следующего допуска при пустой очереди и отклоняет разные
+   * квоты одного bucket-а.
+   */
   private getSchedule(quota: TInvestUnaryQuota): UnaryLimitSchedule {
     let schedule = this.schedules.get(quota.bucket);
 
@@ -170,6 +181,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     return schedule;
   }
 
+  /**
+   * Планирует выдачу permit голове очереди с учётом времени следующего допуска.
+   * Для одного bucket-а одновременно активен не более одного таймера.
+   */
   private start(schedule: UnaryLimitSchedule): void {
     if (schedule.timer !== undefined || schedule.head === undefined) {
       return;
@@ -206,6 +221,11 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     }, Math.min(delay, maxTimerDelayMs));
   }
 
+  /**
+   * Выдаёт permit голове FIFO-очереди и планирует следующий допуск.
+   * Интервал отсчитывается от фактической выдачи, чтобы задержка таймера
+   * не позволила выдать несколько permits подряд.
+   */
   private dispatch(
     schedule: UnaryLimitSchedule,
     scheduledAt: number
@@ -225,6 +245,12 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     this.start(schedule);
   }
 
+  /**
+   * Отменяет ожидающий запрос, сохраняя интервал после последнего выданного
+   * permit.
+   * Удаление головы очереди перепланирует ожидание; отмена сама по себе не
+   * расходует квоту.
+   */
   private cancel(
     schedule: UnaryLimitSchedule,
     request: UnaryLimitRequest
@@ -246,13 +272,19 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
       this.clearTimer(schedule);
     }
 
-    request.reject(abortReason(request.signal));
+    request.reject(InMemoryUnaryLimiter.abortReason(request.signal));
 
     if (isHead) {
       this.start(schedule);
     }
   }
 
+  /**
+   * Исключает запрос из связанной очереди за O(1), сохраняя порядок остальных
+   * ожиданий.
+   * Таймером, abort listener-ом и завершением Promise управляет вызывающий
+   * метод.
+   */
   private removeRequest(
     schedule: UnaryLimitSchedule,
     request: UnaryLimitRequest
@@ -275,6 +307,10 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
     request.next = undefined;
   }
 
+  /**
+   * Снимает таймер ожидания, сохраняя очередь и время следующего допуска.
+   * Пометка inactive не даёт устаревшему callback-у продолжить выдачу permits.
+   */
   private clearTimer(schedule: UnaryLimitSchedule): void {
     const timer = schedule.timer;
 
@@ -290,37 +326,51 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
 
     schedule.timer = undefined;
   }
-}
 
-function assertQuotaShare(quotaShare: number): void {
-  if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
-    throw new RangeError('quotaShare must be a finite number between 0.2 and 1');
-  }
-}
-
-function resolveEffectiveMaxRequests(
-  maxRequests: number,
-  quotaShare: number
-): number {
-  if (quotaShare === 1) {
-    return maxRequests;
+  /**
+   * Проверяет долю квоты при создании limiter-а.
+   * Отклоняет неконечные значения и значения вне `[0.2, 1]` с RangeError.
+   */
+  private static assertQuotaShare(quotaShare: number): void {
+    if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
+      throw new RangeError(
+        'quotaShare must be a finite number between 0.2 and 1'
+      );
+    }
   }
 
-  const scaledMaxRequests = maxRequests * quotaShare;
+  /**
+   * Рассчитывает число permits в окне с учётом quotaShare этого limiter-а.
+   * Полную квоту сохраняет; уменьшенную округляет вниз только при значении от
+   * единицы.
+   * Значение меньше единицы задаёт интервал длиннее окна; округление до нуля
+   * сделало бы его бесконечным.
+   */
+  private resolveEffectiveMaxRequests(maxRequests: number): number {
+    if (this.quotaShare === 1) {
+      return maxRequests;
+    }
 
-  return scaledMaxRequests >= 1
-    ? Math.floor(scaledMaxRequests)
-    : scaledMaxRequests;
-}
+    const scaledMaxRequests = maxRequests * this.quotaShare;
 
-function abortReason(signal: AbortSignal): unknown {
-  if (signal.reason !== undefined) {
-    return signal.reason;
+    return scaledMaxRequests >= 1
+      ? Math.floor(scaledMaxRequests)
+      : scaledMaxRequests;
   }
 
-  const error = new Error('The operation was aborted');
+  /**
+   * Сохраняет исходную причину отмены для отклонения ожидания permit.
+   * Если AbortSignal не содержит причины, создаёт ошибку с именем AbortError.
+   */
+  private static abortReason(signal: AbortSignal): unknown {
+    if (signal.reason !== undefined) {
+      return signal.reason;
+    }
 
-  error.name = 'AbortError';
+    const error = new Error('The operation was aborted');
 
-  return error;
+    error.name = 'AbortError';
+
+    return error;
+  }
 }

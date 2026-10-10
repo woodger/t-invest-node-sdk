@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -40,7 +41,9 @@ import { formatPostStopOrder, postStopOrderFormats } from './reporter';
 
 type PostStopOrderSdk = {
   stopOrders: {
-    postStopOrder(request: PostStopOrderRequest): Promise<PostStopOrderResponse>;
+    postStopOrder(
+      request: PostStopOrderRequest
+    ): Promise<PostStopOrderResponse>;
   };
   close(): void;
 };
@@ -48,7 +51,8 @@ type PostStopOrderSdk = {
 type PostStopOrderSdkFactory = (options: TInvestOptions) => PostStopOrderSdk;
 
 const postStopOrderCommandPath = ['stop-order', 'place'] as const;
-const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const stopOrderDirections = {
   buy: StopOrderDirection.STOP_ORDER_DIRECTION_BUY,
@@ -57,11 +61,15 @@ const stopOrderDirections = {
 
 type StopOrderDirectionName = keyof typeof stopOrderDirections;
 
-const stopOrderDirectionNames = Object.keys(stopOrderDirections) as StopOrderDirectionName[];
+const stopOrderDirectionNames = Object.keys(
+  stopOrderDirections
+) as StopOrderDirectionName[];
 
 const stopOrderExpirationTypes = {
-  'good-till-cancel': StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL,
-  'good-till-date': StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE
+  'good-till-cancel':
+    StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL,
+  'good-till-date':
+    StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE
 } as const;
 
 type StopOrderExpirationTypeName = keyof typeof stopOrderExpirationTypes;
@@ -137,15 +145,15 @@ const postStopOrderOptionsSchema = withSdkOptions(
 type PostStopOrderOptions = InferOptions<typeof postStopOrderOptionsSchema>;
 type PostStopOrderRequestOptions = CommandRequestOptions<
   PostStopOrderOptions,
-  'account-id' |
-  'instrument-id' |
-  'quantity' |
-  'price' |
-  'stop-price' |
-  'direction' |
-  'expiration-type' |
-  'stop-order-type' |
-  'expire-date'
+  | 'account-id'
+  | 'instrument-id'
+  | 'quantity'
+  | 'price'
+  | 'stop-price'
+  | 'direction'
+  | 'expiration-type'
+  | 'stop-order-type'
+  | 'expire-date'
 >;
 
 export function createPostStopOrderCommand(
@@ -185,12 +193,18 @@ export function createPostStopOrderRequest(
   return PostStopOrderRequest.create({
     quantity: options.quantity,
     price: parseOptionalPositiveQuotationOption(options.price, 'price'),
-    stopPrice: parsePositiveQuotationOption(options['stop-price'], 'stop-price'),
+    stopPrice: parsePositiveQuotationOption(
+      options['stop-price'],
+      'stop-price'
+    ),
     direction: stopOrderDirections[options.direction],
     accountId: options['account-id'],
     expirationType,
     stopOrderType: stopOrderTypes[options['stop-order-type']],
-    expireDate: createStopOrderExpireDate(expirationType, options['expire-date']),
+    expireDate: createStopOrderExpireDate(
+      expirationType,
+      options['expire-date']
+    ),
     instrumentId: options['instrument-id'],
     exchangeOrderType: ExchangeOrderType.EXCHANGE_ORDER_TYPE_UNSPECIFIED,
     takeProfitType: TakeProfitType.TAKE_PROFIT_TYPE_UNSPECIFIED,
@@ -205,16 +219,23 @@ function createStopOrderExpireDate(
   expirationType: StopOrderExpirationType,
   rawExpireDate: string | undefined
 ): Date | undefined {
-  if (expirationType === StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE) {
+  if (
+    expirationType
+      === StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE
+  ) {
     if (rawExpireDate === undefined) {
-      throw new CliUsageError("Expected '--expire-date' when '--expiration-type=good-till-date'");
+      throw new CliUsageError(
+        "Expected '--expire-date' when '--expiration-type=good-till-date'"
+      );
     }
 
     return parseDateTimeOption(rawExpireDate, 'expire-date');
   }
 
   if (rawExpireDate !== undefined) {
-    throw new CliUsageError("Expected '--expire-date' only with '--expiration-type=good-till-date'");
+    throw new CliUsageError(
+      "Expected '--expire-date' only with '--expiration-type=good-till-date'"
+    );
   }
 
   return undefined;

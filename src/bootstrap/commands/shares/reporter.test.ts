@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import {
   RealExchange,
   SecurityTradingStatus,
@@ -120,9 +121,15 @@ describe('shares reporter', () => {
     test('formats report as table', () => {
       const output = formatSharesReport(createSharesReport([share()]), 'table');
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
       assert.match(output, /BBG004730N88\s+SBER\s+TQBR\s+share-uid/);
-      assert.match(output, /Sber\s+rub\s+10\s+MOEX\s+Financials\s+SHARE_TYPE_COMMON/);
+      assert.match(
+        output,
+        /Sber\s+rub\s+10\s+MOEX\s+Financials\s+SHARE_TYPE_COMMON/
+      );
       assert.doesNotMatch(output, /2007-07-20/);
     });
 

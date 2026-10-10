@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -28,15 +29,20 @@ import { cancelStopOrderFormats, formatCancelStopOrder } from './reporter';
 
 type CancelStopOrderSdk = {
   stopOrders: {
-    cancelStopOrder(request: CancelStopOrderRequest): Promise<CancelStopOrderResponse>;
+    cancelStopOrder(
+      request: CancelStopOrderRequest
+    ): Promise<CancelStopOrderResponse>;
   };
   close(): void;
 };
 
-type CancelStopOrderSdkFactory = (options: TInvestOptions) => CancelStopOrderSdk;
+type CancelStopOrderSdkFactory = (
+  options: TInvestOptions
+) => CancelStopOrderSdk;
 
 const cancelStopOrderCommandPath = ['stop-order', 'cancel'] as const;
-const defaultCancelStopOrderSdkFactory: CancelStopOrderSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultCancelStopOrderSdkFactory: CancelStopOrderSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const cancelStopOrderRequestOptionsSchema = {
   'account-id': {

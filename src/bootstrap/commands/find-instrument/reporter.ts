@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument search`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
@@ -10,9 +11,9 @@ import type {
   FindInstrumentReportInstrument
 } from '../../../application/reports';
 import {
-  instrumentTypeToJSON } from '../../../generated/common';
-import type { InstrumentShort
-} from '../../../generated/instruments';
+  instrumentTypeToJSON
+} from '../../../generated/common';
+import type { InstrumentShort } from '../../../generated/instruments';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';
@@ -22,7 +23,9 @@ export const findInstrumentFormats = ['json', 'table'] as const;
 
 export type FindInstrumentFormat = typeof findInstrumentFormats[number];
 
-function toReportInstrument(instrument: InstrumentShort): FindInstrumentReportInstrument {
+function toReportInstrument(
+  instrument: InstrumentShort
+): FindInstrumentReportInstrument {
   return {
     isin: instrument.isin,
     figi: instrument.figi,
@@ -43,7 +46,9 @@ function toReportInstrument(instrument: InstrumentShort): FindInstrumentReportIn
   };
 }
 
-export function createFindInstrumentReport(instruments: InstrumentShort[]): FindInstrumentReport {
+export function createFindInstrumentReport(
+  instruments: InstrumentShort[]
+): FindInstrumentReport {
   return instruments.map(toReportInstrument);
 }
 
@@ -85,5 +90,8 @@ export function formatFindInstrument(
   instruments: InstrumentShort[],
   format: FindInstrumentFormat
 ): string {
-  return formatFindInstrumentReport(createFindInstrumentReport(instruments), format);
+  return formatFindInstrumentReport(
+    createFindInstrumentReport(instruments),
+    format
+  );
 }

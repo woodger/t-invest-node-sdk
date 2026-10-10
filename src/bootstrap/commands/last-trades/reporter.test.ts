@@ -56,9 +56,15 @@ describe('last-trades reporter', () => {
 
   describe('formatLastTradesReport', () => {
     test('formats report as table', () => {
-      const output = formatLastTradesReport(createLastTradesReport([trade()]), 'table');
+      const output = formatLastTradesReport(
+        createLastTradesReport([trade()]),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+instrumentUid\s+direction\s+price\s+quantity\s+time/m);
+      assert.match(
+        output,
+        /^figi\s+instrumentUid\s+direction\s+price\s+quantity\s+time/m
+      );
       assert.match(
         output,
         /BBG00QPYJ5H0\s+instrument-uid\s+TRADE_DIRECTION_BUY\s+123.45\s+10\s+2026-06-19T10:00:00.000Z/

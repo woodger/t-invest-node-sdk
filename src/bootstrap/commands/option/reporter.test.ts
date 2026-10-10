@@ -134,17 +134,29 @@ describe('option reporter', () => {
     });
 
     test('returns null when response has no instrument', () => {
-      assert.equal(createOptionReport(response({ instrument: undefined })), null);
+      assert.equal(
+        createOptionReport(response({ instrument: undefined })),
+        null
+      );
     });
   });
 
   describe('formatOptionReport', () => {
     test('formats report as table', () => {
-      const output = formatOptionReport(createOptionReport(response()), 'table');
+      const output = formatOptionReport(
+        createOptionReport(response()),
+        'table'
+      );
 
       assert.match(output, /^uid\s+positionUid\s+ticker\s+classCode\s+name/m);
-      assert.match(output, /option-uid\s+option-position-uid\s+SiM6C125000\s+SPBOPT/);
-      assert.match(output, /USD\/RUB Call Option\s+rub\s+1\s+MOEX\s+Currencies\s+OPTION_DIRECTION_CALL/);
+      assert.match(
+        output,
+        /option-uid\s+option-position-uid\s+SiM6C125000\s+SPBOPT/
+      );
+      assert.match(
+        output,
+        /USD\/RUB Call Option\s+rub\s+1\s+MOEX\s+Currencies\s+OPTION_DIRECTION_CALL/
+      );
       assert.match(output, /12500\.5 rub\s+2026-06-19T00:00:00\.000Z/);
       assert.doesNotMatch(output, /asset-position-uid/);
     });
@@ -158,7 +170,10 @@ describe('option reporter', () => {
 
     test('formats missing option as json null and table header', () => {
       assert.equal(formatOptionReport(null, 'json'), 'null\n');
-      assert.match(formatOptionReport(null, 'table'), /^uid\s+positionUid\s+ticker/);
+      assert.match(
+        formatOptionReport(null, 'table'),
+        /^uid\s+positionUid\s+ticker/
+      );
     });
   });
 });

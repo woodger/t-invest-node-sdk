@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `account tariff`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { UserTariffReport } from '../../../application/reports';
@@ -13,10 +14,15 @@ export const userTariffFormats = ['json', 'table'] as const;
 
 export type UserTariffFormat = typeof userTariffFormats[number];
 
-export function createUserTariffReport(response: GetUserTariffResponse): UserTariffReport {
+export function createUserTariffReport(
+  response: GetUserTariffResponse
+): UserTariffReport {
   return {
     unaryLimits: response.unaryLimits.map((limit) => ({
       limitPerMinute: limit.limitPerMinute,
+      ...(limit.limitPerSecond === undefined
+        ? {}
+        : { limitPerSecond: limit.limitPerSecond }),
       methods: limit.methods
     })),
     streamLimits: response.streamLimits.map((limit) => ({
@@ -36,15 +42,26 @@ export function formatUserTariffReport(
   }
 
   return renderTextTable([
-    ['type', 'limit', 'open', 'methods/streams'],
+    [
+      'type',
+      'limit/min',
+      'limit/sec',
+      'connections',
+      'open',
+      'methods/streams'
+    ],
     ...report.unaryLimits.map((limit) => [
       'unary',
       String(limit.limitPerMinute),
+      limit.limitPerSecond === undefined ? '' : String(limit.limitPerSecond),
+      '',
       '',
       limit.methods.join(', ')
     ]),
     ...report.streamLimits.map((limit) => [
       'stream',
+      '',
+      '',
       String(limit.limit),
       String(limit.open),
       limit.streams.join(', ')

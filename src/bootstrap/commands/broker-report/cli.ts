@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -29,7 +30,9 @@ import { brokerReportFormats, formatBrokerReport } from './reporter';
 
 type BrokerReportSdk = {
   operations: {
-    getBrokerReport(request: BrokerReportRequest): Promise<BrokerReportResponse>;
+    getBrokerReport(
+      request: BrokerReportRequest
+    ): Promise<BrokerReportResponse>;
   };
   close(): void;
 };
@@ -37,7 +40,8 @@ type BrokerReportSdk = {
 type BrokerReportSdkFactory = (options: TInvestOptions) => BrokerReportSdk;
 
 const brokerReportCommandPath = ['operation', 'broker-report'] as const;
-const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const brokerReportRequestOptionsSchema = {
   'account-id': {
@@ -73,11 +77,11 @@ const brokerReportOptionsSchema = withSdkOptions(
 type BrokerReportOptions = InferOptions<typeof brokerReportOptionsSchema>;
 type BrokerReportRequestOptions = CommandRequestOptions<
   BrokerReportOptions,
-  'task-id' |
-  'account-id' |
-  'from' |
-  'to' |
-  'page'
+  | 'task-id'
+  | 'account-id'
+  | 'from'
+  | 'to'
+  | 'page'
 >;
 
 export function createBrokerReportRequest(
@@ -89,7 +93,9 @@ export function createBrokerReportRequest(
     || options.to !== undefined;
 
   if (taskId !== undefined && hasGenerateArgs) {
-    throw new CliUsageError("Expected either '--task-id' or '--account-id' with '--from' and '--to'");
+    throw new CliUsageError(
+      "Expected either '--task-id' or '--account-id' with '--from' and '--to'"
+    );
   }
 
   if (taskId !== undefined) {
@@ -110,7 +116,9 @@ export function createBrokerReportRequest(
   const to = parseRequiredDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return {

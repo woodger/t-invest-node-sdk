@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `instrument brand list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { BrandsReport, BrandsReportBrand } from '../../../application/reports';
+import type {
+  BrandsReport,
+  BrandsReportBrand
+} from '../../../application/reports';
 import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
@@ -30,7 +34,10 @@ export function createBrandsReport(brands: Brand[]): BrandsReport {
   return brands.map(createBrandReport);
 }
 
-export function formatBrandsReport(report: BrandsReport, format: BrandsFormat): string {
+export function formatBrandsReport(
+  report: BrandsReport,
+  format: BrandsFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }

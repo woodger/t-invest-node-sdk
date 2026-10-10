@@ -1,5 +1,6 @@
 /**
- * Модуль SDK options CLI-слоя нормализует общие auth/runtime параметры API-команд.
+ * Модуль SDK options CLI-слоя нормализует общие auth/runtime параметры
+ * API-команд.
  *
  * Здесь допустимы:
  * - чтение `--token`, `--endpoint`, `--app-name`, `--insecure`;

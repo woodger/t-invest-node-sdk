@@ -39,25 +39,45 @@ export function createMarketDataStreamRequests(
   config: StreamRunConfig
 ): MarketDataRequest[] {
   if (config.stream !== 'marketdata.marketDataStream') {
-    throw new CliUsageError(`Expected marketdata bidirectional stream config, got '${config.stream}'`);
+    throw new CliUsageError(
+      `Expected marketdata bidirectional stream config, got '${config.stream}'`
+    );
   }
 
   return config.requests.map((request) => {
     switch (request.type) {
       case 'subscribeCandles':
-        return { subscribeCandlesRequest: createSubscribeCandlesRequest(request.instruments) };
+        return {
+          subscribeCandlesRequest: createSubscribeCandlesRequest(
+            request.instruments
+          )
+        };
 
       case 'subscribeOrderBook':
-        return { subscribeOrderBookRequest: createSubscribeOrderBookRequest(request.instruments) };
+        return {
+          subscribeOrderBookRequest: createSubscribeOrderBookRequest(
+            request.instruments
+          )
+        };
 
       case 'subscribeTrades':
-        return { subscribeTradesRequest: createSubscribeTradesRequest(request.instruments) };
+        return {
+          subscribeTradesRequest: createSubscribeTradesRequest(
+            request.instruments
+          )
+        };
 
       case 'subscribeInfo':
-        return { subscribeInfoRequest: createSubscribeInfoRequest(request.instruments) };
+        return {
+          subscribeInfoRequest: createSubscribeInfoRequest(request.instruments)
+        };
 
       case 'subscribeLastPrice':
-        return { subscribeLastPriceRequest: createSubscribeLastPriceRequest(request.instruments) };
+        return {
+          subscribeLastPriceRequest: createSubscribeLastPriceRequest(
+            request.instruments
+          )
+        };
 
       case 'getMySubscriptions':
         return { getMySubscriptions: {} };
@@ -69,13 +89,17 @@ export function createMarketDataServerSideStreamRequest(
   config: StreamRunConfig
 ): MarketDataServerSideStreamRequest {
   if (config.stream !== 'marketdata.marketDataServerSideStream') {
-    throw new CliUsageError(`Expected marketdata server-side stream config, got '${config.stream}'`);
+    throw new CliUsageError(
+      `Expected marketdata server-side stream config, got '${config.stream}'`
+    );
   }
 
   const subscriptions = config.subscriptions;
 
   if (!subscriptions) {
-    throw new CliUsageError("Expected 'subscriptions' for marketdata server-side stream config");
+    throw new CliUsageError(
+      "Expected 'subscriptions' for marketdata server-side stream config"
+    );
   }
 
   const candles = subscriptions.candles ?? [];
@@ -108,7 +132,9 @@ export function createPortfolioStreamRequest(
   config: StreamRunConfig
 ): PortfolioStreamRequest {
   if (config.stream !== 'operations.portfolioStream') {
-    throw new CliUsageError(`Expected portfolio stream config, got '${config.stream}'`);
+    throw new CliUsageError(
+      `Expected portfolio stream config, got '${config.stream}'`
+    );
   }
 
   return {
@@ -121,7 +147,9 @@ export function createPositionsStreamRequest(
   config: StreamRunConfig
 ): PositionsStreamRequest {
   if (config.stream !== 'operations.positionsStream') {
-    throw new CliUsageError(`Expected positions stream config, got '${config.stream}'`);
+    throw new CliUsageError(
+      `Expected positions stream config, got '${config.stream}'`
+    );
   }
 
   return {
@@ -135,7 +163,9 @@ export function createTradesStreamRequest(
   config: StreamRunConfig
 ): TradesStreamRequest {
   if (config.stream !== 'orders.tradesStream') {
-    throw new CliUsageError(`Expected trades stream config, got '${config.stream}'`);
+    throw new CliUsageError(
+      `Expected trades stream config, got '${config.stream}'`
+    );
   }
 
   return {
@@ -148,10 +178,12 @@ function createSubscribeCandlesRequest(
 ): SubscribeCandlesRequest {
   return {
     subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-    instruments: instruments.map((item) => CandleInstrument.create({
-      interval: item.interval,
-      instrumentId: item.instrumentId
-    })),
+    instruments: instruments.map((item) =>
+      CandleInstrument.create({
+        interval: item.interval,
+        instrumentId: item.instrumentId
+      })
+    ),
     waitingClose: resolveCandlesWaitingClose(instruments)
   };
 }
@@ -161,11 +193,13 @@ function createSubscribeOrderBookRequest(
 ): SubscribeOrderBookRequest {
   return {
     subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-    instruments: instruments.map((item) => OrderBookInstrument.create({
-      depth: item.depth,
-      instrumentId: item.instrumentId,
-      orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
-    }))
+    instruments: instruments.map((item) =>
+      OrderBookInstrument.create({
+        depth: item.depth,
+        instrumentId: item.instrumentId,
+        orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
+      })
+    )
   };
 }
 
@@ -174,9 +208,11 @@ function createSubscribeTradesRequest(
 ): SubscribeTradesRequest {
   return {
     subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-    instruments: instruments.map((item) => TradeInstrument.create({
-      instrumentId: item.instrumentId
-    })),
+    instruments: instruments.map((item) =>
+      TradeInstrument.create({
+        instrumentId: item.instrumentId
+      })
+    ),
     tradeSource: TradeSourceType.TRADE_SOURCE_UNSPECIFIED,
     withOpenInterest: false
   };
@@ -187,9 +223,11 @@ function createSubscribeInfoRequest(
 ): SubscribeInfoRequest {
   return {
     subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-    instruments: instruments.map((item) => InfoInstrument.create({
-      instrumentId: item.instrumentId
-    }))
+    instruments: instruments.map((item) =>
+      InfoInstrument.create({
+        instrumentId: item.instrumentId
+      })
+    )
   };
 }
 
@@ -198,8 +236,10 @@ function createSubscribeLastPriceRequest(
 ): SubscribeLastPriceRequest {
   return {
     subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-    instruments: instruments.map((item) => LastPriceInstrument.create({
-      instrumentId: item.instrumentId
-    }))
+    instruments: instruments.map((item) =>
+      LastPriceInstrument.create({
+        instrumentId: item.instrumentId
+      })
+    )
   };
 }

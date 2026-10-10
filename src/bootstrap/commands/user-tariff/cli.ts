@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -20,7 +21,9 @@ import { formatUserTariff, userTariffFormats } from './reporter';
 
 type UserTariffSdk = {
   users: {
-    getUserTariff(request: Record<string, never>): Promise<GetUserTariffResponse>;
+    getUserTariff(
+      request: Record<string, never>
+    ): Promise<GetUserTariffResponse>;
   };
   close(): void;
 };
@@ -28,15 +31,18 @@ type UserTariffSdk = {
 type UserTariffSdkFactory = (options: TInvestOptions) => UserTariffSdk;
 
 const userTariffCommandPath = ['account', 'tariff'] as const;
-const defaultUserTariffSdkFactory: UserTariffSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultUserTariffSdkFactory: UserTariffSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
-const userTariffOptionsSchema = withSdkOptions({
-  format: {
-    type: 'string',
-    choices: userTariffFormats,
-    default: 'table'
-  }
-} as const);
+const userTariffOptionsSchema = withSdkOptions(
+  {
+    format: {
+      type: 'string',
+      choices: userTariffFormats,
+      default: 'table'
+    }
+  } as const
+);
 
 type UserTariffOptions = InferOptions<typeof userTariffOptionsSchema>;
 

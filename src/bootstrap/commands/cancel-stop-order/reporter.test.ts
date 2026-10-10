@@ -1,16 +1,25 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createCancelStopOrderReport, formatCancelStopOrderReport } from './reporter';
+import {
+  createCancelStopOrderReport,
+  formatCancelStopOrderReport
+} from './reporter';
 
 describe('cancel-stop-order reporter', () => {
   describe('createCancelStopOrderReport', () => {
-    test('maps generated cancel stop order response to stable report values', () => {
-      assert.deepEqual(createCancelStopOrderReport({
-        time: new Date('2026-06-19T10:00:00.000Z')
-      }), {
-        time: '2026-06-19T10:00:00.000Z'
-      });
-    });
+    test(
+      'maps generated cancel stop order response to stable report values',
+      () => {
+        assert.deepEqual(
+          createCancelStopOrderReport({
+            time: new Date('2026-06-19T10:00:00.000Z')
+          }),
+          {
+            time: '2026-06-19T10:00:00.000Z'
+          }
+        );
+      }
+    );
   });
 
   describe('formatCancelStopOrderReport', () => {

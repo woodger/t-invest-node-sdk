@@ -80,11 +80,23 @@ describe('dividends reporter', () => {
 
   describe('formatDividendsReport', () => {
     test('formats report as table', () => {
-      const output = formatDividendsReport(createDividendsReport([dividend()]), 'table');
+      const output = formatDividendsReport(
+        createDividendsReport([dividend()]),
+        'table'
+      );
 
-      assert.match(output, /^recordDate\s+paymentDate\s+lastBuyDate\s+dividendNet/m);
-      assert.match(output, /2026-01-22T00:00:00\.000Z\s+2026-02-01T00:00:00\.000Z/);
-      assert.match(output, /12\.5 rub\s+100\.25 rub\s+5\.125\s+Regular Cash\s+Annual/);
+      assert.match(
+        output,
+        /^recordDate\s+paymentDate\s+lastBuyDate\s+dividendNet/m
+      );
+      assert.match(
+        output,
+        /2026-01-22T00:00:00\.000Z\s+2026-02-01T00:00:00\.000Z/
+      );
+      assert.match(
+        output,
+        /12\.5 rub\s+100\.25 rub\s+5\.125\s+Regular Cash\s+Annual/
+      );
     });
 
     test('formats report as json', () => {

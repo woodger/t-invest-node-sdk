@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
@@ -10,7 +11,9 @@ import type {
 } from '../../../generated/instruments';
 import { createFuturesMarginCommand, createFuturesMarginRequest } from './cli';
 
-function response(overrides: Partial<GetFuturesMarginResponse> = {}): GetFuturesMarginResponse {
+function response(
+  overrides: Partial<GetFuturesMarginResponse> = {}
+): GetFuturesMarginResponse {
   return {
     initialMarginOnBuy: {
       currency: 'rub',
@@ -116,18 +119,19 @@ describe('futures-margin command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'future',
-            'margin',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=FUTFIGI'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'future',
+              'margin',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--instrument-id=FUTFIGI'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

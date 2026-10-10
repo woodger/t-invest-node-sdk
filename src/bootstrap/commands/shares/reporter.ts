@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `instrument share list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { SharesReport } from '../../../application/reports';
@@ -23,7 +24,10 @@ export function createSharesReport(instruments: Share[]): SharesReport {
   return instruments.map(createShareReportInstrument);
 }
 
-export function formatSharesReport(report: SharesReport, format: SharesFormat): string {
+export function formatSharesReport(
+  report: SharesReport,
+  format: SharesFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -31,6 +35,9 @@ export function formatSharesReport(report: SharesReport, format: SharesFormat): 
   return renderShareRows(report);
 }
 
-export function formatShares(instruments: Share[], format: SharesFormat): string {
+export function formatShares(
+  instruments: Share[],
+  format: SharesFormat
+): string {
   return formatSharesReport(createSharesReport(instruments), format);
 }

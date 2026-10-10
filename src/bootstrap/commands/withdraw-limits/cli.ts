@@ -6,7 +6,8 @@
  * - делегирование request mapping в command-owned mapper;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -24,7 +25,9 @@ import { createWithdrawLimitsRequest } from './request.mapper';
 
 type WithdrawLimitsSdk = {
   operations: {
-    getWithdrawLimits(request: WithdrawLimitsRequest): Promise<WithdrawLimitsResponse>;
+    getWithdrawLimits(
+      request: WithdrawLimitsRequest
+    ): Promise<WithdrawLimitsResponse>;
   };
   close(): void;
 };
@@ -32,7 +35,8 @@ type WithdrawLimitsSdk = {
 type WithdrawLimitsSdkFactory = (options: TInvestOptions) => WithdrawLimitsSdk;
 
 const withdrawLimitsCommandPath = ['operation', 'withdraw-limits'] as const;
-const defaultWithdrawLimitsSdkFactory: WithdrawLimitsSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultWithdrawLimitsSdkFactory: WithdrawLimitsSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const withdrawLimitsRequestOptionsSchema = {
   'account-id': {

@@ -2,14 +2,18 @@
  * Модуль CLI-репортинга команды `instrument schedules`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type {
   TradingSchedulesReport,
   TradingSchedulesReportDay
 } from '../../../application/reports';
-import type { TradingDay, TradingSchedule } from '../../../generated/instruments';
+import type {
+  TradingDay,
+  TradingSchedule
+} from '../../../generated/instruments';
 import {
   formatReportDate
 } from '../../../infrastructure/report-values';
@@ -19,7 +23,10 @@ export const tradingSchedulesFormats = ['json', 'table'] as const;
 
 export type TradingSchedulesFormat = typeof tradingSchedulesFormats[number];
 
-function toReportDay(exchange: string, day: TradingDay): TradingSchedulesReportDay {
+function toReportDay(
+  exchange: string,
+  day: TradingDay
+): TradingSchedulesReportDay {
   return {
     exchange,
     date: formatReportDate(day.date),
@@ -30,7 +37,9 @@ function toReportDay(exchange: string, day: TradingDay): TradingSchedulesReportD
     openingAuctionEndTime: formatReportDate(day.openingAuctionEndTime),
     closingAuctionStartTime: formatReportDate(day.closingAuctionStartTime),
     closingAuctionEndTime: formatReportDate(day.closingAuctionEndTime),
-    eveningOpeningAuctionStartTime: formatReportDate(day.eveningOpeningAuctionStartTime),
+    eveningOpeningAuctionStartTime: formatReportDate(
+      day.eveningOpeningAuctionStartTime
+    ),
     eveningStartTime: formatReportDate(day.eveningStartTime),
     eveningEndTime: formatReportDate(day.eveningEndTime),
     clearingStartTime: formatReportDate(day.clearingStartTime),
@@ -57,7 +66,15 @@ export function formatTradingSchedulesReport(
   }
 
   return renderTextTable([
-    ['exchange', 'date', 'isTradingDay', 'startTime', 'endTime', 'eveningStartTime', 'eveningEndTime'],
+    [
+      'exchange',
+      'date',
+      'isTradingDay',
+      'startTime',
+      'endTime',
+      'eveningStartTime',
+      'eveningEndTime'
+    ],
     ...report.map((day) => [
       day.exchange,
       day.date,
@@ -74,5 +91,8 @@ export function formatTradingSchedules(
   schedules: TradingSchedule[],
   format: TradingSchedulesFormat
 ): string {
-  return formatTradingSchedulesReport(createTradingSchedulesReport(schedules), format);
+  return formatTradingSchedulesReport(
+    createTradingSchedulesReport(schedules),
+    format
+  );
 }

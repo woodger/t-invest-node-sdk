@@ -15,7 +15,9 @@ import type {
   ClientMiddlewareCall,
   CompatServiceDefinition
 } from 'nice-grpc';
-import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
+import type {
+  TInvestUnaryLimiter
+} from '../../../application/services/unary-limiter';
 import {
   createClientFactory,
   Metadata
@@ -43,7 +45,7 @@ export function createSdkClient<Service extends CompatServiceDefinition>(
 }
 
 function createSdkMetadataMiddleware(metadata: Metadata) {
-  return async function*<Request, Response>(
+  return async function* <Request, Response>(
     call: ClientMiddlewareCall<Request, Response>,
     options: CallOptions
   ) {

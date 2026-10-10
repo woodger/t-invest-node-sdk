@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue } from '../../../generated/common';
@@ -22,7 +23,9 @@ function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   };
 }
 
-function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersResponse {
+function ordersResponse(
+  overrides: Partial<GetOrdersResponse> = {}
+): GetOrdersResponse {
   return {
     orders: [
       {
@@ -30,7 +33,8 @@ function ordersResponse(overrides: Partial<GetOrdersResponse> = {}): GetOrdersRe
         orderRequestId: 'request-id',
         figi: 'BBG00QPYJ5H0',
         instrumentUid: 'instrument-uid',
-        executionReportStatus: OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
+        executionReportStatus:
+          OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW,
         direction: OrderDirection.ORDER_DIRECTION_BUY,
         orderType: OrderType.ORDER_TYPE_LIMIT,
         lotsRequested: 10,
@@ -112,18 +116,19 @@ describe('sandbox-orders command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'order',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=sandbox-account-id'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'sandbox',
+              'order',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051',
+              '--account-id=sandbox-account-id'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

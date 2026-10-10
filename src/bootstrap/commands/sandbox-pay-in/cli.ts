@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -37,7 +38,8 @@ type SandboxPayInSdk = {
 type SandboxPayInSdkFactory = (options: TInvestOptions) => SandboxPayInSdk;
 
 const sandboxPayInCommandPath = ['sandbox', 'pay-in'] as const;
-const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) =>
+  new TInvestNodeSDK(options);
 
 const sandboxPayInCurrencies = ['rub', 'usd'] as const;
 

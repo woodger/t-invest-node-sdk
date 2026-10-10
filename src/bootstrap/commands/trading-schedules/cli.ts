@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -18,21 +19,29 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
+import {
+  parseDateTimeOption,
+  withSdkOptions
+} from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatTradingSchedules, tradingSchedulesFormats } from './reporter';
 
 type TradingSchedulesSdk = {
   instruments: {
-    tradingSchedules(request: TradingSchedulesRequest): Promise<TradingSchedulesResponse>;
+    tradingSchedules(
+      request: TradingSchedulesRequest
+    ): Promise<TradingSchedulesResponse>;
   };
   close(): void;
 };
 
-type TradingSchedulesSdkFactory = (options: TInvestOptions) => TradingSchedulesSdk;
+type TradingSchedulesSdkFactory = (
+  options: TInvestOptions
+) => TradingSchedulesSdk;
 
 const tradingSchedulesCommandPath = ['instrument', 'schedules'] as const;
-const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const tradingSchedulesRequestOptionsSchema = {
   exchange: {
@@ -61,8 +70,13 @@ const tradingSchedulesOptionsSchema = withSdkOptions(
   tradingSchedulesFormatOptionsSchema
 );
 
-type TradingSchedulesOptions = InferOptions<typeof tradingSchedulesOptionsSchema>;
-type TradingSchedulesRequestOptions = CommandRequestOptions<TradingSchedulesOptions, 'from' | 'to' | 'exchange'>;
+type TradingSchedulesOptions = InferOptions<
+  typeof tradingSchedulesOptionsSchema
+>;
+type TradingSchedulesRequestOptions = CommandRequestOptions<
+  TradingSchedulesOptions,
+  'from' | 'to' | 'exchange'
+>;
 
 export function createTradingSchedulesCommand(
   createSdk: TradingSchedulesSdkFactory = defaultTradingSchedulesSdkFactory
@@ -98,7 +112,9 @@ export function createTradingSchedulesRequest(
   const to = parseDateTimeOption(options.to, 'to');
 
   if (from.getTime() > to.getTime()) {
-    throw new CliUsageError("Expected '--from' to be earlier than or equal to '--to'");
+    throw new CliUsageError(
+      "Expected '--from' to be earlier than or equal to '--to'"
+    );
   }
 
   return {

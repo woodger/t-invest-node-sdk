@@ -6,7 +6,8 @@
  * - описание preferred command paths и compatibility aliases;
  * - helpers для domain-level help и registry aliases.
  *
- * Здесь не должно быть исполнения команд, SDK wiring или command-specific parsing.
+ * Здесь не должно быть исполнения команд, SDK wiring или command-specific
+ * parsing.
  */
 
 export const cliDomains = {
@@ -14,7 +15,8 @@ export const cliDomains = {
     description: 'Accounts, user info, tariff and limits'
   },
   instrument: {
-    description: 'Shares, bonds, ETFs, currencies, futures, options and dictionaries'
+    description:
+      'Shares, bonds, ETFs, currencies, futures, options and dictionaries'
   },
   market: {
     description: 'Historical and live market data'
@@ -513,15 +515,12 @@ const cliPathAliases = [
   }
 ] as const satisfies readonly CliPathAliasDefinition[];
 
-type CommandPathName<TPath extends readonly string[]> =
-  TPath extends readonly [
-    infer THead extends string,
-    ...infer TTail extends string[]
-  ]
-    ? TTail extends []
-      ? THead
-      : `${THead} ${CommandPathName<TTail>}`
-    : never;
+type CommandPathName<TPath extends readonly string[]> = TPath extends readonly [
+  infer THead extends string,
+  ...infer TTail extends string[]
+] ? TTail extends [] ? THead
+  : `${THead} ${CommandPathName<TTail>}`
+  : never;
 
 type CliPreferredPath = typeof cliPathAliases[number]['preferred'];
 
@@ -533,7 +532,9 @@ export type CliCommandName =
   | 'version';
 
 const preferredPathByAliasName = createPreferredPathByAliasName(cliPathAliases);
-const aliasPathsByPreferredName = createAliasPathsByPreferredName(cliPathAliases);
+const aliasPathsByPreferredName = createAliasPathsByPreferredName(
+  cliPathAliases
+);
 const explicitAliasDomains = createExplicitAliasDomains(cliPathAliases);
 
 export const cliDomainNames = Object.keys(cliDomains) as CliDomainName[];
@@ -571,7 +572,9 @@ export function canonicalizeCommandPath(path: CliCommandPath): CliCommandPath {
 
   const [domain] = publicPath;
 
-  return isCliDomainName(domain) && explicitAliasDomains.has(domain) ? path : publicPath;
+  return isCliDomainName(domain) && explicitAliasDomains.has(domain)
+    ? path
+    : publicPath;
 }
 
 export function canonicalizeCommandName(name: string): string {
@@ -580,7 +583,9 @@ export function canonicalizeCommandName(name: string): string {
 
 export function commandPathAliases(path: CliCommandPath): CliCommandPath[] {
   const canonicalPath = canonicalizeCommandPath(path);
-  const aliasPaths = aliasPathsByPreferredName.get(commandPathToName(canonicalPath));
+  const aliasPaths = aliasPathsByPreferredName.get(
+    commandPathToName(canonicalPath)
+  );
 
   if (aliasPaths !== undefined) {
     return uniqueCommandPaths([canonicalPath, ...aliasPaths]);
@@ -589,7 +594,9 @@ export function commandPathAliases(path: CliCommandPath): CliCommandPath[] {
   return uniqueCommandPaths([canonicalPath, legacyCommandPath(canonicalPath)]);
 }
 
-export function commandDomainName(commandName: string): CliDomainName | undefined {
+export function commandDomainName(
+  commandName: string
+): CliDomainName | undefined {
   const [domain] = commandName.split(' ');
 
   return isCliDomainName(domain) ? domain : undefined;
@@ -599,7 +606,9 @@ export function commandActionName(commandName: string): string {
   return commandName.split(' ').slice(1).join(' ');
 }
 
-function isLegacyPathHead(value: string): value is keyof typeof publicDomainByLegacyHead {
+function isLegacyPathHead(
+  value: string
+): value is keyof typeof publicDomainByLegacyHead {
   return Object.hasOwn(publicDomainByLegacyHead, value);
 }
 
@@ -650,7 +659,9 @@ function createExplicitAliasDomains(
 function publicDomainPath(path: CliCommandPath): CliCommandPath {
   const [head, ...tail] = path;
 
-  const domain = isLegacyPathHead(head) ? publicDomainByLegacyHead[head] : undefined;
+  const domain = isLegacyPathHead(head)
+    ? publicDomainByLegacyHead[head]
+    : undefined;
 
   if (domain === undefined) {
     return path;
@@ -672,7 +683,9 @@ function legacyCommandPath(path: CliCommandPath): CliCommandPath | undefined {
 }
 
 function legacyHeadForDomain(domain: CliDomainName): string | undefined {
-  for (const [legacyHead, publicDomain] of Object.entries(publicDomainByLegacyHead)) {
+  for (
+    const [legacyHead, publicDomain] of Object.entries(publicDomainByLegacyHead)
+  ) {
     if (publicDomain === domain) {
       return legacyHead;
     }
@@ -681,7 +694,9 @@ function legacyHeadForDomain(domain: CliDomainName): string | undefined {
   return undefined;
 }
 
-function uniqueCommandPaths(paths: readonly (CliCommandPath | undefined)[]): CliCommandPath[] {
+function uniqueCommandPaths(
+  paths: readonly (CliCommandPath | undefined)[]
+): CliCommandPath[] {
   const names = new Set<string>();
   const result: CliCommandPath[] = [];
 

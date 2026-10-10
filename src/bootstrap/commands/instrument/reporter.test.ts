@@ -1,13 +1,17 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import {
   RealExchange,
   InstrumentType,
   SecurityTradingStatus
 } from '../../../generated/common';
-import { type Instrument, type InstrumentResponse } from '../../../generated/instruments';
+import {
+  type Instrument,
+  type InstrumentResponse
+} from '../../../generated/instruments';
 import { createInstrumentReport, formatInstrumentReport } from './reporter';
 
 function instrument(overrides: Partial<Instrument> = {}): Instrument {
@@ -48,7 +52,9 @@ function instrument(overrides: Partial<Instrument> = {}): Instrument {
   } as Instrument;
 }
 
-function response(overrides: Partial<InstrumentResponse> = {}): InstrumentResponse {
+function response(
+  overrides: Partial<InstrumentResponse> = {}
+): InstrumentResponse {
   return {
     instrument: instrument(),
     ...overrides
@@ -92,17 +98,32 @@ describe('instrument reporter', () => {
     });
 
     test('returns null when response has no instrument', () => {
-      assert.equal(createInstrumentReport(response({ instrument: undefined })), null);
+      assert.equal(
+        createInstrumentReport(response({ instrument: undefined })),
+        null
+      );
     });
   });
 
   describe('formatInstrumentReport', () => {
     test('formats report as table', () => {
-      const output = formatInstrumentReport(createInstrumentReport(response()), 'table');
+      const output = formatInstrumentReport(
+        createInstrumentReport(response()),
+        'table'
+      );
 
-      assert.match(output, /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m);
-      assert.match(output, /BBG00QPYJ5H0\s+TCSG\s+TQBR\s+instrument-uid\s+position-uid\s+TCS Group/);
-      assert.match(output, /share\s+rub\s+1\s+MOEX\s+SECURITY_TRADING_STATUS_NORMAL_TRADING\s+true\s+true/);
+      assert.match(
+        output,
+        /^figi\s+ticker\s+classCode\s+uid\s+positionUid\s+name/m
+      );
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+TCSG\s+TQBR\s+instrument-uid\s+position-uid\s+TCS Group/
+      );
+      assert.match(
+        output,
+        /share\s+rub\s+1\s+MOEX\s+SECURITY_TRADING_STATUS_NORMAL_TRADING\s+true\s+true/
+      );
     });
 
     test('formats report as json', () => {
@@ -114,7 +135,10 @@ describe('instrument reporter', () => {
 
     test('formats missing instrument as json null and table header', () => {
       assert.equal(formatInstrumentReport(null, 'json'), 'null\n');
-      assert.match(formatInstrumentReport(null, 'table'), /^figi\s+ticker\s+classCode/);
+      assert.match(
+        formatInstrumentReport(null, 'table'),
+        /^figi\s+ticker\s+classCode/
+      );
     });
   });
 });

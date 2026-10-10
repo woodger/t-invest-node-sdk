@@ -49,10 +49,16 @@ describe('last-prices reporter', () => {
 
   describe('formatLastPricesReport', () => {
     test('formats report as table', () => {
-      const output = formatLastPricesReport(createLastPricesReport([lastPrice()]), 'table');
+      const output = formatLastPricesReport(
+        createLastPricesReport([lastPrice()]),
+        'table'
+      );
 
       assert.match(output, /^figi\s+instrumentUid\s+price\s+time/m);
-      assert.match(output, /BBG00QPYJ5H0\s+instrument-uid\s+123.45\s+2026-06-19T10:00:00.000Z/);
+      assert.match(
+        output,
+        /BBG00QPYJ5H0\s+instrument-uid\s+123.45\s+2026-06-19T10:00:00.000Z/
+      );
     });
 
     test('formats report as json', () => {

@@ -27,20 +27,24 @@ describe('instrument id options', () => {
 
     test('rejects ambiguous canonical and deprecated options', () => {
       assert.throws(
-        () => resolveInstrumentIdOption({
-          'instrument-id': 'instrument-id',
-          figi: 'figi-id'
-        }),
+        () =>
+          resolveInstrumentIdOption({
+            'instrument-id': 'instrument-id',
+            figi: 'figi-id'
+          }),
         /Use either '--instrument-id' or deprecated '--figi', not both/
       );
     });
 
-    test('requires canonical instrument-id when both options are absent', () => {
-      assert.throws(
-        () => resolveInstrumentIdOption({}),
-        /Expected '--instrument-id'/
-      );
-    });
+    test(
+      'requires canonical instrument-id when both options are absent',
+      () => {
+        assert.throws(
+          () => resolveInstrumentIdOption({}),
+          /Expected '--instrument-id'/
+        );
+      }
+    );
   });
 
   describe('resolveOptionalInstrumentIdOption', () => {

@@ -2,7 +2,8 @@
  * Модуль CLI-репортинга команды `order show`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
 import type { OrderStateReport } from '../../../application/reports';
@@ -19,7 +20,9 @@ export const orderStateFormats = ordersFormats;
 
 export type OrderStateFormat = OrdersFormat;
 
-export function createSingleOrderStateReport(order: OrderState): OrderStateReport {
+export function createSingleOrderStateReport(
+  order: OrderState
+): OrderStateReport {
   return createOrderStateReport(order);
 }
 
@@ -63,6 +66,9 @@ export function formatOrderStateReport(
   ]);
 }
 
-export function formatOrderState(order: OrderState, format: OrderStateFormat): string {
+export function formatOrderState(
+  order: OrderState,
+  format: OrderStateFormat
+): string {
   return formatOrderStateReport(createSingleOrderStateReport(order), format);
 }

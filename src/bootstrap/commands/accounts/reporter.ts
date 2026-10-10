@@ -2,10 +2,14 @@
  * Модуль CLI-репортинга команды `account list`.
  *
  * Здесь допустимы mapping generated DTO в application report contract и
- * presentation formatting. Разбор command options и запуск SDK остаются в `cli.ts`.
+ * presentation formatting. Разбор command options и запуск SDK остаются в
+ * `cli.ts`.
  */
 
-import type { AccountsReport, AccountsReportAccount } from '../../../application/reports';
+import type {
+  AccountsReport,
+  AccountsReportAccount
+} from '../../../application/reports';
 import {
   accessLevelToJSON,
   accountStatusToJSON,
@@ -37,7 +41,10 @@ export function createAccountsReport(accounts: Account[]): AccountsReport {
   return accounts.map(toReportAccount);
 }
 
-export function formatAccountsReport(report: AccountsReport, format: AccountsFormat): string {
+export function formatAccountsReport(
+  report: AccountsReport,
+  format: AccountsFormat
+): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -56,6 +63,9 @@ export function formatAccountsReport(report: AccountsReport, format: AccountsFor
   ]);
 }
 
-export function formatAccounts(accounts: Account[], format: AccountsFormat): string {
+export function formatAccounts(
+  accounts: Account[],
+  format: AccountsFormat
+): string {
   return formatAccountsReport(createAccountsReport(accounts), format);
 }

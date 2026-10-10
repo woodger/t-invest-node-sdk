@@ -6,7 +6,8 @@
  * - преобразование CLI options в generated request;
  * - выполнение короткого SDK lifecycle через общий bootstrap helper;
  *
- * Здесь не должно быть ручного table/json rendering или application report contracts.
+ * Здесь не должно быть ручного table/json rendering или application report
+ * contracts.
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -23,19 +24,27 @@ import {
   assertSideEffectConfirmed,
   sideEffectConfirmationOptionsSchema
 } from '../../args/side-effect-args';
-import { formatOpenSandboxAccount, openSandboxAccountFormats } from './reporter';
+import {
+  formatOpenSandboxAccount,
+  openSandboxAccountFormats
+} from './reporter';
 
 type SandboxOpenAccountSdk = {
   sandbox: {
-    openSandboxAccount(request: OpenSandboxAccountRequest): Promise<OpenSandboxAccountResponse>;
+    openSandboxAccount(
+      request: OpenSandboxAccountRequest
+    ): Promise<OpenSandboxAccountResponse>;
   };
   close(): void;
 };
 
-type SandboxOpenAccountSdkFactory = (options: TInvestOptions) => SandboxOpenAccountSdk;
+type SandboxOpenAccountSdkFactory = (
+  options: TInvestOptions
+) => SandboxOpenAccountSdk;
 
 const sandboxOpenAccountCommandPath = ['sandbox', 'account', 'open'] as const;
-const defaultSandboxOpenAccountSdkFactory: SandboxOpenAccountSdkFactory = (options) => new TInvestNodeSDK(options);
+const defaultSandboxOpenAccountSdkFactory: SandboxOpenAccountSdkFactory =
+  (options) => new TInvestNodeSDK(options);
 
 const sandboxOpenAccountFormatOptionsSchema = {
   format: {
@@ -50,7 +59,9 @@ const sandboxOpenAccountOptionsSchema = withSdkOptions(
   sandboxOpenAccountFormatOptionsSchema
 );
 
-type SandboxOpenAccountOptions = InferOptions<typeof sandboxOpenAccountOptionsSchema>;
+type SandboxOpenAccountOptions = InferOptions<
+  typeof sandboxOpenAccountOptionsSchema
+>;
 
 export function createSandboxOpenAccountCommand(
   createSdk: SandboxOpenAccountSdkFactory = defaultSandboxOpenAccountSdkFactory
@@ -74,7 +85,9 @@ async function runSandboxOpenAccountCommand(
 
   const { format } = options;
   return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.openSandboxAccount(createSandboxOpenAccountRequest());
+    const response = await sdk.sandbox.openSandboxAccount(
+      createSandboxOpenAccountRequest()
+    );
 
     return formatOpenSandboxAccount(response, format);
   });

@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import {
   describe,
-  test } from 'node:test';
+  test
+} from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { Brand,
+import type {
+  Brand,
   GetBrandsRequest,
   GetBrandsResponse
 } from '../../../generated/instruments';
@@ -24,7 +26,9 @@ function brand(overrides: Partial<Brand> = {}): Brand {
   } as Brand;
 }
 
-function response(overrides: Partial<GetBrandsResponse> = {}): GetBrandsResponse {
+function response(
+  overrides: Partial<GetBrandsResponse> = {}
+): GetBrandsResponse {
   return {
     brands: [brand()],
     ...overrides
@@ -93,17 +97,18 @@ describe('brands command', () => {
       }));
 
       await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'brand',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
+        () =>
+          commandFacade.run(
+            command,
+            [
+              'instrument',
+              'brand',
+              'list',
+              '--token=token',
+              '--endpoint=localhost:50051'
+            ],
+            undefined
+          ),
         /api failed/
       );
 

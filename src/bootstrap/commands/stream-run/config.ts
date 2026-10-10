@@ -48,7 +48,8 @@ export type StreamRunConfig = {
     requests?: never;
   }
   | {
-    stream: 'operations.portfolioStream' | 'operations.positionsStream' | 'orders.tradesStream';
+    stream: 'operations.portfolioStream' | 'operations.positionsStream'
+      | 'orders.tradesStream';
     accounts: string[];
     requests?: never;
     subscriptions?: never;
@@ -131,9 +132,12 @@ const allowedMarketDataStreamRequestTypes = [
   'getMySubscriptions'
 ] as const;
 
-type MarketDataStreamRequestType = typeof allowedMarketDataStreamRequestTypes[number];
+type MarketDataStreamRequestType =
+  typeof allowedMarketDataStreamRequestTypes[number];
 
-const allowedMarketDataStreamRequestTypeSet = new Set<string>(allowedMarketDataStreamRequestTypes);
+const allowedMarketDataStreamRequestTypeSet = new Set<string>(
+  allowedMarketDataStreamRequestTypes
+);
 
 const candleIntervalAliases = {
   '1min': SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE,
@@ -157,9 +161,18 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
   const runtime = parseRuntime(config['runtime']);
 
   if (stream === 'marketdata.marketDataStream') {
-    assertAbsent(config['accounts'], "Expected 'accounts' to be omitted for marketdata stream config");
-    assertAbsent(config['subscriptions'], "Expected 'subscriptions' to be omitted for marketdata bidirectional stream config");
-    assertAbsent(config['rawRequests'], "Expected 'rawRequests' to be omitted for marketdata bidirectional stream config");
+    assertAbsent(
+      config['accounts'],
+      "Expected 'accounts' to be omitted for marketdata stream config"
+    );
+    assertAbsent(
+      config['subscriptions'],
+      "Expected 'subscriptions' to be omitted for marketdata bidirectional stream config"
+    );
+    assertAbsent(
+      config['rawRequests'],
+      "Expected 'rawRequests' to be omitted for marketdata bidirectional stream config"
+    );
 
     return {
       stream,
@@ -169,9 +182,18 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
   }
 
   if (stream === 'marketdata.marketDataServerSideStream') {
-    assertAbsent(config['accounts'], "Expected 'accounts' to be omitted for marketdata stream config");
-    assertAbsent(config['requests'], "Expected 'requests' to be omitted for marketdata server-side stream config");
-    assertAbsent(config['rawRequests'], "Expected 'rawRequests' to be omitted for marketdata server-side stream config");
+    assertAbsent(
+      config['accounts'],
+      "Expected 'accounts' to be omitted for marketdata stream config"
+    );
+    assertAbsent(
+      config['requests'],
+      "Expected 'requests' to be omitted for marketdata server-side stream config"
+    );
+    assertAbsent(
+      config['rawRequests'],
+      "Expected 'rawRequests' to be omitted for marketdata server-side stream config"
+    );
 
     return {
       stream,
@@ -180,9 +202,18 @@ export function parseStreamRunConfig(json: string): StreamRunConfig {
     };
   }
 
-  assertAbsent(config['subscriptions'], `Expected 'subscriptions' to be omitted for ${stream} config`);
-  assertAbsent(config['requests'], `Expected 'requests' to be omitted for ${stream} config`);
-  assertAbsent(config['rawRequests'], `Expected 'rawRequests' to be omitted for ${stream} config`);
+  assertAbsent(
+    config['subscriptions'],
+    `Expected 'subscriptions' to be omitted for ${stream} config`
+  );
+  assertAbsent(
+    config['requests'],
+    `Expected 'requests' to be omitted for ${stream} config`
+  );
+  assertAbsent(
+    config['rawRequests'],
+    `Expected 'rawRequests' to be omitted for ${stream} config`
+  );
 
   return {
     stream,
@@ -197,7 +228,9 @@ function parseStreamName(value: unknown): StreamRunStreamName {
   }
 
   if (!streamRunStreamNameSet.has(value)) {
-    throw new CliUsageError(`Expected 'stream' as one of: ${streamRunStreamNames.join(', ')}`);
+    throw new CliUsageError(
+      `Expected 'stream' as one of: ${streamRunStreamNames.join(', ')}`
+    );
   }
 
   return value as StreamRunStreamName;
@@ -213,10 +246,21 @@ function parseRuntime(value: unknown): StreamRunRuntime {
 
   return {
     format: parseRuntimeFormat(runtime['format']),
-    maxEvents: parseOptionalPositiveInteger(runtime['maxEvents'], 'runtime.maxEvents'),
-    durationMs: parseOptionalPositiveInteger(runtime['durationMs'], 'runtime.durationMs'),
-    idleTimeoutMs: parseOptionalPositiveInteger(runtime['idleTimeoutMs'], 'runtime.idleTimeoutMs'),
-    includePings: parseOptionalBoolean(runtime['includePings'], 'runtime.includePings') ?? false,
+    maxEvents: parseOptionalPositiveInteger(
+      runtime['maxEvents'],
+      'runtime.maxEvents'
+    ),
+    durationMs: parseOptionalPositiveInteger(
+      runtime['durationMs'],
+      'runtime.durationMs'
+    ),
+    idleTimeoutMs: parseOptionalPositiveInteger(
+      runtime['idleTimeoutMs'],
+      'runtime.idleTimeoutMs'
+    ),
+    includePings:
+      parseOptionalBoolean(runtime['includePings'], 'runtime.includePings')
+        ?? false,
     includeSubscriptionEvents: parseOptionalBoolean(
       runtime['includeSubscriptionEvents'],
       'runtime.includeSubscriptionEvents'
@@ -242,26 +286,43 @@ function parseRuntimeFormat(value: unknown): 'jsonl' {
   throw new CliUsageError("Expected 'runtime.format' as one of: jsonl");
 }
 
-function parseMarketDataStreamRequests(value: unknown): MarketDataStreamRequestConfig[] {
-  const requests = parseArray(value, 'requests').map(parseMarketDataStreamRequest);
+function parseMarketDataStreamRequests(
+  value: unknown
+): MarketDataStreamRequestConfig[] {
+  const requests = parseArray(value, 'requests').map(
+    parseMarketDataStreamRequest
+  );
 
   if (requests.length === 0) {
-    throw new CliUsageError("Expected 'requests' to contain at least one market data stream request");
+    throw new CliUsageError(
+      "Expected 'requests' to contain at least one market data stream request"
+    );
   }
 
   return requests;
 }
 
-function parseMarketDataStreamRequest(value: unknown): MarketDataStreamRequestConfig {
+function parseMarketDataStreamRequest(
+  value: unknown
+): MarketDataStreamRequestConfig {
   const request = requireObject(value, 'requests[]');
   const requestType = parseMarketDataStreamRequestType(request['type']);
 
   switch (requestType) {
     case 'subscribeCandles': {
-      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+      rejectUnknownFields(
+        request,
+        new Set(['type', 'instruments']),
+        'requests[]'
+      );
 
-      const instruments = parseArray(request['instruments'], 'requests[].instruments')
-        .map((item) => parseCandleSubscription(item, 'requests[].instruments[]'));
+      const instruments = parseArray(
+        request['instruments'],
+        'requests[].instruments'
+      )
+        .map((item) =>
+          parseCandleSubscription(item, 'requests[].instruments[]')
+        );
 
       validateCandlesWaitingClose(instruments);
 
@@ -272,23 +333,41 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataStreamRequestCo
     }
 
     case 'subscribeOrderBook':
-      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+      rejectUnknownFields(
+        request,
+        new Set(['type', 'instruments']),
+        'requests[]'
+      );
 
       return {
         type: requestType,
-        instruments: parseArray(request['instruments'], 'requests[].instruments')
-          .map((item) => parseOrderBookSubscription(item, 'requests[].instruments[]'))
+        instruments: parseArray(
+          request['instruments'],
+          'requests[].instruments'
+        )
+          .map((item) =>
+            parseOrderBookSubscription(item, 'requests[].instruments[]')
+          )
       };
 
     case 'subscribeTrades':
     case 'subscribeInfo':
     case 'subscribeLastPrice':
-      rejectUnknownFields(request, new Set(['type', 'instruments']), 'requests[]');
+      rejectUnknownFields(
+        request,
+        new Set(['type', 'instruments']),
+        'requests[]'
+      );
 
       return {
         type: requestType,
-        instruments: parseArray(request['instruments'], 'requests[].instruments')
-          .map((item) => parseInstrumentSubscription(item, 'requests[].instruments[]'))
+        instruments: parseArray(
+          request['instruments'],
+          'requests[].instruments'
+        )
+          .map((item) =>
+            parseInstrumentSubscription(item, 'requests[].instruments[]')
+          )
       };
 
     case 'getMySubscriptions':
@@ -300,13 +379,19 @@ function parseMarketDataStreamRequest(value: unknown): MarketDataStreamRequestCo
   }
 }
 
-function parseMarketDataStreamRequestType(value: unknown): MarketDataStreamRequestType {
+function parseMarketDataStreamRequestType(
+  value: unknown
+): MarketDataStreamRequestType {
   if (typeof value !== 'string') {
     throw new CliUsageError("Expected 'requests[].type' as string");
   }
 
   if (!allowedMarketDataStreamRequestTypeSet.has(value)) {
-    throw new CliUsageError(`Expected 'requests[].type' as one of: ${allowedMarketDataStreamRequestTypes.join(', ')}`);
+    throw new CliUsageError(
+      `Expected 'requests[].type' as one of: ${
+        allowedMarketDataStreamRequestTypes.join(', ')
+      }`
+    );
   }
 
   return value as MarketDataStreamRequestType;
@@ -314,25 +399,50 @@ function parseMarketDataStreamRequestType(value: unknown): MarketDataStreamReque
 
 function parseMarketDataSubscriptions(value: unknown): MarketDataSubscriptions {
   const subscriptions = requireObject(value, 'subscriptions');
-  rejectUnknownFields(subscriptions, allowedSubscriptionFields, 'subscriptions');
+  rejectUnknownFields(
+    subscriptions,
+    allowedSubscriptionFields,
+    'subscriptions'
+  );
 
   const result = {
-    candles: parseOptionalArray(subscriptions['candles'], 'subscriptions.candles')
+    candles: parseOptionalArray(
+      subscriptions['candles'],
+      'subscriptions.candles'
+    )
       ?.map((item) => parseCandleSubscription(item, 'subscriptions.candles[]')),
-    orderBooks: parseOptionalArray(subscriptions['orderBooks'], 'subscriptions.orderBooks')
-      ?.map((item) => parseOrderBookSubscription(item, 'subscriptions.orderBooks[]')),
+    orderBooks: parseOptionalArray(
+      subscriptions['orderBooks'],
+      'subscriptions.orderBooks'
+    )
+      ?.map((item) =>
+        parseOrderBookSubscription(item, 'subscriptions.orderBooks[]')
+      ),
     trades: parseOptionalArray(subscriptions['trades'], 'subscriptions.trades')
-      ?.map((item) => parseInstrumentSubscription(item, 'subscriptions.trades[]')),
+      ?.map((item) =>
+        parseInstrumentSubscription(item, 'subscriptions.trades[]')
+      ),
     info: parseOptionalArray(subscriptions['info'], 'subscriptions.info')
-      ?.map((item) => parseInstrumentSubscription(item, 'subscriptions.info[]')),
-    lastPrices: parseOptionalArray(subscriptions['lastPrices'], 'subscriptions.lastPrices')
-      ?.map((item) => parseInstrumentSubscription(item, 'subscriptions.lastPrices[]'))
+      ?.map((item) =>
+        parseInstrumentSubscription(item, 'subscriptions.info[]')
+      ),
+    lastPrices: parseOptionalArray(
+      subscriptions['lastPrices'],
+      'subscriptions.lastPrices'
+    )
+      ?.map((item) =>
+        parseInstrumentSubscription(item, 'subscriptions.lastPrices[]')
+      )
   };
 
-  const hasSubscriptions = Object.values(result).some((items) => (items?.length ?? 0) > 0);
+  const hasSubscriptions = Object.values(result).some((items) =>
+    (items?.length ?? 0) > 0
+  );
 
   if (!hasSubscriptions) {
-    throw new CliUsageError("Expected 'subscriptions' to contain at least one market data subscription");
+    throw new CliUsageError(
+      "Expected 'subscriptions' to contain at least one market data subscription"
+    );
   }
 
   if (result.candles !== undefined) {
@@ -354,7 +464,10 @@ function parseCandleSubscription(
   );
 
   return {
-    instrumentId: parseInstrumentId(candle['instrumentId'], `${path}.instrumentId`),
+    instrumentId: parseInstrumentId(
+      candle['instrumentId'],
+      `${path}.instrumentId`
+    ),
     interval: parseCandleInterval(candle['interval'], `${path}.interval`),
     waitingClose: parseOptionalBoolean(
       candle['waitingClose'],
@@ -374,11 +487,16 @@ function parseOrderBookSubscription(
     path
   );
 
-  const instrumentId = parseInstrumentId(orderBook['instrumentId'], `${path}.instrumentId`);
+  const instrumentId = parseInstrumentId(
+    orderBook['instrumentId'],
+    `${path}.instrumentId`
+  );
   const depth = parsePositiveInteger(orderBook['depth'], `${path}.depth`);
 
   if (depth > 2_147_483_647) {
-    throw new CliUsageError(`Expected '${path}.depth' to be less than or equal to 2147483647`);
+    throw new CliUsageError(
+      `Expected '${path}.depth' to be less than or equal to 2147483647`
+    );
   }
 
   return {
@@ -395,11 +513,17 @@ function parseInstrumentSubscription(
   rejectUnknownFields(instrument, new Set(['instrumentId']), path);
 
   return {
-    instrumentId: parseInstrumentId(instrument['instrumentId'], `${path}.instrumentId`)
+    instrumentId: parseInstrumentId(
+      instrument['instrumentId'],
+      `${path}.instrumentId`
+    )
   };
 }
 
-function parseCandleInterval(value: unknown, path: string): SubscriptionInterval {
+function parseCandleInterval(
+  value: unknown,
+  path: string
+): SubscriptionInterval {
   if (typeof value !== 'string') {
     throw new CliUsageError(`Expected '${path}' as string`);
   }
@@ -412,10 +536,14 @@ function parseCandleInterval(value: unknown, path: string): SubscriptionInterval
 }
 
 function parseAccountIds(value: unknown, stream: string): string[] {
-  const accounts = parseArray(value, 'accounts').map((item) => parseInstrumentId(item, 'accounts[]'));
+  const accounts = parseArray(value, 'accounts').map((item) =>
+    parseInstrumentId(item, 'accounts[]')
+  );
 
   if (accounts.length === 0) {
-    throw new CliUsageError(`Expected 'accounts' to contain at least one account id for ${stream}`);
+    throw new CliUsageError(
+      `Expected 'accounts' to contain at least one account id for ${stream}`
+    );
   }
 
   return accounts;
@@ -429,7 +557,10 @@ function parseInstrumentId(value: unknown, path: string): string {
   return value;
 }
 
-function parseOptionalBoolean(value: unknown, path: string): boolean | undefined {
+function parseOptionalBoolean(
+  value: unknown,
+  path: string
+): boolean | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -441,7 +572,10 @@ function parseOptionalBoolean(value: unknown, path: string): boolean | undefined
   return value;
 }
 
-function parseOptionalPositiveInteger(value: unknown, path: string): number | undefined {
+function parseOptionalPositiveInteger(
+  value: unknown,
+  path: string
+): number | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -457,7 +591,10 @@ function parsePositiveInteger(value: unknown, path: string): number {
   return value;
 }
 
-function parseOptionalArray(value: unknown, path: string): unknown[] | undefined {
+function parseOptionalArray(
+  value: unknown,
+  path: string
+): unknown[] | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -499,16 +636,22 @@ function assertAbsent(value: unknown, message: string): void {
   }
 }
 
-export function resolveCandlesWaitingClose(candles: CandleSubscriptionConfig[]): boolean {
+export function resolveCandlesWaitingClose(
+  candles: CandleSubscriptionConfig[]
+): boolean {
   validateCandlesWaitingClose(candles);
 
   return candles[0]?.waitingClose ?? false;
 }
 
-function validateCandlesWaitingClose(candles: CandleSubscriptionConfig[]): void {
+function validateCandlesWaitingClose(
+  candles: CandleSubscriptionConfig[]
+): void {
   const waitingClose = candles[0]?.waitingClose ?? false;
 
   if (candles.some((item) => item.waitingClose !== waitingClose)) {
-    throw new CliUsageError("Expected 'subscriptions.candles[].waitingClose' to be the same for one request");
+    throw new CliUsageError(
+      "Expected 'subscriptions.candles[].waitingClose' to be the same for one request"
+    );
   }
 }

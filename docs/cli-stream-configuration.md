@@ -1,10 +1,10 @@
 # Справочник конфигурации потокового CLI
 
-> Type: Reference. Здесь описан JSON config для команды `t-invest-node-sdk stream run --config=PATH`.
+> Type: Reference. Здесь описан JSON-файл конфигурации для команды `t-invest-node-sdk stream run --config=PATH`.
 
 ## Цель
 
-Stream config следует generated gRPC contracts и не скрывает смысл SDK/API, но избавляет пользователя от ручной сборки generated DTO для типовых подписок.
+Конфигурация выбирает поток, подписки и параметры вывода. Для типовых подписок CLI сам собирает запросы по сгенерированным gRPC-контрактам.
 
 Минимальная допустимая конфигурация:
 
@@ -28,11 +28,11 @@ Stream config следует generated gRPC contracts и не скрывает �
 
 | Поле | Тип | Обязательность | Назначение |
 | --- | --- | --- | --- |
-| `stream` | string | всегда | Выбирает stream method |
-| `subscriptions` | object | для server-side Market Data stream | Подписки на рыночные данные |
-| `requests` | object[] | для bidirectional Market Data stream | Статический набор начальных запросов |
-| `accounts` | string[] | для потоков по счетам | Идентификаторы счетов Operations/Orders streams |
-| `runtime` | object | нет | Настройки вывода и lifecycle процесса |
+| `stream` | string | всегда | Выбирает метод потокового API |
+| `subscriptions` | object | для серверного потока рыночных данных | Подписки на рыночные данные |
+| `requests` | object[] | для двустороннего потока рыночных данных | Статический набор начальных запросов |
+| `accounts` | string[] | для потоков по счетам | Идентификаторы счетов в потоках операций и заявок |
+| `runtime` | object | нет | Настройки вывода и завершения процесса |
 
 Допустимые значения `stream`:
 
@@ -42,9 +42,9 @@ Stream config следует generated gRPC contracts и не скрывает �
 - `operations.positionsStream`;
 - `orders.tradesStream`.
 
-`marketdata.marketDataStream` использует отдельное поле `requests`, потому что это bidirectional stream: CLI сначала отправляет заданный в config набор request-ов, а затем читает события provider-а.
+`marketdata.marketDataStream` использует отдельное поле `requests`, потому что это двусторонний поток: CLI сначала отправляет заданный в конфигурации набор запросов, а затем читает события провайдера.
 
-Имя `rawRequests` оставлено для возможного будущего расширения. Сейчас оно не входит в публичный config contract, поэтому parser отклоняет его для любого stream.
+Поле `rawRequests` не поддерживается: проверка конфигурации отклоняет его для любого потока.
 
 ## Настройки runtime
 
@@ -66,11 +66,11 @@ Stream config следует generated gRPC contracts и не скрывает �
 
 - `format` — формат вывода; поддерживается только `jsonl`;
 - `maxEvents` — завершиться после N выведенных событий;
-- `durationMs` — завершиться через N миллисекунд после запуска stream;
+- `durationMs` — завершиться через N миллисекунд после запуска потока;
 - `idleTimeoutMs` — завершиться после N миллисекунд без событий;
 - `includePings` — включать события `ping` в `stdout`;
 - `includeSubscriptionEvents` — включать статусы подписок в `stdout`;
-- `raw` — выводить generated response без нормализованного envelope.
+- `raw` — выводить сгенерированный ответ без общей структуры нормализованного события.
 
 ## Подписки на рыночные данные
 
@@ -119,28 +119,28 @@ Stream config следует generated gRPC contracts и не скрывает �
 
 Значения подписок по умолчанию:
 
-- CLI всегда подписывается через `SUBSCRIPTION_ACTION_SUBSCRIBE`; поле `action` в config не принимается;
+- CLI всегда подписывается через `SUBSCRIPTION_ACTION_SUBSCRIBE`; поле `action` в конфигурации не принимается;
 - устаревшие поля `figi` сгенерированных контрактов сохраняют значения по умолчанию protobuf и не сериализуются;
 - `instrumentId` обязателен для каждого инструмента;
 - `waitingClose` имеет значение `false`;
 - `orderBooks[].depth` обязателен и должен быть целым числом от `1` до `2147483647` (диапазон protobuf `int32`).
 
-Значения `waitingClose` должны совпадать у всех свечных подписок одного запроса. Для server-side stream это весь массив `subscriptions.candles`; для bidirectional stream — `instruments` внутри одного `subscribeCandles` request. Отсутствующее поле считается `false`.
+Значения `waitingClose` должны совпадать у всех свечных подписок одного запроса. Для серверного потока это весь массив `subscriptions.candles`; для двустороннего — `instruments` внутри одного запроса `subscribeCandles`. Отсутствующее поле считается `false`.
 
 Поддерживаемые алиасы интервала свечей:
 
 - `1min`;
 - `5min`.
 
-Другие aliases из unary historical candles CLI не принимаются здесь, потому что generated `SubscriptionInterval` для stream contract сейчас содержит только one-minute и five-minutes интервалы.
+Другие псевдонимы из CLI-команды получения исторических свечей здесь не принимаются: сгенерированный `SubscriptionInterval` для потока содержит только интервалы в одну и пять минут.
 
 ## Сравнение MarketDataStream и MarketDataServerSideStream
 
 `marketdata.marketDataServerSideStream` отправляет один начальный запрос, собранный из поля `subscriptions`, а затем читает события.
 
-`marketdata.marketDataStream` — bidirectional stream. `stream run` поддерживает только статический набор типизированных начальных запросов из config и не читает дополнительные запросы из `stdin`, файлов, таймеров или interactive input.
+`marketdata.marketDataStream` — двусторонний поток. `stream run` поддерживает только статический набор типизированных начальных запросов из конфигурации и не читает дополнительные запросы из `stdin`, файлов, таймеров или интерактивного ввода.
 
-Типизированная bidirectional-форма:
+Типизированная форма двустороннего потока:
 
 ```json
 {
@@ -174,14 +174,14 @@ Stream config следует generated gRPC contracts и не скрывает �
 - `subscribeLastPrice`;
 - `getMySubscriptions`.
 
-Элементы запроса используют те же поля инструмента, что и server-side подписки на рыночные данные:
+Элементы запроса используют те же поля инструмента, что и подписки серверного потока рыночных данных:
 
 - `subscribeCandles` требует `instrumentId` и `interval`; `waitingClose` необязателен;
 - `subscribeOrderBook` требует `instrumentId` и `depth`;
 - `subscribeTrades`, `subscribeInfo` и `subscribeLastPrice` требуют `instrumentId`;
 - `getMySubscriptions` не принимает `instruments`.
 
-Режим raw bidirectional requests сейчас не поддерживается. Используйте поле `requests` и перечисленные выше типизированные варианты.
+Отправка произвольных запросов двустороннего потока не поддерживается. Используйте поле `requests` и перечисленные выше типизированные варианты.
 
 ## Потоки по счетам
 
@@ -227,30 +227,30 @@ Stream config следует generated gRPC contracts и не скрывает �
 Правила:
 
 - `accounts` должен содержать хотя бы один идентификатор счёта;
-- идентификаторы передаются в поле `accounts` generated request;
+- идентификаторы передаются в поле `accounts` сгенерированного запроса;
 - потоки по счетам не используют `subscriptions`;
 - неизвестные поля отклоняются до создания SDK.
 
 ## Правила проверки
 
-Parser отклоняет:
+Проверка конфигурации отклоняет:
 
 - неизвестные значения `stream`;
 - отсутствие `accounts` для потоков по счетам;
-- пустой `subscriptions` для server-side Market Data stream;
+- пустой `subscriptions` для серверного потока рыночных данных;
 - отсутствующий или пустой `requests` для `marketdata.marketDataStream`;
 - неизвестные поля верхнего уровня;
 - неподдерживаемое поле `rawRequests`;
 - неподдерживаемый `runtime.format`;
-- неположительные числовые runtime limits;
+- неположительные числовые ограничения в `runtime`;
 - элементы Market Data без `instrumentId`;
-- generated enum names и aliases, которые не поддерживает config mapper.
+- имена сгенерированных перечислений и псевдонимы, которые не поддерживает преобразователь конфигурации.
 
-CLI проверяет config до создания `TInvestNodeSDK`.
+CLI проверяет конфигурацию до создания `TInvestNodeSDK`.
 
 ## Переопределения через CLI
 
-Runtime options можно переопределить CLI-флагами:
+Настройки из `runtime` можно переопределить CLI-флагами:
 
 ```bash
 t-invest-node-sdk stream run \
@@ -259,9 +259,9 @@ t-invest-node-sdk stream run \
   --include-pings
 ```
 
-Логические runtime-флаги используют синтаксис `--flag` / `--no-flag`. Например, `--no-include-pings` или `--no-raw` отключает значение `true` из config; формы `--flag=true` и `--flag=false` не поддерживаются.
+Доступные флаги и правила переопределения логических значений описаны в [настройках runtime потокового CLI](./cli-stream-reference.md#настройки-runtime).
 
-Подписки и выбор счетов задаются только в config. Благодаря этому командная строка остаётся стабильной и не обрастает множеством хрупких stream-specific флагов.
+Подписки и выбор счетов задаются только в конфигурации. Это позволяет использовать одну команду для разных потоков без отдельного набора флагов для каждого метода.
 
 ## Режимы вывода
 
@@ -277,7 +277,7 @@ Raw-событие при `runtime.raw: true`:
 {"orderTrades":{"orderId":"..."}}
 ```
 
-По умолчанию CLI выводит нормализованные события в едином event envelope для всех stream methods.
+По умолчанию CLI выводит нормализованные события в единой структуре для всех потоковых методов.
 
 ## Связанная документация
 

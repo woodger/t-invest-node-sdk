@@ -35,10 +35,8 @@ import { UnaryLimitResolver } from './unary-limit-resolver';
 
 const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
-const requestSerializationPath =
-  '/test.RequestSerializationService/GetPayload';
-const responseParsingPath =
-  '/test.ResponseParsingService/GetPayload';
+const requestSerializationPath = '/test.RequestSerializationService/GetPayload';
+const responseParsingPath = '/test.ResponseParsingService/GetPayload';
 const oneMiB = 1024 * 1024;
 const twoMiB = 2 * oneMiB;
 const maxReceiveMessageLength = 4 * 1024 * 1024;
@@ -83,97 +81,104 @@ const responseParsingServiceDefinition = {
 type PayloadServiceClient = Client<typeof payloadServiceDefinition>;
 
 describe('createSdkClient', () => {
-  test('infers client methods and signatures from the service definition', () => {
-    type InferredClient = ReturnType<typeof createSdkClient<typeof payloadServiceDefinition>>;
+  test(
+    'infers client methods and signatures from the service definition',
+    () => {
+      type InferredClient = ReturnType<
+        typeof createSdkClient<typeof payloadServiceDefinition>
+      >;
 
-    const matchesDefinition = true satisfies (
-      [InferredClient] extends [PayloadServiceClient]
-        ? [keyof InferredClient] extends [keyof PayloadServiceClient]
-          ? true
+      const matchesDefinition = true satisfies (
+        [InferredClient] extends [PayloadServiceClient]
+          ? [keyof InferredClient] extends [keyof PayloadServiceClient] ? true
           : false
-        : false
-    );
+          : false
+      );
 
-    assert.equal(matchesDefinition, true);
-  });
+      assert.equal(matchesDefinition, true);
+    }
+  );
 
-  test('merges SDK-owned and per-call metadata around limited calls', async () => {
-    const server = createServer();
-    let receivedAuthorization: string | undefined;
-    let receivedAppName: string | undefined;
-    let receivedRequestId: string | undefined;
+  test(
+    'merges SDK-owned and per-call metadata around limited calls',
+    async () => {
+      const server = createServer();
+      let receivedAuthorization: string | undefined;
+      let receivedAppName: string | undefined;
+      let receivedRequestId: string | undefined;
 
-    server.add(payloadServiceDefinition, {
-      async getPayload(request, context) {
-        void request;
+      server.add(payloadServiceDefinition, {
+        async getPayload(request, context) {
+          void request;
 
-        receivedAuthorization = context.metadata.get('Authorization');
-        receivedAppName = context.metadata.get('x-app-name');
-        receivedRequestId = context.metadata.get('x-request-id');
+          receivedAuthorization = context.metadata.get('Authorization');
+          receivedAppName = context.metadata.get('x-app-name');
+          receivedRequestId = context.metadata.get('x-request-id');
 
-        return payload;
-      }
-    });
-
-    const port = await server.listen('127.0.0.1:0');
-    const channel = createSdkChannel({
-      token: 'token',
-      endpoint: `127.0.0.1:${port}`,
-      useSsl: false
-    }, 4 * 1024 * 1024);
-    let limiterContext: TInvestUnaryLimitContext | undefined;
-    const limiter: TInvestUnaryLimiter = {
-      async acquire(context) {
-        limiterContext = context;
-      }
-    };
-
-    const lifecycleController = new AbortController();
-    const client = createSdkClient(
-      payloadServiceDefinition,
-      channel,
-      new Metadata({
-        Authorization: 'Bearer token',
-        'x-app-name': 'sdk-app'
-      }),
-      limiter,
-      new UnaryLimitResolver({
-        PayloadService: {
-          maxRequests: 60,
-          windowMs: 60_000
+          return payload;
         }
-      }),
-      {
-        useSsl: false,
-        maxReceiveMessageLength,
-        signal: lifecycleController.signal,
-        // Сценарий metadata не проверяет отказ закрытого lifecycle.
-        // oxlint-disable-next-line no-empty-function
-        assertOpen() {}
-      }
-    );
-
-    try {
-      const response = await client.getPayload({}, {
-        metadata: new Metadata({
-          Authorization: 'Bearer per-call-token',
-          'x-app-name': 'per-call-app',
-          'x-request-id': 'request-id'
-        })
       });
 
-      assert.deepEqual([...response], [...payload]);
-      assert.equal(receivedAuthorization, 'Bearer token');
-      assert.equal(receivedAppName, 'sdk-app');
-      assert.equal(receivedRequestId, 'request-id');
-      assert.equal(limiterContext?.quota.maxRequests, 60);
-      assert.equal(limiterContext?.path, payloadPath);
+      const port = await server.listen('127.0.0.1:0');
+      const channel = createSdkChannel({
+        token: 'token',
+        endpoint: `127.0.0.1:${port}`,
+        useSsl: false
+      }, 4 * 1024 * 1024);
+      let limiterContext: TInvestUnaryLimitContext | undefined;
+      const limiter: TInvestUnaryLimiter = {
+        async acquire(context) {
+          limiterContext = context;
+        }
+      };
+
+      const lifecycleController = new AbortController();
+      const client = createSdkClient(
+        payloadServiceDefinition,
+        channel,
+        new Metadata({
+          Authorization: 'Bearer token',
+          'x-app-name': 'sdk-app'
+        }),
+        limiter,
+        new UnaryLimitResolver({
+          PayloadService: {
+            maxRequests: 60,
+            windowMs: 60_000
+          }
+        }),
+        {
+          useSsl: false,
+          maxReceiveMessageLength,
+          signal: lifecycleController.signal,
+          // Сценарий metadata не проверяет отказ закрытого lifecycle.
+          // oxlint-disable-next-line no-empty-function
+          assertOpen() {}
+        }
+      );
+
+      try {
+        const response = await client.getPayload({}, {
+          metadata: new Metadata({
+            Authorization: 'Bearer per-call-token',
+            'x-app-name': 'per-call-app',
+            'x-request-id': 'request-id'
+          })
+        });
+
+        assert.deepEqual([...response], [...payload]);
+        assert.equal(receivedAuthorization, 'Bearer token');
+        assert.equal(receivedAppName, 'sdk-app');
+        assert.equal(receivedRequestId, 'request-id');
+        assert.equal(limiterContext?.quota.maxRequests, 60);
+        assert.equal(limiterContext?.path, payloadPath);
+      }
+      finally {
+        channel.close();
+        await server.shutdown();
+      }
     }
-    finally {
-      channel.close();
-      await server.shutdown();
-    }
-  });
+  );
 
   test('rejects a unary call when the header callback throws', async () => {
     const server = createServer();
@@ -275,12 +280,13 @@ describe('createSdkClient', () => {
     try {
       await assert.rejects(
         client.getPayload({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.Internal)
           && error.source === 'sdk'
           && error.path === requestSerializationPath
           && error.details?.startsWith(
-            'Request message serialization failure:'
-          ) === true
+              'Request message serialization failure:'
+            ) === true
           && error.cause instanceof ClientError
       );
       assert.equal(handlerCalls, 0);
@@ -316,12 +322,13 @@ describe('createSdkClient', () => {
     try {
       await assert.rejects(
         client.getPayload({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.Internal)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.Internal)
           && error.source === 'sdk'
           && error.path === responseParsingPath
           && error.details?.startsWith(
-            'Response message parsing error:'
-          ) === true
+              'Response message parsing error:'
+            ) === true
           && error.cause instanceof ClientError
       );
     }
@@ -331,45 +338,48 @@ describe('createSdkClient', () => {
     }
   });
 
-  test('maps a local receive message limit failure to the SDK source', async () => {
-    const server = createServer();
+  test(
+    'maps a local receive message limit failure to the SDK source',
+    async () => {
+      const server = createServer();
 
-    server.add(payloadServiceDefinition, {
-      async getPayload() {
-        return new Uint8Array(twoMiB);
-      }
-    });
-
-    const port = await server.listen('127.0.0.1:0');
-    const channel = createSdkChannel({
-      token: 'token',
-      endpoint: `127.0.0.1:${port}`,
-      useSsl: false
-    }, oneMiB);
-    const client = createPayloadClient(channel, false, oneMiB);
-
-    try {
-      await assert.rejects(
-        client.getPayload({}),
-        (error: unknown) => {
-          if (
-            !isSdkError(error, SdkErrorCode.ResourceExhausted)
-            || !(error.cause instanceof ClientError)
-          ) {
-            return false;
-          }
-
-          return error.source === 'sdk'
-            && error.path === payloadPath
-            && error.details === error.cause.details;
+      server.add(payloadServiceDefinition, {
+        async getPayload() {
+          return new Uint8Array(twoMiB);
         }
-      );
+      });
+
+      const port = await server.listen('127.0.0.1:0');
+      const channel = createSdkChannel({
+        token: 'token',
+        endpoint: `127.0.0.1:${port}`,
+        useSsl: false
+      }, oneMiB);
+      const client = createPayloadClient(channel, false, oneMiB);
+
+      try {
+        await assert.rejects(
+          client.getPayload({}),
+          (error: unknown) => {
+            if (
+              !isSdkError(error, SdkErrorCode.ResourceExhausted)
+              || !(error.cause instanceof ClientError)
+            ) {
+              return false;
+            }
+
+            return error.source === 'sdk'
+              && error.path === payloadPath
+              && error.details === error.cause.details;
+          }
+        );
+      }
+      finally {
+        channel.close();
+        await server.shutdown();
+      }
     }
-    finally {
-      channel.close();
-      await server.shutdown();
-    }
-  });
+  );
 
   test('keeps provider quota exhaustion in the gRPC source', async () => {
     const server = createServer();
@@ -465,7 +475,8 @@ describe('createSdkClient', () => {
     try {
       await assert.rejects(
         client.getPayload({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.Unavailable)
           && error.source === 'tls'
           && error.path === payloadPath
       );
@@ -495,7 +506,8 @@ describe('createSdkClient', () => {
     try {
       await assert.rejects(
         client.getPayload({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
+        (error: unknown) =>
+          isSdkError(error, SdkErrorCode.Unavailable)
           && error.source === 'grpc'
           && error.path === payloadPath
           && error.details === 'temporarily unavailable'
@@ -507,41 +519,47 @@ describe('createSdkClient', () => {
     }
   });
 
-  test('keeps provider certificate diagnostics in the gRPC source after a valid TLS handshake', async () => {
-    const details = 'provider backend certificate rotation failed: CERT_HAS_EXPIRED';
-    const server = createPayloadTlsServer(Status.UNAVAILABLE, details);
-    const port = await listen(server);
-    const channel = createSdkChannel({
-      token: 'token',
-      endpoint: `localhost:${port}`,
-      useSsl: true,
-      tls: {
-        rootCertificates: readTlsFixture('tls-root.cert.pem')
-      }
-    }, maxReceiveMessageLength);
-    const client = createPayloadClient(channel, true);
+  test(
+    'keeps provider certificate diagnostics in the gRPC source after a valid TLS handshake',
+    async () => {
+      const details =
+        'provider backend certificate rotation failed: CERT_HAS_EXPIRED';
+      const server = createPayloadTlsServer(Status.UNAVAILABLE, details);
+      const port = await listen(server);
+      const channel = createSdkChannel({
+        token: 'token',
+        endpoint: `localhost:${port}`,
+        useSsl: true,
+        tls: {
+          rootCertificates: readTlsFixture('tls-root.cert.pem')
+        }
+      }, maxReceiveMessageLength);
+      const client = createPayloadClient(channel, true);
 
-    try {
-      await assert.rejects(
-        client.getPayload({}),
-        (error: unknown) => isSdkError(error, SdkErrorCode.Unavailable)
-          && error.source === 'grpc'
-          && error.path === payloadPath
-          && error.details === details
-      );
+      try {
+        await assert.rejects(
+          client.getPayload({}),
+          (error: unknown) =>
+            isSdkError(error, SdkErrorCode.Unavailable)
+            && error.source === 'grpc'
+            && error.path === payloadPath
+            && error.details === details
+        );
+      }
+      finally {
+        channel.close();
+        await close(server);
+      }
     }
-    finally {
-      channel.close();
-      await close(server);
-    }
-  });
+  );
 });
 
 function createPayloadClient(
   channel: Channel,
   useSsl: boolean,
   receiveMessageLength: number = maxReceiveMessageLength,
-  service: typeof payloadServiceDefinition
+  service:
+    | typeof payloadServiceDefinition
     | typeof requestSerializationServiceDefinition
     | typeof responseParsingServiceDefinition = payloadServiceDefinition
 ): PayloadServiceClient {
@@ -595,9 +613,7 @@ function createPayloadTlsServer(
       stream.once('wantTrailers', () => {
         stream.sendTrailers({
           'grpc-status': String(grpcStatus),
-          ...(grpcDetails === undefined
-            ? {}
-            : { 'grpc-message': grpcDetails })
+          ...(grpcDetails === undefined ? {} : { 'grpc-message': grpcDetails })
         });
       });
       stream.end(grpcStatus === Status.OK ? frame : undefined);
