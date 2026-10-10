@@ -16,7 +16,7 @@ npm run cli -- dev compile-proto
 
 Официальный источник контрактов — активный репозиторий [`invest-contracts`](https://opensource.tbank.ru/invest/invest-contracts). [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит точные тег и коммит. Файлы T-Invest лежат в плоской структуре `contracts/*.proto`, а сгенерированный TypeScript — в `src/generated/*.ts`. Генератор читает только локальные файлы и не скачивает контракты из внешнего репозитория.
 
-Контракты и производный сгенерированный код распространяются по [Apache License 2.0](../../LICENSE-APACHE-2.0). Происхождение компонентов и необходимые уведомления приведены в [`NOTICE`](../../NOTICE).
+Контракты и производный сгенерированный код распространяются по [Apache License 2.0](../LICENSE-APACHE-2.0). Происхождение компонентов и необходимые уведомления приведены в [`NOTICE`](../NOTICE).
 
 Вспомогательные `google/protobuf/descriptor.proto` и `google/protobuf/timestamp.proto` взяты из официального выпуска protobuf `v32.1`; тот же manifest хранит их источник. `package.json` закрепляет версию компилятора, сейчас это `protoc 36.2`.
 

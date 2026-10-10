@@ -32,7 +32,7 @@
 
 - [Архитектура SDK](./architecture.md) — карта слоёв и ответственность компонентов.
 - [Заметки по Clean Architecture](./clean-architecture/index.md) — контракты приложения, устройство команд, форматирование и вывод.
-- [Разработка и выпуск версии](./development/index.md) — обновление proto и генерация TypeScript.
+- [Разработка и выпуск версии](https://github.com/woodger/t-invest-node-sdk/blob/main/docs/development.md) — обновление proto и генерация TypeScript.
 - [Источник контрактов](../contracts/upstream.json) — закреплённые версия и коммит T-Invest API.
 - [Политики проекта](./policy/index.md) — правила внесения изменений.
 - [Политика документации](./policy/documentation-policy.md) — выбор источника истины и назначение документов.
