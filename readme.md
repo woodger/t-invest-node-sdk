@@ -12,7 +12,7 @@
 
 ## Установка
 
-Пакет `@woodger/t-invest-node-sdk` требует Node.js `>=20.19.0`. Установите его из npm:
+Модуль `@woodger/t-invest-node-sdk` требует Node.js `>=20.19.0`. Установите его из npm:
 
 ```sh
 npm install @woodger/t-invest-node-sdk
@@ -116,7 +116,7 @@ interface TInvestNodeSDKConfig {
 
 ## Политика gRPC-транспорта
 
-SDK принимает входящие gRPC-сообщения размером не более 4 MiB. Лимит задан самим пакетом; изменить его для отдельного экземпляра SDK нельзя.
+SDK принимает входящие gRPC-сообщения размером не более 4 MiB. Лимит задан самим модулем; изменить его для отдельного экземпляра SDK нельзя.
 
 ## CLI
 
@@ -177,7 +177,7 @@ npm run cli -- <domain> <command> --help
 
 ### Ошибки SDK
 
-Корень пакета экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. Сначала проверьте неизвестную ошибку через `isSdkError()`, затем используйте сочетание `code` и `source` для классификации. `path`, `details` и `cause` доступны для диагностики.
+Корень модуля экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. Сначала проверьте неизвестную ошибку через `isSdkError()`, затем используйте сочетание `code` и `source` для классификации. `path`, `details` и `cause` доступны для диагностики.
 
 Коды ошибок, их источники и условия повторного запроса описаны в руководстве [Ошибки и завершение работы SDK](docs/guides/errors-and-lifecycle.md).
 
@@ -189,20 +189,20 @@ npm run cli -- <domain> <command> --help
 - [Unary-вызовы](docs/guides/unary-calls.md) — портфель, свечи, сигналы, ограничение времени запроса и метаданные ответа;
 - [Потоки и отмена](docs/guides/streams-and-cancellation.md) — серверные и двусторонние потоки с `AbortSignal` приложения;
 - [Ошибки и завершение работы](docs/guides/errors-and-lifecycle.md) — проверка `SdkError.code` и `source`, закрытие SDK и условия повтора;
-- [Тестовые сервисы](docs/guides/testing-with-service-definitions.md) — тесты через публичные описания сервисов из корня пакета.
+- [Тестовые сервисы](docs/guides/testing-with-service-definitions.md) — тесты через публичные описания сервисов из корня модуля.
 
 ## Экспорты
 
-Публичный API включает класс `TInvestNodeSDK` для unary- и потоковых запросов. Пакет также выборочно реэкспортирует:
+Публичный API включает класс `TInvestNodeSDK` для unary- и потоковых запросов. Модуль также выборочно реэкспортирует:
 
 - `Timestamp`;
 - типы, перечисления и их JSON-конвертеры из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `signals`, `stoporders`, `users`;
-- интерфейсы сервисов пакета `UsersService`, `OrdersService`, `MarketDataService` и т.п.
+- интерфейсы сервисов модуля `UsersService`, `OrdersService`, `MarketDataService` и т.п.
 - сгенерированные серверные контракты `*ServiceDefinition` и `*ServiceImplementation` для адаптеров `nice-grpc`.
 
 Происхождение сгенерированных контрактов описано в разделе [Сгенерированный код](docs/architecture.md#сгенерированный-код).
 
-Сгенерированные `*ServiceClient` остаются внутренними транспортными контрактами и не входят в экспорты корня пакета.
+Сгенерированные `*ServiceClient` остаются внутренними транспортными контрактами и не входят в экспорты корня модуля.
 
 Основная точка входа:
 

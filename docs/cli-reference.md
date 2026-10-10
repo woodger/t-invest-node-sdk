@@ -18,7 +18,7 @@ SDK публикует команды в форме `<domain> <resource/action>`
 - `stream`;
 - `dev`.
 
-После установки пакета справка доступна через:
+После установки модуля справка доступна через:
 
 ```sh
 npm exec -- t-invest-node-sdk --help
@@ -99,7 +99,7 @@ npm exec -- t-invest-node-sdk market order-book --help
 - `stream run` -> поток выбирается в JSON-конфигурации;
 - `dev compile-proto` -> генерация TypeScript-контрактов (`compile-proto`).
 - `help` -> встроенная справка по CLI, домену или команде;
-- `version` -> версия пакета.
+- `version` -> версия модуля.
 
 ## Побочные эффекты и idempotency
 

@@ -30,7 +30,7 @@ Production graph начинается от runtime entrypoints и рабочих
 - proto generation entrypoint в `src/bootstrap/commands/compile-proto/cli.ts` и `src/bootstrap/proto/compile-proto.ts`, если он связан через CLI registry;
 - unary quota configuration и limiter runtime;
 - `contracts/*.proto`;
-- `src/bootstrap/generated-exports.ts` и generated modules, если они экспортируются пакетом;
+- `src/bootstrap/generated-exports.ts` и generated modules, если они экспортируются модулем;
 - dynamic runtime bindings, если они подтверждены кодом или конфигурацией.
 
 Код, достижимый из production graph, нельзя удалять как dead code.
@@ -52,7 +52,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 Признаки:
 
 - импортируется runtime-кодом;
-- участвует в package entrypoint или public exports;
+- участвует в точке входа модуля или public exports;
 - используется SDK client, middleware, generated exports или runtime config;
 - нужен сборке или запуску как declaration/config/entrypoint-файл;
 - явно поддерживается как public/internal API.
@@ -83,7 +83,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 - нет barrel exports;
 - нет test references;
 - нет docs references;
-- нет package script / entrypoint references;
+- нет ссылок из скриптов или точки входа модуля;
 - нет dynamic string references;
 - файл не нужен как declaration/config/entrypoint.
 
@@ -128,7 +128,7 @@ Test graph начинается от `*.test.ts` и `package.json` `test` script
 - есть `export * from ...` или named re-export;
 - symbols не импортируются active runtime code;
 - tests могут существовать или отсутствовать;
-- package public API может быть шире внутреннего runtime graph.
+- публичный API модуля может быть шире внутреннего runtime graph.
 
 Решение: `needs owner decision`.
 
@@ -172,7 +172,7 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 
 - достижим из production graph;
 - нужен сборке, типам, declarations или runtime config;
-- служит package entrypoint;
+- служит точкой входа модуля;
 - поддерживается как public/internal API;
 - имеет действующий documented contract.
 
@@ -218,7 +218,7 @@ Roadmap должен жить в docs, issue tracker или планах, а н�
 - реэкспорты через промежуточные модули;
 - ссылки из тестов;
 - ссылки из документации;
-- `main`, `types`, `exports` и скрипты пакета;
+- `main`, `types`, `exports` и скрипты модуля;
 - `include` и `exclude` в tsconfig;
 - сгенерированные экспорты;
 - процесс работы с proto;

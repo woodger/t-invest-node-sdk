@@ -32,7 +32,7 @@
 
 ## SDK и runtime policies
 
-- Публичные экспорты пакета: [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts).
+- Публичные экспорты модуля: [`src/index.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/index.ts).
 - Квоты T-Invest и ограничение частоты запросов в SDK: [Лимитная политика](./limits-policy.md).
 - Встроенный корневой сертификат и настройка доверия для отдельного экземпляра SDK: [TLS-доверие](./tls-policy.md).
 - Происхождение, распространение и подключение встроенного сертификата: [Встроенный Russian Trusted Root CA](./bundled-ca.md).

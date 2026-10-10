@@ -6,7 +6,7 @@
 
 SDK требует Node.js `>=20.19.0`.
 
-Установите пакет из npm:
+Установите модуль из npm:
 
 ```sh
 npm install @woodger/t-invest-node-sdk

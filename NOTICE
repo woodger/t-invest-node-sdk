@@ -6,7 +6,7 @@ MIT License в [`LICENSE`](./LICENSE) применяется к исходном
 
 ## T-Invest API contracts
 
-Пакет содержит JavaScript-код и TypeScript declarations, сгенерированные из
+Модуль содержит JavaScript-код и TypeScript declarations, сгенерированные из
 официальных proto-контрактов T-Invest API версии 1.51. Исходный snapshot
 зафиксирован в
 [`contracts/upstream.json`](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json).
@@ -24,20 +24,20 @@ MIT License в [`LICENSE`](./LICENSE) применяется к исходном
 
 ## Russian Trusted Root CA
 
-Пакет содержит публичный корневой X.509-сертификат Russian Trusted Root CA,
+Модуль содержит публичный корневой X.509-сертификат Russian Trusted Root CA,
 полученный по официальному маршруту со страницы сертификатов Госуслуг и
 используемый для проверки TLS-цепочки T-Invest API. Соответствующий приватный
-ключ в пакет не входит.
+ключ в модуль не входит.
 
 Проект не заявляет авторство сертификата и не представляет MIT License SDK как
 отдельное лицензионное разрешение на этот trust material. Официальный источник,
-X.509 fingerprint, основание package-модели и границы распространения описаны в
+X.509 fingerprint, основание включения в модуль и границы распространения описаны в
 документе
 [`docs/bundled-ca.md`](./docs/bundled-ca.md).
 
 ## Google API field behavior contract
 
-Пакет содержит артефакты, полученные из
+Модуль содержит артефакты, полученные из
 [`google/api/field_behavior.proto`](https://github.com/googleapis/googleapis/blob/master/google/api/field_behavior.proto).
 Исходный контракт опубликован на условиях Apache License 2.0. Полный текст
 лицензии приведён в [`LICENSE-APACHE-2.0`](./LICENSE-APACHE-2.0).
@@ -62,7 +62,7 @@ limitations under the License.
 
 ## Google Protocol Buffers contracts
 
-Пакет может содержать артефакты, полученные из контрактов Google Protocol
+Модуль может содержать артефакты, полученные из контрактов Google Protocol
 Buffers. Исходные контракты содержат следующее уведомление:
 
 ```text

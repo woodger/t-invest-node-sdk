@@ -77,13 +77,15 @@ SDK предоставляет необязательный `TInvestUnaryLimiter
 
 После выдачи permit и передачи unary-вызова transport-у limiter не возвращает слот даже при последующей отмене: provider уже мог учесть запрос в своей квоте.
 
-Для каждого вызова gRPC resolver выбирает самое специфичное совпавшее правило. Method override заменяет service fallback и не становится вторым одновременным ограничением. Поэтому один resolved context не описывает все service aggregate и IP policies provider-а. Package policy дополнительно связывает некоторые method rules общей quota group. Если per-instance override меняет квоту одного метода, этот метод отделяется от package default group; согласованный override всех методов группы сохраняет общий bucket.
+Для каждого вызова gRPC resolver выбирает самое специфичное совпавшее правило. Method override заменяет service fallback и не становится вторым одновременным ограничением. Поэтому один resolved context не описывает все service aggregate и IP policies provider-а. Политика модуля дополнительно связывает некоторые method rules общей quota group. Если per-instance override меняет квоту одного метода, этот метод отделяется от группы по умолчанию модуля; согласованный override всех методов группы сохраняет общий bucket.
 
 [Отдельное руководство](./guides/custom-unary-limiter.md) показывает, как написать собственный ограничитель запросов, обрабатывать отмену и управлять его временем жизни. Готовый `createInMemoryUnaryLimiter()` выдаёт разрешения на запросы через равные интервалы внутри одного процесса. Его `quotaShare` позволяет выделить фиксированную долю квоты; расчёт этой доли и ограничения реализации разобраны в руководстве.
 
-## Декларативный package config
+<a id="декларативный-package-config"></a>
 
-Package defaults хранятся в `src/config.ts` как одна типизированная декларация. [Архитектура SDK](./architecture.md#конфигурация-терминология-и-ownership) описывает термины source/runtime config и ownership этого pipeline. Поле `default` задаёт service fallback, `methods` — правила отдельных RPC, а один элемент `groups` — общую квоту:
+## Декларативная конфигурация модуля
+
+Настройки модуля по умолчанию хранятся в `src/config.ts` как одна типизированная декларация. [Архитектура SDK](./architecture.md#конфигурация-терминология-и-ownership) описывает термины source/runtime config и ownership этого pipeline. Поле `default` задаёт service fallback, `methods` — правила отдельных RPC, а один элемент `groups` — общую квоту:
 
 ```ts
 OperationsService: {
@@ -146,4 +148,4 @@ const sdk = new TInvestNodeSDK({
 
 `defineUnaryLimits()` преобразует вложенную декларацию в плоский runtime `UnaryLimits`. Остальные service и method limits в этом примере наследуются из `defaultConfig.unaryLimits`.
 
-Consumer-owned limiter должен учитывать выбранную границу координации, фактический тариф пользователя и rate-limit metadata provider-а. Статическая package policy сама по себе не задаёт retry или deployment policy приложения.
+Consumer-owned limiter должен учитывать выбранную границу координации, фактический тариф пользователя и rate-limit metadata provider-а. Статическая политика модуля сама по себе не задаёт retry или deployment policy приложения.

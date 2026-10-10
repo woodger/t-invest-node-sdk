@@ -28,7 +28,7 @@ npm run build
 
 ## Публикация релиза
 
-`publishConfig.access` делает scoped-пакет общедоступным. Сценарий `prepack` запускает `tsc` перед `npm pack` и `npm publish`. Перед слиянием релизного коммита проверьте версию, changelog и проект:
+`publishConfig.access` делает модуль с областью видимости общедоступным. Сценарий `prepack` запускает `tsc` перед `npm pack` и `npm publish`. Перед слиянием релизного коммита проверьте версию, changelog и проект:
 
 ```sh
 VERSION="$(node -p "require('./package.json').version")"
@@ -50,7 +50,7 @@ git tag -a "$VERSION" "origin/main" -m "$VERSION"
 git push origin "$VERSION"
 ```
 
-Из того же коммита `origin/main` опубликуйте пакет в npm:
+Из того же коммита `origin/main` опубликуйте модуль в npm:
 
 ```sh
 npm publish
