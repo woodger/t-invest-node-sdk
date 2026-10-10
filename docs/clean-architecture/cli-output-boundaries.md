@@ -62,30 +62,16 @@ warnings/errors -> Output.error -> stderr
 
 ## Поток команды
 
+Порядок выполнения команды описан в [API-командах](./api-commands.md#command-flow). Результат проходит через границу форматирования и записи:
+
 ```text
-src/bootstrap/index.ts
-        ↓
-bootstrap/cli/runner.ts
-        ↓
-icore command resolution + typed options
-        ↓
-bootstrap/commands/<command>/cli.ts
-        ↓
-SDK call
-        ↓
-bootstrap/commands/<command>/reporter.ts
-        ↓
-application report или command-local event contract
-        ↓
-command-specific output values
-        ↓
-icore render primitive или project-specific formatter
-        ↓
-string/AsyncIterable
-        ↓
-icore TerminalApp -> Output.write
-        ↓
-stdout
+reporter команды
+  -> контракт отчёта или события
+  -> значения для выбранного формата
+  -> форматирование через icore или функцию проекта
+  -> string/AsyncIterable
+  -> TerminalApp -> Output.write
+  -> stdout
 ```
 
 Runner управляет короткими псевдонимами, быстрыми вызовами справки и версии и предупреждениями команд. Справка и версия проходят через вспомогательное приложение терминала, предупреждения — через приложение команд, а штатный результат передаётся в `runPrepared`. Оба приложения используют один `Output` и одну политику ошибок.

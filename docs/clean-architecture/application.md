@@ -167,19 +167,7 @@ Runner использует два этапа, `prepare -> runPrepared`, что�
 
 ## Mapping
 
-Текущий flow API-команды:
-
-```text
-process.argv
-  -> icore terminal app
-  -> icore schema parser/validator
-  -> typed command options
-  -> project API-specific validation
-  -> generated request DTO
-  -> generated SDK call
-  -> application report или command-local stream event contract
-  -> CLI output
-```
+Порядок выполнения команды описан в [API-командах](./api-commands.md#command-flow).
 
 Где должен жить mapping:
 

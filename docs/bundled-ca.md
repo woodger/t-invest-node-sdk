@@ -79,27 +79,9 @@ certificates/russian-trusted-root-ca.pem
 
 Внутренний модуль [`src/infrastructure/transport/grpc/tls-root-certificates.ts`](https://github.com/woodger/t-invest-node-sdk/blob/main/src/infrastructure/transport/grpc/tls-root-certificates.ts) синхронно читает файл при первом обращении, разрешая путь относительно скомпилированного модуля. Полученный `Buffer` сохраняется в памяти процесса для повторного использования. При `useSsl: true` транспорт передаёт его в `ChannelCredentials.createSsl()`.
 
-Встроенный корневой сертификат действует только для канала конкретного экземпляра SDK. SDK не изменяет системное хранилище доверенных сертификатов, не использует `NODE_EXTRA_CA_CERTS` и не делает скрытых сетевых запросов за сертификатами.
-
 ## Переопределение в коде приложения
 
-Для подключения к собственному или тестовому серверу приложение может передать содержимое своих корневых сертификатов в формате PEM:
-
-```ts
-import { readFile } from 'node:fs/promises';
-import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
-
-const rootCertificates = await readFile('./certificates/custom-root.pem');
-const sdk = new TInvestNodeSDK({
-  token,
-  endpoint,
-  tls: {
-    rootCertificates
-  }
-});
-```
-
-`tls.rootCertificates` принимает `Buffer`, а не путь к файлу. Переданные сертификаты полностью заменяют встроенный сертификат для этого канала; стандартные корневые сертификаты Node.js автоматически не добавляются. При `useSsl: false` SDK создаёт соединение без TLS и не читает встроенный PEM-файл.
+Правила доверия для канала SDK и пример подключения с собственными сертификатами описаны в [TLS-доверии](./tls-policy.md#переопределение-для-экземпляра-sdk).
 
 ## Обновление сертификата
 

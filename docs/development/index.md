@@ -26,6 +26,16 @@ CLI использует собранные файлы из `dist`, поэтом
 npm run build
 ```
 
+### Обновление контрактов
+
+При обновлении контрактов нужно:
+
+1. получить `*.proto` из `source.path` на точном `source.commit` или `source.release`;
+2. заменить T-Invest файлы в `local.rawContractsPath`;
+3. обновить коммит или выпуск источника в `contracts/upstream.json`;
+4. при изменении вспомогательных контрактов получить их из точного выпуска и обновить соответствующую запись `supportingSources`;
+5. выполнить `local.generationCommand`, затем `npm run build`, `npm run lint` и `npm test`.
+
 ## Публикация релиза
 
 `publishConfig.access` делает модуль с областью видимости общедоступным. Сценарий `prepack` запускает `tsc` перед `npm pack` и `npm publish`. Перед слиянием релизного коммита проверьте версию, changelog и проект:

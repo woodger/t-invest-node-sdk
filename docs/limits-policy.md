@@ -112,40 +112,6 @@ OperationsService: {
 
 Значения `maxRequests` и `windowMs` должны быть конечными положительными числами, а ключи — именами известных сервисов или полными путями поддерживаемых unary RPC. SDK проверяет итоговые квоты после объединения значений по умолчанию и переопределений экземпляра, до создания транспортного обработчика квот. Порядок компиляции конфигурации и разделение ответственности описаны в [архитектуре SDK](./architecture.md#конфигурация-терминология-и-ownership).
 
-Пример точечного ограничения для отдельного экземпляра:
-
-```ts
-import {
-  defineUnaryLimits,
-  TInvestNodeSDK,
-  type TInvestUnaryLimiter
-} from '@woodger/t-invest-node-sdk';
-
-declare const unaryLimiter: TInvestUnaryLimiter;
-
-const sdk = new TInvestNodeSDK({
-  token,
-  endpoint,
-  unaryLimiter,
-  unaryLimits: defineUnaryLimits({
-    UsersService: {
-      default: {
-        maxRequests: 50,
-        windowMs: 60_000
-      }
-    },
-    OrdersService: {
-      methods: {
-        PostOrder: {
-          maxRequests: 10,
-          windowMs: 1_000
-        }
-      }
-    }
-  })
-});
-```
-
-`defineUnaryLimits()` преобразует вложенную декларацию в плоский runtime `UnaryLimits`. Остальные service и method limits в этом примере наследуются из `defaultConfig.unaryLimits`.
+Настройка квот для отдельного экземпляра и пример `defineUnaryLimits()` приведены в [руководстве по ограничителю](./guides/custom-unary-limiter.md#per-instance-overrides).
 
 Ограничитель приложения должен учитывать выбранную границу координации, фактический тариф пользователя и метаданные квот провайдера. Статическая политика модуля сама по себе не задаёт правила повторных запросов или развёртывания приложения.
