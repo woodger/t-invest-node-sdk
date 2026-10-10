@@ -98,7 +98,7 @@ export async function* recoverClosedCandles(
 
         yield candle;
 
-        // Consumer может сохранить свечу до запроса следующей
+        // Приложение может сохранить свечу до запроса следующей
         // и сдвига checkpoint.
         nextMinute = time + minuteMs;
         failures = 0;

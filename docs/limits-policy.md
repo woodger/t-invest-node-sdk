@@ -66,7 +66,7 @@ SDK работает через `gRPC`. В таблице приведена е�
 
 ## Как это связано с SDK
 
-SDK предоставляет необязательный `TInvestUnaryLimiter` port. Если Consumer передал `TInvestOptions.unaryLimiter`, SDK перед каждым unary transport call:
+SDK предоставляет необязательный интерфейс `TInvestUnaryLimiter`. Если приложение передало `TInvestOptions.unaryLimiter`, SDK перед каждым unary-вызовом транспорта:
 
 - использует service fallback или более специфичное правило по полному gRPC method path;
 - разрешает общий quota bucket;
@@ -148,4 +148,4 @@ const sdk = new TInvestNodeSDK({
 
 `defineUnaryLimits()` преобразует вложенную декларацию в плоский runtime `UnaryLimits`. Остальные service и method limits в этом примере наследуются из `defaultConfig.unaryLimits`.
 
-Consumer-owned limiter должен учитывать выбранную границу координации, фактический тариф пользователя и rate-limit metadata provider-а. Статическая политика модуля сама по себе не задаёт retry или deployment policy приложения.
+Ограничитель приложения должен учитывать выбранную границу координации, фактический тариф пользователя и метаданные квот провайдера. Статическая политика модуля сама по себе не задаёт правила повторных запросов или развёртывания приложения.

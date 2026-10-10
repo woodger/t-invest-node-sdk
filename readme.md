@@ -23,7 +23,7 @@ npm install @woodger/t-invest-node-sdk
 Документация хранится в Markdown-файлах каталога `docs`:
 
 - [Навигация по документации](docs/index.md)
-- [Руководства для Consumer-ов](docs/guides/index.md)
+- [Руководства для пользователей SDK](docs/guides/index.md)
 - [Архитектура SDK](docs/architecture.md)
 - [Заметки по Clean Architecture](docs/clean-architecture/index.md)
 - [Разделение форматирования и вывода в CLI](docs/clean-architecture/cli-output-boundaries.md)
