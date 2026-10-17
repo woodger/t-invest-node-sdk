@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffReport, formatUserTariffReport } from './reporter';
