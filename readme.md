@@ -10,7 +10,8 @@
 - [Лимиты API](https://developer.tbank.ru/invest/intro/intro/limits) — квоты unary-запросов и ограничения потоков;
 - [Proto-контракты](https://opensource.tbank.ru/invest/invest-contracts) — исходные контракты gRPC API.
 
-## Установка
+<a id="установка"></a>
+## Установить модуль
 
 Модуль `@woodger/t-invest-node-sdk` требует Node.js `>=20.19.0`. Установите его из npm:
 
@@ -18,9 +19,10 @@
 npm install @woodger/t-invest-node-sdk
 ```
 
-Архив npm содержит готовый JavaScript и объявления типов из `dist`. Установка по ссылке на Git-репозиторий не поддерживается: при ней npm запускает `prepack` и собирает исходный код.
+Архив npm содержит готовый JavaScript и объявления типов из `dist`. Установка по ссылке на Git-репозиторий не поддерживается.
 
-## Быстрый старт
+<a id="быстрый-старт"></a>
+## Выполнить первый запрос
 
 Замените `YOUR_TOKEN` своим токеном доступа.
 
@@ -41,143 +43,37 @@ finally {
 }
 ```
 
-Более подробный пример с выбором доступного счёта и освобождением ресурсов: [Первый SDK-вызов](docs/examples/getting-started.md).
+Более подробный пример с выбором доступного счёта и освобождением ресурсов: [Получить список счетов и закрыть SDK](docs/examples/getting-started.md).
 
 <a id="подробные-примеры"></a>
+<a id="документация"></a>
+## Выбрать следующий сценарий
 
-## Документация
+- [Получить список счетов и закрыть SDK](docs/examples/getting-started.md) — выбрать счёт для следующего запроса.
+- [Выполнить связанные одиночные gRPC-запросы](docs/examples/unary-calls.md) — получить портфель, свечи или активные сигналы.
+- [Читать и завершать поток](docs/examples/streams-and-cancellation.md) — подписаться на события и отменить чтение через `AbortSignal`.
+- [Восстановить поток закрытых свечей](docs/examples/market-data-recovery.md) — повторно подключиться и догрузить историю после разрыва.
+- [Обработать ошибки и закрыть SDK](docs/examples/errors-and-lifecycle.md) — различить причины ошибки и принять решение о повторе.
+- [Ограничить частоту одиночных gRPC-запросов](docs/examples/unary-limits.md) — подключить готовый ограничитель или изменить квоты экземпляра.
+- [Проверить приложение с тестовым gRPC-сервером](docs/examples/testing-with-service-definitions.md) — выполнить интеграционный тест без брокера.
+- [Выполнить команду CLI](docs/cli-reference.md) — передать аргументы, получить вывод и код завершения.
 
-- [Примеры](docs/examples/index.md) — запросы, потоки, ошибки и тестирование приложения.
-- [Справочник CLI](docs/cli-reference.md) — команды, опции и коды завершения.
-- [Все документы](docs/index.md) — настройки SDK, архитектура, разработка и политики проекта.
+Полный список сценариев находится в [индексе examples](docs/examples/index.md). Настройки TLS, квоты и документацию для разработки можно выбрать в [индексе документации](docs/index.md).
 
-## Опции `TInvestNodeSDK`
+<a id="опции-tinvestnodesdk"></a>
+<a id="опции-defaultconfig"></a>
+<a id="политика-grpc-транспорта"></a>
+<a id="cli"></a>
+<a id="доступные-сервисы"></a>
+<a id="lifecycle-и-отмена"></a>
+<a id="ошибки-sdk"></a>
+<a id="экспорты"></a>
+## Разделить задачи SDK и приложения
 
-```ts
-interface TInvestOptions {
-  token: string;
-  endpoint: string;
-  appName?: string;
-  useSsl?: boolean;
-  tls?: TInvestTlsOptions;
-  unaryLimiter?: TInvestUnaryLimiter;
-  unaryLimits?: UnaryLimits;
-}
+SDK создаёт типизированные gRPC-клиенты, выполняет вызовы и закрывает общий канал. Приложение выбирает API-вызовы, формирует запросы, передаёт настройки подключения, владеет предметными правилами и освобождает собственные ресурсы. Точные экспортируемые типы и сервисы перечислены в [`src/index.ts`](src/index.ts); правила встроенного CLI и его границы с `icore` описаны в [документации CLI](docs/clean-architecture/cli-output-boundaries.md).
 
-interface TInvestTlsOptions {
-  rootCertificates?: Buffer;
-}
-
-interface TInvestUnaryLimit {
-  maxRequests: number;
-  windowMs: number;
-}
-
-type UnaryLimits = Record<string, TInvestUnaryLimit>;
-```
-
-- `token` - OAuth токен.
-- `endpoint` - gRPC endpoint в формате `host:port`.
-- `appName` - необязательное значение для заголовка `x-app-name`.
-- `useSsl` - использовать TLS, по умолчанию `true`.
-- `tls.rootCertificates` - содержимое собственных корневых сертификатов в формате PEM.
-- `unaryLimiter` - необязательный ограничитель частоты unary-запросов, которым управляет приложение. Без него SDK отправляет запросы сразу.
-- `unaryLimits` - переопределения квот для одного экземпляра SDK. Значения объединяются с `defaultConfig.unaryLimits` и передаются настроенному ограничителю.
-
-Для подключения к T-Invest SDK использует встроенный корневой сертификат. Собственные сертификаты можно передать через `tls.rootCertificates`. Подробнее — в [настройках TLS](docs/tls-policy.md).
-
-`createInMemoryUnaryLimiter()` создаёт ограничитель для одного процесса, а `defineUnaryLimits()` помогает сгруппировать переопределения квот по сервисам и методам. Примеры подключения и настройки — в [руководстве по ограничению частоты запросов](docs/examples/unary-limits.md).
-
-## Опции `defaultConfig`
-
-```ts
-interface TInvestNodeSDKConfig {
-  unaryLimits: UnaryLimits;
-  requireSideEffectConfirmation: boolean;
-}
-```
-
-- `unaryLimits` - квоты unary-запросов по умолчанию, заданные по именам сервисов или полным путям gRPC-методов. Ограничение метода имеет приоритет над ограничением сервиса.
-- `requireSideEffectConfirmation` - требовать `--confirm` для CLI-команд, которые изменяют заявки, избранное или счета в песочнице; по умолчанию `true`.
-
-Подробнее о квотах API и их настройке в SDK — в [лимитной политике](docs/limits-policy.md).
-
-## Политика gRPC-транспорта
-
-SDK принимает входящие gRPC-сообщения размером не более 4 MiB. Лимит задан самим модулем; изменить его для отдельного экземпляра SDK нельзя.
-
-## CLI
-
-Встроенный `--help` покажет актуальные домены, команды и опции:
-
-```sh
-npm exec -- t-invest-node-sdk --help
-```
-
-Подключение, правила передачи аргументов, список команд и коды завершения описаны в [справочнике CLI](docs/cli-reference.md).
-
-## Доступные сервисы
-
-`TInvestNodeSDK` создаёт unary-клиенты по первому обращению:
-
-- `sdk.instruments`
-- `sdk.marketData`
-- `sdk.operations`
-- `sdk.orders`
-- `sdk.sandbox`
-- `sdk.signals`
-- `sdk.stopOrders`
-- `sdk.users`
-
-Клиенты повторяют методы из сгенерированных gRPC-описаний.
-
-Для потоковых RPC доступны клиенты:
-
-- `sdk.marketdataStream`
-- `sdk.operationsStream`
-- `sdk.ordersStream`
-
-Все клиенты используют общий gRPC-канал. SDK добавляет заголовки отдельного вызова к заголовкам экземпляра, сохраняя собственные `authorization` и `x-app-name`. Вызов `sdk.close()` закрывает канал.
-
-### Lifecycle и отмена
-
-`sdk.close()` можно вызывать повторно. После закрытия новые обращения к сервисам и вызовы через ранее полученные клиенты завершаются с `SdkErrorCode.SdkClosed`; ожидание локальной unary-квоты отменяется. Уже выполняющиеся unary-запросы и потоки можно отменить собственным `AbortSignal`: `close()` не ждёт их завершения.
-
-`TInvestCallOptions.signal` действует на весь SDK-вызов. Если настроен `unaryLimiter`, SDK сначала передаёт ему сигнал для отмены ожидания, а затем использует тот же сигнал в gRPC-вызове.
-
-`onHeader` и `onTrailer` — синхронные обработчики. Если обработчик выбрасывает исключение, SDK возвращает ту же ошибку из unary-вызова или при чтении следующего события потока и отменяет незавершённый gRPC-вызов.
-
-### Ошибки SDK
-
-Корень модуля экспортирует `SdkError`, `SdkErrorCode`, `SdkErrorSource` и `isSdkError()`. Сначала проверьте неизвестную ошибку через `isSdkError()`, затем используйте сочетание `code` и `source` для классификации. `path`, `details` и `cause` доступны для диагностики.
-
-Коды ошибок, их источники и условия повторного запроса описаны в руководстве [Ошибки и завершение работы SDK](docs/examples/errors-and-lifecycle.md).
-
-## Экспорты
-
-Публичный API включает класс `TInvestNodeSDK` для unary- и потоковых запросов. Модуль также выборочно реэкспортирует:
-
-- `Timestamp`;
-- типы, перечисления и их JSON-конвертеры из `common`, `instruments`, `marketdata`, `operations`, `orders`, `sandbox`, `signals`, `stoporders`, `users`;
-- интерфейсы сервисов модуля `UsersService`, `OrdersService`, `MarketDataService` и т.п.
-- сгенерированные серверные контракты `*ServiceDefinition` и `*ServiceImplementation` для адаптеров `nice-grpc`.
-
-Происхождение сгенерированных контрактов описано в разделе [Сгенерированный код](docs/architecture.md#сгенерированный-код).
-
-Сгенерированные `*ServiceClient` остаются внутренними транспортными контрактами и не входят в экспорты корня модуля.
-
-Основная точка входа:
-
-```ts
-import {
-  TInvestNodeSDK,
-  CandleInterval,
-  InstrumentsService,
-  MarketDataStreamService,
-} from '@woodger/t-invest-node-sdk';
-```
-
-## Дисклеймер
+<a id="дисклеймер"></a>
+## Проверить лицензию и статус проекта
 
 Проект является независимой реализацией и не имеет никакого отношения к T-Invest, T-Банку или их аффилированным лицам. Названия продуктов и компаний используются только для обозначения совместимости с публичным API.
 
