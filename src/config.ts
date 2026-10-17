@@ -1,15 +1,14 @@
 /**
- * Модуль package config хранит декларативные defaults и общие runtime
- * policies SDK.
+ * Модуль хранит значения по умолчанию и правила работы SDK.
  *
  * Здесь допустимы:
- * - человекочитаемые package defaults;
- * - transport safety policy общего gRPC channel;
- * - unary quota policy по generated service и RPC names;
- * - CLI safety policy, общая для package entrypoints;
+ * - значения по умолчанию модуля;
+ * - правила настройки общего gRPC-канала;
+ * - квоты unary-вызовов по сервисам и RPC;
+ * - правило подтверждения CLI-команд с побочными эффектами.
  *
- * Здесь не должно быть secrets, environment parsing, deployment-specific
- * значений или runtime-преобразований.
+ * Здесь не должно быть секретов, чтения окружения, значений развёртывания или
+ * преобразований при создании SDK.
  */
 
 import type { PackageConfigDefinition } from './config.types';
@@ -38,7 +37,7 @@ const usersRequestsPerMinute = 100;
 export const packageConfig = {
   sdk: {
     /**
-     * TLS включен для каждого SDK instance, если consumer не переопределил его.
+     * TLS включён, если приложение не передало `useSsl` для экземпляра SDK.
      */
     useSsl: true
   },

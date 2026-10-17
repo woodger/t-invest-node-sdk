@@ -22,7 +22,8 @@ t-invest-node-sdk stream run --config=PATH [runtime options]
 | `operations.positionsStream` | `sdk.operationsStream.positionsStream` | `OperationsStreamService/PositionsStream` | серверный |
 | `orders.tradesStream` | `sdk.ordersStream.tradesStream` | `OrdersStreamService/TradesStream` | серверный |
 
-## Runtime-модель
+<a id="runtime-модель"></a>
+## Выполнение команды
 
 За один запуск `stream run` открывает одну сессию с настройками из конфигурации и переопределениями CLI. Лимиты `maxEvents`, `durationMs` и `idleTimeoutMs` приводят к штатному завершению; ошибка провайдера, возникшая до таймаута, не маскируется.
 

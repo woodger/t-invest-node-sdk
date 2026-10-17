@@ -1,9 +1,10 @@
 /**
- * Модуль CLI-команды `stream run` запускает configured stream session.
+ * Модуль CLI-команды `stream run` запускает потоковую сессию с настройками
+ * из файла и командной строки.
  *
  * Здесь допустимы:
- * - чтение stream config и применение runtime overrides;
- * - передача validated config и runtime policy в stream session;
+ * - чтение конфигурации потока и применение параметров CLI;
+ * - передача проверенных настроек в потоковую сессию;
  *
  * Здесь не должно быть JSONL event formatting rules или transport adapter
  * logic.

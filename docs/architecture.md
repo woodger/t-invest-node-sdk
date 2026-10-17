@@ -58,7 +58,7 @@ src/generated
 
 - `bootstrap/index.ts` - точка запуска CLI, которая публикуется как исполняемый файл модуля `dist/bootstrap/index.js`;
 - `bootstrap/t-invest-node-sdk.ts` - публичный фасад SDK, управляющий общим каналом и закрытием через `close()`;
-- `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - компилятор и адаптер конфигурации с [разделённой ответственностью](#конфигурация-терминология-и-ownership);
+- `bootstrap/unary-limit-config.ts` и `bootstrap/sdk-config.ts` - подготовка и проверка настроек модуля и экземпляра SDK;
 - `bootstrap/proto/compile-proto.ts` - генерация proto через закреплённые локальные `protoc` и `ts-proto`;
 - `bootstrap/args` - общие функции проверки и нормализации опций CLI;
 - `bootstrap/cli` - контракт CLI, реестр, форматирование справки, декларативный `help-catalog.ts`, версия, политика ошибок терминала и runner;
@@ -91,36 +91,26 @@ src/generated
 
 Новый код должен импортировать реализацию из слоя-владельца. Не добавляйте совместимые обёртки в корне проекта.
 
-## Конфигурация: терминология и ownership
+<a id="конфигурация-терминология-и-ownership"></a>
+## Настройки модуля и экземпляра SDK
 
-Для настроек модуля и правил его работы используются следующие термины:
+`src/config.ts` хранит `packageConfig`: значения по умолчанию, настройки gRPC и правила unary-квот. `PackageConfigDefinition` из `src/config.types.ts` проверяет форму этих настроек при компиляции.
 
-- `source config` - единственное исходное описание настроек и правил модуля;
-- `authoring contract` - TypeScript-типы, которые проверяют исходную конфигурацию при компиляции;
-- `compiled package baseline` - нормализованные квоты и группы общих квот, один раз собранные из исходной конфигурации;
-- `public runtime config` - совместимое публичное представление подготовленных настроек по умолчанию;
-- `per-instance overrides` - переопределения от пользователя для одного экземпляра SDK, а не второе описание настроек модуля;
-- `resolved runtime snapshot` - отдельная итоговая конфигурация экземпляра SDK, которая не изменяет подготовленные настройки модуля или `defaultConfig`.
+При загрузке модуля `compileUnaryLimits(packageConfig.unaryLimits)` создаёт `packageUnaryLimits` с таблицами `limits` и `buckets`. `defaultConfig.unaryLimits` получает отдельную копию `limits` для публичного чтения и изменения. При создании `TInvestNodeSDK` функция `resolveUnaryLimitConfig()` читает текущие `defaultConfig.unaryLimits`, применяет `TInvestOptions.unaryLimits` и возвращает отдельные `limits` и `buckets` для `UnaryLimitResolver`.
 
 Декларативная конфигурация модуля содержит только данные: значения записаны прямо в объектном литерале и проверяются через `as const satisfies`. Вызов функции построения или преобразования объекта, например `defineConfig({...})`, превращает декларацию в исполняемый язык настройки. Исходная конфигурация не допускает импортов, выполняемых при запуске, вызовов функций, раскрытия объектов через spread, объединения или разрешения конфигурации и параллельных деклараций одного правила.
 
-Конфигурация unary-квот проходит следующие этапы:
+Подготовка unary-квот проходит следующие этапы:
 
 ```text
-packageConfig -- compileUnaryLimits --> internal package baseline
-                                          |-- copy limits --> defaultConfig
-                                          `-- limits + buckets ---------.
-current defaultConfig.unaryLimits -------------------------------------+--> resolveUnaryLimitConfig
-per-instance unaryLimits ----------------------------------------------'
-                                                                          |
-                                                                          `--> runtime snapshot
-
-runtime snapshot -----.
-                       +--> UnaryLimitResolver --> TInvestUnaryQuota --.
-gRPC method path ------'                                        |
-                                                                +--> unaryLimiter.acquire()
-per-instance unaryLimiter --------------------------------------'
+packageConfig.unaryLimits -- compileUnaryLimits --> packageUnaryLimits
+                                                    |-- limits --> defaultConfig.unaryLimits --.
+                                                    |                                      |
+                                                    `-- buckets ---------------------------+--> resolveUnaryLimitConfig --> UnaryLimitConfig
+TInvestOptions.unaryLimits ------------------------------------------------'
 ```
+
+`UnaryLimitResolver` получает `UnaryLimitConfig` и путь gRPC-метода. Если задан `TInvestOptions.unaryLimiter`, middleware передаёт выбранную квоту в `unaryLimiter.acquire()`.
 
 Правила gRPC-транспорта задаются модулем и не имеют публичного переопределения или переопределения для отдельного экземпляра:
 
@@ -128,7 +118,7 @@ per-instance unaryLimiter --------------------------------------'
 packageConfig.grpc.maxReceiveMessageLength
   --> TInvestNodeSDK bootstrap
        |--> createSdkChannel --> grpc.max_receive_message_length
-       '--> SdkCallRuntime --> error source classification
+       '--> SdkCallErrorClassificationOptions --> error source classification
 ```
 
 SDK явно задаёт максимальный размер входящего сообщения вместо неявного значения по умолчанию транспортной зависимости. Локальное превышение лимита сохраняет gRPC-код `RESOURCE_EXHAUSTED`, но получает публичный `source: 'sdk'`; квота провайдера с тем же кодом остаётся в `source: 'grpc'`. Адаптер распознаёт транспортную диагностику внутри SDK и не раскрывает её как контракт приложения.
@@ -145,14 +135,14 @@ per-instance tls.rootCertificates ------- override-'
 
 Загрузкой встроенного PEM-файла управляет инфраструктурный модуль `tls-root-certificates.ts`; хранение и кеширование описаны в [документе о сертификате](./bundled-ca.md#хранение-и-подключение-по-умолчанию). Правила доверия и замены сертификатов для канала SDK описаны в [TLS-доверии](./tls-policy.md).
 
-Middleware получает итоговый `useSsl` вместе с контекстом выполнения вызова. Для известных ошибок проверки цепочки сертификатов и имени сервера он сохраняет gRPC-код `UNAVAILABLE`, но меняет публичный источник ошибки на `tls`. Ошибки `UNAVAILABLE` от провайдера и сети сохраняют источник `grpc`; транспортный адаптер не принимает решений о повторе.
+Middleware получает значение `useSsl` и ограничение размера входящего сообщения для классификации ошибок. Для известных ошибок проверки цепочки сертификатов и имени сервера он сохраняет gRPC-код `UNAVAILABLE`, но меняет публичный источник ошибки на `tls`. Ошибки `UNAVAILABLE` от провайдера и сети сохраняют источник `grpc`; транспортный адаптер не принимает решений о повторе.
 
 При создании экземпляра SDK объединяет настройки модуля по умолчанию с публичными параметрами экземпляра:
 
 ```text
-packageConfig.sdk -- defaults --.
-                                +--> resolved TInvestOptions
-per-instance options -----------'
+packageConfig.sdk.useSsl -- default --.
+                                   +--> resolveSdkInstanceOptions --> ResolvedTInvestOptions
+TInvestOptions -------------------'
 ```
 
 Явный `useSsl` для экземпляра имеет приоритет над настройкой модуля; `undefined` сохраняет значение по умолчанию. Для `unaryLimiter` значения по умолчанию нет: без него SDK не задерживает вызовы для соблюдения квоты.

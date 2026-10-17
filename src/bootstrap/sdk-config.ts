@@ -1,14 +1,15 @@
 /**
- * Модуль bootstrap config adapter собирает runtime policy для SDK instances.
+ * Модуль собирает настройки экземпляра SDK из значений модуля и параметров
+ * создания.
  *
  * Здесь допустимы:
- * - компиляция package defaults в public flat config;
- * - разрешение per-instance unary limit overrides;
- * - согласование overrides с package quota groups;
- * - проверка инвариантов итогового instance snapshot;
+ * - подготовка публичного `defaultConfig`;
+ * - применение переопределений unary-квот экземпляра;
+ * - согласование переопределений с группами общих квот;
+ * - проверка итоговых настроек перед созданием транспорта.
  *
- * Здесь не должно быть transport initialization, provider tariff refresh или
- * limiter state.
+ * Здесь не должно быть создания транспорта, обновления тарифа провайдера или
+ * состояния ограничителя.
  */
 
 import type { TInvestOptions } from '../application/dto/t-invest-options';

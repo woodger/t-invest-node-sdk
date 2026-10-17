@@ -6,7 +6,8 @@
  * - wiring middleware к nice-grpc client factory;
  * - возврат typed generated client facade;
  *
- * Здесь не должно быть SDK lifecycle ownership или API request mapping.
+ * Здесь не должно быть управления жизненным циклом SDK или преобразования
+ * API-запросов.
  */
 
 import type {
@@ -22,8 +23,11 @@ import {
   createClientFactory,
   Metadata
 } from 'nice-grpc';
-import { createSdkMiddleware } from './sdk-middleware';
-import type { SdkCallRuntime } from './sdk-middleware';
+import {
+  createSdkMiddleware,
+  type SdkCallErrorClassificationOptions,
+  type SdkCallLifecycle
+} from './sdk-middleware';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export function createSdkClient<Service extends CompatServiceDefinition>(
@@ -32,13 +36,15 @@ export function createSdkClient<Service extends CompatServiceDefinition>(
   metadata: Metadata,
   unaryLimiter: TInvestUnaryLimiter | undefined,
   unaryLimitResolver: UnaryLimitResolver,
-  runtime: SdkCallRuntime
+  lifecycle: SdkCallLifecycle,
+  errorClassification: SdkCallErrorClassificationOptions
 ) {
   return createClientFactory()
     .use(createSdkMiddleware(
       unaryLimiter,
       unaryLimitResolver,
-      runtime
+      lifecycle,
+      errorClassification
     ))
     .use(createSdkMetadataMiddleware(metadata))
     .create(serviceDefinition, channel);

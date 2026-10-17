@@ -20,7 +20,8 @@ import {
 } from '../../../application/services/unary-limiter';
 import {
   createSdkMiddleware,
-  type SdkCallRuntime
+  type SdkCallErrorClassificationOptions,
+  type SdkCallLifecycle
 } from './sdk-middleware';
 import { UnaryLimitResolver } from './unary-limit-resolver';
 
@@ -116,18 +117,25 @@ function createRejectedResponseStreamCall(
   };
 }
 
-function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
+function createOpenLifecycle(): SdkCallLifecycle {
   const signal = new AbortController().signal;
 
   return {
-    useSsl,
-    maxReceiveMessageLength: maxReceiveMessageLengthBytes,
     signal,
     assertOpen() {
       if (signal.aborted) {
         throw signal.reason;
       }
     }
+  };
+}
+
+function createErrorClassification(
+  useSsl: boolean
+): SdkCallErrorClassificationOptions {
+  return {
+    useSsl,
+    maxReceiveMessageLength: maxReceiveMessageLengthBytes
   };
 }
 
@@ -297,14 +305,16 @@ describe('createSdkMiddleware', () => {
       limiter,
       resolver,
       {
-        useSsl: false,
-        maxReceiveMessageLength: maxReceiveMessageLengthBytes,
         signal: lifecycleController.signal,
         assertOpen() {
           if (lifecycleController.signal.aborted) {
             throw closeError;
           }
         }
+      },
+      {
+        useSsl: false,
+        maxReceiveMessageLength: maxReceiveMessageLengthBytes
       }
     );
     const result = middleware(createUnaryCall(usersPath), {}).next();
@@ -349,7 +359,8 @@ describe('createSdkMiddleware', () => {
     const middleware = createSdkMiddleware(
       undefined,
       new UnaryLimitResolver({}),
-      createOpenRuntime(true)
+      createOpenLifecycle(),
+      createErrorClassification(true)
     );
     const iterator = middleware(
       createRejectedResponseStreamCall(path, providerError),

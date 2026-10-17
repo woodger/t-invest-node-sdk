@@ -1,12 +1,12 @@
 /**
- * Модуль bootstrap SDK facade собирает публичный `TInvestNodeSDK` runtime.
+ * Модуль реализует публичный класс `TInvestNodeSDK`.
  *
  * Здесь допустимы:
- * - lazy creation generated service clients;
- * - владение shared gRPC channel и metadata;
- * - подключение Consumer-owned unary limiter-а к transport adapters;
+ * - ленивое создание сгенерированных клиентов сервисов;
+ * - владение общими каналом gRPC и метаданными;
+ * - подключение ограничителя unary-запросов, переданного приложением;
  *
- * Здесь не должно быть CLI command logic или generated DTO mapping.
+ * Здесь не должно быть логики CLI или преобразования сгенерированных DTO.
  */
 
 import {
@@ -193,12 +193,14 @@ export class TInvestNodeSDK {
       this.options.unaryLimiter,
       this.unaryLimitResolver,
       {
-        useSsl: this.options.useSsl,
-        maxReceiveMessageLength: this.maxReceiveMessageLength,
         signal: this.lifecycleController.signal,
         assertOpen: () => {
           this.assertOpen();
         }
+      },
+      {
+        useSsl: this.options.useSsl,
+        maxReceiveMessageLength: this.maxReceiveMessageLength
       }
     );
 

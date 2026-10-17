@@ -154,12 +154,14 @@ describe('createSdkClient', () => {
           }
         }),
         {
-          useSsl: false,
-          maxReceiveMessageLength: maxReceiveMessageLengthBytes,
           signal: lifecycleController.signal,
           // Сценарий metadata не проверяет отказ закрытого lifecycle.
           // oxlint-disable-next-line no-empty-function
           assertOpen() {}
+        },
+        {
+          useSsl: false,
+          maxReceiveMessageLength: maxReceiveMessageLengthBytes
         }
       );
 
@@ -581,14 +583,16 @@ function createPayloadClient(
     undefined,
     new UnaryLimitResolver({}),
     {
-      useSsl,
-      maxReceiveMessageLength: receiveMessageLength,
       signal,
       assertOpen() {
         if (signal.aborted) {
           throw signal.reason;
         }
       }
+    },
+    {
+      useSsl,
+      maxReceiveMessageLength: receiveMessageLength
     }
   );
 }

@@ -1,11 +1,11 @@
 /**
- * Модуль application DTO задает options публичного SDK.
+ * Модуль задаёт публичные параметры создания экземпляра SDK.
  *
  * Здесь допустимы:
- * - форма настроек, передаваемых в bootstrap SDK facade;
- * - optional runtime flags без привязки к CLI parser-у;
+ * - параметры подключения, TLS и метаданных;
+ * - ограничитель и переопределения квот для экземпляра SDK.
  *
- * Здесь не должно быть environment fallback logic или transport creation.
+ * Здесь не должно быть чтения переменных окружения или создания транспорта.
  */
 
 import type {
@@ -29,8 +29,8 @@ export interface TInvestOptions {
   appName?: string;
   useSsl?: boolean;
   tls?: TInvestTlsOptions;
-  /** Необязательная Consumer-owned стратегия ожидания перед unary-вызовами. */
+  /** Необязательный ограничитель перед unary-вызовами, передаваемый приложением. */
   unaryLimiter?: TInvestUnaryLimiter;
-  /** Per-instance конечные положительные overrides unary-квот. */
+  /** Конечные положительные переопределения unary-квот для экземпляра SDK. */
   unaryLimits?: TInvestUnaryLimits;
 }

@@ -151,7 +151,7 @@ SDK отменяет `signal` вместе с конкретным вызово�
 
 SDK преобразует отмену отдельного вызова в публичный `SdkErrorCode.Cancelled` с `source: 'abort'`, а при закрытии сохраняет ошибку закрытого SDK. Остальные ошибки ограничителя передаются без маскировки под ошибки gRPC.
 
-## Ownership и время жизни
+## Время жизни ограничителя
 
 Временем жизни ограничителя управляет код, который его создал:
 
@@ -355,7 +355,7 @@ function abortReason(signal: AbortSignal): unknown {
 }
 ```
 
-Создайте один объект на нужный scope и передайте его всем соответствующим SDK instances:
+Передайте один объект ограничителя всем экземплярам SDK в процессе, которые должны учитывать одну квоту:
 
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
@@ -369,11 +369,13 @@ const sdk = new TInvestNodeSDK({
 });
 ```
 
-Для production-реализации также продумайте наблюдаемость, предел очереди, fairness, поведение при перегрузке и очистку неиспользуемых buckets. Эти решения зависят от приложения и не входят в минимальный port SDK.
+Для реализации приложения также продумайте наблюдаемость, предел очереди, порядок выдачи разрешений, поведение при перегрузке и очистку неиспользуемых `bucket`. Эти решения зависят от приложения; SDK требует только соблюдения интерфейса `TInvestUnaryLimiter`.
 
 ## Межпроцессная реализация
 
-Один JavaScript-объект объединяет SDK instances только внутри процесса. Для нескольких процессов сделайте `acquire()` тонким adapter-ом к отдельно запущенному coordinator-у:
+Один JavaScript-объект объединяет экземпляры SDK только внутри процесса. Для нескольких процессов `acquire()` может обращаться к отдельно запущенному координатору.
+
+Если координатор обслуживает несколько пользователей, окружений или развёртываний, его запрос должен содержать ключ, который определяет общий учёт квот. В примере этот ключ называется `quotaCoordinationKey`; он относится к протоколу приложения и не входит в интерфейс SDK:
 
 ```ts
 import type {
@@ -384,7 +386,7 @@ import type {
 interface CoordinatorClient {
   acquire(
     request: {
-      readonly scope: string;
+      readonly quotaCoordinationKey: string;
       readonly bucket: string;
       readonly maxRequests: number;
       readonly windowMs: number;
@@ -396,12 +398,12 @@ interface CoordinatorClient {
 class CoordinatorUnaryLimiter implements TInvestUnaryLimiter {
   constructor(
     private readonly client: CoordinatorClient,
-    private readonly scope: string
+    private readonly quotaCoordinationKey: string
   ) {}
 
   async acquire(context: TInvestUnaryLimitContext): Promise<void> {
     await this.client.acquire({
-      scope: this.scope,
+      quotaCoordinationKey: this.quotaCoordinationKey,
       bucket: context.quota.bucket,
       maxRequests: context.quota.maxRequests,
       windowMs: context.quota.windowMs
@@ -413,7 +415,7 @@ class CoordinatorUnaryLimiter implements TInvestUnaryLimiter {
 Для такого решения заранее определите:
 
 - кто запускает и завершает координатор;
-- какие процессы входят в одну область координации (`scope`);
+- какие процессы используют один `quotaCoordinationKey`;
 - как атомарно резервируются разрешения на запросы;
 - удаляется ли ещё не разрешённый запрос при отмене или разрыве соединения;
 - запрещается ли выдача разрешений при недоступности координатора;
@@ -423,12 +425,12 @@ class CoordinatorUnaryLimiter implements TInvestUnaryLimiter {
 
 Не возвращайте квоту после ошибки или отмены RPC: запрос уже мог достичь провайдера и быть учтён в квоте.
 
-SDK не требует конкретного протокола координатора, транспорта IPC или базы данных. Приложение выбирает подходящую своей архитектуре область координации без новой зависимости времени выполнения внутри SDK.
+SDK не задаёт протокол координатора, транспорт IPC или базу данных. Приложение само выбирает ключ координации и способ его передачи, не добавляя зависимость в SDK.
 
 ## Проверочный список собственной реализации
 
-- `acquire()` разрешается только после фактической выдачи permit.
-- Все callers с одинаковыми `bucket` используют одно состояние в выбранном scope.
+- `acquire()` завершается успешно только после фактической выдачи разрешения.
+- Все вызовы с одинаковыми `bucket` и `quotaCoordinationKey` используют одно общее состояние.
 - `maxRequests` и `windowMs` применяются как пара без смены единиц.
 - Отменённые ожидания удаляются по `signal` без утечек обработчиков событий.
 - После выдачи разрешения квота не возвращается автоматически.

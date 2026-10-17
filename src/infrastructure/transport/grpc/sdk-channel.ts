@@ -1,12 +1,12 @@
 /**
- * Модуль gRPC channel adapter создает transport channel для SDK runtime.
+ * Модуль создаёт gRPC-канал SDK.
  *
  * Здесь допустимы:
- * - выбор TLS или insecure credentials по SDK options;
- * - mapping package-owned transport policy в gRPC channel options;
- * - создание low-level nice-grpc channel;
+ * - выбор TLS или незашифрованного подключения по параметрам SDK;
+ * - передача ограничения размера входящего сообщения в настройки канала;
+ * - создание канала `nice-grpc`.
  *
- * Здесь не должно быть service client caching или CLI option parsing.
+ * Здесь не должно быть кеширования клиентов сервисов или разбора опций CLI.
  */
 
 import {

@@ -1,15 +1,15 @@
 /**
- * Модуль gRPC middleware adapter связывает transport calls с unary limiter
- * port.
+ * Модуль gRPC middleware связывает вызовы транспорта с ограничителем
+ * unary-запросов.
  *
  * Здесь допустимы:
- * - разрешение gRPC path в transport-neutral quota;
- * - вызов Consumer-owned limiter-а перед unary transport call;
- * - пропуск response stream calls без limiter-а;
- * - проверка SDK lifecycle и делегирование классификации call failures;
- * - делегирование actual call execution в nice-grpc middleware chain;
+ * - выбор квоты по пути gRPC-метода;
+ * - вызов ограничителя, переданного приложением, перед unary-вызовом;
+ * - пропуск потоковых ответов без ограничения;
+ * - проверка закрытия SDK и классификация ошибок вызова;
+ * - передача вызова в цепочку middleware `nice-grpc`.
  *
- * Здесь не должно быть retry policy или stream lifecycle management.
+ * Здесь не должно быть правил повторных запросов или управления потоками.
  */
 
 import type {
@@ -32,23 +32,27 @@ import {
 } from './sdk-call-error';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
-export interface SdkCallRuntime {
-  readonly useSsl: boolean;
-  readonly maxReceiveMessageLength: number;
+export interface SdkCallLifecycle {
   readonly signal: AbortSignal;
   assertOpen(): void;
+}
+
+export interface SdkCallErrorClassificationOptions {
+  readonly useSsl: boolean;
+  readonly maxReceiveMessageLength: number;
 }
 
 export function createSdkMiddleware(
   unaryLimiter: TInvestUnaryLimiter | undefined,
   unaryLimitResolver: UnaryLimitResolver,
-  runtime?: SdkCallRuntime
+  lifecycle?: SdkCallLifecycle,
+  errorClassification?: SdkCallErrorClassificationOptions
 ) {
   return async function* <Request, Response>(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
-    runtime?.assertOpen();
+    lifecycle?.assertOpen();
 
     if (!call.responseStream && unaryLimiter !== undefined) {
       await acquireUnaryPermit(
@@ -56,14 +60,14 @@ export function createSdkMiddleware(
         unaryLimitResolver,
         call.method.path,
         options.signal,
-        runtime?.signal
+        lifecycle?.signal
       );
     }
 
     const callbackBoundary = createCallCallbackBoundary(options);
 
     try {
-      runtime?.assertOpen();
+      lifecycle?.assertOpen();
 
       if (!call.responseStream) {
         throwIfAborted(options.signal);
@@ -103,8 +107,8 @@ export function createSdkMiddleware(
         error,
         call.method.path,
         options.signal,
-        runtime?.useSsl === true,
-        runtime?.maxReceiveMessageLength
+        errorClassification?.useSsl === true,
+        errorClassification?.maxReceiveMessageLength
       );
     }
     finally {

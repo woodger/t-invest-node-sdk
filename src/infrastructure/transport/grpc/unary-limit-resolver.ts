@@ -4,10 +4,10 @@
  * Здесь допустимы:
  * - точное сопоставление method paths;
  * - разрешение service fallback по qualified gRPC service name;
- * - выбор runtime bucket для найденного правила.
+ * - выбор общего bucket для найденного правила.
  *
- * Здесь не должно быть compilation package config, validation limits или
- * limiter state.
+ * Здесь не должно быть подготовки настроек модуля, проверки квот или
+ * состояния ограничителя.
  */
 
 import type {

@@ -262,7 +262,7 @@ describe('resolveUnaryLimitConfig', () => {
     }
   );
 
-  test('returns an isolated snapshot for each resolution', () => {
+  test('returns separate quota tables for each resolution', () => {
     const first = resolveUnaryLimitConfig();
     const second = resolveUnaryLimitConfig();
 
@@ -534,7 +534,7 @@ describe('resolveUnaryLimitConfig', () => {
     }
   });
 
-  test('returns an isolated bucket snapshot for each resolution', () => {
+  test('returns separate quota bucket tables for each resolution', () => {
     const first = resolveUnaryLimitConfig();
     const second = resolveUnaryLimitConfig();
     const path =
