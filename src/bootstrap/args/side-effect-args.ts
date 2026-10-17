@@ -14,6 +14,9 @@ import type { Quotation } from '../../generated/common';
 import { CliUsageError } from 'icore';
 import { defaultConfig } from '../sdk-config';
 
+// Quotation.nano хранит дробную часть в наноединицах.
+const quotationFractionDigits = 9;
+
 export const sideEffectConfirmationOptionsSchema = {
   confirm: {
     type: 'boolean'
@@ -41,7 +44,7 @@ export function parsePositiveQuotationOption(
 
   const [unitsText, fractionText = ''] = value.split('.');
   const units = Number(unitsText);
-  const nano = Number(fractionText.padEnd(9, '0'));
+  const nano = Number(fractionText.padEnd(quotationFractionDigits, '0'));
 
   if (!Number.isSafeInteger(units) || units === 0 && nano === 0) {
     throw new CliUsageError(decimalErrorMessage(name));
@@ -63,5 +66,5 @@ export function parseOptionalPositiveQuotationOption(
 }
 
 function decimalErrorMessage(name: string): string {
-  return `Expected '--${name}' as decimal greater than 0 with up to 9 fractional digits`;
+  return `Expected '--${name}' as decimal greater than 0 with up to ${quotationFractionDigits} fractional digits`;
 }

@@ -83,6 +83,7 @@ export interface StreamRunSessionDependencies {
   readonly elapsedNow: StreamRunElapsedClock;
 }
 
+// Node.js принимает задержки setTimeout не больше 2^31 - 1 миллисекунд.
 const maxTimerDelayMs = 2_147_483_647;
 const streamReadTimedOut = Symbol('streamReadTimedOut');
 

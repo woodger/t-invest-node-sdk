@@ -14,6 +14,9 @@ import {
 } from '../../../generated/orders';
 import { createPostOrderCommand } from './cli';
 
+const maxSafeQuantity = Number.MAX_SAFE_INTEGER;
+const firstUnsafeQuantity = maxSafeQuantity + 1;
+
 function postOrderResponse(
   overrides: Partial<PostOrderResponse> = {}
 ): PostOrderResponse {
@@ -86,7 +89,7 @@ describe('post-order command', () => {
               'place',
               '--account-id=account-id',
               '--instrument-id=instrument-id',
-              '--quantity=9007199254740993',
+              `--quantity=${firstUnsafeQuantity}`,
               '--direction=buy',
               '--order-type=market',
               '--order-id=idempotency-key',
@@ -94,7 +97,9 @@ describe('post-order command', () => {
             ],
             undefined
           ),
-        /Expected '--quantity' to be less than or equal to 9007199254740991/
+        new RegExp(
+          `Expected '--quantity' to be less than or equal to ${maxSafeQuantity}`
+        )
       );
       assert.equal(sdkCreated, false);
     });

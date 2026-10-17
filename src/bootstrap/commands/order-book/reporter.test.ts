@@ -7,6 +7,8 @@ import type {
 } from '../../../generated/marketdata';
 import { createOrderBookReport, formatOrderBookReport } from './reporter';
 
+const reportedOrderBookDepth = 2;
+
 function quotation(units: number, nano: number): Quotation {
   return {
     units,
@@ -27,7 +29,7 @@ function response(
 ): GetOrderBookResponse {
   return {
     figi: 'BBG00QPYJ5H0',
-    depth: 2,
+    depth: reportedOrderBookDepth,
     bids: [order()],
     asks: [order({ price: quotation(101, 0), quantity: 4 })],
     lastPrice: quotation(100, 500000000),
@@ -50,7 +52,7 @@ describe('order-book reporter', () => {
       assert.deepEqual(report, {
         figi: 'BBG00QPYJ5H0',
         instrumentUid: 'instrument-uid',
-        depth: 2,
+        depth: reportedOrderBookDepth,
         lastPrice: '100.5',
         closePrice: '99',
         limitUp: '120',
@@ -110,11 +112,16 @@ describe('order-book reporter', () => {
       );
       assert.match(
         output,
-        /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+bid\s+100.25\s+10/
+        new RegExp(
+          `BBG00QPYJ5H0\\s+instrument-uid\\s+${reportedOrderBookDepth}\\s+`
+            + '2026-06-19T10:01:00.000Z\\s+bid\\s+100.25\\s+10'
+        )
       );
       assert.match(
         output,
-        /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+ask\s+101\s+4/
+        new RegExp(
+          `BBG00QPYJ5H0\\s+instrument-uid\\s+${reportedOrderBookDepth}\\s+2026-06-19T10:01:00.000Z\\s+ask\\s+101\\s+4`
+        )
       );
     });
 

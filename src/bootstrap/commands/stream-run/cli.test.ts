@@ -11,12 +11,15 @@ import {
   type MarketDataRequest,
   type MarketDataResponse
 } from '../../../generated/marketdata';
+import { maxInt32 } from '../../args/command-options';
 import type {
   PortfolioStreamRequest,
   PortfolioStreamResponse
 } from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 import { createStreamRunCommand } from './cli';
+
+const firstOutOfRangeInt32 = maxInt32 + 1;
 
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {
   let result = '';
@@ -358,7 +361,7 @@ describe('stream run command', () => {
               subscriptions: {
                 orderBooks: [{
                   instrumentId: 'instrument-id',
-                  depth: 2_147_483_648
+                  depth: firstOutOfRangeInt32
                 }]
               }
             }),
@@ -374,7 +377,9 @@ describe('stream run command', () => {
               ['stream', 'run', '--config=stream.json'],
               undefined
             ),
-          /Expected 'subscriptions\.orderBooks\[\]\.depth' to be less than or equal to 2147483647/
+          new RegExp(
+            `Expected 'subscriptions\\.orderBooks\\[\\]\\.depth' to be less than or equal to ${maxInt32}`
+          )
         );
       }
     );

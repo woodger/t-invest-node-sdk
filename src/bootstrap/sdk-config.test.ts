@@ -15,23 +15,49 @@ import {
   UnaryLimitResolver
 } from '../infrastructure/transport/grpc/unary-limit-resolver';
 
+const minuteWindowMs = 60_000;
+const secondWindowMs = 1_000;
+const instrumentsDefaultRequestsPerMinute = 200;
+const instrumentsListRequestsPerMinute = 15;
+const marketDataRequestsPerMinute = 600;
+const operationsDefaultRequestsPerMinute = 200;
+const operationsReportRequestsPerMinute = 5;
+const ordersDefaultRequestsPerMinute = 100;
+const ordersGetOrdersRequestsPerMinute = 200;
+const ordersPostOrderRequestsPerSecond = 15;
+const ordersPostOrderAsyncRequestsPerMinute = 600;
+const ordersCancelOrderRequestsPerMinute = 300;
+const ordersReplaceOrderRequestsPerMinute = 300;
+const sandboxRequestsPerMinute = 200;
+const signalsRequestsPerMinute = 100;
+const stopOrdersDefaultRequestsPerMinute = 50;
+const stopOrdersGetRequestsPerMinute = 60;
+const usersRequestsPerMinute = 100;
+const overriddenUsersRequestsPerMinute = 25;
+const overridePostOrderRequestsPerMinute = 300;
+const overrideGetOrderBookRequestsPerMinute = 300;
+const customReportRequestsPerMinute = 10;
+
 describe('defaultConfig', () => {
   test('applies current service-level unary limits', () => {
     const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
       '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy':
-        200,
+        instrumentsDefaultRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.MarketDataService/GetCandles':
-        600,
+        marketDataRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio':
-        200,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState': 100,
+        operationsDefaultRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState':
+        ordersDefaultRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.SandboxService/GetSandboxAccounts':
-        200,
-      '/tinkoff.public.invest.api.contract.v1.SignalService/GetSignals': 100,
+        sandboxRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.SignalService/GetSignals':
+        signalsRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.StopOrdersService/PostStopOrder':
-        50,
-      '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts': 100
+        stopOrdersDefaultRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts':
+        usersRequestsPerMinute
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
@@ -42,16 +68,22 @@ describe('defaultConfig', () => {
   test('applies lower method-specific limits before service fallbacks', () => {
     const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
-      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Bonds': 15,
-      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares': 15,
-      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Options': 15,
-      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Futures': 15,
-      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Etfs': 15,
-      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetAssets': 15,
+      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Bonds':
+        instrumentsListRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Shares':
+        instrumentsListRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Options':
+        instrumentsListRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Futures':
+        instrumentsListRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/Etfs':
+        instrumentsListRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetAssets':
+        instrumentsListRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport':
-        5,
+        operationsReportRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer':
-        5
+        operationsReportRequestsPerMinute
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
@@ -62,14 +94,18 @@ describe('defaultConfig', () => {
   test('applies higher method-specific limits before service fallbacks', () => {
     const resolver = createDefaultUnaryLimitResolver();
     const expectedLimits = {
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders': 200,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': 15,
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders':
+        ordersGetOrdersRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder':
+        ordersPostOrderRequestsPerSecond,
       '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrderAsync':
-        600,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/CancelOrder': 300,
-      '/tinkoff.public.invest.api.contract.v1.OrdersService/ReplaceOrder': 300,
+        ordersPostOrderAsyncRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/CancelOrder':
+        ordersCancelOrderRequestsPerMinute,
+      '/tinkoff.public.invest.api.contract.v1.OrdersService/ReplaceOrder':
+        ordersReplaceOrderRequestsPerMinute,
       '/tinkoff.public.invest.api.contract.v1.StopOrdersService/GetStopOrders':
-        60
+        stopOrdersGetRequestsPerMinute
     };
 
     for (const [path, limit] of Object.entries(expectedLimits)) {
@@ -80,7 +116,7 @@ describe('defaultConfig', () => {
       resolver.resolve(
         '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
       )?.windowMs,
-      1_000
+      secondWindowMs
     );
   });
 });
@@ -166,18 +202,24 @@ describe('resolveSdkInstanceOptions', () => {
 describe('resolveUnaryLimitConfig', () => {
   test('merges per-instance overrides over package defaults', () => {
     const { limits } = resolveUnaryLimitConfig({
-      UsersService: perMinute(25)
+      UsersService: perMinute(overriddenUsersRequestsPerMinute)
     });
 
-    assert.deepEqual(limits['UsersService'], perMinute(25));
-    assert.deepEqual(limits['MarketDataService'], perMinute(600));
+    assert.deepEqual(
+      limits['UsersService'],
+      perMinute(overriddenUsersRequestsPerMinute)
+    );
+    assert.deepEqual(
+      limits['MarketDataService'],
+      perMinute(marketDataRequestsPerMinute)
+    );
   });
 
   test('merges method overrides produced from nested definitions', () => {
     const overrides = defineUnaryLimits({
       OrdersService: {
         methods: {
-          PostOrder: perMinute(300)
+          PostOrder: perMinute(overridePostOrderRequestsPerMinute)
         }
       }
     });
@@ -188,13 +230,13 @@ describe('resolveUnaryLimitConfig', () => {
       resolver.resolve(
         '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder'
       )?.maxRequests,
-      300
+      overridePostOrderRequestsPerMinute
     );
     assert.equal(
       resolver.resolve(
         '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
       )?.maxRequests,
-      100
+      ordersDefaultRequestsPerMinute
     );
   });
 
@@ -204,7 +246,7 @@ describe('resolveUnaryLimitConfig', () => {
       const overrides = defineUnaryLimits({
         MarketDataService: {
           methods: {
-            GetOrderBook: perMinute(300)
+            GetOrderBook: perMinute(overrideGetOrderBookRequestsPerMinute)
           }
         }
       });
@@ -215,7 +257,7 @@ describe('resolveUnaryLimitConfig', () => {
         resolver.resolve(
           '/tinkoff.public.invest.api.contract.v1.MarketDataService/GetOrderBook'
         )?.maxRequests,
-        300
+        overrideGetOrderBookRequestsPerMinute
       );
     }
   );
@@ -230,10 +272,17 @@ describe('resolveUnaryLimitConfig', () => {
       assert.fail('Expected UsersService limit');
     }
 
-    (firstUsersLimit as { maxRequests: number }).maxRequests = 25;
+    (firstUsersLimit as { maxRequests: number }).maxRequests =
+      overriddenUsersRequestsPerMinute;
 
-    assert.deepEqual(second.limits['UsersService'], perMinute(100));
-    assert.deepEqual(defaultConfig.unaryLimits['UsersService'], perMinute(100));
+    assert.deepEqual(
+      second.limits['UsersService'],
+      perMinute(usersRequestsPerMinute)
+    );
+    assert.deepEqual(
+      defaultConfig.unaryLimits['UsersService'],
+      perMinute(usersRequestsPerMinute)
+    );
   });
 
   test(
@@ -245,7 +294,7 @@ describe('resolveUnaryLimitConfig', () => {
             resolveUnaryLimitConfig({
               UsersService: {
                 maxRequests: limit,
-                windowMs: 60_000
+                windowMs: minuteWindowMs
               }
             }),
           (error: unknown) =>
@@ -264,7 +313,7 @@ describe('resolveUnaryLimitConfig', () => {
       () =>
         resolveUnaryLimitConfig({
           UsersService: {
-            maxRequests: 100,
+            maxRequests: usersRequestsPerMinute,
             windowMs: 0
           }
         }),
@@ -362,7 +411,7 @@ describe('resolveUnaryLimitConfig', () => {
       const overrides = defineUnaryLimits({
         OperationsService: {
           methods: {
-            GetBrokerReport: perMinute(10)
+            GetBrokerReport: perMinute(customReportRequestsPerMinute)
           }
         }
       });
@@ -384,7 +433,7 @@ describe('resolveUnaryLimitConfig', () => {
       const overrides = defineUnaryLimits({
         OperationsService: {
           methods: {
-            GetBrokerReport: perMinute(5)
+            GetBrokerReport: perMinute(operationsReportRequestsPerMinute)
           }
         }
       });
@@ -407,8 +456,8 @@ describe('resolveUnaryLimitConfig', () => {
     const overrides = defineUnaryLimits({
       OperationsService: {
         methods: {
-          GetBrokerReport: perMinute(10),
-          GetDividendsForeignIssuer: perMinute(10)
+          GetBrokerReport: perMinute(customReportRequestsPerMinute),
+          GetDividendsForeignIssuer: perMinute(customReportRequestsPerMinute)
         }
       }
     });
@@ -423,8 +472,8 @@ describe('resolveUnaryLimitConfig', () => {
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
     );
 
-    assert.equal(brokerReport.maxRequests, 10);
-    assert.equal(dividendsReport.maxRequests, 10);
+    assert.equal(brokerReport.maxRequests, customReportRequestsPerMinute);
+    assert.equal(dividendsReport.maxRequests, customReportRequestsPerMinute);
     assert.equal(brokerReport.bucket, dividendsReport.bucket);
   });
 
@@ -434,7 +483,9 @@ describe('resolveUnaryLimitConfig', () => {
     const previousLimit = defaultConfig.unaryLimits[path];
 
     try {
-      defaultConfig.unaryLimits[path] = perMinute(10);
+      defaultConfig.unaryLimits[path] = perMinute(
+        customReportRequestsPerMinute
+      );
 
       const { limits, buckets } = resolveUnaryLimitConfig();
       const resolver = new UnaryLimitResolver(limits, buckets);
@@ -444,7 +495,7 @@ describe('resolveUnaryLimitConfig', () => {
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer'
       );
 
-      assert.equal(quota.maxRequests, 10);
+      assert.equal(quota.maxRequests, customReportRequestsPerMinute);
       assert.notEqual(quota.bucket, groupedQuota.bucket);
     }
     finally {
@@ -473,7 +524,7 @@ describe('resolveUnaryLimitConfig', () => {
         '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio'
       );
 
-      assert.equal(quota.maxRequests, 200);
+      assert.equal(quota.maxRequests, operationsDefaultRequestsPerMinute);
       assert.equal(quota.bucket, fallbackQuota.bucket);
     }
     finally {
@@ -522,6 +573,6 @@ function resolveRequiredQuota(
 function perMinute(maxRequests: number) {
   return {
     maxRequests,
-    windowMs: 60_000
+    windowMs: minuteWindowMs
   };
 }

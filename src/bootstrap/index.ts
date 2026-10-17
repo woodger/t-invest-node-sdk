@@ -5,6 +5,7 @@
  * `dist/bootstrap/index.js` и делегирует bootstrap-механику CLI runner-у.
  */
 
+import { cliExitCodes } from './cli/error';
 import { runCli } from './cli/runner';
 import {
   installWarningInterceptor
@@ -16,11 +17,14 @@ installWarningInterceptor({
   ]
 });
 
-void runCli(process.argv.slice(2))
+// Node.js оставляет первые два argv-элемента для исполняемого файла и entry module.
+const nodeCliArgumentStartIndex = 2;
+
+void runCli(process.argv.slice(nodeCliArgumentStartIndex))
   .then((exitCode) => {
     process.exitCode = exitCode;
   })
   .catch((error: unknown) => {
     console.error(error);
-    process.exitCode = 1;
+    process.exitCode = cliExitCodes.runtimeError;
   });

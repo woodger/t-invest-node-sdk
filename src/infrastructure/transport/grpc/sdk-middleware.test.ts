@@ -29,10 +29,13 @@ type TestRequest = Record<string, never>;
 const defaultUnaryResponse = { ok: true };
 const usersPath =
   '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
-const maxReceiveMessageLength = 4 * 1024 * 1024;
+const maxReceiveMessageLengthBytes = 4_194_304;
+const minuteWindowMs = 60_000;
+const usersDefaultRequestsPerMinute = 100;
+const usersAlternativeRequestsPerMinute = 50;
 const usersLimit = {
-  maxRequests: 100,
-  windowMs: 60_000
+  maxRequests: usersDefaultRequestsPerMinute,
+  windowMs: minuteWindowMs
 };
 
 async function* createUnaryResponseIterator<Response>(
@@ -118,7 +121,7 @@ function createOpenRuntime(useSsl: boolean): SdkCallRuntime {
 
   return {
     useSsl,
-    maxReceiveMessageLength,
+    maxReceiveMessageLength: maxReceiveMessageLengthBytes,
     signal,
     assertOpen() {
       if (signal.aborted) {
@@ -164,8 +167,8 @@ describe('createSdkMiddleware', () => {
     const resolverA = new UnaryLimitResolver({ UsersService: usersLimit });
     const resolverB = new UnaryLimitResolver({
       UsersService: {
-        maxRequests: 50,
-        windowMs: 60_000
+        maxRequests: usersAlternativeRequestsPerMinute,
+        windowMs: minuteWindowMs
       }
     });
     let callsA = 0;
@@ -173,13 +176,13 @@ describe('createSdkMiddleware', () => {
     const limiterA: TInvestUnaryLimiter = {
       async acquire({ quota }) {
         callsA += 1;
-        assert.equal(quota.maxRequests, 100);
+        assert.equal(quota.maxRequests, usersDefaultRequestsPerMinute);
       }
     };
     const limiterB: TInvestUnaryLimiter = {
       async acquire({ quota }) {
         callsB += 1;
-        assert.equal(quota.maxRequests, 50);
+        assert.equal(quota.maxRequests, usersAlternativeRequestsPerMinute);
       }
     };
 
@@ -295,7 +298,7 @@ describe('createSdkMiddleware', () => {
       resolver,
       {
         useSsl: false,
-        maxReceiveMessageLength,
+        maxReceiveMessageLength: maxReceiveMessageLengthBytes,
         signal: lifecycleController.signal,
         assertOpen() {
           if (lifecycleController.signal.aborted) {

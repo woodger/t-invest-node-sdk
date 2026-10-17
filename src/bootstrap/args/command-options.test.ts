@@ -6,11 +6,16 @@ import {
   parseDateTimeOption,
   parseOptionalNonNegativeInt32Option,
   parseRequiredDateTimeOption,
+  maxInt32,
   positiveSafeIntegerOption,
   positiveInt32Option,
   requireStringOption,
   withSdkOptions
 } from './command-options';
+
+const maxSafeInteger = Number.MAX_SAFE_INTEGER;
+const firstUnsafeInteger = maxSafeInteger + 1;
+const firstOutOfRangeInt32 = maxInt32 + 1;
 
 describe('command options', () => {
   describe('withSdkOptions', () => {
@@ -87,9 +92,11 @@ describe('command options', () => {
         () =>
           parseOptions(
             { quantity: positiveSafeIntegerOption },
-            { quantity: '9007199254740993' }
+            { quantity: String(firstUnsafeInteger) }
           ),
-        /Expected '--quantity' to be less than or equal to 9007199254740991/
+        new RegExp(
+          `Expected '--quantity' to be less than or equal to ${maxSafeInteger}`
+        )
       );
     });
   });
@@ -97,16 +104,24 @@ describe('command options', () => {
   describe('positiveInt32Option', () => {
     test('accepts the maximum positive int32', () => {
       assert.deepEqual(
-        parseOptions({ depth: positiveInt32Option }, { depth: '2147483647' }),
-        { depth: 2_147_483_647 }
+        parseOptions(
+          { depth: positiveInt32Option },
+          { depth: String(maxInt32) }
+        ),
+        { depth: maxInt32 }
       );
     });
 
     test('rejects the first integer outside int32', () => {
       assert.throws(
         () =>
-          parseOptions({ depth: positiveInt32Option }, { depth: '2147483648' }),
-        /Expected '--depth' to be less than or equal to 2147483647/
+          parseOptions(
+            { depth: positiveInt32Option },
+            { depth: String(firstOutOfRangeInt32) }
+          ),
+        new RegExp(
+          `Expected '--depth' to be less than or equal to ${maxInt32}`
+        )
       );
     });
   });
@@ -219,15 +234,21 @@ describe('command options', () => {
 
     test('accepts the maximum int32 page', () => {
       assert.equal(
-        parseOptionalNonNegativeInt32Option('2147483647', 'page'),
-        2_147_483_647
+        parseOptionalNonNegativeInt32Option(String(maxInt32), 'page'),
+        maxInt32
       );
     });
 
     test('rejects pages outside int32', () => {
       assert.throws(
-        () => parseOptionalNonNegativeInt32Option('2147483648', 'page'),
-        /Expected '--page' to be less than or equal to 2147483647/
+        () =>
+          parseOptionalNonNegativeInt32Option(
+            String(firstOutOfRangeInt32),
+            'page'
+          ),
+        new RegExp(
+          `Expected '--page' to be less than or equal to ${maxInt32}`
+        )
       );
     });
   });

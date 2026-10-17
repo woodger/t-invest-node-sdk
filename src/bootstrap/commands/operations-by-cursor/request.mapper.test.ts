@@ -14,6 +14,9 @@ const defaultOptions = {
   'without-overnights': false
 } as const;
 
+const minOperationsByCursorPageSize = 1;
+const maxOperationsByCursorPageSize = 1_000;
+
 describe('createOperationsByCursorRequest', () => {
   test('преобразует options в generated GetOperationsByCursorRequest', () => {
     const request = createOperationsByCursorRequest({
@@ -22,7 +25,7 @@ describe('createOperationsByCursorRequest', () => {
       from: '2026-06-01T00:00:00.000Z',
       to: '2026-06-19T00:00:00.000Z',
       cursor: 'cursor',
-      limit: '1000',
+      limit: String(maxOperationsByCursorPageSize),
       'operation-type': 'OPERATION_TYPE_BUY',
       state: 'executed',
       'without-commissions': true,
@@ -35,7 +38,7 @@ describe('createOperationsByCursorRequest', () => {
     assert.equal(request.from?.toISOString(), '2026-06-01T00:00:00.000Z');
     assert.equal(request.to?.toISOString(), '2026-06-19T00:00:00.000Z');
     assert.equal(request.cursor, 'cursor');
-    assert.equal(request.limit, 1000);
+    assert.equal(request.limit, maxOperationsByCursorPageSize);
     assert.deepEqual(request.operationTypes, [
       OperationType.OPERATION_TYPE_BUY
     ]);
@@ -82,14 +85,21 @@ describe('createOperationsByCursorRequest', () => {
   });
 
   test('отклоняет limit вне provider range', () => {
-    for (const limit of ['0', '1001']) {
+    for (
+      const limit of [
+        String(minOperationsByCursorPageSize - 1),
+        String(maxOperationsByCursorPageSize + 1)
+      ]
+    ) {
       assert.throws(
         () =>
           createOperationsByCursorRequest({
             ...defaultOptions,
             limit
           }),
-        /Expected '--limit' as integer from 1 to 1000/
+        new RegExp(
+          `Expected '--limit' as integer from ${minOperationsByCursorPageSize} to ${maxOperationsByCursorPageSize}`
+        )
       );
     }
   });

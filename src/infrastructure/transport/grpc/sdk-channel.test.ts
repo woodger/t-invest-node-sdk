@@ -15,8 +15,12 @@ import {
 import type { ServiceDefinition } from 'nice-grpc';
 import { createSdkChannel } from './sdk-channel';
 
-const oneMiB = 1024 * 1024;
-const twoMiB = 2 * 1024 * 1024;
+const oneMiB = 1_048_576;
+const twoMiB = 2 * oneMiB;
+// gRPC frame начинается с однобайтного флага сжатия и четырёхбайтовой длины.
+const grpcFrameHeaderBytes = 5;
+const grpcFrameLengthOffsetBytes = 1;
+const httpOkStatusCode = 200;
 const tlsFixturesDirectory = resolve(
   __dirname,
   '../../../../src/infrastructure/transport/grpc/test-fixtures'
@@ -138,19 +142,19 @@ function createPayloadTlsServer() {
     stream.resume();
     stream.once('end', () => {
       const message = new Uint8Array([1, 2, 3]);
-      const frame = Buffer.alloc(5 + message.byteLength);
+      const frame = Buffer.alloc(grpcFrameHeaderBytes + message.byteLength);
 
-      frame.writeUInt32BE(message.byteLength, 1);
-      frame.set(message, 5);
+      frame.writeUInt32BE(message.byteLength, grpcFrameLengthOffsetBytes);
+      frame.set(message, grpcFrameHeaderBytes);
       stream.respond({
-        ':status': 200,
+        ':status': httpOkStatusCode,
         'content-type': 'application/grpc+proto'
       }, {
         waitForTrailers: true
       });
       stream.once('wantTrailers', () => {
         stream.sendTrailers({
-          'grpc-status': '0'
+          'grpc-status': String(Status.OK)
         });
       });
       stream.end(frame);

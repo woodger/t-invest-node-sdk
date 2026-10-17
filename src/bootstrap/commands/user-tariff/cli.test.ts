@@ -5,21 +5,27 @@ import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffCommand } from './cli';
 
+const defaultUnaryLimitPerMinute = 100;
+const defaultStreamConnectionLimit = 10;
+const defaultOpenStreamCount = 2;
+const postOrderUnaryLimitPerMinute = 900;
+const postOrderUnaryLimitPerSecond = 15;
+
 function response(
   overrides: Partial<GetUserTariffResponse> = {}
 ): GetUserTariffResponse {
   return {
     unaryLimits: [
       {
-        limitPerMinute: 100,
+        limitPerMinute: defaultUnaryLimitPerMinute,
         methods: ['UsersService/GetAccounts']
       }
     ],
     streamLimits: [
       {
-        limit: 10,
+        limit: defaultStreamConnectionLimit,
         streams: ['MarketDataStreamService/MarketDataStream'],
-        open: 2
+        open: defaultOpenStreamCount
       }
     ],
     ...overrides
@@ -70,7 +76,10 @@ describe('user-tariff command', () => {
       assert.equal(getUserTariffCalls, 1);
       assert.deepEqual(receivedRequest, {});
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output).unaryLimits[0].limitPerMinute, 100);
+      assert.equal(
+        JSON.parse(output).unaryLimits[0].limitPerMinute,
+        defaultUnaryLimitPerMinute
+      );
     });
 
     test('prints both rate-limit windows in json', async () => {
@@ -79,8 +88,8 @@ describe('user-tariff command', () => {
           async getUserTariff() {
             return response({
               unaryLimits: [{
-                limitPerMinute: 900,
-                limitPerSecond: 15,
+                limitPerMinute: postOrderUnaryLimitPerMinute,
+                limitPerSecond: postOrderUnaryLimitPerSecond,
                 methods: ['OrdersService/PostOrder']
               }]
             });
@@ -101,8 +110,8 @@ describe('user-tariff command', () => {
       );
 
       assert.deepEqual(JSON.parse(output).unaryLimits, [{
-        limitPerMinute: 900,
-        limitPerSecond: 15,
+        limitPerMinute: postOrderUnaryLimitPerMinute,
+        limitPerSecond: postOrderUnaryLimitPerSecond,
         methods: ['OrdersService/PostOrder']
       }]);
     });

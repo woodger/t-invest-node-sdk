@@ -3,21 +3,27 @@ import { describe, test } from 'node:test';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffReport, formatUserTariffReport } from './reporter';
 
+const defaultUnaryLimitPerMinute = 100;
+const defaultStreamConnectionLimit = 10;
+const defaultOpenStreamCount = 2;
+const postOrderUnaryLimitPerMinute = 900;
+const postOrderUnaryLimitPerSecond = 15;
+
 function response(
   overrides: Partial<GetUserTariffResponse> = {}
 ): GetUserTariffResponse {
   return {
     unaryLimits: [
       {
-        limitPerMinute: 100,
+        limitPerMinute: defaultUnaryLimitPerMinute,
         methods: ['UsersService/GetAccounts', 'UsersService/GetInfo']
       }
     ],
     streamLimits: [
       {
-        limit: 10,
+        limit: defaultStreamConnectionLimit,
         streams: ['MarketDataStreamService/MarketDataStream'],
-        open: 2
+        open: defaultOpenStreamCount
       }
     ],
     ...overrides
@@ -32,15 +38,15 @@ describe('user-tariff reporter', () => {
       assert.deepEqual(report, {
         unaryLimits: [
           {
-            limitPerMinute: 100,
+            limitPerMinute: defaultUnaryLimitPerMinute,
             methods: ['UsersService/GetAccounts', 'UsersService/GetInfo']
           }
         ],
         streamLimits: [
           {
-            limit: 10,
+            limit: defaultStreamConnectionLimit,
             streams: ['MarketDataStreamService/MarketDataStream'],
-            open: 2
+            open: defaultOpenStreamCount
           }
         ]
       });
@@ -60,11 +66,16 @@ describe('user-tariff reporter', () => {
       );
       assert.match(
         output,
-        /unary\s+100\s+UsersService\/GetAccounts, UsersService\/GetInfo/
+        new RegExp(
+          `unary\\s+${defaultUnaryLimitPerMinute}\\s+UsersService/GetAccounts, UsersService/GetInfo`
+        )
       );
       assert.match(
         output,
-        /stream\s+10\s+2\s+MarketDataStreamService\/MarketDataStream/
+        new RegExp(
+          `stream\\s+${defaultStreamConnectionLimit}\\s+${defaultOpenStreamCount}\\s+`
+            + 'MarketDataStreamService/MarketDataStream'
+        )
       );
     });
 
@@ -74,22 +85,22 @@ describe('user-tariff reporter', () => {
 
       assert.deepEqual(JSON.parse(output), {
         unaryLimits: [{
-          limitPerMinute: 100,
+          limitPerMinute: defaultUnaryLimitPerMinute,
           methods: ['UsersService/GetAccounts', 'UsersService/GetInfo']
         }],
         streamLimits: [{
-          limit: 10,
+          limit: defaultStreamConnectionLimit,
           streams: ['MarketDataStreamService/MarketDataStream'],
-          open: 2
+          open: defaultOpenStreamCount
         }]
       });
     });
 
-    for (const limitPerSecond of [15, 0]) {
+    for (const limitPerSecond of [postOrderUnaryLimitPerSecond, 0]) {
       test(`preserves a per-second limit of ${limitPerSecond} in json`, () => {
         const report = createUserTariffReport(response({
           unaryLimits: [{
-            limitPerMinute: 900,
+            limitPerMinute: postOrderUnaryLimitPerMinute,
             limitPerSecond,
             methods: ['OrdersService/PostOrder']
           }]
@@ -97,7 +108,7 @@ describe('user-tariff reporter', () => {
         const output = formatUserTariffReport(report, 'json');
 
         assert.deepEqual(JSON.parse(output).unaryLimits, [{
-          limitPerMinute: 900,
+          limitPerMinute: postOrderUnaryLimitPerMinute,
           limitPerSecond,
           methods: ['OrdersService/PostOrder']
         }]);
@@ -106,7 +117,7 @@ describe('user-tariff reporter', () => {
       test(`shows a per-second limit of ${limitPerSecond} beside the per-minute limit`, () => {
         const report = createUserTariffReport(response({
           unaryLimits: [{
-            limitPerMinute: 900,
+            limitPerMinute: postOrderUnaryLimitPerMinute,
             limitPerSecond,
             methods: ['OrdersService/PostOrder']
           }]
@@ -116,7 +127,7 @@ describe('user-tariff reporter', () => {
         assert.match(
           output,
           new RegExp(
-            `^unary\\s+900\\s+${limitPerSecond}\\s+OrdersService/PostOrder$`,
+            `^unary\\s+${postOrderUnaryLimitPerMinute}\\s+${limitPerSecond}\\s+OrdersService/PostOrder$`,
             'm'
           )
         );

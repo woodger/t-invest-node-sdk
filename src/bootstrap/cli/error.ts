@@ -18,6 +18,12 @@ import {
 } from 'icore';
 import { renderCliHelp } from './help';
 
+export const cliExitCodes = {
+  success: 0,
+  runtimeError: 1,
+  usageError: 2
+} as const;
+
 export function renderCommandError(error: unknown): string {
   if (isIcoreError(error, 'UNKNOWN_COMMAND')) {
     const command = error.details.reason === 'unresolved'
@@ -35,7 +41,9 @@ export function renderCommandError(error: unknown): string {
 }
 
 export function resolveCommandExitCode(error: unknown): number {
-  return isUsageError(error) ? 2 : 1;
+  return isUsageError(error)
+    ? cliExitCodes.usageError
+    : cliExitCodes.runtimeError;
 }
 
 export const terminalErrorPolicy: TerminalErrorPolicy<unknown> = {

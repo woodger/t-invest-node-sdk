@@ -37,9 +37,15 @@ const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
 const requestSerializationPath = '/test.RequestSerializationService/GetPayload';
 const responseParsingPath = '/test.ResponseParsingService/GetPayload';
-const oneMiB = 1024 * 1024;
+const oneMiB = 1_048_576;
 const twoMiB = 2 * oneMiB;
-const maxReceiveMessageLength = 4 * 1024 * 1024;
+const maxReceiveMessageLengthBytes = 4 * oneMiB;
+const payloadServiceRequestsPerMinute = 60;
+const minuteWindowMs = 60_000;
+// gRPC frame начинается с однобайтного флага сжатия и четырёхбайтовой длины.
+const grpcFrameHeaderBytes = 5;
+const grpcFrameLengthOffsetBytes = 1;
+const httpOkStatusCode = 200;
 const tlsFixturesDirectory = resolve(
   __dirname,
   '../../../../src/infrastructure/transport/grpc/test-fixtures'
@@ -124,7 +130,7 @@ describe('createSdkClient', () => {
         token: 'token',
         endpoint: `127.0.0.1:${port}`,
         useSsl: false
-      }, 4 * 1024 * 1024);
+      }, maxReceiveMessageLengthBytes);
       let limiterContext: TInvestUnaryLimitContext | undefined;
       const limiter: TInvestUnaryLimiter = {
         async acquire(context) {
@@ -143,13 +149,13 @@ describe('createSdkClient', () => {
         limiter,
         new UnaryLimitResolver({
           PayloadService: {
-            maxRequests: 60,
-            windowMs: 60_000
+            maxRequests: payloadServiceRequestsPerMinute,
+            windowMs: minuteWindowMs
           }
         }),
         {
           useSsl: false,
-          maxReceiveMessageLength,
+          maxReceiveMessageLength: maxReceiveMessageLengthBytes,
           signal: lifecycleController.signal,
           // Сценарий metadata не проверяет отказ закрытого lifecycle.
           // oxlint-disable-next-line no-empty-function
@@ -170,7 +176,10 @@ describe('createSdkClient', () => {
         assert.equal(receivedAuthorization, 'Bearer token');
         assert.equal(receivedAppName, 'sdk-app');
         assert.equal(receivedRequestId, 'request-id');
-        assert.equal(limiterContext?.quota.maxRequests, 60);
+        assert.equal(
+          limiterContext?.quota.maxRequests,
+          payloadServiceRequestsPerMinute
+        );
         assert.equal(limiterContext?.path, payloadPath);
       }
       finally {
@@ -197,7 +206,7 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, maxReceiveMessageLengthBytes);
     const client = createPayloadClient(channel, false);
 
     try {
@@ -233,7 +242,7 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, maxReceiveMessageLengthBytes);
     const client = createPayloadClient(channel, false);
 
     try {
@@ -269,11 +278,11 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, maxReceiveMessageLengthBytes);
     const client = createPayloadClient(
       channel,
       false,
-      maxReceiveMessageLength,
+      maxReceiveMessageLengthBytes,
       requestSerializationServiceDefinition
     );
 
@@ -311,11 +320,11 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, maxReceiveMessageLengthBytes);
     const client = createPayloadClient(
       channel,
       false,
-      maxReceiveMessageLength,
+      maxReceiveMessageLengthBytes,
       responseParsingServiceDefinition
     );
 
@@ -500,7 +509,7 @@ describe('createSdkClient', () => {
       tls: {
         rootCertificates: readTlsFixture('tls-root.cert.pem')
       }
-    }, maxReceiveMessageLength);
+    }, maxReceiveMessageLengthBytes);
     const client = createPayloadClient(channel, true);
 
     try {
@@ -533,7 +542,7 @@ describe('createSdkClient', () => {
         tls: {
           rootCertificates: readTlsFixture('tls-root.cert.pem')
         }
-      }, maxReceiveMessageLength);
+      }, maxReceiveMessageLengthBytes);
       const client = createPayloadClient(channel, true);
 
       try {
@@ -557,7 +566,7 @@ describe('createSdkClient', () => {
 function createPayloadClient(
   channel: Channel,
   useSsl: boolean,
-  receiveMessageLength: number = maxReceiveMessageLength,
+  receiveMessageLength: number = maxReceiveMessageLengthBytes,
   service:
     | typeof payloadServiceDefinition
     | typeof requestSerializationServiceDefinition
@@ -600,12 +609,12 @@ function createPayloadTlsServer(
   server.on('stream', (stream: ServerHttp2Stream) => {
     stream.resume();
     stream.once('end', () => {
-      const frame = Buffer.alloc(5 + payload.byteLength);
+      const frame = Buffer.alloc(grpcFrameHeaderBytes + payload.byteLength);
 
-      frame.writeUInt32BE(payload.byteLength, 1);
-      frame.set(payload, 5);
+      frame.writeUInt32BE(payload.byteLength, grpcFrameLengthOffsetBytes);
+      frame.set(payload, grpcFrameHeaderBytes);
       stream.respond({
-        ':status': 200,
+        ':status': httpOkStatusCode,
         'content-type': 'application/grpc+proto'
       }, {
         waitForTrailers: true

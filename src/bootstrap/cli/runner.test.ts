@@ -2,7 +2,11 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
 import packageJson from '../../../package.json';
+import { maxInt32 } from '../args/command-options';
+import { cliExitCodes } from './error';
 import { parseCliInput, runCli } from './runner';
+
+const firstOutOfRangeInt32 = maxInt32 + 1;
 
 function createIo() {
   let stdout = '';
@@ -121,7 +125,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli([], io);
 
-      assert.equal(exitCode, 0);
+      assert.equal(exitCode, cliExitCodes.success);
       assert.match(read().stdout, /Usage:/);
       assert.equal(read().stderr, '');
     });
@@ -137,7 +141,7 @@ describe('bootstrap cli runner', () => {
         const { io, read } = createIo();
         const exitCode = await runCli(argv, io);
 
-        assert.equal(exitCode, 2);
+        assert.equal(exitCode, cliExitCodes.usageError);
         assert.equal(read().stdout, '');
         assert.match(
           read().stderr,
@@ -153,7 +157,7 @@ describe('bootstrap cli runner', () => {
           const { io, read } = createIo();
           const exitCode = await runCli([command], io);
 
-          assert.equal(exitCode, 0);
+          assert.equal(exitCode, cliExitCodes.success);
           assert.match(read().stdout, /Domains:/);
           assert.match(
             read().stdout,
@@ -169,7 +173,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['operation', 'portfolio', '--help'], io);
 
-      assert.equal(exitCode, 0);
+      assert.equal(exitCode, cliExitCodes.success);
       assert.match(
         read().stdout,
         /operation portfolio - Print account portfolio/
@@ -210,7 +214,7 @@ describe('bootstrap cli runner', () => {
           const { io, read } = createIo();
           const exitCode = await runCli([...path, '--help'], io);
 
-          assert.equal(exitCode, 0);
+          assert.equal(exitCode, cliExitCodes.success);
           assert.match(read().stdout, title);
           assert.match(read().stdout, usage);
           assert.equal(read().stderr, '');
@@ -227,7 +231,7 @@ describe('bootstrap cli runner', () => {
           io
         );
 
-        assert.equal(exitCode, 0);
+        assert.equal(exitCode, cliExitCodes.success);
         assert.match(
           read().stdout,
           /operation portfolio - Print account portfolio/
@@ -252,7 +256,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['account', '--help'], io);
 
-      assert.equal(exitCode, 0);
+      assert.equal(exitCode, cliExitCodes.success);
       assert.match(
         read().stdout,
         /account - Accounts, user info, tariff and limits/
@@ -269,7 +273,7 @@ describe('bootstrap cli runner', () => {
         const { io, read } = createIo();
         const exitCode = await runCli(['help', 'market', 'get-candles'], io);
 
-        assert.equal(exitCode, 0);
+        assert.equal(exitCode, cliExitCodes.success);
         assert.match(
           read().stdout,
           /market candles - Print historical candles/
@@ -300,7 +304,7 @@ describe('bootstrap cli runner', () => {
         const { io, read } = createIo();
         const exitCode = await runCli(['help', command], io);
 
-        assert.equal(exitCode, 0);
+        assert.equal(exitCode, cliExitCodes.success);
         assert.match(read().stdout, output);
         assert.equal(read().stderr, '');
       }
@@ -311,7 +315,7 @@ describe('bootstrap cli runner', () => {
         const { io, read } = createIo();
         const exitCode = await runCli([command], io);
 
-        assert.equal(exitCode, 0);
+        assert.equal(exitCode, cliExitCodes.success);
         assert.equal(
           read().stdout,
           `t-invest-node-sdk ${packageJson.version}\n`
@@ -324,7 +328,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['version', 'unexpected'], io);
 
-      assert.equal(exitCode, 2);
+      assert.equal(exitCode, cliExitCodes.usageError);
       assert.equal(read().stdout, '');
       assert.match(
         read().stderr,
@@ -344,7 +348,7 @@ describe('bootstrap cli runner', () => {
           const { io, read } = createIo();
           const exitCode = await runCli([argument], io);
 
-          assert.equal(exitCode, 2);
+          assert.equal(exitCode, cliExitCodes.usageError);
           assert.equal(read().stdout, '');
           assert.match(read().stderr, replacement);
         }
@@ -357,7 +361,7 @@ describe('bootstrap cli runner', () => {
         const { io, read } = createIo();
         const exitCode = await runCli(['--help=false'], io);
 
-        assert.equal(exitCode, 2);
+        assert.equal(exitCode, cliExitCodes.usageError);
         assert.equal(read().stdout, '');
         assert.match(read().stderr, /Expected '--help' as boolean flag/);
       }
@@ -383,7 +387,7 @@ describe('bootstrap cli runner', () => {
           })
         );
 
-        assert.equal(exitCode, 1);
+        assert.equal(exitCode, cliExitCodes.runtimeError);
         assert.equal(stderr, 'stdout failed\n');
       }
     );
@@ -397,7 +401,7 @@ describe('bootstrap cli runner', () => {
           io
         );
 
-        assert.equal(exitCode, 2);
+        assert.equal(exitCode, cliExitCodes.usageError);
         assert.equal(read().stdout, '');
         assert.match(
           read().stderr,
@@ -413,7 +417,7 @@ describe('bootstrap cli runner', () => {
             'market',
             'order-book',
             '--instrument-id=instrument-id',
-            '--depth=2147483648'
+            `--depth=${firstOutOfRangeInt32}`
           ],
           option: 'depth'
         },
@@ -422,7 +426,7 @@ describe('bootstrap cli runner', () => {
             'operation',
             'broker-report',
             '--task-id=task-id',
-            '--page=2147483648'
+            `--page=${firstOutOfRangeInt32}`
           ],
           option: 'page'
         },
@@ -431,7 +435,7 @@ describe('bootstrap cli runner', () => {
             'operation',
             'foreign-dividends-report',
             '--task-id=task-id',
-            '--page=2147483648'
+            `--page=${firstOutOfRangeInt32}`
           ],
           option: 'page'
         }
@@ -446,12 +450,12 @@ describe('bootstrap cli runner', () => {
           '--insecure'
         ], io);
 
-        assert.equal(exitCode, 2);
+        assert.equal(exitCode, cliExitCodes.usageError);
         assert.equal(read().stdout, '');
         assert.match(
           read().stderr,
           new RegExp(
-            `Expected '--${option}' to be less than or equal to 2147483647`
+            `Expected '--${option}' to be less than or equal to ${maxInt32}`
           )
         );
       });
@@ -461,7 +465,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['account', 'list', 'unexpected'], io);
 
-      assert.equal(exitCode, 2);
+      assert.equal(exitCode, cliExitCodes.usageError);
       assert.equal(read().stdout, '');
       assert.match(
         read().stderr,
@@ -510,7 +514,7 @@ describe('bootstrap cli runner', () => {
 
       finishWrite();
 
-      assert.equal(await exitCode, 0);
+      assert.equal(await exitCode, cliExitCodes.success);
       assert.equal(commandFinished, true);
     });
 
@@ -518,7 +522,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['unknown-command'], io);
 
-      assert.equal(exitCode, 2);
+      assert.equal(exitCode, cliExitCodes.usageError);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Unknown command: unknown-command/);
       assert.match(read().stderr, /Usage:/);
@@ -532,7 +536,7 @@ describe('bootstrap cli runner', () => {
         '--figi=FUTFIGI'
       ], io);
 
-      assert.equal(exitCode, 2);
+      assert.equal(exitCode, cliExitCodes.usageError);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Warning: '--figi' is deprecated/);
       assert.match(read().stderr, /use '--instrument-id' instead/);
@@ -547,7 +551,7 @@ describe('bootstrap cli runner', () => {
         '--instrument-id=FUTFIGI'
       ], io);
 
-      assert.equal(exitCode, 2);
+      assert.equal(exitCode, cliExitCodes.usageError);
       assert.equal(read().stdout, '');
       assert.doesNotMatch(read().stderr, /deprecated/);
       assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
@@ -602,7 +606,7 @@ describe('bootstrap cli runner', () => {
 
       finishWrite();
 
-      assert.equal(await exitCode, 2);
+      assert.equal(await exitCode, cliExitCodes.usageError);
       assert.equal(commandFinished, true);
       assert.equal(stderrWrites, 1);
     });
@@ -611,7 +615,7 @@ describe('bootstrap cli runner', () => {
       const { io, read } = createIo();
       const exitCode = await runCli(['portfolio'], io);
 
-      assert.equal(exitCode, 2);
+      assert.equal(exitCode, cliExitCodes.usageError);
       assert.equal(read().stdout, '');
       assert.match(read().stderr, /Unknown command: portfolio/);
       assert.match(read().stderr, /Usage:/);

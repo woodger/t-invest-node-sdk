@@ -81,6 +81,9 @@ interface UnaryLimitSchedule {
   timer: UnaryLimitTimer | undefined;
 }
 
+const minimumQuotaShare = 0.2;
+const maximumQuotaShare = 1;
+// Node.js принимает задержки setTimeout не больше 2^31 - 1 миллисекунд.
 const maxTimerDelayMs = 2_147_483_647;
 
 /**
@@ -92,7 +95,9 @@ const maxTimerDelayMs = 2_147_483_647;
 export function createInMemoryUnaryLimiter(
   options: TInvestInMemoryUnaryLimiterOptions = {}
 ): TInvestUnaryLimiter {
-  const quotaShare = options.quotaShare === undefined ? 1 : options.quotaShare;
+  const quotaShare = options.quotaShare === undefined
+    ? maximumQuotaShare
+    : options.quotaShare;
 
   return new InMemoryUnaryLimiter(quotaShare);
 }
@@ -332,9 +337,13 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * Отклоняет неконечные значения и значения вне `[0.2, 1]` с RangeError.
    */
   private static assertQuotaShare(quotaShare: number): void {
-    if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
+    if (
+      !Number.isFinite(quotaShare)
+      || quotaShare < minimumQuotaShare
+      || quotaShare > maximumQuotaShare
+    ) {
       throw new RangeError(
-        'quotaShare must be a finite number between 0.2 and 1'
+        `quotaShare must be a finite number between ${minimumQuotaShare} and ${maximumQuotaShare}`
       );
     }
   }
@@ -347,7 +356,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * сделало бы его бесконечным.
    */
   private resolveEffectiveMaxRequests(maxRequests: number): number {
-    if (this.quotaShare === 1) {
+    if (this.quotaShare === maximumQuotaShare) {
       return maxRequests;
     }
 

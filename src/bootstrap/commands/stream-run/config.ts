@@ -11,6 +11,7 @@
 
 import { SubscriptionInterval } from '../../../generated/marketdata';
 import { CliUsageError } from 'icore';
+import { maxInt32 } from '../../args/command-options';
 
 export const streamRunStreamNames = [
   'marketdata.marketDataStream',
@@ -493,9 +494,9 @@ function parseOrderBookSubscription(
   );
   const depth = parsePositiveInteger(orderBook['depth'], `${path}.depth`);
 
-  if (depth > 2_147_483_647) {
+  if (depth > maxInt32) {
     throw new CliUsageError(
-      `Expected '${path}.depth' to be less than or equal to 2147483647`
+      `Expected '${path}.depth' to be less than or equal to ${maxInt32}`
     );
   }
 

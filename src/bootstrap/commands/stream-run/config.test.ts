@@ -3,12 +3,17 @@ import { describe, test } from 'node:test';
 import {
   SubscriptionInterval
 } from '../../../generated/marketdata';
+import { maxInt32 } from '../../args/command-options';
 import {
   parseStreamRunConfig,
   type MarketDataStreamRequestConfig,
   type StreamRunConfig,
   type StreamRunRuntime
 } from './config';
+
+const firstOutOfRangeInt32 = maxInt32 + 1;
+const testMaxEvents = 2;
+const testOrderBookDepth = 10;
 
 function configJson(value: unknown): string {
   return JSON.stringify(value);
@@ -62,14 +67,14 @@ describe('stream run config', () => {
         accounts: ['account-id'],
         runtime: {
           format: 'jsonl',
-          maxEvents: 2,
+          maxEvents: testMaxEvents,
           includePings: true
         }
       }));
 
       assert.ok(config.stream === 'operations.portfolioStream');
       assert.deepEqual(config.accounts, ['account-id']);
-      assert.equal(config.runtime.maxEvents, 2);
+      assert.equal(config.runtime.maxEvents, testMaxEvents);
       assert.equal(config.runtime.includePings, true);
       assert.equal(config.runtime.includeSubscriptionEvents, true);
       assert.equal(config.runtime.raw, false);
@@ -93,7 +98,7 @@ describe('stream run config', () => {
             instruments: [
               {
                 instrumentId: 'order-book-id',
-                depth: 10
+                depth: testOrderBookDepth
               }
             ]
           },
@@ -126,7 +131,7 @@ describe('stream run config', () => {
           }
         ],
         runtime: {
-          maxEvents: 2
+          maxEvents: testMaxEvents
         }
       }));
 
@@ -142,7 +147,10 @@ describe('stream run config', () => {
         },
         {
           type: 'subscribeOrderBook',
-          instruments: [{ instrumentId: 'order-book-id', depth: 10 }]
+          instruments: [{
+            instrumentId: 'order-book-id',
+            depth: testOrderBookDepth
+          }]
         },
         {
           type: 'subscribeTrades',
@@ -477,25 +485,28 @@ describe('stream run config', () => {
         });
 
         const config = parseStreamRunConfig(
-          configJson(createConfig(2_147_483_647))
+          configJson(createConfig(maxInt32))
         );
         if (config.stream === 'marketdata.marketDataStream') {
           const request = config.requests[0];
 
           assert.ok(request?.type === 'subscribeOrderBook');
-          assert.equal(request.instruments[0]?.depth, 2_147_483_647);
+          assert.equal(request.instruments[0]?.depth, maxInt32);
         }
         else {
           assert.ok(config.stream === 'marketdata.marketDataServerSideStream');
           assert.equal(
             config.subscriptions.orderBooks?.[0]?.depth,
-            2_147_483_647
+            maxInt32
           );
         }
 
         assert.throws(
-          () => parseStreamRunConfig(configJson(createConfig(2_147_483_648))),
-          /depth' to be less than or equal to 2147483647/
+          () =>
+            parseStreamRunConfig(
+              configJson(createConfig(firstOutOfRangeInt32))
+            ),
+          new RegExp(`depth' to be less than or equal to ${maxInt32}`)
         );
       });
     }
