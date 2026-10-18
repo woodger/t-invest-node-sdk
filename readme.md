@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/%40woodger%2Ft-invest-node-sdk.svg)](https://www.npmjs.com/package/@woodger/t-invest-node-sdk) [![node](https://img.shields.io/node/v/%40woodger%2Ft-invest-node-sdk.svg)](https://www.npmjs.com/package/@woodger/t-invest-node-sdk) [![types](https://img.shields.io/npm/types/%40woodger%2Ft-invest-node-sdk.svg)](https://www.npmjs.com/package/@woodger/t-invest-node-sdk) [![license](https://img.shields.io/npm/l/%40woodger%2Ft-invest-node-sdk.svg)](LICENSE)
 
-Минималистичный TypeScript/Node.js SDK для работы с gRPC API T-Invest через `nice-grpc`.
+Минималистичный SDK на [TypeScript](https://www.typescriptlang.org/) для доступа к T-Invest API.
 
 Официальные ресурсы T-Invest:
 
@@ -10,19 +10,15 @@
 - [Лимиты API](https://developer.tbank.ru/invest/intro/intro/limits) — квоты unary-запросов и ограничения потоков;
 - [Proto-контракты](https://opensource.tbank.ru/invest/invest-contracts) — исходные контракты gRPC API.
 
-<a id="установка"></a>
 ## Установить модуль
 
-Модуль `@woodger/t-invest-node-sdk` требует Node.js `>=20.19.0`. Установите его из npm:
+Чтобы использовать `@woodger/t-invest-node-sdk` в своём проекте, выполните:
 
 ```sh
 npm install @woodger/t-invest-node-sdk
 ```
 
-Архив npm содержит готовый JavaScript и объявления типов из `dist`. Установка по ссылке на Git-репозиторий не поддерживается.
-
-<a id="быстрый-старт"></a>
-## Выполнить первый запрос
+## Попробовать
 
 Замените `YOUR_TOKEN` своим токеном доступа.
 
@@ -43,10 +39,6 @@ finally {
 }
 ```
 
-Более подробный пример с выбором доступного счёта и освобождением ресурсов: [Получить список счетов и закрыть SDK](docs/examples/getting-started.md).
-
-<a id="подробные-примеры"></a>
-<a id="документация"></a>
 ## Выбрать следующий сценарий
 
 - [Получить список счетов и закрыть SDK](docs/examples/getting-started.md) — выбрать счёт для следующего запроса.
@@ -58,23 +50,10 @@ finally {
 - [Проверить приложение с тестовым gRPC-сервером](docs/examples/testing-with-service-definitions.md) — выполнить интеграционный тест без брокера.
 - [Выполнить команду CLI](docs/cli-reference.md) — передать аргументы, получить вывод и код завершения.
 
-Полный список сценариев находится в [индексе examples](docs/examples/index.md). Настройки TLS, квоты и документацию для разработки можно выбрать в [индексе документации](docs/index.md).
+Другие примеры работы с SDK см. [раздел с примерами](docs/examples/index.md). Настройки TLS и квот, а также материалы для разработки [документация API](docs/index.md).
 
-<a id="опции-tinvestnodesdk"></a>
-<a id="опции-defaultconfig"></a>
-<a id="политика-grpc-транспорта"></a>
-<a id="cli"></a>
-<a id="доступные-сервисы"></a>
-<a id="lifecycle-и-отмена"></a>
-<a id="ошибки-sdk"></a>
-<a id="экспорты"></a>
-## Разделить задачи SDK и приложения
-
-SDK создаёт типизированные gRPC-клиенты, выполняет вызовы и закрывает общий канал. Приложение выбирает API-вызовы, формирует запросы, передаёт настройки подключения, владеет предметными правилами и освобождает собственные ресурсы. Точные экспортируемые типы и сервисы перечислены в [`src/index.ts`](src/index.ts); правила встроенного CLI и его границы с `icore` описаны в [документации CLI](docs/clean-architecture/cli-output-boundaries.md).
-
-<a id="дисклеймер"></a>
-## Проверить лицензию и статус проекта
+## Лицензия
 
 Проект является независимой реализацией и не имеет никакого отношения к T-Invest, T-Банку или их аффилированным лицам. Названия продуктов и компаний используются только для обозначения совместимости с публичным API.
 
-Собственный код SDK распространяется по [MIT License](LICENSE). Для сторонних компонентов сохранены полный текст [Apache License 2.0](LICENSE-APACHE-2.0) и [`NOTICE`](NOTICE) с границами лицензий и необходимыми уведомлениями.
+Собственный код SDK распространяется по [MIT](LICENSE). Для сторонних компонентов смотри полный текст [Apache License 2.0](LICENSE-APACHE-2.0).
