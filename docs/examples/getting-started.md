@@ -7,6 +7,8 @@
 
 В примере параметры указаны явно: замените `YOUR_TOKEN` своим токеном доступа.
 
+`getting-started.ts`
+
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 

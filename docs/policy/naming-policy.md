@@ -19,6 +19,8 @@
 
 Примеры:
 
+`naming-example.ts`
+
 ```ts
 const maxRetryCount = 3;
 
@@ -68,6 +70,8 @@ class TInvestNodeSDK {
 
 Запрещено:
 
+`naming-example.ts`
+
 ```ts
 export const DEFAULT_CONFIG = {};
 export const UNARY_LIMITS = {};
@@ -81,6 +85,8 @@ enum Status {
 ```
 
 Допустимо:
+
+`naming-example.ts`
 
 ```ts
 export const defaultConfig = {};
@@ -113,6 +119,8 @@ enum Status {
 
 Допустимо:
 
+`naming-example.ts`
+
 ```ts
 export type SdkErrorCode =
   | 'UNKNOWN_UNARY_LIMIT';
@@ -123,6 +131,8 @@ const sdkErrorMessages: Record<SdkErrorCode, string> = {
 ```
 
 Запрещено:
+
+`naming-example.ts`
 
 ```ts
 const UNKNOWN_UNARY_LIMIT = 'Unhandled unary limits';
@@ -155,14 +165,20 @@ ALL_CAPS string code -> допустимо, если это stable symbolic code
 
 Примеры допустимых исключений:
 
+`naming-example.ts`
+
 ```ts
 process.env.NODE_ENV;
 process.env.INVEST_TOKEN;
 ```
 
+`naming-example.ts`
+
 ```ts
 const envName = 'INVEST_TOKEN';
 ```
+
+`naming-example.ts`
 
 ```ts
 const externalPayload = {
@@ -180,6 +196,8 @@ const externalPayload = {
 
 Допустимо:
 
+`naming-example.ts`
+
 ```ts
 const options = {
   maxRequests: 100,
@@ -188,6 +206,8 @@ const options = {
 ```
 
 Запрещено:
+
+`naming-example.ts`
 
 ```ts
 const options = {
@@ -204,6 +224,8 @@ const options = {
 
 Допустимо:
 
+`naming-example.ts`
+
 ```ts
 enum RuntimeMode {
   Production = 'production',
@@ -212,6 +234,8 @@ enum RuntimeMode {
 ```
 
 Запрещено:
+
+`naming-example.ts`
 
 ```ts
 enum RuntimeMode {
@@ -223,6 +247,8 @@ enum RuntimeMode {
 Члены сгенерированных перечислений могут сохранять форму внешнего proto-контракта. Их нельзя переименовывать вручную.
 
 Если внешнее значение должно быть `ALL_CAPS`, оно должно быть значением перечисления, а не именем его члена:
+
+`naming-example.ts`
 
 ```ts
 enum ExternalStatus {
@@ -239,12 +265,16 @@ enum ExternalStatus {
 
 Допустимо:
 
+`naming-example.ts`
+
 ```ts
 const serviceName = 'market-data-service';
 const optionName = '--track-limits';
 ```
 
 Запрещено использовать имя `ALL_CAPS` во время выполнения без внешней необходимости:
+
+`naming-example.ts`
 
 ```ts
 const serviceName = 'MARKET_DATA_SERVICE';

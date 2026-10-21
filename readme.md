@@ -22,6 +22,8 @@ npm install @woodger/t-invest-node-sdk
 
 Замените `YOUR_TOKEN` своим токеном доступа.
 
+`main.ts`
+
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 

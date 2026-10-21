@@ -8,6 +8,8 @@
 
 Минимальная допустимая конфигурация:
 
+`marketdata-stream.json`
+
 ```json
 {
   "stream": "marketdata.marketDataServerSideStream",
@@ -50,6 +52,8 @@
 
 Поле `runtime` содержит настройки запуска: формат вывода, число событий и условия завершения.
 
+`marketdata-stream.json`
+
 ```json
 {
   "runtime": {
@@ -77,6 +81,8 @@
 ## Подписаться на рыночные данные
 
 Поле `subscriptions` группирует подписки по семействам событий:
+
+`marketdata-stream.json`
 
 ```json
 {
@@ -144,6 +150,8 @@
 
 Типизированная форма двустороннего потока:
 
+`marketdata-bidirectional.json`
+
 ```json
 {
   "stream": "marketdata.marketDataStream",
@@ -189,6 +197,8 @@
 
 Поток портфеля:
 
+`portfolio-stream.json`
+
 ```json
 {
   "stream": "operations.portfolioStream",
@@ -202,6 +212,8 @@
 
 Поток позиций:
 
+`positions-stream.json`
+
 ```json
 {
   "stream": "operations.positionsStream",
@@ -214,6 +226,8 @@
 ```
 
 Поток сделок по поручениям:
+
+`order-trades-stream.json`
 
 ```json
 {

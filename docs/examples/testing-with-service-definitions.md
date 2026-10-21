@@ -12,6 +12,8 @@ npm install --save-dev nice-grpc@^2.1.17
 
 ## Запустить тест с `SignalService`
 
+`signal-service.test.ts`
+
 ```ts
 import assert from 'node:assert/strict';
 import { createServer } from 'nice-grpc';

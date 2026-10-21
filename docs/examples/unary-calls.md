@@ -10,6 +10,8 @@
 
 ### Создать SDK
 
+`unary-calls.ts`
+
 ```ts
 import { TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
@@ -20,6 +22,8 @@ const sdk = new TInvestNodeSDK({
 ```
 
 ### Получить портфель доступного счёта
+
+`unary-calls.ts`
 
 ```ts
 import { PortfolioRequest_CurrencyRequest } from '@woodger/t-invest-node-sdk';
@@ -48,6 +52,8 @@ else {
 
 ### Получить минутные свечи
 
+`unary-calls.ts`
+
 ```ts
 import { CandleInterval } from '@woodger/t-invest-node-sdk';
 
@@ -67,6 +73,8 @@ console.log(candles);
 ```
 
 ### Получить активные сигналы
+
+`unary-calls.ts`
 
 ```ts
 import { SignalState } from '@woodger/t-invest-node-sdk';
@@ -106,6 +114,8 @@ else {
 
 Например, прочитать лимит и остаток квоты можно прямо в обработчиках:
 
+`unary-calls.ts`
+
 ```ts
 await sdk.users.getAccounts({}, {
   signal: AbortSignal.timeout(5_000),
@@ -128,6 +138,8 @@ SDK управляет заголовками `authorization` и `x-app-name` э
 ## Закрыть SDK после запросов
 
 После завершения запросов вызовите:
+
+`unary-calls.ts`
 
 ```ts
 sdk.close();

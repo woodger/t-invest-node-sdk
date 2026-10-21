@@ -34,6 +34,8 @@
 
 Шаблон:
 
+`comment-style.ts`
+
 ```ts
 /**
  * Модуль <роль файла в системе>.
@@ -49,6 +51,8 @@
 
 Хороший пример:
 
+`comment-style.ts`
+
 ```ts
 /**
  * Модуль SDK internals собирает gRPC channel, metadata и middleware.
@@ -63,6 +67,8 @@
 ```
 
 Плохой пример:
+
+`comment-style.ts`
 
 ```ts
 /**
@@ -100,6 +106,8 @@ JSDoc не нужен, если смысл полностью ясен из им
 
 Плохо:
 
+`comment-style.ts`
+
 ```ts
 /**
  * Создает metadata.
@@ -108,6 +116,8 @@ createSdkMetadata(...)
 ```
 
 Лучше:
+
+`comment-style.ts`
 
 ```ts
 /**
@@ -139,6 +149,8 @@ createSdkMetadata(...)
 
 Хорошо:
 
+`comment-style.ts`
+
 ```ts
 // Stream calls не проходят через unary limiter:
 // лимиты stream-соединений управляются отдельной политикой API.
@@ -148,6 +160,8 @@ if (call.responseStream) {
 ```
 
 Хорошо:
+
+`comment-style.ts`
 
 ```ts
 // Первый unary-запрос не задерживается:
@@ -171,12 +185,16 @@ if (lastCallTime === undefined) {
 
 Плохо:
 
+`comment-style.ts`
+
 ```ts
 // Create metadata
 const metadata = createMetadata();
 ```
 
 Плохо:
+
+`comment-style.ts`
 
 ```ts
 // Check if path exists
@@ -195,12 +213,16 @@ TODO допустим только если он объясняет:
 
 Хорошо:
 
+`comment-style.ts`
+
 ```ts
 // TODO: stream limit tracking требует данных users.getUserTariff().
 // Вернуться при добавлении runtime tariff refresh.
 ```
 
 Плохо:
+
+`comment-style.ts`
 
 ```ts
 // TODO: fix later
@@ -214,6 +236,8 @@ Workaround-комментарий должен называть внешнее �
 
 Хорошо:
 
+`comment-style.ts`
+
 ```ts
 // nice-grpc ожидает AsyncIterableIterator даже для unary middleware,
 // поэтому unary response возвращается через минимальный iterator wrapper.
@@ -221,6 +245,8 @@ return iterator;
 ```
 
 Плохо:
+
+`comment-style.ts`
 
 ```ts
 // Return iterator
@@ -232,6 +258,8 @@ return iterator;
 Комментарий полезен, когда он защищает границу слоя.
 
 Хорошо:
+
+`comment-style.ts`
 
 ```ts
 /**

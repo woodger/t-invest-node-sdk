@@ -8,11 +8,15 @@
 
 Во фрагментах ниже `sdk` — уже созданный экземпляр SDK. Его настройка и освобождение показаны в руководстве [Первый SDK-вызов](./getting-started.md). Каждый пример рассматривает отдельный случай; остальные ошибки передаются вызывающему коду.
 
+`errors-and-lifecycle.ts`
+
 ```ts
 import { isSdkError, SdkErrorCode } from '@woodger/t-invest-node-sdk';
 ```
 
 ### Обработать ошибку TLS
+
+`errors-and-lifecycle.ts`
 
 ```ts
 try {
@@ -32,6 +36,8 @@ catch (error) {
 ```
 
 ### Обработать истёкший срок ожидания
+
+`errors-and-lifecycle.ts`
 
 ```ts
 const deadline = AbortSignal.timeout(5_000);
@@ -55,6 +61,8 @@ catch (error) {
 
 ### Обработать ошибку авторизации
 
+`errors-and-lifecycle.ts`
+
 ```ts
 try {
   await sdk.users.getAccounts({});
@@ -75,6 +83,8 @@ catch (error) {
 ### Различить лимит сообщения и квоту провайдера
 
 Один `ResourceExhausted` может обозначать разные ограничения. Здесь ошибка после диагностики передаётся дальше: решение о повторе вызова остаётся у приложения.
+
+`errors-and-lifecycle.ts`
 
 ```ts
 try {
@@ -106,6 +116,8 @@ catch (error) {
 SDK преобразует статусы gRPC в одноимённые стабильные `SdkErrorCode`.
 
 Для ошибки с `source: 'grpc'` поле `code` содержит символьное имя стандартного статуса gRPC, отличного от `OK`. Например:
+
+`errors-and-lifecycle.ts`
 
 ```ts
 SdkErrorCode.InvalidArgument;    // 'INVALID_ARGUMENT'

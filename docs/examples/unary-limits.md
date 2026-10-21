@@ -8,6 +8,8 @@
 
 По умолчанию SDK отправляет запросы сразу. Чтобы ограничить их частоту внутри одного процесса, передайте `createInMemoryUnaryLimiter()` в опцию `unaryLimiter`:
 
+`unary-limits.ts`
+
 ```ts
 import {
   createInMemoryUnaryLimiter,
@@ -30,6 +32,8 @@ const sdk = new TInvestNodeSDK({
 ## Переопределить квоты
 
 Через `unaryLimits` можно заменить правило модуля для конкретного экземпляра SDK. `defineUnaryLimits()` преобразует вложенную декларацию в плоский `UnaryLimits`. Тип вложенной декларации экспортируется как `UnaryLimitsDefinition`; плоская запись тоже поддерживается. Укажите оба параметра окна:
+
+`custom-unary-limits.ts`
 
 ```ts
 import {
@@ -70,6 +74,8 @@ SDK проверяет переопределения квот при созда
 ## Выделить фиксированную долю квоты
 
 Если число независимых ограничителей, использующих одну квоту, заранее известно, каждому можно выделить фиксированную долю:
+
+`quota-share.ts`
 
 ```ts
 const unaryLimiter = createInMemoryUnaryLimiter({
