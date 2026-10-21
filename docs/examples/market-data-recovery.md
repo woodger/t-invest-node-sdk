@@ -18,27 +18,171 @@
 
 Исправления ранее опубликованной истории и задержки её появления требуют периодической сверки в приложении. Ограничения периодов `GetCandles` описаны в [официальной документации](https://developer.tbank.ru/invest/services/quotes/faq_marketdata/).
 
-## Читать закрытые свечи
+## Разделить пример на файлы
 
-`from` задаёт начало первой ещё не обработанной минуты по UTC. История читается окнами не больше суток с `limit: 2400`, что покрывает минутные свечи одного окна. Функцию из примера можно разместить в модуле `recover-closed-candles.ts` своего приложения.
+Ниже показаны четыре файла одного приложения. Разместите их в одном каталоге: `read-candle-history.ts` читает историю, `watch-candle-updates.ts` открывает одну подписку, `recover-closed-candles.ts` управляет восстановлением, а `main.ts` сохраняет данные и управляет временем жизни SDK.
+
+Пример предполагает, что API возвращает корректные данные для запрошенных параметров.
+
+## Догрузить историю
+
+Функция принимает границы `from` и `until` в миллисекундах UTC и читает историю окнами не больше суток с `limit: 2400`, что покрывает минутные свечи одного окна. Она сортирует свечи, пропускает повторы и останавливается на первой незавершённой свече. Вместе со свечой выдаётся время её начала для продвижения checkpoint.
+
+`read-candle-history.ts`
 
 ```ts
-import { setTimeout as delay } from 'node:timers/promises';
 import {
   CandleInterval,
-  CandleSource,
   GetCandlesRequest_CandleSource,
-  isSdkError,
-  SdkErrorCode,
-  SubscriptionAction,
-  SubscriptionInterval,
-  SubscriptionStatus,
   type HistoricCandle,
   type TInvestNodeSDK
 } from '@woodger/t-invest-node-sdk';
 
 const minuteMs = 60_000;
 const dayMs = 24 * 60 * minuteMs;
+
+export async function* readCandleHistory(
+  sdk: Pick<TInvestNodeSDK, 'marketData'>,
+  instrumentUid: string,
+  from: number,
+  until: number,
+  signal: AbortSignal
+): AsyncGenerator<{ candle: HistoricCandle; time: number }> {
+  let cursor = from;
+  let windowStart = from;
+
+  while (windowStart < until) {
+    signal.throwIfAborted();
+
+    const windowEnd = Math.min(windowStart + dayMs, until);
+    const { candles } = await sdk.marketData.getCandles({
+      instrumentId: instrumentUid,
+      from: new Date(windowStart),
+      to: new Date(windowEnd),
+      interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
+      candleSourceType: GetCandlesRequest_CandleSource.CANDLE_SOURCE_EXCHANGE,
+      limit: 2400
+    }, { signal });
+    const ordered = candles.map((candle) => {
+      const time = candle.time?.getTime();
+
+      if (time === undefined) {
+        throw new Error('Missing candle time');
+      }
+
+      return { candle, time };
+    }).sort((a, b) => a.time - b.time);
+
+    for (const { candle, time } of ordered) {
+      signal.throwIfAborted();
+
+      if (time < cursor || time >= until) {
+        continue;
+      }
+
+      if (!candle.isComplete) {
+        return;
+      }
+
+      yield { candle, time };
+
+      cursor = time + minuteMs;
+    }
+
+    windowStart = windowEnd;
+  }
+}
+```
+
+## Получать уведомления
+
+Функция открывает одну подписку и выдаёт верхнюю границу для догрузки истории в миллисекундах UTC. После подтверждения подписки это начало текущей минуты, а при получении свечи — конец её интервала. Ошибка или завершение потока передаются координатору восстановления.
+
+`watch-candle-updates.ts`
+
+```ts
+import {
+  GetCandlesRequest_CandleSource,
+  SubscriptionAction,
+  SubscriptionInterval,
+  SubscriptionStatus,
+  type TInvestNodeSDK
+} from '@woodger/t-invest-node-sdk';
+
+const minuteMs = 60_000;
+
+export async function* watchCandleUpdates(
+  sdk: Pick<TInvestNodeSDK, 'marketdataStream'>,
+  instrumentUid: string,
+  signal: AbortSignal
+): AsyncGenerator<number> {
+  let subscribed = false;
+  const responses = sdk.marketdataStream.marketDataServerSideStream({
+    subscribeCandlesRequest: {
+      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
+      instruments: [{
+        instrumentId: instrumentUid,
+        interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
+      }],
+      waitingClose: true,
+      candleSourceType: GetCandlesRequest_CandleSource.CANDLE_SOURCE_EXCHANGE
+    }
+  }, { signal });
+
+  for await (const response of responses) {
+    signal.throwIfAborted();
+
+    if (!subscribed && response.subscribeCandlesResponse) {
+      const subscription = response.subscribeCandlesResponse.candlesSubscriptions.find(
+        (item) => item.instrumentUid === instrumentUid
+          && item.interval === SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
+      );
+
+      if (subscription?.subscriptionStatus !== SubscriptionStatus.SUBSCRIPTION_STATUS_SUCCESS
+        || !subscription.waitingClose) {
+        throw new Error('Closed-candle subscription was rejected');
+      }
+
+      subscribed = true;
+
+      yield Math.floor(Date.now() / minuteMs) * minuteMs;
+    }
+
+    if (response.candle) {
+      if (!subscribed) {
+        throw new Error('Candle received before subscription confirmation');
+      }
+
+      const time = response.candle.time?.getTime();
+
+      if (time === undefined) {
+        throw new Error('Missing candle time');
+      }
+
+      yield time + minuteMs;
+    }
+  }
+}
+```
+
+## Восстановить чтение
+
+`from` задаёт начало первой ещё не обработанной минуты по UTC. Координатор догружает историю до полученной границы и выдаёт свечи потребителю. Он хранит `nextMinute` между подключениями и сбрасывает счётчик неудач после обработки свечи. Прогресс продвигается после возобновления из `yield`, чтобы потребитель успел сохранить свечу.
+
+`recover-closed-candles.ts`
+
+```ts
+import { setTimeout as delay } from 'node:timers/promises';
+import {
+  isSdkError,
+  SdkErrorCode,
+  type HistoricCandle,
+  type TInvestNodeSDK
+} from '@woodger/t-invest-node-sdk';
+import { readCandleHistory } from './read-candle-history.js';
+import { watchCandleUpdates } from './watch-candle-updates.js';
+
+const minuteMs = 60_000;
 
 export async function* recoverClosedCandles(
   sdk: Pick<TInvestNodeSDK, 'marketData' | 'marketdataStream'>,
@@ -54,111 +198,19 @@ export async function* recoverClosedCandles(
     throw new Error('from must identify a UTC minute boundary');
   }
 
-  // Данные берём из истории; stream используется для уведомлений о догрузке.
-  async function* readHistory(
-    until: number,
-    attemptSignal: AbortSignal
-  ): AsyncGenerator<HistoricCandle> {
-    let windowStart = nextMinute;
-
-    while (windowStart < until) {
-      attemptSignal.throwIfAborted();
-
-      const windowEnd = Math.min(windowStart + dayMs, until);
-      const { candles } = await sdk.marketData.getCandles({
-        instrumentId: instrumentUid,
-        from: new Date(windowStart),
-        to: new Date(windowEnd),
-        interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
-        candleSourceType: GetCandlesRequest_CandleSource.CANDLE_SOURCE_EXCHANGE,
-        limit: 2400
-      }, { signal: attemptSignal });
-      const ordered = candles.map((candle) => {
-        const time = candle.time?.getTime();
-
-        if (time === undefined || !Number.isFinite(time)
-          || time % minuteMs !== 0 || time < windowStart || time > windowEnd
-          || candle.candleSource !== CandleSource.CANDLE_SOURCE_EXCHANGE) {
-          throw new Error('Unexpected historical candle');
-        }
-
-        return { candle, time };
-      }).sort((a, b) => a.time - b.time);
-
-      for (const { candle, time } of ordered) {
-        attemptSignal.throwIfAborted();
-
-        if (time < nextMinute || time >= until) {
-          continue;
-        }
-
-        if (!candle.isComplete) {
-          return;
-        }
-
-        yield candle;
-
-        // Приложение может сохранить свечу до запроса следующей
-        // и сдвига checkpoint.
-        nextMinute = time + minuteMs;
-        failures = 0;
-      }
-
-      windowStart = windowEnd;
-    }
-  }
-
   while (!signal.aborted) {
     const attempt = new AbortController();
     const attemptSignal = AbortSignal.any([signal, attempt.signal]);
 
     try {
-      let subscribed = false;
-      const responses = sdk.marketdataStream.marketDataServerSideStream({
-        subscribeCandlesRequest: {
-          subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-          instruments: [{
-            instrumentId: instrumentUid,
-            interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
-          }],
-          waitingClose: true,
-          candleSourceType: GetCandlesRequest_CandleSource.CANDLE_SOURCE_EXCHANGE
-        }
-      }, { signal: attemptSignal });
+      for await (const until of watchCandleUpdates(sdk, instrumentUid, attemptSignal)) {
+        for await (const { candle, time } of readCandleHistory(
+          sdk, instrumentUid, nextMinute, until, attemptSignal
+        )) {
+          yield candle;
 
-      for await (const response of responses) {
-        attemptSignal.throwIfAborted();
-
-        if (!subscribed && response.subscribeCandlesResponse) {
-          const subscription = response.subscribeCandlesResponse.candlesSubscriptions.find(
-            (item) => item.instrumentUid === instrumentUid
-              && item.interval === SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
-          );
-
-          if (subscription?.subscriptionStatus !== SubscriptionStatus.SUBSCRIPTION_STATUS_SUCCESS
-            || !subscription.waitingClose) {
-            throw new Error('Closed-candle subscription was rejected');
-          }
-
-          subscribed = true;
-
-          // Активная подписка позволяет получать уведомления за время догрузки.
-          yield* readHistory(Math.floor(Date.now() / minuteMs) * minuteMs, attemptSignal);
-        }
-
-        if (response.candle) {
-          const candle = response.candle;
-          const time = candle.time?.getTime();
-
-          if (!subscribed || candle.instrumentUid !== instrumentUid
-            || candle.interval !== SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
-            || time === undefined || !Number.isFinite(time) || time % minuteMs !== 0
-            || candle.candleSourceType !== CandleSource.CANDLE_SOURCE_EXCHANGE) {
-            throw new Error('Unexpected stream candle');
-          }
-
-          // Уведомление запускает чтение истории из того же источника данных.
-          yield* readHistory(time + minuteMs, attemptSignal);
+          nextMinute = time + minuteMs;
+          failures = 0;
         }
       }
     }
@@ -213,6 +265,8 @@ export async function* recoverClosedCandles(
 ## Сохранить свечу и завершить работу
 
 Демонстрация хранит данные и checkpoint в памяти. В приложении замените обновление `Map` и checkpoint одной транзакцией своего хранилища и загружайте checkpoint перед стартом. Ключ записи должен включать инструмент, интервал, источник и время свечи; повторная запись по тому же ключу должна быть безопасной.
+
+`main.ts`
 
 ```ts
 import {
