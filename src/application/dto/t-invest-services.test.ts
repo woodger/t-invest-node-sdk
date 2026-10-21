@@ -134,14 +134,9 @@ const serviceMethodContracts = {
   >
 } as const;
 
-const expectedServiceMethodContractCount = 11;
-
 describe('public service contracts', () => {
   test('match generated client signatures and definition method keys', () => {
-    assert.equal(
-      Object.keys(serviceMethodContracts).length,
-      expectedServiceMethodContractCount
-    );
+    assert.equal(Object.keys(serviceMethodContracts).length, 11);
     assert.equal(Object.values(serviceMethodContracts).every(Boolean), true);
   });
 });

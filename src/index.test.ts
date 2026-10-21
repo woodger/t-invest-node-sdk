@@ -62,12 +62,6 @@ type RootUnaryLimiterContracts = [
   TInvestUnaryQuota
 ];
 
-const expectedServerSideImplementationContractCount:
-  RootServerSideImplementationContracts['length'] = 11;
-const expectedSdkErrorContractCount: RootSdkErrorContracts['length'] = 3;
-const expectedUnaryLimiterContractCount: RootUnaryLimiterContracts['length'] =
-  6;
-
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
   'MarketDataServiceDefinition',
@@ -188,7 +182,10 @@ describe('package entrypoint', () => {
   );
 
   test('exposes generated server-side service implementation types', () => {
-    assert.equal(expectedServerSideImplementationContractCount, 11);
+    assert.equal(
+      11 satisfies RootServerSideImplementationContracts['length'],
+      11
+    );
   });
 
   test('exposes SignalService contracts', () => {
@@ -290,8 +287,8 @@ describe('package entrypoint', () => {
     assert.equal(hasPackageExport('SdkError'), true);
     assert.equal(hasPackageExport('SdkErrorCode'), true);
     assert.equal(hasPackageExport('isSdkError'), true);
-    assert.equal(expectedSdkErrorContractCount, 3);
-    assert.equal(expectedUnaryLimiterContractCount, 6);
+    assert.equal(3 satisfies RootSdkErrorContracts['length'], 3);
+    assert.equal(6 satisfies RootUnaryLimiterContracts['length'], 6);
   });
 });
 

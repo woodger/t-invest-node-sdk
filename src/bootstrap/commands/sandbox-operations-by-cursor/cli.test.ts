@@ -12,8 +12,6 @@ import {
 } from '../../../generated/operations';
 import { createSandboxOperationsByCursorCommand } from './cli';
 
-const testPageSize = 100;
-
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
     units,
@@ -98,7 +96,7 @@ describe('sandbox-operations-by-cursor command', () => {
           '--token=token',
           '--endpoint=localhost:50051',
           '--account-id=sandbox-account-id',
-          `--limit=${testPageSize}`,
+          '--limit=100',
           '--format=json'
         ],
         undefined
@@ -109,7 +107,7 @@ describe('sandbox-operations-by-cursor command', () => {
         endpoint: 'localhost:50051'
       });
       assert.equal(receivedRequest?.accountId, 'sandbox-account-id');
-      assert.equal(receivedRequest?.limit, testPageSize);
+      assert.equal(receivedRequest?.limit, 100);
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).page.nextCursor, 'next-cursor');
     });

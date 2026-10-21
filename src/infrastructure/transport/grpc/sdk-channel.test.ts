@@ -15,12 +15,6 @@ import {
 import type { ServiceDefinition } from 'nice-grpc';
 import { createSdkChannel } from './sdk-channel';
 
-const oneMiB = 1_048_576;
-const twoMiB = 2 * oneMiB;
-// gRPC frame начинается с однобайтного флага сжатия и четырёхбайтовой длины.
-const grpcFrameHeaderBytes = 5;
-const grpcFrameLengthOffsetBytes = 1;
-const httpOkStatusCode = 200;
 const tlsFixturesDirectory = resolve(
   __dirname,
   '../../../../src/infrastructure/transport/grpc/test-fixtures'
@@ -49,7 +43,7 @@ describe('createSdkChannel', () => {
         token: 'token',
         endpoint: `localhost:${port}`,
         useSsl: true
-      }, twoMiB);
+      }, 2_097_152);
 
       try {
         const client = createClient(payloadServiceDefinition, channel);
@@ -81,7 +75,7 @@ describe('createSdkChannel', () => {
         tls: {
           rootCertificates: readTlsFixture('tls-root.cert.pem')
         }
-      }, twoMiB);
+      }, 2_097_152);
 
       const client = createClient(payloadServiceDefinition, channel);
       const response = await client.getPayload({});
@@ -100,7 +94,7 @@ describe('createSdkChannel', () => {
 
     server.add(payloadServiceDefinition, {
       async getPayload() {
-        return new Uint8Array(twoMiB);
+        return new Uint8Array(2_097_152);
       }
     });
 
@@ -109,7 +103,7 @@ describe('createSdkChannel', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, oneMiB);
+    }, 1_048_576);
 
     try {
       const client = createClient(payloadServiceDefinition, channel);
@@ -142,12 +136,13 @@ function createPayloadTlsServer() {
     stream.resume();
     stream.once('end', () => {
       const message = new Uint8Array([1, 2, 3]);
-      const frame = Buffer.alloc(grpcFrameHeaderBytes + message.byteLength);
+      // gRPC frame начинается с флага сжатия (1 байт) и длины (4 байта).
+      const frame = Buffer.alloc(5 + message.byteLength);
 
-      frame.writeUInt32BE(message.byteLength, grpcFrameLengthOffsetBytes);
-      frame.set(message, grpcFrameHeaderBytes);
+      frame.writeUInt32BE(message.byteLength, 1);
+      frame.set(message, 5);
       stream.respond({
-        ':status': httpOkStatusCode,
+        ':status': 200,
         'content-type': 'application/grpc+proto'
       }, {
         waitForTrailers: true

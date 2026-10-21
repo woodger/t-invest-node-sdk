@@ -13,10 +13,6 @@ import {
   withSdkOptions
 } from './command-options';
 
-const maxSafeInteger = Number.MAX_SAFE_INTEGER;
-const firstUnsafeInteger = maxSafeInteger + 1;
-const firstOutOfRangeInt32 = maxInt32 + 1;
-
 describe('command options', () => {
   describe('withSdkOptions', () => {
     test('allows common SDK options with command-specific options', () => {
@@ -92,10 +88,10 @@ describe('command options', () => {
         () =>
           parseOptions(
             { quantity: positiveSafeIntegerOption },
-            { quantity: String(firstUnsafeInteger) }
+            { quantity: String(9_007_199_254_740_992) }
           ),
         new RegExp(
-          `Expected '--quantity' to be less than or equal to ${maxSafeInteger}`
+          `Expected '--quantity' to be less than or equal to 9007199254740991`
         )
       );
     });
@@ -117,7 +113,7 @@ describe('command options', () => {
         () =>
           parseOptions(
             { depth: positiveInt32Option },
-            { depth: String(firstOutOfRangeInt32) }
+            { depth: String(2_147_483_648) }
           ),
         new RegExp(
           `Expected '--depth' to be less than or equal to ${maxInt32}`
@@ -243,7 +239,7 @@ describe('command options', () => {
       assert.throws(
         () =>
           parseOptionalNonNegativeInt32Option(
-            String(firstOutOfRangeInt32),
+            String(2_147_483_648),
             'page'
           ),
         new RegExp(

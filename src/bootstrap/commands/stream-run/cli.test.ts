@@ -19,8 +19,6 @@ import type {
 import type { TradesStreamResponse } from '../../../generated/orders';
 import { createStreamRunCommand } from './cli';
 
-const firstOutOfRangeInt32 = maxInt32 + 1;
-
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {
   let result = '';
 
@@ -361,7 +359,7 @@ describe('stream run command', () => {
               subscriptions: {
                 orderBooks: [{
                   instrumentId: 'instrument-id',
-                  depth: firstOutOfRangeInt32
+                  depth: 2_147_483_648
                 }]
               }
             }),

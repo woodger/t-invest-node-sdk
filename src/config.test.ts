@@ -2,8 +2,6 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { packageConfig } from './config';
 
-const maxReceiveMessageLengthBytes = 4_194_304;
-
 describe('packageConfig', () => {
   test('defines defaults for each SDK instance', () => {
     assert.deepEqual(packageConfig.sdk, {
@@ -12,9 +10,6 @@ describe('packageConfig', () => {
   });
 
   test('sets the gRPC receive message limit to four MiB', () => {
-    assert.equal(
-      packageConfig.grpc.maxReceiveMessageLength,
-      maxReceiveMessageLengthBytes
-    );
+    assert.equal(packageConfig.grpc.maxReceiveMessageLength, 4_194_304);
   });
 });

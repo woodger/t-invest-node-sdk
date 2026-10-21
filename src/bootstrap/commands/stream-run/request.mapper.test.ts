@@ -16,8 +16,6 @@ import {
   createTradesStreamRequest
 } from './request.mapper';
 
-const testOrderBookDepth = 10;
-
 function configJson(value: unknown): string {
   return JSON.stringify(value);
 }
@@ -35,7 +33,7 @@ describe('stream request mapper', () => {
           type: 'subscribeOrderBook',
           instruments: [{
             instrumentId: 'order-book-id',
-            depth: testOrderBookDepth
+            depth: 10
           }]
         },
         {
@@ -71,7 +69,7 @@ describe('stream request mapper', () => {
           instruments: [
             {
               figi: '',
-              depth: testOrderBookDepth,
+              depth: 10,
               instrumentId: 'order-book-id',
               orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
             }
@@ -130,7 +128,7 @@ describe('stream request mapper', () => {
         }],
         orderBooks: [{
           instrumentId: 'order-book-id',
-          depth: testOrderBookDepth
+          depth: 10
         }],
         trades: [{ instrumentId: 'trade-id' }],
         info: [{ instrumentId: 'info-id' }],
@@ -150,7 +148,7 @@ describe('stream request mapper', () => {
     });
     assert.deepEqual(request.subscribeOrderBookRequest?.instruments, [{
       figi: '',
-      depth: testOrderBookDepth,
+      depth: 10,
       instrumentId: 'order-book-id',
       orderBookType: OrderBookType.ORDERBOOK_TYPE_UNSPECIFIED
     }]);

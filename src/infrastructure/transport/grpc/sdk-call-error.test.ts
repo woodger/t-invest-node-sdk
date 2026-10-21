@@ -9,7 +9,6 @@ import {
 import { mapSdkCallError } from './sdk-call-error';
 
 const path = '/test.Service/Method';
-const maxReceiveMessageLengthBytes = 4_194_304;
 
 describe('mapSdkCallError', () => {
   test('преобразует provider gRPC error в публичный контракт', () => {
@@ -23,7 +22,7 @@ describe('mapSdkCallError', () => {
       path,
       undefined,
       true,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
 
     assert.ok(isSdkError(error, SdkErrorCode.Unauthenticated));
@@ -37,7 +36,7 @@ describe('mapSdkCallError', () => {
     const localError = new ClientError(
       path,
       Status.RESOURCE_EXHAUSTED,
-      `Received message that decompresses to a size larger than ${maxReceiveMessageLengthBytes}`
+      `Received message that decompresses to a size larger than 4194304`
     );
     const providerError = new ClientError(
       path,
@@ -49,14 +48,14 @@ describe('mapSdkCallError', () => {
       path,
       undefined,
       true,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
     const mappedProviderError = mapSdkCallError(
       providerError,
       path,
       undefined,
       true,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
 
     assert.ok(isSdkError(mappedLocalError, SdkErrorCode.ResourceExhausted));
@@ -82,14 +81,14 @@ describe('mapSdkCallError', () => {
       path,
       undefined,
       true,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
     const mappedNetworkError = mapSdkCallError(
       networkError,
       path,
       undefined,
       true,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
 
     assert.ok(isSdkError(mappedTlsError, SdkErrorCode.Unavailable));
@@ -109,7 +108,7 @@ describe('mapSdkCallError', () => {
       path,
       undefined,
       false,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
 
     assert.ok(isSdkError(error, SdkErrorCode.Unavailable));
@@ -129,7 +128,7 @@ describe('mapSdkCallError', () => {
         path,
         undefined,
         true,
-        maxReceiveMessageLengthBytes
+        4_194_304
       );
 
       assert.ok(isSdkError(error, SdkErrorCode.Unavailable));
@@ -151,7 +150,7 @@ describe('mapSdkCallError', () => {
         path,
         undefined,
         true,
-        maxReceiveMessageLengthBytes
+        4_194_304
       );
 
       assert.ok(isSdkError(error, SdkErrorCode.Unavailable));
@@ -171,7 +170,7 @@ describe('mapSdkCallError', () => {
       path,
       controller.signal,
       true,
-      maxReceiveMessageLengthBytes
+      4_194_304
     );
 
     assert.ok(isSdkError(error, SdkErrorCode.Cancelled));
@@ -193,7 +192,7 @@ describe('mapSdkCallError', () => {
         path,
         undefined,
         true,
-        maxReceiveMessageLengthBytes
+        4_194_304
       ),
       sdkError
     );
@@ -203,7 +202,7 @@ describe('mapSdkCallError', () => {
         path,
         undefined,
         true,
-        maxReceiveMessageLengthBytes
+        4_194_304
       ),
       unknownError
     );

@@ -6,44 +6,32 @@ import {
   defineUnaryLimits
 } from './unary-limit-config';
 
-const minuteWindowMs = 60_000;
-const secondWindowMs = 1_000;
-const usersRequestsPerMinute = 50;
-const operationsDefaultRequestsPerMinute = 200;
-const getPortfolioRequestsPerMinute = 100;
-const reportsRequestsPerMinute = 5;
-const brokerReportOverrideRequestsPerMinute = 10;
-const ordersDefaultRequestsPerMinute = 100;
-const firstSharedBucketRequestsPerMinute = 100;
-const secondSharedBucketRequestsPerMinute = 200;
-const postOrderRequestsPerSecond = 15;
-
 const perMinute = (maxRequests: number) => ({
   maxRequests,
-  windowMs: minuteWindowMs
+  windowMs: 60_000
 });
 
 describe('defineUnaryLimits', () => {
   test('converts nested definitions to the flat runtime contract', () => {
     const limits = defineUnaryLimits({
       UsersService: {
-        default: perMinute(usersRequestsPerMinute)
+        default: perMinute(50)
       },
       OrdersService: {
         methods: {
           PostOrder: {
-            maxRequests: postOrderRequestsPerSecond,
-            windowMs: secondWindowMs
+            maxRequests: 15,
+            windowMs: 1_000
           }
         }
       }
     });
 
     assert.deepEqual(limits, {
-      UsersService: perMinute(usersRequestsPerMinute),
+      UsersService: perMinute(50),
       '/tinkoff.public.invest.api.contract.v1.OrdersService/PostOrder': {
-        maxRequests: postOrderRequestsPerSecond,
-        windowMs: secondWindowMs
+        maxRequests: 15,
+        windowMs: 1_000
       }
     });
   });
@@ -53,13 +41,13 @@ describe('compileUnaryLimits', () => {
   test('compiles service, method, and shared group rules together', () => {
     const compiled = compileUnaryLimits({
       OperationsService: {
-        default: perMinute(operationsDefaultRequestsPerMinute),
+        default: perMinute(200),
         methods: {
-          GetPortfolio: perMinute(getPortfolioRequestsPerMinute)
+          GetPortfolio: perMinute(100)
         },
         groups: {
           reports: {
-            limit: perMinute(reportsRequestsPerMinute),
+            limit: perMinute(5),
             methods: [
               'GetBrokerReport',
               'GetDividendsForeignIssuer'
@@ -70,13 +58,13 @@ describe('compileUnaryLimits', () => {
     });
 
     assert.deepEqual(compiled.limits, {
-      OperationsService: perMinute(operationsDefaultRequestsPerMinute),
+      OperationsService: perMinute(200),
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio':
-        perMinute(getPortfolioRequestsPerMinute),
+        perMinute(100),
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport':
-        perMinute(reportsRequestsPerMinute),
+        perMinute(5),
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer':
-        perMinute(reportsRequestsPerMinute)
+        perMinute(5)
     });
     assert.deepEqual(compiled.buckets, {
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetBrokerReport':
@@ -91,15 +79,13 @@ describe('compileUnaryLimits', () => {
       () =>
         compileUnaryLimits({
           OperationsService: {
-            default: perMinute(operationsDefaultRequestsPerMinute),
+            default: perMinute(200),
             methods: {
-              GetBrokerReport: perMinute(
-                brokerReportOverrideRequestsPerMinute
-              )
+              GetBrokerReport: perMinute(10)
             },
             groups: {
               reports: {
-                limit: perMinute(reportsRequestsPerMinute),
+                limit: perMinute(5),
                 methods: ['GetBrokerReport']
               }
             }
@@ -114,14 +100,14 @@ describe('compileUnaryLimits', () => {
       () =>
         compileUnaryLimits({
           OperationsService: {
-            default: perMinute(operationsDefaultRequestsPerMinute),
+            default: perMinute(200),
             groups: {
               first: {
-                limit: perMinute(reportsRequestsPerMinute),
+                limit: perMinute(5),
                 methods: ['GetBrokerReport']
               },
               second: {
-                limit: perMinute(reportsRequestsPerMinute),
+                limit: perMinute(5),
                 methods: ['GetBrokerReport']
               }
             }
@@ -145,10 +131,10 @@ describe('compileUnaryLimits', () => {
       () =>
         compileUnaryLimits({
           OrdersService: {
-            default: perMinute(ordersDefaultRequestsPerMinute),
+            default: perMinute(100),
             methods: {
               PostOrder: {
-                maxRequests: postOrderRequestsPerSecond,
+                maxRequests: 15,
                 windowMs: Number.POSITIVE_INFINITY
               }
             }
@@ -185,8 +171,8 @@ describe('assertUnaryLimitConfig', () => {
             [secondPath]: 'test:shared'
           },
           limits: {
-            [firstPath]: perMinute(firstSharedBucketRequestsPerMinute),
-            [secondPath]: perMinute(secondSharedBucketRequestsPerMinute)
+            [firstPath]: perMinute(100),
+            [secondPath]: perMinute(200)
           }
         }),
       /quota group test:shared contains inconsistent limits/

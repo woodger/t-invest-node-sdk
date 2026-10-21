@@ -15,9 +15,6 @@ import type {
 import { SignalServiceDefinition } from '../generated/signals';
 import { TInvestNodeSDK } from './t-invest-node-sdk';
 
-const signalServiceRequestsPerMinute = 100;
-const minuteWindowMs = 60_000;
-
 describe('TInvestNodeSDK', () => {
   test('exposes service clients through canonical facade names', () => {
     const sdk = new TInvestNodeSDK({
@@ -198,8 +195,8 @@ describe('TInvestNodeSDK', () => {
       );
       assert.deepEqual(limiterContext?.quota, {
         bucket: 'rule:SignalService',
-        maxRequests: signalServiceRequestsPerMinute,
-        windowMs: minuteWindowMs
+        maxRequests: 100,
+        windowMs: 60_000
       });
     }
     finally {

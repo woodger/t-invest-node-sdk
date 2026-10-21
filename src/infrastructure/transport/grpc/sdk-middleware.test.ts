@@ -30,13 +30,9 @@ type TestRequest = Record<string, never>;
 const defaultUnaryResponse = { ok: true };
 const usersPath =
   '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
-const maxReceiveMessageLengthBytes = 4_194_304;
-const minuteWindowMs = 60_000;
-const usersDefaultRequestsPerMinute = 100;
-const usersAlternativeRequestsPerMinute = 50;
 const usersLimit = {
-  maxRequests: usersDefaultRequestsPerMinute,
-  windowMs: minuteWindowMs
+  maxRequests: 100,
+  windowMs: 60_000
 };
 
 async function* createUnaryResponseIterator<Response>(
@@ -135,7 +131,7 @@ function createErrorClassification(
 ): SdkCallErrorClassificationOptions {
   return {
     useSsl,
-    maxReceiveMessageLength: maxReceiveMessageLengthBytes
+    maxReceiveMessageLength: 4_194_304
   };
 }
 
@@ -175,8 +171,8 @@ describe('createSdkMiddleware', () => {
     const resolverA = new UnaryLimitResolver({ UsersService: usersLimit });
     const resolverB = new UnaryLimitResolver({
       UsersService: {
-        maxRequests: usersAlternativeRequestsPerMinute,
-        windowMs: minuteWindowMs
+        maxRequests: 50,
+        windowMs: 60_000
       }
     });
     let callsA = 0;
@@ -184,13 +180,13 @@ describe('createSdkMiddleware', () => {
     const limiterA: TInvestUnaryLimiter = {
       async acquire({ quota }) {
         callsA += 1;
-        assert.equal(quota.maxRequests, usersDefaultRequestsPerMinute);
+        assert.equal(quota.maxRequests, 100);
       }
     };
     const limiterB: TInvestUnaryLimiter = {
       async acquire({ quota }) {
         callsB += 1;
-        assert.equal(quota.maxRequests, usersAlternativeRequestsPerMinute);
+        assert.equal(quota.maxRequests, 50);
       }
     };
 
@@ -314,7 +310,7 @@ describe('createSdkMiddleware', () => {
       },
       {
         useSsl: false,
-        maxReceiveMessageLength: maxReceiveMessageLengthBytes
+        maxReceiveMessageLength: 4_194_304
       }
     );
     const result = middleware(createUnaryCall(usersPath), {}).next();

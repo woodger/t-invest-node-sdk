@@ -10,8 +10,6 @@ import type {
 } from '../../../generated/marketdata';
 import { createOrderBookCommand, createOrderBookRequest } from './cli';
 
-const testOrderBookDepth = 10;
-
 function quotation(units: number, nano: number): Quotation {
   return {
     units,
@@ -32,7 +30,7 @@ function orderBookResponse(
 ): GetOrderBookResponse {
   return {
     figi: 'BBG00QPYJ5H0',
-    depth: testOrderBookDepth,
+    depth: 10,
     bids: [order()],
     asks: [order({ price: quotation(101, 0), quantity: 4 })],
     lastPrice: quotation(100, 500000000),
@@ -52,13 +50,13 @@ describe('order-book command', () => {
     test('returns generated getOrderBook request', () => {
       const request = createOrderBookRequest({
         'instrument-id': 'BBG00QPYJ5H0',
-        depth: testOrderBookDepth
+        depth: 10
       });
 
       assert.deepEqual(request, {
         figi: undefined,
         instrumentId: 'BBG00QPYJ5H0',
-        depth: testOrderBookDepth
+        depth: 10
       });
     });
   });
@@ -93,7 +91,7 @@ describe('order-book command', () => {
           '--token=token',
           '--endpoint=localhost:50051',
           '--instrument-id=BBG00QPYJ5H0',
-          `--depth=${testOrderBookDepth}`,
+          '--depth=10',
           '--format=json'
         ],
         undefined
@@ -106,7 +104,7 @@ describe('order-book command', () => {
       assert.deepEqual(receivedRequest, {
         figi: undefined,
         instrumentId: 'BBG00QPYJ5H0',
-        depth: testOrderBookDepth
+        depth: 10
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).instrumentUid, 'instrument-uid');
@@ -134,7 +132,7 @@ describe('order-book command', () => {
             '--token=token',
             '--endpoint=localhost:50051',
             '--instrument-id=BBG00QPYJ5H0',
-            `--depth=${testOrderBookDepth}`
+            '--depth=10'
           ],
           undefined
         ),

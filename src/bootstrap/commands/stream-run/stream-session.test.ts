@@ -17,14 +17,6 @@ import {
   type StreamRunSdk
 } from './stream-session';
 
-const defaultDeadlineTimeoutMs = 500;
-const streamCompletionDeadlineMs = 5_000;
-const shortRuntimeTimeoutMs = 10;
-const providerErrorDurationMs = 100;
-// Node.js принимает задержки setTimeout не больше 2^31 - 1 миллисекунд.
-const maxTimerDelayMs = 2_147_483_647;
-const timerRangeOverflowMs = 10;
-
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {
   let result = '';
 
@@ -115,7 +107,7 @@ function createTestSdk(overrides: TestSdkOverrides): StreamRunSdk {
 
 async function withDeadline<T>(
   promise: Promise<T>,
-  timeoutMs = defaultDeadlineTimeoutMs
+  timeoutMs = 500
 ): Promise<T> {
   let timeout: ReturnType<typeof setTimeout> | undefined;
   const deadline = new Promise<never>((resolve, reject) => {
@@ -196,7 +188,7 @@ describe('runStreamRunSession', () => {
         });
         const rendered = await withDeadline(
           collectOutput(output),
-          streamCompletionDeadlineMs
+          5_000
         );
 
         assert.equal(rendered.trim().split('\n').length, 1);
@@ -247,7 +239,7 @@ describe('runStreamRunSession', () => {
         });
         const rendered = await withDeadline(
           collectOutput(output),
-          streamCompletionDeadlineMs
+          5_000
         );
 
         assert.equal(rendered.trim().split('\n').length, 1);
@@ -270,7 +262,7 @@ describe('runStreamRunSession', () => {
     let closeCalls = 0;
     const output = runStreamRunSession(
       config,
-      { ...defaultRuntime, durationMs: shortRuntimeTimeoutMs },
+      { ...defaultRuntime, durationMs: 10 },
       sdkOptions,
       {
         createSdk: () =>
@@ -312,7 +304,7 @@ describe('runStreamRunSession', () => {
       let closeCalls = 0;
       const output = runStreamRunSession(
         config,
-        { ...defaultRuntime, idleTimeoutMs: shortRuntimeTimeoutMs },
+        { ...defaultRuntime, idleTimeoutMs: 10 },
         sdkOptions,
         {
           createSdk: () =>
@@ -356,8 +348,7 @@ describe('runStreamRunSession', () => {
   );
 
   test('разбивает duration больше диапазона Node.js timer', async () => {
-    const timerRangeOverflowDurationMs =
-      maxTimerDelayMs + timerRangeOverflowMs;
+    // Интервал на 10 мс превышает предел setTimeout в Node.js (2^31 - 1 мс).
     const originalSetTimeout = global.setTimeout;
     const originalClearTimeout = global.clearTimeout;
     const delays: number[] = [];
@@ -388,7 +379,7 @@ describe('runStreamRunSession', () => {
       };
       const output = runStreamRunSession(
         config,
-        { ...defaultRuntime, durationMs: timerRangeOverflowDurationMs },
+        { ...defaultRuntime, durationMs: 2_147_483_657 },
         sdkOptions,
         {
           createSdk: () =>
@@ -413,13 +404,13 @@ describe('runStreamRunSession', () => {
       const completion = collectOutput(output);
 
       await new Promise<void>((resolve) => setImmediate(resolve));
-      assert.deepEqual(delays, [maxTimerDelayMs]);
+      assert.deepEqual(delays, [2_147_483_647]);
 
-      elapsed = maxTimerDelayMs;
+      elapsed = 2_147_483_647;
       runNextTimer(callbacks);
-      assert.deepEqual(delays, [maxTimerDelayMs, timerRangeOverflowMs]);
+      assert.deepEqual(delays, [2_147_483_647, 10]);
 
-      elapsed = timerRangeOverflowDurationMs;
+      elapsed = 2_147_483_657;
       runNextTimer(callbacks);
       assert.equal(await completion, '');
       assert.equal(closeCalls, 1);
@@ -440,7 +431,7 @@ describe('runStreamRunSession', () => {
     let closeCalls = 0;
     const output = runStreamRunSession(
       config,
-      { ...defaultRuntime, durationMs: providerErrorDurationMs },
+      { ...defaultRuntime, durationMs: 100 },
       sdkOptions,
       {
         createSdk: () =>

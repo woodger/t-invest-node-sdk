@@ -6,8 +6,6 @@ import { maxInt32 } from '../args/command-options';
 import { cliExitCodes } from './error';
 import { parseCliInput, runCli } from './runner';
 
-const firstOutOfRangeInt32 = maxInt32 + 1;
-
 function createIo() {
   let stdout = '';
   let stderr = '';
@@ -417,7 +415,7 @@ describe('bootstrap cli runner', () => {
             'market',
             'order-book',
             '--instrument-id=instrument-id',
-            `--depth=${firstOutOfRangeInt32}`
+            '--depth=2147483648'
           ],
           option: 'depth'
         },
@@ -426,7 +424,7 @@ describe('bootstrap cli runner', () => {
             'operation',
             'broker-report',
             '--task-id=task-id',
-            `--page=${firstOutOfRangeInt32}`
+            '--page=2147483648'
           ],
           option: 'page'
         },
@@ -435,7 +433,7 @@ describe('bootstrap cli runner', () => {
             'operation',
             'foreign-dividends-report',
             '--task-id=task-id',
-            `--page=${firstOutOfRangeInt32}`
+            '--page=2147483648'
           ],
           option: 'page'
         }

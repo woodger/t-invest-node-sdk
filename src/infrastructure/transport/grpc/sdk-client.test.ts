@@ -37,15 +37,6 @@ const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
 const requestSerializationPath = '/test.RequestSerializationService/GetPayload';
 const responseParsingPath = '/test.ResponseParsingService/GetPayload';
-const oneMiB = 1_048_576;
-const twoMiB = 2 * oneMiB;
-const maxReceiveMessageLengthBytes = 4 * oneMiB;
-const payloadServiceRequestsPerMinute = 60;
-const minuteWindowMs = 60_000;
-// gRPC frame начинается с однобайтного флага сжатия и четырёхбайтовой длины.
-const grpcFrameHeaderBytes = 5;
-const grpcFrameLengthOffsetBytes = 1;
-const httpOkStatusCode = 200;
 const tlsFixturesDirectory = resolve(
   __dirname,
   '../../../../src/infrastructure/transport/grpc/test-fixtures'
@@ -130,7 +121,7 @@ describe('createSdkClient', () => {
         token: 'token',
         endpoint: `127.0.0.1:${port}`,
         useSsl: false
-      }, maxReceiveMessageLengthBytes);
+      }, 4_194_304);
       let limiterContext: TInvestUnaryLimitContext | undefined;
       const limiter: TInvestUnaryLimiter = {
         async acquire(context) {
@@ -149,8 +140,8 @@ describe('createSdkClient', () => {
         limiter,
         new UnaryLimitResolver({
           PayloadService: {
-            maxRequests: payloadServiceRequestsPerMinute,
-            windowMs: minuteWindowMs
+            maxRequests: 60,
+            windowMs: 60_000
           }
         }),
         {
@@ -161,7 +152,7 @@ describe('createSdkClient', () => {
         },
         {
           useSsl: false,
-          maxReceiveMessageLength: maxReceiveMessageLengthBytes
+          maxReceiveMessageLength: 4_194_304
         }
       );
 
@@ -178,10 +169,7 @@ describe('createSdkClient', () => {
         assert.equal(receivedAuthorization, 'Bearer token');
         assert.equal(receivedAppName, 'sdk-app');
         assert.equal(receivedRequestId, 'request-id');
-        assert.equal(
-          limiterContext?.quota.maxRequests,
-          payloadServiceRequestsPerMinute
-        );
+        assert.equal(limiterContext?.quota.maxRequests, 60);
         assert.equal(limiterContext?.path, payloadPath);
       }
       finally {
@@ -208,7 +196,7 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLengthBytes);
+    }, 4_194_304);
     const client = createPayloadClient(channel, false);
 
     try {
@@ -244,7 +232,7 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLengthBytes);
+    }, 4_194_304);
     const client = createPayloadClient(channel, false);
 
     try {
@@ -280,11 +268,11 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLengthBytes);
+    }, 4_194_304);
     const client = createPayloadClient(
       channel,
       false,
-      maxReceiveMessageLengthBytes,
+      4_194_304,
       requestSerializationServiceDefinition
     );
 
@@ -322,11 +310,11 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLengthBytes);
+    }, 4_194_304);
     const client = createPayloadClient(
       channel,
       false,
-      maxReceiveMessageLengthBytes,
+      4_194_304,
       responseParsingServiceDefinition
     );
 
@@ -356,7 +344,7 @@ describe('createSdkClient', () => {
 
       server.add(payloadServiceDefinition, {
         async getPayload() {
-          return new Uint8Array(twoMiB);
+          return new Uint8Array(2_097_152);
         }
       });
 
@@ -365,8 +353,8 @@ describe('createSdkClient', () => {
         token: 'token',
         endpoint: `127.0.0.1:${port}`,
         useSsl: false
-      }, oneMiB);
-      const client = createPayloadClient(channel, false, oneMiB);
+      }, 1_048_576);
+      const client = createPayloadClient(channel, false, 1_048_576);
 
       try {
         await assert.rejects(
@@ -409,8 +397,8 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, oneMiB);
-    const client = createPayloadClient(channel, false, oneMiB);
+    }, 1_048_576);
+    const client = createPayloadClient(channel, false, 1_048_576);
 
     try {
       await assert.rejects(
@@ -511,7 +499,7 @@ describe('createSdkClient', () => {
       tls: {
         rootCertificates: readTlsFixture('tls-root.cert.pem')
       }
-    }, maxReceiveMessageLengthBytes);
+    }, 4_194_304);
     const client = createPayloadClient(channel, true);
 
     try {
@@ -544,7 +532,7 @@ describe('createSdkClient', () => {
         tls: {
           rootCertificates: readTlsFixture('tls-root.cert.pem')
         }
-      }, maxReceiveMessageLengthBytes);
+      }, 4_194_304);
       const client = createPayloadClient(channel, true);
 
       try {
@@ -568,7 +556,7 @@ describe('createSdkClient', () => {
 function createPayloadClient(
   channel: Channel,
   useSsl: boolean,
-  receiveMessageLength: number = maxReceiveMessageLengthBytes,
+  receiveMessageLength: number = 4_194_304,
   service:
     | typeof payloadServiceDefinition
     | typeof requestSerializationServiceDefinition
@@ -613,12 +601,13 @@ function createPayloadTlsServer(
   server.on('stream', (stream: ServerHttp2Stream) => {
     stream.resume();
     stream.once('end', () => {
-      const frame = Buffer.alloc(grpcFrameHeaderBytes + payload.byteLength);
+      // gRPC frame начинается с флага сжатия (1 байт) и длины (4 байта).
+      const frame = Buffer.alloc(5 + payload.byteLength);
 
-      frame.writeUInt32BE(payload.byteLength, grpcFrameLengthOffsetBytes);
-      frame.set(payload, grpcFrameHeaderBytes);
+      frame.writeUInt32BE(payload.byteLength, 1);
+      frame.set(payload, 5);
       stream.respond({
-        ':status': httpOkStatusCode,
+        ':status': 200,
         'content-type': 'application/grpc+proto'
       }, {
         waitForTrailers: true

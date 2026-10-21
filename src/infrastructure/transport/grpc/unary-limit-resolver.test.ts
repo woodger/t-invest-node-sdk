@@ -4,17 +4,13 @@ import { UnaryLimitResolver } from './unary-limit-resolver';
 
 const ordersPath =
   '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrders';
-const minuteWindowMs = 60_000;
-const ordersServiceRequestsPerMinute = 100;
-const getOrdersRequestsPerMinute = 200;
-const reportsRequestsPerMinute = 5;
 
 describe('UnaryLimitResolver', () => {
   test(
     'resolves a service fallback from the final qualified service segment',
     () => {
       const resolver = new UnaryLimitResolver({
-        OrdersService: perMinute(ordersServiceRequestsPerMinute)
+        OrdersService: perMinute(100)
       });
       const getOrdersQuota = resolveRequiredQuota(resolver, ordersPath);
       const getOrderStateQuota = resolveRequiredQuota(
@@ -22,26 +18,20 @@ describe('UnaryLimitResolver', () => {
         '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
       );
 
-      assert.equal(
-        getOrdersQuota.maxRequests,
-        ordersServiceRequestsPerMinute
-      );
-      assert.equal(
-        getOrderStateQuota.maxRequests,
-        ordersServiceRequestsPerMinute
-      );
+      assert.equal(getOrdersQuota.maxRequests, 100);
+      assert.equal(getOrderStateQuota.maxRequests, 100);
       assert.equal(getOrdersQuota.bucket, getOrderStateQuota.bucket);
     }
   );
 
   test('prefers an exact method rule regardless of declaration order', () => {
     const methodFirst = new UnaryLimitResolver({
-      [ordersPath]: perMinute(getOrdersRequestsPerMinute),
-      OrdersService: perMinute(ordersServiceRequestsPerMinute)
+      [ordersPath]: perMinute(200),
+      OrdersService: perMinute(100)
     });
     const fallbackFirst = new UnaryLimitResolver({
-      OrdersService: perMinute(ordersServiceRequestsPerMinute),
-      [ordersPath]: perMinute(getOrdersRequestsPerMinute)
+      OrdersService: perMinute(100),
+      [ordersPath]: perMinute(200)
     });
     const methodFirstQuota = resolveRequiredQuota(methodFirst, ordersPath);
     const fallbackFirstQuota = resolveRequiredQuota(fallbackFirst, ordersPath);
@@ -50,15 +40,15 @@ describe('UnaryLimitResolver', () => {
       '/tinkoff.public.invest.api.contract.v1.OrdersService/GetOrderState'
     );
 
-    assert.equal(methodFirstQuota.maxRequests, getOrdersRequestsPerMinute);
-    assert.equal(fallbackFirstQuota.maxRequests, getOrdersRequestsPerMinute);
+    assert.equal(methodFirstQuota.maxRequests, 200);
+    assert.equal(fallbackFirstQuota.maxRequests, 200);
     assert.equal(methodFirstQuota.bucket, fallbackFirstQuota.bucket);
     assert.notEqual(methodFirstQuota.bucket, serviceFallbackQuota.bucket);
   });
 
   test('does not match a service name inside a longer service name', () => {
     const resolver = new UnaryLimitResolver({
-      OrdersService: perMinute(ordersServiceRequestsPerMinute)
+      OrdersService: perMinute(100)
     });
 
     assert.equal(
@@ -71,8 +61,8 @@ describe('UnaryLimitResolver', () => {
 
   test('does not resolve inherited limit rules', () => {
     const inheritedLimits = Object.create({
-      [ordersPath]: perMinute(getOrdersRequestsPerMinute),
-      OrdersService: perMinute(ordersServiceRequestsPerMinute)
+      [ordersPath]: perMinute(200),
+      OrdersService: perMinute(100)
     }) as Record<string, ReturnType<typeof perMinute>>;
     const resolver = new UnaryLimitResolver(inheritedLimits);
 
@@ -85,8 +75,8 @@ describe('UnaryLimitResolver', () => {
     const dividendsReportPath =
       '/tinkoff.public.invest.api.contract.v1.OperationsService/GetDividendsForeignIssuer';
     const resolver = new UnaryLimitResolver({
-      [brokerReportPath]: perMinute(reportsRequestsPerMinute),
-      [dividendsReportPath]: perMinute(reportsRequestsPerMinute)
+      [brokerReportPath]: perMinute(5),
+      [dividendsReportPath]: perMinute(5)
     }, {
       [brokerReportPath]: 'reports',
       [dividendsReportPath]: 'reports'
@@ -97,14 +87,14 @@ describe('UnaryLimitResolver', () => {
       dividendsReportPath
     );
 
-    assert.equal(brokerReportQuota.maxRequests, reportsRequestsPerMinute);
-    assert.equal(dividendsReportQuota.maxRequests, reportsRequestsPerMinute);
+    assert.equal(brokerReportQuota.maxRequests, 5);
+    assert.equal(dividendsReportQuota.maxRequests, 5);
     assert.equal(brokerReportQuota.bucket, dividendsReportQuota.bucket);
   });
 
   test('returns undefined for an unknown path', () => {
     const resolver = new UnaryLimitResolver({
-      OrdersService: perMinute(ordersServiceRequestsPerMinute)
+      OrdersService: perMinute(100)
     });
 
     assert.equal(
@@ -132,6 +122,6 @@ function resolveRequiredQuota(
 function perMinute(maxRequests: number) {
   return {
     maxRequests,
-    windowMs: minuteWindowMs
+    windowMs: 60_000
   };
 }

@@ -11,10 +11,6 @@ import {
   type StreamRunRuntime
 } from './config';
 
-const firstOutOfRangeInt32 = maxInt32 + 1;
-const testMaxEvents = 2;
-const testOrderBookDepth = 10;
-
 function configJson(value: unknown): string {
   return JSON.stringify(value);
 }
@@ -67,14 +63,14 @@ describe('stream run config', () => {
         accounts: ['account-id'],
         runtime: {
           format: 'jsonl',
-          maxEvents: testMaxEvents,
+          maxEvents: 2,
           includePings: true
         }
       }));
 
       assert.ok(config.stream === 'operations.portfolioStream');
       assert.deepEqual(config.accounts, ['account-id']);
-      assert.equal(config.runtime.maxEvents, testMaxEvents);
+      assert.equal(config.runtime.maxEvents, 2);
       assert.equal(config.runtime.includePings, true);
       assert.equal(config.runtime.includeSubscriptionEvents, true);
       assert.equal(config.runtime.raw, false);
@@ -98,7 +94,7 @@ describe('stream run config', () => {
             instruments: [
               {
                 instrumentId: 'order-book-id',
-                depth: testOrderBookDepth
+                depth: 10
               }
             ]
           },
@@ -131,7 +127,7 @@ describe('stream run config', () => {
           }
         ],
         runtime: {
-          maxEvents: testMaxEvents
+          maxEvents: 2
         }
       }));
 
@@ -149,7 +145,7 @@ describe('stream run config', () => {
           type: 'subscribeOrderBook',
           instruments: [{
             instrumentId: 'order-book-id',
-            depth: testOrderBookDepth
+            depth: 10
           }]
         },
         {
@@ -504,7 +500,7 @@ describe('stream run config', () => {
         assert.throws(
           () =>
             parseStreamRunConfig(
-              configJson(createConfig(firstOutOfRangeInt32))
+              configJson(createConfig(2_147_483_648))
             ),
           new RegExp(`depth' to be less than or equal to ${maxInt32}`)
         );
