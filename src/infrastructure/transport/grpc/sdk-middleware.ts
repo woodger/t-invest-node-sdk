@@ -31,6 +31,7 @@ import {
 } from './sdk-call-error';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
+/** Проверки состояния SDK и отмена ожиданий квоты при его закрытии. */
 export interface SdkCallLifecycle {
   readonly signal: AbortSignal;
   assertOpen(): void;
@@ -41,6 +42,10 @@ export interface SdkCallErrorClassificationOptions {
   readonly maxReceiveMessageLength: number;
 }
 
+/**
+ * Связывает проверки состояния SDK, unary-квоты и классификацию ошибок RPC.
+ * Синхронные исключения callbacks метаданных передаёт без преобразования.
+ */
 export function createSdkMiddleware(
   unaryLimiter: TInvestUnaryLimiter | undefined,
   unaryLimitResolver: UnaryLimitResolver,
@@ -53,6 +58,7 @@ export function createSdkMiddleware(
   ) {
     lifecycle?.assertOpen();
 
+    // Ошибки ограничителя не должны попадать в классификацию ошибок транспорта.
     if (!call.responseStream && unaryLimiter !== undefined) {
       await acquireUnaryPermit(
         unaryLimiter,
@@ -66,6 +72,7 @@ export function createSdkMiddleware(
     const callbackBoundary = createCallCallbackBoundary(options);
 
     try {
+      // SDK мог закрыться, пока вызов ждал разрешения ограничителя.
       lifecycle?.assertOpen();
 
       if (!call.responseStream) {
@@ -98,6 +105,7 @@ export function createSdkMiddleware(
       return undefined;
     }
     catch (error) {
+      // Ошибка callback важнее транспортной ошибки, вызванной его отменой RPC.
       if (callbackBoundary?.failure !== undefined) {
         throw callbackBoundary.failure.reason;
       }
@@ -111,13 +119,20 @@ export function createSdkMiddleware(
       );
     }
     finally {
+      // Учитываем ошибку callback и при досрочном закрытии итератора.
       throwCallCallbackFailure(callbackBoundary);
     }
   };
 }
 
+// Контракт ограничителя требует сигнал даже для вызовов без отмены.
 const passiveUnaryLimitSignal = new AbortController().signal;
 
+/**
+ * Ожидает квоту до обращения к транспорту. Отмена вызова получает CANCELLED,
+ * закрытие SDK сохраняет причину lifecycle-сигнала, остальные ошибки
+ * ограничителя передаются без преобразования.
+ */
 async function acquireUnaryPermit(
   limiter: TInvestUnaryLimiter,
   resolver: UnaryLimitResolver,
@@ -147,6 +162,7 @@ async function acquireUnaryPermit(
       quota,
       signal
     });
+    // Ограничитель приложения может не учитывать отмену во время ожидания.
     throwIfAborted(signal);
   }
   catch (error) {
@@ -170,6 +186,7 @@ async function acquireUnaryPermit(
   }
 }
 
+/** Объединяет отмену вызова и закрытие SDK только для ожидания квоты. */
 function resolveUnaryLimitSignal(
   callSignal: AbortSignal | undefined,
   lifecycleSignal: AbortSignal | undefined
@@ -196,6 +213,10 @@ interface CallCallbackBoundary {
   readonly failure: CallCallbackFailure | undefined;
 }
 
+/**
+ * Переносит синхронные исключения onHeader/onTrailer из обработчиков событий
+ * nice-grpc в Promise или AsyncIterable вызова, отменяя RPC при ошибке.
+ */
 function createCallCallbackBoundary(
   options: CallOptions
 ): CallCallbackBoundary | undefined {
@@ -203,12 +224,11 @@ function createCallCallbackBoundary(
     return undefined;
   }
 
-  // nice-grpc вызывает эти callbacks из EventEmitter handlers. Исключение
-  // нужно вернуть владельцу RPC, иначе оно обходит Promise/AsyncIterable.
   const controller = new AbortController();
   let failure: CallCallbackFailure | undefined;
   const captureFailure = (reason: unknown) => {
     if (failure === undefined) {
+      // Обёртка отличает throw undefined от отсутствия ошибки.
       failure = { reason };
       controller.abort(reason);
     }
@@ -236,12 +256,17 @@ function createCallCallbackBoundary(
 
   return {
     options: protectedOptions,
+    // Callbacks срабатывают после создания границы; нужна текущая ошибка.
     get failure() {
       return failure;
     }
   };
 }
 
+/**
+ * Перехватывает исключение в обработчике событий транспорта, чтобы middleware
+ * мог передать его владельцу RPC при чтении результата.
+ */
 function protectCallCallback(
   callback: NonNullable<CallOptions['onHeader']>,
   captureFailure: (reason: unknown) => void
@@ -256,6 +281,7 @@ function protectCallCallback(
   };
 }
 
+/** Поднимает сохранённую ошибку callback в контексте владельца RPC. */
 function throwCallCallbackFailure(
   boundary: CallCallbackBoundary | undefined
 ): void {
