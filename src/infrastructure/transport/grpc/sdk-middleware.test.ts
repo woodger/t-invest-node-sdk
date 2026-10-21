@@ -439,4 +439,165 @@ describe('createSdkMiddleware', () => {
       );
     }
   );
+
+  test('isolates callback failures between concurrent calls', async () => {
+    const path = '/test.StreamService/Watch';
+    const callbackError = new Error('stream trailer callback failed');
+    let failedCallSignal: AbortSignal | undefined;
+    let healthyCallSignal: AbortSignal | undefined;
+    let healthyTrailerCalls = 0;
+    const failingCall: ClientMiddlewareCall<
+      TestRequest,
+      { seq: number },
+      CallOptions
+    > = {
+      ...createResponseStreamCall(path, [{ seq: 1 }]),
+      responseStream: true,
+      next: async function* (_request, options) {
+        failedCallSignal = options.signal;
+        yield { seq: 1 };
+        options.onTrailer?.(new Metadata());
+      }
+    };
+    const healthyCall: ClientMiddlewareCall<
+      TestRequest,
+      { seq: number },
+      CallOptions
+    > = {
+      ...createResponseStreamCall(path, [{ seq: 1 }, { seq: 2 }]),
+      responseStream: true,
+      next: async function* (_request, options) {
+        healthyCallSignal = options.signal;
+        yield { seq: 1 };
+
+        if (options.signal?.aborted) {
+          throw options.signal.reason;
+        }
+
+        yield { seq: 2 };
+        options.onTrailer?.(new Metadata());
+      }
+    };
+    const middleware = createSdkMiddleware(
+      undefined,
+      new UnaryLimitResolver({})
+    );
+    const failing = middleware(failingCall, {
+      onTrailer() {
+        throw callbackError;
+      }
+    });
+    const healthy = middleware(healthyCall, {
+      onTrailer() {
+        healthyTrailerCalls += 1;
+      }
+    });
+
+    try {
+      assert.deepEqual(await Promise.all([
+        failing.next(),
+        healthy.next()
+      ]), [
+        { done: false, value: { seq: 1 } },
+        { done: false, value: { seq: 1 } }
+      ]);
+
+      await assert.rejects(
+        failing.next(),
+        (error: unknown) => error === callbackError
+      );
+
+      assert.equal(failedCallSignal?.aborted, true);
+      assert.equal(healthyCallSignal?.aborted, false);
+      assert.deepEqual(await healthy.next(), {
+        done: false,
+        value: { seq: 2 }
+      });
+      assert.deepEqual(await healthy.next(), {
+        done: true,
+        value: undefined
+      });
+      assert.equal(healthyTrailerCalls, 1);
+    }
+    finally {
+      await Promise.all([failing.return(undefined), healthy.return(undefined)]);
+    }
+  });
+
+  test('preserves an undefined callback failure over later failures', async () => {
+    const callbackFailure: unknown = undefined;
+    const call: ClientMiddlewareCall<
+      TestRequest,
+      typeof defaultUnaryResponse,
+      CallOptions
+    > = {
+      ...createUnaryCall(usersPath),
+      next(_request, options) {
+        options.onHeader?.(new Metadata());
+        options.onTrailer?.(new Metadata());
+
+        return createRejectedIterator(new ClientError(
+          usersPath,
+          Status.CANCELLED,
+          'transport cancelled'
+        ));
+      }
+    };
+    const middleware = createSdkMiddleware(
+      undefined,
+      new UnaryLimitResolver({})
+    );
+    const iterator = middleware(call, {
+      onHeader() {
+        throw callbackFailure;
+      },
+      onTrailer() {
+        throw new Error('trailer callback failed');
+      }
+    });
+
+    await assert.rejects(
+      iterator.next(),
+      (error: unknown) => error === callbackFailure
+    );
+  });
+
+  test('propagates a trailer callback failure when a stream is closed early', async () => {
+    const path = '/test.StreamService/Watch';
+    const callbackError = new Error('stream trailer callback failed');
+    const call: ClientMiddlewareCall<
+      TestRequest,
+      typeof defaultUnaryResponse,
+      CallOptions
+    > = {
+      ...createResponseStreamCall(path, [defaultUnaryResponse]),
+      responseStream: true,
+      next: async function* (_request, options) {
+        try {
+          yield defaultUnaryResponse;
+        }
+        finally {
+          options.onTrailer?.(new Metadata());
+        }
+      }
+    };
+    const middleware = createSdkMiddleware(
+      undefined,
+      new UnaryLimitResolver({})
+    );
+    const iterator = middleware(call, {
+      onTrailer() {
+        throw callbackError;
+      }
+    });
+
+    assert.deepEqual(await iterator.next(), {
+      done: false,
+      value: defaultUnaryResponse
+    });
+    await assert.rejects(
+      iterator.return(undefined),
+      (error: unknown) => error === callbackError
+    );
+  });
 });

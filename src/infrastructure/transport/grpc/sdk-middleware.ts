@@ -52,28 +52,57 @@ export function createSdkMiddleware(
   lifecycle?: SdkCallLifecycle,
   errorClassification?: SdkCallErrorClassificationOptions
 ) {
-  return async function* <Request, Response>(
+  const middleware = new SdkMiddleware(
+    unaryLimiter,
+    unaryLimitResolver,
+    lifecycle,
+    errorClassification
+  );
+
+  return <Request, Response>(
+    call: ClientMiddlewareCall<Request, Response, CallOptions>,
+    options: CallOptions
+  ) => middleware.handle(call, options);
+}
+
+// Контракт ограничителя требует сигнал даже для вызовов без отмены.
+const passiveUnaryLimitSignal = new AbortController().signal;
+
+/**
+ * Хранит зависимости middleware, общие для нескольких одновременных RPC.
+ * Состояние callbacks создаётся отдельно внутри каждого вызова handle.
+ */
+class SdkMiddleware {
+  constructor(
+    private readonly unaryLimiter: TInvestUnaryLimiter | undefined,
+    private readonly unaryLimitResolver: UnaryLimitResolver,
+    private readonly lifecycle?: SdkCallLifecycle,
+    private readonly errorClassification?: SdkCallErrorClassificationOptions
+  ) {}
+
+  async *handle<Request, Response>(
     call: ClientMiddlewareCall<Request, Response, CallOptions>,
     options: CallOptions
   ) {
-    lifecycle?.assertOpen();
+    this.lifecycle?.assertOpen();
 
     // Ошибки ограничителя не должны попадать в классификацию ошибок транспорта.
-    if (!call.responseStream && unaryLimiter !== undefined) {
-      await acquireUnaryPermit(
-        unaryLimiter,
-        unaryLimitResolver,
+    if (!call.responseStream && this.unaryLimiter !== undefined) {
+      await this.acquireUnaryPermit(
+        this.unaryLimiter,
         call.method.path,
-        options.signal,
-        lifecycle?.signal
+        options.signal
       );
     }
 
-    const callbackBoundary = createCallCallbackBoundary(options);
+    const callbackBoundary = options.onHeader === undefined
+      && options.onTrailer === undefined
+      ? undefined
+      : new CallCallbackBoundary(options);
 
     try {
       // SDK мог закрыться, пока вызов ждал разрешения ограничителя.
-      lifecycle?.assertOpen();
+      this.lifecycle?.assertOpen();
 
       if (!call.responseStream) {
         throwIfAborted(options.signal);
@@ -83,7 +112,7 @@ export function createSdkMiddleware(
           callbackBoundary?.options ?? options
         );
 
-        throwCallCallbackFailure(callbackBoundary);
+        callbackBoundary?.throwIfFailed();
 
         return response;
       }
@@ -96,93 +125,87 @@ export function createSdkMiddleware(
           callbackBoundary?.options ?? options
         )
       ) {
-        throwCallCallbackFailure(callbackBoundary);
+        callbackBoundary?.throwIfFailed();
         yield response;
       }
 
-      throwCallCallbackFailure(callbackBoundary);
+      callbackBoundary?.throwIfFailed();
 
       return undefined;
     }
     catch (error) {
-      // Ошибка callback важнее транспортной ошибки, вызванной его отменой RPC.
-      if (callbackBoundary?.failure !== undefined) {
-        throw callbackBoundary.failure.reason;
-      }
+      // Ошибка callback важнее транспортной ошибки, возникшей при отмене RPC.
+      callbackBoundary?.throwIfFailed();
 
       throw mapSdkCallError(
         error,
         call.method.path,
         options.signal,
-        errorClassification?.useSsl === true,
-        errorClassification?.maxReceiveMessageLength
+        this.errorClassification?.useSsl === true,
+        this.errorClassification?.maxReceiveMessageLength
       );
     }
     finally {
       // Учитываем ошибку callback и при досрочном закрытии итератора.
-      throwCallCallbackFailure(callbackBoundary);
+      callbackBoundary?.throwIfFailed();
     }
-  };
-}
-
-// Контракт ограничителя требует сигнал даже для вызовов без отмены.
-const passiveUnaryLimitSignal = new AbortController().signal;
-
-/**
- * Ожидает квоту до обращения к транспорту. Отмена вызова получает CANCELLED,
- * закрытие SDK сохраняет причину lifecycle-сигнала, остальные ошибки
- * ограничителя передаются без преобразования.
- */
-async function acquireUnaryPermit(
-  limiter: TInvestUnaryLimiter,
-  resolver: UnaryLimitResolver,
-  path: string,
-  callSignal: AbortSignal | undefined,
-  lifecycleSignal: AbortSignal | undefined
-): Promise<void> {
-  const quota = resolver.resolve(path);
-
-  if (quota === undefined) {
-    throw new SdkError(
-      SdkErrorCode.UnknownUnaryLimit,
-      `Unhandled unary limits for ${path}`,
-      {
-        source: 'sdk',
-        path
-      }
-    );
   }
 
-  const signal = resolveUnaryLimitSignal(callSignal, lifecycleSignal);
+  /**
+   * Ожидает квоту до обращения к транспорту. Отмена вызова получает CANCELLED,
+   * закрытие SDK сохраняет причину lifecycle-сигнала, остальные ошибки
+   * ограничителя передаются без преобразования.
+   */
+  private async acquireUnaryPermit(
+    limiter: TInvestUnaryLimiter,
+    path: string,
+    callSignal: AbortSignal | undefined
+  ): Promise<void> {
+    const lifecycleSignal = this.lifecycle?.signal;
+    const quota = this.unaryLimitResolver.resolve(path);
 
-  try {
-    throwIfAborted(signal);
-    await limiter.acquire({
-      path,
-      quota,
-      signal
-    });
-    // Ограничитель приложения может не учитывать отмену во время ожидания.
-    throwIfAborted(signal);
-  }
-  catch (error) {
-    if (isCallCancellation(error, callSignal)) {
+    if (quota === undefined) {
       throw new SdkError(
-        SdkErrorCode.Cancelled,
-        errorMessage(error, `SDK call ${path} was cancelled`),
+        SdkErrorCode.UnknownUnaryLimit,
+        `Unhandled unary limits for ${path}`,
         {
-          source: 'abort',
-          path,
-          cause: error
+          source: 'sdk',
+          path
         }
       );
     }
 
-    if (isCallCancellation(error, lifecycleSignal)) {
-      throw lifecycleSignal?.reason ?? error;
-    }
+    const signal = resolveUnaryLimitSignal(callSignal, lifecycleSignal);
 
-    throw error;
+    try {
+      throwIfAborted(signal);
+      await limiter.acquire({
+        path,
+        quota,
+        signal
+      });
+      // Ограничитель приложения может не учитывать отмену во время ожидания.
+      throwIfAborted(signal);
+    }
+    catch (error) {
+      if (isCallCancellation(error, callSignal)) {
+        throw new SdkError(
+          SdkErrorCode.Cancelled,
+          errorMessage(error, `SDK call ${path} was cancelled`),
+          {
+            source: 'abort',
+            path,
+            cause: error
+          }
+        );
+      }
+
+      if (isCallCancellation(error, lifecycleSignal)) {
+        throw lifecycleSignal?.reason ?? error;
+      }
+
+      throw error;
+    }
   }
 }
 
@@ -208,84 +231,58 @@ interface CallCallbackFailure {
   readonly reason: unknown;
 }
 
-interface CallCallbackBoundary {
+/**
+ * Хранит первую ошибку callbacks одного RPC и отменяет этот вызов при ошибке.
+ * Синхронные исключения onHeader/onTrailer из обработчиков событий nice-grpc
+ * передаются владельцу Promise или AsyncIterable через throwIfFailed.
+ */
+class CallCallbackBoundary {
   readonly options: CallOptions;
-  readonly failure: CallCallbackFailure | undefined;
-}
+  private readonly controller = new AbortController();
+  private failure: CallCallbackFailure | undefined;
 
-/**
- * Переносит синхронные исключения onHeader/onTrailer из обработчиков событий
- * nice-grpc в Promise или AsyncIterable вызова, отменяя RPC при ошибке.
- */
-function createCallCallbackBoundary(
-  options: CallOptions
-): CallCallbackBoundary | undefined {
-  if (options.onHeader === undefined && options.onTrailer === undefined) {
-    return undefined;
+  constructor(options: CallOptions) {
+    this.options = {
+      ...options,
+      signal: options.signal === undefined
+        ? this.controller.signal
+        : AbortSignal.any([options.signal, this.controller.signal])
+    };
+
+    if (options.onHeader !== undefined) {
+      this.options.onHeader = this.protectCallback(options.onHeader);
+    }
+
+    if (options.onTrailer !== undefined) {
+      this.options.onTrailer = this.protectCallback(options.onTrailer);
+    }
   }
 
-  const controller = new AbortController();
-  let failure: CallCallbackFailure | undefined;
-  const captureFailure = (reason: unknown) => {
-    if (failure === undefined) {
-      // Обёртка отличает throw undefined от отсутствия ошибки.
-      failure = { reason };
-      controller.abort(reason);
+  /** Поднимает сохранённую ошибку callback в контексте владельца RPC. */
+  throwIfFailed(): void {
+    if (this.failure !== undefined) {
+      throw this.failure.reason;
     }
-  };
-  const protectedOptions: CallOptions = {
-    ...options,
-    signal: options.signal === undefined
-      ? controller.signal
-      : AbortSignal.any([options.signal, controller.signal])
-  };
-
-  if (options.onHeader !== undefined) {
-    protectedOptions.onHeader = protectCallCallback(
-      options.onHeader,
-      captureFailure
-    );
   }
 
-  if (options.onTrailer !== undefined) {
-    protectedOptions.onTrailer = protectCallCallback(
-      options.onTrailer,
-      captureFailure
-    );
-  }
-
-  return {
-    options: protectedOptions,
-    // Callbacks срабатывают после создания границы; нужна текущая ошибка.
-    get failure() {
-      return failure;
-    }
-  };
-}
-
-/**
- * Перехватывает исключение в обработчике событий транспорта, чтобы middleware
- * мог передать его владельцу RPC при чтении результата.
- */
-function protectCallCallback(
-  callback: NonNullable<CallOptions['onHeader']>,
-  captureFailure: (reason: unknown) => void
-): NonNullable<CallOptions['onHeader']> {
-  return (metadata) => {
-    try {
-      callback(metadata);
-    }
-    catch (error) {
-      captureFailure(error);
-    }
-  };
-}
-
-/** Поднимает сохранённую ошибку callback в контексте владельца RPC. */
-function throwCallCallbackFailure(
-  boundary: CallCallbackBoundary | undefined
-): void {
-  if (boundary?.failure !== undefined) {
-    throw boundary.failure.reason;
+  /**
+   * Перехватывает исключение в обработчике событий транспорта, чтобы middleware
+   * мог передать его владельцу RPC при чтении результата.
+   */
+  private protectCallback(
+    callback: NonNullable<CallOptions['onHeader']>
+  ): NonNullable<CallOptions['onHeader']> {
+    return (metadata) => {
+      try {
+        callback(metadata);
+      }
+      catch (error) {
+        if (this.failure === undefined) {
+          // Обёртка отличает throw undefined от отсутствия ошибки.
+          this.failure = { reason: error };
+          this.controller.abort(error);
+        }
+      }
+    };
   }
 }
