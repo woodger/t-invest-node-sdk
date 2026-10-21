@@ -15,7 +15,6 @@ import type {
   GetBrandsRequest,
   GetBrandsResponse
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -31,44 +30,29 @@ type BrandsSdk = {
 
 type BrandsSdkFactory = (options: TInvestOptions) => BrandsSdk;
 
-const brandsCommandPath = ['instrument', 'brand', 'list'] as const;
-const defaultBrandsSdkFactory: BrandsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const brandsOptionsSchema = withSdkOptions(
-  {
-    format: {
-      type: 'string',
-      choices: brandsFormats,
-      default: 'table'
-    }
-  } as const
-);
-
-type BrandsOptions = InferOptions<typeof brandsOptionsSchema>;
-
 export function createBrandsCommand(
-  createSdk: BrandsSdkFactory = defaultBrandsSdkFactory
+  createSdk: BrandsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: brandsCommandPath,
-    options: brandsOptionsSchema,
-    handle({ options }) {
-      return runBrandsCommand(options, createSdk);
+    path: ['instrument', 'brand', 'list'] as const,
+    options: withSdkOptions({
+      format: {
+        type: 'string',
+        choices: brandsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getBrands({ paging: undefined });
+
+        return formatBrands(response.brands, format);
+      });
     }
   });
 }
 
 export const brandsCommand = createBrandsCommand();
-
-async function runBrandsCommand(
-  options: BrandsOptions,
-  createSdk: BrandsSdkFactory
-): Promise<string> {
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getBrands({ paging: undefined });
-
-    return formatBrands(response.brands, format);
-  });
-}

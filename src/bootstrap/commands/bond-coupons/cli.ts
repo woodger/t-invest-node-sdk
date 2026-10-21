@@ -41,11 +41,7 @@ type BondCouponsSdk = {
 
 type BondCouponsSdkFactory = (options: TInvestOptions) => BondCouponsSdk;
 
-const bondCouponsCommandPath = ['instrument', 'bond', 'coupons'] as const;
-const defaultBondCouponsSdkFactory: BondCouponsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const bondCouponsRequestOptionsSchema = {
+const bondCouponsOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
     type: 'string',
@@ -54,21 +50,13 @@ const bondCouponsRequestOptionsSchema = {
   to: {
     type: 'string',
     required: true
-  }
-} as const;
-
-const bondCouponsFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: bondCouponsFormats,
     default: 'table'
   }
-} as const;
-
-const bondCouponsOptionsSchema = withSdkOptions(
-  bondCouponsRequestOptionsSchema,
-  bondCouponsFormatOptionsSchema
-);
+});
 
 type BondCouponsOptions = InferOptions<typeof bondCouponsOptionsSchema>;
 type BondCouponsRequestOptions = CommandRequestOptions<
@@ -77,31 +65,26 @@ type BondCouponsRequestOptions = CommandRequestOptions<
 >;
 
 export function createBondCouponsCommand(
-  createSdk: BondCouponsSdkFactory = defaultBondCouponsSdkFactory
+  createSdk: BondCouponsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: bondCouponsCommandPath,
+    path: ['instrument', 'bond', 'coupons'] as const,
     options: bondCouponsOptionsSchema,
-    handle({ options }) {
-      return runBondCouponsCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createBondCouponsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getBondCoupons(request);
+
+        return formatBondCoupons(response.events, format);
+      });
     }
   });
 }
 
 export const bondCouponsCommand = createBondCouponsCommand();
-
-async function runBondCouponsCommand(
-  options: BondCouponsOptions,
-  createSdk: BondCouponsSdkFactory
-): Promise<string> {
-  const request = createBondCouponsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getBondCoupons(request);
-
-    return formatBondCoupons(response.events, format);
-  });
-}
 
 export function createBondCouponsRequest(
   options: BondCouponsRequestOptions

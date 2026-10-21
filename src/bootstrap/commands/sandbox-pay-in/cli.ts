@@ -37,13 +37,9 @@ type SandboxPayInSdk = {
 
 type SandboxPayInSdkFactory = (options: TInvestOptions) => SandboxPayInSdk;
 
-const sandboxPayInCommandPath = ['sandbox', 'pay-in'] as const;
-const defaultSandboxPayInSdkFactory: SandboxPayInSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
 const sandboxPayInCurrencies = ['rub', 'usd'] as const;
 
-const sandboxPayInRequestOptionsSchema = {
+const sandboxPayInOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
     required: true
@@ -56,22 +52,14 @@ const sandboxPayInRequestOptionsSchema = {
     type: 'string',
     choices: sandboxPayInCurrencies,
     default: 'rub'
-  }
-} as const;
-
-const sandboxPayInFormatOptionsSchema = {
+  },
+  ...sideEffectConfirmationOptionsSchema,
   format: {
     type: 'string',
     choices: sandboxPayInFormats,
     default: 'table'
   }
-} as const;
-
-const sandboxPayInOptionsSchema = withSdkOptions(
-  sandboxPayInRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  sandboxPayInFormatOptionsSchema
-);
+});
 
 type SandboxPayInOptions = InferOptions<typeof sandboxPayInOptionsSchema>;
 type SandboxPayInRequestOptions = CommandRequestOptions<
@@ -80,33 +68,28 @@ type SandboxPayInRequestOptions = CommandRequestOptions<
 >;
 
 export function createSandboxPayInCommand(
-  createSdk: SandboxPayInSdkFactory = defaultSandboxPayInSdkFactory
+  createSdk: SandboxPayInSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxPayInCommandPath,
+    path: ['sandbox', 'pay-in'] as const,
     options: sandboxPayInOptionsSchema,
-    handle({ options }) {
-      return runSandboxPayInCommand(options, createSdk);
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createSandboxPayInRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.sandboxPayIn(request);
+
+        return formatSandboxPayIn(response, format);
+      });
     }
   });
 }
 
 export const sandboxPayInCommand = createSandboxPayInCommand();
-
-async function runSandboxPayInCommand(
-  options: SandboxPayInOptions,
-  createSdk: SandboxPayInSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createSandboxPayInRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.sandboxPayIn(request);
-
-    return formatSandboxPayIn(response, format);
-  });
-}
 
 export function createSandboxPayInRequest(
   options: SandboxPayInRequestOptions

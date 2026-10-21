@@ -35,29 +35,17 @@ type StopOrdersSdk = {
 
 type StopOrdersSdkFactory = (options: TInvestOptions) => StopOrdersSdk;
 
-const stopOrdersCommandPath = ['stop-order', 'list'] as const;
-const defaultStopOrdersSdkFactory: StopOrdersSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const stopOrdersRequestOptionsSchema = {
+const stopOrdersOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
     required: true
-  }
-} as const;
-
-const stopOrdersFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: stopOrdersFormats,
     default: 'table'
   }
-} as const;
-
-const stopOrdersOptionsSchema = withSdkOptions(
-  stopOrdersRequestOptionsSchema,
-  stopOrdersFormatOptionsSchema
-);
+});
 
 type StopOrdersOptions = InferOptions<typeof stopOrdersOptionsSchema>;
 type StopOrdersRequestOptions = CommandRequestOptions<
@@ -66,31 +54,26 @@ type StopOrdersRequestOptions = CommandRequestOptions<
 >;
 
 export function createStopOrdersCommand(
-  createSdk: StopOrdersSdkFactory = defaultStopOrdersSdkFactory
+  createSdk: StopOrdersSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: stopOrdersCommandPath,
+    path: ['stop-order', 'list'] as const,
     options: stopOrdersOptionsSchema,
-    handle({ options }) {
-      return runStopOrdersCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createStopOrdersRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.stopOrders.getStopOrders(request);
+
+        return formatStopOrders(response, format);
+      });
     }
   });
 }
 
 export const stopOrdersCommand = createStopOrdersCommand();
-
-async function runStopOrdersCommand(
-  options: StopOrdersOptions,
-  createSdk: StopOrdersSdkFactory
-): Promise<string> {
-  const request = createStopOrdersRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.stopOrders.getStopOrders(request);
-
-    return formatStopOrders(response, format);
-  });
-}
 
 export function createStopOrdersRequest(
   options: StopOrdersRequestOptions

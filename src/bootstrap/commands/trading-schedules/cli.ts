@@ -39,11 +39,7 @@ type TradingSchedulesSdkFactory = (
   options: TInvestOptions
 ) => TradingSchedulesSdk;
 
-const tradingSchedulesCommandPath = ['instrument', 'schedules'] as const;
-const defaultTradingSchedulesSdkFactory: TradingSchedulesSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const tradingSchedulesRequestOptionsSchema = {
+const tradingSchedulesOptionsSchema = withSdkOptions({
   exchange: {
     type: 'string'
   },
@@ -54,21 +50,13 @@ const tradingSchedulesRequestOptionsSchema = {
   to: {
     type: 'string',
     required: true
-  }
-} as const;
-
-const tradingSchedulesFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: tradingSchedulesFormats,
     default: 'table'
   }
-} as const;
-
-const tradingSchedulesOptionsSchema = withSdkOptions(
-  tradingSchedulesRequestOptionsSchema,
-  tradingSchedulesFormatOptionsSchema
-);
+});
 
 type TradingSchedulesOptions = InferOptions<
   typeof tradingSchedulesOptionsSchema
@@ -79,31 +67,26 @@ type TradingSchedulesRequestOptions = CommandRequestOptions<
 >;
 
 export function createTradingSchedulesCommand(
-  createSdk: TradingSchedulesSdkFactory = defaultTradingSchedulesSdkFactory
+  createSdk: TradingSchedulesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: tradingSchedulesCommandPath,
+    path: ['instrument', 'schedules'] as const,
     options: tradingSchedulesOptionsSchema,
-    handle({ options }) {
-      return runTradingSchedulesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createTradingSchedulesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.tradingSchedules(request);
+
+        return formatTradingSchedules(response.exchanges, format);
+      });
     }
   });
 }
 
 export const tradingSchedulesCommand = createTradingSchedulesCommand();
-
-async function runTradingSchedulesCommand(
-  options: TradingSchedulesOptions,
-  createSdk: TradingSchedulesSdkFactory
-): Promise<string> {
-  const request = createTradingSchedulesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.tradingSchedules(request);
-
-    return formatTradingSchedules(response.exchanges, format);
-  });
-}
 
 export function createTradingSchedulesRequest(
   options: TradingSchedulesRequestOptions

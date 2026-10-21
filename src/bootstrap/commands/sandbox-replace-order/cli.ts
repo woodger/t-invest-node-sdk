@@ -15,10 +15,8 @@ import type {
   PostOrderResponse,
   ReplaceOrderRequest
 } from '../../../generated/orders';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import type { CommandRequestOptions } from '../../args/command-options';
 import {
   positiveSafeIntegerOption,
   withSdkOptions
@@ -47,97 +45,58 @@ type SandboxReplaceOrderSdkFactory = (
   options: TInvestOptions
 ) => SandboxReplaceOrderSdk;
 
-const sandboxReplaceOrderCommandPath = ['sandbox', 'order', 'replace'] as const;
-const defaultSandboxReplaceOrderSdkFactory: SandboxReplaceOrderSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxReplaceOrderRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  'order-id': {
-    type: 'string',
-    required: true
-  },
-  'idempotency-key': {
-    type: 'string',
-    required: true
-  },
-  quantity: {
-    ...positiveSafeIntegerOption,
-    required: true
-  },
-  price: {
-    type: 'string',
-    required: true
-  },
-  'price-type': {
-    type: 'string',
-    choices: ['point', 'currency'],
-    required: true
-  }
-} as const;
-
-const sandboxReplaceOrderFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: replaceOrderFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxReplaceOrderOptionsSchema = withSdkOptions(
-  sandboxReplaceOrderRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  sandboxReplaceOrderFormatOptionsSchema
-);
-
-type SandboxReplaceOrderOptions = InferOptions<
-  typeof sandboxReplaceOrderOptionsSchema
->;
-type SandboxReplaceOrderRequestOptions = CommandRequestOptions<
-  SandboxReplaceOrderOptions,
-  | 'account-id'
-  | 'order-id'
-  | 'idempotency-key'
-  | 'quantity'
-  | 'price'
-  | 'price-type'
->;
-
 export function createSandboxReplaceOrderCommand(
-  createSdk: SandboxReplaceOrderSdkFactory =
-    defaultSandboxReplaceOrderSdkFactory
+  createSdk: SandboxReplaceOrderSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxReplaceOrderCommandPath,
-    options: sandboxReplaceOrderOptionsSchema,
-    handle({ options }) {
-      return runSandboxReplaceOrderCommand(options, createSdk);
+    path: ['sandbox', 'order', 'replace'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      'order-id': {
+        type: 'string',
+        required: true
+      },
+      'idempotency-key': {
+        type: 'string',
+        required: true
+      },
+      quantity: {
+        ...positiveSafeIntegerOption,
+        required: true
+      },
+      price: {
+        type: 'string',
+        required: true
+      },
+      'price-type': {
+        type: 'string',
+        choices: ['point', 'currency'],
+        required: true
+      },
+      ...sideEffectConfirmationOptionsSchema,
+      format: {
+        type: 'string',
+        choices: replaceOrderFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createReplaceOrderRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.replaceSandboxOrder(request);
+
+        return formatReplaceOrder(response, format);
+      });
     }
   });
 }
 
 export const sandboxReplaceOrderCommand = createSandboxReplaceOrderCommand();
-
-async function runSandboxReplaceOrderCommand(
-  options: SandboxReplaceOrderOptions,
-  createSdk: SandboxReplaceOrderSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createSandboxReplaceOrderRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.replaceSandboxOrder(request);
-
-    return formatReplaceOrder(response, format);
-  });
-}
-
-export function createSandboxReplaceOrderRequest(
-  options: SandboxReplaceOrderRequestOptions
-): ReplaceOrderRequest {
-  return createReplaceOrderRequest(options);
-}

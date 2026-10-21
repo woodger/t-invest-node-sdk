@@ -15,7 +15,6 @@ import type {
   FuturesResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -35,48 +34,31 @@ type FuturesSdk = {
 
 type FuturesSdkFactory = (options: TInvestOptions) => FuturesSdk;
 
-const futuresCommandPath = ['instrument', 'future', 'list'] as const;
-const defaultFuturesSdkFactory: FuturesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const futuresFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: futuresFormats,
-    default: 'table'
-  }
-} as const;
-
-const futuresOptionsSchema = withSdkOptions(
-  instrumentStatusOptionsSchema,
-  futuresFormatOptionsSchema
-);
-
-type FuturesOptions = InferOptions<typeof futuresOptionsSchema>;
-
 export function createFuturesCommand(
-  createSdk: FuturesSdkFactory = defaultFuturesSdkFactory
+  createSdk: FuturesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: futuresCommandPath,
-    options: futuresOptionsSchema,
-    handle({ options }) {
-      return runFuturesCommand(options, createSdk);
+    path: ['instrument', 'future', 'list'] as const,
+    options: withSdkOptions({
+      ...instrumentStatusOptionsSchema,
+      format: {
+        type: 'string',
+        choices: futuresFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentsRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.futures(request);
+
+        return formatFutures(response.instruments, format);
+      });
     }
   });
 }
 
 export const futuresCommand = createFuturesCommand();
-
-async function runFuturesCommand(
-  options: FuturesOptions,
-  createSdk: FuturesSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentsRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.futures(request);
-
-    return formatFutures(response.instruments, format);
-  });
-}

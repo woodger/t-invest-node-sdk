@@ -15,7 +15,6 @@ import {
   type CurrencyResponse,
   type InstrumentRequest
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -35,48 +34,31 @@ type CurrencySdk = {
 
 type CurrencySdkFactory = (options: TInvestOptions) => CurrencySdk;
 
-const currencyCommandPath = ['instrument', 'currency', 'show'] as const;
-const defaultCurrencySdkFactory: CurrencySdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const currencyFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: currencyFormats,
-    default: 'table'
-  }
-} as const;
-
-const currencyOptionsSchema = withSdkOptions(
-  instrumentLookupOptionsSchema,
-  currencyFormatOptionsSchema
-);
-
-type CurrencyOptions = InferOptions<typeof currencyOptionsSchema>;
-
 export function createCurrencyCommand(
-  createSdk: CurrencySdkFactory = defaultCurrencySdkFactory
+  createSdk: CurrencySdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: currencyCommandPath,
-    options: currencyOptionsSchema,
-    handle({ options }) {
-      return runCurrencyCommand(options, createSdk);
+    path: ['instrument', 'currency', 'show'] as const,
+    options: withSdkOptions({
+      ...instrumentLookupOptionsSchema,
+      format: {
+        type: 'string',
+        choices: currencyFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentLookupRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.currencyBy(request);
+
+        return formatCurrency(response, format);
+      });
     }
   });
 }
 
 export const currencyCommand = createCurrencyCommand();
-
-async function runCurrencyCommand(
-  options: CurrencyOptions,
-  createSdk: CurrencySdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentLookupRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.currencyBy(request);
-
-    return formatCurrency(response, format);
-  });
-}

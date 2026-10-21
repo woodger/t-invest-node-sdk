@@ -35,10 +35,6 @@ type AssetsSdk = {
 
 type AssetsSdkFactory = (options: TInvestOptions) => AssetsSdk;
 
-const assetsCommandPath = ['instrument', 'asset', 'list'] as const;
-const defaultAssetsSdkFactory: AssetsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
 const assetInstrumentTypes = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
   bond: InstrumentType.INSTRUMENT_TYPE_BOND,
@@ -57,26 +53,18 @@ const assetInstrumentTypeNames = Object.keys(assetInstrumentTypes) as Array<
 
 type AssetInstrumentTypeName = typeof assetInstrumentTypeNames[number];
 
-const assetsInstrumentTypeOptionsSchema = {
+const assetsOptionsSchema = withSdkOptions({
   'instrument-type': {
     type: 'string',
     choices: assetInstrumentTypeNames,
     default: 'unspecified'
-  }
-} as const;
-
-const assetsFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: assetsFormats,
     default: 'table'
   }
-} as const;
-
-const assetsOptionsSchema = withSdkOptions(
-  assetsInstrumentTypeOptionsSchema,
-  assetsFormatOptionsSchema
-);
+});
 
 type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
 type AssetsRequestOptions = CommandRequestOptions<
@@ -85,31 +73,26 @@ type AssetsRequestOptions = CommandRequestOptions<
 >;
 
 export function createAssetsCommand(
-  createSdk: AssetsSdkFactory = defaultAssetsSdkFactory
+  createSdk: AssetsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: assetsCommandPath,
+    path: ['instrument', 'asset', 'list'] as const,
     options: assetsOptionsSchema,
-    handle({ options }) {
-      return runAssetsCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createAssetsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getAssets(request);
+
+        return formatAssets(response.assets, format);
+      });
     }
   });
 }
 
 export const assetsCommand = createAssetsCommand();
-
-async function runAssetsCommand(
-  options: AssetsOptions,
-  createSdk: AssetsSdkFactory
-): Promise<string> {
-  const request = createAssetsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getAssets(request);
-
-    return formatAssets(response.assets, format);
-  });
-}
 
 export function createAssetsRequest(
   options: AssetsRequestOptions

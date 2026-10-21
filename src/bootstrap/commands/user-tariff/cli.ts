@@ -12,7 +12,6 @@
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetUserTariffResponse } from '../../../generated/users';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -30,44 +29,29 @@ type UserTariffSdk = {
 
 type UserTariffSdkFactory = (options: TInvestOptions) => UserTariffSdk;
 
-const userTariffCommandPath = ['account', 'tariff'] as const;
-const defaultUserTariffSdkFactory: UserTariffSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const userTariffOptionsSchema = withSdkOptions(
-  {
-    format: {
-      type: 'string',
-      choices: userTariffFormats,
-      default: 'table'
-    }
-  } as const
-);
-
-type UserTariffOptions = InferOptions<typeof userTariffOptionsSchema>;
-
 export function createUserTariffCommand(
-  createSdk: UserTariffSdkFactory = defaultUserTariffSdkFactory
+  createSdk: UserTariffSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: userTariffCommandPath,
-    options: userTariffOptionsSchema,
-    handle({ options }) {
-      return runUserTariffCommand(options, createSdk);
+    path: ['account', 'tariff'] as const,
+    options: withSdkOptions({
+      format: {
+        type: 'string',
+        choices: userTariffFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.users.getUserTariff({});
+
+        return formatUserTariff(response, format);
+      });
     }
   });
 }
 
 export const userTariffCommand = createUserTariffCommand();
-
-async function runUserTariffCommand(
-  options: UserTariffOptions,
-  createSdk: UserTariffSdkFactory
-): Promise<string> {
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.users.getUserTariff({});
-
-    return formatUserTariff(response, format);
-  });
-}

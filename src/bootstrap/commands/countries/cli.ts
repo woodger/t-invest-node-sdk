@@ -15,7 +15,6 @@ import type {
   GetCountriesRequest,
   GetCountriesResponse
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -31,44 +30,29 @@ type CountriesSdk = {
 
 type CountriesSdkFactory = (options: TInvestOptions) => CountriesSdk;
 
-const countriesCommandPath = ['instrument', 'country', 'list'] as const;
-const defaultCountriesSdkFactory: CountriesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const countriesOptionsSchema = withSdkOptions(
-  {
-    format: {
-      type: 'string',
-      choices: countriesFormats,
-      default: 'table'
-    }
-  } as const
-);
-
-type CountriesOptions = InferOptions<typeof countriesOptionsSchema>;
-
 export function createCountriesCommand(
-  createSdk: CountriesSdkFactory = defaultCountriesSdkFactory
+  createSdk: CountriesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: countriesCommandPath,
-    options: countriesOptionsSchema,
-    handle({ options }) {
-      return runCountriesCommand(options, createSdk);
+    path: ['instrument', 'country', 'list'] as const,
+    options: withSdkOptions({
+      format: {
+        type: 'string',
+        choices: countriesFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getCountries({});
+
+        return formatCountries(response.countries, format);
+      });
     }
   });
 }
 
 export const countriesCommand = createCountriesCommand();
-
-async function runCountriesCommand(
-  options: CountriesOptions,
-  createSdk: CountriesSdkFactory
-): Promise<string> {
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getCountries({});
-
-    return formatCountries(response.countries, format);
-  });
-}

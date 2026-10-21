@@ -44,14 +44,7 @@ type DividendsForeignIssuerSdkFactory = (
   options: TInvestOptions
 ) => DividendsForeignIssuerSdk;
 
-const dividendsForeignIssuerCommandPath = [
-  'operation',
-  'foreign-dividends-report'
-] as const;
-const defaultDividendsForeignIssuerSdkFactory:
-  DividendsForeignIssuerSdkFactory = (options) => new TInvestNodeSDK(options);
-
-const dividendsForeignIssuerRequestOptionsSchema = {
+const dividendsForeignIssuerOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string'
   },
@@ -66,21 +59,13 @@ const dividendsForeignIssuerRequestOptionsSchema = {
   },
   page: {
     type: 'string'
-  }
-} as const;
-
-const dividendsForeignIssuerFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: dividendsForeignIssuerFormats,
     default: 'table'
   }
-} as const;
-
-const dividendsForeignIssuerOptionsSchema = withSdkOptions(
-  dividendsForeignIssuerRequestOptionsSchema,
-  dividendsForeignIssuerFormatOptionsSchema
-);
+});
 
 type DividendsForeignIssuerOptions = InferOptions<
   typeof dividendsForeignIssuerOptionsSchema
@@ -142,30 +127,24 @@ export function createDividendsForeignIssuerRequest(
 }
 
 export function createDividendsForeignIssuerCommand(
-  createSdk: DividendsForeignIssuerSdkFactory =
-    defaultDividendsForeignIssuerSdkFactory
+  createSdk: DividendsForeignIssuerSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: dividendsForeignIssuerCommandPath,
+    path: ['operation', 'foreign-dividends-report'] as const,
     options: dividendsForeignIssuerOptionsSchema,
-    handle({ options }) {
-      return runDividendsForeignIssuerCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createDividendsForeignIssuerRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.operations.getDividendsForeignIssuer(request);
+
+        return formatDividendsForeignIssuer(response, format);
+      });
     }
   });
 }
 
 export const dividendsForeignIssuerCommand =
   createDividendsForeignIssuerCommand();
-
-async function runDividendsForeignIssuerCommand(
-  options: DividendsForeignIssuerOptions,
-  createSdk: DividendsForeignIssuerSdkFactory
-): Promise<string> {
-  const request = createDividendsForeignIssuerRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.operations.getDividendsForeignIssuer(request);
-
-    return formatDividendsForeignIssuer(response, format);
-  });
-}

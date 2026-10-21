@@ -15,7 +15,6 @@ import type {
   BondsResponse,
   InstrumentsRequest
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -35,48 +34,31 @@ type BondsSdk = {
 
 type BondsSdkFactory = (options: TInvestOptions) => BondsSdk;
 
-const bondsCommandPath = ['instrument', 'bond', 'list'] as const;
-const defaultBondsSdkFactory: BondsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const bondsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: bondsFormats,
-    default: 'table'
-  }
-} as const;
-
-const bondsOptionsSchema = withSdkOptions(
-  instrumentStatusOptionsSchema,
-  bondsFormatOptionsSchema
-);
-
-type BondsOptions = InferOptions<typeof bondsOptionsSchema>;
-
 export function createBondsCommand(
-  createSdk: BondsSdkFactory = defaultBondsSdkFactory
+  createSdk: BondsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: bondsCommandPath,
-    options: bondsOptionsSchema,
-    handle({ options }) {
-      return runBondsCommand(options, createSdk);
+    path: ['instrument', 'bond', 'list'] as const,
+    options: withSdkOptions({
+      ...instrumentStatusOptionsSchema,
+      format: {
+        type: 'string',
+        choices: bondsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentsRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.bonds(request);
+
+        return formatBonds(response.instruments, format);
+      });
     }
   });
 }
 
 export const bondsCommand = createBondsCommand();
-
-async function runBondsCommand(
-  options: BondsOptions,
-  createSdk: BondsSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentsRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.bonds(request);
-
-    return formatBonds(response.instruments, format);
-  });
-}

@@ -15,7 +15,6 @@ import type {
   GetOrderStateRequest,
   OrderState
 } from '../../../generated/orders';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -32,58 +31,38 @@ type OrderStateSdk = {
 
 type OrderStateSdkFactory = (options: TInvestOptions) => OrderStateSdk;
 
-const orderStateCommandPath = ['order', 'show'] as const;
-const defaultOrderStateSdkFactory: OrderStateSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const orderStateRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  'order-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const orderStateFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: orderStateFormats,
-    default: 'table'
-  }
-} as const;
-
-const orderStateOptionsSchema = withSdkOptions(
-  orderStateRequestOptionsSchema,
-  orderStateFormatOptionsSchema
-);
-
-type OrderStateOptions = InferOptions<typeof orderStateOptionsSchema>;
 export function createOrderStateCommand(
-  createSdk: OrderStateSdkFactory = defaultOrderStateSdkFactory
+  createSdk: OrderStateSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: orderStateCommandPath,
-    options: orderStateOptionsSchema,
-    handle({ options }) {
-      return runOrderStateCommand(options, createSdk);
+    path: ['order', 'show'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      'order-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: orderStateFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createOrderStateRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.orders.getOrderState(request);
+
+        return formatOrderState(response, format);
+      });
     }
   });
 }
 
 export const orderStateCommand = createOrderStateCommand();
-
-async function runOrderStateCommand(
-  options: OrderStateOptions,
-  createSdk: OrderStateSdkFactory
-): Promise<string> {
-  const request = createOrderStateRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.orders.getOrderState(request);
-
-    return formatOrderState(response, format);
-  });
-}

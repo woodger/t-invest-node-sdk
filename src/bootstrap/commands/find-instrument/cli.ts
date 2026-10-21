@@ -37,10 +37,6 @@ type FindInstrumentSdk = {
 
 type FindInstrumentSdkFactory = (options: TInvestOptions) => FindInstrumentSdk;
 
-const findInstrumentCommandPath = ['instrument', 'search'] as const;
-const defaultFindInstrumentSdkFactory: FindInstrumentSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
 const instrumentKinds = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
   bond: InstrumentType.INSTRUMENT_TYPE_BOND,
@@ -59,7 +55,7 @@ const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<
 
 type InstrumentKindName = typeof findInstrumentKindNames[number];
 
-const findInstrumentRequestOptionsSchema = {
+const findInstrumentOptionsSchema = withSdkOptions({
   query: {
     type: 'string',
     required: true
@@ -72,21 +68,13 @@ const findInstrumentRequestOptionsSchema = {
   'api-trade-available': {
     type: 'boolean',
     default: false
-  }
-} as const;
-
-const findInstrumentFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: findInstrumentFormats,
     default: 'table'
   }
-} as const;
-
-const findInstrumentOptionsSchema = withSdkOptions(
-  findInstrumentRequestOptionsSchema,
-  findInstrumentFormatOptionsSchema
-);
+});
 
 type FindInstrumentOptions = InferOptions<typeof findInstrumentOptionsSchema>;
 type FindInstrumentRequestOptions = CommandRequestOptions<
@@ -95,31 +83,26 @@ type FindInstrumentRequestOptions = CommandRequestOptions<
 >;
 
 export function createFindInstrumentCommand(
-  createSdk: FindInstrumentSdkFactory = defaultFindInstrumentSdkFactory
+  createSdk: FindInstrumentSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: findInstrumentCommandPath,
+    path: ['instrument', 'search'] as const,
     options: findInstrumentOptionsSchema,
-    handle({ options }) {
-      return runFindInstrumentCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createFindInstrumentRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.findInstrument(request);
+
+        return formatFindInstrument(response.instruments, format);
+      });
     }
   });
 }
 
 export const findInstrumentCommand = createFindInstrumentCommand();
-
-async function runFindInstrumentCommand(
-  options: FindInstrumentOptions,
-  createSdk: FindInstrumentSdkFactory
-): Promise<string> {
-  const request = createFindInstrumentRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.findInstrument(request);
-
-    return formatFindInstrument(response.instruments, format);
-  });
-}
 
 export function createFindInstrumentRequest(
   options: FindInstrumentRequestOptions

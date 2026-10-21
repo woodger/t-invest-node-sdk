@@ -38,11 +38,7 @@ type LastTradesSdk = {
 
 type LastTradesSdkFactory = (options: TInvestOptions) => LastTradesSdk;
 
-const lastTradesCommandPath = ['market', 'trades'] as const;
-const defaultLastTradesSdkFactory: LastTradesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const lastTradesRequestOptionsSchema = {
+const lastTradesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
     required: true
@@ -54,21 +50,13 @@ const lastTradesRequestOptionsSchema = {
   to: {
     type: 'string',
     required: true
-  }
-} as const;
-
-const lastTradesFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: lastTradesFormats,
     default: 'table'
   }
-} as const;
-
-const lastTradesOptionsSchema = withSdkOptions(
-  lastTradesRequestOptionsSchema,
-  lastTradesFormatOptionsSchema
-);
+});
 
 type LastTradesOptions = InferOptions<typeof lastTradesOptionsSchema>;
 type LastTradesRequestOptions = CommandRequestOptions<
@@ -77,31 +65,26 @@ type LastTradesRequestOptions = CommandRequestOptions<
 >;
 
 export function createLastTradesCommand(
-  createSdk: LastTradesSdkFactory = defaultLastTradesSdkFactory
+  createSdk: LastTradesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: lastTradesCommandPath,
+    path: ['market', 'trades'] as const,
     options: lastTradesOptionsSchema,
-    handle({ options }) {
-      return runLastTradesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createLastTradesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getLastTrades(request);
+
+        return formatLastTrades(response.trades, format);
+      });
     }
   });
 }
 
 export const lastTradesCommand = createLastTradesCommand();
-
-async function runLastTradesCommand(
-  options: LastTradesOptions,
-  createSdk: LastTradesSdkFactory
-): Promise<string> {
-  const request = createLastTradesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getLastTrades(request);
-
-    return formatLastTrades(response.trades, format);
-  });
-}
 
 export function createLastTradesRequest(
   options: LastTradesRequestOptions

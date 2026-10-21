@@ -43,30 +43,18 @@ type SandboxCloseAccountSdkFactory = (
   options: TInvestOptions
 ) => SandboxCloseAccountSdk;
 
-const sandboxCloseAccountCommandPath = ['sandbox', 'account', 'close'] as const;
-const defaultSandboxCloseAccountSdkFactory: SandboxCloseAccountSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxCloseAccountRequestOptionsSchema = {
+const sandboxCloseAccountOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
     required: true
-  }
-} as const;
-
-const sandboxCloseAccountFormatOptionsSchema = {
+  },
+  ...sideEffectConfirmationOptionsSchema,
   format: {
     type: 'string',
     choices: closeSandboxAccountFormats,
     default: 'table'
   }
-} as const;
-
-const sandboxCloseAccountOptionsSchema = withSdkOptions(
-  sandboxCloseAccountRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  sandboxCloseAccountFormatOptionsSchema
-);
+});
 
 type SandboxCloseAccountOptions = InferOptions<
   typeof sandboxCloseAccountOptionsSchema
@@ -77,34 +65,28 @@ type SandboxCloseAccountRequestOptions = CommandRequestOptions<
 >;
 
 export function createSandboxCloseAccountCommand(
-  createSdk: SandboxCloseAccountSdkFactory =
-    defaultSandboxCloseAccountSdkFactory
+  createSdk: SandboxCloseAccountSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxCloseAccountCommandPath,
+    path: ['sandbox', 'account', 'close'] as const,
     options: sandboxCloseAccountOptionsSchema,
-    handle({ options }) {
-      return runSandboxCloseAccountCommand(options, createSdk);
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createSandboxCloseAccountRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        await sdk.sandbox.closeSandboxAccount(request);
+
+        return formatCloseSandboxAccount(request.accountId, format);
+      });
     }
   });
 }
 
 export const sandboxCloseAccountCommand = createSandboxCloseAccountCommand();
-
-async function runSandboxCloseAccountCommand(
-  options: SandboxCloseAccountOptions,
-  createSdk: SandboxCloseAccountSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createSandboxCloseAccountRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    await sdk.sandbox.closeSandboxAccount(request);
-
-    return formatCloseSandboxAccount(request.accountId, format);
-  });
-}
 
 export function createSandboxCloseAccountRequest(
   options: SandboxCloseAccountRequestOptions

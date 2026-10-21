@@ -15,7 +15,6 @@ import type {
   OpenSandboxAccountRequest,
   OpenSandboxAccountResponse
 } from '../../../generated/sandbox';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -42,57 +41,32 @@ type SandboxOpenAccountSdkFactory = (
   options: TInvestOptions
 ) => SandboxOpenAccountSdk;
 
-const sandboxOpenAccountCommandPath = ['sandbox', 'account', 'open'] as const;
-const defaultSandboxOpenAccountSdkFactory: SandboxOpenAccountSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxOpenAccountFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: openSandboxAccountFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxOpenAccountOptionsSchema = withSdkOptions(
-  sideEffectConfirmationOptionsSchema,
-  sandboxOpenAccountFormatOptionsSchema
-);
-
-type SandboxOpenAccountOptions = InferOptions<
-  typeof sandboxOpenAccountOptionsSchema
->;
-
 export function createSandboxOpenAccountCommand(
-  createSdk: SandboxOpenAccountSdkFactory = defaultSandboxOpenAccountSdkFactory
+  createSdk: SandboxOpenAccountSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxOpenAccountCommandPath,
-    options: sandboxOpenAccountOptionsSchema,
-    handle({ options }) {
-      return runSandboxOpenAccountCommand(options, createSdk);
+    path: ['sandbox', 'account', 'open'] as const,
+    options: withSdkOptions({
+      ...sideEffectConfirmationOptionsSchema,
+      format: {
+        type: 'string',
+        choices: openSandboxAccountFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.openSandboxAccount({});
+
+        return formatOpenSandboxAccount(response, format);
+      });
     }
   });
 }
 
 export const sandboxOpenAccountCommand = createSandboxOpenAccountCommand();
-
-async function runSandboxOpenAccountCommand(
-  options: SandboxOpenAccountOptions,
-  createSdk: SandboxOpenAccountSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.openSandboxAccount(
-      createSandboxOpenAccountRequest()
-    );
-
-    return formatOpenSandboxAccount(response, format);
-  });
-}
-
-export function createSandboxOpenAccountRequest(): OpenSandboxAccountRequest {
-  return {};
-}

@@ -15,10 +15,8 @@ import type {
   PostOrderRequest,
   PostOrderResponse
 } from '../../../generated/orders';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import type { CommandRequestOptions } from '../../args/command-options';
 import {
   positiveSafeIntegerOption,
   withSdkOptions
@@ -42,101 +40,62 @@ type SandboxPostOrderSdkFactory = (
   options: TInvestOptions
 ) => SandboxPostOrderSdk;
 
-const sandboxPostOrderCommandPath = ['sandbox', 'order', 'place'] as const;
-const defaultSandboxPostOrderSdkFactory: SandboxPostOrderSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxPostOrderRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  'instrument-id': {
-    type: 'string',
-    required: true
-  },
-  quantity: {
-    ...positiveSafeIntegerOption,
-    required: true
-  },
-  price: {
-    type: 'string'
-  },
-  direction: {
-    type: 'string',
-    choices: ['buy', 'sell'],
-    required: true
-  },
-  'order-type': {
-    type: 'string',
-    choices: ['limit', 'market', 'bestprice'],
-    required: true
-  },
-  'order-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const sandboxPostOrderFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: postOrderFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxPostOrderOptionsSchema = withSdkOptions(
-  sandboxPostOrderRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  sandboxPostOrderFormatOptionsSchema
-);
-
-type SandboxPostOrderOptions = InferOptions<
-  typeof sandboxPostOrderOptionsSchema
->;
-type SandboxPostOrderRequestOptions = CommandRequestOptions<
-  SandboxPostOrderOptions,
-  | 'account-id'
-  | 'instrument-id'
-  | 'quantity'
-  | 'price'
-  | 'direction'
-  | 'order-type'
-  | 'order-id'
->;
-
 export function createSandboxPostOrderCommand(
-  createSdk: SandboxPostOrderSdkFactory = defaultSandboxPostOrderSdkFactory
+  createSdk: SandboxPostOrderSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxPostOrderCommandPath,
-    options: sandboxPostOrderOptionsSchema,
-    handle({ options }) {
-      return runSandboxPostOrderCommand(options, createSdk);
+    path: ['sandbox', 'order', 'place'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      'instrument-id': {
+        type: 'string',
+        required: true
+      },
+      quantity: {
+        ...positiveSafeIntegerOption,
+        required: true
+      },
+      price: {
+        type: 'string'
+      },
+      direction: {
+        type: 'string',
+        choices: ['buy', 'sell'],
+        required: true
+      },
+      'order-type': {
+        type: 'string',
+        choices: ['limit', 'market', 'bestprice'],
+        required: true
+      },
+      'order-id': {
+        type: 'string',
+        required: true
+      },
+      ...sideEffectConfirmationOptionsSchema,
+      format: {
+        type: 'string',
+        choices: postOrderFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createPostOrderRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.postSandboxOrder(request);
+
+        return formatPostOrder(response, format);
+      });
     }
   });
 }
 
 export const sandboxPostOrderCommand = createSandboxPostOrderCommand();
-
-async function runSandboxPostOrderCommand(
-  options: SandboxPostOrderOptions,
-  createSdk: SandboxPostOrderSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createSandboxPostOrderRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.postSandboxOrder(request);
-
-    return formatPostOrder(response, format);
-  });
-}
-
-export function createSandboxPostOrderRequest(
-  options: SandboxPostOrderRequestOptions
-): PostOrderRequest {
-  return createPostOrderRequest(options);
-}

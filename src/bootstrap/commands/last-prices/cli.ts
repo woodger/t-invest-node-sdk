@@ -38,29 +38,17 @@ type LastPricesSdk = {
 
 type LastPricesSdkFactory = (options: TInvestOptions) => LastPricesSdk;
 
-const lastPricesCommandPath = ['market', 'last-prices'] as const;
-const defaultLastPricesSdkFactory: LastPricesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const lastPricesInstrumentIdsOptionsSchema = {
+const lastPricesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
     required: true
-  }
-} as const;
-
-const lastPricesFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: lastPricesFormats,
     default: 'table'
   }
-} as const;
-
-const lastPricesOptionsSchema = withSdkOptions(
-  lastPricesInstrumentIdsOptionsSchema,
-  lastPricesFormatOptionsSchema
-);
+});
 
 type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
 type LastPricesRequestOptions = CommandRequestOptions<
@@ -69,31 +57,26 @@ type LastPricesRequestOptions = CommandRequestOptions<
 >;
 
 export function createLastPricesCommand(
-  createSdk: LastPricesSdkFactory = defaultLastPricesSdkFactory
+  createSdk: LastPricesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: lastPricesCommandPath,
+    path: ['market', 'last-prices'] as const,
     options: lastPricesOptionsSchema,
-    handle({ options }) {
-      return runLastPricesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createLastPricesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getLastPrices(request);
+
+        return formatLastPrices(response.lastPrices, format);
+      });
     }
   });
 }
 
 export const lastPricesCommand = createLastPricesCommand();
-
-async function runLastPricesCommand(
-  options: LastPricesOptions,
-  createSdk: LastPricesSdkFactory
-): Promise<string> {
-  const request = createLastPricesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getLastPrices(request);
-
-    return formatLastPrices(response.lastPrices, format);
-  });
-}
 
 export function createLastPricesRequest(
   options: LastPricesRequestOptions

@@ -15,7 +15,6 @@ import {
   type InstrumentsRequest,
   type SharesResponse
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -35,48 +34,31 @@ type SharesSdk = {
 
 type SharesSdkFactory = (options: TInvestOptions) => SharesSdk;
 
-const sharesCommandPath = ['instrument', 'share', 'list'] as const;
-const defaultSharesSdkFactory: SharesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const sharesFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: sharesFormats,
-    default: 'table'
-  }
-} as const;
-
-const sharesOptionsSchema = withSdkOptions(
-  instrumentStatusOptionsSchema,
-  sharesFormatOptionsSchema
-);
-
-type SharesOptions = InferOptions<typeof sharesOptionsSchema>;
-
 export function createSharesCommand(
-  createSdk: SharesSdkFactory = defaultSharesSdkFactory
+  createSdk: SharesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sharesCommandPath,
-    options: sharesOptionsSchema,
-    handle({ options }) {
-      return runSharesCommand(options, createSdk);
+    path: ['instrument', 'share', 'list'] as const,
+    options: withSdkOptions({
+      ...instrumentStatusOptionsSchema,
+      format: {
+        type: 'string',
+        choices: sharesFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentsRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.shares(request);
+
+        return formatShares(response.instruments, format);
+      });
     }
   });
 }
 
 export const sharesCommand = createSharesCommand();
-
-async function runSharesCommand(
-  options: SharesOptions,
-  createSdk: SharesSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentsRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.shares(request);
-
-    return formatShares(response.instruments, format);
-  });
-}

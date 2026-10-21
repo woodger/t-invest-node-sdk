@@ -37,29 +37,17 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TInvestOptions) => ClosePricesSdk;
 
-const closePricesCommandPath = ['market', 'close-prices'] as const;
-const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const closePricesInstrumentIdsOptionsSchema = {
+const closePricesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
     required: true
-  }
-} as const;
-
-const closePricesFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: closePricesFormats,
     default: 'table'
   }
-} as const;
-
-const closePricesOptionsSchema = withSdkOptions(
-  closePricesInstrumentIdsOptionsSchema,
-  closePricesFormatOptionsSchema
-);
+});
 
 type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
 type ClosePricesRequestOptions = CommandRequestOptions<
@@ -68,31 +56,26 @@ type ClosePricesRequestOptions = CommandRequestOptions<
 >;
 
 export function createClosePricesCommand(
-  createSdk: ClosePricesSdkFactory = defaultClosePricesSdkFactory
+  createSdk: ClosePricesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: closePricesCommandPath,
+    path: ['market', 'close-prices'] as const,
     options: closePricesOptionsSchema,
-    handle({ options }) {
-      return runClosePricesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createClosePricesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getClosePrices(request);
+
+        return formatClosePrices(response.closePrices, format);
+      });
     }
   });
 }
 
 export const closePricesCommand = createClosePricesCommand();
-
-async function runClosePricesCommand(
-  options: ClosePricesOptions,
-  createSdk: ClosePricesSdkFactory
-): Promise<string> {
-  const request = createClosePricesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getClosePrices(request);
-
-    return formatClosePrices(response.closePrices, format);
-  });
-}
 
 export function createClosePricesRequest(
   options: ClosePricesRequestOptions

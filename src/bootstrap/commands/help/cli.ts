@@ -17,10 +17,6 @@ export const helpCommand = command.define({
   options: {},
   allowExtraPositionals: true,
   handle({ positionals }) {
-    return renderHelpOutput(positionals);
+    return renderHelp(positionals);
   }
 });
-
-function renderHelpOutput(positionals: readonly unknown[]): string {
-  return renderHelp(positionals);
-}

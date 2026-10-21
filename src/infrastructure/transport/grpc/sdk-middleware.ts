@@ -17,7 +17,6 @@ import type {
   ClientMiddlewareCall
 } from 'nice-grpc';
 import {
-  isSdkError,
   SdkError,
   SdkErrorCode
 } from '../../../application/errors/sdk-error';
@@ -165,10 +164,6 @@ async function acquireUnaryPermit(
 
     if (isCallCancellation(error, lifecycleSignal)) {
       throw lifecycleSignal?.reason ?? error;
-    }
-
-    if (isSdkError(error)) {
-      throw error;
     }
 
     throw error;

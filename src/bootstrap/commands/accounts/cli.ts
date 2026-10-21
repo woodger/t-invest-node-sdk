@@ -11,7 +11,6 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -28,44 +27,29 @@ type AccountsSdk = {
 
 type AccountsSdkFactory = (options: TInvestOptions) => AccountsSdk;
 
-const accountsCommandPath = ['account', 'list'] as const;
-const defaultAccountsSdkFactory: AccountsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const accountsOptionsSchema = withSdkOptions(
-  {
-    format: {
-      type: 'string',
-      choices: accountsFormats,
-      default: 'table'
-    }
-  } as const
-);
-
-type AccountsOptions = InferOptions<typeof accountsOptionsSchema>;
-
 export function createAccountsCommand(
-  createSdk: AccountsSdkFactory = defaultAccountsSdkFactory
+  createSdk: AccountsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: accountsCommandPath,
-    options: accountsOptionsSchema,
-    handle({ options }) {
-      return runAccountsCommand(options, createSdk);
+    path: ['account', 'list'] as const,
+    options: withSdkOptions({
+      format: {
+        type: 'string',
+        choices: accountsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.users.getAccounts({});
+
+        return formatAccounts(response.accounts, format);
+      });
     }
   });
 }
 
 export const accountsCommand = createAccountsCommand();
-
-async function runAccountsCommand(
-  options: AccountsOptions,
-  createSdk: AccountsSdkFactory
-): Promise<string> {
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.users.getAccounts({});
-
-    return formatAccounts(response.accounts, format);
-  });
-}

@@ -38,26 +38,14 @@ type FuturesMarginSdk = {
 
 type FuturesMarginSdkFactory = (options: TInvestOptions) => FuturesMarginSdk;
 
-const futuresMarginCommandPath = ['instrument', 'future', 'margin'] as const;
-const defaultFuturesMarginSdkFactory: FuturesMarginSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const futuresMarginRequestOptionsSchema = {
-  ...instrumentIdWithDeprecatedFigiOptionsSchema
-} as const;
-
-const futuresMarginFormatOptionsSchema = {
+const futuresMarginOptionsSchema = withSdkOptions({
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
   format: {
     type: 'string',
     choices: futuresMarginFormats,
     default: 'table'
   }
-} as const;
-
-const futuresMarginOptionsSchema = withSdkOptions(
-  futuresMarginRequestOptionsSchema,
-  futuresMarginFormatOptionsSchema
-);
+});
 
 type FuturesMarginOptions = InferOptions<typeof futuresMarginOptionsSchema>;
 type FuturesMarginRequestOptions = CommandRequestOptions<
@@ -66,31 +54,26 @@ type FuturesMarginRequestOptions = CommandRequestOptions<
 >;
 
 export function createFuturesMarginCommand(
-  createSdk: FuturesMarginSdkFactory = defaultFuturesMarginSdkFactory
+  createSdk: FuturesMarginSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: futuresMarginCommandPath,
+    path: ['instrument', 'future', 'margin'] as const,
     options: futuresMarginOptionsSchema,
-    handle({ options }) {
-      return runFuturesMarginCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createFuturesMarginRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getFuturesMargin(request);
+
+        return formatFuturesMargin(response, format);
+      });
     }
   });
 }
 
 export const futuresMarginCommand = createFuturesMarginCommand();
-
-async function runFuturesMarginCommand(
-  options: FuturesMarginOptions,
-  createSdk: FuturesMarginSdkFactory
-): Promise<string> {
-  const request = createFuturesMarginRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getFuturesMargin(request);
-
-    return formatFuturesMargin(response, format);
-  });
-}
 
 export function createFuturesMarginRequest(
   options: FuturesMarginRequestOptions

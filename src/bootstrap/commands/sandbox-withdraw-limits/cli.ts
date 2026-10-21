@@ -15,10 +15,8 @@ import type {
   WithdrawLimitsRequest,
   WithdrawLimitsResponse
 } from '../../../generated/operations';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createWithdrawLimitsRequest } from '../withdraw-limits/request.mapper';
@@ -40,72 +38,35 @@ type SandboxWithdrawLimitsSdkFactory = (
   options: TInvestOptions
 ) => SandboxWithdrawLimitsSdk;
 
-const sandboxWithdrawLimitsCommandPath = [
-  'sandbox',
-  'withdraw-limits'
-] as const;
-const defaultSandboxWithdrawLimitsSdkFactory: SandboxWithdrawLimitsSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxWithdrawLimitsRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const sandboxWithdrawLimitsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: withdrawLimitsFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxWithdrawLimitsOptionsSchema = withSdkOptions(
-  sandboxWithdrawLimitsRequestOptionsSchema,
-  sandboxWithdrawLimitsFormatOptionsSchema
-);
-
-type SandboxWithdrawLimitsOptions = InferOptions<
-  typeof sandboxWithdrawLimitsOptionsSchema
->;
-type SandboxWithdrawLimitsRequestOptions = CommandRequestOptions<
-  SandboxWithdrawLimitsOptions,
-  'account-id'
->;
-
 export function createSandboxWithdrawLimitsCommand(
-  createSdk: SandboxWithdrawLimitsSdkFactory =
-    defaultSandboxWithdrawLimitsSdkFactory
+  createSdk: SandboxWithdrawLimitsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxWithdrawLimitsCommandPath,
-    options: sandboxWithdrawLimitsOptionsSchema,
-    handle({ options }) {
-      return runSandboxWithdrawLimitsCommand(options, createSdk);
+    path: ['sandbox', 'withdraw-limits'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: withdrawLimitsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createWithdrawLimitsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.getSandboxWithdrawLimits(request);
+
+        return formatWithdrawLimits(response, format);
+      });
     }
   });
 }
 
 export const sandboxWithdrawLimitsCommand =
   createSandboxWithdrawLimitsCommand();
-
-async function runSandboxWithdrawLimitsCommand(
-  options: SandboxWithdrawLimitsOptions,
-  createSdk: SandboxWithdrawLimitsSdkFactory
-): Promise<string> {
-  const request = createSandboxWithdrawLimitsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.getSandboxWithdrawLimits(request);
-
-    return formatWithdrawLimits(response, format);
-  });
-}
-
-export function createSandboxWithdrawLimitsRequest(
-  options: SandboxWithdrawLimitsRequestOptions
-): WithdrawLimitsRequest {
-  return createWithdrawLimitsRequest(options);
-}

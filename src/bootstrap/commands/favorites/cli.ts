@@ -15,7 +15,6 @@ import type {
   GetFavoritesRequest,
   GetFavoritesResponse
 } from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -31,44 +30,29 @@ type FavoritesSdk = {
 
 type FavoritesSdkFactory = (options: TInvestOptions) => FavoritesSdk;
 
-const favoritesCommandPath = ['instrument', 'favorite', 'list'] as const;
-const defaultFavoritesSdkFactory: FavoritesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const favoritesOptionsSchema = withSdkOptions(
-  {
-    format: {
-      type: 'string',
-      choices: favoritesFormats,
-      default: 'table'
-    }
-  } as const
-);
-
-type FavoritesOptions = InferOptions<typeof favoritesOptionsSchema>;
-
 export function createFavoritesCommand(
-  createSdk: FavoritesSdkFactory = defaultFavoritesSdkFactory
+  createSdk: FavoritesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: favoritesCommandPath,
-    options: favoritesOptionsSchema,
-    handle({ options }) {
-      return runFavoritesCommand(options, createSdk);
+    path: ['instrument', 'favorite', 'list'] as const,
+    options: withSdkOptions({
+      format: {
+        type: 'string',
+        choices: favoritesFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getFavorites({});
+
+        return formatFavorites(response.favoriteInstruments, format);
+      });
     }
   });
 }
 
 export const favoritesCommand = createFavoritesCommand();
-
-async function runFavoritesCommand(
-  options: FavoritesOptions,
-  createSdk: FavoritesSdkFactory
-): Promise<string> {
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getFavorites({});
-
-    return formatFavorites(response.favoriteInstruments, format);
-  });
-}

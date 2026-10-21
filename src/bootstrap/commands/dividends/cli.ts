@@ -39,11 +39,7 @@ type DividendsSdk = {
 
 type DividendsSdkFactory = (options: TInvestOptions) => DividendsSdk;
 
-const dividendsCommandPath = ['instrument', 'dividends'] as const;
-const defaultDividendsSdkFactory: DividendsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const dividendsRequestOptionsSchema = {
+const dividendsOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
     type: 'string',
@@ -52,21 +48,13 @@ const dividendsRequestOptionsSchema = {
   to: {
     type: 'string',
     required: true
-  }
-} as const;
-
-const dividendsFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: dividendsFormats,
     default: 'table'
   }
-} as const;
-
-const dividendsOptionsSchema = withSdkOptions(
-  dividendsRequestOptionsSchema,
-  dividendsFormatOptionsSchema
-);
+});
 
 type DividendsOptions = InferOptions<typeof dividendsOptionsSchema>;
 type DividendsRequestOptions = CommandRequestOptions<
@@ -75,31 +63,26 @@ type DividendsRequestOptions = CommandRequestOptions<
 >;
 
 export function createDividendsCommand(
-  createSdk: DividendsSdkFactory = defaultDividendsSdkFactory
+  createSdk: DividendsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: dividendsCommandPath,
+    path: ['instrument', 'dividends'] as const,
     options: dividendsOptionsSchema,
-    handle({ options }) {
-      return runDividendsCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createDividendsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getDividends(request);
+
+        return formatDividends(response.dividends, format);
+      });
     }
   });
 }
 
 export const dividendsCommand = createDividendsCommand();
-
-async function runDividendsCommand(
-  options: DividendsOptions,
-  createSdk: DividendsSdkFactory
-): Promise<string> {
-  const request = createDividendsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getDividends(request);
-
-    return formatDividends(response.dividends, format);
-  });
-}
 
 export function createDividendsRequest(
   options: DividendsRequestOptions

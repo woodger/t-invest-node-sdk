@@ -9,10 +9,7 @@ import {
   type Account,
   type GetAccountsRequest
 } from '../../../generated/users';
-import {
-  createSandboxAccountsCommand,
-  createSandboxAccountsRequest
-} from './cli';
+import { createSandboxAccountsCommand } from './cli';
 
 function account(overrides: Partial<Account> = {}): Account {
   return {
@@ -28,12 +25,6 @@ function account(overrides: Partial<Account> = {}): Account {
 }
 
 describe('sandbox-accounts command', () => {
-  describe('createSandboxAccountsRequest', () => {
-    test('returns generated getSandboxAccounts request', () => {
-      assert.deepEqual(createSandboxAccountsRequest(), {});
-    });
-  });
-
   describe('createSandboxAccountsCommand', () => {
     test('calls getSandboxAccounts and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

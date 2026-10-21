@@ -46,10 +46,6 @@ type EditFavoritesSdk = {
 
 type EditFavoritesSdkFactory = (options: TInvestOptions) => EditFavoritesSdk;
 
-const editFavoritesCommandPath = ['instrument', 'favorite', 'edit'] as const;
-const defaultEditFavoritesSdkFactory: EditFavoritesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
 const editFavoriteActions = {
   add: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD,
   del: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_DEL
@@ -61,28 +57,20 @@ const editFavoriteActionNames = Object.keys(
   editFavoriteActions
 ) as EditFavoritesActionName[];
 
-const editFavoritesRequestOptionsSchema = {
+const editFavoritesOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   action: {
     type: 'string',
     choices: editFavoriteActionNames,
     required: true
-  }
-} as const;
-
-const editFavoritesFormatOptionsSchema = {
+  },
+  ...sideEffectConfirmationOptionsSchema,
   format: {
     type: 'string',
     choices: editFavoritesFormats,
     default: 'table'
   }
-} as const;
-
-const editFavoritesOptionsSchema = withSdkOptions(
-  editFavoritesRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  editFavoritesFormatOptionsSchema
-);
+});
 
 type EditFavoritesOptions = InferOptions<typeof editFavoritesOptionsSchema>;
 type EditFavoritesRequestOptions = CommandRequestOptions<
@@ -91,33 +79,28 @@ type EditFavoritesRequestOptions = CommandRequestOptions<
 >;
 
 export function createEditFavoritesCommand(
-  createSdk: EditFavoritesSdkFactory = defaultEditFavoritesSdkFactory
+  createSdk: EditFavoritesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: editFavoritesCommandPath,
+    path: ['instrument', 'favorite', 'edit'] as const,
     options: editFavoritesOptionsSchema,
-    handle({ options }) {
-      return runEditFavoritesCommand(options, createSdk);
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createEditFavoritesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.editFavorites(request);
+
+        return formatEditFavorites(response, format);
+      });
     }
   });
 }
 
 export const editFavoritesCommand = createEditFavoritesCommand();
-
-async function runEditFavoritesCommand(
-  options: EditFavoritesOptions,
-  createSdk: EditFavoritesSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createEditFavoritesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.editFavorites(request);
-
-    return formatEditFavorites(response, format);
-  });
-}
 
 export function createEditFavoritesRequest(
   options: EditFavoritesRequestOptions

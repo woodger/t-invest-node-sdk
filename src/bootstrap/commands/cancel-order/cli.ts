@@ -15,7 +15,6 @@ import type {
   CancelOrderRequest,
   CancelOrderResponse
 } from '../../../generated/orders';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -36,61 +35,41 @@ type CancelOrderSdk = {
 
 type CancelOrderSdkFactory = (options: TInvestOptions) => CancelOrderSdk;
 
-const cancelOrderCommandPath = ['order', 'cancel'] as const;
-const defaultCancelOrderSdkFactory: CancelOrderSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const cancelOrderRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  'order-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const cancelOrderFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: cancelOrderFormats,
-    default: 'table'
-  }
-} as const;
-
-const cancelOrderOptionsSchema = withSdkOptions(
-  cancelOrderRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  cancelOrderFormatOptionsSchema
-);
-
-type CancelOrderOptions = InferOptions<typeof cancelOrderOptionsSchema>;
 export function createCancelOrderCommand(
-  createSdk: CancelOrderSdkFactory = defaultCancelOrderSdkFactory
+  createSdk: CancelOrderSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: cancelOrderCommandPath,
-    options: cancelOrderOptionsSchema,
-    handle({ options }) {
-      return runCancelOrderCommand(options, createSdk);
+    path: ['order', 'cancel'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      'order-id': {
+        type: 'string',
+        required: true
+      },
+      ...sideEffectConfirmationOptionsSchema,
+      format: {
+        type: 'string',
+        choices: cancelOrderFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createCancelOrderRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.orders.cancelOrder(request);
+
+        return formatCancelOrder(response, format);
+      });
     }
   });
 }
 
 export const cancelOrderCommand = createCancelOrderCommand();
-
-async function runCancelOrderCommand(
-  options: CancelOrderOptions,
-  createSdk: CancelOrderSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createCancelOrderRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.orders.cancelOrder(request);
-
-    return formatCancelOrder(response, format);
-  });
-}

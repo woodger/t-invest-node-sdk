@@ -12,7 +12,6 @@
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { GetInfoResponse } from '../../../generated/users';
-import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -28,44 +27,29 @@ type UserInfoSdk = {
 
 type UserInfoSdkFactory = (options: TInvestOptions) => UserInfoSdk;
 
-const userInfoCommandPath = ['account', 'info'] as const;
-const defaultUserInfoSdkFactory: UserInfoSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const userInfoOptionsSchema = withSdkOptions(
-  {
-    format: {
-      type: 'string',
-      choices: userInfoFormats,
-      default: 'table'
-    }
-  } as const
-);
-
-type UserInfoOptions = InferOptions<typeof userInfoOptionsSchema>;
-
 export function createUserInfoCommand(
-  createSdk: UserInfoSdkFactory = defaultUserInfoSdkFactory
+  createSdk: UserInfoSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: userInfoCommandPath,
-    options: userInfoOptionsSchema,
-    handle({ options }) {
-      return runUserInfoCommand(options, createSdk);
+    path: ['account', 'info'] as const,
+    options: withSdkOptions({
+      format: {
+        type: 'string',
+        choices: userInfoFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.users.getInfo({});
+
+        return formatUserInfo(response, format);
+      });
     }
   });
 }
 
 export const userInfoCommand = createUserInfoCommand();
-
-async function runUserInfoCommand(
-  options: UserInfoOptions,
-  createSdk: UserInfoSdkFactory
-): Promise<string> {
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.users.getInfo({});
-
-    return formatUserInfo(response, format);
-  });
-}

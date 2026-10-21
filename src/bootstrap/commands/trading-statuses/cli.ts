@@ -39,29 +39,17 @@ type TradingStatusesSdkFactory = (
   options: TInvestOptions
 ) => TradingStatusesSdk;
 
-const tradingStatusesCommandPath = ['market', 'statuses'] as const;
-const defaultTradingStatusesSdkFactory: TradingStatusesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const tradingStatusesInstrumentIdsOptionsSchema = {
+const tradingStatusesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
     required: true
-  }
-} as const;
-
-const tradingStatusesFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: tradingStatusesFormats,
     default: 'table'
   }
-} as const;
-
-const tradingStatusesOptionsSchema = withSdkOptions(
-  tradingStatusesInstrumentIdsOptionsSchema,
-  tradingStatusesFormatOptionsSchema
-);
+});
 
 type TradingStatusesOptions = InferOptions<typeof tradingStatusesOptionsSchema>;
 type TradingStatusesRequestOptions = CommandRequestOptions<
@@ -70,31 +58,26 @@ type TradingStatusesRequestOptions = CommandRequestOptions<
 >;
 
 export function createTradingStatusesCommand(
-  createSdk: TradingStatusesSdkFactory = defaultTradingStatusesSdkFactory
+  createSdk: TradingStatusesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: tradingStatusesCommandPath,
+    path: ['market', 'statuses'] as const,
     options: tradingStatusesOptionsSchema,
-    handle({ options }) {
-      return runTradingStatusesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createTradingStatusesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getTradingStatuses(request);
+
+        return formatTradingStatuses(response, format);
+      });
     }
   });
 }
 
 export const tradingStatusesCommand = createTradingStatusesCommand();
-
-async function runTradingStatusesCommand(
-  options: TradingStatusesOptions,
-  createSdk: TradingStatusesSdkFactory
-): Promise<string> {
-  const request = createTradingStatusesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getTradingStatuses(request);
-
-    return formatTradingStatuses(response, format);
-  });
-}
 
 export function createTradingStatusesRequest(
   options: TradingStatusesRequestOptions
