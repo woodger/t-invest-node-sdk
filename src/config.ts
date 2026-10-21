@@ -17,23 +17,6 @@ const maxReceiveMessageLengthBytes = 4_194_304;
 const minuteWindowMs = 60_000;
 const secondWindowMs = 1_000;
 
-const instrumentsDefaultRequestsPerMinute = 200;
-const instrumentsListRequestsPerMinute = 15;
-const marketDataUnaryRequestsPerMinute = 600;
-const operationsDefaultRequestsPerMinute = 200;
-const operationsReportRequestsPerMinute = 5;
-const ordersDefaultRequestsPerMinute = 100;
-const ordersGetOrdersRequestsPerMinute = 200;
-const ordersPostOrderRequestsPerSecond = 15;
-const ordersPostOrderAsyncRequestsPerMinute = 600;
-const ordersCancelOrderRequestsPerMinute = 300;
-const ordersReplaceOrderRequestsPerMinute = 300;
-const sandboxRequestsPerMinute = 200;
-const signalsRequestsPerMinute = 100;
-const stopOrdersDefaultRequestsPerMinute = 50;
-const getStopOrdersRequestsPerMinute = 60;
-const usersRequestsPerMinute = 100;
-
 export const packageConfig = {
   sdk: {
     /**
@@ -59,13 +42,13 @@ export const packageConfig = {
      */
     InstrumentsService: {
       default: {
-        maxRequests: instrumentsDefaultRequestsPerMinute,
+        maxRequests: 200,
         windowMs: minuteWindowMs
       },
       groups: {
         'list-methods': {
           limit: {
-            maxRequests: instrumentsListRequestsPerMinute,
+            maxRequests: 15,
             windowMs: minuteWindowMs
           },
           methods: [
@@ -86,7 +69,7 @@ export const packageConfig = {
      */
     MarketDataService: {
       default: {
-        maxRequests: marketDataUnaryRequestsPerMinute,
+        maxRequests: 600,
         windowMs: minuteWindowMs
       }
     },
@@ -97,13 +80,13 @@ export const packageConfig = {
      */
     OperationsService: {
       default: {
-        maxRequests: operationsDefaultRequestsPerMinute,
+        maxRequests: 200,
         windowMs: minuteWindowMs
       },
       groups: {
         reports: {
           limit: {
-            maxRequests: operationsReportRequestsPerMinute,
+            maxRequests: 5,
             windowMs: minuteWindowMs
           },
           methods: [
@@ -120,28 +103,28 @@ export const packageConfig = {
      */
     OrdersService: {
       default: {
-        maxRequests: ordersDefaultRequestsPerMinute,
+        maxRequests: 100,
         windowMs: minuteWindowMs
       },
       methods: {
         GetOrders: {
-          maxRequests: ordersGetOrdersRequestsPerMinute,
+          maxRequests: 200,
           windowMs: minuteWindowMs
         },
         PostOrder: {
-          maxRequests: ordersPostOrderRequestsPerSecond,
+          maxRequests: 15,
           windowMs: secondWindowMs
         },
         PostOrderAsync: {
-          maxRequests: ordersPostOrderAsyncRequestsPerMinute,
+          maxRequests: 600,
           windowMs: minuteWindowMs
         },
         CancelOrder: {
-          maxRequests: ordersCancelOrderRequestsPerMinute,
+          maxRequests: 300,
           windowMs: minuteWindowMs
         },
         ReplaceOrder: {
-          maxRequests: ordersReplaceOrderRequestsPerMinute,
+          maxRequests: 300,
           windowMs: minuteWindowMs
         }
       }
@@ -153,7 +136,7 @@ export const packageConfig = {
      */
     SandboxService: {
       default: {
-        maxRequests: sandboxRequestsPerMinute,
+        maxRequests: 200,
         windowMs: minuteWindowMs
       }
     },
@@ -164,7 +147,7 @@ export const packageConfig = {
      */
     SignalService: {
       default: {
-        maxRequests: signalsRequestsPerMinute,
+        maxRequests: 100,
         windowMs: minuteWindowMs
       }
     },
@@ -175,12 +158,12 @@ export const packageConfig = {
      */
     StopOrdersService: {
       default: {
-        maxRequests: stopOrdersDefaultRequestsPerMinute,
+        maxRequests: 50,
         windowMs: minuteWindowMs
       },
       methods: {
         GetStopOrders: {
-          maxRequests: getStopOrdersRequestsPerMinute,
+          maxRequests: 60,
           windowMs: minuteWindowMs
         }
       }
@@ -192,7 +175,7 @@ export const packageConfig = {
      */
     UsersService: {
       default: {
-        maxRequests: usersRequestsPerMinute,
+        maxRequests: 100,
         windowMs: minuteWindowMs
       }
     }
