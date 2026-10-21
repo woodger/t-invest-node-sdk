@@ -8,46 +8,10 @@ import type {
 import { createInMemoryUnaryLimiter } from './unary-limiter';
 
 const passiveSignal = new AbortController().signal;
-const minimumQuotaShare = 0.2;
-const maximumQuotaShare = 1;
-const halfQuotaShare = 0.5;
-const minuteWindowMs = 60_000;
-const secondWindowMs = 1_000;
-const ordersRequestsPerMinute = 100;
-const ordersPermitIntervalMs = minuteWindowMs / ordersRequestsPerMinute;
-const postOrderRequestsPerSecond = 15;
-const postOrderPermitIntervalMs = Math.ceil(
-  secondWindowMs / postOrderRequestsPerSecond
-);
-const fractionalRequestsPerSecond = 0.5;
-const fractionalPermitIntervalMs =
-  secondWindowMs / fractionalRequestsPerSecond;
-const marketDataRequestsPerMinute = 600;
-const halfShareMarketRequestsPerMinute =
-  marketDataRequestsPerMinute * halfQuotaShare;
-const halfShareMarketPermitIntervalMs =
-  minuteWindowMs / halfShareMarketRequestsPerMinute;
-const reportsRequestsPerMinute = 5;
-const halfShareReportsRequestsPerMinute = Math.floor(
-  reportsRequestsPerMinute * halfQuotaShare
-);
-const halfShareReportsPermitIntervalMs =
-  minuteWindowMs / halfShareReportsRequestsPerMinute;
-const oneRequestPerMinute = 1;
-const minimumSharePermitIntervalMs =
-  minuteWindowMs / (oneRequestPerMinute * minimumQuotaShare);
-const conflictingOrdersRequestsPerMinute = 50;
-const queuedWaitCount = 8;
-const cancelledWaitCount = 3;
-const replacementRequestedAtMs = 100;
-const delayedPermitAtMs = 2_000;
-// Node.js принимает задержки setTimeout не больше 2^31 - 1 миллисекунд.
-const maxTimerDelayMs = 2_147_483_647;
-const timerRangeOverflowMs = 10;
 const ordersQuota: TInvestUnaryQuota = {
   bucket: 'rule:OrdersService',
-  maxRequests: ordersRequestsPerMinute,
-  windowMs: minuteWindowMs
+  maxRequests: 100,
+  windowMs: 60_000
 };
 
 describe('createInMemoryUnaryLimiter', () => {
@@ -73,41 +37,29 @@ describe('createInMemoryUnaryLimiter', () => {
 
       const second = recordPermit(limiter, ordersQuota, clock, granted);
 
-      await clock.advanceTo(ordersPermitIntervalMs - 1);
+      await clock.advanceTo(599);
       assert.deepEqual(granted, [0]);
 
-      await clock.advanceTo(ordersPermitIntervalMs);
-      assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
       await second;
 
+      // Интервал для 15 запросов в секунду округляется вверх до 67 мс.
       const methodQuota: TInvestUnaryQuota = {
         bucket: 'rule:OrdersService/PostOrder',
-        maxRequests: postOrderRequestsPerSecond,
-        windowMs: secondWindowMs
+        maxRequests: 15,
+        windowMs: 1_000
       };
 
       await recordPermit(limiter, methodQuota, clock, granted);
 
       const fourth = recordPermit(limiter, methodQuota, clock, granted);
 
-      await clock.advanceTo(
-        ordersPermitIntervalMs + postOrderPermitIntervalMs - 1
-      );
-      assert.deepEqual(granted, [
-        0,
-        ordersPermitIntervalMs,
-        ordersPermitIntervalMs
-      ]);
+      await clock.advanceTo(666);
+      assert.deepEqual(granted, [0, 600, 600]);
 
-      await clock.advanceTo(
-        ordersPermitIntervalMs + postOrderPermitIntervalMs
-      );
-      assert.deepEqual(granted, [
-        0,
-        ordersPermitIntervalMs,
-        ordersPermitIntervalMs,
-        ordersPermitIntervalMs + postOrderPermitIntervalMs
-      ]);
+      await clock.advanceTo(667);
+      assert.deepEqual(granted, [0, 600, 600, 667]);
       await fourth;
     });
   });
@@ -118,8 +70,8 @@ describe('createInMemoryUnaryLimiter', () => {
       const limiter = createInMemoryUnaryLimiter();
       const quota: TInvestUnaryQuota = {
         bucket: 'rule:FractionalLimitService',
-        maxRequests: fractionalRequestsPerSecond,
-        windowMs: secondWindowMs
+        maxRequests: 0.5,
+        windowMs: 1_000
       };
       const granted: number[] = [];
 
@@ -128,27 +80,28 @@ describe('createInMemoryUnaryLimiter', () => {
 
         const following = recordPermit(limiter, quota, clock, granted);
 
-        await clock.advanceTo(fractionalPermitIntervalMs - 1);
+        await clock.advanceTo(1_999);
         assert.deepEqual(granted, [0]);
 
-        await clock.advanceTo(fractionalPermitIntervalMs);
-        assert.deepEqual(granted, [0, fractionalPermitIntervalMs]);
+        await clock.advanceTo(2_000);
+        assert.deepEqual(granted, [0, 2_000]);
         await following;
       });
     }
   );
 
   test('limits permits to the configured quota share', async () => {
-    const limiter = createInMemoryUnaryLimiter({ quotaShare: halfQuotaShare });
+    const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.5 });
     const marketQuota: TInvestUnaryQuota = {
       bucket: 'rule:MarketDataService',
-      maxRequests: marketDataRequestsPerMinute,
-      windowMs: minuteWindowMs
+      maxRequests: 600,
+      windowMs: 60_000
     };
+    // При доле 0.5 квота 5 округляется вниз до 2 запросов в минуту.
     const reportQuota: TInvestUnaryQuota = {
       bucket: 'quota:OperationsService:reports',
-      maxRequests: reportsRequestsPerMinute,
-      windowMs: minuteWindowMs
+      maxRequests: 5,
+      windowMs: 60_000
     };
     const granted: number[] = [];
 
@@ -157,35 +110,22 @@ describe('createInMemoryUnaryLimiter', () => {
 
       const marketCall = recordPermit(limiter, marketQuota, clock, granted);
 
-      await clock.advanceTo(halfShareMarketPermitIntervalMs - 1);
+      await clock.advanceTo(199);
       assert.deepEqual(granted, [0]);
 
-      await clock.advanceTo(halfShareMarketPermitIntervalMs);
-      assert.deepEqual(granted, [0, halfShareMarketPermitIntervalMs]);
+      await clock.advanceTo(200);
+      assert.deepEqual(granted, [0, 200]);
       await marketCall;
 
       await recordPermit(limiter, reportQuota, clock, granted);
 
       const reportCall = recordPermit(limiter, reportQuota, clock, granted);
 
-      await clock.advanceTo(
-        halfShareMarketPermitIntervalMs + halfShareReportsPermitIntervalMs - 1
-      );
-      assert.deepEqual(granted, [
-        0,
-        halfShareMarketPermitIntervalMs,
-        halfShareMarketPermitIntervalMs
-      ]);
+      await clock.advanceTo(30_199);
+      assert.deepEqual(granted, [0, 200, 200]);
 
-      await clock.advanceTo(
-        halfShareMarketPermitIntervalMs + halfShareReportsPermitIntervalMs
-      );
-      assert.deepEqual(granted, [
-        0,
-        halfShareMarketPermitIntervalMs,
-        halfShareMarketPermitIntervalMs,
-        halfShareMarketPermitIntervalMs + halfShareReportsPermitIntervalMs
-      ]);
+      await clock.advanceTo(30_200);
+      assert.deepEqual(granted, [0, 200, 200, 30_200]);
       await reportCall;
     });
   });
@@ -195,17 +135,15 @@ describe('createInMemoryUnaryLimiter', () => {
       const quotaShare of [
         Number.NaN,
         Number.POSITIVE_INFINITY,
-        -halfQuotaShare,
+        -0.5,
         0,
-        minimumQuotaShare / 2,
-        maximumQuotaShare + minimumQuotaShare / 2
+        0.1,
+        1.1
       ]
     ) {
       assert.throws(
         () => createInMemoryUnaryLimiter({ quotaShare }),
-        new RegExp(
-          `quotaShare must be a finite number between ${minimumQuotaShare} and ${maximumQuotaShare}`
-        )
+        new RegExp('quotaShare must be a finite number between 0.2 and 1')
       );
     }
   });
@@ -214,12 +152,12 @@ describe('createInMemoryUnaryLimiter', () => {
     'paces a scaled quota below one permit over a longer interval',
     async () => {
       const limiter = createInMemoryUnaryLimiter({
-        quotaShare: minimumQuotaShare
+        quotaShare: 0.2
       });
       const quota: TInvestUnaryQuota = {
         bucket: 'rule:VeryLowLimitService',
-        maxRequests: oneRequestPerMinute,
-        windowMs: minuteWindowMs
+        maxRequests: 1,
+        windowMs: 60_000
       };
       const granted: number[] = [];
 
@@ -228,11 +166,11 @@ describe('createInMemoryUnaryLimiter', () => {
 
         const following = recordPermit(limiter, quota, clock, granted);
 
-        await clock.advanceTo(minimumSharePermitIntervalMs - 1);
+        await clock.advanceTo(299_999);
         assert.deepEqual(granted, [0]);
 
-        await clock.advanceTo(minimumSharePermitIntervalMs);
-        assert.deepEqual(granted, [0, minimumSharePermitIntervalMs]);
+        await clock.advanceTo(300_000);
+        assert.deepEqual(granted, [0, 300_000]);
         await following;
       });
     }
@@ -247,8 +185,8 @@ describe('createInMemoryUnaryLimiter', () => {
         limiter,
         {
           bucket: 'quota:OperationsService:reports',
-          maxRequests: reportsRequestsPerMinute,
-          windowMs: minuteWindowMs
+          maxRequests: 5,
+          windowMs: 60_000
         },
         clock,
         granted
@@ -258,8 +196,8 @@ describe('createInMemoryUnaryLimiter', () => {
         limiter,
         {
           bucket: 'rule:MarketDataService',
-          maxRequests: marketDataRequestsPerMinute,
-          windowMs: minuteWindowMs
+          maxRequests: 600,
+          windowMs: 60_000
         },
         clock,
         granted
@@ -279,7 +217,7 @@ describe('createInMemoryUnaryLimiter', () => {
     await assert.rejects(
       limiter.acquire(createContext({
         ...ordersQuota,
-        maxRequests: conflictingOrdersRequestsPerMinute
+        maxRequests: 50
       })),
       /Conflicting quota for bucket rule:OrdersService/
     );
@@ -296,21 +234,17 @@ describe('createInMemoryUnaryLimiter', () => {
         recordPermit(limiter, ordersQuota, clock, granted)
       ]);
 
-      await clock.advanceTo(ordersPermitIntervalMs - 1);
+      await clock.advanceTo(599);
       assert.deepEqual(granted, [0]);
 
-      await clock.advanceTo(ordersPermitIntervalMs);
-      assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
 
-      await clock.advanceTo(ordersPermitIntervalMs * 2 - 1);
-      assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+      await clock.advanceTo(1_199);
+      assert.deepEqual(granted, [0, 600]);
 
-      await clock.advanceTo(ordersPermitIntervalMs * 2);
-      assert.deepEqual(granted, [
-        0,
-        ordersPermitIntervalMs,
-        ordersPermitIntervalMs * 2
-      ]);
+      await clock.advanceTo(1_200);
+      assert.deepEqual(granted, [0, 600, 1_200]);
       await acquired;
     });
   });
@@ -332,20 +266,16 @@ describe('createInMemoryUnaryLimiter', () => {
           granted
         );
 
-        clock.setCurrentTime(delayedPermitAtMs);
-        await clock.advanceTo(delayedPermitAtMs);
-        assert.deepEqual(granted, [0, delayedPermitAtMs]);
+        clock.setCurrentTime(2_000);
+        await clock.advanceTo(2_000);
+        assert.deepEqual(granted, [0, 2_000]);
         await delayedCall;
 
-        await clock.advanceTo(delayedPermitAtMs + ordersPermitIntervalMs - 1);
-        assert.deepEqual(granted, [0, delayedPermitAtMs]);
+        await clock.advanceTo(2_599);
+        assert.deepEqual(granted, [0, 2_000]);
 
-        await clock.advanceTo(delayedPermitAtMs + ordersPermitIntervalMs);
-        assert.deepEqual(granted, [
-          0,
-          delayedPermitAtMs,
-          delayedPermitAtMs + ordersPermitIntervalMs
-        ]);
+        await clock.advanceTo(2_600);
+        assert.deepEqual(granted, [0, 2_000, 2_600]);
         await followingCall;
       });
     }
@@ -369,11 +299,11 @@ describe('createInMemoryUnaryLimiter', () => {
       controller.abort(cancellationReason);
       await cancelled;
 
-      await clock.advanceTo(ordersPermitIntervalMs - 1);
+      await clock.advanceTo(599);
       assert.deepEqual(granted, [0]);
 
-      await clock.advanceTo(ordersPermitIntervalMs);
-      assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
       await followingCall;
     });
   });
@@ -419,19 +349,15 @@ describe('createInMemoryUnaryLimiter', () => {
       controller.abort(cancellationReason);
       await cancelled;
 
-      await clock.advanceTo(ordersPermitIntervalMs);
-      assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+      await clock.advanceTo(600);
+      assert.deepEqual(granted, [0, 600]);
       await waitingCall;
 
-      await clock.advanceTo(ordersPermitIntervalMs * 2 - 1);
-      assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+      await clock.advanceTo(1_199);
+      assert.deepEqual(granted, [0, 600]);
 
-      await clock.advanceTo(ordersPermitIntervalMs * 2);
-      assert.deepEqual(granted, [
-        0,
-        ordersPermitIntervalMs,
-        ordersPermitIntervalMs * 2
-      ]);
+      await clock.advanceTo(1_200);
+      assert.deepEqual(granted, [0, 600, 1_200]);
       await followingCall;
     });
   });
@@ -446,7 +372,7 @@ describe('createInMemoryUnaryLimiter', () => {
       await withControlledTimers(async (clock) => {
         await limiter.acquire(createContext(ordersQuota));
 
-        const waiting = Array.from({ length: queuedWaitCount }, (_, index) => {
+        const waiting = Array.from({ length: 8 }, (_, index) => {
           const controller = new AbortController();
           const acquired = limiter.acquire(
             createContext(ordersQuota, controller.signal)
@@ -470,7 +396,7 @@ describe('createInMemoryUnaryLimiter', () => {
         }
 
         await Promise.all(cancelled.map(({ acquired }) => acquired));
-        await clock.advanceTo(ordersPermitIntervalMs * 4);
+        await clock.advanceTo(2_400);
         assert.deepEqual(granted, [0, 2, 4, 6]);
         await Promise.all(waiting.map(({ acquired }) => acquired));
       });
@@ -488,7 +414,7 @@ describe('createInMemoryUnaryLimiter', () => {
         await recordPermit(limiter, ordersQuota, clock, granted);
 
         const controllers = Array.from(
-          { length: cancelledWaitCount },
+          { length: 3 },
           () => new AbortController()
         );
         const cancelled = controllers.map((controller) =>
@@ -503,28 +429,24 @@ describe('createInMemoryUnaryLimiter', () => {
         }
 
         await Promise.all(cancelled);
-        clock.setCurrentTime(replacementRequestedAtMs);
+        clock.setCurrentTime(100);
 
         const replacement = recordPermit(limiter, ordersQuota, clock, granted);
 
-        await clock.advanceTo(ordersPermitIntervalMs - 1);
+        await clock.advanceTo(599);
         assert.deepEqual(granted, [0]);
 
-        await clock.advanceTo(ordersPermitIntervalMs);
-        assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+        await clock.advanceTo(600);
+        assert.deepEqual(granted, [0, 600]);
         await replacement;
 
         const following = recordPermit(limiter, ordersQuota, clock, granted);
 
-        await clock.advanceTo(ordersPermitIntervalMs * 2 - 1);
-        assert.deepEqual(granted, [0, ordersPermitIntervalMs]);
+        await clock.advanceTo(1_199);
+        assert.deepEqual(granted, [0, 600]);
 
-        await clock.advanceTo(ordersPermitIntervalMs * 2);
-        assert.deepEqual(granted, [
-          0,
-          ordersPermitIntervalMs,
-          ordersPermitIntervalMs * 2
-        ]);
+        await clock.advanceTo(1_200);
+        assert.deepEqual(granted, [0, 600, 1_200]);
         await following;
       });
     }
@@ -534,12 +456,11 @@ describe('createInMemoryUnaryLimiter', () => {
     'keeps waits beyond the Node.js timer range pending for the full interval',
     async () => {
       const limiter = createInMemoryUnaryLimiter();
-      const timerRangeOverflowIntervalMs =
-        maxTimerDelayMs + timerRangeOverflowMs;
+      // Интервал на 10 мс превышает предел setTimeout в Node.js (2^31 - 1 мс).
       const quota: TInvestUnaryQuota = {
         bucket: 'rule:VeryLowLimitService',
-        maxRequests: oneRequestPerMinute,
-        windowMs: timerRangeOverflowIntervalMs
+        maxRequests: 1,
+        windowMs: 2_147_483_657
       };
       const granted: number[] = [];
 
@@ -550,17 +471,17 @@ describe('createInMemoryUnaryLimiter', () => {
 
         assert.ok(clock.delays.length > 0);
         assert.ok(
-          clock.delays.every((delay) => delay > 0 && delay <= maxTimerDelayMs)
+          clock.delays.every((delay) => delay > 0 && delay <= 2_147_483_647)
         );
 
-        await clock.advanceTo(timerRangeOverflowIntervalMs - 1);
+        await clock.advanceTo(2_147_483_656);
         assert.deepEqual(granted, [0]);
         assert.ok(
-          clock.delays.every((delay) => delay > 0 && delay <= maxTimerDelayMs)
+          clock.delays.every((delay) => delay > 0 && delay <= 2_147_483_647)
         );
 
-        await clock.advanceTo(timerRangeOverflowIntervalMs);
-        assert.deepEqual(granted, [0, timerRangeOverflowIntervalMs]);
+        await clock.advanceTo(2_147_483_657);
+        assert.deepEqual(granted, [0, 2_147_483_657]);
         await waitingCall;
       });
     }
