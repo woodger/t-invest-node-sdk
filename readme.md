@@ -8,7 +8,7 @@
 
 - [Документация T-Invest API](https://developer.tbank.ru/invest/intro/intro/) — начало работы, получение токена и адреса подключения;
 - [Лимиты API](https://developer.tbank.ru/invest/intro/intro/limits) — квоты unary-запросов и ограничения потоков;
-- [Proto-контракты](https://opensource.tbank.ru/invest/invest-contracts) — исходные контракты gRPC API.
+- [Proto-контракты](https://github.com/Invest-SDK/invest-contracts) — исходные контракты gRPC API.
 
 ## Установить модуль
 

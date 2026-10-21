@@ -14,7 +14,7 @@ npm run cli -- dev compile-proto
 
 Для генерации используются закреплённые зависимости разработки `protoc` и `ts-proto`. Устанавливать компилятор в систему не нужно: команда запускает инструменты из локального `node_modules`.
 
-Официальный источник контрактов — активный репозиторий [`invest-contracts`](https://opensource.tbank.ru/invest/invest-contracts). [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит точные тег и коммит. Файлы T-Invest лежат в плоской структуре `contracts/*.proto`, а сгенерированный TypeScript — в `src/generated/*.ts`. Генератор читает только локальные файлы и не скачивает контракты из внешнего репозитория.
+Источник текущего снимка контрактов — репозиторий [`Invest-SDK/invest-contracts`](https://github.com/Invest-SDK/invest-contracts). [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит точный коммит и, при наличии, тег выпуска. Файлы T-Invest лежат в плоской структуре `contracts/*.proto`, а сгенерированный TypeScript — в `src/generated/*.ts`. Генератор читает только локальные файлы и не скачивает контракты из внешнего репозитория.
 
 Контракты и производный сгенерированный код распространяются по [Apache License 2.0](../LICENSE-APACHE-2.0). Происхождение компонентов и необходимые уведомления приведены в [`NOTICE`](../NOTICE).
 

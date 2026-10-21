@@ -278,7 +278,7 @@ export function orderIdTypeToJSON(object: OrderIdType): string {
 export interface TradesStreamRequest {
   /** Идентификаторы счетов. */
   accounts: string[];
-  /** Задержка (пинг) сообщений: 5000–180 000 миллисекунд. Значение по умолчанию — 120 000. */
+  /** Задержка (пинг) сообщений: 5000–60 000 миллисекунд. Значение по умолчанию — 60 000. */
   pingDelayMs?: number | undefined;
 }
 
@@ -497,7 +497,11 @@ export interface GetOrderStateRequest {
   /** Тип цены. */
   priceType: PriceType;
   /** Тип идентификатора заявки. */
-  orderIdType?: OrderIdType | undefined;
+  orderIdType?:
+    | OrderIdType
+    | undefined;
+  /** Дата выставления заявки в часовом поясе UTC. */
+  orderDate?: Date | undefined;
 }
 
 /** Запрос получения списка активных торговых поручений. */
@@ -749,7 +753,7 @@ export interface GetOrderPriceResponse_ExtraFuture {
 export interface OrderStateStreamRequest {
   /** Идентификаторы счетов. */
   accounts: string[];
-  /** Задержка (пинг) сообщений:  1000-120 000 миллисекунд. Значение по умолчанию — 120 000. */
+  /** Задержка (пинг) сообщений:  5000-60 000 миллисекунд. Значение по умолчанию — 60 000. */
   pingDelayMillis?: number | undefined;
 }
 
@@ -2906,7 +2910,7 @@ export const CancelOrderResponse: MessageFns<CancelOrderResponse> = {
 };
 
 function createBaseGetOrderStateRequest(): GetOrderStateRequest {
-  return { accountId: "", orderId: "", priceType: 0, orderIdType: undefined };
+  return { accountId: "", orderId: "", priceType: 0, orderIdType: undefined, orderDate: undefined };
 }
 
 export const GetOrderStateRequest: MessageFns<GetOrderStateRequest> = {
@@ -2922,6 +2926,9 @@ export const GetOrderStateRequest: MessageFns<GetOrderStateRequest> = {
     }
     if (message.orderIdType !== undefined) {
       writer.uint32(32).int32(message.orderIdType);
+    }
+    if (message.orderDate !== undefined) {
+      Timestamp.encode(toTimestamp(message.orderDate), writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -2971,6 +2978,14 @@ export const GetOrderStateRequest: MessageFns<GetOrderStateRequest> = {
             message.orderIdType = reader.int32() as any;
             continue;
           }
+          case 5: {
+            if (tag !== 42) {
+              break;
+            }
+
+            message.orderDate = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+            continue;
+          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -3005,6 +3020,11 @@ export const GetOrderStateRequest: MessageFns<GetOrderStateRequest> = {
         : isSet(object.order_id_type)
         ? orderIdTypeFromJSON(object.order_id_type)
         : undefined,
+      orderDate: isSet(object.orderDate)
+        ? fromJsonTimestamp(object.orderDate)
+        : isSet(object.order_date)
+        ? fromJsonTimestamp(object.order_date)
+        : undefined,
     };
   },
 
@@ -3022,6 +3042,9 @@ export const GetOrderStateRequest: MessageFns<GetOrderStateRequest> = {
     if (message.orderIdType !== undefined) {
       obj.orderIdType = orderIdTypeToJSON(message.orderIdType);
     }
+    if (message.orderDate !== undefined) {
+      obj.orderDate = message.orderDate.toISOString();
+    }
     return obj;
   },
 
@@ -3034,6 +3057,7 @@ export const GetOrderStateRequest: MessageFns<GetOrderStateRequest> = {
     message.orderId = object.orderId ?? "";
     message.priceType = object.priceType ?? 0;
     message.orderIdType = object.orderIdType ?? undefined;
+    message.orderDate = object.orderDate ?? undefined;
     return message;
   },
 };
