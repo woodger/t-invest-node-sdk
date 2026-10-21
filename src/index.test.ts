@@ -101,6 +101,7 @@ const signalRuntimeContractNames = [
 ] as const;
 
 const generatedEnumRuntimeContractNames = [
+  ['ResultSubscriptionStatus', 'resultSubscriptionStatus'],
   ['Recommendation', 'recommendation'],
   ['BondType', 'bondType'],
   ['InstrumentExchangeType', 'instrumentExchangeType'],

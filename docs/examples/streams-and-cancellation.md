@@ -122,6 +122,80 @@ export async function runMarketDataStream(
 
 Создавайте и освобождайте `sdk` и `signal` так же, как в полном примере серверного потока выше. Если источник запросов продолжает работать после начальной подписки, он тоже должен учитывать сигнал отмены, останавливать формирование запросов и удалять обработчики событий.
 
+## Изменить подписку во время чтения
+
+Источник запросов может оставаться активным и отправлять изменения подписки, пока приложение читает ответы. В примере он сначала подписывается на минутные свечи, а через десять секунд отправляет отписку в тот же RPC. Подтверждения подписки и отписки приходят в `subscribeCandlesResponse` и выводятся вместе с остальными ответами.
+
+`subscription-changes.ts`
+
+```ts
+import { setTimeout as delay } from 'node:timers/promises';
+import {
+  SubscriptionAction,
+  SubscriptionInterval,
+  type TInvestNodeSDK
+} from '@woodger/t-invest-node-sdk';
+
+async function* subscriptionChanges(
+  instrumentUid: string,
+  signal: AbortSignal
+) {
+  const subscription = {
+    instruments: [{
+      instrumentId: instrumentUid,
+      interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
+    }],
+    waitingClose: true
+  };
+  const subscriptionDurationMs = 10_000;
+
+  signal.throwIfAborted();
+
+  yield {
+    subscribeCandlesRequest: {
+      ...subscription,
+      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE
+    }
+  };
+
+  await delay(subscriptionDurationMs, undefined, { signal });
+
+  yield {
+    subscribeCandlesRequest: {
+      ...subscription,
+      subscriptionAction: SubscriptionAction.SUBSCRIPTION_ACTION_UNSUBSCRIBE
+    }
+  };
+}
+
+export async function runSubscriptionChanges(
+  sdk: Pick<TInvestNodeSDK, 'marketdataStream'>,
+  instrumentUid: string,
+  signal: AbortSignal
+): Promise<void> {
+  const session = new AbortController();
+  const sessionSignal = AbortSignal.any([signal, session.signal]);
+
+  try {
+    const responses = sdk.marketdataStream.marketDataStream(
+      subscriptionChanges(instrumentUid, sessionSignal),
+      { signal: sessionSignal }
+    );
+
+    for await (const response of responses) {
+      console.log(response);
+    }
+  }
+  finally {
+    session.abort();
+  }
+}
+```
+
+Передайте функции UID из [примера поиска инструмента](./instrument-lookup.md). Создание SDK, обработку локальной отмены и закрытие канала выполняйте так же, как в первом примере этой страницы. Общий сигнал останавливает и RPC, и ожидание внутри источника запросов. Если чтение завершилось раньше, `finally` отменяет оставшееся ожидание.
+
+Завершение источника после отписки не закрывает поток ответов. Он продолжает работать до отмены или закрытия провайдером. Для потоков состояний заявок используется другая подписка — она разобрана в [отдельном примере](./order-state-stream.md).
+
 ## Восстановить поток после разрыва
 
 [Отдельный пример восстановления рыночного стрима](./market-data-recovery.md) показывает повторную подписку, догрузку закрытых минутных свечей и сохранение прогресса после записи. Восстановлением управляет приложение; SDK передаёт ошибки и не запускает скрытые повторные запросы.
