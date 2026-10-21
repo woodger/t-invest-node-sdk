@@ -13,10 +13,6 @@
 
 import type { PackageConfigDefinition } from './config.types';
 
-const maxReceiveMessageLengthBytes = 4_194_304;
-const minuteWindowMs = 60_000;
-const secondWindowMs = 1_000;
-
 export const packageConfig = {
   sdk: {
     /**
@@ -30,7 +26,7 @@ export const packageConfig = {
      * SDK фиксирует 4 MiB как собственную transport policy и не зависит от
      * неявного default grpc-js, который может измениться при upgrade.
      */
-    maxReceiveMessageLength: maxReceiveMessageLengthBytes
+    maxReceiveMessageLength: 4_194_304
   },
 
   unaryLimits: {
@@ -43,13 +39,13 @@ export const packageConfig = {
     InstrumentsService: {
       default: {
         maxRequests: 200,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       },
       groups: {
         'list-methods': {
           limit: {
             maxRequests: 15,
-            windowMs: minuteWindowMs
+            windowMs: 60_000
           },
           methods: [
             'Bonds',
@@ -70,7 +66,7 @@ export const packageConfig = {
     MarketDataService: {
       default: {
         maxRequests: 600,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       }
     },
 
@@ -81,13 +77,13 @@ export const packageConfig = {
     OperationsService: {
       default: {
         maxRequests: 200,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       },
       groups: {
         reports: {
           limit: {
             maxRequests: 5,
-            windowMs: minuteWindowMs
+            windowMs: 60_000
           },
           methods: [
             'GetBrokerReport',
@@ -104,28 +100,28 @@ export const packageConfig = {
     OrdersService: {
       default: {
         maxRequests: 100,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       },
       methods: {
         GetOrders: {
           maxRequests: 200,
-          windowMs: minuteWindowMs
+          windowMs: 60_000
         },
         PostOrder: {
           maxRequests: 15,
-          windowMs: secondWindowMs
+          windowMs: 1_000
         },
         PostOrderAsync: {
           maxRequests: 600,
-          windowMs: minuteWindowMs
+          windowMs: 60_000
         },
         CancelOrder: {
           maxRequests: 300,
-          windowMs: minuteWindowMs
+          windowMs: 60_000
         },
         ReplaceOrder: {
           maxRequests: 300,
-          windowMs: minuteWindowMs
+          windowMs: 60_000
         }
       }
     },
@@ -137,7 +133,7 @@ export const packageConfig = {
     SandboxService: {
       default: {
         maxRequests: 200,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       }
     },
 
@@ -148,7 +144,7 @@ export const packageConfig = {
     SignalService: {
       default: {
         maxRequests: 100,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       }
     },
 
@@ -159,12 +155,12 @@ export const packageConfig = {
     StopOrdersService: {
       default: {
         maxRequests: 50,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       },
       methods: {
         GetStopOrders: {
           maxRequests: 60,
-          windowMs: minuteWindowMs
+          windowMs: 60_000
         }
       }
     },
@@ -176,7 +172,7 @@ export const packageConfig = {
     UsersService: {
       default: {
         maxRequests: 100,
-        windowMs: minuteWindowMs
+        windowMs: 60_000
       }
     }
   },
