@@ -19,6 +19,8 @@ const sdk = new TInvestNodeSDK({
   token: 'YOUR_TOKEN',
   endpoint: 'invest-public-api.tbank.ru:443'
 });
+
+// Один сигнал завершает чтение потока при остановке приложения.
 const shutdown = new AbortController();
 const requestShutdown = () => shutdown.abort();
 
@@ -26,6 +28,7 @@ process.once('SIGINT', requestShutdown);
 process.once('SIGTERM', requestShutdown);
 
 try {
+  // Ожидание следующего ответа прерывается вместе с сигналом остановки.
   const responses = sdk.marketdataStream.marketDataServerSideStream(
     {
       subscribeCandlesRequest: {
@@ -36,6 +39,7 @@ try {
             interval: SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
           }
         ],
+        // Не ждём закрытия минутного интервала перед отправкой свечи.
         waitingClose: false
       }
     },
@@ -49,6 +53,7 @@ try {
   }
 }
 catch (error) {
+  // Локальная отмена ожидаема; ошибки провайдера и транспорта передаём дальше.
   if (
     !shutdown.signal.aborted
     || !isSdkError(error, SdkErrorCode.Cancelled)
@@ -58,9 +63,11 @@ catch (error) {
   }
 }
 finally {
+  // Обработчики больше не нужны после завершения чтения.
   process.off('SIGINT', requestShutdown);
   process.off('SIGTERM', requestShutdown);
 
+  // Сначала останавливаем поток, затем закрываем общий канал SDK.
   shutdown.abort();
   sdk.close();
 }
@@ -77,6 +84,7 @@ import {
   TInvestNodeSDK
 } from '@woodger/t-invest-node-sdk';
 
+// Источник передаёт начальную подписку и завершается; поток ответов продолжает работать.
 async function* initialRequests() {
   yield {
     subscribeCandlesRequest: {
@@ -89,6 +97,7 @@ async function* initialRequests() {
             SubscriptionInterval.SUBSCRIPTION_INTERVAL_ONE_MINUTE
         }
       ],
+      // Не ждём закрытия минутного интервала перед отправкой свечи.
       waitingClose: false
     }
   };
