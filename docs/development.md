@@ -14,6 +14,8 @@ npm run cli -- dev compile-proto
 
 Для генерации используются закреплённые зависимости разработки `protoc` и `ts-proto`. Устанавливать компилятор в систему не нужно: команда запускает инструменты из локального `node_modules`.
 
+Опции генерации заданы в [`compile-proto.ts`](../src/bootstrap/proto/compile-proto.ts). Параметр `useJsonTimestamp=raw` сохраняет объектный JSON публичного `Timestamp` с полями `seconds` и `nanos`. Поля дат в DTO остаются экземплярами `Date` и сериализуются в JSON как строки ISO.
+
 Источник текущего снимка контрактов — репозиторий [`Invest-SDK/invest-contracts`](https://github.com/Invest-SDK/invest-contracts). [Manifest репозитория](https://github.com/woodger/t-invest-node-sdk/blob/main/contracts/upstream.json) хранит точный коммит и, при наличии, тег выпуска. Файлы T-Invest лежат в плоской структуре `contracts/*.proto`, а сгенерированный TypeScript — в `src/generated/*.ts`. Генератор читает только локальные файлы и не скачивает контракты из внешнего репозитория.
 
 Контракты и производный сгенерированный код распространяются по [Apache License 2.0](../LICENSE-APACHE-2.0). Происхождение компонентов и необходимые уведомления приведены в [`NOTICE`](../NOTICE).

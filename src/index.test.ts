@@ -203,6 +203,34 @@ describe('package entrypoint', () => {
     });
   }
 
+  test('preserves the public Timestamp JSON object representation', () => {
+    const timestamp = { seconds: 1_700_000_000, nanos: 123_456_789 };
+
+    assert.deepEqual(packageExports.Timestamp.toJSON(timestamp), timestamp);
+    assert.deepEqual(packageExports.Timestamp.fromJSON(timestamp), timestamp);
+    assert.deepEqual(
+      packageExports.Timestamp.toJSON({ seconds: 0, nanos: 0 }),
+      {}
+    );
+  });
+
+  test('keeps Date fields as ISO strings in message JSON', () => {
+    const orderDate = new Date('2026-10-20T08:16:50.123Z');
+    const request = packageExports.GetOrderStateRequest.fromPartial({
+      orderDate
+    });
+
+    assert.deepEqual(packageExports.GetOrderStateRequest.toJSON(request), {
+      orderDate: orderDate.toISOString()
+    });
+    assert.deepEqual(
+      packageExports.GetOrderStateRequest.fromJSON({
+        orderDate: orderDate.toISOString()
+      }).orderDate,
+      orderDate
+    );
+  });
+
   test('exposes generated enum contracts used by public DTOs', () => {
     for (const [enumName, converterName] of generatedEnumRuntimeContractNames) {
       assert.equal(hasPackageExport(enumName), true);

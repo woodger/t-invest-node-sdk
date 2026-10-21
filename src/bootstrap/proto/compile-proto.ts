@@ -143,6 +143,8 @@ function runProtoCompiler(
     '--ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false',
     '--ts_proto_opt=env=node',
     '--ts_proto_opt=esModuleInterop=true',
+    // Сохраняем объектный JSON публичного Timestamp при обновлении ts-proto.
+    '--ts_proto_opt=useJsonTimestamp=raw',
     ...protoFiles
   ], {
     cwd: pfs.pwd,
