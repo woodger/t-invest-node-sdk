@@ -42,6 +42,10 @@ export interface SdkCallErrorClassificationOptions {
   readonly maxReceiveMessageLength: number;
 }
 
+interface CallCallbackFailure {
+  readonly reason: unknown;
+}
+
 /**
  * Связывает проверки состояния SDK, unary-квоты и классификацию ошибок RPC.
  * Синхронные исключения callbacks метаданных передаёт без преобразования.
@@ -225,10 +229,6 @@ function throwIfAborted(signal: AbortSignal | undefined): void {
   if (signal?.aborted) {
     throw signal.reason ?? createAbortError();
   }
-}
-
-interface CallCallbackFailure {
-  readonly reason: unknown;
 }
 
 /**
