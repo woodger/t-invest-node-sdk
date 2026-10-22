@@ -5,10 +5,7 @@
 `instrument-lookup.ts`
 
 ```ts
-import {
-  InstrumentIdType,
-  TInvestNodeSDK
-} from '@woodger/t-invest-node-sdk';
+import { InstrumentIdType, TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 const sdk = new TInvestNodeSDK({
   token: 'YOUR_TOKEN',

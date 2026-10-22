@@ -11,10 +11,7 @@
 `unary-limits.ts`
 
 ```ts
-import {
-  createInMemoryUnaryLimiter,
-  TInvestNodeSDK
-} from '@woodger/t-invest-node-sdk';
+import { createInMemoryUnaryLimiter, TInvestNodeSDK } from '@woodger/t-invest-node-sdk';
 
 const sdk = new TInvestNodeSDK({
   token,
