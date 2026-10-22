@@ -15,6 +15,7 @@
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { SdkError, SdkErrorCode } from '../../../application/errors/sdk-error';
 import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
+import { CallCallbackBoundary } from './call-callback-boundary';
 import { createAbortError, errorMessage, isCallCancellation, mapSdkCallError } from './sdk-call-error';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
@@ -28,10 +29,6 @@ export interface SdkCallLifecycle {
 export interface SdkCallErrorClassificationOptions {
   readonly useSsl: boolean;
   readonly maxReceiveMessageLength: number;
-}
-
-interface CallCallbackFailure {
-  readonly reason: unknown;
 }
 
 /**
@@ -216,61 +213,5 @@ function resolveUnaryLimitSignal(
 function throwIfAborted(signal: AbortSignal | undefined): void {
   if (signal?.aborted) {
     throw signal.reason ?? createAbortError();
-  }
-}
-
-/**
- * Хранит первую ошибку callbacks одного RPC и отменяет этот вызов при ошибке.
- * Синхронные исключения onHeader/onTrailer из обработчиков событий nice-grpc
- * передаются владельцу Promise или AsyncIterable через throwIfFailed.
- */
-class CallCallbackBoundary {
-  readonly options: CallOptions;
-  private readonly controller = new AbortController();
-  private failure: CallCallbackFailure | undefined;
-
-  constructor(options: CallOptions) {
-    this.options = {
-      ...options,
-      signal: options.signal === undefined
-        ? this.controller.signal
-        : AbortSignal.any([options.signal, this.controller.signal])
-    };
-
-    if (options.onHeader !== undefined) {
-      this.options.onHeader = this.protectCallback(options.onHeader);
-    }
-
-    if (options.onTrailer !== undefined) {
-      this.options.onTrailer = this.protectCallback(options.onTrailer);
-    }
-  }
-
-  /** Поднимает сохранённую ошибку callback в контексте владельца RPC. */
-  throwIfFailed(): void {
-    if (this.failure !== undefined) {
-      throw this.failure.reason;
-    }
-  }
-
-  /**
-   * Перехватывает исключение в обработчике событий транспорта, чтобы middleware
-   * мог передать его владельцу RPC при чтении результата.
-   */
-  private protectCallback(
-    callback: NonNullable<CallOptions['onHeader']>
-  ): NonNullable<CallOptions['onHeader']> {
-    return (metadata) => {
-      try {
-        callback(metadata);
-      }
-      catch (error) {
-        if (this.failure === undefined) {
-          // Обёртка отличает throw undefined от отсутствия ошибки.
-          this.failure = { reason: error };
-          this.controller.abort(error);
-        }
-      }
-    };
   }
 }
