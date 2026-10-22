@@ -134,11 +134,14 @@ describe('mapSdkCallError', () => {
     }
   );
 
-  test('recognizes certificate codes in local connection diagnostics', () => {
+  test('recognizes exact TLS diagnostics and certificate details in connection errors', () => {
     for (
       const details of [
         'No connection established. Last error: CERT_HAS_EXPIRED',
-        'CERT_HAS_EXPIRED'
+        'No connection established. Last error: certificate has expired',
+        'CERT_HAS_EXPIRED',
+        '  CERT_HAS_EXPIRED  ',
+        '  CERTIFICATE HAS EXPIRED  '
       ]
     ) {
       const error = mapSdkCallError(

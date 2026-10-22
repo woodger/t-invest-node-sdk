@@ -325,15 +325,14 @@ function parseMarketDataStreamRequest(
 ): MarketDataStreamRequestConfig {
   const request = requireObject(value, 'requests[]');
   const requestType = parseMarketDataStreamRequestType(request['type']);
+  const allowedFields = requestType === 'getMySubscriptions'
+    ? new Set(['type'])
+    : new Set(['type', 'instruments']);
+
+  rejectUnknownFields(request, allowedFields, 'requests[]');
 
   switch (requestType) {
     case 'subscribeCandles': {
-      rejectUnknownFields(
-        request,
-        new Set(['type', 'instruments']),
-        'requests[]'
-      );
-
       const instruments = parseArray(
         request['instruments'],
         'requests[].instruments'
@@ -351,12 +350,6 @@ function parseMarketDataStreamRequest(
     }
 
     case 'subscribeOrderBook':
-      rejectUnknownFields(
-        request,
-        new Set(['type', 'instruments']),
-        'requests[]'
-      );
-
       return {
         type: requestType,
         instruments: parseArray(
@@ -371,12 +364,6 @@ function parseMarketDataStreamRequest(
     case 'subscribeTrades':
     case 'subscribeInfo':
     case 'subscribeLastPrice':
-      rejectUnknownFields(
-        request,
-        new Set(['type', 'instruments']),
-        'requests[]'
-      );
-
       return {
         type: requestType,
         instruments: parseArray(
@@ -389,8 +376,6 @@ function parseMarketDataStreamRequest(
       };
 
     case 'getMySubscriptions':
-      rejectUnknownFields(request, new Set(['type']), 'requests[]');
-
       return {
         type: requestType
       };
@@ -482,7 +467,7 @@ function parseCandleSubscription(
   );
 
   return {
-    instrumentId: parseInstrumentId(
+    instrumentId: parseNonEmptyString(
       candle['instrumentId'],
       `${path}.instrumentId`
     ),
@@ -505,7 +490,7 @@ function parseOrderBookSubscription(
     path
   );
 
-  const instrumentId = parseInstrumentId(
+  const instrumentId = parseNonEmptyString(
     orderBook['instrumentId'],
     `${path}.instrumentId`
   );
@@ -531,7 +516,7 @@ function parseInstrumentSubscription(
   rejectUnknownFields(instrument, new Set(['instrumentId']), path);
 
   return {
-    instrumentId: parseInstrumentId(
+    instrumentId: parseNonEmptyString(
       instrument['instrumentId'],
       `${path}.instrumentId`
     )
@@ -555,7 +540,7 @@ function parseCandleInterval(
 
 function parseAccountIds(value: unknown, stream: string): string[] {
   const accounts = parseArray(value, 'accounts').map((item) =>
-    parseInstrumentId(item, 'accounts[]')
+    parseNonEmptyString(item, 'accounts[]')
   );
 
   if (accounts.length === 0) {
@@ -567,7 +552,7 @@ function parseAccountIds(value: unknown, stream: string): string[] {
   return accounts;
 }
 
-function parseInstrumentId(value: unknown, path: string): string {
+function parseNonEmptyString(value: unknown, path: string): string {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new CliUsageError(`Expected '${path}' as non-empty string`);
   }

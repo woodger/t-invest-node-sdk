@@ -86,9 +86,12 @@ export function createStreamRunCommand(
     path: streamRunCommandPath,
     options: streamRunOptionsSchema,
     async handle({ options, provided }) {
-      return createStreamRunOutput(options, provided, {
+      const config = parseStreamRunConfig(await readConfig(options.config));
+      const runtime = resolveStreamRunRuntime(config.runtime, options, provided);
+      const sdkOptions = resolveSdkOptionsFromCommandOptions(options);
+
+      return runStreamRunSession(config, runtime, sdkOptions, {
         createSdk,
-        readConfig,
         now,
         elapsedNow
       });
@@ -97,24 +100,6 @@ export function createStreamRunCommand(
 }
 
 export const streamRunCommand = createStreamRunCommand();
-
-async function createStreamRunOutput(
-  options: StreamRunOptions,
-  provided: StreamRunProvidedOptions,
-  dependencies: Required<StreamRunDependencies>
-): Promise<AsyncIterable<string>> {
-  const config = parseStreamRunConfig(
-    await dependencies.readConfig(options.config)
-  );
-  const runtime = resolveStreamRunRuntime(config.runtime, options, provided);
-  const sdkOptions = resolveSdkOptionsFromCommandOptions(options);
-
-  return runStreamRunSession(config, runtime, sdkOptions, {
-    createSdk: dependencies.createSdk,
-    now: dependencies.now,
-    elapsedNow: dependencies.elapsedNow
-  });
-}
 
 function resolveStreamRunRuntime(
   runtime: StreamRunRuntime,

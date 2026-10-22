@@ -229,21 +229,24 @@ function isTlsCertificateError(
     return false;
   }
 
-  const normalizedDetails = error.details.toLowerCase();
+  const details = error.details.trim();
+  const normalizedDetails = details.toLowerCase();
 
-  const hasCertificateErrorCode = tlsCertificateErrorCodes.some(
-    (code) => error.details.includes(code)
-  );
-  const hasCertificateErrorMessage = tlsCertificateErrorMessages.some(
-    (message) => normalizedDetails.includes(message)
-  );
+  if (
+    tlsCertificateErrorCodes.includes(details)
+    || standaloneTlsCertificateErrorMessages.has(normalizedDetails)
+  ) {
+    return true;
+  }
 
-  return (
-    normalizedDetails.includes(grpcConnectionErrorMarker)
-    && (hasCertificateErrorCode || hasCertificateErrorMessage)
-  )
-    || tlsCertificateErrorCodes.includes(error.details.trim())
-    || standaloneTlsCertificateErrorMessages.has(normalizedDetails.trim());
+  // Текст провайдера может упоминать сертификат; частичное совпадение считаем
+  // TLS-ошибкой только внутри диагностики установления соединения.
+  if (!normalizedDetails.includes(grpcConnectionErrorMarker)) {
+    return false;
+  }
+
+  return tlsCertificateErrorCodes.some((code) => details.includes(code))
+    || tlsCertificateErrorMessages.some((message) => normalizedDetails.includes(message));
 }
 
 function errorName(error: unknown): string | undefined {
