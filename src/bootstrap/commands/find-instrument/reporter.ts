@@ -6,22 +6,16 @@
  * `cli.ts`.
  */
 
-import type {
-  FindInstrumentReport,
-  FindInstrumentReportInstrument
-} from '../../../application/reports';
-import {
-  instrumentTypeToJSON
-} from '../../../generated/common';
+import type { FindInstrumentReport, FindInstrumentReportInstrument } from '../../../application/reports';
+import { instrumentTypeToJSON } from '../../../generated/common';
 import type { InstrumentShort } from '../../../generated/instruments';
-import {
-  formatReportDate
-} from '../../../infrastructure/report-values';
+import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const findInstrumentFormats = ['json', 'table'] as const;
-
+/** Представление результатов поиска инструментов: JSON или таблица. */
 export type FindInstrumentFormat = typeof findInstrumentFormats[number];
+
+export const findInstrumentFormats = ['json', 'table'] as const;
 
 function toReportInstrument(
   instrument: InstrumentShort

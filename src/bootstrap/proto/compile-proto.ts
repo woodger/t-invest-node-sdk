@@ -16,6 +16,11 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pfs } from 'pwd-fs';
 
+type ProtoGenerationPaths = {
+  contractsDir: string;
+  generatedDir: string;
+};
+
 const compilerLauncherPath = path.join(
   pfs.pwd,
   'node_modules',
@@ -26,11 +31,6 @@ const pluginExecutable = process.platform === 'win32'
   ? 'protoc-gen-ts_proto.cmd'
   : 'protoc-gen-ts_proto';
 const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', pluginExecutable);
-
-type ProtoGenerationPaths = {
-  contractsDir: string;
-  generatedDir: string;
-};
 
 export function compileProtoContracts(): void {
   const paths = loadProtoGenerationPaths();
@@ -143,6 +143,8 @@ function runProtoCompiler(
     '--ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false',
     '--ts_proto_opt=env=node',
     '--ts_proto_opt=esModuleInterop=true',
+    // Сохраняем объектный JSON публичного Timestamp при обновлении ts-proto.
+    '--ts_proto_opt=useJsonTimestamp=raw',
     ...protoFiles
   ], {
     cwd: pfs.pwd,

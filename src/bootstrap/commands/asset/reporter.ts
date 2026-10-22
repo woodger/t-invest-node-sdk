@@ -13,22 +13,15 @@ import {
   type AssetReportSummary
 } from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
-import type {
-  Asset,
-  AssetFull,
-  AssetInstrument,
-  AssetResponse,
-  Brand
-} from '../../../generated/instruments';
+import type { Asset, AssetFull, AssetInstrument, AssetResponse, Brand } from '../../../generated/instruments';
 import { assetTypeToJSON } from '../../../generated/instruments';
-import {
-  formatReportDate
-} from '../../../infrastructure/report-values';
+import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const assetFormats = ['json', 'table'] as const;
-
+/** Представление данных актива: JSON или таблица. */
 export type AssetFormat = typeof assetFormats[number];
+
+export const assetFormats = ['json', 'table'] as const;
 
 function createAssetReportBrand(
   brand: Brand | undefined

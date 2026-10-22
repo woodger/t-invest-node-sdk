@@ -1,14 +1,14 @@
 /**
- * Модуль application service задаёт публичный port unary limiter-а и
- * необязательную process-local реализацию.
+ * Модуль задаёт публичный интерфейс ограничителя unary-запросов и
+ * необязательную реализацию для одного процесса.
  *
  * Здесь допустимы:
- * - transport-neutral квота и контекст ожидания;
- * - структурный контракт пользовательской реализации;
- * - отменяемая in-memory очередь с монотонным временем.
+ * - квота, выбранная для вызова, и данные для ожидания;
+ * - структурный контракт реализации, передаваемой приложением;
+ * - отменяемая очередь в памяти с монотонным временем.
  *
- * Здесь не должно быть разбора gRPC path, разрешения package config или
- * владения lifecycle внешнего limiter-а.
+ * Здесь не должно быть разбора пути gRPC, подготовки настроек модуля или
+ * управления временем жизни внешнего ограничителя.
  */
 
 /** Ограничение числа запросов в заданном временном окне. */
@@ -23,15 +23,15 @@ export interface TInvestUnaryLimit {
 /** Плоская таблица правил по service name или полному gRPC method path. */
 export type TInvestUnaryLimits = Record<string, TInvestUnaryLimit>;
 
-/** Разрешённая SDK квота и её непрозрачный общий bucket. */
+/** Квота, выбранная SDK, и её непрозрачный общий bucket. */
 export interface TInvestUnaryQuota extends TInvestUnaryLimit {
   /**
-   * Идентификатор общей квоты; Consumer должен сравнивать, но не разбирать его.
+   * Идентификатор общей квоты; приложение должно сравнивать, но не разбирать его.
    */
   readonly bucket: string;
 }
 
-/** Контекст одного ожидания перед unary transport call. */
+/** Данные одного ожидания перед unary-вызовом транспорта. */
 export interface TInvestUnaryLimitContext {
   /** Полный gRPC path фактически вызываемого unary RPC. */
   readonly path: string;
@@ -43,12 +43,12 @@ export interface TInvestUnaryLimitContext {
   readonly signal: AbortSignal;
 }
 
-/** Consumer-owned стратегия ожидания перед unary-вызовами. */
+/** Стратегия ожидания перед unary-вызовами, передаваемая приложением. */
 export interface TInvestUnaryLimiter {
   acquire(context: TInvestUnaryLimitContext): Promise<void>;
 }
 
-/** Настройки встроенного process-local unary limiter-а. */
+/** Настройки встроенного ограничителя unary-запросов для одного процесса. */
 export interface TInvestInMemoryUnaryLimiterOptions {
   /**
    * Доля исходной квоты T-Invest в диапазоне `[0.2, 1]`.
@@ -81,10 +81,14 @@ interface UnaryLimitSchedule {
   timer: UnaryLimitTimer | undefined;
 }
 
+const minimumQuotaShare = 0.2;
+const maximumQuotaShare = 1;
+// Node.js принимает задержки setTimeout не больше 2^31 - 1 миллисекунд.
 const maxTimerDelayMs = 2_147_483_647;
 
 /**
- * Создаёт необязательный process-local limiter с равномерной выдачей permits.
+ * Создаёт необязательный ограничитель для одного процесса с равномерной выдачей
+ * разрешений.
  * Один объект можно передать нескольким SDK instances для общего состояния.
  * `quotaShare` статически резервирует часть исходной квоты для других
  * владельцев.
@@ -92,7 +96,9 @@ const maxTimerDelayMs = 2_147_483_647;
 export function createInMemoryUnaryLimiter(
   options: TInvestInMemoryUnaryLimiterOptions = {}
 ): TInvestUnaryLimiter {
-  const quotaShare = options.quotaShare === undefined ? 1 : options.quotaShare;
+  const quotaShare = options.quotaShare === undefined
+    ? maximumQuotaShare
+    : options.quotaShare;
 
   return new InMemoryUnaryLimiter(quotaShare);
 }
@@ -332,9 +338,13 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * Отклоняет неконечные значения и значения вне `[0.2, 1]` с RangeError.
    */
   private static assertQuotaShare(quotaShare: number): void {
-    if (!Number.isFinite(quotaShare) || quotaShare < 0.2 || quotaShare > 1) {
+    if (
+      !Number.isFinite(quotaShare)
+      || quotaShare < minimumQuotaShare
+      || quotaShare > maximumQuotaShare
+    ) {
       throw new RangeError(
-        'quotaShare must be a finite number between 0.2 and 1'
+        `quotaShare must be a finite number between ${minimumQuotaShare} and ${maximumQuotaShare}`
       );
     }
   }
@@ -347,7 +357,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * сделало бы его бесконечным.
    */
   private resolveEffectiveMaxRequests(maxRequests: number): number {
-    if (this.quotaShare === 1) {
+    if (this.quotaShare === maximumQuotaShare) {
       return maxRequests;
     }
 

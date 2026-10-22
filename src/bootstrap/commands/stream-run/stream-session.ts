@@ -7,9 +7,7 @@
  * Здесь не должно быть чтения config, CLI option schema или JSONL mapping.
  */
 
-import type {
-  TInvestCallOptions
-} from '../../../application/dto/t-invest-services';
+import type { TInvestCallOptions } from '../../../application/dto/t-invest-services';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   MarketDataRequest,
@@ -22,15 +20,8 @@ import type {
   PositionsStreamRequest,
   PositionsStreamResponse
 } from '../../../generated/operations';
-import type {
-  TradesStreamRequest,
-  TradesStreamResponse
-} from '../../../generated/orders';
-import type {
-  StreamRunConfig,
-  StreamRunRuntime,
-  StreamRunStreamName
-} from './config';
+import type { TradesStreamRequest, TradesStreamResponse } from '../../../generated/orders';
+import type { StreamRunConfig, StreamRunRuntime, StreamRunStreamName } from './config';
 import {
   createMarketDataServerSideStreamRequest,
   createMarketDataStreamRequests,
@@ -38,11 +29,12 @@ import {
   createPositionsStreamRequest,
   createTradesStreamRequest
 } from './request.mapper';
-import {
-  formatStreamRunResponse,
-  type StreamRunResponse
-} from './reporter';
+import { formatStreamRunResponse, type StreamRunResponse } from './reporter';
 
+/**
+ * Контракт SDK для потоковой сессии, включающий используемые потоки и закрытие
+ * соединения.
+ */
 export type StreamRunSdk = {
   marketdataStream: {
     marketDataStream(
@@ -73,16 +65,27 @@ export type StreamRunSdk = {
   close(): void;
 };
 
+/**
+ * Создаёт SDK, который принадлежит потоковой сессии и закрывается при её
+ * завершении.
+ */
 export type StreamRunSdkFactory = (options: TInvestOptions) => StreamRunSdk;
+/** Календарное время для метки receivedAt у события потока. */
 export type StreamRunClock = () => Date;
+/** Монотонное время в миллисекундах для отсчёта длительности сессии и простоя. */
 export type StreamRunElapsedClock = () => number;
 
+/**
+ * Фабрика SDK и часы, передаваемые потоковой сессии для управления ресурсами и
+ * временем.
+ */
 export interface StreamRunSessionDependencies {
   readonly createSdk: StreamRunSdkFactory;
   readonly now: StreamRunClock;
   readonly elapsedNow: StreamRunElapsedClock;
 }
 
+// Node.js принимает задержки setTimeout не больше 2^31 - 1 миллисекунд.
 const maxTimerDelayMs = 2_147_483_647;
 const streamReadTimedOut = Symbol('streamReadTimedOut');
 

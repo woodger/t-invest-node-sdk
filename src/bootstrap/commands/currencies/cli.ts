@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type CurrenciesResponse,
-  type InstrumentsRequest
-} from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
+import { type CurrenciesResponse, type InstrumentsRequest } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentsRequestFromOptions,
-  instrumentStatusOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentsRequestFromOptions, instrumentStatusOptionsSchema } from '../../args/instruments-args';
 import { currenciesFormats, formatCurrencies } from './reporter';
 
 type CurrenciesSdk = {
@@ -35,48 +28,31 @@ type CurrenciesSdk = {
 
 type CurrenciesSdkFactory = (options: TInvestOptions) => CurrenciesSdk;
 
-const currenciesCommandPath = ['instrument', 'currency', 'list'] as const;
-const defaultCurrenciesSdkFactory: CurrenciesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const currenciesFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: currenciesFormats,
-    default: 'table'
-  }
-} as const;
-
-const currenciesOptionsSchema = withSdkOptions(
-  instrumentStatusOptionsSchema,
-  currenciesFormatOptionsSchema
-);
-
-type CurrenciesOptions = InferOptions<typeof currenciesOptionsSchema>;
-
 export function createCurrenciesCommand(
-  createSdk: CurrenciesSdkFactory = defaultCurrenciesSdkFactory
+  createSdk: CurrenciesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: currenciesCommandPath,
-    options: currenciesOptionsSchema,
-    handle({ options }) {
-      return runCurrenciesCommand(options, createSdk);
+    path: ['instrument', 'currency', 'list'] as const,
+    options: withSdkOptions({
+      ...instrumentStatusOptionsSchema,
+      format: {
+        type: 'string',
+        choices: currenciesFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentsRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.currencies(request);
+
+        return formatCurrencies(response.instruments, format);
+      });
     }
   });
 }
 
 export const currenciesCommand = createCurrenciesCommand();
-
-async function runCurrenciesCommand(
-  options: CurrenciesOptions,
-  createSdk: CurrenciesSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentsRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.currencies(request);
-
-    return formatCurrencies(response.instruments, format);
-  });
-}

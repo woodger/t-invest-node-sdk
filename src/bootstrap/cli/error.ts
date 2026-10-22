@@ -11,12 +11,14 @@
  * Здесь не должно быть command execution, stdout/stderr writes или SDK wiring.
  */
 
-import {
-  isIcoreError,
-  isUsageError,
-  type TerminalErrorPolicy
-} from 'icore';
+import { isIcoreError, isUsageError, type TerminalErrorPolicy } from 'icore';
 import { renderCliHelp } from './help';
+
+export const cliExitCodes = {
+  success: 0,
+  runtimeError: 1,
+  usageError: 2
+} as const;
 
 export function renderCommandError(error: unknown): string {
   if (isIcoreError(error, 'UNKNOWN_COMMAND')) {
@@ -35,7 +37,9 @@ export function renderCommandError(error: unknown): string {
 }
 
 export function resolveCommandExitCode(error: unknown): number {
-  return isUsageError(error) ? 2 : 1;
+  return isUsageError(error)
+    ? cliExitCodes.usageError
+    : cliExitCodes.runtimeError;
 }
 
 export const terminalErrorPolicy: TerminalErrorPolicy<unknown> = {

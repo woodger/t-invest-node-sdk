@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  CandleInterval,
-  GetCandlesRequest,
-  type GetCandlesResponse
-} from '../../../generated/marketdata';
+import { CandleInterval, GetCandlesRequest, type GetCandlesResponse } from '../../../generated/marketdata';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { candlesFormats, formatCandles } from './reporter';
 
@@ -36,9 +29,16 @@ type CandlesSdk = {
 
 type CandlesSdkFactory = (options: TInvestOptions) => CandlesSdk;
 
-const candlesCommandPath = ['market', 'candles'] as const;
-const defaultCandlesSdkFactory: CandlesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type CandleIntervalName = keyof typeof candleIntervals;
+
+type CandlesOptions = InferOptions<typeof candlesOptionsSchema>;
+type CandlesRequestOptions = CommandRequestOptions<
+  CandlesOptions,
+  | 'instrument-id'
+  | 'from'
+  | 'to'
+  | 'interval'
+>;
 
 const candleIntervals = {
   '1min': CandleInterval.CANDLE_INTERVAL_1_MIN,
@@ -61,9 +61,7 @@ const candleIntervalNames = Object.keys(candleIntervals) as Array<
   keyof typeof candleIntervals
 >;
 
-type CandleIntervalName = keyof typeof candleIntervals;
-
-const candlesRequestOptionsSchema = {
+const candlesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
     required: true
@@ -80,57 +78,35 @@ const candlesRequestOptionsSchema = {
     type: 'string',
     choices: candleIntervalNames,
     required: true
-  }
-} as const;
-
-const candlesFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: candlesFormats,
     default: 'json'
   }
-} as const;
-
-const candlesOptionsSchema = withSdkOptions(
-  candlesRequestOptionsSchema,
-  candlesFormatOptionsSchema
-);
-
-type CandlesOptions = InferOptions<typeof candlesOptionsSchema>;
-type CandlesRequestOptions = CommandRequestOptions<
-  CandlesOptions,
-  | 'instrument-id'
-  | 'from'
-  | 'to'
-  | 'interval'
->;
+});
 
 export function createCandlesCommand(
-  createSdk: CandlesSdkFactory = defaultCandlesSdkFactory
+  createSdk: CandlesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: candlesCommandPath,
+    path: ['market', 'candles'] as const,
     options: candlesOptionsSchema,
-    handle({ options }) {
-      return runCandlesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createCandlesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getCandles(request);
+
+        return formatCandles(response.candles, format);
+      });
     }
   });
 }
 
 export const candlesCommand = createCandlesCommand();
-
-async function runCandlesCommand(
-  options: CandlesOptions,
-  createSdk: CandlesSdkFactory
-): Promise<string> {
-  const request = createCandlesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getCandles(request);
-
-    return formatCandles(response.candles, format);
-  });
-}
 
 export function createCandlesRequest(
   options: CandlesRequestOptions

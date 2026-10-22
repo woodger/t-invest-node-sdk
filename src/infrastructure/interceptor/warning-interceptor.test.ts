@@ -1,5 +1,5 @@
 import { describe, test, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { installWarningInterceptor } from './warning-interceptor';
 
 describe('installWarningInterceptor', () => {

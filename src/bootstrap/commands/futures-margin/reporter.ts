@@ -8,16 +8,13 @@
 
 import type { FuturesMarginReport } from '../../../application/reports';
 import type { GetFuturesMarginResponse } from '../../../generated/instruments';
-import {
-  formatReportDecimal,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDecimal, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const futuresMarginFormats = ['json', 'table'] as const;
-
+/** Представление гарантийного обеспечения фьючерса: JSON или таблица. */
 export type FuturesMarginFormat = typeof futuresMarginFormats[number];
+
+export const futuresMarginFormats = ['json', 'table'] as const;
 
 export function createFuturesMarginReport(
   response: GetFuturesMarginResponse

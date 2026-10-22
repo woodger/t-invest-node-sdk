@@ -11,11 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  GetOrdersRequest,
-  GetOrdersResponse
-} from '../../../generated/orders';
-import type { InferOptions } from 'icore';
+import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -32,54 +28,34 @@ type OrdersSdk = {
 
 type OrdersSdkFactory = (options: TInvestOptions) => OrdersSdk;
 
-const ordersCommandPath = ['order', 'list'] as const;
-const defaultOrdersSdkFactory: OrdersSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const ordersRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const ordersFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: ordersFormats,
-    default: 'table'
-  }
-} as const;
-
-const ordersOptionsSchema = withSdkOptions(
-  ordersRequestOptionsSchema,
-  ordersFormatOptionsSchema
-);
-
-type OrdersOptions = InferOptions<typeof ordersOptionsSchema>;
 export function createOrdersCommand(
-  createSdk: OrdersSdkFactory = defaultOrdersSdkFactory
+  createSdk: OrdersSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: ordersCommandPath,
-    options: ordersOptionsSchema,
-    handle({ options }) {
-      return runOrdersCommand(options, createSdk);
+    path: ['order', 'list'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: ordersFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createOrdersRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.orders.getOrders(request);
+
+        return formatOrders(response, format);
+      });
     }
   });
 }
 
 export const ordersCommand = createOrdersCommand();
-
-async function runOrdersCommand(
-  options: OrdersOptions,
-  createSdk: OrdersSdkFactory
-): Promise<string> {
-  const request = createOrdersRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.orders.getOrders(request);
-
-    return formatOrders(response, format);
-  });
-}

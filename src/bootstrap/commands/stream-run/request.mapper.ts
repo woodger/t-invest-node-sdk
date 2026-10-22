@@ -21,10 +21,7 @@ import {
   type SubscribeOrderBookRequest,
   type SubscribeTradesRequest
 } from '../../../generated/marketdata';
-import type {
-  PortfolioStreamRequest,
-  PositionsStreamRequest
-} from '../../../generated/operations';
+import type { PortfolioStreamRequest, PositionsStreamRequest } from '../../../generated/operations';
 import type { TradesStreamRequest } from '../../../generated/orders';
 import { CliUsageError } from 'icore';
 import {

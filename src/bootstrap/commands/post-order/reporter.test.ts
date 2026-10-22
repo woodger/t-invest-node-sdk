@@ -1,8 +1,5 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import {
   OrderDirection,
@@ -10,10 +7,7 @@ import {
   OrderType,
   type PostOrderResponse
 } from '../../../generated/orders';
-import {
-  createOrderMutationReport,
-  formatOrderMutationReport
-} from './reporter';
+import { createOrderMutationReport, formatOrderMutationReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {

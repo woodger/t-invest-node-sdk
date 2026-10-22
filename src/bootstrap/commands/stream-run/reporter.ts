@@ -10,20 +10,20 @@
  */
 
 import type { MarketDataResponse } from '../../../generated/marketdata';
-import type {
-  PortfolioStreamResponse,
-  PositionsStreamResponse
-} from '../../../generated/operations';
+import type { PortfolioStreamResponse, PositionsStreamResponse } from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 
-export const streamRunFormats = ['jsonl'] as const;
-
+/** Ответы поддерживаемых потоков SDK, которые reporter преобразует в события CLI. */
 export type StreamRunResponse =
   | MarketDataResponse
   | PortfolioStreamResponse
   | PositionsStreamResponse
   | TradesStreamResponse;
 
+/**
+ * Метка получения, номер события и параметры фильтрации и вывода одного ответа
+ * потока.
+ */
 export type StreamRunReportOptions = {
   stream: string;
   sequence: number;
@@ -37,6 +37,8 @@ type StreamRunEvent = {
   type: string;
   payload: unknown;
 };
+
+export const streamRunFormats = ['jsonl'] as const;
 
 const streamEventFields = [
   'subscribeCandlesResponse',

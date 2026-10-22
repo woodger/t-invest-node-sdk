@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type GetOperationsByCursorRequest,
-  type GetOperationsByCursorResponse
-} from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import { type GetOperationsByCursorRequest, type GetOperationsByCursorResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  formatOperationsByCursor,
-  operationsByCursorFormats
-} from './reporter';
+import { formatOperationsByCursor, operationsByCursorFormats } from './reporter';
 import { createOperationsByCursorRequest } from './request.mapper';
 
 type OperationsByCursorSdk = {
@@ -39,10 +32,6 @@ type OperationsByCursorSdkFactory = (
   options: TInvestOptions
 ) => OperationsByCursorSdk;
 
-const operationsByCursorCommandPath = ['operation', 'page'] as const;
-const defaultOperationsByCursorSdkFactory: OperationsByCursorSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
 const operationStateNames = [
   'unspecified',
   'executed',
@@ -50,99 +39,69 @@ const operationStateNames = [
   'progress'
 ] as const;
 
-const operationsByCursorStateOptionsSchema = {
-  state: {
-    type: 'string',
-    choices: operationStateNames,
-    default: 'unspecified'
-  }
-} as const;
-
-const operationsByCursorLimitOptionsSchema = {
-  limit: {
-    type: 'string'
-  }
-} as const;
-
-const operationsByCursorOperationTypesOptionsSchema = {
-  'operation-type': {
-    type: 'string'
-  }
-} as const;
-
-const operationsByCursorRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  'instrument-id': {
-    type: 'string'
-  },
-  from: {
-    type: 'string'
-  },
-  to: {
-    type: 'string'
-  },
-  cursor: {
-    type: 'string'
-  },
-  ...operationsByCursorLimitOptionsSchema,
-  ...operationsByCursorOperationTypesOptionsSchema,
-  ...operationsByCursorStateOptionsSchema,
-  'without-commissions': {
-    type: 'boolean',
-    default: false
-  },
-  'without-trades': {
-    type: 'boolean',
-    default: false
-  },
-  'without-overnights': {
-    type: 'boolean',
-    default: false
-  }
-} as const;
-
-const operationsByCursorFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: operationsByCursorFormats,
-    default: 'table'
-  }
-} as const;
-
-const operationsByCursorOptionsSchema = withSdkOptions(
-  operationsByCursorRequestOptionsSchema,
-  operationsByCursorFormatOptionsSchema
-);
-
-type OperationsByCursorOptions = InferOptions<
-  typeof operationsByCursorOptionsSchema
->;
 export function createOperationsByCursorCommand(
-  createSdk: OperationsByCursorSdkFactory = defaultOperationsByCursorSdkFactory
+  createSdk: OperationsByCursorSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: operationsByCursorCommandPath,
-    options: operationsByCursorOptionsSchema,
-    handle({ options }) {
-      return runOperationsByCursorCommand(options, createSdk);
+    path: ['operation', 'page'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      'instrument-id': {
+        type: 'string'
+      },
+      from: {
+        type: 'string'
+      },
+      to: {
+        type: 'string'
+      },
+      cursor: {
+        type: 'string'
+      },
+      limit: {
+        type: 'string'
+      },
+      'operation-type': {
+        type: 'string'
+      },
+      state: {
+        type: 'string',
+        choices: operationStateNames,
+        default: 'unspecified'
+      },
+      'without-commissions': {
+        type: 'boolean',
+        default: false
+      },
+      'without-trades': {
+        type: 'boolean',
+        default: false
+      },
+      'without-overnights': {
+        type: 'boolean',
+        default: false
+      },
+      format: {
+        type: 'string',
+        choices: operationsByCursorFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createOperationsByCursorRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.operations.getOperationsByCursor(request);
+
+        return formatOperationsByCursor(response, format);
+      });
     }
   });
 }
 
 export const operationsByCursorCommand = createOperationsByCursorCommand();
-
-async function runOperationsByCursorCommand(
-  options: OperationsByCursorOptions,
-  createSdk: OperationsByCursorSdkFactory
-): Promise<string> {
-  const request = createOperationsByCursorRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.operations.getOperationsByCursor(request);
-
-    return formatOperationsByCursor(response, format);
-  });
-}

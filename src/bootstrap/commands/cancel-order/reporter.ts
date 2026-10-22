@@ -11,9 +11,10 @@ import type { CancelOrderResponse } from '../../../generated/orders';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const cancelOrderFormats = ['json', 'table'] as const;
-
+/** Представление результата отмены заявки: JSON или таблица. */
 export type CancelOrderFormat = typeof cancelOrderFormats[number];
+
+export const cancelOrderFormats = ['json', 'table'] as const;
 
 export function createCancelOrderReport(
   response: CancelOrderResponse

@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  AssetRequest,
-  AssetResponse
-} from '../../../generated/instruments';
+import type { AssetRequest, AssetResponse } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -32,59 +29,42 @@ type AssetSdk = {
 
 type AssetSdkFactory = (options: TInvestOptions) => AssetSdk;
 
-const assetCommandPath = ['instrument', 'asset', 'show'] as const;
-const defaultAssetSdkFactory: AssetSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type AssetOptions = InferOptions<typeof assetOptionsSchema>;
+type AssetRequestOptions = CommandRequestOptions<AssetOptions, 'id'>;
 
-const assetRequestOptionsSchema = {
+const assetOptionsSchema = withSdkOptions({
   id: {
     type: 'string',
     required: true
-  }
-} as const;
-
-const assetFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: assetFormats,
     default: 'table'
   }
-} as const;
-
-const assetOptionsSchema = withSdkOptions(
-  assetRequestOptionsSchema,
-  assetFormatOptionsSchema
-);
-
-type AssetOptions = InferOptions<typeof assetOptionsSchema>;
-type AssetRequestOptions = CommandRequestOptions<AssetOptions, 'id'>;
+});
 
 export function createAssetCommand(
-  createSdk: AssetSdkFactory = defaultAssetSdkFactory
+  createSdk: AssetSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: assetCommandPath,
+    path: ['instrument', 'asset', 'show'] as const,
     options: assetOptionsSchema,
-    handle({ options }) {
-      return runAssetCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createAssetRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getAssetBy(request);
+
+        return formatAsset(response, format);
+      });
     }
   });
 }
 
 export const assetCommand = createAssetCommand();
-
-async function runAssetCommand(
-  options: AssetOptions,
-  createSdk: AssetSdkFactory
-): Promise<string> {
-  const request = createAssetRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getAssetBy(request);
-
-    return formatAsset(response, format);
-  });
-}
 
 export function createAssetRequest(
   options: AssetRequestOptions

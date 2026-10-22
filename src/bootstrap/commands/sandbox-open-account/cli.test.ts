@@ -1,20 +1,11 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { OpenSandboxAccountRequest } from '../../../generated/sandbox';
-import {
-  createSandboxOpenAccountCommand,
-  createSandboxOpenAccountRequest
-} from './cli';
+import { createSandboxOpenAccountCommand } from './cli';
 
 describe('sandbox-open-account command', () => {
-  describe('createSandboxOpenAccountRequest', () => {
-    test('returns generated openSandboxAccount request', () => {
-      assert.deepEqual(createSandboxOpenAccountRequest(), {});
-    });
-  });
-
   describe('createSandboxOpenAccountCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

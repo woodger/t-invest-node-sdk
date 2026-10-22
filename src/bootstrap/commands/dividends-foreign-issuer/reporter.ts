@@ -16,16 +16,14 @@ import type {
   GetDividendsForeignIssuerReportResponse,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const dividendsForeignIssuerFormats = ['json', 'table'] as const;
-
+/** Представление отчёта о дивидендах иностранных эмитентов: JSON или таблица. */
 export type DividendsForeignIssuerFormat =
   typeof dividendsForeignIssuerFormats[number];
+
+export const dividendsForeignIssuerFormats = ['json', 'table'] as const;
 
 function toReportItem(
   item: GeneratedDividendsForeignIssuerReport

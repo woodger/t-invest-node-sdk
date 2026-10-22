@@ -6,26 +6,20 @@
  * `cli.ts`.
  */
 
-import type {
-  StopOrdersReport,
-  StopOrdersReportOrder
-} from '../../../application/reports';
+import type { StopOrdersReport, StopOrdersReportOrder } from '../../../application/reports';
 import {
   stopOrderDirectionToJSON,
   stopOrderTypeToJSON,
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
-import {
-  formatReportDate,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const stopOrdersFormats = ['json', 'table'] as const;
-
+/** Представление списка стоп-заявок: JSON или таблица. */
 export type StopOrdersFormat = typeof stopOrdersFormats[number];
+
+export const stopOrdersFormats = ['json', 'table'] as const;
 
 function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
   return {

@@ -1,7 +1,7 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { CliUsageError, IcoreError } from 'icore';
-import { renderCommandError, resolveCommandExitCode } from './error';
+import { cliExitCodes, renderCommandError, resolveCommandExitCode } from './error';
 
 describe('renderCommandError', () => {
   test('renders Error message with trailing newline', () => {
@@ -56,11 +56,14 @@ describe('resolveCommandExitCode', () => {
       }
     );
 
-    assert.equal(resolveCommandExitCode(error), 2);
+    assert.equal(resolveCommandExitCode(error), cliExitCodes.usageError);
   });
 
   test('returns exit code two for application usage errors', () => {
-    assert.equal(resolveCommandExitCode(new CliUsageError('Invalid input')), 2);
+    assert.equal(
+      resolveCommandExitCode(new CliUsageError('Invalid input')),
+      cliExitCodes.usageError
+    );
   });
 
   test('returns exit code one for icore definition errors', () => {
@@ -74,10 +77,13 @@ describe('resolveCommandExitCode', () => {
       }
     );
 
-    assert.equal(resolveCommandExitCode(error), 1);
+    assert.equal(resolveCommandExitCode(error), cliExitCodes.runtimeError);
   });
 
   test('returns exit code one for runtime errors', () => {
-    assert.equal(resolveCommandExitCode(new Error('failed')), 1);
+    assert.equal(
+      resolveCommandExitCode(new Error('failed')),
+      cliExitCodes.runtimeError
+    );
   });
 });

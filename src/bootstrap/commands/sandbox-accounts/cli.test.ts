@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
@@ -9,10 +9,7 @@ import {
   type Account,
   type GetAccountsRequest
 } from '../../../generated/users';
-import {
-  createSandboxAccountsCommand,
-  createSandboxAccountsRequest
-} from './cli';
+import { createSandboxAccountsCommand } from './cli';
 
 function account(overrides: Partial<Account> = {}): Account {
   return {
@@ -28,12 +25,6 @@ function account(overrides: Partial<Account> = {}): Account {
 }
 
 describe('sandbox-accounts command', () => {
-  describe('createSandboxAccountsRequest', () => {
-    test('returns generated getSandboxAccounts request', () => {
-      assert.deepEqual(createSandboxAccountsRequest(), {});
-    });
-  });
-
   describe('createSandboxAccountsCommand', () => {
     test('calls getSandboxAccounts and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;

@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  FilterOptionsRequest,
-  OptionsResponse
-} from '../../../generated/instruments';
+import type { FilterOptionsRequest, OptionsResponse } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -32,65 +29,48 @@ type OptionsBySdk = {
 
 type OptionsBySdkFactory = (options: TInvestOptions) => OptionsBySdk;
 
-const optionsByCommandPath = ['instrument', 'option', 'list'] as const;
-const defaultOptionsBySdkFactory: OptionsBySdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const optionsByRequestOptionsSchema = {
-  'basic-asset-uid': {
-    type: 'string',
-    required: true
-  },
-  'basic-asset-position-uid': {
-    type: 'string'
-  }
-} as const;
-
-const optionsByFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: optionsByFormats,
-    default: 'table'
-  }
-} as const;
-
-const optionsByOptionsSchema = withSdkOptions(
-  optionsByRequestOptionsSchema,
-  optionsByFormatOptionsSchema
-);
-
 type OptionsByOptions = InferOptions<typeof optionsByOptionsSchema>;
 type OptionsByRequestOptions = CommandRequestOptions<
   OptionsByOptions,
   'basic-asset-uid' | 'basic-asset-position-uid'
 >;
 
+const optionsByOptionsSchema = withSdkOptions({
+  'basic-asset-uid': {
+    type: 'string',
+    required: true
+  },
+  'basic-asset-position-uid': {
+    type: 'string'
+  },
+  format: {
+    type: 'string',
+    choices: optionsByFormats,
+    default: 'table'
+  }
+});
+
 export function createOptionsByCommand(
-  createSdk: OptionsBySdkFactory = defaultOptionsBySdkFactory
+  createSdk: OptionsBySdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: optionsByCommandPath,
+    path: ['instrument', 'option', 'list'] as const,
     options: optionsByOptionsSchema,
-    handle({ options }) {
-      return runOptionsByCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createOptionsByRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.optionsBy(request);
+
+        return formatOptionsBy(response.instruments, format);
+      });
     }
   });
 }
 
 export const optionsByCommand = createOptionsByCommand();
-
-async function runOptionsByCommand(
-  options: OptionsByOptions,
-  createSdk: OptionsBySdkFactory
-): Promise<string> {
-  const request = createOptionsByRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.optionsBy(request);
-
-    return formatOptionsBy(response.instruments, format);
-  });
-}
 
 export function createOptionsByRequest(
   options: OptionsByRequestOptions

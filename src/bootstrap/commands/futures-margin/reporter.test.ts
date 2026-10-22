@@ -1,10 +1,7 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { GetFuturesMarginResponse } from '../../../generated/instruments';
-import {
-  createFuturesMarginReport,
-  formatFuturesMarginReport
-} from './reporter';
+import { createFuturesMarginReport, formatFuturesMarginReport } from './reporter';
 
 function response(
   overrides: Partial<GetFuturesMarginResponse> = {}

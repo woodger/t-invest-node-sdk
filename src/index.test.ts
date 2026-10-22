@@ -5,7 +5,7 @@
  * внутренних bootstrap или generated implementation details.
  */
 
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import * as packageExports from './index';
 import type {
@@ -62,11 +62,12 @@ type RootUnaryLimiterContracts = [
   TInvestUnaryQuota
 ];
 
-const expectedServerSideImplementationContractCount:
-  RootServerSideImplementationContracts['length'] = 11;
-const expectedSdkErrorContractCount: RootSdkErrorContracts['length'] = 3;
-const expectedUnaryLimiterContractCount: RootUnaryLimiterContracts['length'] =
-  6;
+type GeneratedServiceDefinitionRuntimeContract = {
+  methods: Record<string, {
+    requestType?: unknown;
+    responseType?: unknown;
+  }>;
+};
 
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
@@ -101,6 +102,7 @@ const signalRuntimeContractNames = [
 ] as const;
 
 const generatedEnumRuntimeContractNames = [
+  ['ResultSubscriptionStatus', 'resultSubscriptionStatus'],
   ['Recommendation', 'recommendation'],
   ['BondType', 'bondType'],
   ['InstrumentExchangeType', 'instrumentExchangeType'],
@@ -156,13 +158,6 @@ const generatedEnumRuntimeContractNames = [
   ['AccountValue', 'accountValue']
 ] as const;
 
-type GeneratedServiceDefinitionRuntimeContract = {
-  methods: Record<string, {
-    requestType?: unknown;
-    responseType?: unknown;
-  }>;
-};
-
 describe('package entrypoint', () => {
   test('exposes generated server-side service definitions', () => {
     for (const exportName of serverSideServiceDefinitionNames) {
@@ -187,7 +182,10 @@ describe('package entrypoint', () => {
   );
 
   test('exposes generated server-side service implementation types', () => {
-    assert.equal(expectedServerSideImplementationContractCount, 11);
+    assert.equal(
+      11 satisfies RootServerSideImplementationContracts['length'],
+      11
+    );
   });
 
   test('exposes SignalService contracts', () => {
@@ -201,6 +199,34 @@ describe('package entrypoint', () => {
       assert.equal(hasPackageExport(exportName), true);
     });
   }
+
+  test('preserves the public Timestamp JSON object representation', () => {
+    const timestamp = { seconds: 1_700_000_000, nanos: 123_456_789 };
+
+    assert.deepEqual(packageExports.Timestamp.toJSON(timestamp), timestamp);
+    assert.deepEqual(packageExports.Timestamp.fromJSON(timestamp), timestamp);
+    assert.deepEqual(
+      packageExports.Timestamp.toJSON({ seconds: 0, nanos: 0 }),
+      {}
+    );
+  });
+
+  test('keeps Date fields as ISO strings in message JSON', () => {
+    const orderDate = new Date('2026-10-20T08:16:50.123Z');
+    const request = packageExports.GetOrderStateRequest.fromPartial({
+      orderDate
+    });
+
+    assert.deepEqual(packageExports.GetOrderStateRequest.toJSON(request), {
+      orderDate: orderDate.toISOString()
+    });
+    assert.deepEqual(
+      packageExports.GetOrderStateRequest.fromJSON({
+        orderDate: orderDate.toISOString()
+      }).orderDate,
+      orderDate
+    );
+  });
 
   test('exposes generated enum contracts used by public DTOs', () => {
     for (const [enumName, converterName] of generatedEnumRuntimeContractNames) {
@@ -261,8 +287,8 @@ describe('package entrypoint', () => {
     assert.equal(hasPackageExport('SdkError'), true);
     assert.equal(hasPackageExport('SdkErrorCode'), true);
     assert.equal(hasPackageExport('isSdkError'), true);
-    assert.equal(expectedSdkErrorContractCount, 3);
-    assert.equal(expectedUnaryLimiterContractCount, 6);
+    assert.equal(3 satisfies RootSdkErrorContracts['length'], 3);
+    assert.equal(6 satisfies RootUnaryLimiterContracts['length'], 6);
   });
 });
 

@@ -1,29 +1,22 @@
 /**
- * Модуль CLI-команды `stream run` запускает configured stream session.
+ * Модуль CLI-команды `stream run` запускает потоковую сессию с настройками
+ * из файла и командной строки.
  *
  * Здесь допустимы:
- * - чтение stream config и применение runtime overrides;
- * - передача validated config и runtime policy в stream session;
+ * - чтение конфигурации потока и применение параметров CLI;
+ * - передача проверенных настроек в потоковую сессию;
  *
  * Здесь не должно быть JSONL event formatting rules или transport adapter
  * logic.
  */
 
-import {
-  readFile
-} from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import {
-  positiveSafeIntegerOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  parseStreamRunConfig,
-  type StreamRunRuntime
-} from './config';
+import { parseStreamRunConfig, type StreamRunRuntime } from './config';
 import { streamRunFormats } from './reporter';
 import {
   runStreamRunSession,
@@ -40,6 +33,11 @@ type StreamRunDependencies = {
   now?: StreamRunClock;
   elapsedNow?: StreamRunElapsedClock;
 };
+
+type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
+type StreamRunProvidedOptions = InferProvidedOptions<
+  typeof streamRunOptionsSchema
+>;
 
 const streamRunCommandPath = ['stream', 'run'] as const;
 const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
@@ -75,11 +73,6 @@ const streamRunOptionsSchema = withSdkOptions(
     }
   } as const
 );
-
-type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
-type StreamRunProvidedOptions = InferProvidedOptions<
-  typeof streamRunOptionsSchema
->;
 
 export function createStreamRunCommand(
   dependencies: StreamRunDependencies = {}

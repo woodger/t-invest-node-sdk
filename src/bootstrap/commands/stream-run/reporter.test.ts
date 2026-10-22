@@ -1,10 +1,7 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { ResultSubscriptionStatus } from '../../../generated/common';
-import {
-  formatStreamRunResponse,
-  type StreamRunResponse
-} from './reporter';
+import { formatStreamRunResponse, type StreamRunResponse } from './reporter';
 
 const baseOptions = {
   stream: 'operations.portfolioStream',

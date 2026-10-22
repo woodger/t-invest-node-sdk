@@ -11,14 +11,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  GetOrdersRequest,
-  GetOrdersResponse
-} from '../../../generated/orders';
-import type { InferOptions } from 'icore';
+import type { GetOrdersRequest, GetOrdersResponse } from '../../../generated/orders';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createOrdersRequest } from '../orders/request.mapper';
@@ -33,65 +28,34 @@ type SandboxOrdersSdk = {
 
 type SandboxOrdersSdkFactory = (options: TInvestOptions) => SandboxOrdersSdk;
 
-const sandboxOrdersCommandPath = ['sandbox', 'order', 'list'] as const;
-const defaultSandboxOrdersSdkFactory: SandboxOrdersSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const sandboxOrdersRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const sandboxOrdersFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: ordersFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxOrdersOptionsSchema = withSdkOptions(
-  sandboxOrdersRequestOptionsSchema,
-  sandboxOrdersFormatOptionsSchema
-);
-
-type SandboxOrdersOptions = InferOptions<typeof sandboxOrdersOptionsSchema>;
-type SandboxOrdersRequestOptions = CommandRequestOptions<
-  SandboxOrdersOptions,
-  'account-id'
->;
-
 export function createSandboxOrdersCommand(
-  createSdk: SandboxOrdersSdkFactory = defaultSandboxOrdersSdkFactory
+  createSdk: SandboxOrdersSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxOrdersCommandPath,
-    options: sandboxOrdersOptionsSchema,
-    handle({ options }) {
-      return runSandboxOrdersCommand(options, createSdk);
+    path: ['sandbox', 'order', 'list'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: ordersFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createOrdersRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.getSandboxOrders(request);
+
+        return formatOrders(response, format);
+      });
     }
   });
 }
 
 export const sandboxOrdersCommand = createSandboxOrdersCommand();
-
-async function runSandboxOrdersCommand(
-  options: SandboxOrdersOptions,
-  createSdk: SandboxOrdersSdkFactory
-): Promise<string> {
-  const request = createSandboxOrdersRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.getSandboxOrders(request);
-
-    return formatOrders(response, format);
-  });
-}
-
-export function createSandboxOrdersRequest(
-  options: SandboxOrdersRequestOptions
-): GetOrdersRequest {
-  return createOrdersRequest(options);
-}

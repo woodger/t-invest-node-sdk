@@ -1,8 +1,5 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -86,7 +83,7 @@ describe('post-order command', () => {
               'place',
               '--account-id=account-id',
               '--instrument-id=instrument-id',
-              '--quantity=9007199254740993',
+              '--quantity=9007199254740992',
               '--direction=buy',
               '--order-type=market',
               '--order-id=idempotency-key',
@@ -94,7 +91,9 @@ describe('post-order command', () => {
             ],
             undefined
           ),
-        /Expected '--quantity' to be less than or equal to 9007199254740991/
+        new RegExp(
+          `Expected '--quantity' to be less than or equal to 9007199254740991`
+        )
       );
       assert.equal(sdkCreated, false);
     });

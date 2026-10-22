@@ -1,37 +1,30 @@
 /**
- * Модуль bootstrap config compiler преобразует декларативную unary policy в
- * runtime-квоты для Consumer-owned limiter-а.
+ * Модуль преобразует декларацию unary-квот в таблицы правил для gRPC-вызовов.
  *
  * Здесь допустимы:
- * - построение полных gRPC paths для method rules;
- * - сборка quota buckets и проверка инвариантов декларации;
- * - проверка инвариантов итогового runtime snapshot;
- * - public mapping читаемых per-instance overrides в flat UnaryLimits.
+ * - построение полных путей gRPC-методов;
+ * - сборка групп общих квот и проверка декларации;
+ * - проверка таблиц квот после объединения значений;
+ * - преобразование переопределений экземпляра в плоскую таблицу.
  *
- * Здесь не должно быть package defaults, limiter state или provider tariff
- * refresh.
+ * Здесь не должно быть значений по умолчанию модуля, состояния ограничителя
+ * или обновления тарифа провайдера.
  */
 
 import type { TInvestUnaryLimit } from '../application/services/unary-limiter';
-import type {
-  UnaryLimits,
-  UnaryLimitsConfig,
-  UnaryLimitsDefinition
-} from '../config.types';
-import {
-  unaryMethodPath
-} from '../infrastructure/transport/grpc/unary-method-path';
+import type { UnaryLimits, UnaryLimitsConfig, UnaryLimitsDefinition } from '../config.types';
+import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-method-path';
 
-/** Path-keyed runtime policy, которую принимает transport resolver. */
+/** Таблицы квот по ключам правил и группам общих квот для транспорта. */
 export interface UnaryLimitConfig {
   buckets: Record<string, string>;
   limits: UnaryLimits;
 }
 
 /**
- * Service defaults сохраняются как короткие keys, а method limits получают
- * полные gRPC paths. Package defaults не подмешиваются, quota groups не
- * создаются.
+ * Значения по умолчанию сервиса сохраняются под короткими ключами, а правила
+ * методов получают полные пути gRPC. Значения модуля и группы общих квот не
+ * добавляются.
  */
 export function defineUnaryLimits(
   definition: UnaryLimitsDefinition
@@ -114,8 +107,8 @@ export function compileUnaryLimits(
 }
 
 /**
- * Проверяет limits и quota groups после применения public defaults и
- * per-instance overrides, до создания transport resolver.
+ * Проверяет таблицы квот и группы общих квот после применения значений по
+ * умолчанию и переопределений экземпляра, до создания транспорта.
  */
 export function assertUnaryLimitConfig(config: UnaryLimitConfig): void {
   const limitsByBucket = new Map<string, TInvestUnaryLimit>();

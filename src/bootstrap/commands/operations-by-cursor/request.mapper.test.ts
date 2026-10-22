@@ -1,9 +1,6 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  OperationState,
-  OperationType
-} from '../../../generated/operations';
+import { OperationState, OperationType } from '../../../generated/operations';
 import { createOperationsByCursorRequest } from './request.mapper';
 
 const defaultOptions = {
@@ -22,7 +19,7 @@ describe('createOperationsByCursorRequest', () => {
       from: '2026-06-01T00:00:00.000Z',
       to: '2026-06-19T00:00:00.000Z',
       cursor: 'cursor',
-      limit: '1000',
+      limit: String(1_000),
       'operation-type': 'OPERATION_TYPE_BUY',
       state: 'executed',
       'without-commissions': true,
@@ -35,7 +32,7 @@ describe('createOperationsByCursorRequest', () => {
     assert.equal(request.from?.toISOString(), '2026-06-01T00:00:00.000Z');
     assert.equal(request.to?.toISOString(), '2026-06-19T00:00:00.000Z');
     assert.equal(request.cursor, 'cursor');
-    assert.equal(request.limit, 1000);
+    assert.equal(request.limit, 1_000);
     assert.deepEqual(request.operationTypes, [
       OperationType.OPERATION_TYPE_BUY
     ]);
@@ -82,14 +79,21 @@ describe('createOperationsByCursorRequest', () => {
   });
 
   test('отклоняет limit вне provider range', () => {
-    for (const limit of ['0', '1001']) {
+    for (
+      const limit of [
+        '0',
+        '1001'
+      ]
+    ) {
       assert.throws(
         () =>
           createOperationsByCursorRequest({
             ...defaultOptions,
             limit
           }),
-        /Expected '--limit' as integer from 1 to 1000/
+        new RegExp(
+          `Expected '--limit' as integer from 1 to 1000`
+        )
       );
     }
   });

@@ -9,6 +9,25 @@
  * Здесь не должно быть imports из transport libraries или retry policy.
  */
 
+/**
+ * Источник сбоя для различения ошибок провайдера, транспорта, отмены и
+ * проверок SDK.
+ */
+export type SdkErrorSource =
+  | 'grpc'
+  | 'tls'
+  | 'abort'
+  | 'lifecycle'
+  | 'sdk';
+
+/** Диагностические поля ошибки SDK и её исходная причина для сохранения в cause. */
+export interface SdkErrorOptions {
+  source: SdkErrorSource;
+  path?: string;
+  details?: string;
+  cause?: unknown;
+}
+
 export enum SdkErrorCode {
   Cancelled = 'CANCELLED',
   Unknown = 'UNKNOWN',
@@ -28,20 +47,6 @@ export enum SdkErrorCode {
   Unauthenticated = 'UNAUTHENTICATED',
   SdkClosed = 'SDK_CLOSED',
   UnknownUnaryLimit = 'UNKNOWN_UNARY_LIMIT'
-}
-
-export type SdkErrorSource =
-  | 'grpc'
-  | 'tls'
-  | 'abort'
-  | 'lifecycle'
-  | 'sdk';
-
-export interface SdkErrorOptions {
-  source: SdkErrorSource;
-  path?: string;
-  details?: string;
-  cause?: unknown;
 }
 
 const sdkErrorBrand = Symbol.for('t-invest-node-sdk/SdkError');
@@ -83,7 +88,23 @@ export class SdkError<Code extends SdkErrorCode = SdkErrorCode> extends Error {
    * по общему бренду и проверяемой форме диагностических полей.
    */
   static override [Symbol.hasInstance](value: unknown): boolean {
-    return hasSdkErrorContract(value);
+    if (typeof value !== 'object' || value === null) {
+      return false;
+    }
+
+    const candidate = value as Record<PropertyKey, unknown>;
+
+    return candidate[sdkErrorBrand] === true
+      && candidate['name'] === 'SdkError'
+      && typeof candidate['message'] === 'string'
+      && typeof candidate['code'] === 'string'
+      && sdkErrorCodes.has(candidate['code'])
+      && typeof candidate['source'] === 'string'
+      && sdkErrorSources.has(candidate['source'])
+      && (candidate['path'] === undefined
+        || typeof candidate['path'] === 'string')
+      && (candidate['details'] === undefined
+        || typeof candidate['details'] === 'string');
   }
 }
 
@@ -101,30 +122,6 @@ export function isSdkError(
   error: unknown,
   code?: SdkErrorCode
 ): error is SdkError {
-  return hasSdkErrorContract(error)
+  return error instanceof SdkError
     && (code === undefined || error.code === code);
-}
-
-/**
- * Общая проверка runtime-контракта для instanceof SdkError и публичного
- * isSdkError.
- */
-function hasSdkErrorContract(value: unknown): value is SdkError {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const candidate = value as Record<PropertyKey, unknown>;
-
-  return candidate[sdkErrorBrand] === true
-    && candidate['name'] === 'SdkError'
-    && typeof candidate['message'] === 'string'
-    && typeof candidate['code'] === 'string'
-    && sdkErrorCodes.has(candidate['code'])
-    && typeof candidate['source'] === 'string'
-    && sdkErrorSources.has(candidate['source'])
-    && (candidate['path'] === undefined
-      || typeof candidate['path'] === 'string')
-    && (candidate['details'] === undefined
-      || typeof candidate['details'] === 'string');
 }

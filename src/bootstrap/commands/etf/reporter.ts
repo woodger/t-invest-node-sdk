@@ -6,28 +6,17 @@
  * `cli.ts`.
  */
 
-import type {
-  EtfReport,
-  EtfReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Etf,
-  EtfResponse
-} from '../../../generated/instruments';
+import type { EtfReport, EtfReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Etf, EtfResponse } from '../../../generated/instruments';
 
-import {
-  formatReportDate,
-  formatReportDecimal
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportDecimal } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const etfFormats = ['json', 'table'] as const;
-
+/** Представление данных фонда: JSON или таблица. */
 export type EtfFormat = typeof etfFormats[number];
+
+export const etfFormats = ['json', 'table'] as const;
 
 export function createEtfReportInstrument(
   instrument: Etf

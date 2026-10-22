@@ -9,12 +9,7 @@
  * сборки generated requests или форматирования provider responses.
  */
 
-import {
-  CliUsageError,
-  mergeOptionsSchema,
-  type MergeOptionsSchemas,
-  type OptionsSchema
-} from 'icore';
+import { CliUsageError, mergeOptionsSchema, type MergeOptionsSchemas, type OptionsSchema } from 'icore';
 
 type OptionalCommandOptionKeys<TOptions> = {
   [TKey in keyof TOptions]: undefined extends TOptions[TKey] ? TKey : never;
@@ -25,6 +20,10 @@ type RequiredCommandOptionKeys<TOptions> = Exclude<
   OptionalCommandOptionKeys<TOptions>
 >;
 
+/**
+ * Выбранные опции для сборки запроса; поля с допустимым undefined становятся
+ * необязательными.
+ */
 export type CommandRequestOptions<
   TOptions,
   TKeys extends keyof TOptions
@@ -33,6 +32,14 @@ export type CommandRequestOptions<
   & Partial<
     Pick<TOptions, Extract<TKeys, OptionalCommandOptionKeys<TOptions>>>
   >;
+
+export const maxInt32 = 2_147_483_647;
+const minSupportedDateTimeYear = 1;
+const maxSupportedDateTimeYear = 9_999;
+const maxDateTimeHour = 23;
+const maxDateTimeMinuteOrSecond = 59;
+const firstGregorianMonth = 1;
+const lastGregorianMonth = 12;
 
 export const sdkOptionsSchema = {
   token: {
@@ -58,7 +65,7 @@ export const positiveSafeIntegerOption = {
 
 export const positiveInt32Option = {
   ...positiveSafeIntegerOption,
-  max: 2_147_483_647
+  max: maxInt32
 } as const;
 
 export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
@@ -93,8 +100,8 @@ export function parseDateTimeOption(value: string, name: string): Date {
 
   if (
     Number.isNaN(date.getTime())
-    || date.getUTCFullYear() < 1
-    || date.getUTCFullYear() > 9999
+    || date.getUTCFullYear() < minSupportedDateTimeYear
+    || date.getUTCFullYear() > maxSupportedDateTimeYear
   ) {
     throw new CliUsageError(
       `Expected '--${name}' as date-time with explicit timezone`
@@ -144,9 +151,9 @@ export function parseOptionalNonNegativeInt32Option(
     );
   }
 
-  if (parsed > 2_147_483_647) {
+  if (parsed > maxInt32) {
     throw new CliUsageError(
-      `Expected '--${name}' to be less than or equal to 2147483647`
+      `Expected '--${name}' to be less than or equal to ${maxInt32}`
     );
   }
 
@@ -170,17 +177,17 @@ function hasValidDateTimeParts(match: RegExpExecArray): boolean {
   return daysInMonth !== undefined
     && day >= 1
     && day <= daysInMonth
-    && hour <= 23
-    && minute <= 59
-    && second <= 59
-    && offsetHour <= 23
-    && offsetMinute <= 59;
+    && hour <= maxDateTimeHour
+    && minute <= maxDateTimeMinuteOrSecond
+    && second <= maxDateTimeMinuteOrSecond
+    && offsetHour <= maxDateTimeHour
+    && offsetMinute <= maxDateTimeMinuteOrSecond;
 }
 
 function resolveDaysInMonth(year: number, month: number): number | undefined {
-  const days = [
+  const daysInGregorianMonth = [
     31,
-    isLeapYear(year) ? 29 : 28,
+    isGregorianLeapYear(year) ? 29 : 28,
     31,
     30,
     31,
@@ -193,9 +200,11 @@ function resolveDaysInMonth(year: number, month: number): number | undefined {
     31
   ];
 
-  return month >= 1 && month <= 12 ? days[month - 1] : undefined;
+  return month >= firstGregorianMonth && month <= lastGregorianMonth
+    ? daysInGregorianMonth[month - firstGregorianMonth]
+    : undefined;
 }
 
-function isLeapYear(year: number): boolean {
+function isGregorianLeapYear(year: number): boolean {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 }

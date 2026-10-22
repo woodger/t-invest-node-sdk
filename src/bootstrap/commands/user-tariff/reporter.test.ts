@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { createUserTariffReport, formatUserTariffReport } from './reporter';
@@ -60,11 +60,16 @@ describe('user-tariff reporter', () => {
       );
       assert.match(
         output,
-        /unary\s+100\s+UsersService\/GetAccounts, UsersService\/GetInfo/
+        new RegExp(
+          `unary\\s+100\\s+UsersService/GetAccounts, UsersService/GetInfo`
+        )
       );
       assert.match(
         output,
-        /stream\s+10\s+2\s+MarketDataStreamService\/MarketDataStream/
+        new RegExp(
+          `stream\\s+10\\s+2\\s+`
+            + 'MarketDataStreamService/MarketDataStream'
+        )
       );
     });
 

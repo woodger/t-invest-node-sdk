@@ -11,14 +11,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  PortfolioRequest,
-  PortfolioResponse
-} from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import type { PortfolioRequest, PortfolioResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPortfolioRequest } from '../portfolio/request.mapper';
@@ -35,72 +30,39 @@ type SandboxPortfolioSdkFactory = (
   options: TInvestOptions
 ) => SandboxPortfolioSdk;
 
-const sandboxPortfolioCommandPath = ['sandbox', 'portfolio'] as const;
-const defaultSandboxPortfolioSdkFactory: SandboxPortfolioSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxPortfolioRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  currency: {
-    type: 'string',
-    choices: ['rub', 'usd', 'eur'],
-    default: 'rub'
-  }
-} as const;
-
-const sandboxPortfolioFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: portfolioFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxPortfolioOptionsSchema = withSdkOptions(
-  sandboxPortfolioRequestOptionsSchema,
-  sandboxPortfolioFormatOptionsSchema
-);
-
-type SandboxPortfolioOptions = InferOptions<
-  typeof sandboxPortfolioOptionsSchema
->;
-type SandboxPortfolioRequestOptions = CommandRequestOptions<
-  SandboxPortfolioOptions,
-  'account-id' | 'currency'
->;
-
 export function createSandboxPortfolioCommand(
-  createSdk: SandboxPortfolioSdkFactory = defaultSandboxPortfolioSdkFactory
+  createSdk: SandboxPortfolioSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxPortfolioCommandPath,
-    options: sandboxPortfolioOptionsSchema,
-    handle({ options }) {
-      return runSandboxPortfolioCommand(options, createSdk);
+    path: ['sandbox', 'portfolio'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      currency: {
+        type: 'string',
+        choices: ['rub', 'usd', 'eur'],
+        default: 'rub'
+      },
+      format: {
+        type: 'string',
+        choices: portfolioFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createPortfolioRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.getSandboxPortfolio(request);
+
+        return formatPortfolio(response, format);
+      });
     }
   });
 }
 
 export const sandboxPortfolioCommand = createSandboxPortfolioCommand();
-
-async function runSandboxPortfolioCommand(
-  options: SandboxPortfolioOptions,
-  createSdk: SandboxPortfolioSdkFactory
-): Promise<string> {
-  const request = createSandboxPortfolioRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.getSandboxPortfolio(request);
-
-    return formatPortfolio(response, format);
-  });
-}
-
-export function createSandboxPortfolioRequest(
-  options: SandboxPortfolioRequestOptions
-): PortfolioRequest {
-  return createPortfolioRequest(options);
-}

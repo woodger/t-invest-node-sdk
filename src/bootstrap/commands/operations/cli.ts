@@ -11,18 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type OperationsRequest,
-  type OperationsResponse
-} from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import { type OperationsRequest, type OperationsResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  instrumentIdWithDeprecatedFigiOptionsSchema
-} from '../../args/instrument-id-options';
+import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
 import { formatOperations, operationsFormats } from './reporter';
 import { createOperationsRequest } from './request.mapper';
 
@@ -35,10 +29,6 @@ type OperationsSdk = {
 
 type OperationsSdkFactory = (options: TInvestOptions) => OperationsSdk;
 
-const operationsCommandPath = ['operation', 'list'] as const;
-const defaultOperationsSdkFactory: OperationsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
 const operationStateNames = [
   'unspecified',
   'executed',
@@ -46,68 +36,48 @@ const operationStateNames = [
   'progress'
 ] as const;
 
-const operationsStateOptionsSchema = {
-  state: {
-    type: 'string',
-    choices: operationStateNames,
-    default: 'unspecified'
-  }
-} as const;
-
-const operationsRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  },
-  from: {
-    type: 'string',
-    required: true
-  },
-  to: {
-    type: 'string',
-    required: true
-  },
-  ...instrumentIdWithDeprecatedFigiOptionsSchema
-} as const;
-
-const operationsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: operationsFormats,
-    default: 'table'
-  }
-} as const;
-
-const operationsOptionsSchema = withSdkOptions(
-  operationsRequestOptionsSchema,
-  operationsStateOptionsSchema,
-  operationsFormatOptionsSchema
-);
-
-type OperationsOptions = InferOptions<typeof operationsOptionsSchema>;
 export function createOperationsCommand(
-  createSdk: OperationsSdkFactory = defaultOperationsSdkFactory
+  createSdk: OperationsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: operationsCommandPath,
-    options: operationsOptionsSchema,
-    handle({ options }) {
-      return runOperationsCommand(options, createSdk);
+    path: ['operation', 'list'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      from: {
+        type: 'string',
+        required: true
+      },
+      to: {
+        type: 'string',
+        required: true
+      },
+      ...instrumentIdWithDeprecatedFigiOptionsSchema,
+      state: {
+        type: 'string',
+        choices: operationStateNames,
+        default: 'unspecified'
+      },
+      format: {
+        type: 'string',
+        choices: operationsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createOperationsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.operations.getOperations(request);
+
+        return formatOperations(response.operations, format);
+      });
     }
   });
 }
 
 export const operationsCommand = createOperationsCommand();
-
-async function runOperationsCommand(
-  options: OperationsOptions,
-  createSdk: OperationsSdkFactory
-): Promise<string> {
-  const request = createOperationsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.operations.getOperations(request);
-
-    return formatOperations(response.operations, format);
-  });
-}

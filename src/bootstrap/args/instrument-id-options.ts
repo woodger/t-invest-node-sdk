@@ -13,6 +13,15 @@
 
 import { CliUsageError } from 'icore';
 
+/**
+ * Фильтр инструмента с поддержкой прежнего имени figi; конфликт имён проверяет
+ * resolver.
+ */
+export type InstrumentIdAliasOptions = {
+  'instrument-id'?: string | undefined;
+  figi?: string | undefined;
+};
+
 export const instrumentIdWithDeprecatedFigiOptionsSchema = {
   'instrument-id': {
     type: 'string'
@@ -21,11 +30,6 @@ export const instrumentIdWithDeprecatedFigiOptionsSchema = {
     type: 'string'
   }
 } as const;
-
-export type InstrumentIdAliasOptions = {
-  'instrument-id'?: string | undefined;
-  figi?: string | undefined;
-};
 
 export function resolveInstrumentIdOption(
   options: InstrumentIdAliasOptions

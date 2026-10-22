@@ -1,11 +1,8 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { MoneyValue } from '../../../generated/common';
 import type { WithdrawLimitsResponse } from '../../../generated/operations';
-import {
-  createWithdrawLimitsReport,
-  formatWithdrawLimitsReport
-} from './reporter';
+import { createWithdrawLimitsReport, formatWithdrawLimitsReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {

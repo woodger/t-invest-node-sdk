@@ -1,14 +1,7 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { InstrumentType } from '../../../generated/common';
-import {
-  AssetType,
-  type AssetFull,
-  type AssetResponse
-} from '../../../generated/instruments';
+import { AssetType, type AssetFull, type AssetResponse } from '../../../generated/instruments';
 import { createAssetReport, formatAssetReport } from './reporter';
 
 function asset(overrides: Partial<AssetFull> = {}): AssetFull {

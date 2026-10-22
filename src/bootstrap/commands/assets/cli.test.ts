@@ -1,15 +1,9 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
-import type {
-  AssetsRequest,
-  AssetsResponse
-} from '../../../generated/instruments';
+import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
 import { createAssetsCommand, createAssetsRequest } from './cli';
 
 function response(overrides: Partial<AssetsResponse> = {}): AssetsResponse {

@@ -6,10 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  OperationsByCursorReport,
-  OperationsByCursorReportItem
-} from '../../../application/reports';
+import type { OperationsByCursorReport, OperationsByCursorReportItem } from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
 import {
   operationStateToJSON,
@@ -25,9 +22,10 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const operationsByCursorFormats = ['json', 'table'] as const;
-
+/** Представление страницы истории операций: JSON или таблица. */
 export type OperationsByCursorFormat = typeof operationsByCursorFormats[number];
+
+export const operationsByCursorFormats = ['json', 'table'] as const;
 
 function toReportItem(item: OperationItem): OperationsByCursorReportItem {
   return {

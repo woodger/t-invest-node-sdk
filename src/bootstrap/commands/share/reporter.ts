@@ -6,29 +6,17 @@
  * `cli.ts`.
  */
 
-import type {
-  ShareReport,
-  ShareReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Share,
-  ShareResponse
-} from '../../../generated/instruments';
+import type { ShareReport, ShareReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Share, ShareResponse } from '../../../generated/instruments';
 import { shareTypeToJSON } from '../../../generated/instruments';
-import {
-  formatReportDate,
-  formatReportDecimal,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const shareFormats = ['json', 'table'] as const;
-
+/** Представление данных акции: JSON или таблица. */
 export type ShareFormat = typeof shareFormats[number];
+
+export const shareFormats = ['json', 'table'] as const;
 
 export function createShareReportInstrument(
   instrument: Share

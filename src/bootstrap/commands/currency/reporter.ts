@@ -6,29 +6,17 @@
  * `cli.ts`.
  */
 
-import type {
-  CurrencyReport,
-  CurrencyReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Currency,
-  CurrencyResponse
-} from '../../../generated/instruments';
+import type { CurrencyReport, CurrencyReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Currency, CurrencyResponse } from '../../../generated/instruments';
 
-import {
-  formatReportDate,
-  formatReportDecimal,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const currencyFormats = ['json', 'table'] as const;
-
+/** Представление данных валюты: JSON или таблица. */
 export type CurrencyFormat = typeof currencyFormats[number];
+
+export const currencyFormats = ['json', 'table'] as const;
 
 export function createCurrencyReportInstrument(
   instrument: Currency

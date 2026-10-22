@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import {
   MarketDataServerSideStreamRequest,
@@ -31,7 +31,10 @@ describe('stream request mapper', () => {
         },
         {
           type: 'subscribeOrderBook',
-          instruments: [{ instrumentId: 'order-book-id', depth: 10 }]
+          instruments: [{
+            instrumentId: 'order-book-id',
+            depth: 10
+          }]
         },
         {
           type: 'subscribeTrades',

@@ -1,14 +1,11 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { Quotation } from '../../../generated/common';
 import type {
   DividendsForeignIssuerReport as GeneratedDividendsForeignIssuerReport,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import {
-  createDividendsForeignIssuerReport,
-  formatDividendsForeignIssuerReport
-} from './reporter';
+import { createDividendsForeignIssuerReport, formatDividendsForeignIssuerReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
   return {

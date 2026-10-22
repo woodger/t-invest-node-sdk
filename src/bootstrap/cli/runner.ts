@@ -17,7 +17,7 @@ import {
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
-import { terminalErrorPolicy } from './error';
+import { cliExitCodes, terminalErrorPolicy } from './error';
 import { isHelpRequested, renderCliHelp, renderHelp } from './help';
 import { isVersionRequested, renderVersionInfo } from './version';
 
@@ -114,7 +114,7 @@ export async function runCli(
     try {
       await bootstrapApp.output.write(text);
 
-      return 0;
+      return cliExitCodes.success;
     }
     catch (error) {
       return bootstrapApp.reportError(error, {

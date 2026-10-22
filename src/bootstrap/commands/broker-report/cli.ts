@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  BrokerReportRequest,
-  BrokerReportResponse
-} from '../../../generated/operations';
+import type { BrokerReportRequest, BrokerReportResponse } from '../../../generated/operations';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -39,11 +36,17 @@ type BrokerReportSdk = {
 
 type BrokerReportSdkFactory = (options: TInvestOptions) => BrokerReportSdk;
 
-const brokerReportCommandPath = ['operation', 'broker-report'] as const;
-const defaultBrokerReportSdkFactory: BrokerReportSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type BrokerReportOptions = InferOptions<typeof brokerReportOptionsSchema>;
+type BrokerReportRequestOptions = CommandRequestOptions<
+  BrokerReportOptions,
+  | 'task-id'
+  | 'account-id'
+  | 'from'
+  | 'to'
+  | 'page'
+>;
 
-const brokerReportRequestOptionsSchema = {
+const brokerReportOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string'
   },
@@ -58,31 +61,13 @@ const brokerReportRequestOptionsSchema = {
   },
   page: {
     type: 'string'
-  }
-} as const;
-
-const brokerReportFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: brokerReportFormats,
     default: 'table'
   }
-} as const;
-
-const brokerReportOptionsSchema = withSdkOptions(
-  brokerReportRequestOptionsSchema,
-  brokerReportFormatOptionsSchema
-);
-
-type BrokerReportOptions = InferOptions<typeof brokerReportOptionsSchema>;
-type BrokerReportRequestOptions = CommandRequestOptions<
-  BrokerReportOptions,
-  | 'task-id'
-  | 'account-id'
-  | 'from'
-  | 'to'
-  | 'page'
->;
+});
 
 export function createBrokerReportRequest(
   options: BrokerReportRequestOptions
@@ -132,28 +117,23 @@ export function createBrokerReportRequest(
 }
 
 export function createBrokerReportCommand(
-  createSdk: BrokerReportSdkFactory = defaultBrokerReportSdkFactory
+  createSdk: BrokerReportSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: brokerReportCommandPath,
+    path: ['operation', 'broker-report'] as const,
     options: brokerReportOptionsSchema,
-    handle({ options }) {
-      return runBrokerReportCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createBrokerReportRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.operations.getBrokerReport(request);
+
+        return formatBrokerReport(response, format);
+      });
     }
   });
 }
 
 export const brokerReportCommand = createBrokerReportCommand();
-
-async function runBrokerReportCommand(
-  options: BrokerReportOptions,
-  createSdk: BrokerReportSdkFactory
-): Promise<string> {
-  const request = createBrokerReportRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.operations.getBrokerReport(request);
-
-    return formatBrokerReport(response, format);
-  });
-}

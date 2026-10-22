@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  InstrumentRequest,
-  OptionResponse
-} from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
+import type { InstrumentRequest, OptionResponse } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentLookupRequestFromOptions,
-  instrumentLookupOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentLookupRequestFromOptions, instrumentLookupOptionsSchema } from '../../args/instruments-args';
 import { formatOption, optionFormats } from './reporter';
 
 type OptionSdk = {
@@ -35,48 +28,31 @@ type OptionSdk = {
 
 type OptionSdkFactory = (options: TInvestOptions) => OptionSdk;
 
-const optionCommandPath = ['instrument', 'option', 'show'] as const;
-const defaultOptionSdkFactory: OptionSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const optionFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: optionFormats,
-    default: 'table'
-  }
-} as const;
-
-const optionOptionsSchema = withSdkOptions(
-  instrumentLookupOptionsSchema,
-  optionFormatOptionsSchema
-);
-
-type OptionOptions = InferOptions<typeof optionOptionsSchema>;
-
 export function createOptionCommand(
-  createSdk: OptionSdkFactory = defaultOptionSdkFactory
+  createSdk: OptionSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: optionCommandPath,
-    options: optionOptionsSchema,
-    handle({ options }) {
-      return runOptionCommand(options, createSdk);
+    path: ['instrument', 'option', 'show'] as const,
+    options: withSdkOptions({
+      ...instrumentLookupOptionsSchema,
+      format: {
+        type: 'string',
+        choices: optionFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentLookupRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.optionBy(request);
+
+        return formatOption(response, format);
+      });
     }
   });
 }
 
 export const optionCommand = createOptionCommand();
-
-async function runOptionCommand(
-  options: OptionOptions,
-  createSdk: OptionSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentLookupRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.optionBy(request);
-
-    return formatOption(response, format);
-  });
-}

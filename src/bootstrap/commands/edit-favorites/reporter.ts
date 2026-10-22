@@ -13,9 +13,10 @@ import {
   type FavoritesFormat
 } from '../favorites/reporter';
 
-export const editFavoritesFormats = favoritesFormats;
-
+/** Представление результата изменения избранных инструментов: JSON или таблица. */
 export type EditFavoritesFormat = FavoritesFormat;
+
+export const editFavoritesFormats = favoritesFormats;
 
 export function createEditFavoritesReport(response: EditFavoritesResponse) {
   return createFavoritesReport(response.favoriteInstruments);

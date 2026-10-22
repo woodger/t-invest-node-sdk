@@ -13,17 +13,7 @@ import {
   type GetOperationsByCursorRequest
 } from '../../../generated/operations';
 import { CliUsageError } from 'icore';
-import {
-  parseCommaSeparatedStringListOption,
-  parseDateTimeOption
-} from '../../args/command-options';
-
-const operationStates = {
-  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
-  executed: OperationState.OPERATION_STATE_EXECUTED,
-  canceled: OperationState.OPERATION_STATE_CANCELED,
-  progress: OperationState.OPERATION_STATE_PROGRESS
-} as const;
+import { parseCommaSeparatedStringListOption, parseDateTimeOption } from '../../args/command-options';
 
 interface OperationsByCursorRequestOptions {
   readonly 'account-id': string;
@@ -38,6 +28,16 @@ interface OperationsByCursorRequestOptions {
   readonly limit?: string | undefined;
   readonly state: keyof typeof operationStates;
 }
+
+const minOperationsByCursorPageSize = 1;
+const maxOperationsByCursorPageSize = 1_000;
+
+const operationStates = {
+  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
+  executed: OperationState.OPERATION_STATE_EXECUTED,
+  canceled: OperationState.OPERATION_STATE_CANCELED,
+  progress: OperationState.OPERATION_STATE_PROGRESS
+} as const;
 
 export function createOperationsByCursorRequest(
   options: OperationsByCursorRequestOptions
@@ -76,17 +76,24 @@ function parseOperationsByCursorLimitOption(
   }
 
   if (!/^\d+$/.test(rawValue)) {
-    throw new CliUsageError("Expected '--limit' as integer from 1 to 1000");
+    throw new CliUsageError(operationsByCursorPageSizeError);
   }
 
   const limit = Number(rawValue);
 
-  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1000) {
-    throw new CliUsageError("Expected '--limit' as integer from 1 to 1000");
+  if (
+    !Number.isSafeInteger(limit)
+    || limit < minOperationsByCursorPageSize
+    || limit > maxOperationsByCursorPageSize
+  ) {
+    throw new CliUsageError(operationsByCursorPageSizeError);
   }
 
   return limit;
 }
+
+const operationsByCursorPageSizeError =
+  `Expected '--limit' as integer from ${minOperationsByCursorPageSize} to ${maxOperationsByCursorPageSize}`;
 
 function parseOperationsByCursorOperationTypesOption(
   rawValue: string | undefined

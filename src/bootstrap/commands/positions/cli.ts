@@ -11,11 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  PositionsRequest,
-  PositionsResponse
-} from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -32,54 +28,34 @@ type PositionsSdk = {
 
 type PositionsSdkFactory = (options: TInvestOptions) => PositionsSdk;
 
-const positionsCommandPath = ['operation', 'positions'] as const;
-const defaultPositionsSdkFactory: PositionsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const positionsRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const positionsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: positionsFormats,
-    default: 'table'
-  }
-} as const;
-
-const positionsOptionsSchema = withSdkOptions(
-  positionsRequestOptionsSchema,
-  positionsFormatOptionsSchema
-);
-
-type PositionsOptions = InferOptions<typeof positionsOptionsSchema>;
 export function createPositionsCommand(
-  createSdk: PositionsSdkFactory = defaultPositionsSdkFactory
+  createSdk: PositionsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: positionsCommandPath,
-    options: positionsOptionsSchema,
-    handle({ options }) {
-      return runPositionsCommand(options, createSdk);
+    path: ['operation', 'positions'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: positionsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createPositionsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.operations.getPositions(request);
+
+        return formatPositions(response, format);
+      });
     }
   });
 }
 
 export const positionsCommand = createPositionsCommand();
-
-async function runPositionsCommand(
-  options: PositionsOptions,
-  createSdk: PositionsSdkFactory
-): Promise<string> {
-  const request = createPositionsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.operations.getPositions(request);
-
-    return formatPositions(response, format);
-  });
-}

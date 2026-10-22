@@ -11,11 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  WithdrawLimitsRequest,
-  WithdrawLimitsResponse
-} from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import type { WithdrawLimitsRequest, WithdrawLimitsResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
@@ -34,54 +30,41 @@ type WithdrawLimitsSdk = {
 
 type WithdrawLimitsSdkFactory = (options: TInvestOptions) => WithdrawLimitsSdk;
 
-const withdrawLimitsCommandPath = ['operation', 'withdraw-limits'] as const;
-const defaultWithdrawLimitsSdkFactory: WithdrawLimitsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const withdrawLimitsRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const withdrawLimitsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: withdrawLimitsFormats,
-    default: 'table'
-  }
-} as const;
-
-const withdrawLimitsOptionsSchema = withSdkOptions(
-  withdrawLimitsRequestOptionsSchema,
-  withdrawLimitsFormatOptionsSchema
-);
-
-type WithdrawLimitsOptions = InferOptions<typeof withdrawLimitsOptionsSchema>;
+/**
+ * Описывает команду без открытия соединения; SDK создаётся при выполнении.
+ * Фабрику SDK можно подменить в тестах.
+ */
 export function createWithdrawLimitsCommand(
-  createSdk: WithdrawLimitsSdkFactory = defaultWithdrawLimitsSdkFactory
+  createSdk: WithdrawLimitsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: withdrawLimitsCommandPath,
-    options: withdrawLimitsOptionsSchema,
-    handle({ options }) {
-      return runWithdrawLimitsCommand(options, createSdk);
+    path: ['operation', 'withdraw-limits'] as const,
+    // icore проверяет опции команды вместе с общими настройками SDK.
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: withdrawLimitsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      // Общий с песочницей запрос готовим до создания SDK.
+      const request = createWithdrawLimitsRequest(options);
+      const { format } = options;
+
+      // SDK закрывается после запроса и форматирования, включая ошибки.
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.operations.getWithdrawLimits(request);
+
+        return formatWithdrawLimits(response, format);
+      });
     }
   });
 }
 
 export const withdrawLimitsCommand = createWithdrawLimitsCommand();
-
-async function runWithdrawLimitsCommand(
-  options: WithdrawLimitsOptions,
-  createSdk: WithdrawLimitsSdkFactory
-): Promise<string> {
-  const request = createWithdrawLimitsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.operations.getWithdrawLimits(request);
-
-    return formatWithdrawLimits(response, format);
-  });
-}

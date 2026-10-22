@@ -8,15 +8,13 @@
 
 import type { SandboxPayInReport } from '../../../application/reports';
 import type { SandboxPayInResponse } from '../../../generated/sandbox';
-import {
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const sandboxPayInFormats = ['json', 'table'] as const;
-
+/** Представление результата пополнения счёта песочницы: JSON или таблица. */
 export type SandboxPayInFormat = typeof sandboxPayInFormats[number];
+
+export const sandboxPayInFormats = ['json', 'table'] as const;
 
 export function createSandboxPayInReport(
   response: SandboxPayInResponse

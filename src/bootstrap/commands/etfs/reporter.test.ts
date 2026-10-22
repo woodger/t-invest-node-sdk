@@ -1,13 +1,6 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
-import {
-  RealExchange,
-  SecurityTradingStatus,
-  type Quotation
-} from '../../../generated/common';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
+import { RealExchange, SecurityTradingStatus, type Quotation } from '../../../generated/common';
 import type { Etf } from '../../../generated/instruments';
 import { createEtfsReport, formatEtfsReport } from './reporter';
 

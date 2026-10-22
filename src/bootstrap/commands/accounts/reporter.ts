@@ -6,24 +6,15 @@
  * `cli.ts`.
  */
 
-import type {
-  AccountsReport,
-  AccountsReportAccount
-} from '../../../application/reports';
-import {
-  accessLevelToJSON,
-  accountStatusToJSON,
-  accountTypeToJSON,
-  type Account
-} from '../../../generated/users';
-import {
-  formatReportDate
-} from '../../../infrastructure/report-values';
+import type { AccountsReport, AccountsReportAccount } from '../../../application/reports';
+import { accessLevelToJSON, accountStatusToJSON, accountTypeToJSON, type Account } from '../../../generated/users';
+import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const accountsFormats = ['json', 'table'] as const;
-
+/** Представление списка счетов: JSON или таблица. */
 export type AccountsFormat = typeof accountsFormats[number];
+
+export const accountsFormats = ['json', 'table'] as const;
 
 function toReportAccount(account: Account): AccountsReportAccount {
   return {

@@ -18,14 +18,13 @@ import type {
   PositionsResponse,
   PositionsSecurities
 } from '../../../generated/operations';
-import {
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const positionsFormats = ['json', 'table'] as const;
-
+/** Представление позиций счёта: JSON или таблица. */
 export type PositionsFormat = typeof positionsFormats[number];
+
+export const positionsFormats = ['json', 'table'] as const;
 
 function toReportSecurity(
   position: PositionsSecurities

@@ -6,16 +6,14 @@
  * `cli.ts`.
  */
 
-import type {
-  BrandsReport,
-  BrandsReportBrand
-} from '../../../application/reports';
+import type { BrandsReport, BrandsReportBrand } from '../../../application/reports';
 import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
-export const brandsFormats = ['json', 'table'] as const;
-
+/** Представление справочника брендов: JSON или таблица. */
 export type BrandsFormat = typeof brandsFormats[number];
+
+export const brandsFormats = ['json', 'table'] as const;
 
 export function createBrandReport(brand: Brand): BrandsReportBrand {
   return {

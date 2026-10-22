@@ -25,11 +25,7 @@ import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  parseDateTimeOption,
-  positiveSafeIntegerOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { parseDateTimeOption, positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   assertSideEffectConfirmed,
@@ -50,16 +46,30 @@ type PostStopOrderSdk = {
 
 type PostStopOrderSdkFactory = (options: TInvestOptions) => PostStopOrderSdk;
 
-const postStopOrderCommandPath = ['stop-order', 'place'] as const;
-const defaultPostStopOrderSdkFactory: PostStopOrderSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type StopOrderDirectionName = keyof typeof stopOrderDirections;
+
+type StopOrderExpirationTypeName = keyof typeof stopOrderExpirationTypes;
+
+type StopOrderTypeName = keyof typeof stopOrderTypes;
+
+type PostStopOrderOptions = InferOptions<typeof postStopOrderOptionsSchema>;
+type PostStopOrderRequestOptions = CommandRequestOptions<
+  PostStopOrderOptions,
+  | 'account-id'
+  | 'instrument-id'
+  | 'quantity'
+  | 'price'
+  | 'stop-price'
+  | 'direction'
+  | 'expiration-type'
+  | 'stop-order-type'
+  | 'expire-date'
+>;
 
 const stopOrderDirections = {
   buy: StopOrderDirection.STOP_ORDER_DIRECTION_BUY,
   sell: StopOrderDirection.STOP_ORDER_DIRECTION_SELL
 } as const;
-
-type StopOrderDirectionName = keyof typeof stopOrderDirections;
 
 const stopOrderDirectionNames = Object.keys(
   stopOrderDirections
@@ -72,8 +82,6 @@ const stopOrderExpirationTypes = {
     StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE
 } as const;
 
-type StopOrderExpirationTypeName = keyof typeof stopOrderExpirationTypes;
-
 const stopOrderExpirationTypeNames = Object.keys(
   stopOrderExpirationTypes
 ) as StopOrderExpirationTypeName[];
@@ -84,11 +92,9 @@ const stopOrderTypes = {
   'stop-limit': StopOrderType.STOP_ORDER_TYPE_STOP_LIMIT
 } as const;
 
-type StopOrderTypeName = keyof typeof stopOrderTypes;
-
 const stopOrderTypeNames = Object.keys(stopOrderTypes) as StopOrderTypeName[];
 
-const postStopOrderRequestOptionsSchema = {
+const postStopOrderOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
     required: true
@@ -125,65 +131,38 @@ const postStopOrderRequestOptionsSchema = {
   },
   'expire-date': {
     type: 'string'
-  }
-} as const;
-
-const postStopOrderFormatOptionsSchema = {
+  },
+  ...sideEffectConfirmationOptionsSchema,
   format: {
     type: 'string',
     choices: postStopOrderFormats,
     default: 'table'
   }
-} as const;
-
-const postStopOrderOptionsSchema = withSdkOptions(
-  postStopOrderRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  postStopOrderFormatOptionsSchema
-);
-
-type PostStopOrderOptions = InferOptions<typeof postStopOrderOptionsSchema>;
-type PostStopOrderRequestOptions = CommandRequestOptions<
-  PostStopOrderOptions,
-  | 'account-id'
-  | 'instrument-id'
-  | 'quantity'
-  | 'price'
-  | 'stop-price'
-  | 'direction'
-  | 'expiration-type'
-  | 'stop-order-type'
-  | 'expire-date'
->;
+});
 
 export function createPostStopOrderCommand(
-  createSdk: PostStopOrderSdkFactory = defaultPostStopOrderSdkFactory
+  createSdk: PostStopOrderSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: postStopOrderCommandPath,
+    path: ['stop-order', 'place'] as const,
     options: postStopOrderOptionsSchema,
-    handle({ options }) {
-      return runPostStopOrderCommand(options, createSdk);
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createPostStopOrderRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.stopOrders.postStopOrder(request);
+
+        return formatPostStopOrder(response, format);
+      });
     }
   });
 }
 
 export const postStopOrderCommand = createPostStopOrderCommand();
-
-async function runPostStopOrderCommand(
-  options: PostStopOrderOptions,
-  createSdk: PostStopOrderSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createPostStopOrderRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.stopOrders.postStopOrder(request);
-
-    return formatPostStopOrder(response, format);
-  });
-}
 
 export function createPostStopOrderRequest(
   options: PostStopOrderRequestOptions

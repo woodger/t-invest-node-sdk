@@ -20,11 +20,11 @@ import {
   type CliDomainName
 } from './domains';
 import { cliName } from './version';
-import {
-  commandHelp,
-  type CommandHelp,
-  type CommandHelpName
-} from './help-catalog';
+import { commandHelp, type CommandHelp, type CommandHelpName } from './help-catalog';
+
+type HelpOptions = {
+  help?: unknown;
+};
 
 export function isCommandHelpName(value: unknown): value is CommandHelpName {
   return typeof value === 'string' && Object.hasOwn(commandHelp, value);
@@ -53,10 +53,6 @@ export function resolveDomainHelpName(
 
   return isCliDomainName(domain) ? domain : undefined;
 }
-
-type HelpOptions = {
-  help?: unknown;
-};
 
 export function isHelpRequested(options: HelpOptions): boolean {
   return options.help === true;

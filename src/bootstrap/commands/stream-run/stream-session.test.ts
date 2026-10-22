@@ -1,21 +1,19 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { createServer } from 'nice-grpc';
 import { ResultSubscriptionStatus } from '../../../generated/common';
-import {
-  OperationsStreamServiceDefinition,
-  type PortfolioStreamResponse
-} from '../../../generated/operations';
-import {
-  OrdersStreamServiceDefinition,
-  type TradesStreamResponse
-} from '../../../generated/orders';
+import { OperationsStreamServiceDefinition, type PortfolioStreamResponse } from '../../../generated/operations';
+import { OrdersStreamServiceDefinition, type TradesStreamResponse } from '../../../generated/orders';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import type { StreamRunConfig, StreamRunRuntime } from './config';
-import {
-  runStreamRunSession,
-  type StreamRunSdk
-} from './stream-session';
+import { runStreamRunSession, type StreamRunSdk } from './stream-session';
+
+interface TestSdkOverrides {
+  readonly portfolioStream?:
+    StreamRunSdk['operationsStream']['portfolioStream'];
+  readonly tradesStream?: StreamRunSdk['ordersStream']['tradesStream'];
+  readonly close?: () => void;
+}
 
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {
   let result = '';
@@ -74,13 +72,6 @@ function createUnusedStream(name: string) {
   return () => {
     throw new Error(`${name} should not be called`);
   };
-}
-
-interface TestSdkOverrides {
-  readonly portfolioStream?:
-    StreamRunSdk['operationsStream']['portfolioStream'];
-  readonly tradesStream?: StreamRunSdk['ordersStream']['tradesStream'];
-  readonly close?: () => void;
 }
 
 function createTestSdk(overrides: TestSdkOverrides): StreamRunSdk {
@@ -186,7 +177,10 @@ describe('runStreamRunSession', () => {
           now: () => new Date(),
           elapsedNow: () => performance.now()
         });
-        const rendered = await withDeadline(collectOutput(output), 5_000);
+        const rendered = await withDeadline(
+          collectOutput(output),
+          5_000
+        );
 
         assert.equal(rendered.trim().split('\n').length, 1);
         assert.equal(JSON.parse(rendered).type, 'orderTrades');
@@ -234,7 +228,10 @@ describe('runStreamRunSession', () => {
           now: () => new Date(),
           elapsedNow: () => performance.now()
         });
-        const rendered = await withDeadline(collectOutput(output), 5_000);
+        const rendered = await withDeadline(
+          collectOutput(output),
+          5_000
+        );
 
         assert.equal(rendered.trim().split('\n').length, 1);
         assert.match(rendered, /"accountId":"first-account"/);
@@ -342,8 +339,7 @@ describe('runStreamRunSession', () => {
   );
 
   test('разбивает duration больше диапазона Node.js timer', async () => {
-    const maxTimerDelayMs = 2_147_483_647;
-    const durationMs = maxTimerDelayMs + 10;
+    // Интервал на 10 мс превышает предел setTimeout в Node.js (2^31 - 1 мс).
     const originalSetTimeout = global.setTimeout;
     const originalClearTimeout = global.clearTimeout;
     const delays: number[] = [];
@@ -374,7 +370,7 @@ describe('runStreamRunSession', () => {
       };
       const output = runStreamRunSession(
         config,
-        { ...defaultRuntime, durationMs },
+        { ...defaultRuntime, durationMs: 2_147_483_657 },
         sdkOptions,
         {
           createSdk: () =>
@@ -399,13 +395,13 @@ describe('runStreamRunSession', () => {
       const completion = collectOutput(output);
 
       await new Promise<void>((resolve) => setImmediate(resolve));
-      assert.deepEqual(delays, [maxTimerDelayMs]);
+      assert.deepEqual(delays, [2_147_483_647]);
 
-      elapsed = maxTimerDelayMs;
+      elapsed = 2_147_483_647;
       runNextTimer(callbacks);
-      assert.deepEqual(delays, [maxTimerDelayMs, 10]);
+      assert.deepEqual(delays, [2_147_483_647, 10]);
 
-      elapsed = durationMs;
+      elapsed = 2_147_483_657;
       runNextTimer(callbacks);
       assert.equal(await completion, '');
       assert.equal(closeCalls, 1);

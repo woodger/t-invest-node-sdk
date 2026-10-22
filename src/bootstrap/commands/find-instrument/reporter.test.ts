@@ -1,14 +1,8 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { InstrumentType } from '../../../generated/common';
 import type { InstrumentShort } from '../../../generated/instruments';
-import {
-  createFindInstrumentReport,
-  formatFindInstrumentReport
-} from './reporter';
+import { createFindInstrumentReport, formatFindInstrumentReport } from './reporter';
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {
   return {

@@ -11,13 +11,8 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  InstrumentType
-} from '../../../generated/common';
-import type {
-  AssetsRequest,
-  AssetsResponse
-} from '../../../generated/instruments';
+import { InstrumentType } from '../../../generated/common';
+import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -35,9 +30,13 @@ type AssetsSdk = {
 
 type AssetsSdkFactory = (options: TInvestOptions) => AssetsSdk;
 
-const assetsCommandPath = ['instrument', 'asset', 'list'] as const;
-const defaultAssetsSdkFactory: AssetsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type AssetInstrumentTypeName = typeof assetInstrumentTypeNames[number];
+
+type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
+type AssetsRequestOptions = CommandRequestOptions<
+  AssetsOptions,
+  'instrument-type'
+>;
 
 const assetInstrumentTypes = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -55,61 +54,40 @@ const assetInstrumentTypeNames = Object.keys(assetInstrumentTypes) as Array<
   keyof typeof assetInstrumentTypes
 >;
 
-type AssetInstrumentTypeName = typeof assetInstrumentTypeNames[number];
-
-const assetsInstrumentTypeOptionsSchema = {
+const assetsOptionsSchema = withSdkOptions({
   'instrument-type': {
     type: 'string',
     choices: assetInstrumentTypeNames,
     default: 'unspecified'
-  }
-} as const;
-
-const assetsFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: assetsFormats,
     default: 'table'
   }
-} as const;
-
-const assetsOptionsSchema = withSdkOptions(
-  assetsInstrumentTypeOptionsSchema,
-  assetsFormatOptionsSchema
-);
-
-type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
-type AssetsRequestOptions = CommandRequestOptions<
-  AssetsOptions,
-  'instrument-type'
->;
+});
 
 export function createAssetsCommand(
-  createSdk: AssetsSdkFactory = defaultAssetsSdkFactory
+  createSdk: AssetsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: assetsCommandPath,
+    path: ['instrument', 'asset', 'list'] as const,
     options: assetsOptionsSchema,
-    handle({ options }) {
-      return runAssetsCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createAssetsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getAssets(request);
+
+        return formatAssets(response.assets, format);
+      });
     }
   });
 }
 
 export const assetsCommand = createAssetsCommand();
-
-async function runAssetsCommand(
-  options: AssetsOptions,
-  createSdk: AssetsSdkFactory
-): Promise<string> {
-  const request = createAssetsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getAssets(request);
-
-    return formatAssets(response.assets, format);
-  });
-}
 
 export function createAssetsRequest(
   options: AssetsRequestOptions

@@ -1,17 +1,7 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
-import {
-  RealExchange,
-  SecurityTradingStatus,
-  type Quotation
-} from '../../../generated/common';
-import {
-  type Future,
-  type FutureResponse
-} from '../../../generated/instruments';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
+import { RealExchange, SecurityTradingStatus, type Quotation } from '../../../generated/common';
+import { type Future, type FutureResponse } from '../../../generated/instruments';
 import { createFutureReport, formatFutureReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

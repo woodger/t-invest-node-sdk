@@ -6,10 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  DividendsReport,
-  DividendsReportItem
-} from '../../../application/reports';
+import type { DividendsReport, DividendsReportItem } from '../../../application/reports';
 import type { Dividend } from '../../../generated/instruments';
 import {
   formatReportDate,
@@ -19,9 +16,10 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const dividendsFormats = ['json', 'table'] as const;
-
+/** Представление дивидендных выплат по инструменту: JSON или таблица. */
 export type DividendsFormat = typeof dividendsFormats[number];
+
+export const dividendsFormats = ['json', 'table'] as const;
 
 function toReportDividend(dividend: Dividend): DividendsReportItem {
   return {

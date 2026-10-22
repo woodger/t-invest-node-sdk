@@ -9,15 +9,12 @@
 import type { TradingStatusesReport } from '../../../application/reports';
 import type { GetTradingStatusesResponse } from '../../../generated/marketdata';
 import { renderJson, renderTextTable } from 'icore';
-import {
-  createTradingStatusReport,
-  tradingStatusFormats,
-  type TradingStatusFormat
-} from '../trading-status/reporter';
+import { createTradingStatusReport, tradingStatusFormats, type TradingStatusFormat } from '../trading-status/reporter';
+
+/** Представление торговых статусов инструментов: JSON или таблица. */
+export type TradingStatusesFormat = TradingStatusFormat;
 
 export const tradingStatusesFormats = tradingStatusFormats;
-
-export type TradingStatusesFormat = TradingStatusFormat;
 
 export function createTradingStatusesReport(
   response: GetTradingStatusesResponse

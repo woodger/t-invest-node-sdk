@@ -11,18 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  GetOrderBookRequest,
-  type GetOrderBookResponse
-} from '../../../generated/marketdata';
+import { GetOrderBookRequest, type GetOrderBookResponse } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  positiveInt32Option,
-  withSdkOptions
-} from '../../args/command-options';
+import { positiveInt32Option, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrderBook, orderBookFormats } from './reporter';
 
@@ -35,70 +29,49 @@ type OrderBookSdk = {
 
 type OrderBookSdkFactory = (options: TInvestOptions) => OrderBookSdk;
 
-const orderBookCommandPath = ['market', 'order-book'] as const;
-const defaultOrderBookSdkFactory: OrderBookSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const orderBookDepthOptionsSchema = {
-  depth: {
-    ...positiveInt32Option,
-    required: true
-  }
-} as const;
-
-const orderBookFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: orderBookFormats,
-    default: 'table'
-  }
-} as const;
-
-const orderBookRequestOptionsSchema = {
-  'instrument-id': {
-    type: 'string',
-    required: true
-  },
-  ...orderBookDepthOptionsSchema
-} as const;
-
-const orderBookOptionsSchema = withSdkOptions(
-  orderBookRequestOptionsSchema,
-  orderBookFormatOptionsSchema
-);
-
 type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
 type OrderBookRequestOptions = CommandRequestOptions<
   OrderBookOptions,
   'instrument-id' | 'depth'
 >;
 
+const orderBookOptionsSchema = withSdkOptions({
+  'instrument-id': {
+    type: 'string',
+    required: true
+  },
+  depth: {
+    ...positiveInt32Option,
+    required: true
+  },
+  format: {
+    type: 'string',
+    choices: orderBookFormats,
+    default: 'table'
+  }
+});
+
 export function createOrderBookCommand(
-  createSdk: OrderBookSdkFactory = defaultOrderBookSdkFactory
+  createSdk: OrderBookSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: orderBookCommandPath,
+    path: ['market', 'order-book'] as const,
     options: orderBookOptionsSchema,
-    handle({ options }) {
-      return runOrderBookCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createOrderBookRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getOrderBook(request);
+
+        return formatOrderBook(response, format);
+      });
     }
   });
 }
 
 export const orderBookCommand = createOrderBookCommand();
-
-async function runOrderBookCommand(
-  options: OrderBookOptions,
-  createSdk: OrderBookSdkFactory
-): Promise<string> {
-  const request = createOrderBookRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getOrderBook(request);
-
-    return formatOrderBook(response, format);
-  });
-}
 
 export function createOrderBookRequest(
   options: OrderBookRequestOptions

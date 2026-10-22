@@ -6,20 +6,15 @@
  * `cli.ts`.
  */
 
-import type {
-  CandlesReport,
-  CandlesReportCandle
-} from '../../../application/reports';
+import type { CandlesReport, CandlesReportCandle } from '../../../application/reports';
 import type { HistoricCandle } from '../../../generated/marketdata';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderCsv, renderJson } from 'icore';
 
-export const candlesFormats = ['json', 'csv'] as const;
-
+/** Представление исторических свечей: JSON или CSV. */
 export type CandlesFormat = typeof candlesFormats[number];
+
+export const candlesFormats = ['json', 'csv'] as const;
 
 function toReportCandle(candle: HistoricCandle): CandlesReportCandle {
   return {

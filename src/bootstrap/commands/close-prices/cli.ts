@@ -11,18 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  GetClosePricesRequest,
-  GetClosePricesResponse
-} from '../../../generated/marketdata';
+import type { GetClosePricesRequest, GetClosePricesResponse } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  parseCommaSeparatedStringListOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { parseCommaSeparatedStringListOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { closePricesFormats, formatClosePrices } from './reporter';
 
@@ -37,62 +31,45 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TInvestOptions) => ClosePricesSdk;
 
-const closePricesCommandPath = ['market', 'close-prices'] as const;
-const defaultClosePricesSdkFactory: ClosePricesSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const closePricesInstrumentIdsOptionsSchema = {
-  'instrument-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const closePricesFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: closePricesFormats,
-    default: 'table'
-  }
-} as const;
-
-const closePricesOptionsSchema = withSdkOptions(
-  closePricesInstrumentIdsOptionsSchema,
-  closePricesFormatOptionsSchema
-);
-
 type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
 type ClosePricesRequestOptions = CommandRequestOptions<
   ClosePricesOptions,
   'instrument-id'
 >;
 
+const closePricesOptionsSchema = withSdkOptions({
+  'instrument-id': {
+    type: 'string',
+    required: true
+  },
+  format: {
+    type: 'string',
+    choices: closePricesFormats,
+    default: 'table'
+  }
+});
+
 export function createClosePricesCommand(
-  createSdk: ClosePricesSdkFactory = defaultClosePricesSdkFactory
+  createSdk: ClosePricesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: closePricesCommandPath,
+    path: ['market', 'close-prices'] as const,
     options: closePricesOptionsSchema,
-    handle({ options }) {
-      return runClosePricesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createClosePricesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.marketData.getClosePrices(request);
+
+        return formatClosePrices(response.closePrices, format);
+      });
     }
   });
 }
 
 export const closePricesCommand = createClosePricesCommand();
-
-async function runClosePricesCommand(
-  options: ClosePricesOptions,
-  createSdk: ClosePricesSdkFactory
-): Promise<string> {
-  const request = createClosePricesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.marketData.getClosePrices(request);
-
-    return formatClosePrices(response.closePrices, format);
-  });
-}
 
 export function createClosePricesRequest(
   options: ClosePricesRequestOptions

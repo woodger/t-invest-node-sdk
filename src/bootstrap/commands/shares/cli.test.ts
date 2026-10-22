@@ -1,15 +1,9 @@
 import { InstrumentStatus } from '../../../generated/common';
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type InstrumentsRequest,
-  type SharesResponse
-} from '../../../generated/instruments';
+import { type InstrumentsRequest, type SharesResponse } from '../../../generated/instruments';
 import { createSharesCommand } from './cli';
 
 function response(overrides: Partial<SharesResponse> = {}): SharesResponse {

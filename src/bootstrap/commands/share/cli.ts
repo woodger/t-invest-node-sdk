@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type InstrumentRequest,
-  type ShareResponse
-} from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
+import { type InstrumentRequest, type ShareResponse } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentLookupRequestFromOptions,
-  instrumentLookupOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentLookupRequestFromOptions, instrumentLookupOptionsSchema } from '../../args/instruments-args';
 import { formatShare, shareFormats } from './reporter';
 
 type ShareSdk = {
@@ -35,48 +28,31 @@ type ShareSdk = {
 
 type ShareSdkFactory = (options: TInvestOptions) => ShareSdk;
 
-const shareCommandPath = ['instrument', 'share', 'show'] as const;
-const defaultShareSdkFactory: ShareSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const shareFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: shareFormats,
-    default: 'table'
-  }
-} as const;
-
-const shareOptionsSchema = withSdkOptions(
-  instrumentLookupOptionsSchema,
-  shareFormatOptionsSchema
-);
-
-type ShareOptions = InferOptions<typeof shareOptionsSchema>;
-
 export function createShareCommand(
-  createSdk: ShareSdkFactory = defaultShareSdkFactory
+  createSdk: ShareSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: shareCommandPath,
-    options: shareOptionsSchema,
-    handle({ options }) {
-      return runShareCommand(options, createSdk);
+    path: ['instrument', 'share', 'show'] as const,
+    options: withSdkOptions({
+      ...instrumentLookupOptionsSchema,
+      format: {
+        type: 'string',
+        choices: shareFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentLookupRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.shareBy(request);
+
+        return formatShare(response, format);
+      });
     }
   });
 }
 
 export const shareCommand = createShareCommand();
-
-async function runShareCommand(
-  options: ShareOptions,
-  createSdk: ShareSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentLookupRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.shareBy(request);
-
-    return formatShare(response, format);
-  });
-}

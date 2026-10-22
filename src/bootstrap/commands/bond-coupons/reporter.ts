@@ -6,21 +6,15 @@
  * `cli.ts`.
  */
 
-import type {
-  BondCouponsReport,
-  BondCouponsReportCoupon
-} from '../../../application/reports';
+import type { BondCouponsReport, BondCouponsReportCoupon } from '../../../application/reports';
 import { couponTypeToJSON, type Coupon } from '../../../generated/instruments';
-import {
-  formatReportDate,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const bondCouponsFormats = ['json', 'table'] as const;
-
+/** Представление купонных выплат по облигации: JSON или таблица. */
 export type BondCouponsFormat = typeof bondCouponsFormats[number];
+
+export const bondCouponsFormats = ['json', 'table'] as const;
 
 function toReportCoupon(coupon: Coupon): BondCouponsReportCoupon {
   return {

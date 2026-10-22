@@ -1,10 +1,7 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { Quotation } from '../../../generated/common';
-import type {
-  GetOrderBookResponse,
-  Order
-} from '../../../generated/marketdata';
+import type { GetOrderBookResponse, Order } from '../../../generated/marketdata';
 import { createOrderBookReport, formatOrderBookReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
@@ -110,11 +107,16 @@ describe('order-book reporter', () => {
       );
       assert.match(
         output,
-        /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+bid\s+100.25\s+10/
+        new RegExp(
+          `BBG00QPYJ5H0\\s+instrument-uid\\s+2\\s+`
+            + '2026-06-19T10:01:00.000Z\\s+bid\\s+100.25\\s+10'
+        )
       );
       assert.match(
         output,
-        /BBG00QPYJ5H0\s+instrument-uid\s+2\s+2026-06-19T10:01:00.000Z\s+ask\s+101\s+4/
+        new RegExp(
+          `BBG00QPYJ5H0\\s+instrument-uid\\s+2\\s+2026-06-19T10:01:00.000Z\\s+ask\\s+101\\s+4`
+        )
       );
     });
 

@@ -1,9 +1,6 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  createSandboxPayInReport,
-  formatSandboxPayInReport
-} from './reporter';
+import { createSandboxPayInReport, formatSandboxPayInReport } from './reporter';
 
 describe('sandbox-pay-in reporter', () => {
   describe('createSandboxPayInReport', () => {

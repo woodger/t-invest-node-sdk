@@ -1,25 +1,20 @@
 /**
- * Модуль bootstrap config adapter собирает runtime policy для SDK instances.
+ * Модуль собирает настройки экземпляра SDK из значений модуля и параметров
+ * создания.
  *
  * Здесь допустимы:
- * - компиляция package defaults в public flat config;
- * - разрешение per-instance unary limit overrides;
- * - согласование overrides с package quota groups;
- * - проверка инвариантов итогового instance snapshot;
+ * - подготовка публичного `defaultConfig`;
+ * - применение переопределений unary-квот экземпляра;
+ * - согласование переопределений с группами общих квот;
+ * - проверка итоговых настроек перед созданием транспорта.
  *
- * Здесь не должно быть transport initialization, provider tariff refresh или
- * limiter state.
+ * Здесь не должно быть создания транспорта, обновления тарифа провайдера или
+ * состояния ограничителя.
  */
 
 import type { TInvestOptions } from '../application/dto/t-invest-options';
-import {
-  SdkError,
-  SdkErrorCode
-} from '../application/errors/sdk-error';
-import type {
-  TInvestNodeSDKConfig,
-  UnaryLimits
-} from '../config.types';
+import { SdkError, SdkErrorCode } from '../application/errors/sdk-error';
+import type { TInvestNodeSDKConfig, UnaryLimits } from '../config.types';
 import { packageConfig } from '../config';
 import { InstrumentsServiceDefinition } from '../generated/instruments';
 import { MarketDataServiceDefinition } from '../generated/marketdata';
@@ -30,21 +25,15 @@ import { SignalServiceDefinition } from '../generated/signals';
 import { StopOrdersServiceDefinition } from '../generated/stoporders';
 import { UsersServiceDefinition } from '../generated/users';
 import type { UnaryLimitConfig } from './unary-limit-config';
-import {
-  assertUnaryLimitConfig,
-  cloneUnaryLimits,
-  compileUnaryLimits,
-  sameUnaryLimit
-} from './unary-limit-config';
+import { assertUnaryLimitConfig, cloneUnaryLimits, compileUnaryLimits, sameUnaryLimit } from './unary-limit-config';
 
+/** Параметры экземпляра после проверки и применения значения useSsl по умолчанию. */
 export type ResolvedTInvestOptions = Omit<
   TInvestOptions,
   'useSsl'
 > & {
   useSsl: boolean;
 };
-
-const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
 
 interface UnaryServiceDefinitionContract {
   readonly name: string;
@@ -57,6 +46,8 @@ interface UnaryServiceDefinitionContract {
     }>
   >;
 }
+
+const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
 
 const unaryServiceDefinitions: readonly UnaryServiceDefinitionContract[] = [
   InstrumentsServiceDefinition,

@@ -1,8 +1,7 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  SubscriptionInterval
-} from '../../../generated/marketdata';
+import { SubscriptionInterval } from '../../../generated/marketdata';
+import { maxInt32 } from '../../args/command-options';
 import {
   parseStreamRunConfig,
   type MarketDataStreamRequestConfig,
@@ -142,7 +141,10 @@ describe('stream run config', () => {
         },
         {
           type: 'subscribeOrderBook',
-          instruments: [{ instrumentId: 'order-book-id', depth: 10 }]
+          instruments: [{
+            instrumentId: 'order-book-id',
+            depth: 10
+          }]
         },
         {
           type: 'subscribeTrades',
@@ -477,25 +479,28 @@ describe('stream run config', () => {
         });
 
         const config = parseStreamRunConfig(
-          configJson(createConfig(2_147_483_647))
+          configJson(createConfig(maxInt32))
         );
         if (config.stream === 'marketdata.marketDataStream') {
           const request = config.requests[0];
 
           assert.ok(request?.type === 'subscribeOrderBook');
-          assert.equal(request.instruments[0]?.depth, 2_147_483_647);
+          assert.equal(request.instruments[0]?.depth, maxInt32);
         }
         else {
           assert.ok(config.stream === 'marketdata.marketDataServerSideStream');
           assert.equal(
             config.subscriptions.orderBooks?.[0]?.depth,
-            2_147_483_647
+            maxInt32
           );
         }
 
         assert.throws(
-          () => parseStreamRunConfig(configJson(createConfig(2_147_483_648))),
-          /depth' to be less than or equal to 2147483647/
+          () =>
+            parseStreamRunConfig(
+              configJson(createConfig(2_147_483_648))
+            ),
+          new RegExp(`depth' to be less than or equal to ${maxInt32}`)
         );
       });
     }

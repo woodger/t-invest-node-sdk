@@ -9,16 +9,12 @@
 import type { FuturesReport } from '../../../application/reports';
 import type { Future } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import {
-  createFutureReportInstrument,
-  futureFormats,
-  renderFutureRows,
-  type FutureFormat
-} from '../future/reporter';
+import { createFutureReportInstrument, futureFormats, renderFutureRows, type FutureFormat } from '../future/reporter';
+
+/** Представление списка фьючерсов: JSON или таблица. */
+export type FuturesFormat = FutureFormat;
 
 export const futuresFormats = futureFormats;
-
-export type FuturesFormat = FutureFormat;
 
 export function createFuturesReport(instruments: Future[]): FuturesReport {
   return instruments.map(createFutureReportInstrument);

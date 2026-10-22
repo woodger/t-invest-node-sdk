@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  EtfResponse,
-  InstrumentRequest
-} from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
+import type { EtfResponse, InstrumentRequest } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentLookupRequestFromOptions,
-  instrumentLookupOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentLookupRequestFromOptions, instrumentLookupOptionsSchema } from '../../args/instruments-args';
 import { etfFormats, formatEtf } from './reporter';
 
 type EtfSdk = {
@@ -35,48 +28,31 @@ type EtfSdk = {
 
 type EtfSdkFactory = (options: TInvestOptions) => EtfSdk;
 
-const etfCommandPath = ['instrument', 'etf', 'show'] as const;
-const defaultEtfSdkFactory: EtfSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const etfFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: etfFormats,
-    default: 'table'
-  }
-} as const;
-
-const etfOptionsSchema = withSdkOptions(
-  instrumentLookupOptionsSchema,
-  etfFormatOptionsSchema
-);
-
-type EtfOptions = InferOptions<typeof etfOptionsSchema>;
-
 export function createEtfCommand(
-  createSdk: EtfSdkFactory = defaultEtfSdkFactory
+  createSdk: EtfSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: etfCommandPath,
-    options: etfOptionsSchema,
-    handle({ options }) {
-      return runEtfCommand(options, createSdk);
+    path: ['instrument', 'etf', 'show'] as const,
+    options: withSdkOptions({
+      ...instrumentLookupOptionsSchema,
+      format: {
+        type: 'string',
+        choices: etfFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentLookupRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.etfBy(request);
+
+        return formatEtf(response, format);
+      });
     }
   });
 }
 
 export const etfCommand = createEtfCommand();
-
-async function runEtfCommand(
-  options: EtfOptions,
-  createSdk: EtfSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentLookupRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.etfBy(request);
-
-    return formatEtf(response, format);
-  });
-}

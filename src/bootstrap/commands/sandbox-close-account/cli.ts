@@ -11,24 +11,15 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  CloseSandboxAccountRequest,
-  CloseSandboxAccountResponse
-} from '../../../generated/sandbox';
+import type { CloseSandboxAccountRequest, CloseSandboxAccountResponse } from '../../../generated/sandbox';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  assertSideEffectConfirmed,
-  sideEffectConfirmationOptionsSchema
-} from '../../args/side-effect-args';
-import {
-  closeSandboxAccountFormats,
-  formatCloseSandboxAccount
-} from './reporter';
+import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import { closeSandboxAccountFormats, formatCloseSandboxAccount } from './reporter';
 
 type SandboxCloseAccountSdk = {
   sandbox: {
@@ -43,31 +34,6 @@ type SandboxCloseAccountSdkFactory = (
   options: TInvestOptions
 ) => SandboxCloseAccountSdk;
 
-const sandboxCloseAccountCommandPath = ['sandbox', 'account', 'close'] as const;
-const defaultSandboxCloseAccountSdkFactory: SandboxCloseAccountSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxCloseAccountRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const sandboxCloseAccountFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: closeSandboxAccountFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxCloseAccountOptionsSchema = withSdkOptions(
-  sandboxCloseAccountRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  sandboxCloseAccountFormatOptionsSchema
-);
-
 type SandboxCloseAccountOptions = InferOptions<
   typeof sandboxCloseAccountOptionsSchema
 >;
@@ -76,35 +42,42 @@ type SandboxCloseAccountRequestOptions = CommandRequestOptions<
   'account-id'
 >;
 
+const sandboxCloseAccountOptionsSchema = withSdkOptions({
+  'account-id': {
+    type: 'string',
+    required: true
+  },
+  ...sideEffectConfirmationOptionsSchema,
+  format: {
+    type: 'string',
+    choices: closeSandboxAccountFormats,
+    default: 'table'
+  }
+});
+
 export function createSandboxCloseAccountCommand(
-  createSdk: SandboxCloseAccountSdkFactory =
-    defaultSandboxCloseAccountSdkFactory
+  createSdk: SandboxCloseAccountSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxCloseAccountCommandPath,
+    path: ['sandbox', 'account', 'close'] as const,
     options: sandboxCloseAccountOptionsSchema,
-    handle({ options }) {
-      return runSandboxCloseAccountCommand(options, createSdk);
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createSandboxCloseAccountRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        await sdk.sandbox.closeSandboxAccount(request);
+
+        return formatCloseSandboxAccount(request.accountId, format);
+      });
     }
   });
 }
 
 export const sandboxCloseAccountCommand = createSandboxCloseAccountCommand();
-
-async function runSandboxCloseAccountCommand(
-  options: SandboxCloseAccountOptions,
-  createSdk: SandboxCloseAccountSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createSandboxCloseAccountRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    await sdk.sandbox.closeSandboxAccount(request);
-
-    return formatCloseSandboxAccount(request.accountId, format);
-  });
-}
 
 export function createSandboxCloseAccountRequest(
   options: SandboxCloseAccountRequestOptions

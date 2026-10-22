@@ -6,18 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  OptionReport,
-  OptionReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Option,
-  OptionResponse
-} from '../../../generated/instruments';
+import type { OptionReport, OptionReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Option, OptionResponse } from '../../../generated/instruments';
 import {
   optionDirectionToJSON,
   optionPaymentTypeToJSON,
@@ -32,9 +23,10 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const optionFormats = ['json', 'table'] as const;
-
+/** Представление данных опциона: JSON или таблица. */
 export type OptionFormat = typeof optionFormats[number];
+
+export const optionFormats = ['json', 'table'] as const;
 
 export function createOptionReportInstrument(
   instrument: Option

@@ -11,20 +11,14 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  CancelStopOrderRequest,
-  CancelStopOrderResponse
-} from '../../../generated/stoporders';
+import type { CancelStopOrderRequest, CancelStopOrderResponse } from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  assertSideEffectConfirmed,
-  sideEffectConfirmationOptionsSchema
-} from '../../args/side-effect-args';
+import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
 import { cancelStopOrderFormats, formatCancelStopOrder } from './reporter';
 
 type CancelStopOrderSdk = {
@@ -40,11 +34,13 @@ type CancelStopOrderSdkFactory = (
   options: TInvestOptions
 ) => CancelStopOrderSdk;
 
-const cancelStopOrderCommandPath = ['stop-order', 'cancel'] as const;
-const defaultCancelStopOrderSdkFactory: CancelStopOrderSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type CancelStopOrderOptions = InferOptions<typeof cancelStopOrderOptionsSchema>;
+type CancelStopOrderRequestOptions = CommandRequestOptions<
+  CancelStopOrderOptions,
+  'account-id' | 'stop-order-id'
+>;
 
-const cancelStopOrderRequestOptionsSchema = {
+const cancelStopOrderOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
     required: true
@@ -52,57 +48,38 @@ const cancelStopOrderRequestOptionsSchema = {
   'stop-order-id': {
     type: 'string',
     required: true
-  }
-} as const;
-
-const cancelStopOrderFormatOptionsSchema = {
+  },
+  ...sideEffectConfirmationOptionsSchema,
   format: {
     type: 'string',
     choices: cancelStopOrderFormats,
     default: 'table'
   }
-} as const;
-
-const cancelStopOrderOptionsSchema = withSdkOptions(
-  cancelStopOrderRequestOptionsSchema,
-  sideEffectConfirmationOptionsSchema,
-  cancelStopOrderFormatOptionsSchema
-);
-
-type CancelStopOrderOptions = InferOptions<typeof cancelStopOrderOptionsSchema>;
-type CancelStopOrderRequestOptions = CommandRequestOptions<
-  CancelStopOrderOptions,
-  'account-id' | 'stop-order-id'
->;
+});
 
 export function createCancelStopOrderCommand(
-  createSdk: CancelStopOrderSdkFactory = defaultCancelStopOrderSdkFactory
+  createSdk: CancelStopOrderSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: cancelStopOrderCommandPath,
+    path: ['stop-order', 'cancel'] as const,
     options: cancelStopOrderOptionsSchema,
-    handle({ options }) {
-      return runCancelStopOrderCommand(options, createSdk);
+    async handle({ options }) {
+      assertSideEffectConfirmed(options.confirm);
+
+      const request = createCancelStopOrderRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.stopOrders.cancelStopOrder(request);
+
+        return formatCancelStopOrder(response, format);
+      });
     }
   });
 }
 
 export const cancelStopOrderCommand = createCancelStopOrderCommand();
-
-async function runCancelStopOrderCommand(
-  options: CancelStopOrderOptions,
-  createSdk: CancelStopOrderSdkFactory
-): Promise<string> {
-  assertSideEffectConfirmed(options.confirm);
-
-  const request = createCancelStopOrderRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.stopOrders.cancelStopOrder(request);
-
-    return formatCancelStopOrder(response, format);
-  });
-}
 
 export function createCancelStopOrderRequest(
   options: CancelStopOrderRequestOptions

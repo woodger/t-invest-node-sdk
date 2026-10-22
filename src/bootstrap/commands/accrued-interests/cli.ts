@@ -11,18 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  GetAccruedInterestsRequest,
-  type GetAccruedInterestsResponse
-} from '../../../generated/instruments';
+import { GetAccruedInterestsRequest, type GetAccruedInterestsResponse } from '../../../generated/instruments';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  parseDateTimeOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { parseDateTimeOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import {
   instrumentIdWithDeprecatedFigiOptionsSchema,
@@ -43,35 +37,6 @@ type AccruedInterestsSdkFactory = (
   options: TInvestOptions
 ) => AccruedInterestsSdk;
 
-const accruedInterestsCommandPath = ['instrument', 'bond', 'accrued'] as const;
-const defaultAccruedInterestsSdkFactory: AccruedInterestsSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const accruedInterestsRequestOptionsSchema = {
-  ...instrumentIdWithDeprecatedFigiOptionsSchema,
-  from: {
-    type: 'string',
-    required: true
-  },
-  to: {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const accruedInterestsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: accruedInterestsFormats,
-    default: 'table'
-  }
-} as const;
-
-const accruedInterestsOptionsSchema = withSdkOptions(
-  accruedInterestsRequestOptionsSchema,
-  accruedInterestsFormatOptionsSchema
-);
-
 type AccruedInterestsOptions = InferOptions<
   typeof accruedInterestsOptionsSchema
 >;
@@ -80,32 +45,44 @@ type AccruedInterestsRequestOptions = CommandRequestOptions<
   'from' | 'to' | 'instrument-id' | 'figi'
 >;
 
+const accruedInterestsOptionsSchema = withSdkOptions({
+  ...instrumentIdWithDeprecatedFigiOptionsSchema,
+  from: {
+    type: 'string',
+    required: true
+  },
+  to: {
+    type: 'string',
+    required: true
+  },
+  format: {
+    type: 'string',
+    choices: accruedInterestsFormats,
+    default: 'table'
+  }
+});
+
 export function createAccruedInterestsCommand(
-  createSdk: AccruedInterestsSdkFactory = defaultAccruedInterestsSdkFactory
+  createSdk: AccruedInterestsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: accruedInterestsCommandPath,
+    path: ['instrument', 'bond', 'accrued'] as const,
     options: accruedInterestsOptionsSchema,
-    handle({ options }) {
-      return runAccruedInterestsCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createAccruedInterestsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getAccruedInterests(request);
+
+        return formatAccruedInterests(response.accruedInterests, format);
+      });
     }
   });
 }
 
 export const accruedInterestsCommand = createAccruedInterestsCommand();
-
-async function runAccruedInterestsCommand(
-  options: AccruedInterestsOptions,
-  createSdk: AccruedInterestsSdkFactory
-): Promise<string> {
-  const request = createAccruedInterestsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getAccruedInterests(request);
-
-    return formatAccruedInterests(response.accruedInterests, format);
-  });
-}
 
 export function createAccruedInterestsRequest(
   options: AccruedInterestsRequestOptions

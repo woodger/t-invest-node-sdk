@@ -1,11 +1,6 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  AccessLevel,
-  AccountStatus,
-  AccountType,
-  type Account
-} from '../../../generated/users';
+import { AccessLevel, AccountStatus, AccountType, type Account } from '../../../generated/users';
 import { createAccountsReport, formatAccountsReport } from './reporter';
 
 function account(overrides: Partial<Account> = {}): Account {

@@ -11,17 +11,15 @@
 
 import { SubscriptionInterval } from '../../../generated/marketdata';
 import { CliUsageError } from 'icore';
+import { maxInt32 } from '../../args/command-options';
 
-export const streamRunStreamNames = [
-  'marketdata.marketDataStream',
-  'marketdata.marketDataServerSideStream',
-  'operations.portfolioStream',
-  'operations.positionsStream',
-  'orders.tradesStream'
-] as const;
-
+/** Имена потоков SDK, поддерживаемых командой stream run. */
 export type StreamRunStreamName = typeof streamRunStreamNames[number];
 
+/**
+ * Ограничения потоковой сессии и настройки фильтрации и представления её
+ * событий.
+ */
 export type StreamRunRuntime = {
   format: 'jsonl';
   maxEvents?: number | undefined;
@@ -32,6 +30,10 @@ export type StreamRunRuntime = {
   raw: boolean;
 };
 
+/**
+ * Проверенная конфигурация stream run; состав запросов и подписок зависит от
+ * выбранного потока.
+ */
 export type StreamRunConfig = {
   runtime: StreamRunRuntime;
 } & (
@@ -56,6 +58,10 @@ export type StreamRunConfig = {
   }
 );
 
+/**
+ * Описание одного начального запроса подписки или получения подписок для
+ * двустороннего потока.
+ */
 export type MarketDataStreamRequestConfig =
   | {
     type: 'subscribeCandles';
@@ -73,6 +79,7 @@ export type MarketDataStreamRequestConfig =
     type: 'getMySubscriptions';
   };
 
+/** Наборы подписок для серверного потока marketDataServerSideStream. */
 export type MarketDataSubscriptions = {
   candles?: CandleSubscriptionConfig[] | undefined;
   orderBooks?: OrderBookSubscriptionConfig[] | undefined;
@@ -81,18 +88,32 @@ export type MarketDataSubscriptions = {
   lastPrices?: InstrumentSubscriptionConfig[] | undefined;
 };
 
+/** Инструмент, интервал и режим ожидания закрытия свечи для подписки. */
 export type CandleSubscriptionConfig = InstrumentSubscriptionConfig & {
   interval: SubscriptionInterval;
   waitingClose: boolean;
 };
 
+/** Инструмент и глубина стакана для подписки на его обновления. */
 export type OrderBookSubscriptionConfig = InstrumentSubscriptionConfig & {
   depth: number;
 };
 
+/** Общая часть подписки, задающая идентификатор инструмента. */
 export type InstrumentSubscriptionConfig = {
   instrumentId: string;
 };
+
+type MarketDataStreamRequestType =
+  typeof allowedMarketDataStreamRequestTypes[number];
+
+export const streamRunStreamNames = [
+  'marketdata.marketDataStream',
+  'marketdata.marketDataServerSideStream',
+  'operations.portfolioStream',
+  'operations.positionsStream',
+  'orders.tradesStream'
+] as const;
 
 const streamRunStreamNameSet = new Set<string>(streamRunStreamNames);
 
@@ -131,9 +152,6 @@ const allowedMarketDataStreamRequestTypes = [
   'subscribeLastPrice',
   'getMySubscriptions'
 ] as const;
-
-type MarketDataStreamRequestType =
-  typeof allowedMarketDataStreamRequestTypes[number];
 
 const allowedMarketDataStreamRequestTypeSet = new Set<string>(
   allowedMarketDataStreamRequestTypes
@@ -493,9 +511,9 @@ function parseOrderBookSubscription(
   );
   const depth = parsePositiveInteger(orderBook['depth'], `${path}.depth`);
 
-  if (depth > 2_147_483_647) {
+  if (depth > maxInt32) {
     throw new CliUsageError(
-      `Expected '${path}.depth' to be less than or equal to 2147483647`
+      `Expected '${path}.depth' to be less than or equal to ${maxInt32}`
     );
   }
 

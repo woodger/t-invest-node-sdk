@@ -6,12 +6,12 @@
  */
 
 import { InstrumentStatus } from '../../generated/common';
-import {
-  InstrumentIdType,
-  type InstrumentRequest,
-  type InstrumentsRequest
-} from '../../generated/instruments';
+import { InstrumentIdType, type InstrumentRequest, type InstrumentsRequest } from '../../generated/instruments';
 import { CliUsageError, parseOptions, type RawOptionValue } from 'icore';
+
+type InstrumentIdTypeName = keyof typeof instrumentIdTypes;
+
+type InstrumentStatusName = keyof typeof instrumentStatuses;
 
 const instrumentIdTypes = {
   figi: InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI,
@@ -19,8 +19,6 @@ const instrumentIdTypes = {
   uid: InstrumentIdType.INSTRUMENT_ID_TYPE_UID,
   'position-uid': InstrumentIdType.INSTRUMENT_ID_TYPE_POSITION_UID
 } as const;
-
-type InstrumentIdTypeName = keyof typeof instrumentIdTypes;
 
 const instrumentIdTypeNames = Object.keys(
   instrumentIdTypes
@@ -63,8 +61,6 @@ const instrumentStatuses = {
   base: InstrumentStatus.INSTRUMENT_STATUS_BASE,
   all: InstrumentStatus.INSTRUMENT_STATUS_ALL
 } as const;
-
-type InstrumentStatusName = keyof typeof instrumentStatuses;
 
 const instrumentStatusNames = Object.keys(
   instrumentStatuses

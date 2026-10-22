@@ -29,59 +29,42 @@ type BrandSdk = {
 
 type BrandSdkFactory = (options: TInvestOptions) => BrandSdk;
 
-const brandCommandPath = ['instrument', 'brand', 'show'] as const;
-const defaultBrandSdkFactory: BrandSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
+type BrandOptions = InferOptions<typeof brandOptionsSchema>;
+type BrandRequestOptions = CommandRequestOptions<BrandOptions, 'id'>;
 
-const brandRequestOptionsSchema = {
+const brandOptionsSchema = withSdkOptions({
   id: {
     type: 'string',
     required: true
-  }
-} as const;
-
-const brandFormatOptionsSchema = {
+  },
   format: {
     type: 'string',
     choices: brandFormats,
     default: 'table'
   }
-} as const;
-
-const brandOptionsSchema = withSdkOptions(
-  brandRequestOptionsSchema,
-  brandFormatOptionsSchema
-);
-
-type BrandOptions = InferOptions<typeof brandOptionsSchema>;
-type BrandRequestOptions = CommandRequestOptions<BrandOptions, 'id'>;
+});
 
 export function createBrandCommand(
-  createSdk: BrandSdkFactory = defaultBrandSdkFactory
+  createSdk: BrandSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: brandCommandPath,
+    path: ['instrument', 'brand', 'show'] as const,
     options: brandOptionsSchema,
-    handle({ options }) {
-      return runBrandCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createBrandRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getBrandBy(request);
+
+        return formatBrand(response, format);
+      });
     }
   });
 }
 
 export const brandCommand = createBrandCommand();
-
-async function runBrandCommand(
-  options: BrandOptions,
-  createSdk: BrandSdkFactory
-): Promise<string> {
-  const request = createBrandRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getBrandBy(request);
-
-    return formatBrand(response, format);
-  });
-}
 
 export function createBrandRequest(
   options: BrandRequestOptions

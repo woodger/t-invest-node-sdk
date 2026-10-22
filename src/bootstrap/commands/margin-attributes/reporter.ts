@@ -8,16 +8,13 @@
 
 import type { MarginAttributesReport } from '../../../application/reports';
 import type { GetMarginAttributesResponse } from '../../../generated/users';
-import {
-  formatReportDecimal,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDecimal, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const marginAttributesFormats = ['json', 'table'] as const;
-
+/** Представление показателей маржинальной торговли: JSON или таблица. */
 export type MarginAttributesFormat = typeof marginAttributesFormats[number];
+
+export const marginAttributesFormats = ['json', 'table'] as const;
 
 export function createMarginAttributesReport(
   response: GetMarginAttributesResponse

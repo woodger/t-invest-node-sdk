@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  GetMarginAttributesRequest,
-  GetMarginAttributesResponse
-} from '../../../generated/users';
+import type { GetMarginAttributesRequest, GetMarginAttributesResponse } from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -36,30 +33,6 @@ type MarginAttributesSdkFactory = (
   options: TInvestOptions
 ) => MarginAttributesSdk;
 
-const marginAttributesCommandPath = ['account', 'margin'] as const;
-const defaultMarginAttributesSdkFactory: MarginAttributesSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const marginAttributesRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const marginAttributesFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: marginAttributesFormats,
-    default: 'table'
-  }
-} as const;
-
-const marginAttributesOptionsSchema = withSdkOptions(
-  marginAttributesRequestOptionsSchema,
-  marginAttributesFormatOptionsSchema
-);
-
 type MarginAttributesOptions = InferOptions<
   typeof marginAttributesOptionsSchema
 >;
@@ -68,32 +41,39 @@ type MarginAttributesRequestOptions = CommandRequestOptions<
   'account-id'
 >;
 
+const marginAttributesOptionsSchema = withSdkOptions({
+  'account-id': {
+    type: 'string',
+    required: true
+  },
+  format: {
+    type: 'string',
+    choices: marginAttributesFormats,
+    default: 'table'
+  }
+});
+
 export function createMarginAttributesCommand(
-  createSdk: MarginAttributesSdkFactory = defaultMarginAttributesSdkFactory
+  createSdk: MarginAttributesSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: marginAttributesCommandPath,
+    path: ['account', 'margin'] as const,
     options: marginAttributesOptionsSchema,
-    handle({ options }) {
-      return runMarginAttributesCommand(options, createSdk);
+    async handle({ options }) {
+      const request = createMarginAttributesRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.users.getMarginAttributes(request);
+
+        return formatMarginAttributes(response, format);
+      });
     }
   });
 }
 
 export const marginAttributesCommand = createMarginAttributesCommand();
-
-async function runMarginAttributesCommand(
-  options: MarginAttributesOptions,
-  createSdk: MarginAttributesSdkFactory
-): Promise<string> {
-  const request = createMarginAttributesRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.users.getMarginAttributes(request);
-
-    return formatMarginAttributes(response, format);
-  });
-}
 
 export function createMarginAttributesRequest(
   options: MarginAttributesRequestOptions

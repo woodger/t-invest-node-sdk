@@ -6,16 +6,8 @@
  * `cli.ts`.
  */
 
-import type {
-  BrokerReportItemReport,
-  BrokerReportPageReport,
-  BrokerReportReport
-} from '../../../application/reports';
-import type {
-  BrokerReport,
-  BrokerReportResponse,
-  GetBrokerReportResponse
-} from '../../../generated/operations';
+import type { BrokerReportItemReport, BrokerReportPageReport, BrokerReportReport } from '../../../application/reports';
+import type { BrokerReport, BrokerReportResponse, GetBrokerReportResponse } from '../../../generated/operations';
 import {
   formatReportDate,
   formatReportMoneyText,
@@ -24,9 +16,10 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const brokerReportFormats = ['json', 'table'] as const;
-
+/** Представление брокерского отчёта: JSON или таблица. */
 export type BrokerReportFormat = typeof brokerReportFormats[number];
+
+export const brokerReportFormats = ['json', 'table'] as const;
 
 function toReportItem(item: BrokerReport): BrokerReportItemReport {
   return {

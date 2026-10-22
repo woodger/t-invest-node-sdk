@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { packageConfig } from './config';
 
@@ -10,9 +10,6 @@ describe('packageConfig', () => {
   });
 
   test('sets the gRPC receive message limit to four MiB', () => {
-    assert.equal(
-      packageConfig.grpc.maxReceiveMessageLength,
-      4 * 1024 * 1024
-    );
+    assert.equal(packageConfig.grpc.maxReceiveMessageLength, 4_194_304);
   });
 });

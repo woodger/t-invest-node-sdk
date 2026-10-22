@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  EtfsResponse,
-  InstrumentsRequest
-} from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
+import type { EtfsResponse, InstrumentsRequest } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentsRequestFromOptions,
-  instrumentStatusOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentsRequestFromOptions, instrumentStatusOptionsSchema } from '../../args/instruments-args';
 import { etfsFormats, formatEtfs } from './reporter';
 
 type EtfsSdk = {
@@ -35,48 +28,31 @@ type EtfsSdk = {
 
 type EtfsSdkFactory = (options: TInvestOptions) => EtfsSdk;
 
-const etfsCommandPath = ['instrument', 'etf', 'list'] as const;
-const defaultEtfsSdkFactory: EtfsSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const etfsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: etfsFormats,
-    default: 'table'
-  }
-} as const;
-
-const etfsOptionsSchema = withSdkOptions(
-  instrumentStatusOptionsSchema,
-  etfsFormatOptionsSchema
-);
-
-type EtfsOptions = InferOptions<typeof etfsOptionsSchema>;
-
 export function createEtfsCommand(
-  createSdk: EtfsSdkFactory = defaultEtfsSdkFactory
+  createSdk: EtfsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: etfsCommandPath,
-    options: etfsOptionsSchema,
-    handle({ options }) {
-      return runEtfsCommand(options, createSdk);
+    path: ['instrument', 'etf', 'list'] as const,
+    options: withSdkOptions({
+      ...instrumentStatusOptionsSchema,
+      format: {
+        type: 'string',
+        choices: etfsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentsRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.etfs(request);
+
+        return formatEtfs(response.instruments, format);
+      });
     }
   });
 }
 
 export const etfsCommand = createEtfsCommand();
-
-async function runEtfsCommand(
-  options: EtfsOptions,
-  createSdk: EtfsSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentsRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.etfs(request);
-
-    return formatEtfs(response.instruments, format);
-  });
-}

@@ -13,16 +13,13 @@ import {
   orderTypeToJSON,
   type PostOrderResponse
 } from '../../../generated/orders';
-import {
-  formatReportMoneyText,
-  formatReportQuotation,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportMoneyText, formatReportQuotation, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const postOrderFormats = ['json', 'table'] as const;
-
+/** Представление результата выставления заявки: JSON или таблица. */
 export type PostOrderFormat = typeof postOrderFormats[number];
+
+export const postOrderFormats = ['json', 'table'] as const;
 
 export function createOrderMutationReport(
   response: PostOrderResponse

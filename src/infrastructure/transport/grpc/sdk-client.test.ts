@@ -1,45 +1,23 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
-import {
-  createSecureServer,
-  type ServerHttp2Stream
-} from 'node:http2';
+import { createSecureServer, type ServerHttp2Stream } from 'node:http2';
 import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
-import {
-  ChannelCredentials,
-  ClientError,
-  createChannel,
-  createServer,
-  Metadata,
-  ServerError,
-  Status
-} from 'nice-grpc';
-import type {
-  Client,
-  Channel,
-  ServiceDefinition
-} from 'nice-grpc';
-import {
-  isSdkError,
-  SdkErrorCode
-} from '../../../application/errors/sdk-error';
-import type {
-  TInvestUnaryLimitContext,
-  TInvestUnaryLimiter
-} from '../../../application/services/unary-limiter';
+import { ChannelCredentials, ClientError, createChannel, createServer, Metadata, ServerError, Status } from 'nice-grpc';
+import type { Client, Channel, ServiceDefinition } from 'nice-grpc';
+import { isSdkError, SdkErrorCode } from '../../../application/errors/sdk-error';
+import type { TInvestUnaryLimitContext, TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
 import { createSdkChannel } from './sdk-channel';
 import { createSdkClient } from './sdk-client';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
 import { UnaryLimitResolver } from './unary-limit-resolver';
 
+type PayloadServiceClient = Client<typeof payloadServiceDefinition>;
+
 const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
 const requestSerializationPath = '/test.RequestSerializationService/GetPayload';
 const responseParsingPath = '/test.ResponseParsingService/GetPayload';
-const oneMiB = 1024 * 1024;
-const twoMiB = 2 * oneMiB;
-const maxReceiveMessageLength = 4 * 1024 * 1024;
 const tlsFixturesDirectory = resolve(
   __dirname,
   '../../../../src/infrastructure/transport/grpc/test-fixtures'
@@ -77,8 +55,6 @@ const responseParsingServiceDefinition = {
     }
   }
 } as const satisfies ServiceDefinition;
-
-type PayloadServiceClient = Client<typeof payloadServiceDefinition>;
 
 describe('createSdkClient', () => {
   test(
@@ -124,7 +100,7 @@ describe('createSdkClient', () => {
         token: 'token',
         endpoint: `127.0.0.1:${port}`,
         useSsl: false
-      }, 4 * 1024 * 1024);
+      }, 4_194_304);
       let limiterContext: TInvestUnaryLimitContext | undefined;
       const limiter: TInvestUnaryLimiter = {
         async acquire(context) {
@@ -148,12 +124,14 @@ describe('createSdkClient', () => {
           }
         }),
         {
-          useSsl: false,
-          maxReceiveMessageLength,
           signal: lifecycleController.signal,
           // Сценарий metadata не проверяет отказ закрытого lifecycle.
           // oxlint-disable-next-line no-empty-function
           assertOpen() {}
+        },
+        {
+          useSsl: false,
+          maxReceiveMessageLength: 4_194_304
         }
       );
 
@@ -197,7 +175,7 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, 4_194_304);
     const client = createPayloadClient(channel, false);
 
     try {
@@ -233,7 +211,7 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, 4_194_304);
     const client = createPayloadClient(channel, false);
 
     try {
@@ -269,11 +247,11 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, 4_194_304);
     const client = createPayloadClient(
       channel,
       false,
-      maxReceiveMessageLength,
+      4_194_304,
       requestSerializationServiceDefinition
     );
 
@@ -311,11 +289,11 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, maxReceiveMessageLength);
+    }, 4_194_304);
     const client = createPayloadClient(
       channel,
       false,
-      maxReceiveMessageLength,
+      4_194_304,
       responseParsingServiceDefinition
     );
 
@@ -345,7 +323,7 @@ describe('createSdkClient', () => {
 
       server.add(payloadServiceDefinition, {
         async getPayload() {
-          return new Uint8Array(twoMiB);
+          return new Uint8Array(2_097_152);
         }
       });
 
@@ -354,8 +332,8 @@ describe('createSdkClient', () => {
         token: 'token',
         endpoint: `127.0.0.1:${port}`,
         useSsl: false
-      }, oneMiB);
-      const client = createPayloadClient(channel, false, oneMiB);
+      }, 1_048_576);
+      const client = createPayloadClient(channel, false, 1_048_576);
 
       try {
         await assert.rejects(
@@ -398,8 +376,8 @@ describe('createSdkClient', () => {
       token: 'token',
       endpoint: `127.0.0.1:${port}`,
       useSsl: false
-    }, oneMiB);
-    const client = createPayloadClient(channel, false, oneMiB);
+    }, 1_048_576);
+    const client = createPayloadClient(channel, false, 1_048_576);
 
     try {
       await assert.rejects(
@@ -500,7 +478,7 @@ describe('createSdkClient', () => {
       tls: {
         rootCertificates: readTlsFixture('tls-root.cert.pem')
       }
-    }, maxReceiveMessageLength);
+    }, 4_194_304);
     const client = createPayloadClient(channel, true);
 
     try {
@@ -533,7 +511,7 @@ describe('createSdkClient', () => {
         tls: {
           rootCertificates: readTlsFixture('tls-root.cert.pem')
         }
-      }, maxReceiveMessageLength);
+      }, 4_194_304);
       const client = createPayloadClient(channel, true);
 
       try {
@@ -557,7 +535,7 @@ describe('createSdkClient', () => {
 function createPayloadClient(
   channel: Channel,
   useSsl: boolean,
-  receiveMessageLength: number = maxReceiveMessageLength,
+  receiveMessageLength: number = 4_194_304,
   service:
     | typeof payloadServiceDefinition
     | typeof requestSerializationServiceDefinition
@@ -572,14 +550,16 @@ function createPayloadClient(
     undefined,
     new UnaryLimitResolver({}),
     {
-      useSsl,
-      maxReceiveMessageLength: receiveMessageLength,
       signal,
       assertOpen() {
         if (signal.aborted) {
           throw signal.reason;
         }
       }
+    },
+    {
+      useSsl,
+      maxReceiveMessageLength: receiveMessageLength
     }
   );
 }
@@ -600,6 +580,7 @@ function createPayloadTlsServer(
   server.on('stream', (stream: ServerHttp2Stream) => {
     stream.resume();
     stream.once('end', () => {
+      // gRPC frame начинается с флага сжатия (1 байт) и длины (4 байта).
       const frame = Buffer.alloc(5 + payload.byteLength);
 
       frame.writeUInt32BE(payload.byteLength, 1);

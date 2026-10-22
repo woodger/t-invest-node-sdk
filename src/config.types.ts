@@ -1,13 +1,13 @@
 /**
- * Модуль config types описывает декларативную package policy и публичную
- * runtime конфигурацию SDK.
+ * Модуль описывает типы исходных настроек модуля и публичных значений по
+ * умолчанию.
  *
  * Здесь допустимы:
- * - type contracts для public config surface;
- * - compile-time контракт человекочитаемых package defaults;
- * - переиспользование application service types;
+ * - типы публичных настроек;
+ * - проверка формы исходных настроек при компиляции;
+ * - переиспользование интерфейсов сервисов приложения.
  *
- * Здесь не должно быть default values или runtime validation.
+ * Здесь не должно быть значений по умолчанию или проверок при создании SDK.
  */
 
 import type {
@@ -20,22 +20,19 @@ import type {
   StopOrdersService,
   UsersService
 } from './application/dto/t-invest-services';
-import type {
-  TInvestUnaryLimit,
-  TInvestUnaryLimits
-} from './application/services/unary-limiter';
+import type { TInvestUnaryLimit, TInvestUnaryLimits } from './application/services/unary-limiter';
 
 type GrpcMethodName<Service> = Capitalize<Extract<keyof Service, string>>;
 
 /**
- * Flat runtime rules unary-квот. Ключ — generated service name или полный
- * gRPC method path, значение — число запросов и размер окна.
+ * Плоская таблица квот unary-вызовов. Ключ — имя сгенерированного сервиса или
+ * полный путь gRPC-метода, значение — число запросов и размер окна.
  */
 export type UnaryLimits = TInvestUnaryLimits;
 
 /**
- * Человекочитаемые per-instance overrides без shared quota groups.
- * Package defaults подмешиваются отдельно при создании SDK instance.
+ * Переопределения квот для одного экземпляра без групп общих квот.
+ * Значения по умолчанию модуля добавляются при создании SDK.
  */
 export type UnaryLimitsDefinition = {
   [Service in keyof PackageUnaryLimitsConfig]?: {
@@ -77,9 +74,8 @@ export type UnaryLimitsConfig = Readonly<
 >;
 
 /**
- * Package unary policy для всех поддерживаемых unary services.
- * Допустимые RPC names выводятся из синхронизированных public service
- * contracts.
+ * Настройки квот модуля для всех поддерживаемых unary-сервисов.
+ * Допустимые имена RPC выводятся из синхронизированных интерфейсов сервисов.
  */
 export type PackageUnaryLimitsConfig = {
   InstrumentsService: UnaryServiceLimitsConfig<
@@ -100,30 +96,30 @@ export type PackageUnaryLimitsConfig = {
   UsersService: UnaryServiceLimitsConfig<GrpcMethodName<UsersService>>;
 };
 
-/** Source contract декларативного package config без runtime mapping. */
+/** Тип исходных настроек модуля без преобразований при создании SDK. */
 export interface PackageConfigDefinition {
-  /** Package defaults публичных per-instance SDK options. */
+  /** Значения по умолчанию для параметров экземпляра SDK. */
   sdk: {
     /** Использовать TLS, если instance option не задан. */
     useSsl: boolean;
   };
 
-  /** Package-owned transport policy общего gRPC channel. */
+  /** Настройки общего gRPC-канала. */
   grpc: {
     /** Максимальный размер одного входящего gRPC-сообщения в байтах. */
     maxReceiveMessageLength: number;
   };
 
-  /** Provider limits и package quota groups. */
+  /** Квоты провайдера и группы общих квот. */
   unaryLimits: PackageUnaryLimitsConfig;
 
   /** CLI safety policy для команд с необратимыми или торговыми side effects. */
   requireSideEffectConfirmation: boolean;
 }
 
-/** Публичный runtime config после компиляции package defaults. */
+/** Публичные значения по умолчанию, подготовленные из настроек модуля. */
 export interface TInvestNodeSDKConfig {
-  /** Flat unary rules, доступные для runtime inspection и overrides. */
+  /** Плоская таблица квот, доступная для чтения и переопределения. */
   unaryLimits: UnaryLimits;
 
   /** Требует явное подтверждение CLI-команд с side effects. */

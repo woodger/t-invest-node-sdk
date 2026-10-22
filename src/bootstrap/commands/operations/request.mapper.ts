@@ -5,22 +5,10 @@
  * Здесь не должно быть command schema, SDK calls или rendering.
  */
 
-import {
-  OperationState,
-  type OperationsRequest
-} from '../../../generated/operations';
+import { OperationState, type OperationsRequest } from '../../../generated/operations';
 import { CliUsageError } from 'icore';
 import { parseDateTimeOption } from '../../args/command-options';
-import {
-  resolveOptionalInstrumentIdOption
-} from '../../args/instrument-id-options';
-
-const operationStates = {
-  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
-  executed: OperationState.OPERATION_STATE_EXECUTED,
-  canceled: OperationState.OPERATION_STATE_CANCELED,
-  progress: OperationState.OPERATION_STATE_PROGRESS
-} as const;
+import { resolveOptionalInstrumentIdOption } from '../../args/instrument-id-options';
 
 interface OperationsRequestOptions {
   readonly 'account-id': string;
@@ -30,6 +18,13 @@ interface OperationsRequestOptions {
   readonly 'instrument-id'?: string | undefined;
   readonly figi?: string | undefined;
 }
+
+const operationStates = {
+  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
+  executed: OperationState.OPERATION_STATE_EXECUTED,
+  canceled: OperationState.OPERATION_STATE_CANCELED,
+  progress: OperationState.OPERATION_STATE_PROGRESS
+} as const;
 
 export function createOperationsRequest(
   options: OperationsRequestOptions

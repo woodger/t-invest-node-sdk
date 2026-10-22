@@ -23,6 +23,8 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
   }
 
   const nanosPerUnit = 1_000_000_000n;
+  // MoneyValue.nano и Quotation.nano хранят наноединицы.
+  const nanoFractionDigits = 9;
   const totalNanos = BigInt(value.units) * nanosPerUnit + BigInt(value.nano);
   const sign = totalNanos < 0n ? '-' : '';
   const absoluteNanos = totalNanos < 0n ? -totalNanos : totalNanos;
@@ -33,7 +35,9 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
     return `${sign}${units}`;
   }
 
-  const fraction = nanos.toString().padStart(9, '0').replace(/0+$/, '');
+  const fraction = nanos.toString()
+    .padStart(nanoFractionDigits, '0')
+    .replace(/0+$/, '');
 
   return `${sign}${units}.${fraction}`;
 }

@@ -5,6 +5,7 @@
  * Здесь не должно быть разбора аргументов, rendering или SDK runtime wiring.
  */
 
+/** Запись статического каталога справки одной CLI-команды. */
 export interface CommandHelp {
   description: string;
   sdkCall?: string;
@@ -16,6 +17,9 @@ export interface CommandHelp {
   examples: readonly string[];
   notes?: readonly string[];
 }
+
+/** Канонические имена команд, для которых определена справка в commandHelp. */
+export type CommandHelpName = keyof typeof commandHelp;
 
 const sdkConnectionOptions = [
   '--token=TOKEN          OAuth token, overrides T_INVEST_TOKEN',
@@ -1662,5 +1666,3 @@ export const commandHelp = {
     ]
   }
 } as const satisfies Record<string, CommandHelp>;
-
-export type CommandHelpName = keyof typeof commandHelp;

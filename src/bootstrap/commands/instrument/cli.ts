@@ -11,19 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type InstrumentRequest,
-  type InstrumentResponse
-} from '../../../generated/instruments';
-import type { InferOptions } from 'icore';
+import { type InstrumentRequest, type InstrumentResponse } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentLookupRequestFromOptions,
-  instrumentLookupOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentLookupRequestFromOptions, instrumentLookupOptionsSchema } from '../../args/instruments-args';
 import { formatInstrument, instrumentFormats } from './reporter';
 
 type InstrumentSdk = {
@@ -35,48 +28,31 @@ type InstrumentSdk = {
 
 type InstrumentSdkFactory = (options: TInvestOptions) => InstrumentSdk;
 
-const instrumentCommandPath = ['instrument', 'show'] as const;
-const defaultInstrumentSdkFactory: InstrumentSdkFactory = (options) =>
-  new TInvestNodeSDK(options);
-
-const instrumentFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: instrumentFormats,
-    default: 'table'
-  }
-} as const;
-
-const instrumentOptionsSchema = withSdkOptions(
-  instrumentLookupOptionsSchema,
-  instrumentFormatOptionsSchema
-);
-
-type InstrumentOptions = InferOptions<typeof instrumentOptionsSchema>;
-
 export function createInstrumentCommand(
-  createSdk: InstrumentSdkFactory = defaultInstrumentSdkFactory
+  createSdk: InstrumentSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: instrumentCommandPath,
-    options: instrumentOptionsSchema,
-    handle({ options }) {
-      return runInstrumentCommand(options, createSdk);
+    path: ['instrument', 'show'] as const,
+    options: withSdkOptions({
+      ...instrumentLookupOptionsSchema,
+      format: {
+        type: 'string',
+        choices: instrumentFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const { format } = options;
+      const request = createInstrumentLookupRequestFromOptions(options);
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.instruments.getInstrumentBy(request);
+
+        return formatInstrument(response, format);
+      });
     }
   });
 }
 
 export const instrumentCommand = createInstrumentCommand();
-
-async function runInstrumentCommand(
-  options: InstrumentOptions,
-  createSdk: InstrumentSdkFactory
-): Promise<string> {
-  const { format } = options;
-  const request = createInstrumentLookupRequestFromOptions(options);
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.instruments.getInstrumentBy(request);
-
-    return formatInstrument(response, format);
-  });
-}

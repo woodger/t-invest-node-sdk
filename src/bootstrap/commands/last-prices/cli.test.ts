@@ -1,13 +1,9 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Quotation } from '../../../generated/common';
-import {
-  GetLastPricesRequest,
-  type GetLastPricesResponse,
-  type LastPrice
-} from '../../../generated/marketdata';
+import { GetLastPricesRequest, type GetLastPricesResponse, type LastPrice } from '../../../generated/marketdata';
 import { createLastPricesCommand, createLastPricesRequest } from './cli';
 
 function quotation(units: number, nano: number): Quotation {

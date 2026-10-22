@@ -6,16 +6,14 @@
  * `cli.ts`.
  */
 
-import type {
-  CountriesReport,
-  CountriesReportCountry
-} from '../../../application/reports';
+import type { CountriesReport, CountriesReportCountry } from '../../../application/reports';
 import type { CountryResponse } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
-export const countriesFormats = ['json', 'table'] as const;
-
+/** Представление справочника стран: JSON или таблица. */
 export type CountriesFormat = typeof countriesFormats[number];
+
+export const countriesFormats = ['json', 'table'] as const;
 
 function toReportCountry(country: CountryResponse): CountriesReportCountry {
   return {

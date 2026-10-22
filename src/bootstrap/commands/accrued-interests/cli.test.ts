@@ -1,8 +1,5 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -10,10 +7,7 @@ import {
   GetAccruedInterestsRequest,
   type GetAccruedInterestsResponse
 } from '../../../generated/instruments';
-import {
-  createAccruedInterestsCommand,
-  createAccruedInterestsRequest
-} from './cli';
+import { createAccruedInterestsCommand, createAccruedInterestsRequest } from './cli';
 
 function accruedInterest(
   overrides: Partial<AccruedInterest> = {}

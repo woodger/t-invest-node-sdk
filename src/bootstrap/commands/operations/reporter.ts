@@ -6,25 +6,15 @@
  * `cli.ts`.
  */
 
-import type {
-  OperationsReport,
-  OperationsReportOperation
-} from '../../../application/reports';
-import {
-  operationStateToJSON,
-  operationTypeToJSON,
-  type Operation
-} from '../../../generated/operations';
-import {
-  formatReportDate,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import type { OperationsReport, OperationsReportOperation } from '../../../application/reports';
+import { operationStateToJSON, operationTypeToJSON, type Operation } from '../../../generated/operations';
+import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const operationsFormats = ['json', 'table'] as const;
-
+/** Представление истории операций: JSON или таблица. */
 export type OperationsFormat = typeof operationsFormats[number];
+
+export const operationsFormats = ['json', 'table'] as const;
 
 function toReportOperation(operation: Operation): OperationsReportOperation {
   return {

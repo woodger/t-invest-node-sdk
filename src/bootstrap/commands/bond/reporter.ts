@@ -6,29 +6,17 @@
  * `cli.ts`.
  */
 
-import type {
-  BondReport,
-  BondReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Bond,
-  BondResponse
-} from '../../../generated/instruments';
+import type { BondReport, BondReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Bond, BondResponse } from '../../../generated/instruments';
 import { riskLevelToJSON } from '../../../generated/instruments';
-import {
-  formatReportDate,
-  formatReportDecimal,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const bondFormats = ['json', 'table'] as const;
-
+/** Представление данных облигации: JSON или таблица. */
 export type BondFormat = typeof bondFormats[number];
+
+export const bondFormats = ['json', 'table'] as const;
 
 export function createBondReportInstrument(
   instrument: Bond

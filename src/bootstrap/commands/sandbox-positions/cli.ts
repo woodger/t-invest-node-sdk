@@ -11,14 +11,9 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  PositionsRequest,
-  PositionsResponse
-} from '../../../generated/operations';
-import type { InferOptions } from 'icore';
+import type { PositionsRequest, PositionsResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPositionsRequest } from '../positions/request.mapper';
@@ -35,67 +30,34 @@ type SandboxPositionsSdkFactory = (
   options: TInvestOptions
 ) => SandboxPositionsSdk;
 
-const sandboxPositionsCommandPath = ['sandbox', 'position', 'list'] as const;
-const defaultSandboxPositionsSdkFactory: SandboxPositionsSdkFactory =
-  (options) => new TInvestNodeSDK(options);
-
-const sandboxPositionsRequestOptionsSchema = {
-  'account-id': {
-    type: 'string',
-    required: true
-  }
-} as const;
-
-const sandboxPositionsFormatOptionsSchema = {
-  format: {
-    type: 'string',
-    choices: positionsFormats,
-    default: 'table'
-  }
-} as const;
-
-const sandboxPositionsOptionsSchema = withSdkOptions(
-  sandboxPositionsRequestOptionsSchema,
-  sandboxPositionsFormatOptionsSchema
-);
-
-type SandboxPositionsOptions = InferOptions<
-  typeof sandboxPositionsOptionsSchema
->;
-type SandboxPositionsRequestOptions = CommandRequestOptions<
-  SandboxPositionsOptions,
-  'account-id'
->;
-
 export function createSandboxPositionsCommand(
-  createSdk: SandboxPositionsSdkFactory = defaultSandboxPositionsSdkFactory
+  createSdk: SandboxPositionsSdkFactory = (options) =>
+    new TInvestNodeSDK(options)
 ) {
   return command.define({
-    path: sandboxPositionsCommandPath,
-    options: sandboxPositionsOptionsSchema,
-    handle({ options }) {
-      return runSandboxPositionsCommand(options, createSdk);
+    path: ['sandbox', 'position', 'list'] as const,
+    options: withSdkOptions({
+      'account-id': {
+        type: 'string',
+        required: true
+      },
+      format: {
+        type: 'string',
+        choices: positionsFormats,
+        default: 'table'
+      }
+    }),
+    async handle({ options }) {
+      const request = createPositionsRequest(options);
+      const { format } = options;
+
+      return runSdkCommand(options, createSdk, async (sdk) => {
+        const response = await sdk.sandbox.getSandboxPositions(request);
+
+        return formatPositions(response, format);
+      });
     }
   });
 }
 
 export const sandboxPositionsCommand = createSandboxPositionsCommand();
-
-async function runSandboxPositionsCommand(
-  options: SandboxPositionsOptions,
-  createSdk: SandboxPositionsSdkFactory
-): Promise<string> {
-  const request = createSandboxPositionsRequest(options);
-  const { format } = options;
-  return runSdkCommand(options, createSdk, async (sdk) => {
-    const response = await sdk.sandbox.getSandboxPositions(request);
-
-    return formatPositions(response, format);
-  });
-}
-
-export function createSandboxPositionsRequest(
-  options: SandboxPositionsRequestOptions
-): PositionsRequest {
-  return createPositionsRequest(options);
-}

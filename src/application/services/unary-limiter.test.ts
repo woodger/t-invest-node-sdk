@@ -1,11 +1,14 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import type {
-  TInvestUnaryLimitContext,
-  TInvestUnaryLimiter,
-  TInvestUnaryQuota
-} from './unary-limiter';
+import type { TInvestUnaryLimitContext, TInvestUnaryLimiter, TInvestUnaryQuota } from './unary-limiter';
 import { createInMemoryUnaryLimiter } from './unary-limiter';
+
+interface ControlledTimers {
+  delays: number[];
+  now(): number;
+  advanceTo(value: number): Promise<void>;
+  setCurrentTime(value: number): void;
+}
 
 const passiveSignal = new AbortController().signal;
 const ordersQuota: TInvestUnaryQuota = {
@@ -44,6 +47,7 @@ describe('createInMemoryUnaryLimiter', () => {
       assert.deepEqual(granted, [0, 600]);
       await second;
 
+      // Интервал для 15 запросов в секунду округляется вверх до 67 мс.
       const methodQuota: TInvestUnaryQuota = {
         bucket: 'rule:OrdersService/PostOrder',
         maxRequests: 15,
@@ -96,6 +100,7 @@ describe('createInMemoryUnaryLimiter', () => {
       maxRequests: 600,
       windowMs: 60_000
     };
+    // При доле 0.5 квота 5 округляется вниз до 2 запросов в минуту.
     const reportQuota: TInvestUnaryQuota = {
       bucket: 'quota:OperationsService:reports',
       maxRequests: 5,
@@ -141,7 +146,7 @@ describe('createInMemoryUnaryLimiter', () => {
     ) {
       assert.throws(
         () => createInMemoryUnaryLimiter({ quotaShare }),
-        /quotaShare must be a finite number between 0.2 and 1/
+        new RegExp('quotaShare must be a finite number between 0.2 and 1')
       );
     }
   });
@@ -149,7 +154,9 @@ describe('createInMemoryUnaryLimiter', () => {
   test(
     'paces a scaled quota below one permit over a longer interval',
     async () => {
-      const limiter = createInMemoryUnaryLimiter({ quotaShare: 0.2 });
+      const limiter = createInMemoryUnaryLimiter({
+        quotaShare: 0.2
+      });
       const quota: TInvestUnaryQuota = {
         bucket: 'rule:VeryLowLimitService',
         maxRequests: 1,
@@ -452,12 +459,11 @@ describe('createInMemoryUnaryLimiter', () => {
     'keeps waits beyond the Node.js timer range pending for the full interval',
     async () => {
       const limiter = createInMemoryUnaryLimiter();
-      const maxTimerDelayMs = 2_147_483_647;
-      const interval = maxTimerDelayMs + 10;
+      // Интервал на 10 мс превышает предел setTimeout в Node.js (2^31 - 1 мс).
       const quota: TInvestUnaryQuota = {
         bucket: 'rule:VeryLowLimitService',
         maxRequests: 1,
-        windowMs: interval
+        windowMs: 2_147_483_657
       };
       const granted: number[] = [];
 
@@ -468,17 +474,17 @@ describe('createInMemoryUnaryLimiter', () => {
 
         assert.ok(clock.delays.length > 0);
         assert.ok(
-          clock.delays.every((delay) => delay > 0 && delay <= maxTimerDelayMs)
+          clock.delays.every((delay) => delay > 0 && delay <= 2_147_483_647)
         );
 
-        await clock.advanceTo(interval - 1);
+        await clock.advanceTo(2_147_483_656);
         assert.deepEqual(granted, [0]);
         assert.ok(
-          clock.delays.every((delay) => delay > 0 && delay <= maxTimerDelayMs)
+          clock.delays.every((delay) => delay > 0 && delay <= 2_147_483_647)
         );
 
-        await clock.advanceTo(interval);
-        assert.deepEqual(granted, [0, interval]);
+        await clock.advanceTo(2_147_483_657);
+        assert.deepEqual(granted, [0, 2_147_483_657]);
         await waitingCall;
       });
     }
@@ -505,13 +511,6 @@ function recordPermit(
   return limiter.acquire(createContext(quota)).then(() => {
     granted.push(clock.now());
   });
-}
-
-interface ControlledTimers {
-  delays: number[];
-  now(): number;
-  advanceTo(value: number): Promise<void>;
-  setCurrentTime(value: number): void;
 }
 
 async function withControlledTimers(

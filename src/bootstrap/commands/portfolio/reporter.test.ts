@@ -1,10 +1,7 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
-import type {
-  PortfolioPosition,
-  PortfolioResponse
-} from '../../../generated/operations';
+import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
 import { createPortfolioReport, formatPortfolioReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {

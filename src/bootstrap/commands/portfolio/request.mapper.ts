@@ -11,16 +11,16 @@ import {
   type PortfolioRequest
 } from '../../../generated/operations';
 
+interface PortfolioRequestOptions {
+  readonly 'account-id': string;
+  readonly currency: keyof typeof portfolioCurrencies;
+}
+
 const portfolioCurrencies = {
   rub: PortfolioCurrency.RUB,
   usd: PortfolioCurrency.USD,
   eur: PortfolioCurrency.EUR
 } as const;
-
-interface PortfolioRequestOptions {
-  readonly 'account-id': string;
-  readonly currency: keyof typeof portfolioCurrencies;
-}
 
 export function createPortfolioRequest(
   options: PortfolioRequestOptions

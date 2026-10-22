@@ -6,18 +6,15 @@
  * `cli.ts`.
  */
 
-import type {
-  WithdrawLimitsReport
-} from '../../../application/reports';
+import type { WithdrawLimitsReport } from '../../../application/reports';
 import type { WithdrawLimitsResponse } from '../../../generated/operations';
-import {
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const withdrawLimitsFormats = ['json', 'table'] as const;
-
+/** Представление доступных для вывода средств: JSON или таблица. */
 export type WithdrawLimitsFormat = typeof withdrawLimitsFormats[number];
+
+export const withdrawLimitsFormats = ['json', 'table'] as const;
 
 export function createWithdrawLimitsReport(
   response: WithdrawLimitsResponse

@@ -1,11 +1,10 @@
 /**
- * Модуль SDK options CLI-слоя нормализует общие auth/runtime параметры
- * API-команд.
+ * Модуль получает параметры подключения API-команды из CLI и окружения.
  *
  * Здесь допустимы:
  * - чтение `--token`, `--endpoint`, `--app-name`, `--insecure`;
- * - fallback на ENV для credentials/endpoint;
- * - возврат `TInvestOptions` для bootstrap command handlers.
+ * - поиск token и endpoint в переменных окружения;
+ * - создание `TInvestOptions` для обработчика команды.
  *
  * Здесь не должно быть создания `TInvestNodeSDK` или вызовов API.
  */
@@ -13,6 +12,10 @@
 import type { TInvestOptions } from '../../application/dto/t-invest-options';
 import { CliUsageError } from 'icore';
 
+/**
+ * Общие параметры подключения CLI; пропущенные token и endpoint дополняются из
+ * окружения.
+ */
 export type SdkCommandOptions = {
   token?: string | undefined;
   endpoint?: string | undefined;

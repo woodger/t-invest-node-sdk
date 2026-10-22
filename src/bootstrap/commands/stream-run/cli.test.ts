@@ -1,8 +1,5 @@
-import assert from 'node:assert/strict';
-import {
-  describe,
-  test
-} from 'node:test';
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import {
@@ -11,10 +8,8 @@ import {
   type MarketDataRequest,
   type MarketDataResponse
 } from '../../../generated/marketdata';
-import type {
-  PortfolioStreamRequest,
-  PortfolioStreamResponse
-} from '../../../generated/operations';
+import { maxInt32 } from '../../args/command-options';
+import type { PortfolioStreamRequest, PortfolioStreamResponse } from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 import { createStreamRunCommand } from './cli';
 
@@ -374,7 +369,9 @@ describe('stream run command', () => {
               ['stream', 'run', '--config=stream.json'],
               undefined
             ),
-          /Expected 'subscriptions\.orderBooks\[\]\.depth' to be less than or equal to 2147483647/
+          new RegExp(
+            `Expected 'subscriptions\\.orderBooks\\[\\]\\.depth' to be less than or equal to ${maxInt32}`
+          )
         );
       }
     );

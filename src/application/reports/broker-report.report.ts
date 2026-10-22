@@ -10,17 +10,23 @@
 
 import type { ReportMoney } from './money.report';
 
+/** Идентификатор задачи, полученный при запуске формирования брокерского отчёта. */
 export interface BrokerReportTaskReport {
   type: 'generate';
   taskId: string;
 }
 
+/** Положение страницы брокерского отчёта и общее число страниц и записей. */
 export interface BrokerReportPageInfo {
   page: number;
   pagesCount: number;
   itemsCount: number;
 }
 
+/**
+ * Запись о сделке в брокерском отчёте с нормализованными датами и денежными
+ * значениями.
+ */
 export interface BrokerReportItemReport {
   tradeId: string;
   orderId: string;
@@ -68,12 +74,14 @@ export interface BrokerReportItemReport {
   deliveryType: string;
 }
 
+/** Страница готового брокерского отчёта с данными пагинации и записями о сделках. */
 export interface BrokerReportPageReport {
   type: 'page';
   page: BrokerReportPageInfo;
   items: BrokerReportItemReport[];
 }
 
+/** Результат ответа без задачи формирования и страницы брокерского отчёта. */
 export interface BrokerReportEmptyReport {
   /** Тип отчета для пустого provider response. */
   type: 'empty';

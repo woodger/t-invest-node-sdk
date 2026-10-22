@@ -140,11 +140,15 @@ src/bootstrap/cli/index.test.ts     # покрывает barrel-only index.ts
 
 Допустимо:
 
+`help.test.ts`
+
 ```ts
 import { renderCliHelp, isHelpRequested } from './help';
 ```
 
 Запрещено для модульного теста конкретного файла:
+
+`help.test.ts`
 
 ```ts
 import { renderCliHelp } from './index';
@@ -199,6 +203,8 @@ import { renderCliHelp } from '../help';
 - `functionName` для самостоятельных функций, объединённых в группу тестов модуля.
 
 Примеры:
+
+`unary-limit-resolver.test.ts`
 
 ```ts
 describe('UnaryLimitResolver', () => {

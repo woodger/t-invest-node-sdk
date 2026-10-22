@@ -1,33 +1,20 @@
 /**
- * Модуль bootstrap SDK facade собирает публичный `TInvestNodeSDK` runtime.
+ * Модуль реализует публичный класс `TInvestNodeSDK`.
  *
  * Здесь допустимы:
- * - lazy creation generated service clients;
- * - владение shared gRPC channel и metadata;
- * - подключение Consumer-owned unary limiter-а к transport adapters;
+ * - ленивое создание сгенерированных клиентов сервисов;
+ * - владение общими каналом gRPC и метаданными;
+ * - подключение ограничителя unary-запросов, переданного приложением;
  *
- * Здесь не должно быть CLI command logic или generated DTO mapping.
+ * Здесь не должно быть логики CLI или преобразования сгенерированных DTO.
  */
 
-import {
-  type Client,
-  Channel,
-  Metadata
-} from 'nice-grpc';
+import { type Client, Channel, Metadata } from 'nice-grpc';
 import { packageConfig } from '../config';
 import { InstrumentsServiceDefinition } from '../generated/instruments';
-import {
-  MarketDataServiceDefinition,
-  MarketDataStreamServiceDefinition
-} from '../generated/marketdata';
-import {
-  OperationsServiceDefinition,
-  OperationsStreamServiceDefinition
-} from '../generated/operations';
-import {
-  OrdersServiceDefinition,
-  OrdersStreamServiceDefinition
-} from '../generated/orders';
+import { MarketDataServiceDefinition, MarketDataStreamServiceDefinition } from '../generated/marketdata';
+import { OperationsServiceDefinition, OperationsStreamServiceDefinition } from '../generated/operations';
+import { OrdersServiceDefinition, OrdersStreamServiceDefinition } from '../generated/orders';
 import { SandboxServiceDefinition } from '../generated/sandbox';
 import { SignalServiceDefinition } from '../generated/signals';
 import { StopOrdersServiceDefinition } from '../generated/stoporders';
@@ -46,21 +33,14 @@ import type {
   StopOrdersService,
   UsersService
 } from '../application/dto/t-invest-services';
-import {
-  SdkError,
-  SdkErrorCode
-} from '../application/errors/sdk-error';
+import { SdkError, SdkErrorCode } from '../application/errors/sdk-error';
 import {
   createSdkChannel,
   createSdkClient,
   createSdkMetadata,
   UnaryLimitResolver
 } from '../infrastructure/transport/grpc';
-import {
-  resolveSdkInstanceOptions,
-  resolveUnaryLimitConfig,
-  type ResolvedTInvestOptions
-} from './sdk-config';
+import { resolveSdkInstanceOptions, resolveUnaryLimitConfig, type ResolvedTInvestOptions } from './sdk-config';
 
 type ServiceDefinition =
   | typeof InstrumentsServiceDefinition
@@ -193,12 +173,14 @@ export class TInvestNodeSDK {
       this.options.unaryLimiter,
       this.unaryLimitResolver,
       {
-        useSsl: this.options.useSsl,
-        maxReceiveMessageLength: this.maxReceiveMessageLength,
         signal: this.lifecycleController.signal,
         assertOpen: () => {
           this.assertOpen();
         }
+      },
+      {
+        useSsl: this.options.useSsl,
+        maxReceiveMessageLength: this.maxReceiveMessageLength
       }
     );
 

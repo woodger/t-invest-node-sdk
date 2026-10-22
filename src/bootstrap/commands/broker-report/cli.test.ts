@@ -1,11 +1,8 @@
-import assert from 'node:assert/strict';
+import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  BrokerReportRequest,
-  BrokerReportResponse
-} from '../../../generated/operations';
+import type { BrokerReportRequest, BrokerReportResponse } from '../../../generated/operations';
 import { createBrokerReportCommand, createBrokerReportRequest } from './cli';
 
 function response(

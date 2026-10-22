@@ -6,25 +6,15 @@
  * `cli.ts`.
  */
 
-import type {
-  PortfolioReport,
-  PortfolioReportPosition,
-  PortfolioReportSummary
-} from '../../../application/reports';
-import type {
-  PortfolioPosition,
-  PortfolioResponse
-} from '../../../generated/operations';
-import {
-  formatReportDecimal,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import type { PortfolioReport, PortfolioReportPosition, PortfolioReportSummary } from '../../../application/reports';
+import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
+import { formatReportDecimal, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const portfolioFormats = ['json', 'table'] as const;
-
+/** Представление портфеля счёта: JSON или таблица. */
 export type PortfolioFormat = typeof portfolioFormats[number];
+
+export const portfolioFormats = ['json', 'table'] as const;
 
 function toSummary(response: PortfolioResponse): PortfolioReportSummary {
   return {

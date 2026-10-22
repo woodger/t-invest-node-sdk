@@ -6,11 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  OrdersReport,
-  OrdersReportOrder,
-  OrdersReportStage
-} from '../../../application/reports';
+import type { OrdersReport, OrdersReportOrder, OrdersReportStage } from '../../../application/reports';
 import {
   type GetOrdersResponse,
   type OrderStage,
@@ -19,16 +15,13 @@ import {
   orderExecutionReportStatusToJSON,
   orderTypeToJSON
 } from '../../../generated/orders';
-import {
-  formatReportDate,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const ordersFormats = ['json', 'table'] as const;
-
+/** Представление списка заявок: JSON или таблица. */
 export type OrdersFormat = typeof ordersFormats[number];
+
+export const ordersFormats = ['json', 'table'] as const;
 
 function toReportStage(stage: OrderStage): OrdersReportStage {
   return {

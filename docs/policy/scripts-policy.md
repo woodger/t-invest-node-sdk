@@ -28,6 +28,8 @@
 
 Также запрещено:
 
+`package.json`
+
 ```json
 {
   "clean": "rm -rf dist",
