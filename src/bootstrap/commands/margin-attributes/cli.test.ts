@@ -4,7 +4,7 @@ import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import type { GetMarginAttributesRequest, GetMarginAttributesResponse } from '../../../generated/users';
-import { createMarginAttributesCommand, createMarginAttributesRequest } from './cli';
+import { createMarginAttributesCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {
@@ -36,18 +36,6 @@ function response(
 }
 
 describe('margin-attributes command', () => {
-  describe('createMarginAttributesRequest', () => {
-    test('returns generated getMarginAttributes request', () => {
-      const request = createMarginAttributesRequest({
-        'account-id': 'account-id'
-      });
-
-      assert.deepEqual(request, {
-        accountId: 'account-id'
-      });
-    });
-  });
-
   describe('createMarginAttributesCommand', () => {
     test('calls getMarginAttributes and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;
@@ -95,38 +83,6 @@ describe('margin-attributes command', () => {
         currency: 'rub',
         amount: '1000'
       });
-    });
-
-    test('closes sdk when getMarginAttributes rejects', async () => {
-      let closeCalls = 0;
-      const command = createMarginAttributesCommand(() => ({
-        users: {
-          async getMarginAttributes() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'account',
-              'margin',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=account-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

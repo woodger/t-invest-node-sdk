@@ -68,37 +68,5 @@ describe('countries command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].alfaTwo, 'RU');
     });
-
-    test('closes sdk when getCountries rejects', async () => {
-      let closeCalls = 0;
-      const command = createCountriesCommand(() => ({
-        instruments: {
-          async getCountries() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'country',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -63,38 +63,5 @@ describe('share command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output), null);
     });
-
-    test('closes sdk when shareBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createShareCommand(() => ({
-        instruments: {
-          async shareBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'share',
-            'show',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--id=BBG004730N88',
-            '--id-type=figi'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

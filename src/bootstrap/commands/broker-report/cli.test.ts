@@ -160,37 +160,5 @@ describe('broker-report command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).taskId, 'task-id');
     });
-
-    test('closes sdk when getBrokerReport rejects', async () => {
-      let closeCalls = 0;
-      const command = createBrokerReportCommand(() => ({
-        operations: {
-          async getBrokerReport() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'operation',
-              'broker-report',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--task-id=task-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

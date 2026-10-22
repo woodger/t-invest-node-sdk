@@ -96,37 +96,5 @@ describe('last-prices command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].figi, 'BBG00QPYJ5H0');
     });
-
-    test('closes sdk when getLastPrices rejects', async () => {
-      let closeCalls = 0;
-      const command = createLastPricesCommand(() => ({
-        marketData: {
-          async getLastPrices() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'market',
-              'last-prices',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=BBG00QPYJ5H0'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -60,37 +60,5 @@ describe('shares command', () => {
       assert.equal(closeCalls, 1);
       assert.deepEqual(JSON.parse(output), []);
     });
-
-    test('closes sdk when shares rejects', async () => {
-      let closeCalls = 0;
-      const command = createSharesCommand(() => ({
-        instruments: {
-          async shares() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'share',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

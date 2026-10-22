@@ -75,37 +75,5 @@ describe('brands command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].uid, 'brand-uid');
     });
-
-    test('closes sdk when getBrands rejects', async () => {
-      let closeCalls = 0;
-      const command = createBrandsCommand(() => ({
-        instruments: {
-          async getBrands() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'brand',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

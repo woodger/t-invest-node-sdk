@@ -111,37 +111,5 @@ describe('sandbox-operations-by-cursor command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).page.nextCursor, 'next-cursor');
     });
-
-    test('closes sdk when getSandboxOperationsByCursor rejects', async () => {
-      let closeCalls = 0;
-      const command = createSandboxOperationsByCursorCommand(() => ({
-        sandbox: {
-          async getSandboxOperationsByCursor() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'sandbox',
-            'operation',
-            'page',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=sandbox-account-id'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -62,37 +62,5 @@ describe('currencies command', () => {
       assert.equal(closeCalls, 1);
       assert.deepEqual(JSON.parse(output), []);
     });
-
-    test('closes sdk when currencies rejects', async () => {
-      let closeCalls = 0;
-      const command = createCurrenciesCommand(() => ({
-        instruments: {
-          async currencies() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'currency',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

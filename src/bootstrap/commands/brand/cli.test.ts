@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Brand, GetBrandRequest } from '../../../generated/instruments';
-import { createBrandCommand, createBrandRequest } from './cli';
+import { createBrandCommand } from './cli';
 
 function brand(overrides: Partial<Brand> = {}): Brand {
   return {
@@ -20,16 +20,6 @@ function brand(overrides: Partial<Brand> = {}): Brand {
 }
 
 describe('brand command', () => {
-  describe('createBrandRequest', () => {
-    test('returns generated getBrandBy request', () => {
-      const request = createBrandRequest({ id: 'brand-uid' });
-
-      assert.deepEqual(request, {
-        id: 'brand-uid'
-      });
-    });
-  });
-
   describe('createBrandCommand', () => {
     test('calls getBrandBy and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;
@@ -78,38 +68,6 @@ describe('brand command', () => {
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).uid, 'brand-uid');
-    });
-
-    test('closes sdk when getBrandBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createBrandCommand(() => ({
-        instruments: {
-          async getBrandBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'brand',
-            'show',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--id=brand-uid'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

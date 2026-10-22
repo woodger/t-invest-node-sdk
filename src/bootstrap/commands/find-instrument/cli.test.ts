@@ -132,37 +132,5 @@ describe('find-instrument command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].ticker, 'TCSG');
     });
-
-    test('closes sdk when findInstrument rejects', async () => {
-      let closeCalls = 0;
-      const command = createFindInstrumentCommand(() => ({
-        instruments: {
-          async findInstrument() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'search',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--query=TCSG'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

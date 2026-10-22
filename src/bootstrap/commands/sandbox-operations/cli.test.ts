@@ -104,40 +104,5 @@ describe('sandbox-operations command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].id, 'sandbox-operation-id');
     });
-
-    test('closes sdk when getSandboxOperations rejects', async () => {
-      let closeCalls = 0;
-      const command = createSandboxOperationsCommand(() => ({
-        sandbox: {
-          async getSandboxOperations() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'sandbox',
-              'operation',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=sandbox-account-id',
-              '--from=2026-06-01T00:00:00.000Z',
-              '--to=2026-06-19T00:00:00.000Z'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

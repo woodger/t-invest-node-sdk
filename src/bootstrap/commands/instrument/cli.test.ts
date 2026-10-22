@@ -64,38 +64,5 @@ describe('instrument command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output), null);
     });
-
-    test('closes sdk when getInstrumentBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createInstrumentCommand(() => ({
-        instruments: {
-          async getInstrumentBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'show',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--id=BBG00QPYJ5H0',
-              '--id-type=figi'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

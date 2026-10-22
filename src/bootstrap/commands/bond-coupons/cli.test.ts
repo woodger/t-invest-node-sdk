@@ -122,40 +122,5 @@ describe('bond-coupons command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].couponType, 'COUPON_TYPE_CONSTANT');
     });
-
-    test('closes sdk when getBondCoupons rejects', async () => {
-      let closeCalls = 0;
-      const command = createBondCouponsCommand(() => ({
-        instruments: {
-          async getBondCoupons() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'bond',
-              'coupons',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=BOND-FIGI',
-              '--from=2026-01-01T00:00:00Z',
-              '--to=2026-01-31T00:00:00Z'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

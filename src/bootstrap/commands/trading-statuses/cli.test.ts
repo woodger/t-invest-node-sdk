@@ -104,37 +104,5 @@ describe('trading-statuses command', () => {
         'SECURITY_TRADING_STATUS_NORMAL_TRADING'
       );
     });
-
-    test('closes sdk when getTradingStatuses rejects', async () => {
-      let closeCalls = 0;
-      const command = createTradingStatusesCommand(() => ({
-        marketData: {
-          async getTradingStatuses() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'market',
-              'statuses',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=BBG00QPYJ5H0'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

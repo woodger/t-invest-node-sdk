@@ -4,6 +4,7 @@ import { createOutput } from 'icore';
 import packageJson from '../../../package.json';
 import { maxInt32 } from '../args/command-options';
 import { cliExitCodes, terminalErrorPolicy } from './error';
+import { renderCliHelp, renderCommandHelp, renderDomainHelp } from './help';
 import { parseCliInput, runCli } from './runner';
 
 function createIo() {
@@ -148,43 +149,26 @@ describe('bootstrap cli runner', () => {
       }
     });
 
-    test(
-      'prints top-level help from help command and global flags',
-      async () => {
-        for (const command of ['--help', '-h', 'help']) {
-          const { io, read } = createIo();
-          const exitCode = await runCli([command], io);
+    // Содержание страниц проверяется в help.test.ts; здесь важен выбор страницы по argv.
+    test('routes help requests to the expected page', async () => {
+      for (const [argv, stdout] of [
+        [['--help'], renderCliHelp()],
+        [['-h'], renderCliHelp()],
+        [['help'], renderCliHelp()],
+        [['operation', 'portfolio', '--help'], renderCommandHelp('operation portfolio')],
+        [['sandbox', 'get-sandbox-accounts', '--help'], renderCommandHelp('sandbox account list')],
+        [['operations', 'get-portfolio', '--help'], renderCommandHelp('operation portfolio')],
+        [['account', '--help'], renderDomainHelp('account')],
+        [['help', 'market', 'get-candles'], renderCommandHelp('market candles')],
+        [['help', 'version'], renderCommandHelp('version')],
+        [['help', 'compile-proto'], renderCommandHelp('dev compile-proto')]
+      ] as const) {
+        const { io, read } = createIo();
+        const exitCode = await runCli(argv, io);
 
-          assert.equal(exitCode, cliExitCodes.success);
-          assert.match(read().stdout, /Domains:/);
-          assert.match(
-            read().stdout,
-            /account\s+Accounts, user info, tariff and limits/
-          );
-          assert.doesNotMatch(read().stdout, /users get-accounts/);
-          assert.equal(read().stderr, '');
-        }
+        assert.equal(exitCode, cliExitCodes.success);
+        assert.deepEqual(read(), { stdout, stderr: '' });
       }
-    );
-
-    test('prints command-specific help from a command help flag', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['operation', 'portfolio', '--help'], io);
-
-      assert.equal(exitCode, cliExitCodes.success);
-      assert.match(
-        read().stdout,
-        /operation portfolio - Print account portfolio/
-      );
-      assert.match(
-        read().stdout,
-        /SDK call:\n {2}sdk\.operations\.getPortfolio/
-      );
-      assert.match(
-        read().stdout,
-        /t-invest-node-sdk operation portfolio --account-id=ID/
-      );
-      assert.equal(read().stderr, '');
     });
 
     test('prints help without validating command-specific options', async () => {
@@ -208,127 +192,6 @@ describe('bootstrap cli runner', () => {
 
         assert.equal(exitCode, cliExitCodes.success);
         assert.match(read().stdout, /Usage:/);
-        assert.equal(read().stderr, '');
-      }
-    });
-
-    test(
-      'prints sandbox preferred command help from technical command help flags',
-      async () => {
-        for (
-          const { path, title, usage } of [
-            {
-              path: ['sandbox', 'get-sandbox-accounts'],
-              title: /sandbox account list - Print sandbox accounts/,
-              usage: /t-invest-node-sdk sandbox account list/
-            },
-            {
-              path: ['sandbox', 'post-sandbox-order'],
-              title: /sandbox order place - Post a sandbox order/,
-              usage: /t-invest-node-sdk sandbox order place --account-id=ID/
-            },
-            {
-              path: ['sandbox', 'sandbox-pay-in'],
-              title: /sandbox pay-in - Pay in to a sandbox account/,
-              usage: /t-invest-node-sdk sandbox pay-in --account-id=ID/
-            }
-          ] as const
-        ) {
-          const { io, read } = createIo();
-          const exitCode = await runCli([...path, '--help'], io);
-
-          assert.equal(exitCode, cliExitCodes.success);
-          assert.match(read().stdout, title);
-          assert.match(read().stdout, usage);
-          assert.equal(read().stderr, '');
-        }
-      }
-    );
-
-    test(
-      'prints preferred command help from a legacy command help flag',
-      async () => {
-        const { io, read } = createIo();
-        const exitCode = await runCli(
-          ['operations', 'get-portfolio', '--help'],
-          io
-        );
-
-        assert.equal(exitCode, cliExitCodes.success);
-        assert.match(
-          read().stdout,
-          /operation portfolio - Print account portfolio/
-        );
-        assert.match(
-          read().stdout,
-          /t-invest-node-sdk operation portfolio --account-id=ID/
-        );
-        assert.doesNotMatch(
-          read().stdout,
-          /t-invest-node-sdk operation get-portfolio --account-id=ID/
-        );
-        assert.doesNotMatch(
-          read().stdout,
-          /t-invest-node-sdk operations get-portfolio --account-id=ID/
-        );
-        assert.equal(read().stderr, '');
-      }
-    );
-
-    test('prints domain-level help from domain help flag', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['account', '--help'], io);
-
-      assert.equal(exitCode, cliExitCodes.success);
-      assert.match(
-        read().stdout,
-        /account - Accounts, user info, tariff and limits/
-      );
-      assert.match(read().stdout, /list\s+Print user accounts/);
-      assert.doesNotMatch(read().stdout, /users get-accounts/);
-      assert.doesNotMatch(read().stdout, /get-accounts\s+Print user accounts/);
-      assert.equal(read().stderr, '');
-    });
-
-    test(
-      'prints command-specific help from help command argument',
-      async () => {
-        const { io, read } = createIo();
-        const exitCode = await runCli(['help', 'market', 'get-candles'], io);
-
-        assert.equal(exitCode, cliExitCodes.success);
-        assert.match(
-          read().stdout,
-          /market candles - Print historical candles/
-        );
-        assert.match(
-          read().stdout,
-          /gRPC method:\n {2}MarketDataService\/GetCandles/
-        );
-        assert.match(
-          read().stdout,
-          /t-invest-node-sdk market candles --instrument-id=ID/
-        );
-        assert.doesNotMatch(
-          read().stdout,
-          /t-invest-node-sdk market get-candles --instrument-id=ID/
-        );
-        assert.equal(read().stderr, '');
-      }
-    );
-
-    test('prints utility help from help command argument', async () => {
-      for (
-        const [command, output] of [
-          ['version', /version - Show package version/],
-          ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
-        ] as const
-      ) {
-        const { io, read } = createIo();
-        const exitCode = await runCli(['help', command], io);
-
-        assert.equal(exitCode, cliExitCodes.success);
-        assert.match(read().stdout, output);
         assert.equal(read().stderr, '');
       }
     });

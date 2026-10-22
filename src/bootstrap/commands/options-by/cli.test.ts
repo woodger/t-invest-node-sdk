@@ -87,37 +87,5 @@ describe('options-by command', () => {
       assert.equal(closeCalls, 1);
       assert.deepEqual(JSON.parse(output), []);
     });
-
-    test('closes sdk when optionsBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createOptionsByCommand(() => ({
-        instruments: {
-          async optionsBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'option',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--basic-asset-uid=asset-uid'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

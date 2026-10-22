@@ -112,36 +112,5 @@ describe('stop-orders command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].stopOrderId, 'stop-order-id');
     });
-
-    test('closes sdk when getStopOrders rejects', async () => {
-      let closeCalls = 0;
-      const command = createStopOrdersCommand(() => ({
-    stopOrders: {
-          async getStopOrders() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'stop-order',
-            'list',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=account-id'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

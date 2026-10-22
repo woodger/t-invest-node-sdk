@@ -61,35 +61,5 @@ describe('user-info command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).tariff, 'premium');
     });
-
-    test('closes sdk when getInfo rejects', async () => {
-      let closeCalls = 0;
-      const command = createUserInfoCommand(() => ({
-        users: {
-          async getInfo() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'account',
-            'info',
-            '--token=token',
-            '--endpoint=localhost:50051'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

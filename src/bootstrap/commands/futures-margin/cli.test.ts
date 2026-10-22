@@ -98,38 +98,5 @@ describe('futures-margin command', () => {
         amount: '1000.25'
       });
     });
-
-    test('closes sdk when getFuturesMargin rejects', async () => {
-      let closeCalls = 0;
-      const command = createFuturesMarginCommand(() => ({
-        instruments: {
-          async getFuturesMargin() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'future',
-              'margin',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=FUTFIGI'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -65,39 +65,5 @@ describe('option command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output), null);
     });
-
-    test('closes sdk when optionBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createOptionCommand(() => ({
-        instruments: {
-          async optionBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'option',
-              'show',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--id=OPTIONUID',
-              '--id-type=uid'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

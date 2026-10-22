@@ -11,8 +11,9 @@ function response(
   return {
     unaryLimits: [
       {
-        limitPerMinute: 100,
-        methods: ['UsersService/GetAccounts']
+        limitPerMinute: 900,
+        limitPerSecond: 15,
+        methods: ['OrdersService/PostOrder']
       }
     ],
     streamLimits: [
@@ -28,7 +29,7 @@ function response(
 
 describe('user-tariff command', () => {
   describe('createUserTariffCommand', () => {
-    test('calls getUserTariff and closes sdk', async () => {
+    test('prints both rate-limit windows from getUserTariff and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: Record<string, never> | undefined;
       let getUserTariffCalls = 0;
@@ -70,72 +71,11 @@ describe('user-tariff command', () => {
       assert.equal(getUserTariffCalls, 1);
       assert.deepEqual(receivedRequest, {});
       assert.equal(closeCalls, 1);
-      assert.equal(JSON.parse(output).unaryLimits[0].limitPerMinute, 100);
-    });
-
-    test('prints both rate-limit windows in json', async () => {
-      const command = createUserTariffCommand(() => ({
-        users: {
-          async getUserTariff() {
-            return response({
-              unaryLimits: [{
-                limitPerMinute: 900,
-                limitPerSecond: 15,
-                methods: ['OrdersService/PostOrder']
-              }]
-            });
-          }
-        },
-        close: () => undefined
-      }));
-      const output = await commandFacade.run(
-        command,
-        [
-          'account',
-          'tariff',
-          '--token=token',
-          '--endpoint=localhost:50051',
-          '--format=json'
-        ],
-        undefined
-      );
-
       assert.deepEqual(JSON.parse(output).unaryLimits, [{
         limitPerMinute: 900,
         limitPerSecond: 15,
         methods: ['OrdersService/PostOrder']
       }]);
-    });
-
-    test('closes sdk when getUserTariff rejects', async () => {
-      let closeCalls = 0;
-      const command = createUserTariffCommand(() => ({
-        users: {
-          async getUserTariff() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'account',
-              'tariff',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

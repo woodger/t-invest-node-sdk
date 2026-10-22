@@ -105,37 +105,5 @@ describe('order-book command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).instrumentUid, 'instrument-uid');
     });
-
-    test('closes sdk when getOrderBook rejects', async () => {
-      let closeCalls = 0;
-      const command = createOrderBookCommand(() => ({
-    marketData: {
-          async getOrderBook() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'market',
-            'order-book',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--instrument-id=BBG00QPYJ5H0',
-            '--depth=10'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

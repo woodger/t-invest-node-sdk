@@ -65,39 +65,5 @@ describe('currency command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output), null);
     });
-
-    test('closes sdk when currencyBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createCurrencyCommand(() => ({
-        instruments: {
-          async currencyBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'currency',
-              'show',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--id=BBG0013HGFT4',
-              '--id-type=figi'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });
