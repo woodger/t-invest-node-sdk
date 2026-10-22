@@ -13,6 +13,11 @@
 
 import { CliUsageError } from 'icore';
 
+export type InstrumentIdAliasOptions = {
+  'instrument-id'?: string | undefined;
+  figi?: string | undefined;
+};
+
 export const instrumentIdWithDeprecatedFigiOptionsSchema = {
   'instrument-id': {
     type: 'string'
@@ -21,11 +26,6 @@ export const instrumentIdWithDeprecatedFigiOptionsSchema = {
     type: 'string'
   }
 } as const;
-
-export type InstrumentIdAliasOptions = {
-  'instrument-id'?: string | undefined;
-  figi?: string | undefined;
-};
 
 export function resolveInstrumentIdOption(
   options: InstrumentIdAliasOptions

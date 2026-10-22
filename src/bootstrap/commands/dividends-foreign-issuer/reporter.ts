@@ -22,10 +22,10 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const dividendsForeignIssuerFormats = ['json', 'table'] as const;
-
 export type DividendsForeignIssuerFormat =
   typeof dividendsForeignIssuerFormats[number];
+
+export const dividendsForeignIssuerFormats = ['json', 'table'] as const;
 
 function toReportItem(
   item: GeneratedDividendsForeignIssuerReport

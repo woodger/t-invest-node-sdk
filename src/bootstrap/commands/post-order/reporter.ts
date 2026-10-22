@@ -20,9 +20,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const postOrderFormats = ['json', 'table'] as const;
-
 export type PostOrderFormat = typeof postOrderFormats[number];
+
+export const postOrderFormats = ['json', 'table'] as const;
 
 export function createOrderMutationReport(
   response: PostOrderResponse

@@ -22,9 +22,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const portfolioFormats = ['json', 'table'] as const;
-
 export type PortfolioFormat = typeof portfolioFormats[number];
+
+export const portfolioFormats = ['json', 'table'] as const;
 
 function toSummary(response: PortfolioResponse): PortfolioReportSummary {
   return {

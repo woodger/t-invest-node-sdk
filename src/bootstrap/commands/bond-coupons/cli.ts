@@ -41,6 +41,12 @@ type BondCouponsSdk = {
 
 type BondCouponsSdkFactory = (options: TInvestOptions) => BondCouponsSdk;
 
+type BondCouponsOptions = InferOptions<typeof bondCouponsOptionsSchema>;
+type BondCouponsRequestOptions = CommandRequestOptions<
+  BondCouponsOptions,
+  'from' | 'to' | 'instrument-id' | 'figi'
+>;
+
 const bondCouponsOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
@@ -57,12 +63,6 @@ const bondCouponsOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type BondCouponsOptions = InferOptions<typeof bondCouponsOptionsSchema>;
-type BondCouponsRequestOptions = CommandRequestOptions<
-  BondCouponsOptions,
-  'from' | 'to' | 'instrument-id' | 'figi'
->;
 
 export function createBondCouponsCommand(
   createSdk: BondCouponsSdkFactory = (options) =>

@@ -13,14 +13,6 @@ import { SubscriptionInterval } from '../../../generated/marketdata';
 import { CliUsageError } from 'icore';
 import { maxInt32 } from '../../args/command-options';
 
-export const streamRunStreamNames = [
-  'marketdata.marketDataStream',
-  'marketdata.marketDataServerSideStream',
-  'operations.portfolioStream',
-  'operations.positionsStream',
-  'orders.tradesStream'
-] as const;
-
 export type StreamRunStreamName = typeof streamRunStreamNames[number];
 
 export type StreamRunRuntime = {
@@ -95,6 +87,17 @@ export type InstrumentSubscriptionConfig = {
   instrumentId: string;
 };
 
+type MarketDataStreamRequestType =
+  typeof allowedMarketDataStreamRequestTypes[number];
+
+export const streamRunStreamNames = [
+  'marketdata.marketDataStream',
+  'marketdata.marketDataServerSideStream',
+  'operations.portfolioStream',
+  'operations.positionsStream',
+  'orders.tradesStream'
+] as const;
+
 const streamRunStreamNameSet = new Set<string>(streamRunStreamNames);
 
 const allowedTopLevelFields = new Set([
@@ -132,9 +135,6 @@ const allowedMarketDataStreamRequestTypes = [
   'subscribeLastPrice',
   'getMySubscriptions'
 ] as const;
-
-type MarketDataStreamRequestType =
-  typeof allowedMarketDataStreamRequestTypes[number];
 
 const allowedMarketDataStreamRequestTypeSet = new Set<string>(
   allowedMarketDataStreamRequestTypes

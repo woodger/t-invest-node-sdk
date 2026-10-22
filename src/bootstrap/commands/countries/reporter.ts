@@ -13,9 +13,9 @@ import type {
 import type { CountryResponse } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
-export const countriesFormats = ['json', 'table'] as const;
-
 export type CountriesFormat = typeof countriesFormats[number];
+
+export const countriesFormats = ['json', 'table'] as const;
 
 function toReportCountry(country: CountryResponse): CountriesReportCountry {
   return {

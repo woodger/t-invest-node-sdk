@@ -26,9 +26,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const assetFormats = ['json', 'table'] as const;
-
 export type AssetFormat = typeof assetFormats[number];
+
+export const assetFormats = ['json', 'table'] as const;
 
 function createAssetReportBrand(
   brand: Brand | undefined

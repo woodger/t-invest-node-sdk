@@ -19,9 +19,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const closePricesFormats = ['json', 'table'] as const;
-
 export type ClosePricesFormat = typeof closePricesFormats[number];
+
+export const closePricesFormats = ['json', 'table'] as const;
 
 function toReportPrice(
   price: InstrumentClosePriceResponse

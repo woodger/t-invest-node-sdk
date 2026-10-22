@@ -25,9 +25,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const etfFormats = ['json', 'table'] as const;
-
 export type EtfFormat = typeof etfFormats[number];
+
+export const etfFormats = ['json', 'table'] as const;
 
 export function createEtfReportInstrument(
   instrument: Etf

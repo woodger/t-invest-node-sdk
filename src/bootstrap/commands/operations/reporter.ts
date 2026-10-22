@@ -22,9 +22,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const operationsFormats = ['json', 'table'] as const;
-
 export type OperationsFormat = typeof operationsFormats[number];
+
+export const operationsFormats = ['json', 'table'] as const;
 
 function toReportOperation(operation: Operation): OperationsReportOperation {
   return {

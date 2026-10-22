@@ -16,9 +16,9 @@ import {
   type FutureFormat
 } from '../future/reporter';
 
-export const futuresFormats = futureFormats;
-
 export type FuturesFormat = FutureFormat;
+
+export const futuresFormats = futureFormats;
 
 export function createFuturesReport(instruments: Future[]): FuturesReport {
   return instruments.map(createFutureReportInstrument);

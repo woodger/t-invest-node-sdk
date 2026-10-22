@@ -33,6 +33,8 @@ import { createSdkClient } from './sdk-client';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
 import { UnaryLimitResolver } from './unary-limit-resolver';
 
+type PayloadServiceClient = Client<typeof payloadServiceDefinition>;
+
 const payload = new Uint8Array([1, 2, 3]);
 const payloadPath = '/test.PayloadService/GetPayload';
 const requestSerializationPath = '/test.RequestSerializationService/GetPayload';
@@ -74,8 +76,6 @@ const responseParsingServiceDefinition = {
     }
   }
 } as const satisfies ServiceDefinition;
-
-type PayloadServiceClient = Client<typeof payloadServiceDefinition>;
 
 describe('createSdkClient', () => {
   test(

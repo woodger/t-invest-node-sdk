@@ -36,6 +36,14 @@ type MarginAttributesSdkFactory = (
   options: TInvestOptions
 ) => MarginAttributesSdk;
 
+type MarginAttributesOptions = InferOptions<
+  typeof marginAttributesOptionsSchema
+>;
+type MarginAttributesRequestOptions = CommandRequestOptions<
+  MarginAttributesOptions,
+  'account-id'
+>;
+
 const marginAttributesOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
@@ -47,14 +55,6 @@ const marginAttributesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type MarginAttributesOptions = InferOptions<
-  typeof marginAttributesOptionsSchema
->;
-type MarginAttributesRequestOptions = CommandRequestOptions<
-  MarginAttributesOptions,
-  'account-id'
->;
 
 export function createMarginAttributesCommand(
   createSdk: MarginAttributesSdkFactory = (options) =>

@@ -44,6 +44,18 @@ type DividendsForeignIssuerSdkFactory = (
   options: TInvestOptions
 ) => DividendsForeignIssuerSdk;
 
+type DividendsForeignIssuerOptions = InferOptions<
+  typeof dividendsForeignIssuerOptionsSchema
+>;
+type DividendsForeignIssuerRequestOptions = CommandRequestOptions<
+  DividendsForeignIssuerOptions,
+  | 'task-id'
+  | 'account-id'
+  | 'from'
+  | 'to'
+  | 'page'
+>;
+
 const dividendsForeignIssuerOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string'
@@ -66,18 +78,6 @@ const dividendsForeignIssuerOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type DividendsForeignIssuerOptions = InferOptions<
-  typeof dividendsForeignIssuerOptionsSchema
->;
-type DividendsForeignIssuerRequestOptions = CommandRequestOptions<
-  DividendsForeignIssuerOptions,
-  | 'task-id'
-  | 'account-id'
-  | 'from'
-  | 'to'
-  | 'page'
->;
 
 export function createDividendsForeignIssuerRequest(
   options: DividendsForeignIssuerRequestOptions

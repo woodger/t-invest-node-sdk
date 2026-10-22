@@ -17,9 +17,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const lastPricesFormats = ['json', 'table'] as const;
-
 export type LastPricesFormat = typeof lastPricesFormats[number];
+
+export const lastPricesFormats = ['json', 'table'] as const;
 
 function toReportPrice(price: LastPrice): LastPricesReportPrice {
   return {

@@ -15,13 +15,6 @@ import {
   resolveOptionalInstrumentIdOption
 } from '../../args/instrument-id-options';
 
-const operationStates = {
-  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
-  executed: OperationState.OPERATION_STATE_EXECUTED,
-  canceled: OperationState.OPERATION_STATE_CANCELED,
-  progress: OperationState.OPERATION_STATE_PROGRESS
-} as const;
-
 interface OperationsRequestOptions {
   readonly 'account-id': string;
   readonly from: string;
@@ -30,6 +23,13 @@ interface OperationsRequestOptions {
   readonly 'instrument-id'?: string | undefined;
   readonly figi?: string | undefined;
 }
+
+const operationStates = {
+  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
+  executed: OperationState.OPERATION_STATE_EXECUTED,
+  canceled: OperationState.OPERATION_STATE_CANCELED,
+  progress: OperationState.OPERATION_STATE_PROGRESS
+} as const;
 
 export function createOperationsRequest(
   options: OperationsRequestOptions

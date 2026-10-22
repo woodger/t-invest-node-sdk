@@ -16,9 +16,9 @@ import {
   type OptionFormat
 } from '../option/reporter';
 
-export const optionsByFormats = optionFormats;
-
 export type OptionsByFormat = OptionFormat;
+
+export const optionsByFormats = optionFormats;
 
 export function createOptionsByReport(instruments: Option[]): OptionsByReport {
   return instruments.map(createOptionReportInstrument);

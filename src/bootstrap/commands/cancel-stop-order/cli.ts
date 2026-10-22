@@ -40,6 +40,12 @@ type CancelStopOrderSdkFactory = (
   options: TInvestOptions
 ) => CancelStopOrderSdk;
 
+type CancelStopOrderOptions = InferOptions<typeof cancelStopOrderOptionsSchema>;
+type CancelStopOrderRequestOptions = CommandRequestOptions<
+  CancelStopOrderOptions,
+  'account-id' | 'stop-order-id'
+>;
+
 const cancelStopOrderOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
@@ -56,12 +62,6 @@ const cancelStopOrderOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type CancelStopOrderOptions = InferOptions<typeof cancelStopOrderOptionsSchema>;
-type CancelStopOrderRequestOptions = CommandRequestOptions<
-  CancelStopOrderOptions,
-  'account-id' | 'stop-order-id'
->;
 
 export function createCancelStopOrderCommand(
   createSdk: CancelStopOrderSdkFactory = (options) =>

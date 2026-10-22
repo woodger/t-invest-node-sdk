@@ -16,6 +16,16 @@ import {
   parseOptionalPositiveQuotationOption
 } from '../../args/side-effect-args';
 
+interface PostOrderRequestOptions {
+  readonly 'account-id': string;
+  readonly 'instrument-id': string;
+  readonly quantity: number;
+  readonly price?: string | undefined;
+  readonly direction: keyof typeof postOrderDirections;
+  readonly 'order-type': keyof typeof postOrderTypes;
+  readonly 'order-id': string;
+}
+
 const postOrderDirections = {
   buy: OrderDirection.ORDER_DIRECTION_BUY,
   sell: OrderDirection.ORDER_DIRECTION_SELL
@@ -26,16 +36,6 @@ const postOrderTypes = {
   market: OrderType.ORDER_TYPE_MARKET,
   bestprice: OrderType.ORDER_TYPE_BESTPRICE
 } as const;
-
-interface PostOrderRequestOptions {
-  readonly 'account-id': string;
-  readonly 'instrument-id': string;
-  readonly quantity: number;
-  readonly price?: string | undefined;
-  readonly direction: keyof typeof postOrderDirections;
-  readonly 'order-type': keyof typeof postOrderTypes;
-  readonly 'order-id': string;
-}
 
 export function createPostOrderRequest(
   options: PostOrderRequestOptions

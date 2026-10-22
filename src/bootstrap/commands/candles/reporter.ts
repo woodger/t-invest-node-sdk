@@ -17,9 +17,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderCsv, renderJson } from 'icore';
 
-export const candlesFormats = ['json', 'csv'] as const;
-
 export type CandlesFormat = typeof candlesFormats[number];
+
+export const candlesFormats = ['json', 'csv'] as const;
 
 function toReportCandle(candle: HistoricCandle): CandlesReportCandle {
   return {

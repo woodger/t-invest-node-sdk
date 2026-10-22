@@ -38,6 +38,12 @@ type FuturesMarginSdk = {
 
 type FuturesMarginSdkFactory = (options: TInvestOptions) => FuturesMarginSdk;
 
+type FuturesMarginOptions = InferOptions<typeof futuresMarginOptionsSchema>;
+type FuturesMarginRequestOptions = CommandRequestOptions<
+  FuturesMarginOptions,
+  'instrument-id' | 'figi'
+>;
+
 const futuresMarginOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   format: {
@@ -46,12 +52,6 @@ const futuresMarginOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type FuturesMarginOptions = InferOptions<typeof futuresMarginOptionsSchema>;
-type FuturesMarginRequestOptions = CommandRequestOptions<
-  FuturesMarginOptions,
-  'instrument-id' | 'figi'
->;
 
 export function createFuturesMarginCommand(
   createSdk: FuturesMarginSdkFactory = (options) =>

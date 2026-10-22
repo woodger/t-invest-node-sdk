@@ -16,6 +16,11 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pfs } from 'pwd-fs';
 
+type ProtoGenerationPaths = {
+  contractsDir: string;
+  generatedDir: string;
+};
+
 const compilerLauncherPath = path.join(
   pfs.pwd,
   'node_modules',
@@ -26,11 +31,6 @@ const pluginExecutable = process.platform === 'win32'
   ? 'protoc-gen-ts_proto.cmd'
   : 'protoc-gen-ts_proto';
 const pluginPath = path.join(pfs.pwd, 'node_modules', '.bin', pluginExecutable);
-
-type ProtoGenerationPaths = {
-  contractsDir: string;
-  generatedDir: string;
-};
 
 export function compileProtoContracts(): void {
   const paths = loadProtoGenerationPaths();

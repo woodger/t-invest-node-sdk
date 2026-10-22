@@ -39,6 +39,12 @@ type TradingStatusesSdkFactory = (
   options: TInvestOptions
 ) => TradingStatusesSdk;
 
+type TradingStatusesOptions = InferOptions<typeof tradingStatusesOptionsSchema>;
+type TradingStatusesRequestOptions = CommandRequestOptions<
+  TradingStatusesOptions,
+  'instrument-id'
+>;
+
 const tradingStatusesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
@@ -50,12 +56,6 @@ const tradingStatusesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type TradingStatusesOptions = InferOptions<typeof tradingStatusesOptionsSchema>;
-type TradingStatusesRequestOptions = CommandRequestOptions<
-  TradingStatusesOptions,
-  'instrument-id'
->;
 
 export function createTradingStatusesCommand(
   createSdk: TradingStatusesSdkFactory = (options) =>

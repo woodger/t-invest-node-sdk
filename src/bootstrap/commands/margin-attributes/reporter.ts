@@ -15,9 +15,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const marginAttributesFormats = ['json', 'table'] as const;
-
 export type MarginAttributesFormat = typeof marginAttributesFormats[number];
+
+export const marginAttributesFormats = ['json', 'table'] as const;
 
 export function createMarginAttributesReport(
   response: GetMarginAttributesResponse

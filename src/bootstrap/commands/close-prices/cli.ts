@@ -37,6 +37,12 @@ type ClosePricesSdk = {
 
 type ClosePricesSdkFactory = (options: TInvestOptions) => ClosePricesSdk;
 
+type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
+type ClosePricesRequestOptions = CommandRequestOptions<
+  ClosePricesOptions,
+  'instrument-id'
+>;
+
 const closePricesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
@@ -48,12 +54,6 @@ const closePricesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
-type ClosePricesRequestOptions = CommandRequestOptions<
-  ClosePricesOptions,
-  'instrument-id'
->;
 
 export function createClosePricesCommand(
   createSdk: ClosePricesSdkFactory = (options) =>

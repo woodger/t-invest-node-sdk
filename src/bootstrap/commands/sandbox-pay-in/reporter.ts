@@ -14,9 +14,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const sandboxPayInFormats = ['json', 'table'] as const;
-
 export type SandboxPayInFormat = typeof sandboxPayInFormats[number];
+
+export const sandboxPayInFormats = ['json', 'table'] as const;
 
 export function createSandboxPayInReport(
   response: SandboxPayInResponse

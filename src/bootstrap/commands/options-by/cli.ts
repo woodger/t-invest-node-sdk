@@ -32,6 +32,12 @@ type OptionsBySdk = {
 
 type OptionsBySdkFactory = (options: TInvestOptions) => OptionsBySdk;
 
+type OptionsByOptions = InferOptions<typeof optionsByOptionsSchema>;
+type OptionsByRequestOptions = CommandRequestOptions<
+  OptionsByOptions,
+  'basic-asset-uid' | 'basic-asset-position-uid'
+>;
+
 const optionsByOptionsSchema = withSdkOptions({
   'basic-asset-uid': {
     type: 'string',
@@ -46,12 +52,6 @@ const optionsByOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type OptionsByOptions = InferOptions<typeof optionsByOptionsSchema>;
-type OptionsByRequestOptions = CommandRequestOptions<
-  OptionsByOptions,
-  'basic-asset-uid' | 'basic-asset-position-uid'
->;
 
 export function createOptionsByCommand(
   createSdk: OptionsBySdkFactory = (options) =>

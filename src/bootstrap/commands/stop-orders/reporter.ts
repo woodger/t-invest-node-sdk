@@ -23,9 +23,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const stopOrdersFormats = ['json', 'table'] as const;
-
 export type StopOrdersFormat = typeof stopOrdersFormats[number];
+
+export const stopOrdersFormats = ['json', 'table'] as const;
 
 function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
   return {

@@ -38,6 +38,12 @@ type LastPricesSdk = {
 
 type LastPricesSdkFactory = (options: TInvestOptions) => LastPricesSdk;
 
+type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
+type LastPricesRequestOptions = CommandRequestOptions<
+  LastPricesOptions,
+  'instrument-id'
+>;
+
 const lastPricesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
@@ -49,12 +55,6 @@ const lastPricesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
-type LastPricesRequestOptions = CommandRequestOptions<
-  LastPricesOptions,
-  'instrument-id'
->;
 
 export function createLastPricesCommand(
   createSdk: LastPricesSdkFactory = (options) =>

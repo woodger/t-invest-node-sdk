@@ -13,9 +13,9 @@ import type {
 import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
-export const brandsFormats = ['json', 'table'] as const;
-
 export type BrandsFormat = typeof brandsFormats[number];
+
+export const brandsFormats = ['json', 'table'] as const;
 
 export function createBrandReport(brand: Brand): BrandsReportBrand {
   return {

@@ -17,9 +17,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const accruedInterestsFormats = ['json', 'table'] as const;
-
 export type AccruedInterestsFormat = typeof accruedInterestsFormats[number];
+
+export const accruedInterestsFormats = ['json', 'table'] as const;
 
 function toReportAccruedInterest(
   accruedInterest: AccruedInterest

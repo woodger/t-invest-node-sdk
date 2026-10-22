@@ -38,6 +38,12 @@ type LastTradesSdk = {
 
 type LastTradesSdkFactory = (options: TInvestOptions) => LastTradesSdk;
 
+type LastTradesOptions = InferOptions<typeof lastTradesOptionsSchema>;
+type LastTradesRequestOptions = CommandRequestOptions<
+  LastTradesOptions,
+  'instrument-id' | 'from' | 'to'
+>;
+
 const lastTradesOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
@@ -57,12 +63,6 @@ const lastTradesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type LastTradesOptions = InferOptions<typeof lastTradesOptionsSchema>;
-type LastTradesRequestOptions = CommandRequestOptions<
-  LastTradesOptions,
-  'instrument-id' | 'from' | 'to'
->;
 
 export function createLastTradesCommand(
   createSdk: LastTradesSdkFactory = (options) =>

@@ -36,6 +36,17 @@ type CandlesSdk = {
 
 type CandlesSdkFactory = (options: TInvestOptions) => CandlesSdk;
 
+type CandleIntervalName = keyof typeof candleIntervals;
+
+type CandlesOptions = InferOptions<typeof candlesOptionsSchema>;
+type CandlesRequestOptions = CommandRequestOptions<
+  CandlesOptions,
+  | 'instrument-id'
+  | 'from'
+  | 'to'
+  | 'interval'
+>;
+
 const candleIntervals = {
   '1min': CandleInterval.CANDLE_INTERVAL_1_MIN,
   '2min': CandleInterval.CANDLE_INTERVAL_2_MIN,
@@ -56,8 +67,6 @@ const candleIntervals = {
 const candleIntervalNames = Object.keys(candleIntervals) as Array<
   keyof typeof candleIntervals
 >;
-
-type CandleIntervalName = keyof typeof candleIntervals;
 
 const candlesOptionsSchema = withSdkOptions({
   'instrument-id': {
@@ -83,15 +92,6 @@ const candlesOptionsSchema = withSdkOptions({
     default: 'json'
   }
 });
-
-type CandlesOptions = InferOptions<typeof candlesOptionsSchema>;
-type CandlesRequestOptions = CommandRequestOptions<
-  CandlesOptions,
-  | 'instrument-id'
-  | 'from'
-  | 'to'
-  | 'interval'
->;
 
 export function createCandlesCommand(
   createSdk: CandlesSdkFactory = (options) =>

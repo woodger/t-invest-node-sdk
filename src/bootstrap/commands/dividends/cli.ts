@@ -39,6 +39,12 @@ type DividendsSdk = {
 
 type DividendsSdkFactory = (options: TInvestOptions) => DividendsSdk;
 
+type DividendsOptions = InferOptions<typeof dividendsOptionsSchema>;
+type DividendsRequestOptions = CommandRequestOptions<
+  DividendsOptions,
+  'from' | 'to' | 'instrument-id' | 'figi'
+>;
+
 const dividendsOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
@@ -55,12 +61,6 @@ const dividendsOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type DividendsOptions = InferOptions<typeof dividendsOptionsSchema>;
-type DividendsRequestOptions = CommandRequestOptions<
-  DividendsOptions,
-  'from' | 'to' | 'instrument-id' | 'figi'
->;
 
 export function createDividendsCommand(
   createSdk: DividendsSdkFactory = (options) =>

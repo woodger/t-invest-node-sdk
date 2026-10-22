@@ -50,12 +50,30 @@ type PostStopOrderSdk = {
 
 type PostStopOrderSdkFactory = (options: TInvestOptions) => PostStopOrderSdk;
 
+type StopOrderDirectionName = keyof typeof stopOrderDirections;
+
+type StopOrderExpirationTypeName = keyof typeof stopOrderExpirationTypes;
+
+type StopOrderTypeName = keyof typeof stopOrderTypes;
+
+type PostStopOrderOptions = InferOptions<typeof postStopOrderOptionsSchema>;
+type PostStopOrderRequestOptions = CommandRequestOptions<
+  PostStopOrderOptions,
+  | 'account-id'
+  | 'instrument-id'
+  | 'quantity'
+  | 'price'
+  | 'stop-price'
+  | 'direction'
+  | 'expiration-type'
+  | 'stop-order-type'
+  | 'expire-date'
+>;
+
 const stopOrderDirections = {
   buy: StopOrderDirection.STOP_ORDER_DIRECTION_BUY,
   sell: StopOrderDirection.STOP_ORDER_DIRECTION_SELL
 } as const;
-
-type StopOrderDirectionName = keyof typeof stopOrderDirections;
 
 const stopOrderDirectionNames = Object.keys(
   stopOrderDirections
@@ -68,8 +86,6 @@ const stopOrderExpirationTypes = {
     StopOrderExpirationType.STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_DATE
 } as const;
 
-type StopOrderExpirationTypeName = keyof typeof stopOrderExpirationTypes;
-
 const stopOrderExpirationTypeNames = Object.keys(
   stopOrderExpirationTypes
 ) as StopOrderExpirationTypeName[];
@@ -79,8 +95,6 @@ const stopOrderTypes = {
   'stop-loss': StopOrderType.STOP_ORDER_TYPE_STOP_LOSS,
   'stop-limit': StopOrderType.STOP_ORDER_TYPE_STOP_LIMIT
 } as const;
-
-type StopOrderTypeName = keyof typeof stopOrderTypes;
 
 const stopOrderTypeNames = Object.keys(stopOrderTypes) as StopOrderTypeName[];
 
@@ -129,20 +143,6 @@ const postStopOrderOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type PostStopOrderOptions = InferOptions<typeof postStopOrderOptionsSchema>;
-type PostStopOrderRequestOptions = CommandRequestOptions<
-  PostStopOrderOptions,
-  | 'account-id'
-  | 'instrument-id'
-  | 'quantity'
-  | 'price'
-  | 'stop-price'
-  | 'direction'
-  | 'expiration-type'
-  | 'stop-order-type'
-  | 'expire-date'
->;
 
 export function createPostStopOrderCommand(
   createSdk: PostStopOrderSdkFactory = (options) =>

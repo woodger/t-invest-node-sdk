@@ -43,6 +43,14 @@ type SandboxCloseAccountSdkFactory = (
   options: TInvestOptions
 ) => SandboxCloseAccountSdk;
 
+type SandboxCloseAccountOptions = InferOptions<
+  typeof sandboxCloseAccountOptionsSchema
+>;
+type SandboxCloseAccountRequestOptions = CommandRequestOptions<
+  SandboxCloseAccountOptions,
+  'account-id'
+>;
+
 const sandboxCloseAccountOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string',
@@ -55,14 +63,6 @@ const sandboxCloseAccountOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type SandboxCloseAccountOptions = InferOptions<
-  typeof sandboxCloseAccountOptionsSchema
->;
-type SandboxCloseAccountRequestOptions = CommandRequestOptions<
-  SandboxCloseAccountOptions,
-  'account-id'
->;
 
 export function createSandboxCloseAccountCommand(
   createSdk: SandboxCloseAccountSdkFactory = (options) =>

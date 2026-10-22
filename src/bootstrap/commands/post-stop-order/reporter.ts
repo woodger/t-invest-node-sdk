@@ -10,9 +10,9 @@ import type { PostStopOrderReport } from '../../../application/reports';
 import type { PostStopOrderResponse } from '../../../generated/stoporders';
 import { renderJson, renderTextTable } from 'icore';
 
-export const postStopOrderFormats = ['json', 'table'] as const;
-
 export type PostStopOrderFormat = typeof postStopOrderFormats[number];
+
+export const postStopOrderFormats = ['json', 'table'] as const;
 
 export function createPostStopOrderReport(
   response: PostStopOrderResponse

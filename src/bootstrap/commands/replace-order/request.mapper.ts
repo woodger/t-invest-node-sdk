@@ -9,11 +9,6 @@ import { PriceType } from '../../../generated/common';
 import type { ReplaceOrderRequest } from '../../../generated/orders';
 import { parsePositiveQuotationOption } from '../../args/side-effect-args';
 
-const replaceOrderPriceTypes = {
-  point: PriceType.PRICE_TYPE_POINT,
-  currency: PriceType.PRICE_TYPE_CURRENCY
-} as const;
-
 interface ReplaceOrderRequestOptions {
   readonly 'account-id': string;
   readonly 'order-id': string;
@@ -22,6 +17,11 @@ interface ReplaceOrderRequestOptions {
   readonly price: string;
   readonly 'price-type': keyof typeof replaceOrderPriceTypes;
 }
+
+const replaceOrderPriceTypes = {
+  point: PriceType.PRICE_TYPE_POINT,
+  currency: PriceType.PRICE_TYPE_CURRENCY
+} as const;
 
 export function createReplaceOrderRequest(
   options: ReplaceOrderRequestOptions

@@ -43,6 +43,14 @@ type AccruedInterestsSdkFactory = (
   options: TInvestOptions
 ) => AccruedInterestsSdk;
 
+type AccruedInterestsOptions = InferOptions<
+  typeof accruedInterestsOptionsSchema
+>;
+type AccruedInterestsRequestOptions = CommandRequestOptions<
+  AccruedInterestsOptions,
+  'from' | 'to' | 'instrument-id' | 'figi'
+>;
+
 const accruedInterestsOptionsSchema = withSdkOptions({
   ...instrumentIdWithDeprecatedFigiOptionsSchema,
   from: {
@@ -59,14 +67,6 @@ const accruedInterestsOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type AccruedInterestsOptions = InferOptions<
-  typeof accruedInterestsOptionsSchema
->;
-type AccruedInterestsRequestOptions = CommandRequestOptions<
-  AccruedInterestsOptions,
-  'from' | 'to' | 'instrument-id' | 'figi'
->;
 
 export function createAccruedInterestsCommand(
   createSdk: AccruedInterestsSdkFactory = (options) =>

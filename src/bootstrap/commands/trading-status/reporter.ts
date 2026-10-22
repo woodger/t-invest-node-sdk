@@ -11,9 +11,9 @@ import { securityTradingStatusToJSON } from '../../../generated/common';
 import type { GetTradingStatusResponse } from '../../../generated/marketdata';
 import { renderJson, renderTextTable } from 'icore';
 
-export const tradingStatusFormats = ['json', 'table'] as const;
-
 export type TradingStatusFormat = typeof tradingStatusFormats[number];
+
+export const tradingStatusFormats = ['json', 'table'] as const;
 
 export function createTradingStatusReport(
   response: GetTradingStatusResponse

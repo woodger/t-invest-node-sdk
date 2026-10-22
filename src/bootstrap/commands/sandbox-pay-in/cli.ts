@@ -37,6 +37,12 @@ type SandboxPayInSdk = {
 
 type SandboxPayInSdkFactory = (options: TInvestOptions) => SandboxPayInSdk;
 
+type SandboxPayInOptions = InferOptions<typeof sandboxPayInOptionsSchema>;
+type SandboxPayInRequestOptions = CommandRequestOptions<
+  SandboxPayInOptions,
+  'account-id' | 'amount' | 'currency'
+>;
+
 const sandboxPayInCurrencies = ['rub', 'usd'] as const;
 
 const sandboxPayInOptionsSchema = withSdkOptions({
@@ -60,12 +66,6 @@ const sandboxPayInOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type SandboxPayInOptions = InferOptions<typeof sandboxPayInOptionsSchema>;
-type SandboxPayInRequestOptions = CommandRequestOptions<
-  SandboxPayInOptions,
-  'account-id' | 'amount' | 'currency'
->;
 
 export function createSandboxPayInCommand(
   createSdk: SandboxPayInSdkFactory = (options) =>

@@ -62,6 +62,13 @@ type RootUnaryLimiterContracts = [
   TInvestUnaryQuota
 ];
 
+type GeneratedServiceDefinitionRuntimeContract = {
+  methods: Record<string, {
+    requestType?: unknown;
+    responseType?: unknown;
+  }>;
+};
+
 const serverSideServiceDefinitionNames = [
   'InstrumentsServiceDefinition',
   'MarketDataServiceDefinition',
@@ -150,13 +157,6 @@ const generatedEnumRuntimeContractNames = [
   ['TrailingStopStatus', 'trailingStopStatus'],
   ['AccountValue', 'accountValue']
 ] as const;
-
-type GeneratedServiceDefinitionRuntimeContract = {
-  methods: Record<string, {
-    requestType?: unknown;
-    responseType?: unknown;
-  }>;
-};
 
 describe('package entrypoint', () => {
   test('exposes generated server-side service definitions', () => {

@@ -19,9 +19,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const tradingSchedulesFormats = ['json', 'table'] as const;
-
 export type TradingSchedulesFormat = typeof tradingSchedulesFormats[number];
+
+export const tradingSchedulesFormats = ['json', 'table'] as const;
 
 function toReportDay(
   exchange: string,

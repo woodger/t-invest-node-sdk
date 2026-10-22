@@ -26,9 +26,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const bondFormats = ['json', 'table'] as const;
-
 export type BondFormat = typeof bondFormats[number];
+
+export const bondFormats = ['json', 'table'] as const;
 
 export function createBondReportInstrument(
   instrument: Bond

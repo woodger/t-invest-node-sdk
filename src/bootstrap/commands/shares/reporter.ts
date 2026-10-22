@@ -16,9 +16,9 @@ import {
   type ShareFormat
 } from '../share/reporter';
 
-export const sharesFormats = shareFormats;
-
 export type SharesFormat = ShareFormat;
+
+export const sharesFormats = shareFormats;
 
 export function createSharesReport(instruments: Share[]): SharesReport {
   return instruments.map(createShareReportInstrument);

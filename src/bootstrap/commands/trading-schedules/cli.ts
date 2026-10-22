@@ -39,6 +39,14 @@ type TradingSchedulesSdkFactory = (
   options: TInvestOptions
 ) => TradingSchedulesSdk;
 
+type TradingSchedulesOptions = InferOptions<
+  typeof tradingSchedulesOptionsSchema
+>;
+type TradingSchedulesRequestOptions = CommandRequestOptions<
+  TradingSchedulesOptions,
+  'from' | 'to' | 'exchange'
+>;
+
 const tradingSchedulesOptionsSchema = withSdkOptions({
   exchange: {
     type: 'string'
@@ -57,14 +65,6 @@ const tradingSchedulesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type TradingSchedulesOptions = InferOptions<
-  typeof tradingSchedulesOptionsSchema
->;
-type TradingSchedulesRequestOptions = CommandRequestOptions<
-  TradingSchedulesOptions,
-  'from' | 'to' | 'exchange'
->;
 
 export function createTradingSchedulesCommand(
   createSdk: TradingSchedulesSdkFactory = (options) =>

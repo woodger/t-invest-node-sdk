@@ -26,9 +26,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const shareFormats = ['json', 'table'] as const;
-
 export type ShareFormat = typeof shareFormats[number];
+
+export const shareFormats = ['json', 'table'] as const;
 
 export function createShareReportInstrument(
   instrument: Share

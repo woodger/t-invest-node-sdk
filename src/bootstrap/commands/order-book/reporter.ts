@@ -20,9 +20,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const orderBookFormats = ['json', 'table'] as const;
-
 export type OrderBookFormat = typeof orderBookFormats[number];
+
+export const orderBookFormats = ['json', 'table'] as const;
 
 function toReportLevel(
   side: OrderBookReportLevel['side'],

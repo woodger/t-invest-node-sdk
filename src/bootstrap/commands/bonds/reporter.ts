@@ -16,9 +16,9 @@ import {
   type BondFormat
 } from '../bond/reporter';
 
-export const bondsFormats = bondFormats;
-
 export type BondsFormat = BondFormat;
+
+export const bondsFormats = bondFormats;
 
 export function createBondsReport(instruments: Bond[]): BondsReport {
   return instruments.map(createBondReportInstrument);

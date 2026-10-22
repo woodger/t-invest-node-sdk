@@ -15,9 +15,9 @@ import {
   type TradingStatusFormat
 } from '../trading-status/reporter';
 
-export const tradingStatusesFormats = tradingStatusFormats;
-
 export type TradingStatusesFormat = TradingStatusFormat;
+
+export const tradingStatusesFormats = tradingStatusFormats;
 
 export function createTradingStatusesReport(
   response: GetTradingStatusesResponse

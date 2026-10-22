@@ -20,9 +20,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const lastTradesFormats = ['json', 'table'] as const;
-
 export type LastTradesFormat = typeof lastTradesFormats[number];
+
+export const lastTradesFormats = ['json', 'table'] as const;
 
 function toReportTrade(trade: Trade): LastTradesReportTrade {
   return {

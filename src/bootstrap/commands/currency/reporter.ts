@@ -26,9 +26,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const currencyFormats = ['json', 'table'] as const;
-
 export type CurrencyFormat = typeof currencyFormats[number];
+
+export const currencyFormats = ['json', 'table'] as const;
 
 export function createCurrencyReportInstrument(
   instrument: Currency

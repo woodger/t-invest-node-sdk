@@ -16,9 +16,9 @@ import {
   type OrdersFormat
 } from '../orders/reporter';
 
-export const orderStateFormats = ordersFormats;
-
 export type OrderStateFormat = OrdersFormat;
+
+export const orderStateFormats = ordersFormats;
 
 export function createSingleOrderStateReport(
   order: OrderState

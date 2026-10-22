@@ -37,6 +37,14 @@ type FindInstrumentSdk = {
 
 type FindInstrumentSdkFactory = (options: TInvestOptions) => FindInstrumentSdk;
 
+type InstrumentKindName = typeof findInstrumentKindNames[number];
+
+type FindInstrumentOptions = InferOptions<typeof findInstrumentOptionsSchema>;
+type FindInstrumentRequestOptions = CommandRequestOptions<
+  FindInstrumentOptions,
+  'instrument-kind' | 'api-trade-available' | 'query'
+>;
+
 const instrumentKinds = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
   bond: InstrumentType.INSTRUMENT_TYPE_BOND,
@@ -52,8 +60,6 @@ const instrumentKinds = {
 const findInstrumentKindNames = Object.keys(instrumentKinds) as Array<
   keyof typeof instrumentKinds
 >;
-
-type InstrumentKindName = typeof findInstrumentKindNames[number];
 
 const findInstrumentOptionsSchema = withSdkOptions({
   query: {
@@ -75,12 +81,6 @@ const findInstrumentOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type FindInstrumentOptions = InferOptions<typeof findInstrumentOptionsSchema>;
-type FindInstrumentRequestOptions = CommandRequestOptions<
-  FindInstrumentOptions,
-  'instrument-kind' | 'api-trade-available' | 'query'
->;
 
 export function createFindInstrumentCommand(
   createSdk: FindInstrumentSdkFactory = (options) =>

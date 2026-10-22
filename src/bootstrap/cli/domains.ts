@@ -10,6 +10,30 @@
  * parsing.
  */
 
+export type CliDomainName = keyof typeof cliDomains;
+export type CliCommandPath = readonly [string, ...string[]];
+
+type CliPathAliasDefinition = {
+  preferred: CliCommandPath;
+  aliases: readonly CliCommandPath[];
+};
+
+type CommandPathName<TPath extends readonly string[]> = TPath extends readonly [
+  infer THead extends string,
+  ...infer TTail extends string[]
+] ? TTail extends [] ? THead
+  : `${THead} ${CommandPathName<TTail>}`
+  : never;
+
+type CliPreferredPath = typeof cliPathAliases[number]['preferred'];
+
+/** Канонические имена команд, выведенные из preferred CLI paths. */
+export type CliCommandName =
+  | CommandPathName<CliPreferredPath>
+  | 'stream run'
+  | 'help'
+  | 'version';
+
 export const cliDomains = {
   account: {
     description: 'Accounts, user info, tariff and limits'
@@ -40,14 +64,6 @@ export const cliDomains = {
     description: 'Developer tools'
   }
 } as const;
-
-export type CliDomainName = keyof typeof cliDomains;
-export type CliCommandPath = readonly [string, ...string[]];
-
-type CliPathAliasDefinition = {
-  preferred: CliCommandPath;
-  aliases: readonly CliCommandPath[];
-};
 
 const publicDomainByLegacyHead = {
   users: 'account',
@@ -514,22 +530,6 @@ const cliPathAliases = [
     ]
   }
 ] as const satisfies readonly CliPathAliasDefinition[];
-
-type CommandPathName<TPath extends readonly string[]> = TPath extends readonly [
-  infer THead extends string,
-  ...infer TTail extends string[]
-] ? TTail extends [] ? THead
-  : `${THead} ${CommandPathName<TTail>}`
-  : never;
-
-type CliPreferredPath = typeof cliPathAliases[number]['preferred'];
-
-/** Канонические имена команд, выведенные из preferred CLI paths. */
-export type CliCommandName =
-  | CommandPathName<CliPreferredPath>
-  | 'stream run'
-  | 'help'
-  | 'version';
 
 const preferredPathByAliasName = createPreferredPathByAliasName(cliPathAliases);
 const aliasPathsByPreferredName = createAliasPathsByPreferredName(

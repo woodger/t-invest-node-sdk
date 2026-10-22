@@ -15,9 +15,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const withdrawLimitsFormats = ['json', 'table'] as const;
-
 export type WithdrawLimitsFormat = typeof withdrawLimitsFormats[number];
+
+export const withdrawLimitsFormats = ['json', 'table'] as const;
 
 export function createWithdrawLimitsReport(
   response: WithdrawLimitsResponse

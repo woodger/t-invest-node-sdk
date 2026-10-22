@@ -11,9 +11,9 @@ import type { CancelStopOrderResponse } from '../../../generated/stoporders';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const cancelStopOrderFormats = ['json', 'table'] as const;
-
 export type CancelStopOrderFormat = typeof cancelStopOrderFormats[number];
+
+export const cancelStopOrderFormats = ['json', 'table'] as const;
 
 export function createCancelStopOrderReport(
   response: CancelStopOrderResponse

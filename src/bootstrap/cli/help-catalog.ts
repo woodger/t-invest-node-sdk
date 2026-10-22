@@ -17,6 +17,8 @@ export interface CommandHelp {
   notes?: readonly string[];
 }
 
+export type CommandHelpName = keyof typeof commandHelp;
+
 const sdkConnectionOptions = [
   '--token=TOKEN          OAuth token, overrides T_INVEST_TOKEN',
   '--endpoint=HOST:PORT   gRPC endpoint, overrides T_INVEST_ENDPOINT',
@@ -1662,5 +1664,3 @@ export const commandHelp = {
     ]
   }
 } as const satisfies Record<string, CommandHelp>;
-
-export type CommandHelpName = keyof typeof commandHelp;

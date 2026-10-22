@@ -16,9 +16,9 @@ import {
 import type { FavoriteInstrument } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
-export const favoritesFormats = ['json', 'table'] as const;
-
 export type FavoritesFormat = typeof favoritesFormats[number];
+
+export const favoritesFormats = ['json', 'table'] as const;
 
 function toReportInstrument(
   instrument: FavoriteInstrument

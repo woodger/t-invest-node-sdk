@@ -10,9 +10,9 @@ import type { UserInfoReport } from '../../../application/reports';
 import type { GetInfoResponse } from '../../../generated/users';
 import { renderJson, renderTextTable } from 'icore';
 
-export const userInfoFormats = ['json', 'table'] as const;
-
 export type UserInfoFormat = typeof userInfoFormats[number];
+
+export const userInfoFormats = ['json', 'table'] as const;
 
 export function createUserInfoReport(
   response: GetInfoResponse

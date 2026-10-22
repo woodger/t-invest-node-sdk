@@ -25,9 +25,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const instrumentFormats = ['json', 'table'] as const;
-
 export type InstrumentFormat = typeof instrumentFormats[number];
+
+export const instrumentFormats = ['json', 'table'] as const;
 
 function toReportInstrument(
   instrument: Instrument

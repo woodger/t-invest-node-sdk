@@ -16,9 +16,9 @@ import {
   type AssetFormat
 } from '../asset/reporter';
 
-export const assetsFormats = assetFormats;
-
 export type AssetsFormat = AssetFormat;
+
+export const assetsFormats = assetFormats;
 
 export function createAssetsReport(assets: Asset[]): AssetsReport {
   return assets.map(createAssetReportSummary);

@@ -25,9 +25,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const operationsByCursorFormats = ['json', 'table'] as const;
-
 export type OperationsByCursorFormat = typeof operationsByCursorFormats[number];
+
+export const operationsByCursorFormats = ['json', 'table'] as const;
 
 function toReportItem(item: OperationItem): OperationsByCursorReportItem {
   return {

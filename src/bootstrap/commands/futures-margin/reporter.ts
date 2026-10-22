@@ -15,9 +15,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const futuresMarginFormats = ['json', 'table'] as const;
-
 export type FuturesMarginFormat = typeof futuresMarginFormats[number];
+
+export const futuresMarginFormats = ['json', 'table'] as const;
 
 export function createFuturesMarginReport(
   response: GetFuturesMarginResponse

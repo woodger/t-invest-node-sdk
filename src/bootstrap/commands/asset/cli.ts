@@ -32,6 +32,9 @@ type AssetSdk = {
 
 type AssetSdkFactory = (options: TInvestOptions) => AssetSdk;
 
+type AssetOptions = InferOptions<typeof assetOptionsSchema>;
+type AssetRequestOptions = CommandRequestOptions<AssetOptions, 'id'>;
+
 const assetOptionsSchema = withSdkOptions({
   id: {
     type: 'string',
@@ -43,9 +46,6 @@ const assetOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type AssetOptions = InferOptions<typeof assetOptionsSchema>;
-type AssetRequestOptions = CommandRequestOptions<AssetOptions, 'id'>;
 
 export function createAssetCommand(
   createSdk: AssetSdkFactory = (options) =>

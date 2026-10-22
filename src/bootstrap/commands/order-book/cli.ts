@@ -35,6 +35,12 @@ type OrderBookSdk = {
 
 type OrderBookSdkFactory = (options: TInvestOptions) => OrderBookSdk;
 
+type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
+type OrderBookRequestOptions = CommandRequestOptions<
+  OrderBookOptions,
+  'instrument-id' | 'depth'
+>;
+
 const orderBookOptionsSchema = withSdkOptions({
   'instrument-id': {
     type: 'string',
@@ -50,12 +56,6 @@ const orderBookOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
-type OrderBookRequestOptions = CommandRequestOptions<
-  OrderBookOptions,
-  'instrument-id' | 'depth'
->;
 
 export function createOrderBookCommand(
   createSdk: OrderBookSdkFactory = (options) =>

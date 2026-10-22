@@ -16,9 +16,9 @@ import {
   type EtfFormat
 } from '../etf/reporter';
 
-export const etfsFormats = etfFormats;
-
 export type EtfsFormat = EtfFormat;
+
+export const etfsFormats = etfFormats;
 
 export function createEtfsReport(instruments: Etf[]): EtfsReport {
   return instruments.map(createEtfReportInstrument);

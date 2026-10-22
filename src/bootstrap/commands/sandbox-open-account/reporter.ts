@@ -10,9 +10,9 @@ import type { OpenSandboxAccountReport } from '../../../application/reports';
 import type { OpenSandboxAccountResponse } from '../../../generated/sandbox';
 import { renderJson, renderTextTable } from 'icore';
 
-export const openSandboxAccountFormats = ['json', 'table'] as const;
-
 export type OpenSandboxAccountFormat = typeof openSandboxAccountFormats[number];
+
+export const openSandboxAccountFormats = ['json', 'table'] as const;
 
 export function createOpenSandboxAccountReport(
   response: OpenSandboxAccountResponse

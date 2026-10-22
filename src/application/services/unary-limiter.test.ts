@@ -7,6 +7,13 @@ import type {
 } from './unary-limiter';
 import { createInMemoryUnaryLimiter } from './unary-limiter';
 
+interface ControlledTimers {
+  delays: number[];
+  now(): number;
+  advanceTo(value: number): Promise<void>;
+  setCurrentTime(value: number): void;
+}
+
 const passiveSignal = new AbortController().signal;
 const ordersQuota: TInvestUnaryQuota = {
   bucket: 'rule:OrdersService',
@@ -508,13 +515,6 @@ function recordPermit(
   return limiter.acquire(createContext(quota)).then(() => {
     granted.push(clock.now());
   });
-}
-
-interface ControlledTimers {
-  delays: number[];
-  now(): number;
-  advanceTo(value: number): Promise<void>;
-  setCurrentTime(value: number): void;
 }
 
 async function withControlledTimers(

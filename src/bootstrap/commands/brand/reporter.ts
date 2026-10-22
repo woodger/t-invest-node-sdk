@@ -15,9 +15,9 @@ import {
   type BrandsFormat
 } from '../brands/reporter';
 
-export const brandFormats = brandsFormats;
-
 export type BrandFormat = BrandsFormat;
+
+export const brandFormats = brandsFormats;
 
 export function createSingleBrandReport(brand: Brand): BrandReport {
   return createBrandReport(brand);

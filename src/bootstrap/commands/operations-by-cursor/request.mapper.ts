@@ -18,16 +18,6 @@ import {
   parseDateTimeOption
 } from '../../args/command-options';
 
-const minOperationsByCursorPageSize = 1;
-const maxOperationsByCursorPageSize = 1_000;
-
-const operationStates = {
-  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
-  executed: OperationState.OPERATION_STATE_EXECUTED,
-  canceled: OperationState.OPERATION_STATE_CANCELED,
-  progress: OperationState.OPERATION_STATE_PROGRESS
-} as const;
-
 interface OperationsByCursorRequestOptions {
   readonly 'account-id': string;
   readonly 'instrument-id'?: string | undefined;
@@ -41,6 +31,16 @@ interface OperationsByCursorRequestOptions {
   readonly limit?: string | undefined;
   readonly state: keyof typeof operationStates;
 }
+
+const minOperationsByCursorPageSize = 1;
+const maxOperationsByCursorPageSize = 1_000;
+
+const operationStates = {
+  unspecified: OperationState.OPERATION_STATE_UNSPECIFIED,
+  executed: OperationState.OPERATION_STATE_EXECUTED,
+  canceled: OperationState.OPERATION_STATE_CANCELED,
+  progress: OperationState.OPERATION_STATE_PROGRESS
+} as const;
 
 export function createOperationsByCursorRequest(
   options: OperationsByCursorRequestOptions

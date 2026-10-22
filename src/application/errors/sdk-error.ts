@@ -9,6 +9,20 @@
  * Здесь не должно быть imports из transport libraries или retry policy.
  */
 
+export type SdkErrorSource =
+  | 'grpc'
+  | 'tls'
+  | 'abort'
+  | 'lifecycle'
+  | 'sdk';
+
+export interface SdkErrorOptions {
+  source: SdkErrorSource;
+  path?: string;
+  details?: string;
+  cause?: unknown;
+}
+
 export enum SdkErrorCode {
   Cancelled = 'CANCELLED',
   Unknown = 'UNKNOWN',
@@ -28,20 +42,6 @@ export enum SdkErrorCode {
   Unauthenticated = 'UNAUTHENTICATED',
   SdkClosed = 'SDK_CLOSED',
   UnknownUnaryLimit = 'UNKNOWN_UNARY_LIMIT'
-}
-
-export type SdkErrorSource =
-  | 'grpc'
-  | 'tls'
-  | 'abort'
-  | 'lifecycle'
-  | 'sdk';
-
-export interface SdkErrorOptions {
-  source: SdkErrorSource;
-  path?: string;
-  details?: string;
-  cause?: unknown;
 }
 
 const sdkErrorBrand = Symbol.for('t-invest-node-sdk/SdkError');

@@ -17,6 +17,13 @@ import {
   type StreamRunSdk
 } from './stream-session';
 
+interface TestSdkOverrides {
+  readonly portfolioStream?:
+    StreamRunSdk['operationsStream']['portfolioStream'];
+  readonly tradesStream?: StreamRunSdk['ordersStream']['tradesStream'];
+  readonly close?: () => void;
+}
+
 async function collectOutput(output: AsyncIterable<string>): Promise<string> {
   let result = '';
 
@@ -74,13 +81,6 @@ function createUnusedStream(name: string) {
   return () => {
     throw new Error(`${name} should not be called`);
   };
-}
-
-interface TestSdkOverrides {
-  readonly portfolioStream?:
-    StreamRunSdk['operationsStream']['portfolioStream'];
-  readonly tradesStream?: StreamRunSdk['ordersStream']['tradesStream'];
-  readonly close?: () => void;
 }
 
 function createTestSdk(overrides: TestSdkOverrides): StreamRunSdk {

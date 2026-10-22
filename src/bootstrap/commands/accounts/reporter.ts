@@ -21,9 +21,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const accountsFormats = ['json', 'table'] as const;
-
 export type AccountsFormat = typeof accountsFormats[number];
+
+export const accountsFormats = ['json', 'table'] as const;
 
 function toReportAccount(account: Account): AccountsReportAccount {
   return {

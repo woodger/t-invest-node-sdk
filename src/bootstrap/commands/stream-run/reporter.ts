@@ -16,8 +16,6 @@ import type {
 } from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 
-export const streamRunFormats = ['jsonl'] as const;
-
 export type StreamRunResponse =
   | MarketDataResponse
   | PortfolioStreamResponse
@@ -37,6 +35,8 @@ type StreamRunEvent = {
   type: string;
   payload: unknown;
 };
+
+export const streamRunFormats = ['jsonl'] as const;
 
 const streamEventFields = [
   'subscribeCandlesResponse',

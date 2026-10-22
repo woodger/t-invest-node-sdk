@@ -23,9 +23,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const positionsFormats = ['json', 'table'] as const;
-
 export type PositionsFormat = typeof positionsFormats[number];
+
+export const positionsFormats = ['json', 'table'] as const;
 
 function toReportSecurity(
   position: PositionsSecurities

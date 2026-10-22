@@ -29,6 +29,9 @@ type BrandSdk = {
 
 type BrandSdkFactory = (options: TInvestOptions) => BrandSdk;
 
+type BrandOptions = InferOptions<typeof brandOptionsSchema>;
+type BrandRequestOptions = CommandRequestOptions<BrandOptions, 'id'>;
+
 const brandOptionsSchema = withSdkOptions({
   id: {
     type: 'string',
@@ -40,9 +43,6 @@ const brandOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type BrandOptions = InferOptions<typeof brandOptionsSchema>;
-type BrandRequestOptions = CommandRequestOptions<BrandOptions, 'id'>;
 
 export function createBrandCommand(
   createSdk: BrandSdkFactory = (options) =>

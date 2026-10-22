@@ -24,9 +24,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const brokerReportFormats = ['json', 'table'] as const;
-
 export type BrokerReportFormat = typeof brokerReportFormats[number];
+
+export const brokerReportFormats = ['json', 'table'] as const;
 
 function toReportItem(item: BrokerReport): BrokerReportItemReport {
   return {

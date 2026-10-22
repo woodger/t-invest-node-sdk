@@ -18,9 +18,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const bondCouponsFormats = ['json', 'table'] as const;
-
 export type BondCouponsFormat = typeof bondCouponsFormats[number];
+
+export const bondCouponsFormats = ['json', 'table'] as const;
 
 function toReportCoupon(coupon: Coupon): BondCouponsReportCoupon {
   return {

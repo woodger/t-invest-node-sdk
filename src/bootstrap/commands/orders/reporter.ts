@@ -26,9 +26,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const ordersFormats = ['json', 'table'] as const;
-
 export type OrdersFormat = typeof ordersFormats[number];
+
+export const ordersFormats = ['json', 'table'] as const;
 
 function toReportStage(stage: OrderStage): OrdersReportStage {
   return {

@@ -32,9 +32,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const optionFormats = ['json', 'table'] as const;
-
 export type OptionFormat = typeof optionFormats[number];
+
+export const optionFormats = ['json', 'table'] as const;
 
 export function createOptionReportInstrument(
   instrument: Option

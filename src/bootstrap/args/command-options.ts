@@ -16,14 +16,6 @@ import {
   type OptionsSchema
 } from 'icore';
 
-export const maxInt32 = 2_147_483_647;
-const minSupportedDateTimeYear = 1;
-const maxSupportedDateTimeYear = 9_999;
-const maxDateTimeHour = 23;
-const maxDateTimeMinuteOrSecond = 59;
-const firstGregorianMonth = 1;
-const lastGregorianMonth = 12;
-
 type OptionalCommandOptionKeys<TOptions> = {
   [TKey in keyof TOptions]: undefined extends TOptions[TKey] ? TKey : never;
 }[keyof TOptions];
@@ -41,6 +33,14 @@ export type CommandRequestOptions<
   & Partial<
     Pick<TOptions, Extract<TKeys, OptionalCommandOptionKeys<TOptions>>>
   >;
+
+export const maxInt32 = 2_147_483_647;
+const minSupportedDateTimeYear = 1;
+const maxSupportedDateTimeYear = 9_999;
+const maxDateTimeHour = 23;
+const maxDateTimeMinuteOrSecond = 59;
+const firstGregorianMonth = 1;
+const lastGregorianMonth = 12;
 
 export const sdkOptionsSchema = {
   token: {

@@ -42,6 +42,11 @@ type StreamRunDependencies = {
   elapsedNow?: StreamRunElapsedClock;
 };
 
+type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
+type StreamRunProvidedOptions = InferProvidedOptions<
+  typeof streamRunOptionsSchema
+>;
+
 const streamRunCommandPath = ['stream', 'run'] as const;
 const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
   new TInvestNodeSDK(options);
@@ -76,11 +81,6 @@ const streamRunOptionsSchema = withSdkOptions(
     }
   } as const
 );
-
-type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
-type StreamRunProvidedOptions = InferProvidedOptions<
-  typeof streamRunOptionsSchema
->;
 
 export function createStreamRunCommand(
   dependencies: StreamRunDependencies = {}

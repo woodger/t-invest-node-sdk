@@ -45,8 +45,6 @@ export type ResolvedTInvestOptions = Omit<
   useSsl: boolean;
 };
 
-const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
-
 interface UnaryServiceDefinitionContract {
   readonly name: string;
   readonly fullName: string;
@@ -58,6 +56,8 @@ interface UnaryServiceDefinitionContract {
     }>
   >;
 }
+
+const packageUnaryLimits = compileUnaryLimits(packageConfig.unaryLimits);
 
 const unaryServiceDefinitions: readonly UnaryServiceDefinitionContract[] = [
   InstrumentsServiceDefinition,

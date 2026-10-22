@@ -25,9 +25,9 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
-export const futureFormats = ['json', 'table'] as const;
-
 export type FutureFormat = typeof futureFormats[number];
+
+export const futureFormats = ['json', 'table'] as const;
 
 export function createFutureReportInstrument(
   instrument: Future

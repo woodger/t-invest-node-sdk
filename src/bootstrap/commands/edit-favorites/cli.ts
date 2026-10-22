@@ -46,12 +46,18 @@ type EditFavoritesSdk = {
 
 type EditFavoritesSdkFactory = (options: TInvestOptions) => EditFavoritesSdk;
 
+type EditFavoritesActionName = keyof typeof editFavoriteActions;
+
+type EditFavoritesOptions = InferOptions<typeof editFavoritesOptionsSchema>;
+type EditFavoritesRequestOptions = CommandRequestOptions<
+  EditFavoritesOptions,
+  'instrument-id' | 'figi' | 'action'
+>;
+
 const editFavoriteActions = {
   add: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_ADD,
   del: EditFavoritesActionType.EDIT_FAVORITES_ACTION_TYPE_DEL
 } as const;
-
-type EditFavoritesActionName = keyof typeof editFavoriteActions;
 
 const editFavoriteActionNames = Object.keys(
   editFavoriteActions
@@ -71,12 +77,6 @@ const editFavoritesOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type EditFavoritesOptions = InferOptions<typeof editFavoritesOptionsSchema>;
-type EditFavoritesRequestOptions = CommandRequestOptions<
-  EditFavoritesOptions,
-  'instrument-id' | 'figi' | 'action'
->;
 
 export function createEditFavoritesCommand(
   createSdk: EditFavoritesSdkFactory = (options) =>

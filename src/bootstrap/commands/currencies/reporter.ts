@@ -16,9 +16,9 @@ import {
   type CurrencyFormat
 } from '../currency/reporter';
 
-export const currenciesFormats = currencyFormats;
-
 export type CurrenciesFormat = CurrencyFormat;
+
+export const currenciesFormats = currencyFormats;
 
 export function createCurrenciesReport(
   instruments: Currency[]

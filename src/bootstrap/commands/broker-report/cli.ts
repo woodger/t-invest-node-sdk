@@ -39,6 +39,16 @@ type BrokerReportSdk = {
 
 type BrokerReportSdkFactory = (options: TInvestOptions) => BrokerReportSdk;
 
+type BrokerReportOptions = InferOptions<typeof brokerReportOptionsSchema>;
+type BrokerReportRequestOptions = CommandRequestOptions<
+  BrokerReportOptions,
+  | 'task-id'
+  | 'account-id'
+  | 'from'
+  | 'to'
+  | 'page'
+>;
+
 const brokerReportOptionsSchema = withSdkOptions({
   'account-id': {
     type: 'string'
@@ -61,16 +71,6 @@ const brokerReportOptionsSchema = withSdkOptions({
     default: 'table'
   }
 });
-
-type BrokerReportOptions = InferOptions<typeof brokerReportOptionsSchema>;
-type BrokerReportRequestOptions = CommandRequestOptions<
-  BrokerReportOptions,
-  | 'task-id'
-  | 'account-id'
-  | 'from'
-  | 'to'
-  | 'page'
->;
 
 export function createBrokerReportRequest(
   options: BrokerReportRequestOptions

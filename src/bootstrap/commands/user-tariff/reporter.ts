@@ -10,9 +10,9 @@ import type { UserTariffReport } from '../../../application/reports';
 import type { GetUserTariffResponse } from '../../../generated/users';
 import { renderJson, renderTextTable } from 'icore';
 
-export const userTariffFormats = ['json', 'table'] as const;
-
 export type UserTariffFormat = typeof userTariffFormats[number];
+
+export const userTariffFormats = ['json', 'table'] as const;
 
 export function createUserTariffReport(
   response: GetUserTariffResponse
