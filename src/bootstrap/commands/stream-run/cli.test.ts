@@ -9,7 +9,10 @@ import {
   type MarketDataResponse
 } from '../../../generated/marketdata';
 import { maxInt32 } from '../../args/command-options';
-import type { PortfolioStreamRequest, PortfolioStreamResponse } from '../../../generated/operations';
+import type {
+  PortfolioStreamRequest,
+  PortfolioStreamResponse
+} from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 import { createStreamRunCommand } from './cli';
 
@@ -47,7 +50,7 @@ function createUnusedStream(name: string) {
 
 describe('stream run command', () => {
   describe('createStreamRunCommand', () => {
-    test('runs operations portfolio stream and closes sdk', async () => {
+    test('creates sdk on iteration, runs the portfolio stream and closes sdk', async () => {
       let receivedOptions: TInvestOptions | undefined;
       let receivedRequest: PortfolioStreamRequest | undefined;
       let closeCalls = 0;
@@ -104,6 +107,9 @@ describe('stream run command', () => {
         ],
         undefined
       );
+
+      assert.equal(receivedOptions, undefined);
+      assert.equal(closeCalls, 0);
 
       const lines = (await collectOutput(output)).trim().split('\n');
 

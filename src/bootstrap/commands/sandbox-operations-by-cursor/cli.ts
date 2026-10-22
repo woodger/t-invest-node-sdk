@@ -11,13 +11,19 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetOperationsByCursorRequest, GetOperationsByCursorResponse } from '../../../generated/operations';
+import type {
+  GetOperationsByCursorRequest,
+  GetOperationsByCursorResponse
+} from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createOperationsByCursorRequest } from '../operations-by-cursor/request.mapper';
-import { formatOperationsByCursor, operationsByCursorFormats } from '../operations-by-cursor/reporter';
+import {
+  formatOperationsByCursor,
+  operationsByCursorFormats
+} from '../operations-by-cursor/reporter';
 
 type SandboxOperationsByCursorSdk = {
   sandbox: {

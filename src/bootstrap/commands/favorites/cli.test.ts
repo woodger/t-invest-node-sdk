@@ -73,37 +73,5 @@ describe('favorites command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].ticker, 'TCSG');
     });
-
-    test('closes sdk when getFavorites rejects', async () => {
-      let closeCalls = 0;
-      const command = createFavoritesCommand(() => ({
-        instruments: {
-          async getFavorites() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'favorite',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

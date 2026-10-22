@@ -106,10 +106,7 @@ describe('UnaryLimitResolver', () => {
   });
 });
 
-function resolveRequiredQuota(
-  resolver: UnaryLimitResolver,
-  path: string
-) {
+function resolveRequiredQuota(resolver: UnaryLimitResolver, path: string) {
   const quota = resolver.resolve(path);
 
   if (quota === undefined) {

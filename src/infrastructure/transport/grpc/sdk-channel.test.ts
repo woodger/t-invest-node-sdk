@@ -151,9 +151,7 @@ function createPayloadTlsServer() {
   return server;
 }
 
-async function listen(
-  server: ReturnType<typeof createPayloadTlsServer>
-): Promise<number> {
+async function listen(server: ReturnType<typeof createPayloadTlsServer>): Promise<number> {
   await new Promise<void>((resolvePromise, reject) => {
     const rejectOnError = (error: Error) => {
       reject(error);
@@ -175,9 +173,7 @@ async function listen(
   return address.port;
 }
 
-async function close(
-  server: ReturnType<typeof createPayloadTlsServer>
-): Promise<void> {
+async function close(server: ReturnType<typeof createPayloadTlsServer>): Promise<void> {
   await new Promise<void>((resolvePromise, reject) => {
     server.close((error) => {
       if (error) {

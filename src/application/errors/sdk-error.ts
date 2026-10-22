@@ -65,11 +65,7 @@ export class SdkError<Code extends SdkErrorCode = SdkErrorCode> extends Error {
   readonly path: string | undefined;
   readonly details: string | undefined;
 
-  constructor(
-    code: Code,
-    message: string,
-    options: SdkErrorOptions
-  ) {
+  constructor(code: Code, message: string, options: SdkErrorOptions) {
     super(message, { cause: options.cause });
 
     this.name = 'SdkError';
@@ -118,10 +114,7 @@ export function isSdkError<Code extends SdkErrorCode>(
   error: unknown,
   code: Code
 ): error is SdkError<Code>;
-export function isSdkError(
-  error: unknown,
-  code?: SdkErrorCode
-): error is SdkError {
+export function isSdkError(error: unknown, code?: SdkErrorCode): error is SdkError {
   return error instanceof SdkError
     && (code === undefined || error.code === code);
 }

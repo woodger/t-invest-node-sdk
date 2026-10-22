@@ -42,9 +42,7 @@ export function resolveCommandHelpName(
   return isCommandHelpName(commandName) ? commandName : undefined;
 }
 
-export function resolveDomainHelpName(
-  positionals: readonly unknown[]
-): CliDomainName | undefined {
+export function resolveDomainHelpName(positionals: readonly unknown[]): CliDomainName | undefined {
   if (positionals.length !== 1) {
     return undefined;
   }
@@ -74,10 +72,7 @@ export function renderHelp(positionals: readonly unknown[]): string {
   return renderCommandHelp(commandName);
 }
 
-function renderSection(
-  title: string,
-  rows: readonly string[] | undefined
-): string[] {
+function renderSection(title: string, rows: readonly string[] | undefined): string[] {
   if (rows === undefined || rows.length === 0) {
     return [];
   }
@@ -102,9 +97,7 @@ function renderCommandContract(command: CommandHelp): string[] {
   ];
 }
 
-function normalizeHelpCommandName(
-  positionals: readonly unknown[]
-): string | undefined {
+function normalizeHelpCommandName(positionals: readonly unknown[]): string | undefined {
   if (positionals.length === 0) {
     return undefined;
   }

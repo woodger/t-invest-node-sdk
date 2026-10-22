@@ -10,7 +10,11 @@ import type { ShareReport, ShareReportInstrument } from '../../../application/re
 import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type { Share, ShareResponse } from '../../../generated/instruments';
 import { shareTypeToJSON } from '../../../generated/instruments';
-import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных акции: JSON или таблица. */
@@ -18,9 +22,7 @@ export type ShareFormat = typeof shareFormats[number];
 
 export const shareFormats = ['json', 'table'] as const;
 
-export function createShareReportInstrument(
-  instrument: Share
-): ShareReportInstrument {
+export function createShareReportInstrument(instrument: Share): ShareReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -108,10 +110,7 @@ export function renderShareRows(report: ShareReportInstrument[]): string {
   ]);
 }
 
-export function formatShareReport(
-  report: ShareReport,
-  format: ShareFormat
-): string {
+export function formatShareReport(report: ShareReport, format: ShareFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -119,9 +118,6 @@ export function formatShareReport(
   return renderShareRows(report === null ? [] : [report]);
 }
 
-export function formatShare(
-  response: ShareResponse,
-  format: ShareFormat
-): string {
+export function formatShare(response: ShareResponse, format: ShareFormat): string {
   return formatShareReport(createShareReport(response), format);
 }

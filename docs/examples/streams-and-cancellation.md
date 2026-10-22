@@ -107,10 +107,7 @@ async function* initialRequests() {
   };
 }
 
-export async function runMarketDataStream(
-  sdk: TInvestNodeSDK,
-  signal: AbortSignal
-): Promise<void> {
+export async function runMarketDataStream(sdk: TInvestNodeSDK, signal: AbortSignal): Promise<void> {
   const responses = sdk.marketdataStream.marketDataStream(
     initialRequests(),
     {
@@ -140,10 +137,7 @@ import {
   type TInvestNodeSDK
 } from '@woodger/t-invest-node-sdk';
 
-async function* subscriptionChanges(
-  instrumentUid: string,
-  signal: AbortSignal
-) {
+async function* subscriptionChanges(instrumentUid: string, signal: AbortSignal) {
   const subscription = {
     instruments: [{
       instrumentId: instrumentUid,

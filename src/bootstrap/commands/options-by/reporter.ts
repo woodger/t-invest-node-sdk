@@ -9,7 +9,12 @@
 import type { OptionsByReport } from '../../../application/reports';
 import type { Option } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import { createOptionReportInstrument, optionFormats, renderOptionRows, type OptionFormat } from '../option/reporter';
+import {
+  createOptionReportInstrument,
+  optionFormats,
+  renderOptionRows,
+  type OptionFormat
+} from '../option/reporter';
 
 /** Представление списка опционов: JSON или таблица. */
 export type OptionsByFormat = OptionFormat;
@@ -20,10 +25,7 @@ export function createOptionsByReport(instruments: Option[]): OptionsByReport {
   return instruments.map(createOptionReportInstrument);
 }
 
-export function formatOptionsByReport(
-  report: OptionsByReport,
-  format: OptionsByFormat
-): string {
+export function formatOptionsByReport(report: OptionsByReport, format: OptionsByFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -31,9 +33,6 @@ export function formatOptionsByReport(
   return renderOptionRows(report);
 }
 
-export function formatOptionsBy(
-  instruments: Option[],
-  format: OptionsByFormat
-): string {
+export function formatOptionsBy(instruments: Option[], format: OptionsByFormat): string {
   return formatOptionsByReport(createOptionsByReport(instruments), format);
 }

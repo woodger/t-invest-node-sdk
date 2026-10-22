@@ -11,7 +11,10 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { GetAccruedInterestsRequest, type GetAccruedInterestsResponse } from '../../../generated/instruments';
+import {
+  GetAccruedInterestsRequest,
+  type GetAccruedInterestsResponse
+} from '../../../generated/instruments';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -26,9 +29,7 @@ import { accruedInterestsFormats, formatAccruedInterests } from './reporter';
 
 type AccruedInterestsSdk = {
   instruments: {
-    getAccruedInterests(
-      request: GetAccruedInterestsRequest
-    ): Promise<GetAccruedInterestsResponse>;
+    getAccruedInterests(request: GetAccruedInterestsRequest): Promise<GetAccruedInterestsResponse>;
   };
   close(): void;
 };
@@ -37,9 +38,7 @@ type AccruedInterestsSdkFactory = (
   options: TInvestOptions
 ) => AccruedInterestsSdk;
 
-type AccruedInterestsOptions = InferOptions<
-  typeof accruedInterestsOptionsSchema
->;
+type AccruedInterestsOptions = InferOptions<typeof accruedInterestsOptionsSchema>;
 type AccruedInterestsRequestOptions = CommandRequestOptions<
   AccruedInterestsOptions,
   'from' | 'to' | 'instrument-id' | 'figi'

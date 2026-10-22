@@ -16,9 +16,7 @@ export type CancelOrderFormat = typeof cancelOrderFormats[number];
 
 export const cancelOrderFormats = ['json', 'table'] as const;
 
-export function createCancelOrderReport(
-  response: CancelOrderResponse
-): CancelOrderReport {
+export function createCancelOrderReport(response: CancelOrderResponse): CancelOrderReport {
   return {
     time: formatReportDate(response.time)
   };

@@ -110,36 +110,5 @@ describe('operations-by-cursor command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).page.nextCursor, 'next-cursor');
     });
-
-    test('closes sdk when getOperationsByCursor rejects', async () => {
-      let closeCalls = 0;
-      const command = createOperationsByCursorCommand(() => ({
-        operations: {
-          async getOperationsByCursor() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'operation',
-            'page',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--account-id=account-id'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -11,7 +11,10 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { GetTradingStatusRequest, type GetTradingStatusResponse } from '../../../generated/marketdata';
+import {
+  GetTradingStatusRequest,
+  type GetTradingStatusResponse
+} from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -22,9 +25,7 @@ import { formatTradingStatus, tradingStatusFormats } from './reporter';
 
 type TradingStatusSdk = {
   marketData: {
-    getTradingStatus(
-      request: GetTradingStatusRequest
-    ): Promise<GetTradingStatusResponse>;
+    getTradingStatus(request: GetTradingStatusRequest): Promise<GetTradingStatusResponse>;
   };
   close(): void;
 };
@@ -32,10 +33,7 @@ type TradingStatusSdk = {
 type TradingStatusSdkFactory = (options: TInvestOptions) => TradingStatusSdk;
 
 type TradingStatusOptions = InferOptions<typeof tradingStatusOptionsSchema>;
-type TradingStatusRequestOptions = CommandRequestOptions<
-  TradingStatusOptions,
-  'instrument-id'
->;
+type TradingStatusRequestOptions = CommandRequestOptions<TradingStatusOptions, 'instrument-id'>;
 
 const tradingStatusOptionsSchema = withSdkOptions({
   'instrument-id': {

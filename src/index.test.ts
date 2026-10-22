@@ -168,15 +168,21 @@ describe('package entrypoint', () => {
   test(
     'exposes request and response runtime contracts used by service definitions',
     () => {
+      const messages = new Set<unknown>();
+
       for (const exportName of serverSideServiceDefinitionNames) {
         const serviceDefinition = getPackageExport(
           exportName
         ) as GeneratedServiceDefinitionRuntimeContract;
 
         for (const method of Object.values(serviceDefinition.methods)) {
-          assertMessageRuntimeContractIsExported(method.requestType);
-          assertMessageRuntimeContractIsExported(method.responseType);
+          messages.add(method.requestType);
+          messages.add(method.responseType);
         }
+      }
+
+      for (const message of messages) {
+        assertMessageRuntimeContractIsExported(message);
       }
     }
   );

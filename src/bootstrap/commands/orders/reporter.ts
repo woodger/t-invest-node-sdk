@@ -6,7 +6,11 @@
  * `cli.ts`.
  */
 
-import type { OrdersReport, OrdersReportOrder, OrdersReportStage } from '../../../application/reports';
+import type {
+  OrdersReport,
+  OrdersReportOrder,
+  OrdersReportStage
+} from '../../../application/reports';
 import {
   type GetOrdersResponse,
   type OrderStage,
@@ -15,7 +19,11 @@ import {
   orderExecutionReportStatusToJSON,
   orderTypeToJSON
 } from '../../../generated/orders';
-import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportMoneyText,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление списка заявок: JSON или таблица. */
@@ -59,10 +67,7 @@ export function createOrdersReport(response: GetOrdersResponse): OrdersReport {
   return response.orders.map(createOrderStateReport);
 }
 
-export function formatOrdersReport(
-  report: OrdersReport,
-  format: OrdersFormat
-): string {
+export function formatOrdersReport(report: OrdersReport, format: OrdersFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -99,9 +104,6 @@ export function formatOrdersReport(
   ]);
 }
 
-export function formatOrders(
-  response: GetOrdersResponse,
-  format: OrdersFormat
-): string {
+export function formatOrders(response: GetOrdersResponse, format: OrdersFormat): string {
   return formatOrdersReport(createOrdersReport(response), format);
 }

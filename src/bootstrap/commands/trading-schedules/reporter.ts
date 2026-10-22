@@ -6,7 +6,10 @@
  * `cli.ts`.
  */
 
-import type { TradingSchedulesReport, TradingSchedulesReportDay } from '../../../application/reports';
+import type {
+  TradingSchedulesReport,
+  TradingSchedulesReportDay
+} from '../../../application/reports';
 import type { TradingDay, TradingSchedule } from '../../../generated/instruments';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
@@ -16,10 +19,7 @@ export type TradingSchedulesFormat = typeof tradingSchedulesFormats[number];
 
 export const tradingSchedulesFormats = ['json', 'table'] as const;
 
-function toReportDay(
-  exchange: string,
-  day: TradingDay
-): TradingSchedulesReportDay {
+function toReportDay(exchange: string, day: TradingDay): TradingSchedulesReportDay {
   return {
     exchange,
     date: formatReportDate(day.date),
@@ -42,9 +42,7 @@ function toReportDay(
   };
 }
 
-export function createTradingSchedulesReport(
-  schedules: TradingSchedule[]
-): TradingSchedulesReport {
+export function createTradingSchedulesReport(schedules: TradingSchedule[]): TradingSchedulesReport {
   return schedules.flatMap((schedule) => (
     schedule.days.map((day) => toReportDay(schedule.exchange, day))
   ));

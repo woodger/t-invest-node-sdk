@@ -11,21 +11,25 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { CancelStopOrderRequest, CancelStopOrderResponse } from '../../../generated/stoporders';
+import type {
+  CancelStopOrderRequest,
+  CancelStopOrderResponse
+} from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import {
+  assertSideEffectConfirmed,
+  sideEffectConfirmationOptionsSchema
+} from '../../args/side-effect-args';
 import { cancelStopOrderFormats, formatCancelStopOrder } from './reporter';
 
 type CancelStopOrderSdk = {
   stopOrders: {
-    cancelStopOrder(
-      request: CancelStopOrderRequest
-    ): Promise<CancelStopOrderResponse>;
+    cancelStopOrder(request: CancelStopOrderRequest): Promise<CancelStopOrderResponse>;
   };
   close(): void;
 };

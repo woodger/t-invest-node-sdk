@@ -3,7 +3,8 @@ import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
 import packageJson from '../../../package.json';
 import { maxInt32 } from '../args/command-options';
-import { cliExitCodes } from './error';
+import { cliExitCodes, terminalErrorPolicy } from './error';
+import { renderCliHelp, renderCommandHelp, renderDomainHelp } from './help';
 import { parseCliInput, runCli } from './runner';
 
 function createIo() {
@@ -148,162 +149,49 @@ describe('bootstrap cli runner', () => {
       }
     });
 
-    test(
-      'prints top-level help from help command and global flags',
-      async () => {
-        for (const command of ['--help', '-h', 'help']) {
-          const { io, read } = createIo();
-          const exitCode = await runCli([command], io);
+    // Содержание страниц проверяется в help.test.ts; здесь важен выбор страницы по argv.
+    test('routes help requests to the expected page', async () => {
+      for (const [argv, stdout] of [
+        [['--help'], renderCliHelp()],
+        [['-h'], renderCliHelp()],
+        [['help'], renderCliHelp()],
+        [['operation', 'portfolio', '--help'], renderCommandHelp('operation portfolio')],
+        [['sandbox', 'get-sandbox-accounts', '--help'], renderCommandHelp('sandbox account list')],
+        [['operations', 'get-portfolio', '--help'], renderCommandHelp('operation portfolio')],
+        [['account', '--help'], renderDomainHelp('account')],
+        [['help', 'market', 'get-candles'], renderCommandHelp('market candles')],
+        [['help', 'version'], renderCommandHelp('version')],
+        [['help', 'compile-proto'], renderCommandHelp('dev compile-proto')]
+      ] as const) {
+        const { io, read } = createIo();
+        const exitCode = await runCli(argv, io);
 
-          assert.equal(exitCode, cliExitCodes.success);
-          assert.match(read().stdout, /Domains:/);
-          assert.match(
-            read().stdout,
-            /account\s+Accounts, user info, tariff and limits/
-          );
-          assert.doesNotMatch(read().stdout, /users get-accounts/);
-          assert.equal(read().stderr, '');
-        }
+        assert.equal(exitCode, cliExitCodes.success);
+        assert.deepEqual(read(), { stdout, stderr: '' });
       }
-    );
+    });
 
-    test('prints command-specific help from a command help flag', async () => {
+    test('prints help without validating command-specific options', async () => {
       const { io, read } = createIo();
-      const exitCode = await runCli(['operation', 'portfolio', '--help'], io);
+      const exitCode = await runCli([
+        'operation',
+        'portfolio',
+        '--help',
+        '--format=xml'
+      ], io);
 
       assert.equal(exitCode, cliExitCodes.success);
-      assert.match(
-        read().stdout,
-        /operation portfolio - Print account portfolio/
-      );
-      assert.match(
-        read().stdout,
-        /SDK call:\n {2}sdk\.operations\.getPortfolio/
-      );
-      assert.match(
-        read().stdout,
-        /t-invest-node-sdk operation portfolio --account-id=ID/
-      );
+      assert.match(read().stdout, /operation portfolio - Print account portfolio/);
       assert.equal(read().stderr, '');
     });
 
-    test(
-      'prints sandbox preferred command help from technical command help flags',
-      async () => {
-        for (
-          const { path, title, usage } of [
-            {
-              path: ['sandbox', 'get-sandbox-accounts'],
-              title: /sandbox account list - Print sandbox accounts/,
-              usage: /t-invest-node-sdk sandbox account list/
-            },
-            {
-              path: ['sandbox', 'post-sandbox-order'],
-              title: /sandbox order place - Post a sandbox order/,
-              usage: /t-invest-node-sdk sandbox order place --account-id=ID/
-            },
-            {
-              path: ['sandbox', 'sandbox-pay-in'],
-              title: /sandbox pay-in - Pay in to a sandbox account/,
-              usage: /t-invest-node-sdk sandbox pay-in --account-id=ID/
-            }
-          ] as const
-        ) {
-          const { io, read } = createIo();
-          const exitCode = await runCli([...path, '--help'], io);
-
-          assert.equal(exitCode, cliExitCodes.success);
-          assert.match(read().stdout, title);
-          assert.match(read().stdout, usage);
-          assert.equal(read().stderr, '');
-        }
-      }
-    );
-
-    test(
-      'prints preferred command help from a legacy command help flag',
-      async () => {
+    test('keeps help targets after the option terminator as literal text', async () => {
+      for (const target of ['--version', '-v', '--help', '--format=json', '--']) {
         const { io, read } = createIo();
-        const exitCode = await runCli(
-          ['operations', 'get-portfolio', '--help'],
-          io
-        );
+        const exitCode = await runCli(['--help', '--', target], io);
 
         assert.equal(exitCode, cliExitCodes.success);
-        assert.match(
-          read().stdout,
-          /operation portfolio - Print account portfolio/
-        );
-        assert.match(
-          read().stdout,
-          /t-invest-node-sdk operation portfolio --account-id=ID/
-        );
-        assert.doesNotMatch(
-          read().stdout,
-          /t-invest-node-sdk operation get-portfolio --account-id=ID/
-        );
-        assert.doesNotMatch(
-          read().stdout,
-          /t-invest-node-sdk operations get-portfolio --account-id=ID/
-        );
-        assert.equal(read().stderr, '');
-      }
-    );
-
-    test('prints domain-level help from domain help flag', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli(['account', '--help'], io);
-
-      assert.equal(exitCode, cliExitCodes.success);
-      assert.match(
-        read().stdout,
-        /account - Accounts, user info, tariff and limits/
-      );
-      assert.match(read().stdout, /list\s+Print user accounts/);
-      assert.doesNotMatch(read().stdout, /users get-accounts/);
-      assert.doesNotMatch(read().stdout, /get-accounts\s+Print user accounts/);
-      assert.equal(read().stderr, '');
-    });
-
-    test(
-      'prints command-specific help from help command argument',
-      async () => {
-        const { io, read } = createIo();
-        const exitCode = await runCli(['help', 'market', 'get-candles'], io);
-
-        assert.equal(exitCode, cliExitCodes.success);
-        assert.match(
-          read().stdout,
-          /market candles - Print historical candles/
-        );
-        assert.match(
-          read().stdout,
-          /gRPC method:\n {2}MarketDataService\/GetCandles/
-        );
-        assert.match(
-          read().stdout,
-          /t-invest-node-sdk market candles --instrument-id=ID/
-        );
-        assert.doesNotMatch(
-          read().stdout,
-          /t-invest-node-sdk market get-candles --instrument-id=ID/
-        );
-        assert.equal(read().stderr, '');
-      }
-    );
-
-    test('prints utility help from help command argument', async () => {
-      for (
-        const [command, output] of [
-          ['version', /version - Show package version/],
-          ['compile-proto', /dev compile-proto - Generate TypeScript contracts/]
-        ] as const
-      ) {
-        const { io, read } = createIo();
-        const exitCode = await runCli(['help', command], io);
-
-        assert.equal(exitCode, cliExitCodes.success);
-        assert.match(read().stdout, output);
+        assert.match(read().stdout, /Usage:/);
         assert.equal(read().stderr, '');
       }
     });
@@ -366,15 +254,27 @@ describe('bootstrap cli runner', () => {
     );
 
     test(
-      'reports bootstrap output write failures through terminal error policy',
-      async () => {
+      'reports bootstrap output failures with the write phase',
+      async (context) => {
+        const failure = new Error('stdout failed');
+        const originalRenderError = terminalErrorPolicy.renderError;
+
+        assert.ok(originalRenderError);
+
+        const renderError = context.mock.fn(originalRenderError);
+
+        context.after(() => {
+          terminalErrorPolicy.renderError = originalRenderError;
+        });
+        terminalErrorPolicy.renderError = renderError;
+
         let stderr = '';
         const exitCode = await runCli(
           ['--version'],
           createOutput({
             stdout: {
               write() {
-                throw new Error('stdout failed');
+                throw failure;
               }
             },
             stderr: {
@@ -387,6 +287,9 @@ describe('bootstrap cli runner', () => {
 
         assert.equal(exitCode, cliExitCodes.runtimeError);
         assert.equal(stderr, 'stdout failed\n');
+        assert.equal(renderError.mock.callCount(), 1);
+        assert.equal(renderError.mock.calls[0]?.arguments[0], failure);
+        assert.equal(renderError.mock.calls[0]?.arguments[1].phase, 'write');
       }
     );
 
@@ -439,24 +342,27 @@ describe('bootstrap cli runner', () => {
         }
       ]
     ) {
-      test(`returns a usage failure for int32 overflow in ${args.slice(0, 2).join(' ')}`, async () => {
-        const { io, read } = createIo();
-        const exitCode = await runCli([
-          ...args,
-          '--token=token',
-          '--endpoint=127.0.0.1:1',
-          '--insecure'
-        ], io);
+      test(
+        `returns a usage failure for int32 overflow in ${args.slice(0, 2).join(' ')}`,
+        async () => {
+          const { io, read } = createIo();
+          const exitCode = await runCli([
+            ...args,
+            '--token=token',
+            '--endpoint=127.0.0.1:1',
+            '--insecure'
+          ], io);
 
-        assert.equal(exitCode, cliExitCodes.usageError);
-        assert.equal(read().stdout, '');
-        assert.match(
-          read().stderr,
-          new RegExp(
-            `Expected '--${option}' to be less than or equal to ${maxInt32}`
-          )
-        );
-      });
+          assert.equal(exitCode, cliExitCodes.usageError);
+          assert.equal(read().stdout, '');
+          assert.match(
+            read().stderr,
+            new RegExp(
+              `Expected '--${option}' to be less than or equal to ${maxInt32}`
+            )
+          );
+        }
+      );
     }
 
     test('rejects extra command positionals during prepare', async () => {
@@ -527,18 +433,20 @@ describe('bootstrap cli runner', () => {
     });
 
     test('prints deprecated figi option warnings to stderr', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli([
-        'instrument',
-        'get-futures-margin',
-        '--figi=FUTFIGI'
-      ], io);
+      for (const optionArgs of [['--figi=FUTFIGI'], ['--figi', 'FUTFIGI']]) {
+        const { io, read } = createIo();
+        const exitCode = await runCli([
+          'instrument',
+          'get-futures-margin',
+          ...optionArgs
+        ], io);
 
-      assert.equal(exitCode, cliExitCodes.usageError);
-      assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Warning: '--figi' is deprecated/);
-      assert.match(read().stderr, /use '--instrument-id' instead/);
-      assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
+        assert.equal(exitCode, cliExitCodes.usageError);
+        assert.equal(read().stdout, '');
+        assert.match(read().stderr, /Warning: '--figi' is deprecated/);
+        assert.match(read().stderr, /use '--instrument-id' instead/);
+        assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
+      }
     });
 
     test('does not warn for canonical instrument-id option', async () => {

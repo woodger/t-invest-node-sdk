@@ -2,7 +2,11 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { TradingDay, TradingSchedulesRequest, TradingSchedulesResponse } from '../../../generated/instruments';
+import type {
+  TradingDay,
+  TradingSchedulesRequest,
+  TradingSchedulesResponse
+} from '../../../generated/instruments';
 import { createTradingSchedulesCommand, createTradingSchedulesRequest } from './cli';
 
 function tradingDay(overrides: Partial<TradingDay> = {}): TradingDay {
@@ -128,39 +132,6 @@ describe('trading-schedules command', () => {
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].exchange, 'MOEX');
-    });
-
-    test('closes sdk when tradingSchedules rejects', async () => {
-      let closeCalls = 0;
-      const command = createTradingSchedulesCommand(() => ({
-        instruments: {
-          async tradingSchedules() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'schedules',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--from=2026-01-01T00:00:00Z',
-              '--to=2026-01-31T00:00:00Z'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

@@ -6,8 +6,16 @@
  * `cli.ts`.
  */
 
-import type { BrokerReportItemReport, BrokerReportPageReport, BrokerReportReport } from '../../../application/reports';
-import type { BrokerReport, BrokerReportResponse, GetBrokerReportResponse } from '../../../generated/operations';
+import type {
+  BrokerReportItemReport,
+  BrokerReportPageReport,
+  BrokerReportReport
+} from '../../../application/reports';
+import type {
+  BrokerReport,
+  BrokerReportResponse,
+  GetBrokerReportResponse
+} from '../../../generated/operations';
 import {
   formatReportDate,
   formatReportMoneyText,
@@ -53,9 +61,7 @@ function toReportItem(item: BrokerReport): BrokerReportItemReport {
   };
 }
 
-function createBrokerReportPage(
-  report: GetBrokerReportResponse
-): BrokerReportPageReport {
+function createBrokerReportPage(report: GetBrokerReportResponse): BrokerReportPageReport {
   return {
     type: 'page',
     page: {
@@ -67,9 +73,7 @@ function createBrokerReportPage(
   };
 }
 
-export function createBrokerReportReport(
-  response: BrokerReportResponse
-): BrokerReportReport {
+export function createBrokerReportReport(response: BrokerReportResponse): BrokerReportReport {
   if (response.generateBrokerReportResponse !== undefined) {
     return {
       type: 'generate',

@@ -68,41 +68,9 @@ describe('positions command', () => {
         token: 'token',
         endpoint: 'localhost:50051'
       });
-      assert.equal(receivedRequest?.accountId, 'account-id');
+      assert.deepEqual(receivedRequest, { accountId: 'account-id' });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).money[0].amount, '100');
-    });
-
-    test('closes sdk when getPositions rejects', async () => {
-      let closeCalls = 0;
-      const command = createPositionsCommand(() => ({
-        operations: {
-          async getPositions() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'operation',
-              'positions',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=account-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

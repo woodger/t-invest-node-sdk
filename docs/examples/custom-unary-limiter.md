@@ -167,10 +167,7 @@ SDK преобразует отмену отдельного вызова в п�
 `shared-unary-limiter.ts`
 
 ```ts
-import {
-  TInvestNodeSDK,
-  type TInvestUnaryLimiter
-} from '@woodger/t-invest-node-sdk';
+import { TInvestNodeSDK, type TInvestUnaryLimiter } from '@woodger/t-invest-node-sdk';
 
 declare const unaryLimiter: TInvestUnaryLimiter;
 
@@ -388,10 +385,7 @@ const sdk = new TInvestNodeSDK({
 `coordinator-unary-limiter.ts`
 
 ```ts
-import type {
-  TInvestUnaryLimitContext,
-  TInvestUnaryLimiter
-} from '@woodger/t-invest-node-sdk';
+import type { TInvestUnaryLimitContext, TInvestUnaryLimiter } from '@woodger/t-invest-node-sdk';
 
 interface CoordinatorClient {
   acquire(

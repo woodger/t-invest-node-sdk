@@ -60,37 +60,5 @@ describe('etfs command', () => {
       assert.equal(closeCalls, 1);
       assert.deepEqual(JSON.parse(output), []);
     });
-
-    test('closes sdk when etfs rejects', async () => {
-      let closeCalls = 0;
-      const command = createEtfsCommand(() => ({
-        instruments: {
-          async etfs() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'etf',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -77,9 +77,7 @@ export function createDividendsForeignIssuerReport(
   };
 }
 
-function formatDividendsForeignIssuerPage(
-  report: DividendsForeignIssuerPageReport
-): string {
+function formatDividendsForeignIssuerPage(report: DividendsForeignIssuerPageReport): string {
   const table = renderTextTable([
     [
       'recordDate',

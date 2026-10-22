@@ -1,7 +1,10 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { SecurityTradingStatus } from '../../../generated/common';
-import type { GetTradingStatusResponse, GetTradingStatusesResponse } from '../../../generated/marketdata';
+import type {
+  GetTradingStatusResponse,
+  GetTradingStatusesResponse
+} from '../../../generated/marketdata';
 import { createTradingStatusesReport, formatTradingStatusesReport } from './reporter';
 
 function tradingStatus(

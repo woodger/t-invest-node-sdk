@@ -12,8 +12,14 @@
 import { type Client, Channel, Metadata } from 'nice-grpc';
 import { packageConfig } from '../config';
 import { InstrumentsServiceDefinition } from '../generated/instruments';
-import { MarketDataServiceDefinition, MarketDataStreamServiceDefinition } from '../generated/marketdata';
-import { OperationsServiceDefinition, OperationsStreamServiceDefinition } from '../generated/operations';
+import {
+  MarketDataServiceDefinition,
+  MarketDataStreamServiceDefinition
+} from '../generated/marketdata';
+import {
+  OperationsServiceDefinition,
+  OperationsStreamServiceDefinition
+} from '../generated/operations';
 import { OrdersServiceDefinition, OrdersStreamServiceDefinition } from '../generated/orders';
 import { SandboxServiceDefinition } from '../generated/sandbox';
 import { SignalServiceDefinition } from '../generated/signals';
@@ -40,7 +46,11 @@ import {
   createSdkMetadata,
   UnaryLimitResolver
 } from '../infrastructure/transport/grpc';
-import { resolveSdkInstanceOptions, resolveUnaryLimitConfig, type ResolvedTInvestOptions } from './sdk-config';
+import {
+  resolveSdkInstanceOptions,
+  resolveUnaryLimitConfig,
+  type ResolvedTInvestOptions
+} from './sdk-config';
 
 type ServiceDefinition =
   | typeof InstrumentsServiceDefinition

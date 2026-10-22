@@ -12,6 +12,7 @@
 
 /** Имена публичных доменов CLI, выведенные из каталога cliDomains. */
 export type CliDomainName = keyof typeof cliDomains;
+
 /** Непустой путь CLI-команды или её псевдонима из отдельных слов. */
 export type CliCommandPath = readonly [string, ...string[]];
 
@@ -596,9 +597,7 @@ export function commandPathAliases(path: CliCommandPath): CliCommandPath[] {
   return uniqueCommandPaths([canonicalPath, legacyCommandPath(canonicalPath)]);
 }
 
-export function commandDomainName(
-  commandName: string
-): CliDomainName | undefined {
+export function commandDomainName(commandName: string): CliDomainName | undefined {
   const [domain] = commandName.split(' ');
 
   return isCliDomainName(domain) ? domain : undefined;
@@ -608,9 +607,7 @@ export function commandActionName(commandName: string): string {
   return commandName.split(' ').slice(1).join(' ');
 }
 
-function isLegacyPathHead(
-  value: string
-): value is keyof typeof publicDomainByLegacyHead {
+function isLegacyPathHead(value: string): value is keyof typeof publicDomainByLegacyHead {
   return Object.hasOwn(publicDomainByLegacyHead, value);
 }
 

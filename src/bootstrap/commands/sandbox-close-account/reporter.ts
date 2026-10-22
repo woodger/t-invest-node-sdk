@@ -15,9 +15,7 @@ export type CloseSandboxAccountFormat =
 
 export const closeSandboxAccountFormats = ['json', 'table'] as const;
 
-export function createCloseSandboxAccountReport(
-  accountId: string
-): CloseSandboxAccountReport {
+export function createCloseSandboxAccountReport(accountId: string): CloseSandboxAccountReport {
   return {
     accountId,
     status: 'closed'

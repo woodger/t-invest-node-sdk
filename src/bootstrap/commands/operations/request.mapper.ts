@@ -26,9 +26,7 @@ const operationStates = {
   progress: OperationState.OPERATION_STATE_PROGRESS
 } as const;
 
-export function createOperationsRequest(
-  options: OperationsRequestOptions
-): OperationsRequest {
+export function createOperationsRequest(options: OperationsRequestOptions): OperationsRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');
 

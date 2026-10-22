@@ -70,8 +70,10 @@ export type StreamRunSdk = {
  * завершении.
  */
 export type StreamRunSdkFactory = (options: TInvestOptions) => StreamRunSdk;
+
 /** Календарное время для метки receivedAt у события потока. */
 export type StreamRunClock = () => Date;
+
 /** Монотонное время в миллисекундах для отсчёта длительности сессии и простоя. */
 export type StreamRunElapsedClock = () => number;
 
@@ -89,39 +91,38 @@ export interface StreamRunSessionDependencies {
 const maxTimerDelayMs = 2_147_483_647;
 const streamReadTimedOut = Symbol('streamReadTimedOut');
 
-export function runStreamRunSession(
+/** Создаёт SDK при начале чтения и закрывает его при завершении потока. */
+export async function* runStreamRunSession(
   config: StreamRunConfig,
   runtime: StreamRunRuntime,
   sdkOptions: TInvestOptions,
   dependencies: StreamRunSessionDependencies
 ): AsyncIterable<string> {
-  return (async function* streamRunSession() {
-    const sdk = dependencies.createSdk(sdkOptions);
-    const controller = new AbortController();
+  const sdk = dependencies.createSdk(sdkOptions);
+  const controller = new AbortController();
 
-    try {
-      const responses = createStreamResponses(
-        config,
-        sdk,
-        controller.signal
-      );
+  try {
+    const responses = createStreamResponses(
+      config,
+      sdk,
+      controller.signal
+    );
 
-      yield* formatStreamRunResponses(
-        config.stream,
-        responses,
-        runtime,
-        dependencies.now,
-        dependencies.elapsedNow,
-        () => {
-          controller.abort();
-        }
-      );
-    }
-    finally {
-      controller.abort();
-      sdk.close();
-    }
-  })();
+    yield* formatStreamRunResponses(
+      config.stream,
+      responses,
+      runtime,
+      dependencies.now,
+      dependencies.elapsedNow,
+      () => {
+        controller.abort();
+      }
+    );
+  }
+  finally {
+    controller.abort();
+    sdk.close();
+  }
 }
 
 function createStreamResponses(
@@ -327,9 +328,7 @@ async function readNextWithTimeout<T>(
   }
 }
 
-async function settleCancelledRead<T>(
-  read: Promise<IteratorResult<T>>
-): Promise<void> {
+async function settleCancelledRead<T>(read: Promise<IteratorResult<T>>): Promise<void> {
   try {
     await read;
   }

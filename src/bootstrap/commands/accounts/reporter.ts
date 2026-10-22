@@ -7,7 +7,12 @@
  */
 
 import type { AccountsReport, AccountsReportAccount } from '../../../application/reports';
-import { accessLevelToJSON, accountStatusToJSON, accountTypeToJSON, type Account } from '../../../generated/users';
+import {
+  accessLevelToJSON,
+  accountStatusToJSON,
+  accountTypeToJSON,
+  type Account
+} from '../../../generated/users';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
@@ -32,10 +37,7 @@ export function createAccountsReport(accounts: Account[]): AccountsReport {
   return accounts.map(toReportAccount);
 }
 
-export function formatAccountsReport(
-  report: AccountsReport,
-  format: AccountsFormat
-): string {
+export function formatAccountsReport(report: AccountsReport, format: AccountsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -54,9 +56,6 @@ export function formatAccountsReport(
   ]);
 }
 
-export function formatAccounts(
-  accounts: Account[],
-  format: AccountsFormat
-): string {
+export function formatAccounts(accounts: Account[], format: AccountsFormat): string {
   return formatAccountsReport(createAccountsReport(accounts), format);
 }

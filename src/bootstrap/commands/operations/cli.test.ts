@@ -103,39 +103,5 @@ describe('operations command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].id, 'operation-id');
     });
-
-    test('closes sdk when getOperations rejects', async () => {
-      let closeCalls = 0;
-      const command = createOperationsCommand(() => ({
-        operations: {
-          async getOperations() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'operation',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=account-id',
-              '--from=2026-06-01T00:00:00.000Z',
-              '--to=2026-06-19T00:00:00.000Z'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

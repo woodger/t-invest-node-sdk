@@ -16,9 +16,7 @@ export type TradingStatusFormat = typeof tradingStatusFormats[number];
 
 export const tradingStatusFormats = ['json', 'table'] as const;
 
-export function createTradingStatusReport(
-  response: GetTradingStatusResponse
-): TradingStatusReport {
+export function createTradingStatusReport(response: GetTradingStatusResponse): TradingStatusReport {
   return {
     figi: response.figi,
     instrumentUid: response.instrumentUid,

@@ -6,7 +6,12 @@
  */
 
 import { PriceType } from '../../../generated/common';
-import { OrderDirection, OrderType, PostOrderRequest, TimeInForceType } from '../../../generated/orders';
+import {
+  OrderDirection,
+  OrderType,
+  PostOrderRequest,
+  TimeInForceType
+} from '../../../generated/orders';
 import { parseOptionalPositiveQuotationOption } from '../../args/side-effect-args';
 
 interface PostOrderRequestOptions {
@@ -30,9 +35,7 @@ const postOrderTypes = {
   bestprice: OrderType.ORDER_TYPE_BESTPRICE
 } as const;
 
-export function createPostOrderRequest(
-  options: PostOrderRequestOptions
-): PostOrderRequest {
+export function createPostOrderRequest(options: PostOrderRequestOptions): PostOrderRequest {
   return PostOrderRequest.create({
     quantity: options.quantity,
     price: parseOptionalPositiveQuotationOption(options.price, 'price'),

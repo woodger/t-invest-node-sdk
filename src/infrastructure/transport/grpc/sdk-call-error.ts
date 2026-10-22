@@ -8,7 +8,12 @@
  */
 
 import { ClientError, Status } from 'nice-grpc';
-import { isSdkError, SdkError, SdkErrorCode, type SdkErrorSource } from '../../../application/errors/sdk-error';
+import {
+  isSdkError,
+  SdkError,
+  SdkErrorCode,
+  type SdkErrorSource
+} from '../../../application/errors/sdk-error';
 
 const grpcErrorCodes: Partial<Record<Status, SdkErrorCode>> = {
   [Status.CANCELLED]: SdkErrorCode.Cancelled,
@@ -128,10 +133,7 @@ export function mapSdkCallError(
   return error;
 }
 
-export function isCallCancellation(
-  error: unknown,
-  signal: AbortSignal | undefined
-): boolean {
+export function isCallCancellation(error: unknown, signal: AbortSignal | undefined): boolean {
   return signal?.aborted === true
     && (error === signal.reason || errorName(error) === 'AbortError');
 }
@@ -216,29 +218,29 @@ function isLocalReceiveMessageLimitError(
     === `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`;
 }
 
-function isTlsCertificateError(
-  error: ClientError,
-  useSsl: boolean
-): boolean {
+function isTlsCertificateError(error: ClientError, useSsl: boolean): boolean {
   if (!useSsl || error.code !== Status.UNAVAILABLE) {
     return false;
   }
 
-  const normalizedDetails = error.details.toLowerCase();
+  const details = error.details.trim();
+  const normalizedDetails = details.toLowerCase();
 
-  const hasCertificateErrorCode = tlsCertificateErrorCodes.some(
-    (code) => error.details.includes(code)
-  );
-  const hasCertificateErrorMessage = tlsCertificateErrorMessages.some(
-    (message) => normalizedDetails.includes(message)
-  );
+  if (
+    tlsCertificateErrorCodes.includes(details)
+    || standaloneTlsCertificateErrorMessages.has(normalizedDetails)
+  ) {
+    return true;
+  }
 
-  return (
-    normalizedDetails.includes(grpcConnectionErrorMarker)
-    && (hasCertificateErrorCode || hasCertificateErrorMessage)
-  )
-    || tlsCertificateErrorCodes.includes(error.details.trim())
-    || standaloneTlsCertificateErrorMessages.has(normalizedDetails.trim());
+  // Текст провайдера может упоминать сертификат; частичное совпадение считаем
+  // TLS-ошибкой только внутри диагностики установления соединения.
+  if (!normalizedDetails.includes(grpcConnectionErrorMarker)) {
+    return false;
+  }
+
+  return tlsCertificateErrorCodes.some((code) => details.includes(code))
+    || tlsCertificateErrorMessages.some((message) => normalizedDetails.includes(message));
 }
 
 function errorName(error: unknown): string | undefined {

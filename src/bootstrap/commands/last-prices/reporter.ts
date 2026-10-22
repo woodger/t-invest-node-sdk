@@ -29,10 +29,7 @@ export function createLastPricesReport(prices: LastPrice[]): LastPricesReport {
   return prices.map(toReportPrice);
 }
 
-export function formatLastPricesReport(
-  report: LastPricesReport,
-  format: LastPricesFormat
-): string {
+export function formatLastPricesReport(report: LastPricesReport, format: LastPricesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -48,9 +45,6 @@ export function formatLastPricesReport(
   ]);
 }
 
-export function formatLastPrices(
-  prices: LastPrice[],
-  format: LastPricesFormat
-): string {
+export function formatLastPrices(prices: LastPrice[], format: LastPricesFormat): string {
   return formatLastPricesReport(createLastPricesReport(prices), format);
 }

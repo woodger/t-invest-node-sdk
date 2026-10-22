@@ -17,16 +17,11 @@ export type OrderStateFormat = OrdersFormat;
 
 export const orderStateFormats = ordersFormats;
 
-export function createSingleOrderStateReport(
-  order: OrderState
-): OrderStateReport {
+export function createSingleOrderStateReport(order: OrderState): OrderStateReport {
   return createOrderStateReport(order);
 }
 
-export function formatOrderStateReport(
-  report: OrderStateReport,
-  format: OrderStateFormat
-): string {
+export function formatOrderStateReport(report: OrderStateReport, format: OrderStateFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -63,9 +58,6 @@ export function formatOrderStateReport(
   ]);
 }
 
-export function formatOrderState(
-  order: OrderState,
-  format: OrderStateFormat
-): string {
+export function formatOrderState(order: OrderState, format: OrderStateFormat): string {
   return formatOrderStateReport(createSingleOrderStateReport(order), format);
 }

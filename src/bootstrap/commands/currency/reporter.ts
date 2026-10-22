@@ -10,7 +10,11 @@ import type { CurrencyReport, CurrencyReportInstrument } from '../../../applicat
 import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type { Currency, CurrencyResponse } from '../../../generated/instruments';
 
-import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных валюты: JSON или таблица. */
@@ -18,9 +22,7 @@ export type CurrencyFormat = typeof currencyFormats[number];
 
 export const currencyFormats = ['json', 'table'] as const;
 
-export function createCurrencyReportInstrument(
-  instrument: Currency
-): CurrencyReportInstrument {
+export function createCurrencyReportInstrument(instrument: Currency): CurrencyReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -57,9 +59,7 @@ export function createCurrencyReportInstrument(
   };
 }
 
-export function createCurrencyReport(
-  response: CurrencyResponse
-): CurrencyReport {
+export function createCurrencyReport(response: CurrencyResponse): CurrencyReport {
   return response.instrument === undefined
     ? null
     : createCurrencyReportInstrument(response.instrument);
@@ -102,10 +102,7 @@ export function renderCurrencyRows(report: CurrencyReportInstrument[]): string {
   ]);
 }
 
-export function formatCurrencyReport(
-  report: CurrencyReport,
-  format: CurrencyFormat
-): string {
+export function formatCurrencyReport(report: CurrencyReport, format: CurrencyFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -113,9 +110,6 @@ export function formatCurrencyReport(
   return renderCurrencyRows(report === null ? [] : [report]);
 }
 
-export function formatCurrency(
-  response: CurrencyResponse,
-  format: CurrencyFormat
-): string {
+export function formatCurrency(response: CurrencyResponse, format: CurrencyFormat): string {
   return formatCurrencyReport(createCurrencyReport(response), format);
 }

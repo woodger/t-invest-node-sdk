@@ -16,7 +16,10 @@ import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { createInstrumentLookupRequestFromOptions, instrumentLookupOptionsSchema } from '../../args/instruments-args';
+import {
+  createInstrumentLookupRequestFromOptions,
+  instrumentLookupOptionsSchema
+} from '../../args/instruments-args';
 import { formatInstrument, instrumentFormats } from './reporter';
 
 type InstrumentSdk = {

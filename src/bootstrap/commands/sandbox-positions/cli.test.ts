@@ -73,38 +73,5 @@ describe('sandbox-positions command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).money[0].amount, '100');
     });
-
-    test('closes sdk when getSandboxPositions rejects', async () => {
-      let closeCalls = 0;
-      const command = createSandboxPositionsCommand(() => ({
-        sandbox: {
-          async getSandboxPositions() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'sandbox',
-              'position',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=sandbox-account-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

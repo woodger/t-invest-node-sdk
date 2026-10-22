@@ -46,9 +46,7 @@ export function compileProtoContracts(): void {
   runProtoCompiler(protoFiles, paths);
 }
 
-export function loadProtoGenerationPaths(
-  projectRoot: string = pfs.pwd
-): ProtoGenerationPaths {
+export function loadProtoGenerationPaths(projectRoot: string = pfs.pwd): ProtoGenerationPaths {
   const manifestPath = path.join(projectRoot, 'contracts', 'upstream.json');
   let manifestSource: string;
 
@@ -131,10 +129,7 @@ function assertProtoCompilerReady(contractsDir: string): void {
   });
 }
 
-function runProtoCompiler(
-  protoFiles: readonly string[],
-  paths: ProtoGenerationPaths
-): void {
+function runProtoCompiler(protoFiles: readonly string[], paths: ProtoGenerationPaths): void {
   execFileSync(process.execPath, [
     compilerLauncherPath,
     `--plugin=protoc-gen-ts_proto=${pluginPath}`,

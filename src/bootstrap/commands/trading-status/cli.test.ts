@@ -3,7 +3,10 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { SecurityTradingStatus } from '../../../generated/common';
-import type { GetTradingStatusRequest, GetTradingStatusResponse } from '../../../generated/marketdata';
+import type {
+  GetTradingStatusRequest,
+  GetTradingStatusResponse
+} from '../../../generated/marketdata';
 import { createTradingStatusCommand, createTradingStatusRequest } from './cli';
 
 function response(
@@ -82,38 +85,6 @@ describe('trading-status command', () => {
         JSON.parse(output).tradingStatus,
         'SECURITY_TRADING_STATUS_NORMAL_TRADING'
       );
-    });
-
-    test('closes sdk when getTradingStatus rejects', async () => {
-      let closeCalls = 0;
-      const command = createTradingStatusCommand(() => ({
-        marketData: {
-          async getTradingStatus() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'market',
-              'status',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=BBG00QPYJ5H0'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

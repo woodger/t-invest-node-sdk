@@ -3,9 +3,16 @@ import { describe, test } from 'node:test';
 import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { ClientError, Metadata, Status } from 'nice-grpc';
 import { isSdkError, SdkError, SdkErrorCode } from '../../../application/errors/sdk-error';
-import type { TInvestUnaryLimitContext, TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
+import type {
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter
+} from '../../../application/services/unary-limiter';
 import { createInMemoryUnaryLimiter } from '../../../application/services/unary-limiter';
-import { createSdkMiddleware, type SdkCallErrorClassificationOptions, type SdkCallLifecycle } from './sdk-middleware';
+import {
+  createSdkMiddleware,
+  type SdkCallErrorClassificationOptions,
+  type SdkCallLifecycle
+} from './sdk-middleware';
 import { UnaryLimitResolver } from './unary-limit-resolver';
 
 type TestRequest = Record<string, never>;
@@ -30,9 +37,7 @@ async function* createUnaryResponseIterator<Response>(
   return response;
 }
 
-async function* createRejectedIterator(
-  error: unknown
-): AsyncGenerator<never, never, undefined> {
+async function* createRejectedIterator(error: unknown): AsyncGenerator<never, never, undefined> {
   const responses: never[] = [];
 
   for (const response of responses) {
@@ -109,9 +114,7 @@ function createOpenLifecycle(): SdkCallLifecycle {
   };
 }
 
-function createErrorClassification(
-  useSsl: boolean
-): SdkCallErrorClassificationOptions {
+function createErrorClassification(useSsl: boolean): SdkCallErrorClassificationOptions {
   return {
     useSsl,
     maxReceiveMessageLength: 4_194_304

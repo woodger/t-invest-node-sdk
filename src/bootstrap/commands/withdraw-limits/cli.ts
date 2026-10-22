@@ -21,9 +21,7 @@ import { createWithdrawLimitsRequest } from './request.mapper';
 
 type WithdrawLimitsSdk = {
   operations: {
-    getWithdrawLimits(
-      request: WithdrawLimitsRequest
-    ): Promise<WithdrawLimitsResponse>;
+    getWithdrawLimits(request: WithdrawLimitsRequest): Promise<WithdrawLimitsResponse>;
   };
   close(): void;
 };

@@ -10,7 +10,11 @@ import type { BondReport, BondReportInstrument } from '../../../application/repo
 import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type { Bond, BondResponse } from '../../../generated/instruments';
 import { riskLevelToJSON } from '../../../generated/instruments';
-import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных облигации: JSON или таблица. */
@@ -18,9 +22,7 @@ export type BondFormat = typeof bondFormats[number];
 
 export const bondFormats = ['json', 'table'] as const;
 
-export function createBondReportInstrument(
-  instrument: Bond
-): BondReportInstrument {
+export function createBondReportInstrument(instrument: Bond): BondReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -120,10 +122,7 @@ export function renderBondRows(report: BondReportInstrument[]): string {
   ]);
 }
 
-export function formatBondReport(
-  report: BondReport,
-  format: BondFormat
-): string {
+export function formatBondReport(report: BondReport, format: BondFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

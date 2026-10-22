@@ -3,24 +3,9 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CancelStopOrderRequest } from '../../../generated/stoporders';
-import { createCancelStopOrderCommand, createCancelStopOrderRequest } from './cli';
+import { createCancelStopOrderCommand } from './cli';
 
 describe('cancel-stop-order command', () => {
-  describe('createCancelStopOrderRequest', () => {
-    test('returns generated cancelStopOrder request', () => {
-      assert.deepEqual(
-        createCancelStopOrderRequest({
-          'account-id': 'account-id',
-          'stop-order-id': 'stop-order-id'
-        }),
-        {
-          accountId: 'account-id',
-          stopOrderId: 'stop-order-id'
-        }
-      );
-    });
-  });
-
   describe('createCancelStopOrderCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

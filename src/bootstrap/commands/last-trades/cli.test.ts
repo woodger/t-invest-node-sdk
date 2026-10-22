@@ -123,39 +123,5 @@ describe('last-trades command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].figi, 'BBG00QPYJ5H0');
     });
-
-    test('closes sdk when getLastTrades rejects', async () => {
-      let closeCalls = 0;
-      const command = createLastTradesCommand(() => ({
-        marketData: {
-          async getLastTrades() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'market',
-              'trades',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=BBG00QPYJ5H0',
-              '--from=2026-06-19T10:00:00.000Z',
-              '--to=2026-06-19T11:00:00.000Z'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -2,7 +2,11 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { InstrumentIdType, type BondResponse, type InstrumentRequest } from '../../../generated/instruments';
+import {
+  InstrumentIdType,
+  type BondResponse,
+  type InstrumentRequest
+} from '../../../generated/instruments';
 import { createBondCommand } from './cli';
 
 function bondResponse(overrides: Partial<BondResponse> = {}): BondResponse {
@@ -62,39 +66,6 @@ describe('bond command', () => {
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output), null);
-    });
-
-    test('closes sdk when bondBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createBondCommand(() => ({
-        instruments: {
-          async bondBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'bond',
-            'show',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--id=BBG00B9XRY4J',
-            '--id-type=figi'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import { resolveInstrumentIdOption, resolveOptionalInstrumentIdOption } from './instrument-id-options';
+import {
+  resolveInstrumentIdOption,
+  resolveOptionalInstrumentIdOption
+} from './instrument-id-options';
 
 describe('instrument id options', () => {
   describe('resolveInstrumentIdOption', () => {

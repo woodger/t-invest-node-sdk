@@ -26,9 +26,7 @@ import { bondCouponsFormats, formatBondCoupons } from './reporter';
 
 type BondCouponsSdk = {
   instruments: {
-    getBondCoupons(
-      request: GetBondCouponsRequest
-    ): Promise<GetBondCouponsResponse>;
+    getBondCoupons(request: GetBondCouponsRequest): Promise<GetBondCouponsResponse>;
   };
   close(): void;
 };

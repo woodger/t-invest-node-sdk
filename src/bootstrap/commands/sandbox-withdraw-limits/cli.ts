@@ -21,9 +21,7 @@ import { formatWithdrawLimits, withdrawLimitsFormats } from '../withdraw-limits/
 
 type SandboxWithdrawLimitsSdk = {
   sandbox: {
-    getSandboxWithdrawLimits(
-      request: WithdrawLimitsRequest
-    ): Promise<WithdrawLimitsResponse>;
+    getSandboxWithdrawLimits(request: WithdrawLimitsRequest): Promise<WithdrawLimitsResponse>;
   };
   close(): void;
 };

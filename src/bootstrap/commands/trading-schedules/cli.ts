@@ -11,7 +11,10 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { TradingSchedulesRequest, TradingSchedulesResponse } from '../../../generated/instruments';
+import type {
+  TradingSchedulesRequest,
+  TradingSchedulesResponse
+} from '../../../generated/instruments';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -22,9 +25,7 @@ import { formatTradingSchedules, tradingSchedulesFormats } from './reporter';
 
 type TradingSchedulesSdk = {
   instruments: {
-    tradingSchedules(
-      request: TradingSchedulesRequest
-    ): Promise<TradingSchedulesResponse>;
+    tradingSchedules(request: TradingSchedulesRequest): Promise<TradingSchedulesResponse>;
   };
   close(): void;
 };
@@ -33,9 +34,7 @@ type TradingSchedulesSdkFactory = (
   options: TInvestOptions
 ) => TradingSchedulesSdk;
 
-type TradingSchedulesOptions = InferOptions<
-  typeof tradingSchedulesOptionsSchema
->;
+type TradingSchedulesOptions = InferOptions<typeof tradingSchedulesOptionsSchema>;
 type TradingSchedulesRequestOptions = CommandRequestOptions<
   TradingSchedulesOptions,
   'from' | 'to' | 'exchange'

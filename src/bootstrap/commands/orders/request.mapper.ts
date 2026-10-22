@@ -4,9 +4,7 @@ interface OrdersRequestOptions {
   readonly 'account-id': string;
 }
 
-export function createOrdersRequest(
-  options: OrdersRequestOptions
-): GetOrdersRequest {
+export function createOrdersRequest(options: OrdersRequestOptions): GetOrdersRequest {
   return {
     accountId: options['account-id']
   };

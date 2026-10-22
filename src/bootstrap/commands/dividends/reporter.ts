@@ -40,10 +40,7 @@ export function createDividendsReport(dividends: Dividend[]): DividendsReport {
   return dividends.map(toReportDividend);
 }
 
-export function formatDividendsReport(
-  report: DividendsReport,
-  format: DividendsFormat
-): string {
+export function formatDividendsReport(report: DividendsReport, format: DividendsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -72,9 +69,6 @@ export function formatDividendsReport(
   ]);
 }
 
-export function formatDividends(
-  dividends: Dividend[],
-  format: DividendsFormat
-): string {
+export function formatDividends(dividends: Dividend[], format: DividendsFormat): string {
   return formatDividendsReport(createDividendsReport(dividends), format);
 }

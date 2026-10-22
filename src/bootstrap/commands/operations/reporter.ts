@@ -7,8 +7,16 @@
  */
 
 import type { OperationsReport, OperationsReportOperation } from '../../../application/reports';
-import { operationStateToJSON, operationTypeToJSON, type Operation } from '../../../generated/operations';
-import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  operationStateToJSON,
+  operationTypeToJSON,
+  type Operation
+} from '../../../generated/operations';
+import {
+  formatReportDate,
+  formatReportMoneyText,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление истории операций: JSON или таблица. */
@@ -38,16 +46,11 @@ function toReportOperation(operation: Operation): OperationsReportOperation {
   };
 }
 
-export function createOperationsReport(
-  operations: Operation[]
-): OperationsReport {
+export function createOperationsReport(operations: Operation[]): OperationsReport {
   return operations.map(toReportOperation);
 }
 
-export function formatOperationsReport(
-  report: OperationsReport,
-  format: OperationsFormat
-): string {
+export function formatOperationsReport(report: OperationsReport, format: OperationsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -84,9 +87,6 @@ export function formatOperationsReport(
   ]);
 }
 
-export function formatOperations(
-  operations: Operation[],
-  format: OperationsFormat
-): string {
+export function formatOperations(operations: Operation[], format: OperationsFormat): string {
   return formatOperationsReport(createOperationsReport(operations), format);
 }

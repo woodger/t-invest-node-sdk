@@ -13,7 +13,11 @@ import {
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
-import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportMoneyText,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление списка стоп-заявок: JSON или таблица. */
@@ -38,16 +42,11 @@ function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
   };
 }
 
-export function createStopOrdersReport(
-  response: GetStopOrdersResponse
-): StopOrdersReport {
+export function createStopOrdersReport(response: GetStopOrdersResponse): StopOrdersReport {
   return response.stopOrders.map(toReportStopOrder);
 }
 
-export function formatStopOrdersReport(
-  report: StopOrdersReport,
-  format: StopOrdersFormat
-): string {
+export function formatStopOrdersReport(report: StopOrdersReport, format: StopOrdersFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

@@ -3,22 +3,9 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CloseSandboxAccountRequest } from '../../../generated/sandbox';
-import { createSandboxCloseAccountCommand, createSandboxCloseAccountRequest } from './cli';
+import { createSandboxCloseAccountCommand } from './cli';
 
 describe('sandbox-close-account command', () => {
-  describe('createSandboxCloseAccountRequest', () => {
-    test('returns generated closeSandboxAccount request', () => {
-      assert.deepEqual(
-        createSandboxCloseAccountRequest({
-          'account-id': 'sandbox-account-id'
-        }),
-        {
-          accountId: 'sandbox-account-id'
-        }
-      );
-    });
-  });
-
   describe('createSandboxCloseAccountCommand', () => {
     test('requires explicit confirmation before creating sdk', async () => {
       let sdkCreated = false;

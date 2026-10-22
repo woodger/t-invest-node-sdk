@@ -10,7 +10,10 @@
  */
 
 import type { MarketDataResponse } from '../../../generated/marketdata';
-import type { PortfolioStreamResponse, PositionsStreamResponse } from '../../../generated/operations';
+import type {
+  PortfolioStreamResponse,
+  PositionsStreamResponse
+} from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 
 /** Ответы поддерживаемых потоков SDK, которые reporter преобразует в события CLI. */
@@ -100,9 +103,7 @@ export function formatStreamRunResponse(
   }\n`;
 }
 
-export function resolveStreamRunEvent(
-  response: StreamRunResponse
-): StreamRunEvent {
+export function resolveStreamRunEvent(response: StreamRunResponse): StreamRunEvent {
   const record = response as Record<string, unknown>;
 
   for (const field of streamEventFields) {

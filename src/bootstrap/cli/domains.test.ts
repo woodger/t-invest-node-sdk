@@ -1,6 +1,11 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import { canonicalizeCommandName, commandPathAliases, commandPathToName, isCliDomainName } from './domains';
+import {
+  canonicalizeCommandName,
+  commandPathAliases,
+  commandPathToName,
+  isCliDomainName
+} from './domains';
 
 function commandAliasNames(path: readonly [string, ...string[]]): string[] {
   return commandPathAliases(path).map(commandPathToName);

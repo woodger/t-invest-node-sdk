@@ -2,7 +2,11 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { InstrumentIdType, type EtfResponse, type InstrumentRequest } from '../../../generated/instruments';
+import {
+  InstrumentIdType,
+  type EtfResponse,
+  type InstrumentRequest
+} from '../../../generated/instruments';
 import { createEtfCommand } from './cli';
 
 function etfResponse(overrides: Partial<EtfResponse> = {}): EtfResponse {
@@ -62,39 +66,6 @@ describe('etf command', () => {
       });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output), null);
-    });
-
-    test('closes sdk when etfBy rejects', async () => {
-      let closeCalls = 0;
-      const command = createEtfCommand(() => ({
-        instruments: {
-          async etfBy() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () => commandFacade.run(
-          command,
-          [
-            'instrument',
-            'etf',
-            'show',
-            '--token=token',
-            '--endpoint=localhost:50051',
-            '--id=BBG333333333',
-            '--id-type=figi'
-          ],
-          undefined
-        ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

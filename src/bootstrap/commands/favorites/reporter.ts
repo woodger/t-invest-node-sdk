@@ -16,9 +16,7 @@ export type FavoritesFormat = typeof favoritesFormats[number];
 
 export const favoritesFormats = ['json', 'table'] as const;
 
-function toReportInstrument(
-  instrument: FavoriteInstrument
-): FavoritesReportInstrument {
+function toReportInstrument(instrument: FavoriteInstrument): FavoritesReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -31,16 +29,11 @@ function toReportInstrument(
   };
 }
 
-export function createFavoritesReport(
-  instruments: FavoriteInstrument[]
-): FavoritesReport {
+export function createFavoritesReport(instruments: FavoriteInstrument[]): FavoritesReport {
   return instruments.map(toReportInstrument);
 }
 
-export function formatFavoritesReport(
-  report: FavoritesReport,
-  format: FavoritesFormat
-): string {
+export function formatFavoritesReport(report: FavoritesReport, format: FavoritesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

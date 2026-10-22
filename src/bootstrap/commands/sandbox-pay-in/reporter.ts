@@ -16,9 +16,7 @@ export type SandboxPayInFormat = typeof sandboxPayInFormats[number];
 
 export const sandboxPayInFormats = ['json', 'table'] as const;
 
-export function createSandboxPayInReport(
-  response: SandboxPayInResponse
-): SandboxPayInReport {
+export function createSandboxPayInReport(response: SandboxPayInResponse): SandboxPayInReport {
   return {
     balance: toReportMoney(response.balance)
   };

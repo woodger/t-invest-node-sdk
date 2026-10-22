@@ -6,7 +6,10 @@
  * `cli.ts`.
  */
 
-import type { FindInstrumentReport, FindInstrumentReportInstrument } from '../../../application/reports';
+import type {
+  FindInstrumentReport,
+  FindInstrumentReportInstrument
+} from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
 import type { InstrumentShort } from '../../../generated/instruments';
 import { formatReportDate } from '../../../infrastructure/report-values';
@@ -17,9 +20,7 @@ export type FindInstrumentFormat = typeof findInstrumentFormats[number];
 
 export const findInstrumentFormats = ['json', 'table'] as const;
 
-function toReportInstrument(
-  instrument: InstrumentShort
-): FindInstrumentReportInstrument {
+function toReportInstrument(instrument: InstrumentShort): FindInstrumentReportInstrument {
   return {
     isin: instrument.isin,
     figi: instrument.figi,
@@ -40,9 +41,7 @@ function toReportInstrument(
   };
 }
 
-export function createFindInstrumentReport(
-  instruments: InstrumentShort[]
-): FindInstrumentReport {
+export function createFindInstrumentReport(instruments: InstrumentShort[]): FindInstrumentReport {
   return instruments.map(toReportInstrument);
 }
 

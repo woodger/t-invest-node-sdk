@@ -32,10 +32,7 @@ export function createCandlesReport(candles: HistoricCandle[]): CandlesReport {
   return candles.map(toReportCandle);
 }
 
-export function formatCandlesReport(
-  report: CandlesReport,
-  format: CandlesFormat
-): string {
+export function formatCandlesReport(report: CandlesReport, format: CandlesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -54,9 +51,6 @@ export function formatCandlesReport(
   ]);
 }
 
-export function formatCandles(
-  candles: HistoricCandle[],
-  format: CandlesFormat
-): string {
+export function formatCandles(candles: HistoricCandle[], format: CandlesFormat): string {
   return formatCandlesReport(createCandlesReport(candles), format);
 }

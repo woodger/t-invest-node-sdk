@@ -18,13 +18,14 @@ import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-op
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createReplaceOrderRequest } from '../replace-order/request.mapper';
 import { formatReplaceOrder, replaceOrderFormats } from '../replace-order/reporter';
-import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import {
+  assertSideEffectConfirmed,
+  sideEffectConfirmationOptionsSchema
+} from '../../args/side-effect-args';
 
 type SandboxReplaceOrderSdk = {
   sandbox: {
-    replaceSandboxOrder(
-      request: ReplaceOrderRequest
-    ): Promise<PostOrderResponse>;
+    replaceSandboxOrder(request: ReplaceOrderRequest): Promise<PostOrderResponse>;
   };
   close(): void;
 };

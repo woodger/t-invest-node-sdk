@@ -78,9 +78,7 @@ export function createDividendsCommand(
 
 export const dividendsCommand = createDividendsCommand();
 
-export function createDividendsRequest(
-  options: DividendsRequestOptions
-): GetDividendsRequest {
+export function createDividendsRequest(options: DividendsRequestOptions): GetDividendsRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');
 

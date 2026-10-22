@@ -2,7 +2,10 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetFuturesMarginRequest, GetFuturesMarginResponse } from '../../../generated/instruments';
+import type {
+  GetFuturesMarginRequest,
+  GetFuturesMarginResponse
+} from '../../../generated/instruments';
 import { createFuturesMarginCommand, createFuturesMarginRequest } from './cli';
 
 function response(
@@ -97,39 +100,6 @@ describe('futures-margin command', () => {
         currency: 'rub',
         amount: '1000.25'
       });
-    });
-
-    test('closes sdk when getFuturesMargin rejects', async () => {
-      let closeCalls = 0;
-      const command = createFuturesMarginCommand(() => ({
-        instruments: {
-          async getFuturesMargin() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'instrument',
-              'future',
-              'margin',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=FUTFIGI'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

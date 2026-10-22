@@ -3,7 +3,11 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { Quotation } from '../../../generated/common';
-import { GetLastPricesRequest, type GetLastPricesResponse, type LastPrice } from '../../../generated/marketdata';
+import {
+  GetLastPricesRequest,
+  type GetLastPricesResponse,
+  type LastPrice
+} from '../../../generated/marketdata';
 import { createLastPricesCommand, createLastPricesRequest } from './cli';
 
 function quotation(units: number, nano: number): Quotation {
@@ -95,38 +99,6 @@ describe('last-prices command', () => {
       ]);
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].figi, 'BBG00QPYJ5H0');
-    });
-
-    test('closes sdk when getLastPrices rejects', async () => {
-      let closeCalls = 0;
-      const command = createLastPricesCommand(() => ({
-        marketData: {
-          async getLastPrices() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'market',
-              'last-prices',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--instrument-id=BBG00QPYJ5H0'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

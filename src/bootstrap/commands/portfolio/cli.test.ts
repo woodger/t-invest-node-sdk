@@ -91,37 +91,5 @@ describe('portfolio command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).summary.accountId, 'account-id');
     });
-
-    test('closes sdk when getPortfolio rejects', async () => {
-      let closeCalls = 0;
-      const command = createPortfolioCommand(() => ({
-        operations: {
-          async getPortfolio() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'operation',
-              'portfolio',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=account-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

@@ -30,10 +30,7 @@ type OrderBookSdk = {
 type OrderBookSdkFactory = (options: TInvestOptions) => OrderBookSdk;
 
 type OrderBookOptions = InferOptions<typeof orderBookOptionsSchema>;
-type OrderBookRequestOptions = CommandRequestOptions<
-  OrderBookOptions,
-  'instrument-id' | 'depth'
->;
+type OrderBookRequestOptions = CommandRequestOptions<OrderBookOptions, 'instrument-id' | 'depth'>;
 
 const orderBookOptionsSchema = withSdkOptions({
   'instrument-id': {
@@ -73,9 +70,7 @@ export function createOrderBookCommand(
 
 export const orderBookCommand = createOrderBookCommand();
 
-export function createOrderBookRequest(
-  options: OrderBookRequestOptions
-): GetOrderBookRequest {
+export function createOrderBookRequest(options: OrderBookRequestOptions): GetOrderBookRequest {
   return GetOrderBookRequest.create({
     instrumentId: options['instrument-id'],
     depth: options.depth

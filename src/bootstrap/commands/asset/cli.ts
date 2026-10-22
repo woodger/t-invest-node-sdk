@@ -66,9 +66,7 @@ export function createAssetCommand(
 
 export const assetCommand = createAssetCommand();
 
-export function createAssetRequest(
-  options: AssetRequestOptions
-): AssetRequest {
+export function createAssetRequest(options: AssetRequestOptions): AssetRequest {
   return {
     id: options.id
   };

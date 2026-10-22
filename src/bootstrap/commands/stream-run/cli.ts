@@ -35,9 +35,7 @@ type StreamRunDependencies = {
 };
 
 type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
-type StreamRunProvidedOptions = InferProvidedOptions<
-  typeof streamRunOptionsSchema
->;
+type StreamRunProvidedOptions = InferProvidedOptions<typeof streamRunOptionsSchema>;
 
 const streamRunCommandPath = ['stream', 'run'] as const;
 const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
@@ -45,34 +43,32 @@ const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
 const defaultStreamRunConfigReader: StreamRunConfigReader = (path) =>
   readFile(path, 'utf8');
 
-const streamRunOptionsSchema = withSdkOptions(
-  {
-    config: {
-      type: 'string',
-      required: true
-    },
-    'max-events': {
-      ...positiveSafeIntegerOption
-    },
-    'duration-ms': {
-      ...positiveSafeIntegerOption
-    },
-    'idle-timeout-ms': {
-      ...positiveSafeIntegerOption
-    },
-    'include-pings': {
-      type: 'boolean'
-    },
-    raw: {
-      type: 'boolean'
-    },
-    format: {
-      type: 'string',
-      choices: streamRunFormats,
-      default: 'jsonl'
-    }
-  } as const
-);
+const streamRunOptionsSchema = withSdkOptions({
+  config: {
+    type: 'string',
+    required: true
+  },
+  'max-events': {
+    ...positiveSafeIntegerOption
+  },
+  'duration-ms': {
+    ...positiveSafeIntegerOption
+  },
+  'idle-timeout-ms': {
+    ...positiveSafeIntegerOption
+  },
+  'include-pings': {
+    type: 'boolean'
+  },
+  raw: {
+    type: 'boolean'
+  },
+  format: {
+    type: 'string',
+    choices: streamRunFormats,
+    default: 'jsonl'
+  }
+} as const);
 
 export function createStreamRunCommand(
   dependencies: StreamRunDependencies = {}
@@ -86,9 +82,12 @@ export function createStreamRunCommand(
     path: streamRunCommandPath,
     options: streamRunOptionsSchema,
     async handle({ options, provided }) {
-      return createStreamRunOutput(options, provided, {
+      const config = parseStreamRunConfig(await readConfig(options.config));
+      const runtime = resolveStreamRunRuntime(config.runtime, options, provided);
+      const sdkOptions = resolveSdkOptionsFromCommandOptions(options);
+
+      return runStreamRunSession(config, runtime, sdkOptions, {
         createSdk,
-        readConfig,
         now,
         elapsedNow
       });
@@ -97,24 +96,6 @@ export function createStreamRunCommand(
 }
 
 export const streamRunCommand = createStreamRunCommand();
-
-async function createStreamRunOutput(
-  options: StreamRunOptions,
-  provided: StreamRunProvidedOptions,
-  dependencies: Required<StreamRunDependencies>
-): Promise<AsyncIterable<string>> {
-  const config = parseStreamRunConfig(
-    await dependencies.readConfig(options.config)
-  );
-  const runtime = resolveStreamRunRuntime(config.runtime, options, provided);
-  const sdkOptions = resolveSdkOptionsFromCommandOptions(options);
-
-  return runStreamRunSession(config, runtime, sdkOptions, {
-    createSdk: dependencies.createSdk,
-    now: dependencies.now,
-    elapsedNow: dependencies.elapsedNow
-  });
-}
 
 function resolveStreamRunRuntime(
   runtime: StreamRunRuntime,

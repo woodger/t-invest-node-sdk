@@ -31,10 +31,7 @@ export function createLastTradesReport(trades: Trade[]): LastTradesReport {
   return trades.map(toReportTrade);
 }
 
-export function formatLastTradesReport(
-  report: LastTradesReport,
-  format: LastTradesFormat
-): string {
+export function formatLastTradesReport(report: LastTradesReport, format: LastTradesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -52,9 +49,6 @@ export function formatLastTradesReport(
   ]);
 }
 
-export function formatLastTrades(
-  trades: Trade[],
-  format: LastTradesFormat
-): string {
+export function formatLastTrades(trades: Trade[], format: LastTradesFormat): string {
   return formatLastTradesReport(createLastTradesReport(trades), format);
 }

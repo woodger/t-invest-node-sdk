@@ -13,7 +13,10 @@ import {
   type GetOperationsByCursorRequest
 } from '../../../generated/operations';
 import { CliUsageError } from 'icore';
-import { parseCommaSeparatedStringListOption, parseDateTimeOption } from '../../args/command-options';
+import {
+  parseCommaSeparatedStringListOption,
+  parseDateTimeOption
+} from '../../args/command-options';
 
 interface OperationsByCursorRequestOptions {
   readonly 'account-id': string;
@@ -68,9 +71,7 @@ export function createOperationsByCursorRequest(
   };
 }
 
-function parseOperationsByCursorLimitOption(
-  rawValue: string | undefined
-): number {
+function parseOperationsByCursorLimitOption(rawValue: string | undefined): number {
   if (rawValue === undefined) {
     return 0;
   }
@@ -120,10 +121,7 @@ function parseOperationsByCursorOperationTypesOption(
   });
 }
 
-function parseOptionalDateTimeOption(
-  value: string | undefined,
-  name: string
-): Date | undefined {
+function parseOptionalDateTimeOption(value: string | undefined, name: string): Date | undefined {
   if (value === undefined) {
     return undefined;
   }

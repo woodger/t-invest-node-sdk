@@ -6,7 +6,10 @@
  * `cli.ts`.
  */
 
-import type { AccruedInterestsReport, AccruedInterestsReportItem } from '../../../application/reports';
+import type {
+  AccruedInterestsReport,
+  AccruedInterestsReportItem
+} from '../../../application/reports';
 import type { AccruedInterest } from '../../../generated/instruments';
 import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
@@ -16,9 +19,7 @@ export type AccruedInterestsFormat = typeof accruedInterestsFormats[number];
 
 export const accruedInterestsFormats = ['json', 'table'] as const;
 
-function toReportAccruedInterest(
-  accruedInterest: AccruedInterest
-): AccruedInterestsReportItem {
+function toReportAccruedInterest(accruedInterest: AccruedInterest): AccruedInterestsReportItem {
   return {
     date: formatReportDate(accruedInterest.date),
     value: formatReportQuotation(accruedInterest.value),

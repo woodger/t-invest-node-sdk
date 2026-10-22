@@ -15,9 +15,7 @@ export type PostStopOrderFormat = typeof postStopOrderFormats[number];
 
 export const postStopOrderFormats = ['json', 'table'] as const;
 
-export function createPostStopOrderReport(
-  response: PostStopOrderResponse
-): PostStopOrderReport {
+export function createPostStopOrderReport(response: PostStopOrderResponse): PostStopOrderReport {
   return {
     stopOrderId: response.stopOrderId
   };

@@ -178,6 +178,33 @@ describe('stream run config', () => {
       }
     );
 
+    test('rejects unexpected fields before parsing bidirectional request payloads', () => {
+      for (const type of [
+        'subscribeCandles',
+        'subscribeOrderBook',
+        'subscribeTrades',
+        'subscribeInfo',
+        'subscribeLastPrice',
+        'getMySubscriptions'
+      ]) {
+        assert.throws(
+          () => parseStreamRunConfig(configJson({
+            stream: 'marketdata.marketDataStream',
+            requests: [{ type, unexpected: true }]
+          })),
+          /Unexpected 'requests\[\]\.unexpected'/
+        );
+      }
+
+      assert.throws(
+        () => parseStreamRunConfig(configJson({
+          stream: 'marketdata.marketDataStream',
+          requests: [{ type: 'getMySubscriptions', instruments: [] }]
+        })),
+        /Unexpected 'requests\[\]\.instruments'/
+      );
+    });
+
     test('rejects unknown config fields', () => {
       assert.throws(
         () =>

@@ -13,9 +13,7 @@ interface OrderStateRequestOptions {
   readonly 'order-id': string;
 }
 
-export function createOrderStateRequest(
-  options: OrderStateRequestOptions
-): GetOrderStateRequest {
+export function createOrderStateRequest(options: OrderStateRequestOptions): GetOrderStateRequest {
   return {
     accountId: options['account-id'],
     orderId: options['order-id'],

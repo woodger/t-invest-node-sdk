@@ -105,11 +105,11 @@ const deprecatedFigiOptionCommandNames = new Set<string>(
 
 export function resolveCommandWarnings(
   commandName: string,
-  args: readonly string[]
+  provided: Readonly<Record<string, boolean>>
 ): string[] {
   if (
     !deprecatedFigiOptionCommandNames.has(commandName)
-    || !hasOption(args, 'figi')
+    || provided['figi'] !== true
   ) {
     return [];
   }
@@ -205,12 +205,4 @@ function defineCommandLineCommand<
     ...definition,
     aliases
   };
-}
-
-function hasOption(args: readonly string[], name: string): boolean {
-  const optionName = `--${name}`;
-
-  return args.some((arg) =>
-    arg === optionName || arg.startsWith(`${optionName}=`)
-  );
 }

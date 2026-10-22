@@ -22,9 +22,7 @@ const portfolioCurrencies = {
   eur: PortfolioCurrency.EUR
 } as const;
 
-export function createPortfolioRequest(
-  options: PortfolioRequestOptions
-): PortfolioRequest {
+export function createPortfolioRequest(options: PortfolioRequestOptions): PortfolioRequest {
   return {
     accountId: options['account-id'],
     currency: portfolioCurrencies[options.currency]

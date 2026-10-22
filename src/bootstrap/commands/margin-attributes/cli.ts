@@ -11,7 +11,10 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetMarginAttributesRequest, GetMarginAttributesResponse } from '../../../generated/users';
+import type {
+  GetMarginAttributesRequest,
+  GetMarginAttributesResponse
+} from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
@@ -22,9 +25,7 @@ import { formatMarginAttributes, marginAttributesFormats } from './reporter';
 
 type MarginAttributesSdk = {
   users: {
-    getMarginAttributes(
-      request: GetMarginAttributesRequest
-    ): Promise<GetMarginAttributesResponse>;
+    getMarginAttributes(request: GetMarginAttributesRequest): Promise<GetMarginAttributesResponse>;
   };
   close(): void;
 };
@@ -33,13 +34,8 @@ type MarginAttributesSdkFactory = (
   options: TInvestOptions
 ) => MarginAttributesSdk;
 
-type MarginAttributesOptions = InferOptions<
-  typeof marginAttributesOptionsSchema
->;
-type MarginAttributesRequestOptions = CommandRequestOptions<
-  MarginAttributesOptions,
-  'account-id'
->;
+type MarginAttributesOptions = InferOptions<typeof marginAttributesOptionsSchema>;
+type MarginAttributesRequestOptions = CommandRequestOptions<MarginAttributesOptions, 'account-id'>;
 
 const marginAttributesOptionsSchema = withSdkOptions({
   'account-id': {

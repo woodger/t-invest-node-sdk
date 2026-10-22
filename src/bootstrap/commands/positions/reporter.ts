@@ -26,9 +26,7 @@ export type PositionsFormat = typeof positionsFormats[number];
 
 export const positionsFormats = ['json', 'table'] as const;
 
-function toReportSecurity(
-  position: PositionsSecurities
-): PositionsReportSecurity {
+function toReportSecurity(position: PositionsSecurities): PositionsReportSecurity {
   return {
     figi: position.figi,
     instrumentUid: position.instrumentUid,
@@ -59,9 +57,7 @@ function toReportOption(position: PositionsOptions): PositionsReportOption {
   };
 }
 
-export function createPositionsReport(
-  response: PositionsResponse
-): PositionsReport {
+export function createPositionsReport(response: PositionsResponse): PositionsReport {
   return {
     limitsLoadingInProgress: response.limitsLoadingInProgress,
     money: response.money.map((value) => toReportMoney(value)),
@@ -82,10 +78,7 @@ function renderSection(
   ].join('\n');
 }
 
-export function formatPositionsReport(
-  report: PositionsReport,
-  format: PositionsFormat
-): string {
+export function formatPositionsReport(report: PositionsReport, format: PositionsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -149,9 +142,6 @@ export function formatPositionsReport(
   ].join('\n');
 }
 
-export function formatPositions(
-  response: PositionsResponse,
-  format: PositionsFormat
-): string {
+export function formatPositions(response: PositionsResponse, format: PositionsFormat): string {
   return formatPositionsReport(createPositionsReport(response), format);
 }

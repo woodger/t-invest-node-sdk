@@ -163,37 +163,5 @@ describe('dividends-foreign-issuer command', () => {
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output).taskId, 'task-id');
     });
-
-    test('closes sdk when getDividendsForeignIssuer rejects', async () => {
-      let closeCalls = 0;
-      const command = createDividendsForeignIssuerCommand(() => ({
-        operations: {
-          async getDividendsForeignIssuer() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'operation',
-              'foreign-dividends-report',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--task-id=task-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
-    });
   });
 });

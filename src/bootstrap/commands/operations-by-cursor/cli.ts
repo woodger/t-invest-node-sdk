@@ -11,7 +11,10 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { type GetOperationsByCursorRequest, type GetOperationsByCursorResponse } from '../../../generated/operations';
+import {
+  type GetOperationsByCursorRequest,
+  type GetOperationsByCursorResponse
+} from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';

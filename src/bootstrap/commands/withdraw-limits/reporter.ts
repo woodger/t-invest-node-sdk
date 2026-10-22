@@ -16,9 +16,7 @@ export type WithdrawLimitsFormat = typeof withdrawLimitsFormats[number];
 
 export const withdrawLimitsFormats = ['json', 'table'] as const;
 
-export function createWithdrawLimitsReport(
-  response: WithdrawLimitsResponse
-): WithdrawLimitsReport {
+export function createWithdrawLimitsReport(response: WithdrawLimitsResponse): WithdrawLimitsReport {
   return {
     money: response.money.map((value) => toReportMoney(value)),
     blocked: response.blocked.map((value) => toReportMoney(value)),

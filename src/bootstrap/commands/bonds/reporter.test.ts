@@ -1,6 +1,11 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import { RealExchange, SecurityTradingStatus, type MoneyValue, type Quotation } from '../../../generated/common';
+import {
+  RealExchange,
+  SecurityTradingStatus,
+  type MoneyValue,
+  type Quotation
+} from '../../../generated/common';
 import { RiskLevel, type Bond } from '../../../generated/instruments';
 import { createBondsReport, formatBondsReport } from './reporter';
 

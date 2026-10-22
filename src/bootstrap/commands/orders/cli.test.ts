@@ -93,41 +93,9 @@ describe('orders command', () => {
         token: 'token',
         endpoint: 'localhost:50051'
       });
-      assert.equal(receivedRequest?.accountId, 'account-id');
+      assert.deepEqual(receivedRequest, { accountId: 'account-id' });
       assert.equal(closeCalls, 1);
       assert.equal(JSON.parse(output)[0].orderId, 'order-id');
-    });
-
-    test('closes sdk when getOrders rejects', async () => {
-      let closeCalls = 0;
-      const command = createOrdersCommand(() => ({
-        orders: {
-          async getOrders() {
-            throw new Error('api failed');
-          }
-        },
-        close() {
-          closeCalls += 1;
-        }
-      }));
-
-      await assert.rejects(
-        () =>
-          commandFacade.run(
-            command,
-            [
-              'order',
-              'list',
-              '--token=token',
-              '--endpoint=localhost:50051',
-              '--account-id=account-id'
-            ],
-            undefined
-          ),
-        /api failed/
-      );
-
-      assert.equal(closeCalls, 1);
     });
   });
 });

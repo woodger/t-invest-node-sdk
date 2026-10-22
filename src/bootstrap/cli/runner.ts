@@ -12,14 +12,16 @@ import {
   createOutput,
   createTerminalApp,
   parseArgv,
-  parseOptions,
+  parseOptionsSubsetDetailed,
   type Output,
   type OptionsSchema,
   type RawOptionValue
 } from 'icore';
-import { cliExitCodes, terminalErrorPolicy } from './error';
-import { isHelpRequested, renderCliHelp, renderHelp } from './help';
-import { isVersionRequested, renderVersionInfo } from './version';
+import { helpCommand } from '../commands/help/cli';
+import { versionCommand } from '../commands/version/cli';
+import { terminalErrorPolicy } from './error';
+import { isHelpRequested } from './help';
+import { isVersionRequested } from './version';
 
 const bootstrapOptionsSchema = {
   help: {
@@ -37,22 +39,21 @@ const bootstrapOptionsSchema = {
 
 const bootstrapOptionNames = Object.keys(bootstrapOptionsSchema);
 
-// Пустой registry сохраняет единый TerminalApp error contract,
-// не загружая API-команды для глобальных shortcuts.
-const bootstrapCommands = createCommands([] as const);
+// Служебный registry запускает быстрые вызовы через общий terminal lifecycle,
+// не загружая API-команды и транспорт SDK.
+const bootstrapCommands = createCommands([helpCommand, versionCommand]);
 
 export function parseCliInput(argv: readonly string[]) {
   const parsedArgv = parseArgv(argv, bootstrapOptionsSchema);
 
   rejectUndocumentedLongAliases(parsedArgv.options);
-  validateBootstrapOptions(parsedArgv.options);
+  // Опции конкретной команды проверит полный registry после выбора команды.
+  parseOptionsSubsetDetailed(bootstrapOptionsSchema, parsedArgv.options);
 
   return parsedArgv;
 }
 
-function rejectUndocumentedLongAliases(
-  options: Record<string, RawOptionValue>
-): void {
+function rejectUndocumentedLongAliases(options: Record<string, RawOptionValue>): void {
   const replacements: Readonly<Record<string, string>> = {
     h: "'--help' or '-h'",
     'no-h': "'--help' or '-h'",
@@ -67,22 +68,6 @@ function rejectUndocumentedLongAliases(
       );
     }
   }
-}
-
-function validateBootstrapOptions(
-  options: Record<string, RawOptionValue>
-): void {
-  const bootstrapOptions: Record<string, RawOptionValue> = {};
-
-  for (const name of bootstrapOptionNames) {
-    if (Object.hasOwn(options, name)) {
-      bootstrapOptions[name] = options[name] as RawOptionValue;
-    }
-  }
-
-  // Опции конкретной команды намеренно остаются у terminal app `icore`:
-  // эта проверка охватывает только глобальные логические флаги runner-а.
-  parseOptions(bootstrapOptionsSchema, bootstrapOptions);
 }
 
 export async function runCli(
@@ -110,32 +95,19 @@ export async function runCli(
     });
   }
 
-  const writeBootstrapOutput = async (text: string): Promise<number> => {
-    try {
-      await bootstrapApp.output.write(text);
-
-      return cliExitCodes.success;
-    }
-    catch (error) {
-      return bootstrapApp.reportError(error, {
-        phase: 'external',
-        args: argv
-      });
-    }
-  };
-
   // Глобальные флаги обрабатываются до запуска команды, чтобы `--help` и
   // `--version` не требовали SDK credentials и обязательных опций команды.
   if (isHelpRequested(parsedArgv.options)) {
-    return writeBootstrapOutput(renderHelp(parsedArgv.positionals));
+    // Разделитель сохраняет буквальные аргументы после исходного `--`.
+    return bootstrapApp.run(['help', '--', ...parsedArgv.positionals], undefined);
   }
 
   if (isVersionRequested(parsedArgv.options)) {
-    return writeBootstrapOutput(renderVersionInfo());
+    return bootstrapApp.run(['version'], undefined);
   }
 
   if (parsedArgv.positionals.length === 0) {
-    return writeBootstrapOutput(renderCliHelp());
+    return bootstrapApp.run(['help'], undefined);
   }
 
   let registry: typeof import('./registry.js');
@@ -169,7 +141,7 @@ export async function runCli(
 
   try {
     for (
-      const warning of registry.resolveCommandWarnings(prepared.name, argv)
+      const warning of registry.resolveCommandWarnings(prepared.name, prepared.provided)
     ) {
       await app.output.error(warning);
     }

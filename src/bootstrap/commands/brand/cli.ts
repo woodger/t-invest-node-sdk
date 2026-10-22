@@ -66,9 +66,7 @@ export function createBrandCommand(
 
 export const brandCommand = createBrandCommand();
 
-export function createBrandRequest(
-  options: BrandRequestOptions
-): GetBrandRequest {
+export function createBrandRequest(options: BrandRequestOptions): GetBrandRequest {
   return {
     id: options.id
   };

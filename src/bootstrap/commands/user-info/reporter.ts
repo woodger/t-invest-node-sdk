@@ -15,9 +15,7 @@ export type UserInfoFormat = typeof userInfoFormats[number];
 
 export const userInfoFormats = ['json', 'table'] as const;
 
-export function createUserInfoReport(
-  response: GetInfoResponse
-): UserInfoReport {
+export function createUserInfoReport(response: GetInfoResponse): UserInfoReport {
   return {
     premStatus: response.premStatus,
     qualStatus: response.qualStatus,
@@ -26,10 +24,7 @@ export function createUserInfoReport(
   };
 }
 
-export function formatUserInfoReport(
-  report: UserInfoReport,
-  format: UserInfoFormat
-): string {
+export function formatUserInfoReport(report: UserInfoReport, format: UserInfoFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -45,9 +40,6 @@ export function formatUserInfoReport(
   ]);
 }
 
-export function formatUserInfo(
-  response: GetInfoResponse,
-  format: UserInfoFormat
-): string {
+export function formatUserInfo(response: GetInfoResponse, format: UserInfoFormat): string {
   return formatUserInfoReport(createUserInfoReport(response), format);
 }

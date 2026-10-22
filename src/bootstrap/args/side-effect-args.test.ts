@@ -34,7 +34,8 @@ describe('side-effect command args', () => {
 
         assert.doesNotThrow(() => assertSideEffectConfirmed(undefined));
         assert.doesNotThrow(() => assertSideEffectConfirmed(false));
-      } finally {
+      }
+      finally {
         defaultConfig.requireSideEffectConfirmation = previousPolicy;
       }
     });

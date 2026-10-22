@@ -24,16 +24,11 @@ function toReportCountry(country: CountryResponse): CountriesReportCountry {
   };
 }
 
-export function createCountriesReport(
-  countries: CountryResponse[]
-): CountriesReport {
+export function createCountriesReport(countries: CountryResponse[]): CountriesReport {
   return countries.map(toReportCountry);
 }
 
-export function formatCountriesReport(
-  report: CountriesReport,
-  format: CountriesFormat
-): string {
+export function formatCountriesReport(report: CountriesReport, format: CountriesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -49,9 +44,6 @@ export function formatCountriesReport(
   ]);
 }
 
-export function formatCountries(
-  countries: CountryResponse[],
-  format: CountriesFormat
-): string {
+export function formatCountries(countries: CountryResponse[], format: CountriesFormat): string {
   return formatCountriesReport(createCountriesReport(countries), format);
 }
