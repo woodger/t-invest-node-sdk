@@ -10,21 +10,13 @@
  * logic.
  */
 
-import {
-  readFile
-} from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import type { InferOptions, InferProvidedOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { resolveSdkOptionsFromCommandOptions } from '../../args';
-import {
-  positiveSafeIntegerOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  parseStreamRunConfig,
-  type StreamRunRuntime
-} from './config';
+import { parseStreamRunConfig, type StreamRunRuntime } from './config';
 import { streamRunFormats } from './reporter';
 import {
   runStreamRunSession,

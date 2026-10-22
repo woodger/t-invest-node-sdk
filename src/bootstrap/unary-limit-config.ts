@@ -12,14 +12,8 @@
  */
 
 import type { TInvestUnaryLimit } from '../application/services/unary-limiter';
-import type {
-  UnaryLimits,
-  UnaryLimitsConfig,
-  UnaryLimitsDefinition
-} from '../config.types';
-import {
-  unaryMethodPath
-} from '../infrastructure/transport/grpc/unary-method-path';
+import type { UnaryLimits, UnaryLimitsConfig, UnaryLimitsDefinition } from '../config.types';
+import { unaryMethodPath } from '../infrastructure/transport/grpc/unary-method-path';
 
 /** Таблицы квот по ключам правил и группам общих квот для транспорта. */
 export interface UnaryLimitConfig {

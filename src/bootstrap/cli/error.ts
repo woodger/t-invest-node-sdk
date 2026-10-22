@@ -11,11 +11,7 @@
  * Здесь не должно быть command execution, stdout/stderr writes или SDK wiring.
  */
 
-import {
-  isIcoreError,
-  isUsageError,
-  type TerminalErrorPolicy
-} from 'icore';
+import { isIcoreError, isUsageError, type TerminalErrorPolicy } from 'icore';
 import { renderCliHelp } from './help';
 
 export const cliExitCodes = {

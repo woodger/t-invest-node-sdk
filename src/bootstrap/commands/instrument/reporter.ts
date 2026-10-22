@@ -6,23 +6,11 @@
  * `cli.ts`.
  */
 
-import type {
-  InstrumentReport,
-  InstrumentReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  instrumentTypeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Instrument,
-  InstrumentResponse
-} from '../../../generated/instruments';
+import type { InstrumentReport, InstrumentReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, instrumentTypeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Instrument, InstrumentResponse } from '../../../generated/instruments';
 
-import {
-  formatReportDate
-} from '../../../infrastructure/report-values';
+import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных инструмента: JSON или таблица. */

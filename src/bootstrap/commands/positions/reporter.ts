@@ -18,9 +18,7 @@ import type {
   PositionsResponse,
   PositionsSecurities
 } from '../../../generated/operations';
-import {
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление позиций счёта: JSON или таблица. */

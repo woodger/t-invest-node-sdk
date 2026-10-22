@@ -6,10 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  CountriesReport,
-  CountriesReportCountry
-} from '../../../application/reports';
+import type { CountriesReport, CountriesReportCountry } from '../../../application/reports';
 import type { CountryResponse } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 

@@ -6,11 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  OrdersReport,
-  OrdersReportOrder,
-  OrdersReportStage
-} from '../../../application/reports';
+import type { OrdersReport, OrdersReportOrder, OrdersReportStage } from '../../../application/reports';
 import {
   type GetOrdersResponse,
   type OrderStage,
@@ -19,11 +15,7 @@ import {
   orderExecutionReportStatusToJSON,
   orderTypeToJSON
 } from '../../../generated/orders';
-import {
-  formatReportDate,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление списка заявок: JSON или таблица. */

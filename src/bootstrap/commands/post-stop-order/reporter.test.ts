@@ -1,9 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  createPostStopOrderReport,
-  formatPostStopOrderReport
-} from './reporter';
+import { createPostStopOrderReport, formatPostStopOrderReport } from './reporter';
 
 describe('post-stop-order reporter', () => {
   describe('createPostStopOrderReport', () => {

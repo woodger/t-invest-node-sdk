@@ -1,11 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { PriceType } from '../../../generated/common';
-import {
-  OrderDirection,
-  OrderType,
-  TimeInForceType
-} from '../../../generated/orders';
+import { OrderDirection, OrderType, TimeInForceType } from '../../../generated/orders';
 import { createPostOrderRequest } from './request.mapper';
 
 describe('createPostOrderRequest', () => {

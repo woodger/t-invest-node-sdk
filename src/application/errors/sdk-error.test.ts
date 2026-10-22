@@ -1,10 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  isSdkError,
-  SdkError,
-  SdkErrorCode
-} from './sdk-error';
+import { isSdkError, SdkError, SdkErrorCode } from './sdk-error';
 
 describe('SdkError', () => {
   test('exposes stable runtime diagnostics', () => {

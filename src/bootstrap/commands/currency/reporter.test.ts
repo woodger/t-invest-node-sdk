@@ -1,14 +1,8 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
+import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import { RealExchange, SecurityTradingStatus } from '../../../generated/common';
-import {
-  type Currency,
-  type CurrencyResponse
-} from '../../../generated/instruments';
+import { type Currency, type CurrencyResponse } from '../../../generated/instruments';
 import { createCurrencyReport, formatCurrencyReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

@@ -1,10 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  assertUnaryLimitConfig,
-  compileUnaryLimits,
-  defineUnaryLimits
-} from './unary-limit-config';
+import { assertUnaryLimitConfig, compileUnaryLimits, defineUnaryLimits } from './unary-limit-config';
 
 const perMinute = (maxRequests: number) => ({
   maxRequests,

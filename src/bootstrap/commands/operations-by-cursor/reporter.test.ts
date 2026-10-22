@@ -1,10 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  InstrumentType,
-  type MoneyValue,
-  type Quotation
-} from '../../../generated/common';
+import { InstrumentType, type MoneyValue, type Quotation } from '../../../generated/common';
 import {
   OperationState,
   OperationType,
@@ -12,10 +8,7 @@ import {
   type OperationItem,
   type OperationItemTrade
 } from '../../../generated/operations';
-import {
-  createOperationsByCursorReport,
-  formatOperationsByCursorReport
-} from './reporter';
+import { createOperationsByCursorReport, formatOperationsByCursorReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {

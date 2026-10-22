@@ -1,9 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  OperationState,
-  OperationType
-} from '../../../generated/operations';
+import { OperationState, OperationType } from '../../../generated/operations';
 import { createOperationsByCursorRequest } from './request.mapper';
 
 const defaultOptions = {

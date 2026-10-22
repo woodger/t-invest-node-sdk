@@ -6,10 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  DividendsReport,
-  DividendsReportItem
-} from '../../../application/reports';
+import type { DividendsReport, DividendsReportItem } from '../../../application/reports';
 import type { Dividend } from '../../../generated/instruments';
 import {
   formatReportDate,

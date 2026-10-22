@@ -8,10 +8,7 @@
  */
 
 import type { TInvestOptions } from '../../application/dto/t-invest-options';
-import {
-  resolveSdkOptionsFromCommandOptions,
-  type SdkCommandOptions
-} from '../args/sdk-options';
+import { resolveSdkOptionsFromCommandOptions, type SdkCommandOptions } from '../args/sdk-options';
 
 interface ClosableSdk {
   close(): void;

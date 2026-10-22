@@ -1,9 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  createOpenSandboxAccountReport,
-  formatOpenSandboxAccountReport
-} from './reporter';
+import { createOpenSandboxAccountReport, formatOpenSandboxAccountReport } from './reporter';
 
 describe('sandbox-open-account reporter', () => {
   describe('createOpenSandboxAccountReport', () => {

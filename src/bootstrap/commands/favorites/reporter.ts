@@ -6,13 +6,8 @@
  * `cli.ts`.
  */
 
-import type {
-  FavoritesReport,
-  FavoritesReportInstrument
-} from '../../../application/reports';
-import {
-  instrumentTypeToJSON
-} from '../../../generated/common';
+import type { FavoritesReport, FavoritesReportInstrument } from '../../../application/reports';
+import { instrumentTypeToJSON } from '../../../generated/common';
 import type { FavoriteInstrument } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 

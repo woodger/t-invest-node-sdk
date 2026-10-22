@@ -9,11 +9,7 @@
 import type { BrandReport } from '../../../application/reports';
 import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
-import {
-  brandsFormats,
-  createBrandReport,
-  type BrandsFormat
-} from '../brands/reporter';
+import { brandsFormats, createBrandReport, type BrandsFormat } from '../brands/reporter';
 
 /** Представление данных бренда: JSON или таблица. */
 export type BrandFormat = BrandsFormat;

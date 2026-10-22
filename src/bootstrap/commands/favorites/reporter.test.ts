@@ -1,8 +1,5 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
+import { describe, test } from 'node:test';
 import { InstrumentType } from '../../../generated/common';
 import type { FavoriteInstrument } from '../../../generated/instruments';
 import { createFavoritesReport, formatFavoritesReport } from './reporter';

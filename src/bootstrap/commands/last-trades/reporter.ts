@@ -6,18 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  LastTradesReport,
-  LastTradesReportTrade
-} from '../../../application/reports';
-import {
-  tradeDirectionToJSON,
-  type Trade
-} from '../../../generated/marketdata';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import type { LastTradesReport, LastTradesReportTrade } from '../../../application/reports';
+import { tradeDirectionToJSON, type Trade } from '../../../generated/marketdata';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление последних сделок по инструменту: JSON или таблица. */

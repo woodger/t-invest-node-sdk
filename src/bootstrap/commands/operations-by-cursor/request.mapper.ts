@@ -13,10 +13,7 @@ import {
   type GetOperationsByCursorRequest
 } from '../../../generated/operations';
 import { CliUsageError } from 'icore';
-import {
-  parseCommaSeparatedStringListOption,
-  parseDateTimeOption
-} from '../../args/command-options';
+import { parseCommaSeparatedStringListOption, parseDateTimeOption } from '../../args/command-options';
 
 interface OperationsByCursorRequestOptions {
   readonly 'account-id': string;

@@ -6,17 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  ClosePricesReport,
-  ClosePricesReportPrice
-} from '../../../application/reports';
-import type {
-  InstrumentClosePriceResponse
-} from '../../../generated/marketdata';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import type { ClosePricesReport, ClosePricesReportPrice } from '../../../application/reports';
+import type { InstrumentClosePriceResponse } from '../../../generated/marketdata';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление цен закрытия инструментов: JSON или таблица. */

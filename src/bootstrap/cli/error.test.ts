@@ -1,11 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { CliUsageError, IcoreError } from 'icore';
-import {
-  cliExitCodes,
-  renderCommandError,
-  resolveCommandExitCode
-} from './error';
+import { cliExitCodes, renderCommandError, resolveCommandExitCode } from './error';
 
 describe('renderCommandError', () => {
   test('renders Error message with trailing newline', () => {

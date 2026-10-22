@@ -7,9 +7,7 @@
  * Здесь не должно быть чтения config, CLI option schema или JSONL mapping.
  */
 
-import type {
-  TInvestCallOptions
-} from '../../../application/dto/t-invest-services';
+import type { TInvestCallOptions } from '../../../application/dto/t-invest-services';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type {
   MarketDataRequest,
@@ -22,15 +20,8 @@ import type {
   PositionsStreamRequest,
   PositionsStreamResponse
 } from '../../../generated/operations';
-import type {
-  TradesStreamRequest,
-  TradesStreamResponse
-} from '../../../generated/orders';
-import type {
-  StreamRunConfig,
-  StreamRunRuntime,
-  StreamRunStreamName
-} from './config';
+import type { TradesStreamRequest, TradesStreamResponse } from '../../../generated/orders';
+import type { StreamRunConfig, StreamRunRuntime, StreamRunStreamName } from './config';
 import {
   createMarketDataServerSideStreamRequest,
   createMarketDataStreamRequests,
@@ -38,10 +29,7 @@ import {
   createPositionsStreamRequest,
   createTradesStreamRequest
 } from './request.mapper';
-import {
-  formatStreamRunResponse,
-  type StreamRunResponse
-} from './reporter';
+import { formatStreamRunResponse, type StreamRunResponse } from './reporter';
 
 /**
  * Контракт SDK для потоковой сессии, включающий используемые потоки и закрытие

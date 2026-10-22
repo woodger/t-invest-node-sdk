@@ -3,10 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { CloseSandboxAccountRequest } from '../../../generated/sandbox';
-import {
-  createSandboxCloseAccountCommand,
-  createSandboxCloseAccountRequest
-} from './cli';
+import { createSandboxCloseAccountCommand, createSandboxCloseAccountRequest } from './cli';
 
 describe('sandbox-close-account command', () => {
   describe('createSandboxCloseAccountRequest', () => {

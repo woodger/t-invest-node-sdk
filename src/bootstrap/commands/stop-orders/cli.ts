@@ -11,11 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  GetStopOrdersRequest,
-  StopOrderStatusOption,
-  type GetStopOrdersResponse
-} from '../../../generated/stoporders';
+import { GetStopOrdersRequest, StopOrderStatusOption, type GetStopOrdersResponse } from '../../../generated/stoporders';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

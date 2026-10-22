@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  GetOrderStateRequest,
-  OrderState
-} from '../../../generated/orders';
+import type { GetOrderStateRequest, OrderState } from '../../../generated/orders';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';

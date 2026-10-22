@@ -1,17 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
-import {
-  createSecureServer,
-  type ServerHttp2Stream
-} from 'node:http2';
+import { createSecureServer, type ServerHttp2Stream } from 'node:http2';
 import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
-import {
-  ClientError,
-  createClient,
-  createServer,
-  Status
-} from 'nice-grpc';
+import { ClientError, createClient, createServer, Status } from 'nice-grpc';
 import type { ServiceDefinition } from 'nice-grpc';
 import { createSdkChannel } from './sdk-channel';
 

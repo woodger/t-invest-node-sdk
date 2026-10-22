@@ -1,14 +1,8 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  GetFuturesMarginRequest,
-  GetFuturesMarginResponse
-} from '../../../generated/instruments';
+import type { GetFuturesMarginRequest, GetFuturesMarginResponse } from '../../../generated/instruments';
 import { createFuturesMarginCommand, createFuturesMarginRequest } from './cli';
 
 function response(

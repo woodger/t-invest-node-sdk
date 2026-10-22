@@ -6,23 +6,11 @@
  * `cli.ts`.
  */
 
-import type {
-  EtfReport,
-  EtfReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Etf,
-  EtfResponse
-} from '../../../generated/instruments';
+import type { EtfReport, EtfReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Etf, EtfResponse } from '../../../generated/instruments';
 
-import {
-  formatReportDate,
-  formatReportDecimal
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportDecimal } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных фонда: JSON или таблица. */

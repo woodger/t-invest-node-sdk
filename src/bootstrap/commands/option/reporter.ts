@@ -6,18 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  OptionReport,
-  OptionReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Option,
-  OptionResponse
-} from '../../../generated/instruments';
+import type { OptionReport, OptionReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Option, OptionResponse } from '../../../generated/instruments';
 import {
   optionDirectionToJSON,
   optionPaymentTypeToJSON,

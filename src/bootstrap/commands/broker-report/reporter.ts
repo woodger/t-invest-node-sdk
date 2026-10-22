@@ -6,16 +6,8 @@
  * `cli.ts`.
  */
 
-import type {
-  BrokerReportItemReport,
-  BrokerReportPageReport,
-  BrokerReportReport
-} from '../../../application/reports';
-import type {
-  BrokerReport,
-  BrokerReportResponse,
-  GetBrokerReportResponse
-} from '../../../generated/operations';
+import type { BrokerReportItemReport, BrokerReportPageReport, BrokerReportReport } from '../../../application/reports';
+import type { BrokerReport, BrokerReportResponse, GetBrokerReportResponse } from '../../../generated/operations';
 import {
   formatReportDate,
   formatReportMoneyText,

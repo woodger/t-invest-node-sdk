@@ -10,11 +10,7 @@ import type { OrderStateReport } from '../../../application/reports';
 import type { OrderState } from '../../../generated/orders';
 import { formatReportMoneyText } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
-import {
-  createOrderStateReport,
-  ordersFormats,
-  type OrdersFormat
-} from '../orders/reporter';
+import { createOrderStateReport, ordersFormats, type OrdersFormat } from '../orders/reporter';
 
 /** Представление состояния заявки: JSON или таблица. */
 export type OrderStateFormat = OrdersFormat;

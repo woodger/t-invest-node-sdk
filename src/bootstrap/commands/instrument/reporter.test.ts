@@ -1,17 +1,7 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
-import {
-  RealExchange,
-  InstrumentType,
-  SecurityTradingStatus
-} from '../../../generated/common';
-import {
-  type Instrument,
-  type InstrumentResponse
-} from '../../../generated/instruments';
+import { describe, test } from 'node:test';
+import { RealExchange, InstrumentType, SecurityTradingStatus } from '../../../generated/common';
+import { type Instrument, type InstrumentResponse } from '../../../generated/instruments';
 import { createInstrumentReport, formatInstrumentReport } from './reporter';
 
 function instrument(overrides: Partial<Instrument> = {}): Instrument {

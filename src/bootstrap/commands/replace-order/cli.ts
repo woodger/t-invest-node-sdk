@@ -11,21 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type PostOrderResponse,
-  type ReplaceOrderRequest
-} from '../../../generated/orders';
+import { type PostOrderResponse, type ReplaceOrderRequest } from '../../../generated/orders';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
-import {
-  positiveSafeIntegerOption,
-  withSdkOptions
-} from '../../args/command-options';
+import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  assertSideEffectConfirmed,
-  sideEffectConfirmationOptionsSchema
-} from '../../args/side-effect-args';
+import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
 import { formatReplaceOrder, replaceOrderFormats } from './reporter';
 import { createReplaceOrderRequest } from './request.mapper';
 

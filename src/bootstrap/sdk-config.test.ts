@@ -1,19 +1,10 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { TInvestOptions } from '../application/dto/t-invest-options';
-import {
-  isSdkError,
-  SdkErrorCode
-} from '../application/errors/sdk-error';
-import {
-  defaultConfig,
-  resolveSdkInstanceOptions,
-  resolveUnaryLimitConfig
-} from './sdk-config';
+import { isSdkError, SdkErrorCode } from '../application/errors/sdk-error';
+import { defaultConfig, resolveSdkInstanceOptions, resolveUnaryLimitConfig } from './sdk-config';
 import { defineUnaryLimits } from './unary-limit-config';
-import {
-  UnaryLimitResolver
-} from '../infrastructure/transport/grpc/unary-limit-resolver';
+import { UnaryLimitResolver } from '../infrastructure/transport/grpc/unary-limit-resolver';
 
 describe('defaultConfig', () => {
   test('applies current service-level unary limits', () => {

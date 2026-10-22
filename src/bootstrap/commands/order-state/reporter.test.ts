@@ -1,19 +1,8 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
+import { describe, test } from 'node:test';
 import type { MoneyValue } from '../../../generated/common';
-import {
-  OrderDirection,
-  OrderExecutionReportStatus,
-  OrderType,
-  type OrderState
-} from '../../../generated/orders';
-import {
-  createSingleOrderStateReport,
-  formatOrderStateReport
-} from './reporter';
+import { OrderDirection, OrderExecutionReportStatus, OrderType, type OrderState } from '../../../generated/orders';
+import { createSingleOrderStateReport, formatOrderStateReport } from './reporter';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {
   return {

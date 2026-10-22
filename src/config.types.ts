@@ -20,10 +20,7 @@ import type {
   StopOrdersService,
   UsersService
 } from './application/dto/t-invest-services';
-import type {
-  TInvestUnaryLimit,
-  TInvestUnaryLimits
-} from './application/services/unary-limiter';
+import type { TInvestUnaryLimit, TInvestUnaryLimits } from './application/services/unary-limiter';
 
 type GrpcMethodName<Service> = Capitalize<Extract<keyof Service, string>>;
 

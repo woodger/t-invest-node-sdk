@@ -6,23 +6,11 @@
  * `cli.ts`.
  */
 
-import type {
-  FutureReport,
-  FutureReportInstrument
-} from '../../../application/reports';
-import {
-  realExchangeToJSON,
-  securityTradingStatusToJSON
-} from '../../../generated/common';
-import type {
-  Future,
-  FutureResponse
-} from '../../../generated/instruments';
+import type { FutureReport, FutureReportInstrument } from '../../../application/reports';
+import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import type { Future, FutureResponse } from '../../../generated/instruments';
 
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных фьючерса: JSON или таблица. */

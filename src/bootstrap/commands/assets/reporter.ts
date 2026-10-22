@@ -9,12 +9,7 @@
 import type { AssetsReport } from '../../../application/reports';
 import type { Asset } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import {
-  assetFormats,
-  createAssetReportSummary,
-  renderAssetRows,
-  type AssetFormat
-} from '../asset/reporter';
+import { assetFormats, createAssetReportSummary, renderAssetRows, type AssetFormat } from '../asset/reporter';
 
 /** Представление списка активов: JSON или таблица. */
 export type AssetsFormat = AssetFormat;

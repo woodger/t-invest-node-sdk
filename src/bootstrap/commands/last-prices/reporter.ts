@@ -6,15 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  LastPricesReport,
-  LastPricesReportPrice
-} from '../../../application/reports';
+import type { LastPricesReport, LastPricesReportPrice } from '../../../application/reports';
 import type { LastPrice } from '../../../generated/marketdata';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление последних цен инструментов: JSON или таблица. */

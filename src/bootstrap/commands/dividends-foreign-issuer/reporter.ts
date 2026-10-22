@@ -16,10 +16,7 @@ import type {
   GetDividendsForeignIssuerReportResponse,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление отчёта о дивидендах иностранных эмитентов: JSON или таблица. */

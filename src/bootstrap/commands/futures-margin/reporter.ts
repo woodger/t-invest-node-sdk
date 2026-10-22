@@ -8,11 +8,7 @@
 
 import type { FuturesMarginReport } from '../../../application/reports';
 import type { GetFuturesMarginResponse } from '../../../generated/instruments';
-import {
-  formatReportDecimal,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportDecimal, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление гарантийного обеспечения фьючерса: JSON или таблица. */

@@ -9,10 +9,7 @@
  * Здесь не должно быть кеширования клиентов сервисов или разбора опций CLI.
  */
 
-import {
-  ChannelCredentials,
-  createChannel
-} from 'nice-grpc';
+import { ChannelCredentials, createChannel } from 'nice-grpc';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
 

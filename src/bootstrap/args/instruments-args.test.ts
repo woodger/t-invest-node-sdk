@@ -2,10 +2,7 @@ import { InstrumentStatus } from '../../generated/common';
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { InstrumentIdType } from '../../generated/instruments';
-import {
-  createInstrumentLookupRequestFromOptions,
-  createInstrumentsRequestFromOptions
-} from './instruments-args';
+import { createInstrumentLookupRequestFromOptions, createInstrumentsRequestFromOptions } from './instruments-args';
 
 describe('instruments args', () => {
   describe('createInstrumentLookupRequestFromOptions', () => {

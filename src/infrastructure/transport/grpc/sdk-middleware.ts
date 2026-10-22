@@ -12,23 +12,10 @@
  * Здесь не должно быть правил повторных запросов или управления потоками.
  */
 
-import type {
-  CallOptions,
-  ClientMiddlewareCall
-} from 'nice-grpc';
-import {
-  SdkError,
-  SdkErrorCode
-} from '../../../application/errors/sdk-error';
-import type {
-  TInvestUnaryLimiter
-} from '../../../application/services/unary-limiter';
-import {
-  createAbortError,
-  errorMessage,
-  isCallCancellation,
-  mapSdkCallError
-} from './sdk-call-error';
+import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
+import { SdkError, SdkErrorCode } from '../../../application/errors/sdk-error';
+import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
+import { createAbortError, errorMessage, isCallCancellation, mapSdkCallError } from './sdk-call-error';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 /** Проверки состояния SDK и отмена ожиданий квоты при его закрытии. */

@@ -1,13 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import type {
-  MoneyValue,
-  Quotation
-} from '../../../generated/common';
-import type {
-  BrokerReport,
-  BrokerReportResponse
-} from '../../../generated/operations';
+import type { MoneyValue, Quotation } from '../../../generated/common';
+import type { BrokerReport, BrokerReportResponse } from '../../../generated/operations';
 import { createBrokerReportReport, formatBrokerReportReport } from './reporter';
 
 function money(currency: string, units: number, nano: number): MoneyValue {

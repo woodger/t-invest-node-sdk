@@ -1,11 +1,8 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test } from 'node:test';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { CancelOrderRequest
-} from '../../../generated/orders';
+import type { CancelOrderRequest } from '../../../generated/orders';
 import { createCancelOrderCommand } from './cli';
 
 describe('cancel-order command', () => {

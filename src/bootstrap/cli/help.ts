@@ -20,11 +20,7 @@ import {
   type CliDomainName
 } from './domains';
 import { cliName } from './version';
-import {
-  commandHelp,
-  type CommandHelp,
-  type CommandHelpName
-} from './help-catalog';
+import { commandHelp, type CommandHelp, type CommandHelpName } from './help-catalog';
 
 type HelpOptions = {
   help?: unknown;

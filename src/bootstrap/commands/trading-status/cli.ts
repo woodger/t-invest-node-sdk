@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  GetTradingStatusRequest,
-  type GetTradingStatusResponse
-} from '../../../generated/marketdata';
+import { GetTradingStatusRequest, type GetTradingStatusResponse } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

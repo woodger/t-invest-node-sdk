@@ -6,20 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  PortfolioReport,
-  PortfolioReportPosition,
-  PortfolioReportSummary
-} from '../../../application/reports';
-import type {
-  PortfolioPosition,
-  PortfolioResponse
-} from '../../../generated/operations';
-import {
-  formatReportDecimal,
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import type { PortfolioReport, PortfolioReportPosition, PortfolioReportSummary } from '../../../application/reports';
+import type { PortfolioPosition, PortfolioResponse } from '../../../generated/operations';
+import { formatReportDecimal, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление портфеля счёта: JSON или таблица. */

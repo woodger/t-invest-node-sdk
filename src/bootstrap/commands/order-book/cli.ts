@@ -11,18 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  GetOrderBookRequest,
-  type GetOrderBookResponse
-} from '../../../generated/marketdata';
+import { GetOrderBookRequest, type GetOrderBookResponse } from '../../../generated/marketdata';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
-import {
-  positiveInt32Option,
-  withSdkOptions
-} from '../../args/command-options';
+import { positiveInt32Option, withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { formatOrderBook, orderBookFormats } from './reporter';
 

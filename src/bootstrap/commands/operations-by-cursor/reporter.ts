@@ -6,10 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  OperationsByCursorReport,
-  OperationsByCursorReportItem
-} from '../../../application/reports';
+import type { OperationsByCursorReport, OperationsByCursorReportItem } from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
 import {
   operationStateToJSON,

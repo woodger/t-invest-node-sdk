@@ -26,10 +26,7 @@ import {
   withSdkOptions
 } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  dividendsForeignIssuerFormats,
-  formatDividendsForeignIssuer
-} from './reporter';
+import { dividendsForeignIssuerFormats, formatDividendsForeignIssuer } from './reporter';
 
 type DividendsForeignIssuerSdk = {
   operations: {

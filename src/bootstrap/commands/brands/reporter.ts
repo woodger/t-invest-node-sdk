@@ -6,10 +6,7 @@
  * `cli.ts`.
  */
 
-import type {
-  BrandsReport,
-  BrandsReportBrand
-} from '../../../application/reports';
+import type { BrandsReport, BrandsReportBrand } from '../../../application/reports';
 import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 

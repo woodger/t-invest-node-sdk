@@ -13,11 +13,7 @@ import {
   orderTypeToJSON,
   type PostOrderResponse
 } from '../../../generated/orders';
-import {
-  formatReportMoneyText,
-  formatReportQuotation,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportMoneyText, formatReportQuotation, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление результата выставления заявки: JSON или таблица. */

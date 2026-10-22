@@ -1,10 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import type { Quotation } from '../../../generated/common';
-import {
-  TradeDirection,
-  type Trade
-} from '../../../generated/marketdata';
+import { TradeDirection, type Trade } from '../../../generated/marketdata';
 import { createLastTradesReport, formatLastTradesReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

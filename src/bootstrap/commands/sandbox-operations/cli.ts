@@ -11,17 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  OperationsRequest,
-  OperationsResponse
-} from '../../../generated/operations';
+import type { OperationsRequest, OperationsResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  instrumentIdWithDeprecatedFigiOptionsSchema
-} from '../../args/instrument-id-options';
+import { instrumentIdWithDeprecatedFigiOptionsSchema } from '../../args/instrument-id-options';
 import { createOperationsRequest } from '../operations/request.mapper';
 import { formatOperations, operationsFormats } from '../operations/reporter';
 

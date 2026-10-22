@@ -13,17 +13,9 @@ import {
   type AssetReportSummary
 } from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
-import type {
-  Asset,
-  AssetFull,
-  AssetInstrument,
-  AssetResponse,
-  Brand
-} from '../../../generated/instruments';
+import type { Asset, AssetFull, AssetInstrument, AssetResponse, Brand } from '../../../generated/instruments';
 import { assetTypeToJSON } from '../../../generated/instruments';
-import {
-  formatReportDate
-} from '../../../infrastructure/report-values';
+import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных актива: JSON или таблица. */

@@ -2,10 +2,7 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { SecurityTradingStatus } from '../../../generated/common';
 import type { GetTradingStatusResponse } from '../../../generated/marketdata';
-import {
-  createTradingStatusReport,
-  formatTradingStatusReport
-} from './reporter';
+import { createTradingStatusReport, formatTradingStatusReport } from './reporter';
 
 function response(
   overrides: Partial<GetTradingStatusResponse> = {}

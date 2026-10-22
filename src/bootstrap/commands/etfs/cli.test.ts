@@ -1,15 +1,9 @@
 import { InstrumentStatus } from '../../../generated/common';
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
+import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type EtfsResponse,
-  type InstrumentsRequest
-} from '../../../generated/instruments';
+import { type EtfsResponse, type InstrumentsRequest } from '../../../generated/instruments';
 import { createEtfsCommand } from './cli';
 
 function response(overrides: Partial<EtfsResponse> = {}): EtfsResponse {

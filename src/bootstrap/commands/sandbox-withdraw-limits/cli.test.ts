@@ -3,10 +3,7 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import type { MoneyValue } from '../../../generated/common';
-import type {
-  WithdrawLimitsRequest,
-  WithdrawLimitsResponse
-} from '../../../generated/operations';
+import type { WithdrawLimitsRequest, WithdrawLimitsResponse } from '../../../generated/operations';
 import { createSandboxWithdrawLimitsCommand } from './cli';
 
 function money(units: number, nano: number, currency = 'rub'): MoneyValue {

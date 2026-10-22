@@ -11,19 +11,13 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  WithdrawLimitsRequest,
-  WithdrawLimitsResponse
-} from '../../../generated/operations';
+import type { WithdrawLimitsRequest, WithdrawLimitsResponse } from '../../../generated/operations';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createWithdrawLimitsRequest } from '../withdraw-limits/request.mapper';
-import {
-  formatWithdrawLimits,
-  withdrawLimitsFormats
-} from '../withdraw-limits/reporter';
+import { formatWithdrawLimits, withdrawLimitsFormats } from '../withdraw-limits/reporter';
 
 type SandboxWithdrawLimitsSdk = {
   sandbox: {

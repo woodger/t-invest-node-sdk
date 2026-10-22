@@ -8,10 +8,7 @@
 
 import type { SandboxPayInReport } from '../../../application/reports';
 import type { SandboxPayInResponse } from '../../../generated/sandbox';
-import {
-  formatReportMoneyText,
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление результата пополнения счёта песочницы: JSON или таблица. */

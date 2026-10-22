@@ -8,10 +8,7 @@
  * Здесь не должно быть чтения переменных окружения или создания транспорта.
  */
 
-import type {
-  TInvestUnaryLimiter,
-  TInvestUnaryLimits
-} from '../services/unary-limiter';
+import type { TInvestUnaryLimiter, TInvestUnaryLimits } from '../services/unary-limiter';
 
 /** Переопределение доверенных корневых сертификатов TLS для канала SDK. */
 export interface TInvestTlsOptions {

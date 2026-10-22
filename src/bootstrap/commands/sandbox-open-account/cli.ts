@@ -11,22 +11,13 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  OpenSandboxAccountRequest,
-  OpenSandboxAccountResponse
-} from '../../../generated/sandbox';
+import type { OpenSandboxAccountRequest, OpenSandboxAccountResponse } from '../../../generated/sandbox';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  assertSideEffectConfirmed,
-  sideEffectConfirmationOptionsSchema
-} from '../../args/side-effect-args';
-import {
-  formatOpenSandboxAccount,
-  openSandboxAccountFormats
-} from './reporter';
+import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import { formatOpenSandboxAccount, openSandboxAccountFormats } from './reporter';
 
 type SandboxOpenAccountSdk = {
   sandbox: {

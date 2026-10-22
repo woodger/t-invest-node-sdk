@@ -1,8 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  SubscriptionInterval
-} from '../../../generated/marketdata';
+import { SubscriptionInterval } from '../../../generated/marketdata';
 import { maxInt32 } from '../../args/command-options';
 import {
   parseStreamRunConfig,

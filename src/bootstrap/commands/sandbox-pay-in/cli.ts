@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  SandboxPayInRequest,
-  SandboxPayInResponse
-} from '../../../generated/sandbox';
+import type { SandboxPayInRequest, SandboxPayInResponse } from '../../../generated/sandbox';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

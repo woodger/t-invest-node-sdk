@@ -6,13 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  WithdrawLimitsReport
-} from '../../../application/reports';
+import type { WithdrawLimitsReport } from '../../../application/reports';
 import type { WithdrawLimitsResponse } from '../../../generated/operations';
-import {
-  toReportMoney
-} from '../../../infrastructure/report-values';
+import { toReportMoney } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление доступных для вывода средств: JSON или таблица. */

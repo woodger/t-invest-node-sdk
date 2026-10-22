@@ -11,18 +11,12 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  type InstrumentsRequest,
-  type SharesResponse
-} from '../../../generated/instruments';
+import { type InstrumentsRequest, type SharesResponse } from '../../../generated/instruments';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import {
-  createInstrumentsRequestFromOptions,
-  instrumentStatusOptionsSchema
-} from '../../args/instruments-args';
+import { createInstrumentsRequestFromOptions, instrumentStatusOptionsSchema } from '../../args/instruments-args';
 import { formatShares, sharesFormats } from './reporter';
 
 type SharesSdk = {

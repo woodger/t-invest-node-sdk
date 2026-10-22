@@ -8,10 +8,7 @@ import type {
   GetTradingStatusesRequest,
   GetTradingStatusesResponse
 } from '../../../generated/marketdata';
-import {
-  createTradingStatusesCommand,
-  createTradingStatusesRequest
-} from './cli';
+import { createTradingStatusesCommand, createTradingStatusesRequest } from './cli';
 
 function tradingStatus(
   overrides: Partial<GetTradingStatusResponse> = {}

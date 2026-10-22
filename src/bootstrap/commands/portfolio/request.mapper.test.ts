@@ -1,8 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import {
-  PortfolioRequest_CurrencyRequest as PortfolioCurrency
-} from '../../../generated/operations';
+import { PortfolioRequest_CurrencyRequest as PortfolioCurrency } from '../../../generated/operations';
 import { createPortfolioRequest } from './request.mapper';
 
 describe('createPortfolioRequest', () => {

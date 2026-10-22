@@ -6,10 +6,7 @@ import type {
   GetDividendsForeignIssuerRequest,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import {
-  createDividendsForeignIssuerCommand,
-  createDividendsForeignIssuerRequest
-} from './cli';
+import { createDividendsForeignIssuerCommand, createDividendsForeignIssuerRequest } from './cli';
 
 function response(
   overrides: Partial<GetDividendsForeignIssuerResponse> = {}

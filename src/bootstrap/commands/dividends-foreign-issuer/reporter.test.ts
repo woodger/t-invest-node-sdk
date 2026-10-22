@@ -5,10 +5,7 @@ import type {
   DividendsForeignIssuerReport as GeneratedDividendsForeignIssuerReport,
   GetDividendsForeignIssuerResponse
 } from '../../../generated/operations';
-import {
-  createDividendsForeignIssuerReport,
-  formatDividendsForeignIssuerReport
-} from './reporter';
+import { createDividendsForeignIssuerReport, formatDividendsForeignIssuerReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {
   return {

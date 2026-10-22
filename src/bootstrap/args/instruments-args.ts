@@ -6,11 +6,7 @@
  */
 
 import { InstrumentStatus } from '../../generated/common';
-import {
-  InstrumentIdType,
-  type InstrumentRequest,
-  type InstrumentsRequest
-} from '../../generated/instruments';
+import { InstrumentIdType, type InstrumentRequest, type InstrumentsRequest } from '../../generated/instruments';
 import { CliUsageError, parseOptions, type RawOptionValue } from 'icore';
 
 type InstrumentIdTypeName = keyof typeof instrumentIdTypes;

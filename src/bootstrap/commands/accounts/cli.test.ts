@@ -2,12 +2,7 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  AccessLevel,
-  AccountStatus,
-  AccountType,
-  type Account
-} from '../../../generated/users';
+import { AccessLevel, AccountStatus, AccountType, type Account } from '../../../generated/users';
 import { createAccountsCommand } from './cli';
 
 function account(overrides: Partial<Account> = {}): Account {

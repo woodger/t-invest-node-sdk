@@ -1,15 +1,8 @@
 import { strict as assert } from 'node:assert';
-import {
-  describe,
-  test
-} from 'node:test';
+import { describe, test } from 'node:test';
 import type { MoneyValue, Quotation } from '../../../generated/common';
 import { RealExchange, SecurityTradingStatus } from '../../../generated/common';
-import {
-  ShareType,
-  type Share,
-  type ShareResponse
-} from '../../../generated/instruments';
+import { ShareType, type Share, type ShareResponse } from '../../../generated/instruments';
 import { createShareReport, formatShareReport } from './reporter';
 
 function quotation(units: number, nano: number): Quotation {

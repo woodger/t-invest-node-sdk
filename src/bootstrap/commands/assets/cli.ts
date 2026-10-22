@@ -11,13 +11,8 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import {
-  InstrumentType
-} from '../../../generated/common';
-import type {
-  AssetsRequest,
-  AssetsResponse
-} from '../../../generated/instruments';
+import { InstrumentType } from '../../../generated/common';
+import type { AssetsRequest, AssetsResponse } from '../../../generated/instruments';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

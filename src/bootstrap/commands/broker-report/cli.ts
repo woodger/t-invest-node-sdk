@@ -11,10 +11,7 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type {
-  BrokerReportRequest,
-  BrokerReportResponse
-} from '../../../generated/operations';
+import type { BrokerReportRequest, BrokerReportResponse } from '../../../generated/operations';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

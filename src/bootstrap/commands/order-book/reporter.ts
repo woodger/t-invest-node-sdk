@@ -6,18 +6,9 @@
  * `cli.ts`.
  */
 
-import type {
-  OrderBookReport,
-  OrderBookReportLevel
-} from '../../../application/reports';
-import type {
-  GetOrderBookResponse,
-  Order
-} from '../../../generated/marketdata';
-import {
-  formatReportDate,
-  formatReportQuotation
-} from '../../../infrastructure/report-values';
+import type { OrderBookReport, OrderBookReportLevel } from '../../../application/reports';
+import type { GetOrderBookResponse, Order } from '../../../generated/marketdata';
+import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление стакана заявок: JSON или таблица. */
