@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { createOutput } from 'icore';
 import packageJson from '../../../package.json';
 import { maxInt32 } from '../args/command-options';
-import { cliExitCodes } from './error';
+import { cliExitCodes, terminalErrorPolicy } from './error';
 import { parseCliInput, runCli } from './runner';
 
 function createIo() {
@@ -187,6 +187,31 @@ describe('bootstrap cli runner', () => {
       assert.equal(read().stderr, '');
     });
 
+    test('prints help without validating command-specific options', async () => {
+      const { io, read } = createIo();
+      const exitCode = await runCli([
+        'operation',
+        'portfolio',
+        '--help',
+        '--format=xml'
+      ], io);
+
+      assert.equal(exitCode, cliExitCodes.success);
+      assert.match(read().stdout, /operation portfolio - Print account portfolio/);
+      assert.equal(read().stderr, '');
+    });
+
+    test('keeps help targets after the option terminator as literal text', async () => {
+      for (const target of ['--version', '-v', '--help', '--format=json', '--']) {
+        const { io, read } = createIo();
+        const exitCode = await runCli(['--help', '--', target], io);
+
+        assert.equal(exitCode, cliExitCodes.success);
+        assert.match(read().stdout, /Usage:/);
+        assert.equal(read().stderr, '');
+      }
+    });
+
     test(
       'prints sandbox preferred command help from technical command help flags',
       async () => {
@@ -366,15 +391,27 @@ describe('bootstrap cli runner', () => {
     );
 
     test(
-      'reports bootstrap output write failures through terminal error policy',
-      async () => {
+      'reports bootstrap output failures with the write phase',
+      async (context) => {
+        const failure = new Error('stdout failed');
+        const originalRenderError = terminalErrorPolicy.renderError;
+
+        assert.ok(originalRenderError);
+
+        const renderError = context.mock.fn(originalRenderError);
+
+        context.after(() => {
+          terminalErrorPolicy.renderError = originalRenderError;
+        });
+        terminalErrorPolicy.renderError = renderError;
+
         let stderr = '';
         const exitCode = await runCli(
           ['--version'],
           createOutput({
             stdout: {
               write() {
-                throw new Error('stdout failed');
+                throw failure;
               }
             },
             stderr: {
@@ -387,6 +424,9 @@ describe('bootstrap cli runner', () => {
 
         assert.equal(exitCode, cliExitCodes.runtimeError);
         assert.equal(stderr, 'stdout failed\n');
+        assert.equal(renderError.mock.callCount(), 1);
+        assert.equal(renderError.mock.calls[0]?.arguments[0], failure);
+        assert.equal(renderError.mock.calls[0]?.arguments[1].phase, 'write');
       }
     );
 
@@ -527,18 +567,20 @@ describe('bootstrap cli runner', () => {
     });
 
     test('prints deprecated figi option warnings to stderr', async () => {
-      const { io, read } = createIo();
-      const exitCode = await runCli([
-        'instrument',
-        'get-futures-margin',
-        '--figi=FUTFIGI'
-      ], io);
+      for (const optionArgs of [['--figi=FUTFIGI'], ['--figi', 'FUTFIGI']]) {
+        const { io, read } = createIo();
+        const exitCode = await runCli([
+          'instrument',
+          'get-futures-margin',
+          ...optionArgs
+        ], io);
 
-      assert.equal(exitCode, cliExitCodes.usageError);
-      assert.equal(read().stdout, '');
-      assert.match(read().stderr, /Warning: '--figi' is deprecated/);
-      assert.match(read().stderr, /use '--instrument-id' instead/);
-      assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
+        assert.equal(exitCode, cliExitCodes.usageError);
+        assert.equal(read().stdout, '');
+        assert.match(read().stderr, /Warning: '--figi' is deprecated/);
+        assert.match(read().stderr, /use '--instrument-id' instead/);
+        assert.match(read().stderr, /Expected '--token' or T_INVEST_TOKEN/);
+      }
     });
 
     test('does not warn for canonical instrument-id option', async () => {

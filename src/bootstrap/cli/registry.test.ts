@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { isPreparedCommandName } from 'icore';
 import { canonicalizeCommandName } from './domains';
-import { commandLineCommands } from './registry';
+import { commandLineCommands, resolveCommandWarnings } from './registry';
 import { renderVersionInfo } from './version';
 
 const legacyCommandNames = [
@@ -330,5 +330,24 @@ describe('commandLineCommands', () => {
       () => commandLineCommands.resolve(['portfolio']),
       /Unknown command/
     );
+  });
+});
+
+describe('resolveCommandWarnings', () => {
+  test('warns when the deprecated figi option was explicitly provided', () => {
+    assert.deepEqual(
+      resolveCommandWarnings('instrument future margin', { figi: true }),
+      ["Warning: '--figi' is deprecated for this command; use '--instrument-id' instead.\n"]
+    );
+  });
+
+  test('does not warn for options that were not explicitly provided', () => {
+    for (const provided of [{}, { figi: false }, { 'instrument-id': true }] as const) {
+      assert.deepEqual(resolveCommandWarnings('instrument future margin', provided), []);
+    }
+  });
+
+  test('does not warn for commands outside the deprecation policy', () => {
+    assert.deepEqual(resolveCommandWarnings('account list', { figi: true }), []);
   });
 });
