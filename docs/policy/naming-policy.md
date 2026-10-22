@@ -22,6 +22,12 @@
 `naming-example.ts`
 
 ```ts
+type UnaryLimits = Record<string, TInvestUnaryLimit>;
+
+interface TInvestOptions {
+  // ...
+}
+
 const maxRetryCount = 3;
 
 export const defaultConfig = {
@@ -29,12 +35,6 @@ export const defaultConfig = {
 };
 
 export function createSdkMetadata() {
-  // ...
-}
-
-type UnaryLimits = Record<string, TInvestUnaryLimit>;
-
-interface TInvestOptions {
   // ...
 }
 
