@@ -16,12 +16,17 @@ import type {
 } from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 
+/** Ответы поддерживаемых потоков SDK, которые reporter преобразует в события CLI. */
 export type StreamRunResponse =
   | MarketDataResponse
   | PortfolioStreamResponse
   | PositionsStreamResponse
   | TradesStreamResponse;
 
+/**
+ * Метка получения, номер события и параметры фильтрации и вывода одного ответа
+ * потока.
+ */
 export type StreamRunReportOptions = {
   stream: string;
   sequence: number;

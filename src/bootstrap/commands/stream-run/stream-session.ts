@@ -43,6 +43,10 @@ import {
   type StreamRunResponse
 } from './reporter';
 
+/**
+ * Контракт SDK для потоковой сессии, включающий используемые потоки и закрытие
+ * соединения.
+ */
 export type StreamRunSdk = {
   marketdataStream: {
     marketDataStream(
@@ -73,10 +77,20 @@ export type StreamRunSdk = {
   close(): void;
 };
 
+/**
+ * Создаёт SDK, который принадлежит потоковой сессии и закрывается при её
+ * завершении.
+ */
 export type StreamRunSdkFactory = (options: TInvestOptions) => StreamRunSdk;
+/** Календарное время для метки receivedAt у события потока. */
 export type StreamRunClock = () => Date;
+/** Монотонное время в миллисекундах для отсчёта длительности сессии и простоя. */
 export type StreamRunElapsedClock = () => number;
 
+/**
+ * Фабрика SDK и часы, передаваемые потоковой сессии для управления ресурсами и
+ * временем.
+ */
 export interface StreamRunSessionDependencies {
   readonly createSdk: StreamRunSdkFactory;
   readonly now: StreamRunClock;

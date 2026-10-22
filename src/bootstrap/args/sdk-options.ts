@@ -12,6 +12,10 @@
 import type { TInvestOptions } from '../../application/dto/t-invest-options';
 import { CliUsageError } from 'icore';
 
+/**
+ * Общие параметры подключения CLI; пропущенные token и endpoint дополняются из
+ * окружения.
+ */
 export type SdkCommandOptions = {
   token?: string | undefined;
   endpoint?: string | undefined;

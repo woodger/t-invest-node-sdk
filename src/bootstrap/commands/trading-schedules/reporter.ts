@@ -19,6 +19,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление торгового расписания: JSON или таблица. */
 export type TradingSchedulesFormat = typeof tradingSchedulesFormats[number];
 
 export const tradingSchedulesFormats = ['json', 'table'] as const;

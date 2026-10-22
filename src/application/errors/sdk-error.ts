@@ -9,6 +9,10 @@
  * Здесь не должно быть imports из transport libraries или retry policy.
  */
 
+/**
+ * Источник сбоя для различения ошибок провайдера, транспорта, отмены и
+ * проверок SDK.
+ */
 export type SdkErrorSource =
   | 'grpc'
   | 'tls'
@@ -16,6 +20,7 @@ export type SdkErrorSource =
   | 'lifecycle'
   | 'sdk';
 
+/** Диагностические поля ошибки SDK и её исходная причина для сохранения в cause. */
 export interface SdkErrorOptions {
   source: SdkErrorSource;
   path?: string;

@@ -24,6 +24,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление брокерского отчёта: JSON или таблица. */
 export type BrokerReportFormat = typeof brokerReportFormats[number];
 
 export const brokerReportFormats = ['json', 'table'] as const;

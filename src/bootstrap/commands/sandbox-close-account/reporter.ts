@@ -9,6 +9,7 @@
 import type { CloseSandboxAccountReport } from '../../../application/reports';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление результата закрытия счёта песочницы: JSON или таблица. */
 export type CloseSandboxAccountFormat =
   typeof closeSandboxAccountFormats[number];
 

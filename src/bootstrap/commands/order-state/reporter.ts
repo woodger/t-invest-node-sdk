@@ -16,6 +16,7 @@ import {
   type OrdersFormat
 } from '../orders/reporter';
 
+/** Представление состояния заявки: JSON или таблица. */
 export type OrderStateFormat = OrdersFormat;
 
 export const orderStateFormats = ordersFormats;

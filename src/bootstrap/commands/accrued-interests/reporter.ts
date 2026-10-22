@@ -17,6 +17,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление накопленного купонного дохода: JSON или таблица. */
 export type AccruedInterestsFormat = typeof accruedInterestsFormats[number];
 
 export const accruedInterestsFormats = ['json', 'table'] as const;

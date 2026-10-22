@@ -20,6 +20,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление последних сделок по инструменту: JSON или таблица. */
 export type LastTradesFormat = typeof lastTradesFormats[number];
 
 export const lastTradesFormats = ['json', 'table'] as const;

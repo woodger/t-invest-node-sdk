@@ -13,6 +13,7 @@ import type {
 import type { Brand } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление справочника брендов: JSON или таблица. */
 export type BrandsFormat = typeof brandsFormats[number];
 
 export const brandsFormats = ['json', 'table'] as const;

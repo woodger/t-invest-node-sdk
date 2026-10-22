@@ -25,6 +25,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление страницы истории операций: JSON или таблица. */
 export type OperationsByCursorFormat = typeof operationsByCursorFormats[number];
 
 export const operationsByCursorFormats = ['json', 'table'] as const;

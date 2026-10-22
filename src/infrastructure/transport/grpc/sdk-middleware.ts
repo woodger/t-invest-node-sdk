@@ -37,6 +37,7 @@ export interface SdkCallLifecycle {
   assertOpen(): void;
 }
 
+/** Настройки канала для распознавания ошибок TLS и превышения лимита ответа. */
 export interface SdkCallErrorClassificationOptions {
   readonly useSsl: boolean;
   readonly maxReceiveMessageLength: number;

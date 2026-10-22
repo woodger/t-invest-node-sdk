@@ -16,6 +16,7 @@ import {
   type CurrencyFormat
 } from '../currency/reporter';
 
+/** Представление списка валют: JSON или таблица. */
 export type CurrenciesFormat = CurrencyFormat;
 
 export const currenciesFormats = currencyFormats;

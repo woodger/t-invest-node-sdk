@@ -16,6 +16,7 @@ import {
 import type { FavoriteInstrument } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление списка избранных инструментов: JSON или таблица. */
 export type FavoritesFormat = typeof favoritesFormats[number];
 
 export const favoritesFormats = ['json', 'table'] as const;

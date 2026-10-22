@@ -26,6 +26,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных облигации: JSON или таблица. */
 export type BondFormat = typeof bondFormats[number];
 
 export const bondFormats = ['json', 'table'] as const;

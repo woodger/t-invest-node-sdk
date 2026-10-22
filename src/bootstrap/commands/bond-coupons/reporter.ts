@@ -18,6 +18,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление купонных выплат по облигации: JSON или таблица. */
 export type BondCouponsFormat = typeof bondCouponsFormats[number];
 
 export const bondCouponsFormats = ['json', 'table'] as const;

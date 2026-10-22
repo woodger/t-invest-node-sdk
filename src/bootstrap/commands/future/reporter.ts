@@ -25,6 +25,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных фьючерса: JSON или таблица. */
 export type FutureFormat = typeof futureFormats[number];
 
 export const futureFormats = ['json', 'table'] as const;

@@ -32,6 +32,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных опциона: JSON или таблица. */
 export type OptionFormat = typeof optionFormats[number];
 
 export const optionFormats = ['json', 'table'] as const;

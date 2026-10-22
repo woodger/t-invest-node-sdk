@@ -16,6 +16,7 @@ import {
   type AssetFormat
 } from '../asset/reporter';
 
+/** Представление списка активов: JSON или таблица. */
 export type AssetsFormat = AssetFormat;
 
 export const assetsFormats = assetFormats;

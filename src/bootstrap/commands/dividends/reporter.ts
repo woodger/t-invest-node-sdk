@@ -19,6 +19,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление дивидендных выплат по инструменту: JSON или таблица. */
 export type DividendsFormat = typeof dividendsFormats[number];
 
 export const dividendsFormats = ['json', 'table'] as const;

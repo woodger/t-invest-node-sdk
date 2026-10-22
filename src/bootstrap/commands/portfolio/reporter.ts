@@ -22,6 +22,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление портфеля счёта: JSON или таблица. */
 export type PortfolioFormat = typeof portfolioFormats[number];
 
 export const portfolioFormats = ['json', 'table'] as const;

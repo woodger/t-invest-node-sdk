@@ -20,6 +20,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление результата выставления заявки: JSON или таблица. */
 export type PostOrderFormat = typeof postOrderFormats[number];
 
 export const postOrderFormats = ['json', 'table'] as const;

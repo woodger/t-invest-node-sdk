@@ -10,6 +10,7 @@ import type { PostStopOrderReport } from '../../../application/reports';
 import type { PostStopOrderResponse } from '../../../generated/stoporders';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление результата выставления стоп-заявки: JSON или таблица. */
 export type PostStopOrderFormat = typeof postStopOrderFormats[number];
 
 export const postStopOrderFormats = ['json', 'table'] as const;

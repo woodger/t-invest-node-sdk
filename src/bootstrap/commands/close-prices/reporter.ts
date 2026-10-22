@@ -19,6 +19,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление цен закрытия инструментов: JSON или таблица. */
 export type ClosePricesFormat = typeof closePricesFormats[number];
 
 export const closePricesFormats = ['json', 'table'] as const;

@@ -14,6 +14,7 @@ import {
   type PostOrderFormat
 } from '../post-order/reporter';
 
+/** Представление результата изменения заявки: JSON или таблица. */
 export type ReplaceOrderFormat = PostOrderFormat;
 
 export const replaceOrderFormats = postOrderFormats;

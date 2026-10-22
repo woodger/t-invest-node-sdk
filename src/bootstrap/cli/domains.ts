@@ -10,7 +10,9 @@
  * parsing.
  */
 
+/** Имена публичных доменов CLI, выведенные из каталога cliDomains. */
 export type CliDomainName = keyof typeof cliDomains;
+/** Непустой путь CLI-команды или её псевдонима из отдельных слов. */
 export type CliCommandPath = readonly [string, ...string[]];
 
 type CliPathAliasDefinition = {

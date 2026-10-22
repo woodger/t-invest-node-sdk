@@ -26,6 +26,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных актива: JSON или таблица. */
 export type AssetFormat = typeof assetFormats[number];
 
 export const assetFormats = ['json', 'table'] as const;

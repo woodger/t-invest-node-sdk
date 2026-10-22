@@ -17,6 +17,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление последних цен инструментов: JSON или таблица. */
 export type LastPricesFormat = typeof lastPricesFormats[number];
 
 export const lastPricesFormats = ['json', 'table'] as const;

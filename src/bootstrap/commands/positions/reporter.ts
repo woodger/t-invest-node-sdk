@@ -23,6 +23,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление позиций счёта: JSON или таблица. */
 export type PositionsFormat = typeof positionsFormats[number];
 
 export const positionsFormats = ['json', 'table'] as const;

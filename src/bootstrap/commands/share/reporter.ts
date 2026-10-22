@@ -26,6 +26,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных акции: JSON или таблица. */
 export type ShareFormat = typeof shareFormats[number];
 
 export const shareFormats = ['json', 'table'] as const;

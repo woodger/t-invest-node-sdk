@@ -13,6 +13,10 @@
 
 import { CliUsageError } from 'icore';
 
+/**
+ * Фильтр инструмента с поддержкой прежнего имени figi; конфликт имён проверяет
+ * resolver.
+ */
 export type InstrumentIdAliasOptions = {
   'instrument-id'?: string | undefined;
   figi?: string | undefined;

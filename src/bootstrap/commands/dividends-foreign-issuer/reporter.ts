@@ -22,6 +22,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление отчёта о дивидендах иностранных эмитентов: JSON или таблица. */
 export type DividendsForeignIssuerFormat =
   typeof dividendsForeignIssuerFormats[number];
 

@@ -38,6 +38,7 @@ import {
   sameUnaryLimit
 } from './unary-limit-config';
 
+/** Параметры экземпляра после проверки и применения значения useSsl по умолчанию. */
 export type ResolvedTInvestOptions = Omit<
   TInvestOptions,
   'useSsl'

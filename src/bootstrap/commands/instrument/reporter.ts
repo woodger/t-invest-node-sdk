@@ -25,6 +25,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных инструмента: JSON или таблица. */
 export type InstrumentFormat = typeof instrumentFormats[number];
 
 export const instrumentFormats = ['json', 'table'] as const;

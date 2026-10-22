@@ -17,6 +17,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderCsv, renderJson } from 'icore';
 
+/** Представление исторических свечей: JSON или CSV. */
 export type CandlesFormat = typeof candlesFormats[number];
 
 export const candlesFormats = ['json', 'csv'] as const;

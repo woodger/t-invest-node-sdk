@@ -5,6 +5,7 @@
  * Здесь не должно быть разбора аргументов, rendering или SDK runtime wiring.
  */
 
+/** Запись статического каталога справки одной CLI-команды. */
 export interface CommandHelp {
   description: string;
   sdkCall?: string;
@@ -17,6 +18,7 @@ export interface CommandHelp {
   notes?: readonly string[];
 }
 
+/** Канонические имена команд, для которых определена справка в commandHelp. */
 export type CommandHelpName = keyof typeof commandHelp;
 
 const sdkConnectionOptions = [

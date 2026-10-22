@@ -16,6 +16,7 @@ import {
   type ShareFormat
 } from '../share/reporter';
 
+/** Представление списка акций: JSON или таблица. */
 export type SharesFormat = ShareFormat;
 
 export const sharesFormats = shareFormats;

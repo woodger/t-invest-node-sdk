@@ -16,6 +16,7 @@ import {
   type OptionFormat
 } from '../option/reporter';
 
+/** Представление списка опционов: JSON или таблица. */
 export type OptionsByFormat = OptionFormat;
 
 export const optionsByFormats = optionFormats;

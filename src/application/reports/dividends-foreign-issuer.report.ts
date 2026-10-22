@@ -8,17 +8,23 @@
  * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
  */
 
+/** Идентификатор задачи формирования отчёта о дивидендах иностранных эмитентов. */
 export interface DividendsForeignIssuerTaskReport {
   type: 'generate';
   taskId: string;
 }
 
+/** Положение страницы отчёта о дивидендах и общее число страниц и записей. */
 export interface DividendsForeignIssuerPageInfo {
   page: number;
   pagesCount: number;
   itemsCount: number;
 }
 
+/**
+ * Выплата дивидендов иностранного эмитента с датами и суммами в строковом
+ * формате.
+ */
 export interface DividendsForeignIssuerItemReport {
   /** Дата фиксации реестра в ISO-формате или пустая строка. */
   recordDate: string;
@@ -42,12 +48,14 @@ export interface DividendsForeignIssuerItemReport {
   currency: string;
 }
 
+/** Страница отчёта о дивидендах иностранных эмитентов с данными пагинации. */
 export interface DividendsForeignIssuerPageReport {
   type: 'page';
   page: DividendsForeignIssuerPageInfo;
   items: DividendsForeignIssuerItemReport[];
 }
 
+/** Результат ответа без задачи формирования и страницы отчёта о дивидендах. */
 export interface DividendsForeignIssuerEmptyReport {
   /** Тип отчета для пустого provider response. */
   type: 'empty';

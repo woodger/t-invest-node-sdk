@@ -19,6 +19,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление результатов поиска инструментов: JSON или таблица. */
 export type FindInstrumentFormat = typeof findInstrumentFormats[number];
 
 export const findInstrumentFormats = ['json', 'table'] as const;

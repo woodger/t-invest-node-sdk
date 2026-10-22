@@ -26,6 +26,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление списка заявок: JSON или таблица. */
 export type OrdersFormat = typeof ordersFormats[number];
 
 export const ordersFormats = ['json', 'table'] as const;

@@ -26,6 +26,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных валюты: JSON или таблица. */
 export type CurrencyFormat = typeof currencyFormats[number];
 
 export const currencyFormats = ['json', 'table'] as const;

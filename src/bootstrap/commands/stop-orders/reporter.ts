@@ -23,6 +23,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление списка стоп-заявок: JSON или таблица. */
 export type StopOrdersFormat = typeof stopOrdersFormats[number];
 
 export const stopOrdersFormats = ['json', 'table'] as const;

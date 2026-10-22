@@ -15,6 +15,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление доступных для вывода средств: JSON или таблица. */
 export type WithdrawLimitsFormat = typeof withdrawLimitsFormats[number];
 
 export const withdrawLimitsFormats = ['json', 'table'] as const;

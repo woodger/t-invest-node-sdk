@@ -15,6 +15,7 @@ import {
   type BrandsFormat
 } from '../brands/reporter';
 
+/** Представление данных бренда: JSON или таблица. */
 export type BrandFormat = BrandsFormat;
 
 export const brandFormats = brandsFormats;

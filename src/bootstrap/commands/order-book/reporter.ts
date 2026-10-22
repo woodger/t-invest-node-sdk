@@ -20,6 +20,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление стакана заявок: JSON или таблица. */
 export type OrderBookFormat = typeof orderBookFormats[number];
 
 export const orderBookFormats = ['json', 'table'] as const;

@@ -13,6 +13,7 @@ import type {
 import type { CountryResponse } from '../../../generated/instruments';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление справочника стран: JSON или таблица. */
 export type CountriesFormat = typeof countriesFormats[number];
 
 export const countriesFormats = ['json', 'table'] as const;

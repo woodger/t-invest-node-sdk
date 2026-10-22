@@ -15,6 +15,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление гарантийного обеспечения фьючерса: JSON или таблица. */
 export type FuturesMarginFormat = typeof futuresMarginFormats[number];
 
 export const futuresMarginFormats = ['json', 'table'] as const;

@@ -25,6 +25,10 @@ type RequiredCommandOptionKeys<TOptions> = Exclude<
   OptionalCommandOptionKeys<TOptions>
 >;
 
+/**
+ * Выбранные опции для сборки запроса; поля с допустимым undefined становятся
+ * необязательными.
+ */
 export type CommandRequestOptions<
   TOptions,
   TKeys extends keyof TOptions

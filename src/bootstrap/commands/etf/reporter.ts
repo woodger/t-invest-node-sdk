@@ -25,6 +25,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление данных фонда: JSON или таблица. */
 export type EtfFormat = typeof etfFormats[number];
 
 export const etfFormats = ['json', 'table'] as const;

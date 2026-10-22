@@ -15,6 +15,7 @@ import {
   type TradingStatusFormat
 } from '../trading-status/reporter';
 
+/** Представление торговых статусов инструментов: JSON или таблица. */
 export type TradingStatusesFormat = TradingStatusFormat;
 
 export const tradingStatusesFormats = tradingStatusFormats;

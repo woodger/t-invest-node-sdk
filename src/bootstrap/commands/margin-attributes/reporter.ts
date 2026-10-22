@@ -15,6 +15,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление показателей маржинальной торговли: JSON или таблица. */
 export type MarginAttributesFormat = typeof marginAttributesFormats[number];
 
 export const marginAttributesFormats = ['json', 'table'] as const;

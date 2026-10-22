@@ -16,6 +16,7 @@ import {
   type BondFormat
 } from '../bond/reporter';
 
+/** Представление списка облигаций: JSON или таблица. */
 export type BondsFormat = BondFormat;
 
 export const bondsFormats = bondFormats;

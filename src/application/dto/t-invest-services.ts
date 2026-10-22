@@ -191,11 +191,20 @@ import type {
   PayInResponse
 } from '../../generated/users';
 
+/**
+ * Тип значения metadata по имени ключа: для суффикса -bin используется
+ * Uint8Array, для остальных известных ключей — строка. Если имя задано общим
+ * типом string, допускаются оба варианта.
+ */
 export type TInvestMetadataValue<Key extends string> = string extends Key
   ? string | Uint8Array
   : Lowercase<Key> extends `${string}-bin` ? Uint8Array
   : string;
 
+/**
+ * Метаданные RPC с поддержкой строковых и бинарных значений и нескольких
+ * значений одного ключа.
+ */
 export interface TInvestMetadata {
   set<Key extends string>(
     key: Key,
@@ -212,6 +221,10 @@ export interface TInvestMetadata {
   [Symbol.iterator](): IterableIterator<[string, Array<string | Uint8Array>]>;
 }
 
+/**
+ * Настройки отдельного unary-вызова или потока: метаданные, отмена и callbacks
+ * ответа.
+ */
 export interface TInvestCallOptions {
   metadata?: TInvestMetadata;
   /** Отменяет ожидание локальной квоты и переданный transport-вызов. */
@@ -222,6 +235,7 @@ export interface TInvestCallOptions {
   onTrailer?(trailer: TInvestMetadata): void;
 }
 
+/** Счета, профиль, тарифы и денежные переводы, доступные через sdk.users. */
 export interface UsersService {
   getAccounts(
     request: DeepPartial<GetAccountsRequest>,
@@ -257,6 +271,7 @@ export interface UsersService {
   ): Promise<GetAccountValuesResponse>;
 }
 
+/** Торговые заявки и расчёт их стоимости и доступного объёма через sdk.orders. */
 export interface OrdersService {
   postOrder(
     request: DeepPartial<PostOrderRequest>,
@@ -292,6 +307,7 @@ export interface OrdersService {
   ): Promise<GetOrderPriceResponse>;
 }
 
+/** Потоки сделок и состояний заявок, доступные через sdk.ordersStream. */
 export interface OrdersStreamService {
   tradesStream(
     request: DeepPartial<TradesStreamRequest>,
@@ -303,6 +319,7 @@ export interface OrdersStreamService {
   ): AsyncIterable<OrderStateStreamResponse>;
 }
 
+/** Выставление, получение и отмена стоп-заявок через sdk.stopOrders. */
 export interface StopOrdersService {
   postStopOrder(
     request: DeepPartial<PostStopOrderRequest>,
@@ -318,6 +335,7 @@ export interface StopOrdersService {
   ): Promise<CancelStopOrderResponse>;
 }
 
+/** Операции со счетами и заявками песочницы, доступные через sdk.sandbox. */
 export interface SandboxService {
   openSandboxAccount(
     request: DeepPartial<OpenSandboxAccountRequest>,
@@ -401,6 +419,7 @@ export interface SandboxService {
   ): Promise<CancelStopOrderResponse>;
 }
 
+/** Получение стратегий и инвестиционных сигналов через sdk.signals. */
 export interface SignalService {
   getStrategies(
     request: DeepPartial<GetStrategiesRequest>,
@@ -412,6 +431,7 @@ export interface SignalService {
   ): Promise<GetSignalsResponse>;
 }
 
+/** Одиночные запросы котировок, свечей и торговых статусов через sdk.marketData. */
 export interface MarketDataService {
   getCandles(
     request: DeepPartial<GetCandlesRequest>,
@@ -451,6 +471,7 @@ export interface MarketDataService {
   ): Promise<GetMarketValuesResponse>;
 }
 
+/** Двусторонний и серверный потоки рыночных данных через sdk.marketdataStream. */
 export interface MarketDataStreamService {
   marketDataStream(
     request: AsyncIterable<DeepPartial<MarketDataRequest>>,
@@ -462,6 +483,7 @@ export interface MarketDataStreamService {
   ): AsyncIterable<MarketDataResponse>;
 }
 
+/** История операций, портфель, позиции и отчёты через sdk.operations. */
 export interface OperationsService {
   getOperations(
     request: DeepPartial<OperationsRequest>,
@@ -493,6 +515,7 @@ export interface OperationsService {
   ): Promise<GetOperationsByCursorResponse>;
 }
 
+/** Потоки изменений портфеля, позиций и операций через sdk.operationsStream. */
 export interface OperationsStreamService {
   portfolioStream(
     request: DeepPartial<PortfolioStreamRequest>,
@@ -508,6 +531,7 @@ export interface OperationsStreamService {
   ): AsyncIterable<OperationsStreamResponse>;
 }
 
+/** Поиск инструментов, их параметры и справочники через sdk.instruments. */
 export interface InstrumentsService {
   tradingSchedules(
     request: DeepPartial<TradingSchedulesRequest>,

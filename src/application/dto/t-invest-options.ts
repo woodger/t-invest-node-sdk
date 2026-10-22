@@ -13,6 +13,7 @@ import type {
   TInvestUnaryLimits
 } from '../services/unary-limiter';
 
+/** Переопределение доверенных корневых сертификатов TLS для канала SDK. */
 export interface TInvestTlsOptions {
   /**
    * PEM-содержимое root CA bundle для channel этого SDK instance.
@@ -21,6 +22,7 @@ export interface TInvestTlsOptions {
   rootCertificates?: Buffer;
 }
 
+/** Параметры подключения и необязательные настройки создаваемого экземпляра SDK. */
 export interface TInvestOptions {
   /** OAuth token в допустимой для строковых gRPC metadata ASCII-форме. */
   token: string;

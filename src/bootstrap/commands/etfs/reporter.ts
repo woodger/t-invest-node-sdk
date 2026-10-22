@@ -16,6 +16,7 @@ import {
   type EtfFormat
 } from '../etf/reporter';
 
+/** Представление списка фондов: JSON или таблица. */
 export type EtfsFormat = EtfFormat;
 
 export const etfsFormats = etfFormats;

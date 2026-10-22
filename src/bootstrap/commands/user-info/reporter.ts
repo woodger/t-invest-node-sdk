@@ -10,6 +10,7 @@ import type { UserInfoReport } from '../../../application/reports';
 import type { GetInfoResponse } from '../../../generated/users';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление профиля пользователя: JSON или таблица. */
 export type UserInfoFormat = typeof userInfoFormats[number];
 
 export const userInfoFormats = ['json', 'table'] as const;

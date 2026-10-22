@@ -21,6 +21,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление списка счетов: JSON или таблица. */
 export type AccountsFormat = typeof accountsFormats[number];
 
 export const accountsFormats = ['json', 'table'] as const;

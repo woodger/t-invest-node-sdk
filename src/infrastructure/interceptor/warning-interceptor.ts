@@ -10,6 +10,7 @@
  * или application use-case-ами.
  */
 
+/** Условие подавления process warning по подстроке его сообщения. */
 export type WarningFilterRule = {
   messageIncludes?: string;
 };

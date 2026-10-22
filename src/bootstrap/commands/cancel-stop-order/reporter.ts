@@ -11,6 +11,7 @@ import type { CancelStopOrderResponse } from '../../../generated/stoporders';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление результата отмены стоп-заявки: JSON или таблица. */
 export type CancelStopOrderFormat = typeof cancelStopOrderFormats[number];
 
 export const cancelStopOrderFormats = ['json', 'table'] as const;

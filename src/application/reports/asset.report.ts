@@ -8,12 +8,14 @@
  * Здесь не должно быть CLI parsing, SDK calls или presentation formatting.
  */
 
+/** Связь инструмента с другим инструментом по UID в отчёте об активе. */
 export interface AssetReportInstrumentLink {
   /** Тип связи инструмента с активом. */
   type: string;
   instrumentUid: string;
 }
 
+/** Идентификаторы и связи инструмента, входящего в состав актива. */
 export interface AssetReportInstrument {
   uid: string;
   figi: string;
@@ -27,6 +29,7 @@ export interface AssetReportInstrument {
   links: AssetReportInstrumentLink[];
 }
 
+/** Сведения о бренде, включаемые в подробный отчёт об активе. */
 export interface AssetReportBrand {
   uid: string;
   name: string;
@@ -38,6 +41,7 @@ export interface AssetReportBrand {
   countryOfRiskName: string;
 }
 
+/** Краткие данные актива и его инструментов для отчёта со списком активов. */
 export interface AssetReportSummary {
   uid: string;
   /** Тип актива в формате generated enum JSON name. */
@@ -73,6 +77,7 @@ export interface AssetReportFull extends AssetReportSummary {
   brCodeName: string;
 }
 
+/** Подробный отчёт об активе или null, если ответ не содержит актива. */
 export type AssetReport = AssetReportFull | null;
 
 /** Отчет команды `instruments get-assets` на application/output boundary. */

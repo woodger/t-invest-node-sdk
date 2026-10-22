@@ -14,6 +14,7 @@ import {
 } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
+/** Представление результата пополнения счёта песочницы: JSON или таблица. */
 export type SandboxPayInFormat = typeof sandboxPayInFormats[number];
 
 export const sandboxPayInFormats = ['json', 'table'] as const;

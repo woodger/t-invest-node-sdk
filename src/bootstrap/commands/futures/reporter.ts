@@ -16,6 +16,7 @@ import {
   type FutureFormat
 } from '../future/reporter';
 
+/** Представление списка фьючерсов: JSON или таблица. */
 export type FuturesFormat = FutureFormat;
 
 export const futuresFormats = futureFormats;
