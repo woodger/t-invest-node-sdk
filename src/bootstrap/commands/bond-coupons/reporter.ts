@@ -8,7 +8,11 @@
 
 import type { BondCouponsReport, BondCouponsReportCoupon } from '../../../application/reports';
 import { couponTypeToJSON, type Coupon } from '../../../generated/instruments';
-import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportMoneyText,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление купонных выплат по облигации: JSON или таблица. */

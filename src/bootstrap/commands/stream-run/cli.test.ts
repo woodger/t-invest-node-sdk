@@ -9,7 +9,10 @@ import {
   type MarketDataResponse
 } from '../../../generated/marketdata';
 import { maxInt32 } from '../../args/command-options';
-import type { PortfolioStreamRequest, PortfolioStreamResponse } from '../../../generated/operations';
+import type {
+  PortfolioStreamRequest,
+  PortfolioStreamResponse
+} from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 import { createStreamRunCommand } from './cli';
 

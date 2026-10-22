@@ -8,7 +8,12 @@
  */
 
 import { ClientError, Status } from 'nice-grpc';
-import { isSdkError, SdkError, SdkErrorCode, type SdkErrorSource } from '../../../application/errors/sdk-error';
+import {
+  isSdkError,
+  SdkError,
+  SdkErrorCode,
+  type SdkErrorSource
+} from '../../../application/errors/sdk-error';
 
 const grpcErrorCodes: Partial<Record<Status, SdkErrorCode>> = {
   [Status.CANCELLED]: SdkErrorCode.Cancelled,

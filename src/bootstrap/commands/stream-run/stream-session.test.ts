@@ -2,8 +2,14 @@ import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 import { createServer } from 'nice-grpc';
 import { ResultSubscriptionStatus } from '../../../generated/common';
-import { OperationsStreamServiceDefinition, type PortfolioStreamResponse } from '../../../generated/operations';
-import { OrdersStreamServiceDefinition, type TradesStreamResponse } from '../../../generated/orders';
+import {
+  OperationsStreamServiceDefinition,
+  type PortfolioStreamResponse
+} from '../../../generated/operations';
+import {
+  OrdersStreamServiceDefinition,
+  type TradesStreamResponse
+} from '../../../generated/orders';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import type { StreamRunConfig, StreamRunRuntime } from './config';
 import { runStreamRunSession, type StreamRunSdk } from './stream-session';

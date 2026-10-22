@@ -18,7 +18,10 @@ import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createCancelOrderRequest } from '../cancel-order/request.mapper';
 import { cancelOrderFormats, formatCancelOrder } from '../cancel-order/reporter';
-import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import {
+  assertSideEffectConfirmed,
+  sideEffectConfirmationOptionsSchema
+} from '../../args/side-effect-args';
 
 type SandboxCancelOrderSdk = {
   sandbox: {

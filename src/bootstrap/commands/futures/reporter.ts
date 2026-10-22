@@ -9,7 +9,12 @@
 import type { FuturesReport } from '../../../application/reports';
 import type { Future } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import { createFutureReportInstrument, futureFormats, renderFutureRows, type FutureFormat } from '../future/reporter';
+import {
+  createFutureReportInstrument,
+  futureFormats,
+  renderFutureRows,
+  type FutureFormat
+} from '../future/reporter';
 
 /** Представление списка фьючерсов: JSON или таблица. */
 export type FuturesFormat = FutureFormat;

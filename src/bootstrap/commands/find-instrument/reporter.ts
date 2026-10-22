@@ -6,7 +6,10 @@
  * `cli.ts`.
  */
 
-import type { FindInstrumentReport, FindInstrumentReportInstrument } from '../../../application/reports';
+import type {
+  FindInstrumentReport,
+  FindInstrumentReportInstrument
+} from '../../../application/reports';
 import { instrumentTypeToJSON } from '../../../generated/common';
 import type { InstrumentShort } from '../../../generated/instruments';
 import { formatReportDate } from '../../../infrastructure/report-values';

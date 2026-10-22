@@ -126,7 +126,8 @@ createSdkMetadata(...)
 ```ts
 /**
  * Создает metadata для всех SDK clients.
- * Authorization всегда передается как Bearer token, x-app-name добавляется только при явной настройке.
+ * Authorization всегда передается как Bearer token,
+ * x-app-name добавляется только при явной настройке.
  */
 createSdkMetadata(...)
 ```

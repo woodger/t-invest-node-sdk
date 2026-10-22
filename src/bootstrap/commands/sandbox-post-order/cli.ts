@@ -18,7 +18,10 @@ import { positiveSafeIntegerOption, withSdkOptions } from '../../args/command-op
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
 import { createPostOrderRequest } from '../post-order/request.mapper';
 import { formatPostOrder, postOrderFormats } from '../post-order/reporter';
-import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import {
+  assertSideEffectConfirmed,
+  sideEffectConfirmationOptionsSchema
+} from '../../args/side-effect-args';
 
 type SandboxPostOrderSdk = {
   sandbox: {

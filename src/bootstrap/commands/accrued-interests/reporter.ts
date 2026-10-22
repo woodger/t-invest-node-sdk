@@ -6,7 +6,10 @@
  * `cli.ts`.
  */
 
-import type { AccruedInterestsReport, AccruedInterestsReportItem } from '../../../application/reports';
+import type {
+  AccruedInterestsReport,
+  AccruedInterestsReportItem
+} from '../../../application/reports';
 import type { AccruedInterest } from '../../../generated/instruments';
 import { formatReportDate, formatReportQuotation } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';

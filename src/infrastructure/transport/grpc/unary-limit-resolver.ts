@@ -10,7 +10,10 @@
  * состояния ограничителя.
  */
 
-import type { TInvestUnaryLimit, TInvestUnaryQuota } from '../../../application/services/unary-limiter';
+import type {
+  TInvestUnaryLimit,
+  TInvestUnaryQuota
+} from '../../../application/services/unary-limiter';
 
 type UnaryLimitRules = Readonly<Record<string, TInvestUnaryLimit>>;
 type UnaryLimitBuckets = Readonly<Record<string, string>>;

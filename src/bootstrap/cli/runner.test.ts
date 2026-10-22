@@ -342,24 +342,27 @@ describe('bootstrap cli runner', () => {
         }
       ]
     ) {
-      test(`returns a usage failure for int32 overflow in ${args.slice(0, 2).join(' ')}`, async () => {
-        const { io, read } = createIo();
-        const exitCode = await runCli([
-          ...args,
-          '--token=token',
-          '--endpoint=127.0.0.1:1',
-          '--insecure'
-        ], io);
+      test(
+        `returns a usage failure for int32 overflow in ${args.slice(0, 2).join(' ')}`,
+        async () => {
+          const { io, read } = createIo();
+          const exitCode = await runCli([
+            ...args,
+            '--token=token',
+            '--endpoint=127.0.0.1:1',
+            '--insecure'
+          ], io);
 
-        assert.equal(exitCode, cliExitCodes.usageError);
-        assert.equal(read().stdout, '');
-        assert.match(
-          read().stderr,
-          new RegExp(
-            `Expected '--${option}' to be less than or equal to ${maxInt32}`
-          )
-        );
-      });
+          assert.equal(exitCode, cliExitCodes.usageError);
+          assert.equal(read().stdout, '');
+          assert.match(
+            read().stderr,
+            new RegExp(
+              `Expected '--${option}' to be less than or equal to ${maxInt32}`
+            )
+          );
+        }
+      );
     }
 
     test('rejects extra command positionals during prepare', async () => {

@@ -9,7 +9,12 @@
 import type { BondsReport } from '../../../application/reports';
 import type { Bond } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import { bondFormats, createBondReportInstrument, renderBondRows, type BondFormat } from '../bond/reporter';
+import {
+  bondFormats,
+  createBondReportInstrument,
+  renderBondRows,
+  type BondFormat
+} from '../bond/reporter';
 
 /** Представление списка облигаций: JSON или таблица. */
 export type BondsFormat = BondFormat;

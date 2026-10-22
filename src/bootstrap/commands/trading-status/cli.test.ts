@@ -3,7 +3,10 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { SecurityTradingStatus } from '../../../generated/common';
-import type { GetTradingStatusRequest, GetTradingStatusResponse } from '../../../generated/marketdata';
+import type {
+  GetTradingStatusRequest,
+  GetTradingStatusResponse
+} from '../../../generated/marketdata';
 import { createTradingStatusCommand, createTradingStatusRequest } from './cli';
 
 function response(

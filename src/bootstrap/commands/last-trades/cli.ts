@@ -11,7 +11,11 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { GetLastTradesRequest, TradeSourceType, type GetLastTradesResponse } from '../../../generated/marketdata';
+import {
+  GetLastTradesRequest,
+  TradeSourceType,
+  type GetLastTradesResponse
+} from '../../../generated/marketdata';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

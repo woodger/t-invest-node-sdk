@@ -11,7 +11,10 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { GetMarginAttributesRequest, GetMarginAttributesResponse } from '../../../generated/users';
+import type {
+  GetMarginAttributesRequest,
+  GetMarginAttributesResponse
+} from '../../../generated/users';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

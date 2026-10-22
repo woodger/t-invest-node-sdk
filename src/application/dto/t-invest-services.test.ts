@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import type { InstrumentsServiceClient, InstrumentsServiceDefinition } from '../../generated/instruments';
+import type {
+  InstrumentsServiceClient,
+  InstrumentsServiceDefinition
+} from '../../generated/instruments';
 import type {
   MarketDataServiceClient,
   MarketDataServiceDefinition,
@@ -21,7 +24,10 @@ import type {
 } from '../../generated/orders';
 import type { SandboxServiceClient, SandboxServiceDefinition } from '../../generated/sandbox';
 import type { SignalServiceClient, SignalServiceDefinition } from '../../generated/signals';
-import type { StopOrdersServiceClient, StopOrdersServiceDefinition } from '../../generated/stoporders';
+import type {
+  StopOrdersServiceClient,
+  StopOrdersServiceDefinition
+} from '../../generated/stoporders';
 import type { UsersServiceClient, UsersServiceDefinition } from '../../generated/users';
 import type {
   InstrumentsService,

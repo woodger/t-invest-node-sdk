@@ -9,7 +9,12 @@
 import type { EtfsReport } from '../../../application/reports';
 import type { Etf } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import { createEtfReportInstrument, etfFormats, renderEtfRows, type EtfFormat } from '../etf/reporter';
+import {
+  createEtfReportInstrument,
+  etfFormats,
+  renderEtfRows,
+  type EtfFormat
+} from '../etf/reporter';
 
 /** Представление списка фондов: JSON или таблица. */
 export type EtfsFormat = EtfFormat;

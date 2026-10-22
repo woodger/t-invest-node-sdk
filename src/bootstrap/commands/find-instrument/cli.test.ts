@@ -3,7 +3,11 @@ import { describe, test } from 'node:test';
 import { command as commandFacade } from '../../cli/contract';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { InstrumentType } from '../../../generated/common';
-import type { FindInstrumentRequest, FindInstrumentResponse, InstrumentShort } from '../../../generated/instruments';
+import type {
+  FindInstrumentRequest,
+  FindInstrumentResponse,
+  InstrumentShort
+} from '../../../generated/instruments';
 import { createFindInstrumentCommand, createFindInstrumentRequest } from './cli';
 
 function instrument(overrides: Partial<InstrumentShort> = {}): InstrumentShort {

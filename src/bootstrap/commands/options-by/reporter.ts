@@ -9,7 +9,12 @@
 import type { OptionsByReport } from '../../../application/reports';
 import type { Option } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import { createOptionReportInstrument, optionFormats, renderOptionRows, type OptionFormat } from '../option/reporter';
+import {
+  createOptionReportInstrument,
+  optionFormats,
+  renderOptionRows,
+  type OptionFormat
+} from '../option/reporter';
 
 /** Представление списка опционов: JSON или таблица. */
 export type OptionsByFormat = OptionFormat;

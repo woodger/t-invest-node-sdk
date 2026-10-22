@@ -11,14 +11,20 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import type { CloseSandboxAccountRequest, CloseSandboxAccountResponse } from '../../../generated/sandbox';
+import type {
+  CloseSandboxAccountRequest,
+  CloseSandboxAccountResponse
+} from '../../../generated/sandbox';
 import type { InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';
 import type { CommandRequestOptions } from '../../args/command-options';
 import { withSdkOptions } from '../../args/command-options';
 import { TInvestNodeSDK } from '../../t-invest-node-sdk';
-import { assertSideEffectConfirmed, sideEffectConfirmationOptionsSchema } from '../../args/side-effect-args';
+import {
+  assertSideEffectConfirmed,
+  sideEffectConfirmationOptionsSchema
+} from '../../args/side-effect-args';
 import { closeSandboxAccountFormats, formatCloseSandboxAccount } from './reporter';
 
 type SandboxCloseAccountSdk = {

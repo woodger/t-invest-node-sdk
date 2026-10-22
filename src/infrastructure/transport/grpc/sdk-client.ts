@@ -10,10 +10,19 @@
  * API-запросов.
  */
 
-import type { CallOptions, Channel, ClientMiddlewareCall, CompatServiceDefinition } from 'nice-grpc';
+import type {
+  CallOptions,
+  Channel,
+  ClientMiddlewareCall,
+  CompatServiceDefinition
+} from 'nice-grpc';
 import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
 import { createClientFactory, Metadata } from 'nice-grpc';
-import { createSdkMiddleware, type SdkCallErrorClassificationOptions, type SdkCallLifecycle } from './sdk-middleware';
+import {
+  createSdkMiddleware,
+  type SdkCallErrorClassificationOptions,
+  type SdkCallLifecycle
+} from './sdk-middleware';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 export function createSdkClient<Service extends CompatServiceDefinition>(

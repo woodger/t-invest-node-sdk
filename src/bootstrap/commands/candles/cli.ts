@@ -11,7 +11,11 @@
  */
 
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
-import { CandleInterval, GetCandlesRequest, type GetCandlesResponse } from '../../../generated/marketdata';
+import {
+  CandleInterval,
+  GetCandlesRequest,
+  type GetCandlesResponse
+} from '../../../generated/marketdata';
 import { CliUsageError, type InferOptions } from 'icore';
 import { command } from '../../cli/contract';
 import { runSdkCommand } from '../sdk-command-lifecycle';

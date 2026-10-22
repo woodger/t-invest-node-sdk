@@ -1,6 +1,10 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
-import type { TInvestUnaryLimitContext, TInvestUnaryLimiter, TInvestUnaryQuota } from './unary-limiter';
+import type {
+  TInvestUnaryLimitContext,
+  TInvestUnaryLimiter,
+  TInvestUnaryQuota
+} from './unary-limiter';
 import { createInMemoryUnaryLimiter } from './unary-limiter';
 
 interface ControlledTimers {

@@ -7,7 +7,11 @@
  */
 
 import type { InstrumentReport, InstrumentReportInstrument } from '../../../application/reports';
-import { realExchangeToJSON, instrumentTypeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
+import {
+  realExchangeToJSON,
+  instrumentTypeToJSON,
+  securityTradingStatusToJSON
+} from '../../../generated/common';
 import type { Instrument, InstrumentResponse } from '../../../generated/instruments';
 
 import { formatReportDate } from '../../../infrastructure/report-values';

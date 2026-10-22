@@ -10,7 +10,11 @@ import type { CurrencyReport, CurrencyReportInstrument } from '../../../applicat
 import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type { Currency, CurrencyResponse } from '../../../generated/instruments';
 
-import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных валюты: JSON или таблица. */

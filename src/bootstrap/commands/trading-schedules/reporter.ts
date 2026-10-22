@@ -6,7 +6,10 @@
  * `cli.ts`.
  */
 
-import type { TradingSchedulesReport, TradingSchedulesReportDay } from '../../../application/reports';
+import type {
+  TradingSchedulesReport,
+  TradingSchedulesReportDay
+} from '../../../application/reports';
 import type { TradingDay, TradingSchedule } from '../../../generated/instruments';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';

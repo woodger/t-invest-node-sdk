@@ -13,7 +13,11 @@ import {
   type GetStopOrdersResponse,
   type StopOrder
 } from '../../../generated/stoporders';
-import { formatReportDate, formatReportMoneyText, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportMoneyText,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление списка стоп-заявок: JSON или таблица. */

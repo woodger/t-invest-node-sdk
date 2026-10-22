@@ -9,7 +9,12 @@
 import type { SharesReport } from '../../../application/reports';
 import type { Share } from '../../../generated/instruments';
 import { renderJson } from 'icore';
-import { createShareReportInstrument, renderShareRows, shareFormats, type ShareFormat } from '../share/reporter';
+import {
+  createShareReportInstrument,
+  renderShareRows,
+  shareFormats,
+  type ShareFormat
+} from '../share/reporter';
 
 /** Представление списка акций: JSON или таблица. */
 export type SharesFormat = ShareFormat;

@@ -57,8 +57,11 @@ try {
     };
     let state = await sdk.sandbox.getSandboxOrderState(order);
 
-    if (state.executionReportStatus === OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW
-      || state.executionReportStatus === OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_PARTIALLYFILL) {
+    if (
+      state.executionReportStatus === OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_NEW
+      || state.executionReportStatus
+        === OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_PARTIALLYFILL
+    ) {
       await sdk.sandbox.cancelSandboxOrder({
         accountId,
         orderId: placed.orderId,

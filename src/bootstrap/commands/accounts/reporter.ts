@@ -7,7 +7,12 @@
  */
 
 import type { AccountsReport, AccountsReportAccount } from '../../../application/reports';
-import { accessLevelToJSON, accountStatusToJSON, accountTypeToJSON, type Account } from '../../../generated/users';
+import {
+  accessLevelToJSON,
+  accountStatusToJSON,
+  accountTypeToJSON,
+  type Account
+} from '../../../generated/users';
 import { formatReportDate } from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 

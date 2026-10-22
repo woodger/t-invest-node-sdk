@@ -10,7 +10,10 @@
  */
 
 import type { MarketDataResponse } from '../../../generated/marketdata';
-import type { PortfolioStreamResponse, PositionsStreamResponse } from '../../../generated/operations';
+import type {
+  PortfolioStreamResponse,
+  PositionsStreamResponse
+} from '../../../generated/operations';
 import type { TradesStreamResponse } from '../../../generated/orders';
 
 /** Ответы поддерживаемых потоков SDK, которые reporter преобразует в события CLI. */

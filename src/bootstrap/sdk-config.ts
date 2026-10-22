@@ -25,7 +25,12 @@ import { SignalServiceDefinition } from '../generated/signals';
 import { StopOrdersServiceDefinition } from '../generated/stoporders';
 import { UsersServiceDefinition } from '../generated/users';
 import type { UnaryLimitConfig } from './unary-limit-config';
-import { assertUnaryLimitConfig, cloneUnaryLimits, compileUnaryLimits, sameUnaryLimit } from './unary-limit-config';
+import {
+  assertUnaryLimitConfig,
+  cloneUnaryLimits,
+  compileUnaryLimits,
+  sameUnaryLimit
+} from './unary-limit-config';
 
 /** Параметры экземпляра после проверки и применения значения useSsl по умолчанию. */
 export type ResolvedTInvestOptions = Omit<

@@ -10,7 +10,11 @@ import type { BondReport, BondReportInstrument } from '../../../application/repo
 import { realExchangeToJSON, securityTradingStatusToJSON } from '../../../generated/common';
 import type { Bond, BondResponse } from '../../../generated/instruments';
 import { riskLevelToJSON } from '../../../generated/instruments';
-import { formatReportDate, formatReportDecimal, toReportMoney } from '../../../infrastructure/report-values';
+import {
+  formatReportDate,
+  formatReportDecimal,
+  toReportMoney
+} from '../../../infrastructure/report-values';
 import { renderJson, renderTextTable } from 'icore';
 
 /** Представление данных облигации: JSON или таблица. */

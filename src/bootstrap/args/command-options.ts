@@ -9,7 +9,12 @@
  * сборки generated requests или форматирования provider responses.
  */
 
-import { CliUsageError, mergeOptionsSchema, type MergeOptionsSchemas, type OptionsSchema } from 'icore';
+import {
+  CliUsageError,
+  mergeOptionsSchema,
+  type MergeOptionsSchemas,
+  type OptionsSchema
+} from 'icore';
 
 type OptionalCommandOptionKeys<TOptions> = {
   [TKey in keyof TOptions]: undefined extends TOptions[TKey] ? TKey : never;

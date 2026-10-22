@@ -16,7 +16,12 @@ import type { CallOptions, ClientMiddlewareCall } from 'nice-grpc';
 import { SdkError, SdkErrorCode } from '../../../application/errors/sdk-error';
 import type { TInvestUnaryLimiter } from '../../../application/services/unary-limiter';
 import { CallCallbackBoundary } from './call-callback-boundary';
-import { createAbortError, errorMessage, isCallCancellation, mapSdkCallError } from './sdk-call-error';
+import {
+  createAbortError,
+  errorMessage,
+  isCallCancellation,
+  mapSdkCallError
+} from './sdk-call-error';
 import type { UnaryLimitResolver } from './unary-limit-resolver';
 
 /** Проверки состояния SDK и отмена ожиданий квоты при его закрытии. */

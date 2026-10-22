@@ -6,7 +6,12 @@
  */
 
 import { PriceType } from '../../../generated/common';
-import { OrderDirection, OrderType, PostOrderRequest, TimeInForceType } from '../../../generated/orders';
+import {
+  OrderDirection,
+  OrderType,
+  PostOrderRequest,
+  TimeInForceType
+} from '../../../generated/orders';
 import { parseOptionalPositiveQuotationOption } from '../../args/side-effect-args';
 
 interface PostOrderRequestOptions {
