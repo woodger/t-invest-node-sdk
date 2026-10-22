@@ -31,9 +31,7 @@ export const instrumentIdWithDeprecatedFigiOptionsSchema = {
   }
 } as const;
 
-export function resolveInstrumentIdOption(
-  options: InstrumentIdAliasOptions
-): string {
+export function resolveInstrumentIdOption(options: InstrumentIdAliasOptions): string {
   return resolveInstrumentId(options, true) ?? '';
 }
 

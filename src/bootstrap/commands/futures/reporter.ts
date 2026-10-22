@@ -25,10 +25,7 @@ export function createFuturesReport(instruments: Future[]): FuturesReport {
   return instruments.map(createFutureReportInstrument);
 }
 
-export function formatFuturesReport(
-  report: FuturesReport,
-  format: FuturesFormat
-): string {
+export function formatFuturesReport(report: FuturesReport, format: FuturesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -36,9 +33,6 @@ export function formatFuturesReport(
   return renderFutureRows(report);
 }
 
-export function formatFutures(
-  instruments: Future[],
-  format: FuturesFormat
-): string {
+export function formatFutures(instruments: Future[], format: FuturesFormat): string {
   return formatFuturesReport(createFuturesReport(instruments), format);
 }

@@ -36,7 +36,6 @@ describe('options-by command', () => {
         basicAssetPositionUid: 'position-uid'
       });
     });
-
   });
 
   describe('createOptionsByCommand', () => {

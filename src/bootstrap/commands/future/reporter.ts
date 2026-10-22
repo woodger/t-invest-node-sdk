@@ -18,9 +18,7 @@ export type FutureFormat = typeof futureFormats[number];
 
 export const futureFormats = ['json', 'table'] as const;
 
-export function createFutureReportInstrument(
-  instrument: Future
-): FutureReportInstrument {
+export function createFutureReportInstrument(instrument: Future): FutureReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -112,10 +110,7 @@ export function renderFutureRows(report: FutureReportInstrument[]): string {
   ]);
 }
 
-export function formatFutureReport(
-  report: FutureReport,
-  format: FutureFormat
-): string {
+export function formatFutureReport(report: FutureReport, format: FutureFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -123,9 +118,6 @@ export function formatFutureReport(
   return renderFutureRows(report === null ? [] : [report]);
 }
 
-export function formatFuture(
-  response: FutureResponse,
-  format: FutureFormat
-): string {
+export function formatFuture(response: FutureResponse, format: FutureFormat): string {
   return formatFutureReport(createFutureReport(response), format);
 }

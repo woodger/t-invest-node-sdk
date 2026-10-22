@@ -32,10 +32,7 @@ export function createBrandsReport(brands: Brand[]): BrandsReport {
   return brands.map(createBrandReport);
 }
 
-export function formatBrandsReport(
-  report: BrandsReport,
-  format: BrandsFormat
-): string {
+export function formatBrandsReport(report: BrandsReport, format: BrandsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

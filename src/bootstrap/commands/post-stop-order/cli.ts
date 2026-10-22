@@ -41,9 +41,7 @@ import { formatPostStopOrder, postStopOrderFormats } from './reporter';
 
 type PostStopOrderSdk = {
   stopOrders: {
-    postStopOrder(
-      request: PostStopOrderRequest
-    ): Promise<PostStopOrderResponse>;
+    postStopOrder(request: PostStopOrderRequest): Promise<PostStopOrderResponse>;
   };
   close(): void;
 };

@@ -21,16 +21,11 @@ export type CurrenciesFormat = CurrencyFormat;
 
 export const currenciesFormats = currencyFormats;
 
-export function createCurrenciesReport(
-  instruments: Currency[]
-): CurrenciesReport {
+export function createCurrenciesReport(instruments: Currency[]): CurrenciesReport {
   return instruments.map(createCurrencyReportInstrument);
 }
 
-export function formatCurrenciesReport(
-  report: CurrenciesReport,
-  format: CurrenciesFormat
-): string {
+export function formatCurrenciesReport(report: CurrenciesReport, format: CurrenciesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -38,9 +33,6 @@ export function formatCurrenciesReport(
   return renderCurrencyRows(report);
 }
 
-export function formatCurrencies(
-  instruments: Currency[],
-  format: CurrenciesFormat
-): string {
+export function formatCurrencies(instruments: Currency[], format: CurrenciesFormat): string {
   return formatCurrenciesReport(createCurrenciesReport(instruments), format);
 }

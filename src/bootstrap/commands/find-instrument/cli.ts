@@ -23,9 +23,7 @@ import { findInstrumentFormats, formatFindInstrument } from './reporter';
 
 type FindInstrumentSdk = {
   instruments: {
-    findInstrument(
-      request: FindInstrumentRequest
-    ): Promise<FindInstrumentResponse>;
+    findInstrument(request: FindInstrumentRequest): Promise<FindInstrumentResponse>;
   };
   close(): void;
 };

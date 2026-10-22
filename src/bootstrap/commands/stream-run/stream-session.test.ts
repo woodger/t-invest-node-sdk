@@ -102,10 +102,7 @@ function createTestSdk(overrides: TestSdkOverrides): StreamRunSdk {
   };
 }
 
-async function withDeadline<T>(
-  promise: Promise<T>,
-  timeoutMs = 500
-): Promise<T> {
+async function withDeadline<T>(promise: Promise<T>, timeoutMs = 500): Promise<T> {
   let timeout: ReturnType<typeof setTimeout> | undefined;
   const deadline = new Promise<never>((resolve, reject) => {
     void resolve;

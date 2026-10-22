@@ -53,9 +53,7 @@ export function parseCliInput(argv: readonly string[]) {
   return parsedArgv;
 }
 
-function rejectUndocumentedLongAliases(
-  options: Record<string, RawOptionValue>
-): void {
+function rejectUndocumentedLongAliases(options: Record<string, RawOptionValue>): void {
   const replacements: Readonly<Record<string, string>> = {
     h: "'--help' or '-h'",
     'no-h': "'--help' or '-h'",

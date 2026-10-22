@@ -20,10 +20,7 @@ export function createSingleBrandReport(brand: Brand): BrandReport {
   return createBrandReport(brand);
 }
 
-export function formatBrandReport(
-  report: BrandReport,
-  format: BrandFormat
-): string {
+export function formatBrandReport(report: BrandReport, format: BrandFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

@@ -29,9 +29,7 @@ import { cancelStopOrderFormats, formatCancelStopOrder } from './reporter';
 
 type CancelStopOrderSdk = {
   stopOrders: {
-    cancelStopOrder(
-      request: CancelStopOrderRequest
-    ): Promise<CancelStopOrderResponse>;
+    cancelStopOrder(request: CancelStopOrderRequest): Promise<CancelStopOrderResponse>;
   };
   close(): void;
 };

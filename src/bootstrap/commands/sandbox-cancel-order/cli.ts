@@ -25,9 +25,7 @@ import {
 
 type SandboxCancelOrderSdk = {
   sandbox: {
-    cancelSandboxOrder(
-      request: CancelOrderRequest
-    ): Promise<CancelOrderResponse>;
+    cancelSandboxOrder(request: CancelOrderRequest): Promise<CancelOrderResponse>;
   };
   close(): void;
 };

@@ -33,10 +33,7 @@ import {
 } from './unary-limit-config';
 
 /** Параметры экземпляра после проверки и применения значения useSsl по умолчанию. */
-export type ResolvedTInvestOptions = Omit<
-  TInvestOptions,
-  'useSsl'
-> & {
+export type ResolvedTInvestOptions = Omit<TInvestOptions, 'useSsl'> & {
   useSsl: boolean;
 };
 
@@ -78,9 +75,7 @@ export const defaultConfig: TInvestNodeSDKConfig = {
   requireSideEffectConfirmation: packageConfig.requireSideEffectConfirmation
 };
 
-export function resolveSdkInstanceOptions(
-  options: TInvestOptions
-): ResolvedTInvestOptions {
+export function resolveSdkInstanceOptions(options: TInvestOptions): ResolvedTInvestOptions {
   assertRemovedTrackLimitsOption(options);
   assertNonBlankSdkOption(options.token, 'token');
   assertNonBlankSdkOption(options.endpoint, 'endpoint');
@@ -98,9 +93,7 @@ export function resolveSdkInstanceOptions(
   };
 }
 
-export function resolveUnaryLimitConfig(
-  overrides?: UnaryLimits
-): UnaryLimitConfig {
+export function resolveUnaryLimitConfig(overrides?: UnaryLimits): UnaryLimitConfig {
   try {
     const buckets = {
       ...packageUnaryLimits.buckets

@@ -25,9 +25,7 @@ import {
 
 type SandboxReplaceOrderSdk = {
   sandbox: {
-    replaceSandboxOrder(
-      request: ReplaceOrderRequest
-    ): Promise<PostOrderResponse>;
+    replaceSandboxOrder(request: ReplaceOrderRequest): Promise<PostOrderResponse>;
   };
   close(): void;
 };

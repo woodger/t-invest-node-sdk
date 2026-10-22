@@ -112,9 +112,7 @@ export function createCandlesCommand(
 
 export const candlesCommand = createCandlesCommand();
 
-export function createCandlesRequest(
-  options: CandlesRequestOptions
-): GetCandlesRequest {
+export function createCandlesRequest(options: CandlesRequestOptions): GetCandlesRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');
 

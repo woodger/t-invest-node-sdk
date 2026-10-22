@@ -34,9 +34,7 @@ import { editFavoritesFormats, formatEditFavorites } from './reporter';
 
 type EditFavoritesSdk = {
   instruments: {
-    editFavorites(
-      request: EditFavoritesRequest
-    ): Promise<EditFavoritesResponse>;
+    editFavorites(request: EditFavoritesRequest): Promise<EditFavoritesResponse>;
   };
   close(): void;
 };

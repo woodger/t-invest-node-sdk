@@ -25,10 +25,7 @@ export function createSharesReport(instruments: Share[]): SharesReport {
   return instruments.map(createShareReportInstrument);
 }
 
-export function formatSharesReport(
-  report: SharesReport,
-  format: SharesFormat
-): string {
+export function formatSharesReport(report: SharesReport, format: SharesFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -36,9 +33,6 @@ export function formatSharesReport(
   return renderShareRows(report);
 }
 
-export function formatShares(
-  instruments: Share[],
-  format: SharesFormat
-): string {
+export function formatShares(instruments: Share[], format: SharesFormat): string {
   return formatSharesReport(createSharesReport(instruments), format);
 }

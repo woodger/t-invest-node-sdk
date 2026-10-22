@@ -16,9 +16,7 @@ export type ClosePricesFormat = typeof closePricesFormats[number];
 
 export const closePricesFormats = ['json', 'table'] as const;
 
-function toReportPrice(
-  price: InstrumentClosePriceResponse
-): ClosePricesReportPrice {
+function toReportPrice(price: InstrumentClosePriceResponse): ClosePricesReportPrice {
   return {
     figi: price.figi,
     instrumentUid: price.instrumentUid,
@@ -27,9 +25,7 @@ function toReportPrice(
   };
 }
 
-export function createClosePricesReport(
-  prices: InstrumentClosePriceResponse[]
-): ClosePricesReport {
+export function createClosePricesReport(prices: InstrumentClosePriceResponse[]): ClosePricesReport {
   return prices.map(toReportPrice);
 }
 

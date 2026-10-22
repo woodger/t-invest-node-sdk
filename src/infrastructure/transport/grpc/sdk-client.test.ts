@@ -71,9 +71,7 @@ describe('createSdkClient', () => {
   test(
     'infers client methods and signatures from the service definition',
     () => {
-      type InferredClient = ReturnType<
-        typeof createSdkClient<typeof payloadServiceDefinition>
-      >;
+      type InferredClient = ReturnType<typeof createSdkClient<typeof payloadServiceDefinition>>;
 
       const matchesDefinition = true satisfies (
         [InferredClient] extends [PayloadServiceClient]
@@ -579,10 +577,7 @@ function readTlsFixture(name: string): Buffer {
   return readFileSync(resolve(tlsFixturesDirectory, name));
 }
 
-function createPayloadTlsServer(
-  grpcStatus: Status = Status.OK,
-  grpcDetails?: string
-) {
+function createPayloadTlsServer(grpcStatus: Status = Status.OK, grpcDetails?: string) {
   const server = createSecureServer({
     cert: readTlsFixture('tls-server.cert.pem'),
     key: readTlsFixture('tls-server.key.pem')
@@ -615,9 +610,7 @@ function createPayloadTlsServer(
   return server;
 }
 
-async function listen(
-  server: ReturnType<typeof createPayloadTlsServer>
-): Promise<number> {
+async function listen(server: ReturnType<typeof createPayloadTlsServer>): Promise<number> {
   await new Promise<void>((resolvePromise, reject) => {
     const rejectOnError = (error: Error) => {
       reject(error);
@@ -639,9 +632,7 @@ async function listen(
   return address.port;
 }
 
-async function close(
-  server: ReturnType<typeof createPayloadTlsServer>
-): Promise<void> {
+async function close(server: ReturnType<typeof createPayloadTlsServer>): Promise<void> {
   await new Promise<void>((resolvePromise, reject) => {
     server.close((error) => {
       if (error) {

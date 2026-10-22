@@ -37,9 +37,7 @@ async function* createUnaryResponseIterator<Response>(
   return response;
 }
 
-async function* createRejectedIterator(
-  error: unknown
-): AsyncGenerator<never, never, undefined> {
+async function* createRejectedIterator(error: unknown): AsyncGenerator<never, never, undefined> {
   const responses: never[] = [];
 
   for (const response of responses) {
@@ -116,9 +114,7 @@ function createOpenLifecycle(): SdkCallLifecycle {
   };
 }
 
-function createErrorClassification(
-  useSsl: boolean
-): SdkCallErrorClassificationOptions {
+function createErrorClassification(useSsl: boolean): SdkCallErrorClassificationOptions {
   return {
     useSsl,
     maxReceiveMessageLength: 4_194_304

@@ -29,9 +29,7 @@ import { accruedInterestsFormats, formatAccruedInterests } from './reporter';
 
 type AccruedInterestsSdk = {
   instruments: {
-    getAccruedInterests(
-      request: GetAccruedInterestsRequest
-    ): Promise<GetAccruedInterestsResponse>;
+    getAccruedInterests(request: GetAccruedInterestsRequest): Promise<GetAccruedInterestsResponse>;
   };
   close(): void;
 };
@@ -40,9 +38,7 @@ type AccruedInterestsSdkFactory = (
   options: TInvestOptions
 ) => AccruedInterestsSdk;
 
-type AccruedInterestsOptions = InferOptions<
-  typeof accruedInterestsOptionsSchema
->;
+type AccruedInterestsOptions = InferOptions<typeof accruedInterestsOptionsSchema>;
 type AccruedInterestsRequestOptions = CommandRequestOptions<
   AccruedInterestsOptions,
   'from' | 'to' | 'instrument-id' | 'figi'

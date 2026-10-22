@@ -29,9 +29,7 @@ import { closeSandboxAccountFormats, formatCloseSandboxAccount } from './reporte
 
 type SandboxCloseAccountSdk = {
   sandbox: {
-    closeSandboxAccount(
-      request: CloseSandboxAccountRequest
-    ): Promise<CloseSandboxAccountResponse>;
+    closeSandboxAccount(request: CloseSandboxAccountRequest): Promise<CloseSandboxAccountResponse>;
   };
   close(): void;
 };
@@ -40,9 +38,7 @@ type SandboxCloseAccountSdkFactory = (
   options: TInvestOptions
 ) => SandboxCloseAccountSdk;
 
-type SandboxCloseAccountOptions = InferOptions<
-  typeof sandboxCloseAccountOptionsSchema
->;
+type SandboxCloseAccountOptions = InferOptions<typeof sandboxCloseAccountOptionsSchema>;
 type SandboxCloseAccountRequestOptions = CommandRequestOptions<
   SandboxCloseAccountOptions,
   'account-id'

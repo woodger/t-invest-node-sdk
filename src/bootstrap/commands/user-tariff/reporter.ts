@@ -15,9 +15,7 @@ export type UserTariffFormat = typeof userTariffFormats[number];
 
 export const userTariffFormats = ['json', 'table'] as const;
 
-export function createUserTariffReport(
-  response: GetUserTariffResponse
-): UserTariffReport {
+export function createUserTariffReport(response: GetUserTariffResponse): UserTariffReport {
   return {
     unaryLimits: response.unaryLimits.map((limit) => ({
       limitPerMinute: limit.limitPerMinute,
@@ -34,10 +32,7 @@ export function createUserTariffReport(
   };
 }
 
-export function formatUserTariffReport(
-  report: UserTariffReport,
-  format: UserTariffFormat
-): string {
+export function formatUserTariffReport(report: UserTariffReport, format: UserTariffFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

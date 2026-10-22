@@ -72,9 +72,6 @@ export function formatBondCouponsReport(
   ]);
 }
 
-export function formatBondCoupons(
-  coupons: Coupon[],
-  format: BondCouponsFormat
-): string {
+export function formatBondCoupons(coupons: Coupon[], format: BondCouponsFormat): string {
   return formatBondCouponsReport(createBondCouponsReport(coupons), format);
 }

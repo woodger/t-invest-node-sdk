@@ -20,9 +20,7 @@ import { accountsFormats, formatAccounts } from '../accounts/reporter';
 
 type SandboxAccountsSdk = {
   sandbox: {
-    getSandboxAccounts(
-      request: GetAccountsRequest
-    ): Promise<GetAccountsResponse>;
+    getSandboxAccounts(request: GetAccountsRequest): Promise<GetAccountsResponse>;
   };
   close(): void;
 };

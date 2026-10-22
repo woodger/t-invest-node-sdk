@@ -26,9 +26,7 @@ import { formatStopOrders, stopOrdersFormats } from './reporter';
 
 type StopOrdersSdk = {
   stopOrders: {
-    getStopOrders(
-      request: GetStopOrdersRequest
-    ): Promise<GetStopOrdersResponse>;
+    getStopOrders(request: GetStopOrdersRequest): Promise<GetStopOrdersResponse>;
   };
   close(): void;
 };
@@ -36,10 +34,7 @@ type StopOrdersSdk = {
 type StopOrdersSdkFactory = (options: TInvestOptions) => StopOrdersSdk;
 
 type StopOrdersOptions = InferOptions<typeof stopOrdersOptionsSchema>;
-type StopOrdersRequestOptions = CommandRequestOptions<
-  StopOrdersOptions,
-  'account-id'
->;
+type StopOrdersRequestOptions = CommandRequestOptions<StopOrdersOptions, 'account-id'>;
 
 const stopOrdersOptionsSchema = withSdkOptions({
   'account-id': {
@@ -75,9 +70,7 @@ export function createStopOrdersCommand(
 
 export const stopOrdersCommand = createStopOrdersCommand();
 
-export function createStopOrdersRequest(
-  options: StopOrdersRequestOptions
-): GetStopOrdersRequest {
+export function createStopOrdersRequest(options: StopOrdersRequestOptions): GetStopOrdersRequest {
   return {
     accountId: options['account-id'],
     status: StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED,

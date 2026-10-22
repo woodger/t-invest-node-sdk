@@ -72,9 +72,7 @@ export function createOptionsByCommand(
 
 export const optionsByCommand = createOptionsByCommand();
 
-export function createOptionsByRequest(
-  options: OptionsByRequestOptions
-): FilterOptionsRequest {
+export function createOptionsByRequest(options: OptionsByRequestOptions): FilterOptionsRequest {
   return {
     basicAssetUid: options['basic-asset-uid'],
     basicAssetPositionUid: options['basic-asset-position-uid'] ?? ''

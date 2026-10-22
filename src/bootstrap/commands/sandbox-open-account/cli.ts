@@ -27,9 +27,7 @@ import { formatOpenSandboxAccount, openSandboxAccountFormats } from './reporter'
 
 type SandboxOpenAccountSdk = {
   sandbox: {
-    openSandboxAccount(
-      request: OpenSandboxAccountRequest
-    ): Promise<OpenSandboxAccountResponse>;
+    openSandboxAccount(request: OpenSandboxAccountRequest): Promise<OpenSandboxAccountResponse>;
   };
   close(): void;
 };

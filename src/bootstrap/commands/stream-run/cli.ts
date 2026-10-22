@@ -35,9 +35,7 @@ type StreamRunDependencies = {
 };
 
 type StreamRunOptions = InferOptions<typeof streamRunOptionsSchema>;
-type StreamRunProvidedOptions = InferProvidedOptions<
-  typeof streamRunOptionsSchema
->;
+type StreamRunProvidedOptions = InferProvidedOptions<typeof streamRunOptionsSchema>;
 
 const streamRunCommandPath = ['stream', 'run'] as const;
 const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
@@ -45,34 +43,32 @@ const defaultStreamRunSdkFactory: StreamRunSdkFactory = (options) =>
 const defaultStreamRunConfigReader: StreamRunConfigReader = (path) =>
   readFile(path, 'utf8');
 
-const streamRunOptionsSchema = withSdkOptions(
-  {
-    config: {
-      type: 'string',
-      required: true
-    },
-    'max-events': {
-      ...positiveSafeIntegerOption
-    },
-    'duration-ms': {
-      ...positiveSafeIntegerOption
-    },
-    'idle-timeout-ms': {
-      ...positiveSafeIntegerOption
-    },
-    'include-pings': {
-      type: 'boolean'
-    },
-    raw: {
-      type: 'boolean'
-    },
-    format: {
-      type: 'string',
-      choices: streamRunFormats,
-      default: 'jsonl'
-    }
-  } as const
-);
+const streamRunOptionsSchema = withSdkOptions({
+  config: {
+    type: 'string',
+    required: true
+  },
+  'max-events': {
+    ...positiveSafeIntegerOption
+  },
+  'duration-ms': {
+    ...positiveSafeIntegerOption
+  },
+  'idle-timeout-ms': {
+    ...positiveSafeIntegerOption
+  },
+  'include-pings': {
+    type: 'boolean'
+  },
+  raw: {
+    type: 'boolean'
+  },
+  format: {
+    type: 'string',
+    choices: streamRunFormats,
+    default: 'jsonl'
+  }
+} as const);
 
 export function createStreamRunCommand(
   dependencies: StreamRunDependencies = {}

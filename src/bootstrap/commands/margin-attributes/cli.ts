@@ -25,9 +25,7 @@ import { formatMarginAttributes, marginAttributesFormats } from './reporter';
 
 type MarginAttributesSdk = {
   users: {
-    getMarginAttributes(
-      request: GetMarginAttributesRequest
-    ): Promise<GetMarginAttributesResponse>;
+    getMarginAttributes(request: GetMarginAttributesRequest): Promise<GetMarginAttributesResponse>;
   };
   close(): void;
 };
@@ -36,13 +34,8 @@ type MarginAttributesSdkFactory = (
   options: TInvestOptions
 ) => MarginAttributesSdk;
 
-type MarginAttributesOptions = InferOptions<
-  typeof marginAttributesOptionsSchema
->;
-type MarginAttributesRequestOptions = CommandRequestOptions<
-  MarginAttributesOptions,
-  'account-id'
->;
+type MarginAttributesOptions = InferOptions<typeof marginAttributesOptionsSchema>;
+type MarginAttributesRequestOptions = CommandRequestOptions<MarginAttributesOptions, 'account-id'>;
 
 const marginAttributesOptionsSchema = withSdkOptions({
   'account-id': {

@@ -32,9 +32,7 @@ import {
   type StreamRunConfig
 } from './config';
 
-export function createMarketDataStreamRequests(
-  config: StreamRunConfig
-): MarketDataRequest[] {
+export function createMarketDataStreamRequests(config: StreamRunConfig): MarketDataRequest[] {
   if (config.stream !== 'marketdata.marketDataStream') {
     throw new CliUsageError(
       `Expected marketdata bidirectional stream config, got '${config.stream}'`
@@ -125,9 +123,7 @@ export function createMarketDataServerSideStreamRequest(
   };
 }
 
-export function createPortfolioStreamRequest(
-  config: StreamRunConfig
-): PortfolioStreamRequest {
+export function createPortfolioStreamRequest(config: StreamRunConfig): PortfolioStreamRequest {
   if (config.stream !== 'operations.portfolioStream') {
     throw new CliUsageError(
       `Expected portfolio stream config, got '${config.stream}'`
@@ -140,9 +136,7 @@ export function createPortfolioStreamRequest(
   };
 }
 
-export function createPositionsStreamRequest(
-  config: StreamRunConfig
-): PositionsStreamRequest {
+export function createPositionsStreamRequest(config: StreamRunConfig): PositionsStreamRequest {
   if (config.stream !== 'operations.positionsStream') {
     throw new CliUsageError(
       `Expected positions stream config, got '${config.stream}'`
@@ -156,9 +150,7 @@ export function createPositionsStreamRequest(
   };
 }
 
-export function createTradesStreamRequest(
-  config: StreamRunConfig
-): TradesStreamRequest {
+export function createTradesStreamRequest(config: StreamRunConfig): TradesStreamRequest {
   if (config.stream !== 'orders.tradesStream') {
     throw new CliUsageError(
       `Expected trades stream config, got '${config.stream}'`

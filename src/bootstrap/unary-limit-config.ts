@@ -26,9 +26,7 @@ export interface UnaryLimitConfig {
  * методов получают полные пути gRPC. Значения модуля и группы общих квот не
  * добавляются.
  */
-export function defineUnaryLimits(
-  definition: UnaryLimitsDefinition
-): UnaryLimits {
+export function defineUnaryLimits(definition: UnaryLimitsDefinition): UnaryLimits {
   const limits: UnaryLimits = {};
 
   for (const [service, serviceLimits] of Object.entries(definition)) {
@@ -50,9 +48,7 @@ export function defineUnaryLimits(
  * Отклоняет повторное объявление RPC, а также неположительные и неконечные
  * значения квот до создания SDK instance.
  */
-export function compileUnaryLimits(
-  definition: UnaryLimitsConfig
-): UnaryLimitConfig {
+export function compileUnaryLimits(definition: UnaryLimitsConfig): UnaryLimitConfig {
   const buckets: Record<string, string> = {};
   const limits: UnaryLimits = {};
 
@@ -164,10 +160,7 @@ function cloneUnaryLimit(limit: TInvestUnaryLimit): TInvestUnaryLimit {
   };
 }
 
-function assertUnaryLimit(
-  limit: TInvestUnaryLimit,
-  rule: string
-): void {
+function assertUnaryLimit(limit: TInvestUnaryLimit, rule: string): void {
   if (
     typeof limit !== 'object'
     || limit === null

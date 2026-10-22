@@ -41,9 +41,7 @@ type DividendsForeignIssuerSdkFactory = (
   options: TInvestOptions
 ) => DividendsForeignIssuerSdk;
 
-type DividendsForeignIssuerOptions = InferOptions<
-  typeof dividendsForeignIssuerOptionsSchema
->;
+type DividendsForeignIssuerOptions = InferOptions<typeof dividendsForeignIssuerOptionsSchema>;
 type DividendsForeignIssuerRequestOptions = CommandRequestOptions<
   DividendsForeignIssuerOptions,
   | 'task-id'

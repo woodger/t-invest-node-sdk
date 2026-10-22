@@ -232,10 +232,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * Интервал отсчитывается от фактической выдачи, чтобы задержка таймера
    * не позволила выдать несколько permits подряд.
    */
-  private dispatch(
-    schedule: UnaryLimitSchedule,
-    scheduledAt: number
-  ): void {
+  private dispatch(schedule: UnaryLimitSchedule, scheduledAt: number): void {
     const request = schedule.head;
 
     if (request === undefined) {
@@ -257,10 +254,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * Удаление головы очереди перепланирует ожидание; отмена сама по себе не
    * расходует квоту.
    */
-  private cancel(
-    schedule: UnaryLimitSchedule,
-    request: UnaryLimitRequest
-  ): void {
+  private cancel(schedule: UnaryLimitSchedule, request: UnaryLimitRequest): void {
     if (
       schedule.head !== request
       && request.previous === undefined
@@ -291,10 +285,7 @@ class InMemoryUnaryLimiter implements TInvestUnaryLimiter {
    * Таймером, abort listener-ом и завершением Promise управляет вызывающий
    * метод.
    */
-  private removeRequest(
-    schedule: UnaryLimitSchedule,
-    request: UnaryLimitRequest
-  ): void {
+  private removeRequest(schedule: UnaryLimitSchedule, request: UnaryLimitRequest): void {
     if (request.previous === undefined) {
       schedule.head = request.next;
     }

@@ -22,9 +22,7 @@ import { closePricesFormats, formatClosePrices } from './reporter';
 
 type ClosePricesSdk = {
   marketData: {
-    getClosePrices(
-      request: GetClosePricesRequest
-    ): Promise<GetClosePricesResponse>;
+    getClosePrices(request: GetClosePricesRequest): Promise<GetClosePricesResponse>;
   };
   close(): void;
 };
@@ -32,10 +30,7 @@ type ClosePricesSdk = {
 type ClosePricesSdkFactory = (options: TInvestOptions) => ClosePricesSdk;
 
 type ClosePricesOptions = InferOptions<typeof closePricesOptionsSchema>;
-type ClosePricesRequestOptions = CommandRequestOptions<
-  ClosePricesOptions,
-  'instrument-id'
->;
+type ClosePricesRequestOptions = CommandRequestOptions<ClosePricesOptions, 'instrument-id'>;
 
 const closePricesOptionsSchema = withSdkOptions({
   'instrument-id': {

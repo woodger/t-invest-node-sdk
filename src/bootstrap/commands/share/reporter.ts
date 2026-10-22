@@ -22,9 +22,7 @@ export type ShareFormat = typeof shareFormats[number];
 
 export const shareFormats = ['json', 'table'] as const;
 
-export function createShareReportInstrument(
-  instrument: Share
-): ShareReportInstrument {
+export function createShareReportInstrument(instrument: Share): ShareReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -112,10 +110,7 @@ export function renderShareRows(report: ShareReportInstrument[]): string {
   ]);
 }
 
-export function formatShareReport(
-  report: ShareReport,
-  format: ShareFormat
-): string {
+export function formatShareReport(report: ShareReport, format: ShareFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -123,9 +118,6 @@ export function formatShareReport(
   return renderShareRows(report === null ? [] : [report]);
 }
 
-export function formatShare(
-  response: ShareResponse,
-  format: ShareFormat
-): string {
+export function formatShare(response: ShareResponse, format: ShareFormat): string {
   return formatShareReport(createShareReport(response), format);
 }

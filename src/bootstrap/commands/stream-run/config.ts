@@ -304,9 +304,7 @@ function parseRuntimeFormat(value: unknown): 'jsonl' {
   throw new CliUsageError("Expected 'runtime.format' as one of: jsonl");
 }
 
-function parseMarketDataStreamRequests(
-  value: unknown
-): MarketDataStreamRequestConfig[] {
+function parseMarketDataStreamRequests(value: unknown): MarketDataStreamRequestConfig[] {
   const requests = parseArray(value, 'requests').map(
     parseMarketDataStreamRequest
   );
@@ -320,9 +318,7 @@ function parseMarketDataStreamRequests(
   return requests;
 }
 
-function parseMarketDataStreamRequest(
-  value: unknown
-): MarketDataStreamRequestConfig {
+function parseMarketDataStreamRequest(value: unknown): MarketDataStreamRequestConfig {
   const request = requireObject(value, 'requests[]');
   const requestType = parseMarketDataStreamRequestType(request['type']);
   const allowedFields = requestType === 'getMySubscriptions'
@@ -382,9 +378,7 @@ function parseMarketDataStreamRequest(
   }
 }
 
-function parseMarketDataStreamRequestType(
-  value: unknown
-): MarketDataStreamRequestType {
+function parseMarketDataStreamRequestType(value: unknown): MarketDataStreamRequestType {
   if (typeof value !== 'string') {
     throw new CliUsageError("Expected 'requests[].type' as string");
   }
@@ -455,10 +449,7 @@ function parseMarketDataSubscriptions(value: unknown): MarketDataSubscriptions {
   return result;
 }
 
-function parseCandleSubscription(
-  value: unknown,
-  path: string
-): CandleSubscriptionConfig {
+function parseCandleSubscription(value: unknown, path: string): CandleSubscriptionConfig {
   const candle = requireObject(value, path);
   rejectUnknownFields(
     candle,
@@ -479,10 +470,7 @@ function parseCandleSubscription(
   };
 }
 
-function parseOrderBookSubscription(
-  value: unknown,
-  path: string
-): OrderBookSubscriptionConfig {
+function parseOrderBookSubscription(value: unknown, path: string): OrderBookSubscriptionConfig {
   const orderBook = requireObject(value, path);
   rejectUnknownFields(
     orderBook,
@@ -508,10 +496,7 @@ function parseOrderBookSubscription(
   };
 }
 
-function parseInstrumentSubscription(
-  value: unknown,
-  path: string
-): InstrumentSubscriptionConfig {
+function parseInstrumentSubscription(value: unknown, path: string): InstrumentSubscriptionConfig {
   const instrument = requireObject(value, path);
   rejectUnknownFields(instrument, new Set(['instrumentId']), path);
 
@@ -523,10 +508,7 @@ function parseInstrumentSubscription(
   };
 }
 
-function parseCandleInterval(
-  value: unknown,
-  path: string
-): SubscriptionInterval {
+function parseCandleInterval(value: unknown, path: string): SubscriptionInterval {
   if (typeof value !== 'string') {
     throw new CliUsageError(`Expected '${path}' as string`);
   }
@@ -560,10 +542,7 @@ function parseNonEmptyString(value: unknown, path: string): string {
   return value;
 }
 
-function parseOptionalBoolean(
-  value: unknown,
-  path: string
-): boolean | undefined {
+function parseOptionalBoolean(value: unknown, path: string): boolean | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -575,10 +554,7 @@ function parseOptionalBoolean(
   return value;
 }
 
-function parseOptionalPositiveInteger(
-  value: unknown,
-  path: string
-): number | undefined {
+function parseOptionalPositiveInteger(value: unknown, path: string): number | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -594,10 +570,7 @@ function parsePositiveInteger(value: unknown, path: string): number {
   return value;
 }
 
-function parseOptionalArray(
-  value: unknown,
-  path: string
-): unknown[] | undefined {
+function parseOptionalArray(value: unknown, path: string): unknown[] | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -639,17 +612,13 @@ function assertAbsent(value: unknown, message: string): void {
   }
 }
 
-export function resolveCandlesWaitingClose(
-  candles: CandleSubscriptionConfig[]
-): boolean {
+export function resolveCandlesWaitingClose(candles: CandleSubscriptionConfig[]): boolean {
   validateCandlesWaitingClose(candles);
 
   return candles[0]?.waitingClose ?? false;
 }
 
-function validateCandlesWaitingClose(
-  candles: CandleSubscriptionConfig[]
-): void {
+function validateCandlesWaitingClose(candles: CandleSubscriptionConfig[]): void {
   const waitingClose = candles[0]?.waitingClose ?? false;
 
   if (candles.some((item) => item.waitingClose !== waitingClose)) {

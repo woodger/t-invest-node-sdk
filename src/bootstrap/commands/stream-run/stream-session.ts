@@ -70,8 +70,10 @@ export type StreamRunSdk = {
  * завершении.
  */
 export type StreamRunSdkFactory = (options: TInvestOptions) => StreamRunSdk;
+
 /** Календарное время для метки receivedAt у события потока. */
 export type StreamRunClock = () => Date;
+
 /** Монотонное время в миллисекундах для отсчёта длительности сессии и простоя. */
 export type StreamRunElapsedClock = () => number;
 
@@ -326,9 +328,7 @@ async function readNextWithTimeout<T>(
   }
 }
 
-async function settleCancelledRead<T>(
-  read: Promise<IteratorResult<T>>
-): Promise<void> {
+async function settleCancelledRead<T>(read: Promise<IteratorResult<T>>): Promise<void> {
   try {
     await read;
   }

@@ -42,16 +42,11 @@ function toReportStopOrder(order: StopOrder): StopOrdersReportOrder {
   };
 }
 
-export function createStopOrdersReport(
-  response: GetStopOrdersResponse
-): StopOrdersReport {
+export function createStopOrdersReport(response: GetStopOrdersResponse): StopOrdersReport {
   return response.stopOrders.map(toReportStopOrder);
 }
 
-export function formatStopOrdersReport(
-  report: StopOrdersReport,
-  format: StopOrdersFormat
-): string {
+export function formatStopOrdersReport(report: StopOrdersReport, format: StopOrdersFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

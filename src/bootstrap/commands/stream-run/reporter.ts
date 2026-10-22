@@ -103,9 +103,7 @@ export function formatStreamRunResponse(
   }\n`;
 }
 
-export function resolveStreamRunEvent(
-  response: StreamRunResponse
-): StreamRunEvent {
+export function resolveStreamRunEvent(response: StreamRunResponse): StreamRunEvent {
   const record = response as Record<string, unknown>;
 
   for (const field of streamEventFields) {

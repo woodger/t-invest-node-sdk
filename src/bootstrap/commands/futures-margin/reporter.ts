@@ -20,9 +20,7 @@ export type FuturesMarginFormat = typeof futuresMarginFormats[number];
 
 export const futuresMarginFormats = ['json', 'table'] as const;
 
-export function createFuturesMarginReport(
-  response: GetFuturesMarginResponse
-): FuturesMarginReport {
+export function createFuturesMarginReport(response: GetFuturesMarginResponse): FuturesMarginReport {
   return {
     initialMarginOnBuy: toReportMoney(response.initialMarginOnBuy),
     initialMarginOnSell: toReportMoney(response.initialMarginOnSell),

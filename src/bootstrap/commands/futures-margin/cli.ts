@@ -29,9 +29,7 @@ import { formatFuturesMargin, futuresMarginFormats } from './reporter';
 
 type FuturesMarginSdk = {
   instruments: {
-    getFuturesMargin(
-      request: GetFuturesMarginRequest
-    ): Promise<GetFuturesMarginResponse>;
+    getFuturesMargin(request: GetFuturesMarginRequest): Promise<GetFuturesMarginResponse>;
   };
   close(): void;
 };

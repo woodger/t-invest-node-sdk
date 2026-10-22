@@ -25,9 +25,7 @@ import { formatTradingStatus, tradingStatusFormats } from './reporter';
 
 type TradingStatusSdk = {
   marketData: {
-    getTradingStatus(
-      request: GetTradingStatusRequest
-    ): Promise<GetTradingStatusResponse>;
+    getTradingStatus(request: GetTradingStatusRequest): Promise<GetTradingStatusResponse>;
   };
   close(): void;
 };
@@ -35,10 +33,7 @@ type TradingStatusSdk = {
 type TradingStatusSdkFactory = (options: TInvestOptions) => TradingStatusSdk;
 
 type TradingStatusOptions = InferOptions<typeof tradingStatusOptionsSchema>;
-type TradingStatusRequestOptions = CommandRequestOptions<
-  TradingStatusOptions,
-  'instrument-id'
->;
+type TradingStatusRequestOptions = CommandRequestOptions<TradingStatusOptions, 'instrument-id'>;
 
 const tradingStatusOptionsSchema = withSdkOptions({
   'instrument-id': {

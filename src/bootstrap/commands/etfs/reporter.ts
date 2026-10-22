@@ -25,10 +25,7 @@ export function createEtfsReport(instruments: Etf[]): EtfsReport {
   return instruments.map(createEtfReportInstrument);
 }
 
-export function formatEtfsReport(
-  report: EtfsReport,
-  format: EtfsFormat
-): string {
+export function formatEtfsReport(report: EtfsReport, format: EtfsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

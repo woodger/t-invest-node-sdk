@@ -26,9 +26,7 @@ import { formatLastPrices, lastPricesFormats } from './reporter';
 
 type LastPricesSdk = {
   marketData: {
-    getLastPrices(
-      request: GetLastPricesRequest
-    ): Promise<GetLastPricesResponse>;
+    getLastPrices(request: GetLastPricesRequest): Promise<GetLastPricesResponse>;
   };
   close(): void;
 };
@@ -36,10 +34,7 @@ type LastPricesSdk = {
 type LastPricesSdkFactory = (options: TInvestOptions) => LastPricesSdk;
 
 type LastPricesOptions = InferOptions<typeof lastPricesOptionsSchema>;
-type LastPricesRequestOptions = CommandRequestOptions<
-  LastPricesOptions,
-  'instrument-id'
->;
+type LastPricesRequestOptions = CommandRequestOptions<LastPricesOptions, 'instrument-id'>;
 
 const lastPricesOptionsSchema = withSdkOptions({
   'instrument-id': {
@@ -75,9 +70,7 @@ export function createLastPricesCommand(
 
 export const lastPricesCommand = createLastPricesCommand();
 
-export function createLastPricesRequest(
-  options: LastPricesRequestOptions
-): GetLastPricesRequest {
+export function createLastPricesRequest(options: LastPricesRequestOptions): GetLastPricesRequest {
   return GetLastPricesRequest.create({
     instrumentId: parseCommaSeparatedStringListOption(
       options['instrument-id'],

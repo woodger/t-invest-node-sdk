@@ -25,10 +25,7 @@ export function createOptionsByReport(instruments: Option[]): OptionsByReport {
   return instruments.map(createOptionReportInstrument);
 }
 
-export function formatOptionsByReport(
-  report: OptionsByReport,
-  format: OptionsByFormat
-): string {
+export function formatOptionsByReport(report: OptionsByReport, format: OptionsByFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -36,9 +33,6 @@ export function formatOptionsByReport(
   return renderOptionRows(report);
 }
 
-export function formatOptionsBy(
-  instruments: Option[],
-  format: OptionsByFormat
-): string {
+export function formatOptionsBy(instruments: Option[], format: OptionsByFormat): string {
   return formatOptionsByReport(createOptionsByReport(instruments), format);
 }

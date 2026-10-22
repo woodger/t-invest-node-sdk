@@ -67,10 +67,7 @@ export function createOrdersReport(response: GetOrdersResponse): OrdersReport {
   return response.orders.map(createOrderStateReport);
 }
 
-export function formatOrdersReport(
-  report: OrdersReport,
-  format: OrdersFormat
-): string {
+export function formatOrdersReport(report: OrdersReport, format: OrdersFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -107,9 +104,6 @@ export function formatOrdersReport(
   ]);
 }
 
-export function formatOrders(
-  response: GetOrdersResponse,
-  format: OrdersFormat
-): string {
+export function formatOrders(response: GetOrdersResponse, format: OrdersFormat): string {
   return formatOrdersReport(createOrdersReport(response), format);
 }

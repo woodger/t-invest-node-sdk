@@ -522,10 +522,7 @@ function createDefaultUnaryLimitResolver(): UnaryLimitResolver {
   return new UnaryLimitResolver(config.limits, config.buckets);
 }
 
-function resolveRequiredQuota(
-  resolver: UnaryLimitResolver,
-  path: string
-) {
+function resolveRequiredQuota(resolver: UnaryLimitResolver, path: string) {
   const quota = resolver.resolve(path);
 
   if (quota === undefined) {

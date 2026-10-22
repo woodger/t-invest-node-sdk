@@ -71,9 +71,7 @@ export function createOperationsByCursorRequest(
   };
 }
 
-function parseOperationsByCursorLimitOption(
-  rawValue: string | undefined
-): number {
+function parseOperationsByCursorLimitOption(rawValue: string | undefined): number {
   if (rawValue === undefined) {
     return 0;
   }
@@ -123,10 +121,7 @@ function parseOperationsByCursorOperationTypesOption(
   });
 }
 
-function parseOptionalDateTimeOption(
-  value: string | undefined,
-  name: string
-): Date | undefined {
+function parseOptionalDateTimeOption(value: string | undefined, name: string): Date | undefined {
   if (value === undefined) {
     return undefined;
   }

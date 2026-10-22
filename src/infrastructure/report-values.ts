@@ -43,12 +43,8 @@ export function formatReportDecimal(value: DecimalValue | undefined): string {
 }
 
 export function toReportMoney(value: MoneyValue): ReportMoney;
-export function toReportMoney(
-  value: MoneyValue | undefined
-): ReportMoney | null;
-export function toReportMoney(
-  value: MoneyValue | undefined
-): ReportMoney | null {
+export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null;
+export function toReportMoney(value: MoneyValue | undefined): ReportMoney | null {
   if (value === undefined) {
     return null;
   }
@@ -59,9 +55,7 @@ export function toReportMoney(
   };
 }
 
-export function formatReportMoneyText(
-  value: ReportMoney | null | undefined
-): string {
+export function formatReportMoneyText(value: ReportMoney | null | undefined): string {
   if (value == null) {
     return '';
   }

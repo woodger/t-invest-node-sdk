@@ -19,9 +19,7 @@ export type AccruedInterestsFormat = typeof accruedInterestsFormats[number];
 
 export const accruedInterestsFormats = ['json', 'table'] as const;
 
-function toReportAccruedInterest(
-  accruedInterest: AccruedInterest
-): AccruedInterestsReportItem {
+function toReportAccruedInterest(accruedInterest: AccruedInterest): AccruedInterestsReportItem {
   return {
     date: formatReportDate(accruedInterest.date),
     value: formatReportQuotation(accruedInterest.value),

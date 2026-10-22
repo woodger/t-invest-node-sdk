@@ -13,10 +13,7 @@ import { ChannelCredentials, createChannel } from 'nice-grpc';
 import type { TInvestOptions } from '../../../application/dto/t-invest-options';
 import { loadBundledTlsRootCertificates } from './tls-root-certificates';
 
-export function createSdkChannel(
-  options: TInvestOptions,
-  maxReceiveMessageLength: number
-) {
+export function createSdkChannel(options: TInvestOptions, maxReceiveMessageLength: number) {
   const credentials = options.useSsl
     ? ChannelCredentials.createSsl(
         options.tls?.rootCertificates ?? loadBundledTlsRootCertificates()

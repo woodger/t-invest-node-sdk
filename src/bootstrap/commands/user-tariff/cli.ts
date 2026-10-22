@@ -20,9 +20,7 @@ import { formatUserTariff, userTariffFormats } from './reporter';
 
 type UserTariffSdk = {
   users: {
-    getUserTariff(
-      request: Record<string, never>
-    ): Promise<GetUserTariffResponse>;
+    getUserTariff(request: Record<string, never>): Promise<GetUserTariffResponse>;
   };
   close(): void;
 };

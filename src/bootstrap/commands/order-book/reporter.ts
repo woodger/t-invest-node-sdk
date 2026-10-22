@@ -16,10 +16,7 @@ export type OrderBookFormat = typeof orderBookFormats[number];
 
 export const orderBookFormats = ['json', 'table'] as const;
 
-function toReportLevel(
-  side: OrderBookReportLevel['side'],
-  order: Order
-): OrderBookReportLevel {
+function toReportLevel(side: OrderBookReportLevel['side'], order: Order): OrderBookReportLevel {
   return {
     side,
     price: formatReportQuotation(order.price),
@@ -27,9 +24,7 @@ function toReportLevel(
   };
 }
 
-export function createOrderBookReport(
-  response: GetOrderBookResponse
-): OrderBookReport {
+export function createOrderBookReport(response: GetOrderBookResponse): OrderBookReport {
   return {
     figi: response.figi,
     instrumentUid: response.instrumentUid,
@@ -48,10 +43,7 @@ export function createOrderBookReport(
   };
 }
 
-export function formatOrderBookReport(
-  report: OrderBookReport,
-  format: OrderBookFormat
-): string {
+export function formatOrderBookReport(report: OrderBookReport, format: OrderBookFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -78,9 +70,6 @@ export function formatOrderBookReport(
   ]);
 }
 
-export function formatOrderBook(
-  response: GetOrderBookResponse,
-  format: OrderBookFormat
-): string {
+export function formatOrderBook(response: GetOrderBookResponse, format: OrderBookFormat): string {
   return formatOrderBookReport(createOrderBookReport(response), format);
 }

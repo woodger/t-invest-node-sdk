@@ -5,9 +5,7 @@ interface CancelOrderRequestOptions {
   readonly 'order-id': string;
 }
 
-export function createCancelOrderRequest(
-  options: CancelOrderRequestOptions
-): CancelOrderRequest {
+export function createCancelOrderRequest(options: CancelOrderRequestOptions): CancelOrderRequest {
   return {
     accountId: options['account-id'],
     orderId: options['order-id']

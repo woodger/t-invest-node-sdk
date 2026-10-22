@@ -61,10 +61,7 @@ export class UnaryLimitResolver {
    * Связывает квоту с общим bucket-ом группы или отдельным bucket-ом правила.
    * Префиксы quota: и rule: разделяют эти пространства идентификаторов.
    */
-  private createQuota(
-    matchedKey: string,
-    matchedLimit: TInvestUnaryLimit
-  ): TInvestUnaryQuota {
+  private createQuota(matchedKey: string, matchedLimit: TInvestUnaryLimit): TInvestUnaryQuota {
     const quotaBucket = this.buckets[matchedKey];
 
     return {

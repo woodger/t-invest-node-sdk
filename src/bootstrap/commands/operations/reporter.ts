@@ -46,16 +46,11 @@ function toReportOperation(operation: Operation): OperationsReportOperation {
   };
 }
 
-export function createOperationsReport(
-  operations: Operation[]
-): OperationsReport {
+export function createOperationsReport(operations: Operation[]): OperationsReport {
   return operations.map(toReportOperation);
 }
 
-export function formatOperationsReport(
-  report: OperationsReport,
-  format: OperationsFormat
-): string {
+export function formatOperationsReport(report: OperationsReport, format: OperationsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -92,9 +87,6 @@ export function formatOperationsReport(
   ]);
 }
 
-export function formatOperations(
-  operations: Operation[],
-  format: OperationsFormat
-): string {
+export function formatOperations(operations: Operation[], format: OperationsFormat): string {
   return formatOperationsReport(createOperationsReport(operations), format);
 }

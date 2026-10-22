@@ -133,10 +133,7 @@ export function mapSdkCallError(
   return error;
 }
 
-export function isCallCancellation(
-  error: unknown,
-  signal: AbortSignal | undefined
-): boolean {
+export function isCallCancellation(error: unknown, signal: AbortSignal | undefined): boolean {
   return signal?.aborted === true
     && (error === signal.reason || errorName(error) === 'AbortError');
 }
@@ -221,10 +218,7 @@ function isLocalReceiveMessageLimitError(
     === `Received message that decompresses to a size larger than ${maxReceiveMessageLength}`;
 }
 
-function isTlsCertificateError(
-  error: ClientError,
-  useSsl: boolean
-): boolean {
+function isTlsCertificateError(error: ClientError, useSsl: boolean): boolean {
   if (!useSsl || error.code !== Status.UNAVAILABLE) {
     return false;
   }

@@ -22,9 +22,7 @@ export type BondFormat = typeof bondFormats[number];
 
 export const bondFormats = ['json', 'table'] as const;
 
-export function createBondReportInstrument(
-  instrument: Bond
-): BondReportInstrument {
+export function createBondReportInstrument(instrument: Bond): BondReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -124,10 +122,7 @@ export function renderBondRows(report: BondReportInstrument[]): string {
   ]);
 }
 
-export function formatBondReport(
-  report: BondReport,
-  format: BondFormat
-): string {
+export function formatBondReport(report: BondReport, format: BondFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

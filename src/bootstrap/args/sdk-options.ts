@@ -23,10 +23,7 @@ export type SdkCommandOptions = {
   insecure?: boolean | undefined;
 };
 
-function stringFromEnv(
-  env: NodeJS.ProcessEnv,
-  name: string
-): string | undefined {
+function stringFromEnv(env: NodeJS.ProcessEnv, name: string): string | undefined {
   const value = env[name];
 
   if (value === undefined || value.trim() === '') {

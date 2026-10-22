@@ -27,9 +27,7 @@ import { brokerReportFormats, formatBrokerReport } from './reporter';
 
 type BrokerReportSdk = {
   operations: {
-    getBrokerReport(
-      request: BrokerReportRequest
-    ): Promise<BrokerReportResponse>;
+    getBrokerReport(request: BrokerReportRequest): Promise<BrokerReportResponse>;
   };
   close(): void;
 };

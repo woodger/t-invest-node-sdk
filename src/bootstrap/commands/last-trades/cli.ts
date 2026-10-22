@@ -26,9 +26,7 @@ import { formatLastTrades, lastTradesFormats } from './reporter';
 
 type LastTradesSdk = {
   marketData: {
-    getLastTrades(
-      request: GetLastTradesRequest
-    ): Promise<GetLastTradesResponse>;
+    getLastTrades(request: GetLastTradesRequest): Promise<GetLastTradesResponse>;
   };
   close(): void;
 };
@@ -83,9 +81,7 @@ export function createLastTradesCommand(
 
 export const lastTradesCommand = createLastTradesCommand();
 
-export function createLastTradesRequest(
-  options: LastTradesRequestOptions
-): GetLastTradesRequest {
+export function createLastTradesRequest(options: LastTradesRequestOptions): GetLastTradesRequest {
   const from = parseDateTimeOption(options.from, 'from');
   const to = parseDateTimeOption(options.to, 'to');
 

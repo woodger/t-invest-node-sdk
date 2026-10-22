@@ -33,10 +33,7 @@ type AssetsSdkFactory = (options: TInvestOptions) => AssetsSdk;
 type AssetInstrumentTypeName = typeof assetInstrumentTypeNames[number];
 
 type AssetsOptions = InferOptions<typeof assetsOptionsSchema>;
-type AssetsRequestOptions = CommandRequestOptions<
-  AssetsOptions,
-  'instrument-type'
->;
+type AssetsRequestOptions = CommandRequestOptions<AssetsOptions, 'instrument-type'>;
 
 const assetInstrumentTypes = {
   unspecified: InstrumentType.INSTRUMENT_TYPE_UNSPECIFIED,
@@ -89,9 +86,7 @@ export function createAssetsCommand(
 
 export const assetsCommand = createAssetsCommand();
 
-export function createAssetsRequest(
-  options: AssetsRequestOptions
-): AssetsRequest {
+export function createAssetsRequest(options: AssetsRequestOptions): AssetsRequest {
   return {
     instrumentType: assetInstrumentTypes[
       options['instrument-type'] as AssetInstrumentTypeName

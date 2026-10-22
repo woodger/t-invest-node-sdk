@@ -210,10 +210,7 @@ export interface TInvestMetadata {
     key: Key,
     value: TInvestMetadataValue<Key> | Array<TInvestMetadataValue<Key>>
   ): TInvestMetadata;
-  append<Key extends string>(
-    key: Key,
-    value: TInvestMetadataValue<Key>
-  ): TInvestMetadata;
+  append<Key extends string>(key: Key, value: TInvestMetadataValue<Key>): TInvestMetadata;
   delete(key: string): void;
   get<Key extends string>(key: Key): TInvestMetadataValue<Key> | undefined;
   getAll<Key extends string>(key: Key): Array<TInvestMetadataValue<Key>>;
@@ -261,10 +258,7 @@ export interface UsersService {
     request: DeepPartial<CurrencyTransferRequest>,
     options?: TInvestCallOptions
   ): Promise<CurrencyTransferResponse>;
-  payIn(
-    request: DeepPartial<PayInRequest>,
-    options?: TInvestCallOptions
-  ): Promise<PayInResponse>;
+  payIn(request: DeepPartial<PayInRequest>, options?: TInvestCallOptions): Promise<PayInResponse>;
   getAccountValues(
     request: DeepPartial<GetAccountValuesRequest>,
     options?: TInvestCallOptions
@@ -602,10 +596,7 @@ export interface InstrumentsService {
     request: DeepPartial<InstrumentRequest>,
     options?: TInvestCallOptions
   ): Promise<DfaResponse>;
-  dfas(
-    request: DeepPartial<DfasRequest>,
-    options?: TInvestCallOptions
-  ): Promise<DfasResponse>;
+  dfas(request: DeepPartial<DfasRequest>, options?: TInvestCallOptions): Promise<DfasResponse>;
   indicatives(
     request: DeepPartial<IndicativesRequest>,
     options?: TInvestCallOptions
@@ -666,10 +657,7 @@ export interface InstrumentsService {
     request: DeepPartial<GetBrandsRequest>,
     options?: TInvestCallOptions
   ): Promise<GetBrandsResponse>;
-  getBrandBy(
-    request: DeepPartial<GetBrandRequest>,
-    options?: TInvestCallOptions
-  ): Promise<Brand>;
+  getBrandBy(request: DeepPartial<GetBrandRequest>, options?: TInvestCallOptions): Promise<Brand>;
   getAssetFundamentals(
     request: DeepPartial<GetAssetFundamentalsRequest>,
     options?: TInvestCallOptions
@@ -702,8 +690,5 @@ export interface InstrumentsService {
     request: DeepPartial<InstrumentsRequest>,
     options?: TInvestCallOptions
   ): Promise<StructuredNotesResponse>;
-  news(
-    request: DeepPartial<NewsRequest>,
-    options?: TInvestCallOptions
-  ): Promise<NewsResponse>;
+  news(request: DeepPartial<NewsRequest>, options?: TInvestCallOptions): Promise<NewsResponse>;
 }

@@ -25,9 +25,7 @@ export type PostOrderFormat = typeof postOrderFormats[number];
 
 export const postOrderFormats = ['json', 'table'] as const;
 
-export function createOrderMutationReport(
-  response: PostOrderResponse
-): OrderMutationReport {
+export function createOrderMutationReport(response: PostOrderResponse): OrderMutationReport {
   return {
     orderId: response.orderId,
     status: orderExecutionReportStatusToJSON(response.executionReportStatus),
@@ -91,9 +89,6 @@ export function formatOrderMutationReport(
   ]);
 }
 
-export function formatPostOrder(
-  response: PostOrderResponse,
-  format: PostOrderFormat
-): string {
+export function formatPostOrder(response: PostOrderResponse, format: PostOrderFormat): string {
   return formatOrderMutationReport(createOrderMutationReport(response), format);
 }

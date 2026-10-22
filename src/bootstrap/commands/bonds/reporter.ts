@@ -25,10 +25,7 @@ export function createBondsReport(instruments: Bond[]): BondsReport {
   return instruments.map(createBondReportInstrument);
 }
 
-export function formatBondsReport(
-  report: BondsReport,
-  format: BondsFormat
-): string {
+export function formatBondsReport(report: BondsReport, format: BondsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

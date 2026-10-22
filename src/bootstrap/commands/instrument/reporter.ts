@@ -22,9 +22,7 @@ export type InstrumentFormat = typeof instrumentFormats[number];
 
 export const instrumentFormats = ['json', 'table'] as const;
 
-function toReportInstrument(
-  instrument: Instrument
-): InstrumentReportInstrument {
+function toReportInstrument(instrument: Instrument): InstrumentReportInstrument {
   return {
     figi: instrument.figi,
     ticker: instrument.ticker,
@@ -56,18 +54,13 @@ function toReportInstrument(
   };
 }
 
-export function createInstrumentReport(
-  response: InstrumentResponse
-): InstrumentReport {
+export function createInstrumentReport(response: InstrumentResponse): InstrumentReport {
   return response.instrument === undefined
     ? null
     : toReportInstrument(response.instrument);
 }
 
-export function formatInstrumentReport(
-  report: InstrumentReport,
-  format: InstrumentFormat
-): string {
+export function formatInstrumentReport(report: InstrumentReport, format: InstrumentFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -108,9 +101,6 @@ export function formatInstrumentReport(
   ]);
 }
 
-export function formatInstrument(
-  response: InstrumentResponse,
-  format: InstrumentFormat
-): string {
+export function formatInstrument(response: InstrumentResponse, format: InstrumentFormat): string {
   return formatInstrumentReport(createInstrumentReport(response), format);
 }

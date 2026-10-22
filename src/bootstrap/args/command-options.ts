@@ -29,10 +29,7 @@ type RequiredCommandOptionKeys<TOptions> = Exclude<
  * Выбранные опции для сборки запроса; поля с допустимым undefined становятся
  * необязательными.
  */
-export type CommandRequestOptions<
-  TOptions,
-  TKeys extends keyof TOptions
-> =
+export type CommandRequestOptions<TOptions, TKeys extends keyof TOptions> =
   & Pick<TOptions, Extract<TKeys, RequiredCommandOptionKeys<TOptions>>>
   & Partial<
     Pick<TOptions, Extract<TKeys, OptionalCommandOptionKeys<TOptions>>>
@@ -79,10 +76,7 @@ export function withSdkOptions<const TSchemas extends readonly OptionsSchema[]>(
   return mergeOptionsSchema(sdkOptionsSchema, ...schemas);
 }
 
-export function parseCommaSeparatedStringListOption(
-  value: string,
-  name: string
-): string[] {
+export function parseCommaSeparatedStringListOption(value: string, name: string): string[] {
   const values = value.split(',').map((item) => item.trim());
 
   if (values.some((item) => item === '')) {
@@ -116,10 +110,7 @@ export function parseDateTimeOption(value: string, name: string): Date {
   return date;
 }
 
-export function requireStringOption(
-  value: string | undefined,
-  name: string
-): string {
+export function requireStringOption(value: string | undefined, name: string): string {
   if (value === undefined) {
     throw new CliUsageError(`Expected required argument '--${name}'`);
   }
@@ -127,10 +118,7 @@ export function requireStringOption(
   return value;
 }
 
-export function parseRequiredDateTimeOption(
-  value: string | undefined,
-  name: string
-): Date {
+export function parseRequiredDateTimeOption(value: string | undefined, name: string): Date {
   return parseDateTimeOption(requireStringOption(value, name), name);
 }
 

@@ -39,9 +39,7 @@ function toSummary(response: PortfolioResponse): PortfolioReportSummary {
   };
 }
 
-function toReportPosition(
-  position: PortfolioPosition
-): PortfolioReportPosition {
+function toReportPosition(position: PortfolioPosition): PortfolioReportPosition {
   return {
     figi: position.figi,
     instrumentUid: position.instrumentUid,
@@ -55,9 +53,7 @@ function toReportPosition(
   };
 }
 
-export function createPortfolioReport(
-  response: PortfolioResponse
-): PortfolioReport {
+export function createPortfolioReport(response: PortfolioResponse): PortfolioReport {
   return {
     summary: toSummary(response),
     positions: response.positions.map(toReportPosition)
@@ -83,10 +79,7 @@ function renderPortfolioSummary(summary: PortfolioReportSummary): string {
   ].join('\n');
 }
 
-export function formatPortfolioReport(
-  report: PortfolioReport,
-  format: PortfolioFormat
-): string {
+export function formatPortfolioReport(report: PortfolioReport, format: PortfolioFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -119,9 +112,6 @@ export function formatPortfolioReport(
   return `${renderPortfolioSummary(report.summary)}\n\n${positionsTable}`;
 }
 
-export function formatPortfolio(
-  response: PortfolioResponse,
-  format: PortfolioFormat
-): string {
+export function formatPortfolio(response: PortfolioResponse, format: PortfolioFormat): string {
   return formatPortfolioReport(createPortfolioReport(response), format);
 }

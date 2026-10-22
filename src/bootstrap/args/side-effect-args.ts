@@ -34,10 +34,7 @@ export function assertSideEffectConfirmed(
   }
 }
 
-export function parsePositiveQuotationOption(
-  value: string,
-  name: string
-): Quotation {
+export function parsePositiveQuotationOption(value: string, name: string): Quotation {
   if (!/^(?:0|[1-9]\d*)(?:\.\d{1,9})?$/.test(value)) {
     throw new CliUsageError(decimalErrorMessage(name));
   }

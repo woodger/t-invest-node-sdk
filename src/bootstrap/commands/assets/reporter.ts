@@ -25,10 +25,7 @@ export function createAssetsReport(assets: Asset[]): AssetsReport {
   return assets.map(createAssetReportSummary);
 }
 
-export function formatAssetsReport(
-  report: AssetsReport,
-  format: AssetsFormat
-): string {
+export function formatAssetsReport(report: AssetsReport, format: AssetsFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }

@@ -29,9 +29,7 @@ export type AssetFormat = typeof assetFormats[number];
 
 export const assetFormats = ['json', 'table'] as const;
 
-function createAssetReportBrand(
-  brand: Brand | undefined
-): AssetReportBrand | null {
+function createAssetReportBrand(brand: Brand | undefined): AssetReportBrand | null {
   if (brand === undefined) {
     return null;
   }
@@ -48,9 +46,7 @@ function createAssetReportBrand(
   };
 }
 
-export function createAssetReportInstrument(
-  instrument: AssetInstrument
-): AssetReportInstrument {
+export function createAssetReportInstrument(instrument: AssetInstrument): AssetReportInstrument {
   return {
     uid: instrument.uid,
     figi: instrument.figi,
@@ -135,10 +131,7 @@ export function renderAssetRows(report: AssetReportSummary[]): string {
   ]);
 }
 
-export function formatAssetReport(
-  report: AssetReport,
-  format: AssetFormat
-): string {
+export function formatAssetReport(report: AssetReport, format: AssetFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -146,9 +139,6 @@ export function formatAssetReport(
   return renderAssetRows(report === null ? [] : [report]);
 }
 
-export function formatAsset(
-  response: AssetResponse,
-  format: AssetFormat
-): string {
+export function formatAsset(response: AssetResponse, format: AssetFormat): string {
   return formatAssetReport(createAssetReport(response), format);
 }

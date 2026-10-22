@@ -66,12 +66,7 @@ export interface UnaryServiceLimitsConfig<Method extends string = string> {
 }
 
 /** Человекочитаемая unary policy, сгруппированная по generated services. */
-export type UnaryLimitsConfig = Readonly<
-  Record<
-    string,
-    UnaryServiceLimitsConfig
-  >
->;
+export type UnaryLimitsConfig = Readonly<Record<string, UnaryServiceLimitsConfig>>;
 
 /**
  * Настройки квот модуля для всех поддерживаемых unary-сервисов.

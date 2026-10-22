@@ -22,9 +22,7 @@ import { formatOperations, operationsFormats } from '../operations/reporter';
 
 type SandboxOperationsSdk = {
   sandbox: {
-    getSandboxOperations(
-      request: OperationsRequest
-    ): Promise<OperationsResponse>;
+    getSandboxOperations(request: OperationsRequest): Promise<OperationsResponse>;
   };
   close(): void;
 };

@@ -28,9 +28,7 @@ export type OptionFormat = typeof optionFormats[number];
 
 export const optionFormats = ['json', 'table'] as const;
 
-export function createOptionReportInstrument(
-  instrument: Option
-): OptionReportInstrument {
+export function createOptionReportInstrument(instrument: Option): OptionReportInstrument {
   return {
     uid: instrument.uid,
     positionUid: instrument.positionUid,
@@ -130,10 +128,7 @@ export function renderOptionRows(report: OptionReportInstrument[]): string {
   ]);
 }
 
-export function formatOptionReport(
-  report: OptionReport,
-  format: OptionFormat
-): string {
+export function formatOptionReport(report: OptionReport, format: OptionFormat): string {
   if (format === 'json') {
     return renderJson(report);
   }
@@ -141,9 +136,6 @@ export function formatOptionReport(
   return renderOptionRows(report === null ? [] : [report]);
 }
 
-export function formatOption(
-  response: OptionResponse,
-  format: OptionFormat
-): string {
+export function formatOption(response: OptionResponse, format: OptionFormat): string {
   return formatOptionReport(createOptionReport(response), format);
 }
