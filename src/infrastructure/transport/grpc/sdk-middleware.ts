@@ -94,7 +94,7 @@ class SdkMiddleware {
       this.lifecycle?.assertOpen();
 
       if (!call.responseStream) {
-        throwIfAborted(options.signal);
+        SdkMiddleware.throwIfAborted(options.signal);
 
         const response = yield* call.next(
           call.request,
@@ -106,7 +106,7 @@ class SdkMiddleware {
         return response;
       }
 
-      throwIfAborted(options.signal);
+      SdkMiddleware.throwIfAborted(options.signal);
 
       for await (
         const response of call.next(
@@ -164,17 +164,17 @@ class SdkMiddleware {
       );
     }
 
-    const signal = resolveUnaryLimitSignal(callSignal, lifecycleSignal);
+    const signal = SdkMiddleware.resolveUnaryLimitSignal(callSignal, lifecycleSignal);
 
     try {
-      throwIfAborted(signal);
+      SdkMiddleware.throwIfAborted(signal);
       await limiter.acquire({
         path,
         quota,
         signal
       });
       // Ограничитель приложения может не учитывать отмену во время ожидания.
-      throwIfAborted(signal);
+      SdkMiddleware.throwIfAborted(signal);
     }
     catch (error) {
       if (isCallCancellation(error, callSignal)) {
@@ -196,22 +196,22 @@ class SdkMiddleware {
       throw error;
     }
   }
-}
 
-/** Объединяет отмену вызова и закрытие SDK только для ожидания квоты. */
-function resolveUnaryLimitSignal(
-  callSignal: AbortSignal | undefined,
-  lifecycleSignal: AbortSignal | undefined
-): AbortSignal {
-  if (callSignal !== undefined && lifecycleSignal !== undefined) {
-    return AbortSignal.any([callSignal, lifecycleSignal]);
+  /** Объединяет отмену вызова и закрытие SDK только для ожидания квоты. */
+  private static resolveUnaryLimitSignal(
+    callSignal: AbortSignal | undefined,
+    lifecycleSignal: AbortSignal | undefined
+  ): AbortSignal {
+    if (callSignal !== undefined && lifecycleSignal !== undefined) {
+      return AbortSignal.any([callSignal, lifecycleSignal]);
+    }
+
+    return callSignal ?? lifecycleSignal ?? passiveUnaryLimitSignal;
   }
 
-  return callSignal ?? lifecycleSignal ?? passiveUnaryLimitSignal;
-}
-
-function throwIfAborted(signal: AbortSignal | undefined): void {
-  if (signal?.aborted) {
-    throw signal.reason ?? createAbortError();
+  private static throwIfAborted(signal: AbortSignal | undefined): void {
+    if (signal?.aborted) {
+      throw signal.reason ?? createAbortError();
+    }
   }
 }

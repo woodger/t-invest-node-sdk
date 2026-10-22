@@ -88,7 +88,23 @@ export class SdkError<Code extends SdkErrorCode = SdkErrorCode> extends Error {
    * по общему бренду и проверяемой форме диагностических полей.
    */
   static override [Symbol.hasInstance](value: unknown): boolean {
-    return hasSdkErrorContract(value);
+    if (typeof value !== 'object' || value === null) {
+      return false;
+    }
+
+    const candidate = value as Record<PropertyKey, unknown>;
+
+    return candidate[sdkErrorBrand] === true
+      && candidate['name'] === 'SdkError'
+      && typeof candidate['message'] === 'string'
+      && typeof candidate['code'] === 'string'
+      && sdkErrorCodes.has(candidate['code'])
+      && typeof candidate['source'] === 'string'
+      && sdkErrorSources.has(candidate['source'])
+      && (candidate['path'] === undefined
+        || typeof candidate['path'] === 'string')
+      && (candidate['details'] === undefined
+        || typeof candidate['details'] === 'string');
   }
 }
 
@@ -106,30 +122,6 @@ export function isSdkError(
   error: unknown,
   code?: SdkErrorCode
 ): error is SdkError {
-  return hasSdkErrorContract(error)
+  return error instanceof SdkError
     && (code === undefined || error.code === code);
-}
-
-/**
- * Общая проверка runtime-контракта для instanceof SdkError и публичного
- * isSdkError.
- */
-function hasSdkErrorContract(value: unknown): value is SdkError {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const candidate = value as Record<PropertyKey, unknown>;
-
-  return candidate[sdkErrorBrand] === true
-    && candidate['name'] === 'SdkError'
-    && typeof candidate['message'] === 'string'
-    && typeof candidate['code'] === 'string'
-    && sdkErrorCodes.has(candidate['code'])
-    && typeof candidate['source'] === 'string'
-    && sdkErrorSources.has(candidate['source'])
-    && (candidate['path'] === undefined
-      || typeof candidate['path'] === 'string')
-    && (candidate['details'] === undefined
-      || typeof candidate['details'] === 'string');
 }
